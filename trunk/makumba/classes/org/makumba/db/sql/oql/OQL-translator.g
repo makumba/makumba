@@ -398,7 +398,7 @@ query :
 
 selectExpr :
 
-        s:"select"^<AST=QueryAST>
+        s:"select"^<AST=org.makumba.db.sql.oql.QueryAST>
 	{ #s.setSuperQuery(currentQuery); currentQuery=#s; }
 
         (
