@@ -73,15 +73,17 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey */
   public void setTagKey()
   {
-    tagKey= new MultipleKey(queryProps.length+1);
+    tagKey= new MultipleKey(queryProps.length+2);
     for(int i=0; i<queryProps.length; i++)
       tagKey.setAt(queryProps[i], i);
 
-    QueryTag parentList=getParentList();
-
     // if we have a parent, we append the key of the parent
     tagKey.setAt(getParentListKey(), queryProps.length);
+    tagKey.setAt(id, queryProps.length+1);
   }
+
+  /** can this tag have the same key as others in the page? */
+  public boolean allowsIdenticalKey() { return false; }
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. 
     Define a query, set the types of variables to "int" */
@@ -91,10 +93,10 @@ public class QueryTag extends MakumbaTag implements IterationTag
     pageCache.cacheQuery(tagKey, queryProps, getParentListKey());
 
     if(countVar!=null)
-      pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"));
+      pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"), this);
 
     if(maxCountVar!=null)
-      pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"));
+      pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"), this);
   }
 
   /** End the analysis of the tag, after all tags in the page were visited. 
