@@ -109,7 +109,9 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 	getRootData().setStrategy(key, this);
       strategy.setPage(pageContext);
       return strategy.doStart();
-    }catch(Throwable t){ treatException(t); return SKIP_BODY; }
+    }
+    catch(NewProjectionException e){ throw e; }
+    catch(Throwable t){ treatException(t); return SKIP_BODY; }
   }
 
   /** delegate the strategy to end */
