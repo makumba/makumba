@@ -36,18 +36,6 @@
 		</attribute>
 
 		<attribute>
-			<name>header</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>footer</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
 			<name>separator</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -107,18 +95,6 @@
 			<name>maxCountVar</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>header</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>footer</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
 		<attribute>
