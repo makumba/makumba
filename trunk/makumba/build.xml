@@ -120,6 +120,9 @@
 
 	<target name="doc" depends="compile" 
 	description="generates documentation">
+        <tstamp>
+                <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm"/>
+        </tstamp>
 	<javadoc 
 		destdir="doc/api" 
 		sourcepath="classes" 	
@@ -133,6 +136,11 @@
 		Author="true"
 		doctitle="Documentation of Makumba classes"
 	>
+            <bottom><![CDATA[
+                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
+                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
+                </td></tr></TABLE>
+            ]]></bottom>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
 
@@ -146,6 +154,42 @@
 		Author="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
 	>
+            <bottom><![CDATA[
+                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
+                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
+                </td></tr></TABLE>
+            ]]></bottom>
+            <header><![CDATA[
+                <TABLE BORDER="0" CELLPADDING="3" CELLSPACING="3">
+                <TD aCLASS="NavBarCell1" valign=top>
+		   <a href="http://www.makumba.org" target='_top'><img src="http://www.makumba.org/makumba-logo-small.gif" border=0></a>
+                </TD><TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+                <script language="javascript">
+                   url=document.location.href;
+                   clas=url.substring(url.indexOf("/javadoc/"));
+                   clas=clas.substring(9);
+                   clas=clas.substring(0, clas.indexOf(".html") );
+                   //clas=clas.replace(new RegExp("/", "gi") ,".");
+                   //document.write(clas);
+                   //clasUrl=url.substring(0,url.indexOf("/javadoc/"));
+                   //clasUrl=clasUrl+"/classes/"+clas;
+                   clasUrl="";
+                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) )
+		   {
+			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
+                   		clasUrl=clasUrl.concat("",clas,".java");
+			else
+				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
+                        cvsLink="";
+                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba/classes/",clasUrl,"'>CVS</a>");
+		   	document.write(cvsLink);
+		   } //else document.write('(no cvs)');
+                </script>
+                </font>
+                </td>
+                </table>
+            ]]></header>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	    <link href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/"/>
 	    <!--link href="http://java.sun.com/products/servlet/2.3/javadoc/"/-->
