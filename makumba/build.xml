@@ -237,7 +237,7 @@
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="${bundle_base}/makumba.distrib" />
 	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" dest="${bundle_base}/makumba.distrib/"/>
+	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@cvs.sf.net:/cvsroot/makumba" dest="${bundle_base}/makumba.distrib/"/>
 	<mkdir dir="${jar.place}/lib" />
 
 	<!-- make the source tarball: -->
