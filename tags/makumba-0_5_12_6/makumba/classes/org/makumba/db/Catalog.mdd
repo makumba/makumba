@@ -1,0 +1,2 @@
+# this is the DD for the database catalog
+name=char[255]	;Data definition name
