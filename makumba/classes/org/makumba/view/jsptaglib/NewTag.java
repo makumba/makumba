@@ -46,7 +46,7 @@ public class NewTag extends FormTagBase
   }
 
 
-  public DataDefinition getDataType() 
+  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) 
   {
     return type;
   }
