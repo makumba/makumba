@@ -160,8 +160,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   /** tells wether this field has a description originally */
   public boolean hasDescription(){ return !description.equals(name); }
 
-  /** returns field's description*/
-  public String getDescription(){ return description; }
+  /** returns field's description, if present. If not present (null or "") it returns field name. */
+  public String getDescription()
+  {
+    if(description==null) return name;
+    if(description.trim().equals("")) return name;
+    return description; 
+  }
 
   /** returns field's type */
   public String getType(){ return type; }
