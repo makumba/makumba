@@ -15,6 +15,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.13.2; 04 jan 2005 cristi
+fixed small null-related problem with mak:input 
+fixed a number of teething problems of the new exception handling
+
 0.5.13.1; 03 jan 2005 cristi
 better fix for bug 60 (mak:option)
 currently running/analyzed tag is now displayed for all errors/exceptions (bug 780)
