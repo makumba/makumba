@@ -324,7 +324,9 @@ The programmer could just as well decide that all makumba logging at or over the
 	}
 	*/
     }
-    catch(antlr.TokenStreamException f){ throw new org.makumba.MakumbaError(f); }
+    catch(antlr.TokenStreamException f){ 
+	MakumbaSystem.getMakumbaLogger("db.query.compilation").warning(f+": "+oqlQuery);
+	throw new org.makumba.MakumbaError(f, oqlQuery); }
     long diff = new java.util.Date().getTime()-d.getTime();
     MakumbaSystem.getMakumbaLogger("db.query.compilation").fine("OQL to SQL: "+ diff +" ms: "+oqlQuery);
     return t;
