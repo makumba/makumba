@@ -166,19 +166,4 @@ public class Text
     }finally{ is.close(); is1.close(); }
   }
 
-  /** Indicates whether the other object is "equal to" this Text. */
-  public boolean equals(Object other) 
-  { 
-    if(other==null)
-	return false;
-    if(this.getClass() != other.getClass())
-	return false;
-    if(this.length()!=((Text)other).length())
-	return false;
-    try{
-	return this.compare( ((Text)other).toBinaryStream() );
-    }catch(IOException e){ return false; } 
-  } 
-
-
 }

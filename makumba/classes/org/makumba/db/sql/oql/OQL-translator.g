@@ -586,8 +586,8 @@ equalityExpr :
         rel:relationalExpr 
         (
             (
-                eq:TOK_EQ { lastEQop= #eq; is=" is "; } 
-            |   neq:TOK_NE{ lastEQop= #neq;is=" is not ";} 
+                eq:TOK_EQ { lastEQop= #eq; is="is "; } 
+            |   neq:TOK_NE{ lastEQop= #neq;is="is not ";} 
             )
 
             (
@@ -837,8 +837,8 @@ undefinedExpr :
 	//* we take away is_defined and is_undefined and we replace them with SQL is null and is not null...
 	{String s; }
         (
-            undef:"is_undefined" !{s=" is null"; }
-        |   def:"is_defined"!{s=" is not null"; }
+            undef:"is_undefined" !{s="is null"; }
+        |   def:"is_defined"!{s="is not null"; }
         )
    	TOK_LPAREN 
         query
@@ -944,9 +944,9 @@ literal :
         |   doubleLiteral
         |   charLiteral  { ((OQLAST)#literal).makumbaType="char";}  
         |   stringLiteral { ((OQLAST)#literal).makumbaType="char";} 
-        |   dateLiteral   { ((OQLAST)#literal).makumbaType="datetime";} 
-        |   timeLiteral  { ((OQLAST)#literal).makumbaType="datetime";} 
-        |   timestampLiteral  { ((OQLAST)#literal).makumbaType="timestamp";} 
+        |   dateLiteral   { ((OQLAST)#literal).makumbaType="date";} 
+        |   timeLiteral  { ((OQLAST)#literal).makumbaType="date";} 
+        |   timestampLiteral  { ((OQLAST)#literal).makumbaType="date";} 
     ;
 
 objectLiteral :

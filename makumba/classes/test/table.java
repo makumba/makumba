@@ -124,7 +124,9 @@ public class table extends TestCase
     assertEquals("Surname", "doe", pc.get("surname"));
     assertEquals("Birthdate", birth, pc.get("birthdate"));
     assertEquals("Something else", "else", pc.get("something"));
-    assertEquals("Comment text", pc.get("comment"), new Text(getExampleData()) );
+    try{
+      assertTrue(((Text)pc.get("comment")).compare(getExampleData()));
+    }catch(IOException e){}
     assertNotNull(ptrOne);
 
     v=db.executeQuery(readIntSet, ptr);

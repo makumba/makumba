@@ -305,7 +305,7 @@ The programmer could just as well decide that all makumba logging at or over the
 	  String s=f.getMessage();
 	  if(s.startsWith("line"))
 	    s=s.substring(s.indexOf(':')+1);
-	  throw new OQLParseError(s+"\r\nin query:\r\n"+oqlQuery, f);
+	  throw new OQLParseError(s+"\r\nin query:\r\n"+oqlQuery);
 	}
       throw e;
     }

@@ -77,9 +77,7 @@ public class charManager extends FieldManager
             s=" BINARY";
         else
             s="";
-        //should width be computed by getDBType() instead?
-        return getDBName()+" "+getDBType(d)+"("+getWidth()+")"+s;
-        //return super.inCreate(d)+"("+getWidth()+")"+s;
+        return super.inCreate(d)+"("+getWidth()+")"+s;
     }
 
   /** does apostrophe escape */
