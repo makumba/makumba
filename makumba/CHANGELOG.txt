@@ -19,6 +19,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12.2; 4 nov 2004 cristi
+fixed bugs 55 and 57 (query and mak:list start and limit, also documented)
+improved a bit documentation in regard to multiple forms and deprecated mak:list features
+
 0.5.12.1; 19 oct 2004 cristi
 fixed a packaging error. org.makumba.db.Lock.mdd was missing from the 0.5.12 package
 
