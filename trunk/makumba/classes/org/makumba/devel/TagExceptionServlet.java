@@ -155,6 +155,19 @@ public class TagExceptionServlet extends HttpServlet
       {
 	title="Error in JSP Java scriplet or servlet container";
       }
+
+    if(traced instanceof java.sql.SQLException)
+      {
+	title="SQL "+title;
+	body="The problem is related to SQL:\n"
+		+"	 SQLstate: "+((java.sql.SQLException)traced).getSQLState()+"\n"
+		+"	ErrorCode: "+((java.sql.SQLException)traced).getErrorCode()+"\n"
+		+"	  Message: "+traced.getMessage()+"\n\n"
+		+"Refer to your SQL server\'s documentation for error explanation.\n"
+		+"Please check the configuration of your webapp and SQL server.\n"
+		+body;
+      }
+
     body=body+shortTrace(trace(traced));
     try{
        SourceViewer sw=new errorViewer(req,this,title,body,null);
