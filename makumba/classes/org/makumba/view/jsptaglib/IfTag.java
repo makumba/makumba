@@ -23,6 +23,7 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.LogicException;
+import org.makumba.ProgrammerError;
 
 import org.makumba.util.MultipleKey;
 
@@ -62,11 +63,15 @@ public class IfTag extends MakumbaTag implements BodyTag
     pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, testExpr));
   }
   
-  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
-  public void doEndAnalyze()
+  /** tell the ValueComputer to finish analysis, check for proper test result type */
+  public void doEndAnalyze() 
   {
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
+    String type = vc.type.getDataType();
+    if ( !"int".equals(type) ) {
+        throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this + "], type is " + type);
+    }
   }
   
   /** ask the ValueComputer to calculate the expression, and SKIP_BODY if false */
