@@ -1,15 +1,15 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="Author" content="Stefan Baebler">
    <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
-   <title>Makumba documentation index</title>
-   <link rel="stylesheet" type="text/css" media="all" href="main.css" />
-   <script language="JavasCript" src="main.js"></script>
+   <title>Makumba whitepaper</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
 </head>
 <body>
-   <script language="JavaScript">
+   <script type="text/javascript">
       makeNavBar("");
    </script>
 
@@ -46,10 +46,10 @@ the programmer can add "organisational logic" between the interface and
 the database depending on the organisation's needs</li>
 </ul>
 
-<center><img SRC="architecture.gif" height=433 width=624></center>
+<center><img SRC="architecture.gif" height="433" width="624" alt="Architecture scheme"></center>
 
 <p><b>The following are high priorities of Makumba:</b>
-<blockquote>
+<ul>
 <li>
 phased development (easy to start an application in order to collect data,
 and to adjust it later on when further processing is needed)</li>
@@ -75,21 +75,23 @@ platform and database engine independence</li>
 
 <li>
 data compatibility (for copying and replication) across multiple databases</li>
-</blockquote>
+</ul>
+
 <b>The following are _not_ high priorities of Makumba, but can be addressed
 later:</b>
-<blockquote>
+<ul>
 <li>
 speed (most current database drivers are the minimum necessary, but they
 can be optimized using stored procedures and engine-specific features)</li>
 
 <li>
 multiple features for complex needs</li>
-</blockquote>
+</ul>
+
 <b>Why didn't BEST use JSP, Lasso LDML, Cold Fusion CFML, etc?</b>
 <br>We have looked at the mentioned technologies and found several problems,
 that we try to solve in Makumba
-<blockquote>
+<ul>
 <li>
 they are commercial (<a href="makumba.html#CFML">CFML</a>, <a href="makumba.html#Lasso">LDML</a>)</li>
 
@@ -100,9 +102,10 @@ interfaces during rapid application development</li>
 <li>
 their SQL queries are SQL engine dependent, making applications not portable
 across SQL engines</li>
-</blockquote>
+</ul>
+
 <b>BEST developed Makumba out of the following needs:</b>
-<blockquote>
+<ul>
 <li>
 they need a simple technology to base all the applications on. <a href="http://www.BEST.eu.org">BEST</a>
 had several legacy applications built with different technologies (Java,
@@ -148,9 +151,9 @@ need to achieve such communication</li>
 Lotus Notes web content adjustment possibilities were low comparing to
 the HTML-oriented solutions like <a href="http://best.nada.kth.se:8080/jml/jml.cgi/index.jml">JML</a>
 and JSP</li>
-</blockquote>
+</ul>
 
-<script language="JavaScript">
+<script type="text/javascript">
    makeFooter("$Id$");
 </script>
 </body>
