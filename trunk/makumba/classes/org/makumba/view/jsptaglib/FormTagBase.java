@@ -137,6 +137,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   FormTagBase findParentForm(){
     return (FormTagBase)findAncestorWithClass(this, FormTagBase.class);
   }
+
+  FormTagBase findRootForm(){
+    FormTagBase parent=findParentForm();
+    if(parent==null)
+      return this;
+    return parent.findRootForm();
+  }
   
   void checkNoParent(String attrName){
     if(findParentForm()!=null)
@@ -175,7 +182,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       if (formMessage != null) responder.setMessage(formMessage); 
 
       if(findParentForm()!=null) 
-	responder.setParentResponder(findParentForm().responder);
+	responder.setParentResponder(findParentForm().responder, findRootForm().responder);
   }
 
   public int doMakumbaStartTag() throws JspException, LogicException

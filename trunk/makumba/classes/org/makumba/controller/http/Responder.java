@@ -161,17 +161,17 @@ public abstract class Responder implements java.io.Serializable
   /** the form suffix, "" for the root form, _+increment for subforms */
   protected transient String storedSuffix="";
 
+  protected transient String storedParentSuffix="";
+
   static final char suffixSeparator='_';
 
   /** pass the parent responder */
-  public void setParentResponder(Responder resp)
+  public void setParentResponder(Responder resp, Responder root)
   {
-    if(resp.storedSuffix.equals(""))
-      storedSuffix=""+suffixSeparator+(++resp.groupCounter);
-    else
-      throw new RuntimeException("responders that include other responders cannot be included in responders");
+    storedSuffix=""+suffixSeparator+(++root.groupCounter);
+    storedParentSuffix= resp.storedSuffix;
   }
-
+  
   public String getSuffix(){ return storedSuffix; }
 
   static Integer ZERO= new Integer(0);
@@ -180,7 +180,11 @@ public abstract class Responder implements java.io.Serializable
     int n=s.indexOf(suffixSeparator);
     if(n==-1)
       return ZERO;
-    return new Integer(Integer.parseInt(s.substring(n+1)));
+    s=s.substring(n+1);
+    n=s.indexOf(suffixSeparator);
+    if(n!=-1)
+      s=s.substring(0, n);
+    return new Integer(Integer.parseInt(s));
   }
 
   static Comparator bySuffix=new Comparator(){
@@ -222,18 +226,25 @@ public abstract class Responder implements java.io.Serializable
 	String code=(String)responderCodes.next();
 	String responderCode=code;
 	String suffix="";
+	String parentSuffix=null;
 	int n=code.indexOf(suffixSeparator);
 	if(n!=-1)
 	  {
 	    responderCode=code.substring(0, n);
 	    suffix=code.substring(n);
+	    parentSuffix="";
+	    n= suffix.indexOf(suffixSeparator, 1);
+	    if(n!=-1){
+	      parentSuffix=suffix.substring(n);
+	      suffix=suffix.substring(0, n);
+	    }
 	  }
 	Integer i= new Integer(Integer.parseInt(responderCode));
 	Responder fr= ((Responder)indexedCache.get(i));
 	if(fr==null)
 	  throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
 	try{
-	  Object result=fr.op.respondTo(req, fr, suffix);
+	  Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
 	  message="<font color=green>"+fr.message+"</font>";
 	  if(result!=null){
 	    req.setAttribute(fr.resultAttribute, result);
@@ -285,7 +296,7 @@ public abstract class Responder implements java.io.Serializable
   {
     responderOps.put("edit", new ResponderOp()
 		    {
-		      public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		      public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			throws LogicException
 			{
 			  return Logic.doEdit(resp.controller,
@@ -300,7 +311,7 @@ public abstract class Responder implements java.io.Serializable
     
     responderOps.put("simple", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doOp(resp.controller,
@@ -314,7 +325,7 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("new", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doNew(resp.controller,
@@ -329,7 +340,7 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("add", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doAdd(resp.controller,
@@ -344,14 +355,9 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("addToNew", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
-			   // we assume that the parent suffix is appended to the end of the suffix
-			   String parentSuffix="";
-			   int n= suffix.indexOf(suffixSeparator,1);
-			   if(n!=-1)
-			     parentSuffix=suffix.substring(n+1);
 		           return Logic.doAdd(resp.controller,
 					      resp.newType+"->"+resp.addField,
 					      (Pointer)req.getAttribute(resultNamePrefix+parentSuffix), 
@@ -364,7 +370,7 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("delete", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doDelete(resp.controller,
@@ -383,7 +389,7 @@ public abstract class Responder implements java.io.Serializable
 abstract class ResponderOp
 {
   /** respond to the given request, with the data from the given responder, read using the given multiple form suffix */
-  public abstract Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+  public abstract Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
        throws LogicException;
 
   /** check the validity of the given responder data, return not-null if there is a problem*/
