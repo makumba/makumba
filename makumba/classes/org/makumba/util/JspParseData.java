@@ -458,6 +458,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
    
     /** the syntax points where the whole thing begins and ends */
     SyntaxPoint start, end;
+
+    public SyntaxPoint getStart(){ return start; }
+    public SyntaxPoint getEnd(){ return end; }
+
   }
 
 
