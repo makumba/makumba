@@ -68,18 +68,27 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public void setAction(String s){ formAction=s; }
   public void setHandler(String s){ handler=s; }
-  public void setMethod(String s){ formMethod=s; }
+  public void setMethod(String s){ checkNoParent("method"); formMethod=s; }
   public void setName(String s){ 
 	formName = s;
 	extraFormattingParams.put("name", s); 
   }
-  public void setMessage(String s){ formMessage = s ; }
-  public void setMultipart() { responder.setMultipart(true); }
+  public void setMessage(String s){ checkNoParent("message"); formMessage = s ; }
+  public void setMultipart() { 
+    FormTagBase parent= findParentForm();
+    if(parent!=null) // propagate multipart to the root form
+      parent.setMultipart();
+    else
+      responder.setMultipart(true); 
+  }
 
   //additional html attributes:
-  public void setTarget(String s)   { extraFormattingParams.put("target", s); }
-  public void setOnReset(String s)  { extraFormattingParams.put("onReset", s); }
-  public void setOnSubmit(String s) { extraFormattingParams.put("onSubmit", s); }
+  public void setTarget(String s)   
+  { checkNoParent("target"); extraFormattingParams.put("target", s); }
+  public void setOnReset(String s)  
+  { checkNoParent("onReset"); extraFormattingParams.put("onReset", s); }
+  public void setOnSubmit(String s) 
+  { checkNoParent("onSubmit"); extraFormattingParams.put("onSubmit", s); }
   // setName is defined above (approx 10 lines higher)
   
   
@@ -126,6 +135,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     return (FormTagBase)findAncestorWithClass(this, FormTagBase.class);
   }
   
+  void checkNoParent(String attrName){
+    if(findParentForm()!=null)
+      throw new ProgrammerError("Forms included in other forms cannot have a '"+attrName+"' attribute:\n"+getTagText());
+  }
+
   public void doEndAnalyze()
   {
     ComposedQuery dummy= (ComposedQuery)pageCache.queries.get(tagKey);
@@ -133,6 +147,10 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       dummy.analyze();
     if(formAction==null && findParentForm()==null)
       throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
+    if(findParentForm()!=null){
+      if(formAction!=null)
+	throw new ProgrammerError("Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
+    }
     if(baseObject==null)
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
