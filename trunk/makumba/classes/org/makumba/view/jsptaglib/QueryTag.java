@@ -37,7 +37,7 @@ import org.makumba.view.html.RecordViewer;
  */
 public class QueryTag extends MakumbaTag implements IterationTag
 {
-  String[] queryProps=new String[4];
+  String[] queryProps=new String[5];
   String separator="";
   String countVar;
   String maxCountVar;
@@ -48,6 +48,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   static String standardLastCountVar="org_makumba_view_jsptaglib_lastCountVar";
 
   public void setFrom(String s) { queryProps[ComposedQuery.FROM]=s; }
+  public void setVariableFrom(String s) { queryProps[ComposedQuery.VARFROM]=s; }
   public void setWhere(String s){ queryProps[ComposedQuery.WHERE]=s; }
   public void setOrderBy(String s){ queryProps[ComposedQuery.ORDERBY]=s; }
   public void setGroupBy(String s){ queryProps[ComposedQuery.GROUPBY]=s; }

@@ -112,7 +112,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     tagKey=new MultipleKey(keyComponents);
   }
 
-  static final String[] dummyQuerySections= {null, null, null, null};
+  static final String[] dummyQuerySections= {null, null, null, null, null};
  
   /** cache a dummy query when there is no mak:list around us */
   public void cacheDummyQueryAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
