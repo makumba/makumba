@@ -610,17 +610,17 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
 /** This class bridges between Enumeration and Iterator. */
 class EnumerationWrapper implements Iterator, Enumeration {
-  private Enumeration enum;
+  private Enumeration _enum;
 
   private EnumerationWrapper() { } // not allowed.
   public EnumerationWrapper(Enumeration e){
-      enum = e ;
+      _enum = e ;
   }
   
   public void    remove()  { throw new UnsupportedOperationException(); }
-  public Object  next()    { return enum.nextElement(); }
-  public boolean hasNext() { return enum.hasMoreElements(); }
+  public Object  next()    { return _enum.nextElement(); }
+  public boolean hasNext() { return _enum.hasMoreElements(); }
   
-  public boolean hasMoreElements() { return enum.hasMoreElements(); }  	
-  public Object  nextElement()     { return enum.nextElement(); }  	
+  public boolean hasMoreElements() { return _enum.hasMoreElements(); }  	
+  public Object  nextElement()     { return _enum.nextElement(); }  	
 }

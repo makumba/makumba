@@ -27,7 +27,7 @@ public class setcharEnumParser extends setEnumParser
 {
   void parseEnum(FieldCursor fc) 
   {
-    enum.type="charEnum";
-    fc.expectCharEnum(enum);
+    _enum.type="charEnum";
+    fc.expectCharEnum(_enum);
   }
 }
