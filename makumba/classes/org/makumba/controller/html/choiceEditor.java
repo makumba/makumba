@@ -34,7 +34,7 @@ public abstract class choiceEditor extends FieldEditor
 	
   
   /** Get the available options. */
-  public abstract Object getOptions();
+  public abstract Object getOptions(Dictionary formatParams);
 
   /** Gets the number of available options. */
   public abstract int getOptionsLength(Object opts);
@@ -59,6 +59,8 @@ public abstract class choiceEditor extends FieldEditor
   /** Gets the default size of the select HTML box. */
   public abstract int getDefaultSize();
 
+  /** Null values are ignored */
+  public boolean shouldRemoveNullValue(){return true; }
 
   // height? orderBy? where?
   public String format(Object o, Dictionary formatParams) 
@@ -80,9 +82,15 @@ public abstract class choiceEditor extends FieldEditor
     } else {
 	value=new Vector(1);
 	if(o!=null)
-	   value.addElement(o);
+	  value.addElement(o);
     }
 
+    // we clean up null values
+    for(Iterator i=value.iterator(); i.hasNext(); )
+      if(i.next()==Pointer.Null){
+	if(shouldRemoveNullValue())
+	  i.remove();
+      }
     if (!hidden) {
         HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(formatParams));
         int size=getIntParam(formatParams,"size");
@@ -92,7 +100,7 @@ public abstract class choiceEditor extends FieldEditor
         hcw.setMultiple(isMultiple());
         hcw.setLiteralHtml(getExtraFormatting(formatParams));
     
-	Object opt=getOptions(); 
+	Object opt=getOptions(formatParams); 
 	List values = new ArrayList(getOptionsLength(opt));
 	List labels = new ArrayList(getOptionsLength(opt));
 	String[] valueFormattedList = new String[value.size()];

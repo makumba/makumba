@@ -85,7 +85,7 @@ mak:lastCount()</a></li>
           <li><a href="#makadd">&lt;mak:addForm&gt;</a></li>
           <li><a href="#makedit">&lt;mak:editForm&gt;</a></li>
           <li><a href="#makform">&lt;mak:form&gt;</a></li>
-          <li><a href="#input">&lt;mak:input/&gt;</a></li>
+          <li><a href="#input">&lt;mak:input/&gt;</a> and <a href="#choiceDisplay">selector option display</a></li>
           <li><a href="#action">&lt;mak:action/&gt;</a></li>
         </ul>
       </li>
@@ -1334,11 +1334,11 @@ These are JSP EL (expression language) functions that give information
 about the iterations in a list.
 <ul>
   <li> mak:count() gives the number of the current iteration inside a
-mak:list. it has no value outside the list </li>
+mak:list or mak:object. It has no value outside that tag. </li>
   <li> mak:maxCount() gives the total number of iterations inside a
-mak:list. it has no value outside the list </li>
+mak:list or mak:object (1). It has no value outside that tag. </li>
   <li> mak:lastCount() gives the total number of iterations of the
-previous mak:list or mak:object, respectively. it has no value inside the 
+previous mak:list or mak:object, respectively. It has no value inside the 
 mak:list/object.
 <div class="note">Note: if you want to store the value of some mak:list/object
 for usage in/after a later mak:list/object, you can do that with &lt;c:set 
@@ -2280,6 +2280,7 @@ of the country of which person is a citizen, through the person edit
 form :
 </p>
 <pre class="example">&lt;mak:input field="person.citizenship.capital.name" /&gt;<br></pre>
+
 <p>Restrictions for different field types:
 </p>
 <ul>
@@ -2289,6 +2290,24 @@ form :
   <li>subset, subpointer: cannot be edited as a field,
 only as a separate object</li>
 </ul>
+
+
+<h5><a name="choiceDisplay" >Selector option display</h5>
+By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:list</code> (or <code>mak:object</code>) that have a <code>choice</code> label. The <code>choice</code> name is standard for this purpose (maybe it should be reserved?).<p>
+All text from the mak:input that is not inside a mak:list will be shown in the choser as a nil option. Such nil options will be ignored at form submission.<p> 
+If an option is returned many times by the <code>mak:lists</code>, it will only be shown the first time it occurs.<p>
+<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;
+Please choose:
+&lt;mak:list from="T choice" where="someCondition" &gt;
+    &lt;mak:value expr="choice.someField /&gt;
+&lt;/mak:list&gt;
+   -------- separator----------
+&lt;mak:list from="T choice" where="someOtherCondition" &gt;
+    &lt;mak:value expr="choice.someField /&gt;
+&lt;/mak:list&gt;
+&lt;/mak:input&gt;
+<br></pre>
+
 <!-- ========================================================= -->
 <!-- ====================== mak:action ======================= -->
 <h4><a name="action">&lt;mak:action&gt;....&lt;/mak:action&gt;</a></h4>

@@ -15,6 +15,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.13; 02 jan 2005 cristi
+fixed bug 59 and 60: the option lists of set and ptr chosers can be freely formatted, ordered, etc, and nil can be an option
+
 0.5.12.7; 01 jan 2005 cristi
 fixed some bugs of 0.5.12.6: some methods became useless due to signature or name change
 renamed some more methods to indicate "atAnalysis"

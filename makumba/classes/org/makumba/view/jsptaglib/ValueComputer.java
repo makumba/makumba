@@ -76,12 +76,18 @@ public class ValueComputer
 
   ValueComputer(){}
 
+  /** a special ValueComputer made by mak:lists who want to select extra expressions */
+  ValueComputer(MultipleKey listKey, String expr, MakumbaJspAnalyzer.PageCache pageCache){
+    parentKey= listKey;
+    this.expr=expr;
+    pageCache.getQuery(parentKey).checkProjectionInteger(expr);
+
+  }
+
   /** a nonQueryMak:value value computer */
   ValueComputer(MakumbaTag analyzed, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    parentKey= analyzed.getParentListKey(pageCache);
-    this.expr=expr;
-    pageCache.getQuery(parentKey).checkProjectionInteger(expr);
+    this(analyzed.getParentListKey(pageCache), expr, pageCache);
   }
 
   /** The key of the query in which this value is a projection. Return parentKey */
@@ -101,10 +107,13 @@ public class ValueComputer
   /** Get the value of the queryProjection from the currentListData of the enclosing query. Used mostly by InputTag */
   public Object getValue(MakumbaTag running) throws LogicException
   {
-    return QueryExecution.getFor(getQueryKey(), running.getPageContext(), null, null)
-      .currentListData().data[projectionIndex];
+    return getValue(running.getPageContext());
   }
 
+  Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException { 
+    return QueryExecution.getFor(getQueryKey(), pc, null, null)
+      .currentListData().data[projectionIndex];
+  }
   /** Format the value of the queryProjection from the currentListData of the enclosing query. Set the var and the printVar values*/  
   public void print(ValueTag running, MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException
   {

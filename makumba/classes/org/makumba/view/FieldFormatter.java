@@ -64,14 +64,14 @@ public class FieldFormatter extends FieldHandler
     for(Enumeration e=formatParams.keys(); e.hasMoreElements(); )
       {
 	String s=(String)e.nextElement();
+	if(s.startsWith("org.makumba"))
+	  continue;
 	checkParam(s, ((String)formatParams.get(s)).toLowerCase());
       }
   }
 
   public void checkParam(String name, String val)
   {
-    if(name.startsWith("org.makumba"))
-      return;
     Hashtable h=(Hashtable)validParams.get(name);
     if(h==null)
       throw new InvalidValueException(this, "invalid format parameter \'"+name+"\'");

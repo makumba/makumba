@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+import java.util.Vector;
 
 public class setEditor extends ptrEditor
 {
@@ -29,5 +30,21 @@ public class setEditor extends ptrEditor
   public boolean isMultiple() { return true; }
 
   public int getDefaultSize() { return 10; }
+
+  public Object readFrom(org.makumba.controller.http.HttpParameters p, String suffix) 
+  {
+    Object o= super.readFrom(p, suffix);
+    if(o==null)
+      return new Vector();
+    
+    /* we remove all nulls from the input */
+    if(o instanceof Vector){
+      for(java.util.Iterator i= ((Vector)o).iterator(); i.hasNext();)
+	if("".equals(i.next()))
+	  i.remove();
+    }
+    return o;
+  }
+
 }
 
