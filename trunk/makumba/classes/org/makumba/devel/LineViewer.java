@@ -121,10 +121,10 @@ public class LineViewer implements SourceViewer
       while(++n<len&& isMakumbaTypeChar(s.charAt(n)));
 
       String possibleMdd=s.substring(j, n);
-      if(possibleMdd.equals("www.makumba.org"))
+      if(possibleMdd.indexOf("www.makumba.org")!=-1 )
 	{
 	  writeNonMdd(s.substring(0, j));
-	  highlighted.append("<a href=\"http://www.makumba.org\">www.makumba.org</a>");
+	  highlighted.append("<a href=\"http://www.makumba.org\">").append(possibleMdd).append("</a>");
 	}
       else{
 	Class c=null;
