@@ -186,7 +186,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     if(pageCache.queries.get(tagKey)!=null)
       {
 	QueryExecution.startListGroup(pageContext);
-	QueryExecution.getFor(tagKey, pageContext).onParentIteration();
+	QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
       }
 
     responder.setOperation(getOperation());

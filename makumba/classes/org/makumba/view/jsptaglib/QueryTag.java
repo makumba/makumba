@@ -54,11 +54,13 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void setSeparator(String s){ separator=s; }
   public void setCountVar(String s){ countVar=s; }
   public void setMaxCountVar(String s){ maxCountVar=s; }
-  public void setOffset(String s){ onlyOuterListArgument("offset"); onlyInt("offset", s); offset=s.trim(); }
-  public void setLimit(String s){ onlyOuterListArgument("limit"); onlyInt("limit", s); limit=s.trim(); }
+  public void setOffset(String s)throws JspException
+  { onlyOuterListArgument("offset"); onlyInt("offset", s); offset=s.trim(); }
+  public void setLimit(String s)throws JspException
+  { onlyOuterListArgument("limit"); onlyInt("limit", s); limit=s.trim(); }
 
     /** throw an exception if this is not the root tag */
-  protected void onlyOuterListArgument(String s) 
+  protected void onlyOuterListArgument(String s) throws JspException
   {
     QueryTag t= (QueryTag)findAncestorWithClass(this, QueryTag.class);
     while(t!=null && t instanceof ObjectTag)
@@ -68,7 +70,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
 		     (this, "the "+s+" parameter can only be set for the outermost mak:list tag"));   
   }
 
-  protected void onlyInt(String s, String value){
+  protected void onlyInt(String s, String value) throws JspException{
     value=value.trim();
     if(value.startsWith("$"))
       return;
@@ -132,13 +134,13 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public int doMakumbaStartTag() throws LogicException, JspException
   {
     if(getParentList()==null)
-      QueryExecution.startListGroup(pageContext, offset, limit);
+      QueryExecution.startListGroup(pageContext);
     else {
       upperCount= pageContext.getRequest().getAttribute(standardCountVar);
       upperMaxCount= pageContext.getRequest().getAttribute(standardMaxCountVar);
     }
 
-    execution= QueryExecution.getFor(tagKey, pageContext);
+    execution= QueryExecution.getFor(tagKey, pageContext, offset, limit);
 
     int n= execution.onParentIteration();
 

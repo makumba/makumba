@@ -101,7 +101,7 @@ public class ValueComputer
   /** Get the value of the queryProjection from the currentListData of the enclosing query. Used mostly by InputTag */
   public Object getValue(MakumbaTag running) throws LogicException
   {
-    return QueryExecution.getFor(getQueryKey(), running.getPageContext())
+    return QueryExecution.getFor(getQueryKey(), running.getPageContext(), null, null)
       .currentListData().data[projectionIndex];
   }
 
@@ -170,10 +170,10 @@ abstract class QueryValueComputer extends ValueComputer
   QueryExecution runQuery(MakumbaTag running) throws LogicException
   {
     QueryExecution ex= 
-      QueryExecution.getFor(queryKey, running.getPageContext());
+      QueryExecution.getFor(queryKey, running.getPageContext(), null, null);
 
     QueryExecution parentEx= 
-      QueryExecution.getFor(parentKey, running.getPageContext());
+      QueryExecution.getFor(parentKey, running.getPageContext(), null, null);
 
     // if the valueQuery's iterationGroup for this parentIteration was not computed, do it now...
     if(parentEx.valueQueryData.get(queryKey)==null)
