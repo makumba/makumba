@@ -28,15 +28,15 @@ import java.util.regex.*;
 
 import java.lang.reflect.Method;
 import javax.servlet.jsp.tagext.Tag;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.makumba.MakumbaSystem;
 
 /** This class performs a rudimentary detection of JSP-relevant tags in a JSP page.
  * @author cristi
  */
 public class JspParseData
 {
-    /** since debugging is resource-intensive, we guard it with a system property*/
-    static boolean dbg=System.getProperty("makumba.jspparse.debug")!=null;
-
   /** this method will perform the analysis if not performed already, or if the file has changed
    * the method is synchronized, so other accesses are blocked if the current access determines that an analysis needs be performed 
    *@param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
@@ -90,7 +90,7 @@ public class JspParseData
     void startTag(TagData td, Object status);
     
     /** the end of a body tag, like </...> */
-    void endTag(String tagName, Object status);
+    void endTag(TagData td, Object status);
     
     /** a simple tag, like <... /> */
     void simpleTag(TagData td, Object status);
@@ -106,15 +106,20 @@ public class JspParseData
   /** a composite object passed to the analyzers */
   public class TagData
   {
+    /** the parse data where this TagData was produced */
+    JspParseData parseData;
+
     /**name of the tag*/
     public String name; 
-    /**tag attributes */
-    public Map attributes; // attributes
 
-    // this will also include syntax points, just in case the analyzer wants to do more stuff
-    
+    /**tag attributes */
+    public Map attributes; 
+
     /**tag object, if one is created by the analyzer */
     public Object tagObject;
+   
+    /** the syntax points where the whole thing begins and ends */
+    SyntaxPoint start, end;
   }
 
   /** the path of the JSP page */
@@ -127,8 +132,10 @@ public class JspParseData
   /** the analyzer plugged in */
   JspAnalyzer analyzer;
 
-  /** the syntax points of this page, in the order of their page position */
-  SortedSet syntaxPoints;
+  /** the syntax points of this page */
+  SourceSyntaxPoints syntaxPoints;
+
+  public SourceSyntaxPoints getSyntaxPoints(){ return syntaxPoints; }
 
   /** the holder of the analysis status, and partial results */
   Object holder;
@@ -187,16 +194,14 @@ public class JspParseData
   {
     long start= new java.util.Date().getTime();
     lastChanged=file.lastModified();
-    syntaxPoints= new TreeSet();
+    String content=readFile();    
+   
+    syntaxPoints= new SourceSyntaxPoints(content);
+
     holder= analyzer.makeStatusHolder(initStatus);
 
-    String content=readFile();    
-    
-    // add the text lines as syntax points (beginning and end of each line)
-    SyntaxPoint.addLines(content, syntaxPoints);
-
     // remove JSP comments from the text
-    content= SyntaxPoint.unComment(content, JspCommentPattern, "JSPComment", syntaxPoints);
+    content= syntaxPoints.unComment(content, JspCommentPattern, "JSPComment");
 
     // the page analysis as such:
     treatTags(content, analyzer);
@@ -232,9 +237,9 @@ public class JspParseData
 	ret.put(attName, st.sval);
 	
 	// syntax points
-	SyntaxPoint.addSyntaxPoints(syntaxPoints, origin, origin+attName.length(), "JSPTagAttributeName", null);
-	SyntaxPoint.addSyntaxPoints(syntaxPoints, origin+n, origin+n+1, "JSPTagAttributeEquals", null);
-	SyntaxPoint.addSyntaxPoints(syntaxPoints, origin+s.indexOf('\"', n), origin+s.length(), "JSPTagAttributeValue", null);
+	syntaxPoints.addSyntaxPoints(origin, origin+attName.length(), "JSPTagAttributeName", null);
+	syntaxPoints.addSyntaxPoints(origin+n, origin+n+1, "JSPTagAttributeEquals", null);
+	syntaxPoints.addSyntaxPoints(origin+s.indexOf('\"', n), origin+s.length(), "JSPTagAttributeValue", null);
       }
     return ret;
   }
@@ -281,32 +286,37 @@ public class JspParseData
     boolean tagClosed=tag.endsWith("/>");
     Matcher m1= TagName.matcher(tag);
     m1.find();
-    SyntaxPoint.addSyntaxPoints(syntaxPoints, m.start()+m1.start(), m.start()+m1.end(), "JSPTagName", null);    
+    syntaxPoints.addSyntaxPoints(m.start()+m1.start(), m.start()+m1.end(), "JSPTagName", null);
+
     String type=tagEnd?"JspTagEnd":(tagClosed?"JspTagSimple":"JspTagBegin");
-    SyntaxPoint.addSyntaxPoints(syntaxPoints, m.start(), m.end(), type, null);
+
+    SyntaxPoint end= syntaxPoints.addSyntaxPoints(m.start(), m.end(), type, null);
+    SyntaxPoint start= (SyntaxPoint)end.getOtherInfo();
+
     String tagName= tag.substring(m1.start(), m1.end());
     
-    String debug;
     TagData td= null;
-    if(!tagEnd)
-      {
-	td=new TagData();
-	td.name=tagName;
-	td.attributes= parseAttributes(tag, m.start());
-	debug=td.name+" "+td.attributes;
-      }
-    else
-      debug="/"+tagName;
-    
-    if(dbg)
-	org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
+    td=new TagData();
+    td.name=tagName;
+    td.parseData=this;
+    td.start=start;
+    td.end=end;
 
+    if(!tagEnd)
+	td.attributes= parseAttributes(tag, m.start());
+
+    Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags");
+    
+    // we avoid evaluation of the logging expression
+    if(log.isLoggable(Level.FINE))
+      log.fine(uri+":"+start.line+":"+start.column+": "+
+	       (tagEnd?("/"+tagName):(td.name+" "+td.attributes)));
     if(tagEnd)
       {
-	an.endTag(tagName, holder);
+	an.endTag(td, holder);
 	return;
       }
-
+    
     if(tagClosed)
       an.simpleTag(td, holder);
     else
@@ -317,16 +327,25 @@ public class JspParseData
   void treatSystemTag(Matcher m, String content, JspAnalyzer an)
   {
     String tag= content.substring(m.start(), m.end());
-    SyntaxPoint.addSyntaxPoints(syntaxPoints, m.start(), m.end(), "JSPSystemTag", null);
+    SyntaxPoint end= syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JSPSystemTag", null);
     
     Matcher m1= Word.matcher(tag);
     m1.find();
-    SyntaxPoint.addSyntaxPoints(syntaxPoints, m.start()+m1.start(), m.start()+m1.end(), "JSPSystemTagName", null);
+    syntaxPoints.addSyntaxPoints(m.start()+m1.start(), m.start()+m1.end(), "JSPSystemTagName", null);
+    SyntaxPoint start= (SyntaxPoint)end.getOtherInfo();
+
     TagData td= new TagData();
     td.name=tag.substring(m1.start(), m1.end());
+    td.parseData=this;
     td.attributes= parseAttributes(tag, m.start());
-    if(dbg)
-	org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), td.name)+": "+td.name+" "+td.attributes);
+    td.start=start;
+    td.end=end;
+
+    Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags");
+    
+    // we avoid evaluation of the logging expression
+    if(log.isLoggable(Level.FINE))
+      log.fine(uri+":"+start.line+":"+start.column+": "+td.name+" "+td.attributes);
 
     an.systemTag(td, holder);
   }
@@ -345,6 +364,16 @@ public class JspParseData
     return sb.toString();
   }
 
+    public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
+    {
+	sb.append(td.start.getLine()).append(":\n").
+	    append(td.parseData.getSyntaxPoints().getLineText(td.start.getLine())).
+	    append('\n');
+	for(int i=1; i<td.start.getColumn(); i++)
+	    sb.append(' ');
+	sb.append('^');
+    }
+    
   public static void fill(Tag t, Map attributes)
   {
     Class c= t.getClass();
