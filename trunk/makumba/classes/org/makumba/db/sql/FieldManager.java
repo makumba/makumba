@@ -72,7 +72,7 @@ public abstract class FieldManager extends FieldHandler
   public String getDBName(){ return dbname; }
 
   /** ask this field to write its contribution in a SQL CREATE statement */
-  public String inCreate(Database d){ return getDBName()+" "+getDBType(d);}
+  public String inCreate(Database d){ return getDBName()+" "+getDBType(d)+(isUnique()?" UNIQUE":"");}
 
   /** ask this field to write its contribution in a SQL CREATE statement */
     //  public String inCreate(){ return getDBName()+" "+getDBType(null);}
