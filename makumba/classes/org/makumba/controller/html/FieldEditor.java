@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+import org.makumba.ProgrammerError;
 import org.makumba.view.*;
 import javax.servlet.*;
 import java.util.*;
@@ -64,17 +65,20 @@ public class FieldEditor extends org.makumba.view.FieldFormatter
 
   public String formatHidden(Object o, Dictionary formatParams)
   {
-    return "<input type=\"hidden\" name=\""+getInputName(formatParams)+"\" value=\""+formatHiddenValue(o, formatParams)+"\">";
+    return "<input type=\"hidden\" name=\"" + getInputName(formatParams) + "\" value=\"" + 
+            formatHiddenValue(o, formatParams) + "\" " + getExtraFormatting(formatParams) +">";
   }
 
   /** Formats the value to appear in hidden input statement. */
   public String formatHiddenValue(Object o, Dictionary formatParams) {
-      return super.format(o, formatParams);
+     // default : same treatment as formatting for normal input.
+     return formatValue(o, formatParams);
   }
 
   /** Formats the value to appear in an input statement. */
   public String formatValue(Object o, Dictionary formatParams) {
-      return super.format(o, formatParams);
+      // return super.format(o, formatParams);
+      throw new ProgrammerError("If this method is needed, overload it in the inheriting class");
   }
 
   public void onStartup(RecordEditor re){}

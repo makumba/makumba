@@ -45,21 +45,25 @@ public class charEditor extends FieldEditor
     return ret;
   }
 
+  /** Formats the input-field in case of null object */
   public String formatNull(Dictionary formatParams) 
   { return formatNotNull(null, formatParams); }
 
+
+  /** Formats the input-field in case of not-null object */
   public String formatNotNull(Object o, Dictionary formatParams) 
   { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+formatValue(o, formatParams)+"\" "+getParams(formatParams)+
       getExtraFormatting(formatParams)+">"; }
 
   /** Formats the value to appear in an input statement. */
   public String formatValue(Object o, Dictionary formatParams) {
-     if (o == null) {
-     	 return resetValueFormat(null, formatParams);
-     } else { 
-         return resetValueFormat(HtmlUtils.string2html(o.toString()), formatParams);
-     }
+     String s = (o == null)? null : HtmlUtils.string2html(o.toString());
+     return resetValueFormat(s, formatParams);
   }
+
+  /* Formats the value to appear in hidden input statement: don't overload default behaviour set in FieldEditor. */
+  // public String formatHiddenValue(Object o, Dictionary formatParams) {}
+
 
   // public String getLiteral(Object o, Dictionary formatParams) 
   // {  }

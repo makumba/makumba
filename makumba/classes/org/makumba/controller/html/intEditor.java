@@ -37,11 +37,10 @@ public class intEditor extends charEditor
   
   /** Formats the value to appear in an input statement. */
   public String formatValue(Object o, Dictionary formatParams) {
-     if (o == null) {
-     	 return resetValueFormat(null, formatParams);
-     } else { 
-         return resetValueFormat(o.toString(), formatParams);
-     }
+     // note: only diff with charEditor.formatValue is not calling string2html
+     //       maybe can just as well not redefine this method?
+     String s = (o == null)? null : o.toString();
+     return resetValueFormat(s, formatParams);
   }
   
   public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
