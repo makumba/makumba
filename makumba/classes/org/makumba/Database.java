@@ -53,12 +53,17 @@ public interface Database
    * Database querying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.query.compilation", "db.query.execution", "db.query.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.query.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br>
    * @param OQL the OQL query to execute. Refers to parameters as $1, $2 ...
    * @param parameterValues the parameter values. Should be null if there are no parameters. If there is only one parameter, it can be indicated directly. If there are more parameters, they can be indicated in a Object[] or a java.util.Vector
+   * @param limit the maximum number of records to return, -1 for all
+   * @param offset the offset of the first record to return, 0 for first
    * @return a Dictionary, containing a name-value pair for each non-null SELECT column. If a certain SELECT column is not named using AS, it will be automatically named like col1, col2, etc. 
    * @exception org.makumba.DBError if a fatal database error occurs
    * @exception org.makumba.OQLParseError if the OQL is not correct
    * @exception InvalidValueException in case of makumba type conflict between a pointer value passed as parameter and the type expected in the respective OQL expression
    * @exception IllegalStateException if the connection was already closed
    */
+  public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
+
+  /** @see Database#executeQuery(java.lang.String, java.lang.Object, int, int), execute query without limiting the results */
   public java.util.Vector executeQuery(String OQL, Object parameterValues);
 
   /** Insert a record of the given type. <BR>

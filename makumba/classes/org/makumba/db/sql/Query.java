@@ -55,11 +55,16 @@ public class Query implements org.makumba.db.Query
     assigner= new ParameterAssigner(db, tree);
   }
 
-  public Vector execute(Object [] args, DBConnection dbc)
+  public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
   {
-    PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command);
+    PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command
+								     +" LIMIT ?, ?"
+								     );
     try{
       String s=assigner.assignParameters(ps, args);
+      ps.setInt(assigner.tree.parameterNumber()+1, limit);
+      ps.setInt(assigner.tree.parameterNumber()+2, offset);
+
       if(s!=null)
 	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+command+"\n"+s);
 
