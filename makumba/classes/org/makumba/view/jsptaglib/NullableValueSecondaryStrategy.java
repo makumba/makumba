@@ -36,12 +36,18 @@ public class NullableValueSecondaryStrategy extends TagStrategySupport implement
 
   NullableValueSecondaryStrategy(NullableValueStrategy main) { this.main= main; }
 
+  public void doAnalyze() 
+  { 
+    main.doAnalyze();
+    main.getQuery().checkProjectionInteger(((ValueTag)tag).expr);
+  }
+
   public int doStart() throws JspException 
   {
     int n=main.done;
     if(n!=BodyTag.EVAL_BODY_TAG)
       return n;
-    ValueTag.displayIn(main);
+    main.insertEvaluation((ValueTag)tag);
     return BodyTag.EVAL_BODY_INCLUDE;
   }
 
@@ -49,6 +55,5 @@ public class NullableValueSecondaryStrategy extends TagStrategySupport implement
   public void setQuery(ComposedQuery q){ } 
   public ComposedQuery getQuery() { return main.getQuery(); }
   public void doQuery(org.makumba.Database db, Attributes a) {}
-  public boolean foundMoreProjections(){ return main.foundMoreProjections(); }
   public boolean executed() { return main.executed(); }
 }
