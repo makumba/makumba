@@ -28,10 +28,12 @@ import java.sql.*;
 /** this deals with pointers in SQL */
 public class ptrDBManager extends FieldManager
 {
+  //should it just extend intManager instead?
+
   /** returns INT */
   protected String getDBType()
   {
-    return "INT";
+    return "INTEGER";
   }
 
   public int getSQLType()
