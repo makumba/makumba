@@ -93,7 +93,7 @@ public interface Database
     </ul>
    * @return a Pointer to the inserted record 
    * @param host a pointer to the host record, to which a subrecord will be added
-   * @param subTypeField the name of the subrecord field.
+   * @param subsetField the name of the subrecord field.
    * @param data the field-value mapping for the new subrecord. <br> 
    The ommitted fields will be set to null. <br>
    To insert an external set, pass a Vector of Pointers (or null, or an empty vector). <br>
