@@ -20,7 +20,6 @@ public class ControllerFilter implements Filter
         throws ServletException, java.io.IOException
   {
     boolean filter= shouldFilter((HttpServletRequest)req);
-   try{
       if(filter){
 	try{
 	  RequestAttributes.getAttributes((HttpServletRequest)req);
@@ -35,78 +34,35 @@ public class ControllerFilter implements Filter
 	  return;
       }
       chain.doFilter(req, resp);
-    }finally{ if(filter)setLastAccess((HttpServletRequest)req); }
   }
 
   /** decide if we filter or not */
   public boolean shouldFilter(HttpServletRequest req)
   {
-      req.getSession(true);  
     String file=null;
     try{
       file= new URL(req.getRequestURL().toString()).getFile();
     }catch(java.net.MalformedURLException e) { } // can't be
 
+    // JSP and HTML are always filtered
+    if(file.endsWith(".jsp") || file.endsWith(".html"))
+	return true;
+
+    // JSPX is never filtered
     if(file.endsWith(".jspx"))
-      {
-	// all images and stuff referred by jspxes are not filtered
-	setLastAccess((HttpServletRequest)req); 
 	return false;
-      }
-    return !((file.endsWith(".css")||file.endsWith(".jpg")||file.endsWith(".gif"))
-	     && refererAccessedRecently(req));
-  }
 
-  static final String accessTable="ACCESS TABLE";
-
-  /** keep all access times to filtered pages in the session */
-  public void setLastAccess(HttpServletRequest req)
-  {
-    Hashtable accesses= (Hashtable)req.getSession(true).getAttribute(accessTable);
-    if(accesses==null)
-      req.getSession(true).setAttribute(accessTable, accesses=new Hashtable());
-    String qs=req.getQueryString();
+    // we compute the file that corresponds to the indicated path
+    java.io.File f= new java.io.File(conf.getServletContext().getRealPath(req.getRequestURI()));    
     
-    accesses.put(req.getRequestURI()+((qs!=null)?("?"+qs):""), new Date());
+    // if it's a directory, there will most probably be a redirection, we filter anyway
+    if(f.isDirectory())
+	return true;
+    
+    // if the file does not exist on disk, it means that it's produced dynamically, so we filter
+    // it it exists, it's probably an image or a CSS, we don't filter
+    return !f.exists();
   }
-
-  static final long RECENTLY=10000;
-
-  /** check if the referrer of this request was accessed recently */
-  public boolean refererAccessedRecently(HttpServletRequest req)
-  {
-    Hashtable accesses=null;
-    String referer= req.getHeader("Referer");
-    URL u=null;
-    try{
-	u= new URL(referer);
-    }catch(java.net.MalformedURLException e) { } // can't be
-
-    /* we build the URI from the referer and just check if we are on the 
-       same host as the referer access
-       we don't check the port because ports may change in HTTP redirections...
-    */
-    if(!u.getHost().equals(req.getServerName()))
-	referer=null;
-    else
-	{
-	    referer=referer.substring(7);
-	    int n=referer.indexOf("/");
-	    if(n==-1)
-		referer="/";
-	    else
-		referer=referer.substring(n);
-	}
-
-    Date lastAccess=null;
-    boolean b= (accesses=(Hashtable)req.getSession(true).getAttribute(accessTable))!=null 
-      && referer!=null
-      && (lastAccess=(Date)accesses.get(referer))!=null
-      && (new Date()).getTime()- lastAccess.getTime() < RECENTLY;
-    // System.out.println("\n"+req.getRequestURI()+" "+referer+" "+lastAccess+" "+b+"\n"+accesses+"\n");
-    return b;
-  }
-
 
   public void destroy(){}
   
