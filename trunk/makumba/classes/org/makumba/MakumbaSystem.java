@@ -22,6 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba;
+import java.io.StringReader;
+
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -122,6 +124,9 @@ public class MakumbaSystem
   public static DataDefinition getDataDefinition(String typeName) 
   { return org.makumba.abstr.RecordInfo.getRecordInfo(typeName); }
 
+  public static DataDefinition getTemporaryDataDefinition(String name){
+      	return new org.makumba.abstr.RecordInfo(name);
+  }
 
   /** Make a field definition from the indicated string */
   public static FieldDefinition makeFieldDefinition(String name, String definition)
@@ -335,7 +340,7 @@ The programmer could just as well decide that all makumba logging at or over the
   {
     java.util.Date d= new java.util.Date();
     org.makumba.db.sql.oql.OQLLexer lexer =  
-      new org.makumba.db.sql.oql.OQLLexer(new java.io.StringBufferInputStream(oqlQuery));
+      new org.makumba.db.sql.oql.OQLLexer(new StringReader(oqlQuery));
     org.makumba.db.sql.oql.OQLParser parser = 
       new org.makumba.db.sql.oql.OQLParser(lexer);
     // Parse the input expression
