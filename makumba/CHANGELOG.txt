@@ -23,7 +23,7 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 0.5.9.16; 30 nov 2003 fred
 stefan; *: bug 511 (dos2unix cr/lf)
 fred; 30 nov 2003: undid 1 change makumba.tld of 26 oct 2003 (mak:input#display is rtexpr)
-fred; 30 nov 2003: bug 563 fixed (STILL NEEDS TESTING) hidden input for char[] generates bad html
+fred; 30 nov 2003: bug 653 fixed (STILL NEEDS TESTING) hidden input for char[] generates bad html
 cristi; 29 oct 2003: made makumba work from java applets, needed to catch security exceptions in org.makumba.MakumbaSystem, org.makumba.util.NamedResources, org.makumba.Text
 fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
 fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
