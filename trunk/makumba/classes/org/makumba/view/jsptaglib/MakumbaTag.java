@@ -310,8 +310,10 @@ public abstract class MakumbaTag extends TagSupport
 
   public String getPageTextInfo(){ 
     if(tagData==null) return "";
-    return tagData.getStart().getFile().getPath()+":"+
-      tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
-      tagData.getEnd().getLine()+":"+tagData.getEnd().getColumn();
+    try{
+      return tagData.getStart().getFile().getCanonicalPath()+":"+
+	tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
+	tagData.getEnd().getLine()+":"+tagData.getEnd().getColumn();
+    }catch(java.io.IOException e) { throw new MakumbaError(e.toString()); }
   }
 }
