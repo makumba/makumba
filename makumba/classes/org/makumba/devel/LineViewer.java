@@ -34,6 +34,7 @@ public class LineViewer implements SourceViewer
   boolean lineNumbers;
   File dir;
   String title;
+  String jspSourceViewExtension="x"; //default for old .jspx - change this to "s" when .jsps gets adopted (bug 677)
 
   /** if this resource is actually a directory, returns not null */
   public File getDirectory() 
@@ -173,7 +174,7 @@ public class LineViewer implements SourceViewer
 	    {
 	      highlighted.append("<a href=\"").append(page);
 	      if(page.endsWith("jsp"))
-		highlighted.append("x");
+		highlighted.append(jspSourceViewExtension);
 	      highlighted.append("\">").append(possibleMdd).append("</a>");
 	    }
 	}

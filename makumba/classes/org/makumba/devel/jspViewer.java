@@ -41,7 +41,8 @@ public class jspViewer extends LineViewer
     this.sv=sv;
     contextPath=req.getContextPath();
     String servletPath=req.getServletPath();
-    virtualPath=servletPath.substring(0, req.getServletPath().length()-extraLength());
+    virtualPath=servletPath.substring(0, servletPath.length()-extraLength());
+    jspSourceViewExtension=servletPath.substring(servletPath.length()-extraLength());
     realPath=sv.getServletConfig().getServletContext().getRealPath(virtualPath);
     reader= new FileReader(realPath);
     servletPath=servletPath.substring(0, servletPath.indexOf("."))+".jsp";

@@ -49,6 +49,10 @@
     </servlet-mapping>
     <servlet-mapping>
 	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>*.jsps</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
 	<url-pattern>*.jspxp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
