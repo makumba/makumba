@@ -34,10 +34,10 @@ public class MultipleAttributeParametrizer
   String baseOQL;
   NamedResources parametrizers;       
 
-  public Vector execute(Database db, Attributes a) 
+  public Vector execute(Database db, Attributes a, int offset, int limit) 
        throws LogicException
   {
-    return getAttributeParametrizer(a).execute(db, rewriteAttributes(a));
+    return getAttributeParametrizer(a).execute(db, rewriteAttributes(a), offset, limit);
   }
 
 

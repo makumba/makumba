@@ -329,11 +329,12 @@ public class ComposedQuery
 
   // ------------
   /** execute the contained query in the given database */ 
-  public Grouper execute(org.makumba.Database db, Attributes a) 
+  public Grouper execute(org.makumba.Database db, Attributes a, int offset, int limit) 
        throws LogicException
   {
     prepare(a);
-    return new Grouper(getPreviousKeyset(), attrParam.execute(db, a).elements());
+    System.out.println(limit);
+    return new Grouper(getPreviousKeyset(), attrParam.execute(db, a, offset, limit).elements());
   }
   
   public synchronized void analyze()

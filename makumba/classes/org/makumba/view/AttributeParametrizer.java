@@ -153,7 +153,7 @@ public class AttributeParametrizer
 
   /** find and execute the query corresponding to the non-parametrized arguments and 
    * pass the parametrizable ones */
-  public Vector execute(Database db, Dictionary a) 
+  public Vector execute(Database db, Dictionary a, int offset, int limit) 
        throws LogicException
   {
     Object args[]= new Object[parameters.size()];
@@ -163,7 +163,7 @@ public class AttributeParametrizer
 	args[j++]=a.get((String)argumentNames.elementAt(i));
     Dictionary d= (Dictionary)parameters.clone();
     nonParametrized(a, d);
-    return db.executeQuery(findAST(d), args);
+    return db.executeQuery(findAST(d), args, offset, limit);
   }
 
   /** fill a dictionary with pairs like {argName= argValue } for nonparametrized arguments */

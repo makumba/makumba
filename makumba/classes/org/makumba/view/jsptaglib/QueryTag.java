@@ -41,6 +41,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   String separator="";
   String countVar;
   String maxCountVar;
+  String offset, limit;
   
   static String standardCountVar="org_makumba_view_jsptaglib_countVar";
   static String standardMaxCountVar="org_makumba_view_jsptaglib_maxCountVar";
@@ -53,6 +54,32 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void setSeparator(String s){ separator=s; }
   public void setCountVar(String s){ countVar=s; }
   public void setMaxCountVar(String s){ maxCountVar=s; }
+  public void setOffset(String s){ onlyOuterListArgument("offset"); onlyInt("offset", s); offset=s.trim(); }
+  public void setLimit(String s){ onlyOuterListArgument("limit"); onlyInt("limit", s); limit=s.trim(); }
+
+    /** throw an exception if this is not the root tag */
+  protected void onlyOuterListArgument(String s) 
+  {
+    QueryTag t= (QueryTag)findAncestorWithClass(this, QueryTag.class);
+    while(t!=null && t instanceof ObjectTag)
+      t= (QueryTag)findAncestorWithClass(t, QueryTag.class);
+    if(t instanceof QueryTag)
+      treatException(new MakumbaJspException
+		     (this, "the "+s+" parameter can only be set for the outermost mak:list tag"));   
+  }
+
+  protected void onlyInt(String s, String value){
+    value=value.trim();
+    if(value.startsWith("$"))
+      return;
+    try{
+      Integer.parseInt(value);
+    }catch(NumberFormatException nfe){
+      treatException(new MakumbaJspException
+		     (this, "the "+s+" parameter can only be an $attribute or an int"));   
+      
+    }
+  }
 
   // runtime stuff
   QueryExecution execution;
@@ -105,7 +132,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public int doMakumbaStartTag() throws LogicException, JspException
   {
     if(getParentList()==null)
-      QueryExecution.startListGroup(pageContext);
+      QueryExecution.startListGroup(pageContext, offset, limit);
     else {
       upperCount= pageContext.getRequest().getAttribute(standardCountVar);
       upperMaxCount= pageContext.getRequest().getAttribute(standardMaxCountVar);
