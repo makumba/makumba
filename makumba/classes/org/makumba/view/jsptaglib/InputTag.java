@@ -51,11 +51,6 @@ public class InputTag extends MakumbaTag
   public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
   public void setDisplay(String d) {   this.display=d; }
-  public void setType(String s) {
-    super.setType(s);
-    if(s.equals("file"))
-      getForm().setMultipart();
-  }  
 
   //Extra html formatting parameters
   public void setAccessKey(String s){ extraFormattingParams.put("accessKey", s); }
@@ -152,6 +147,18 @@ public class InputTag extends MakumbaTag
       formType=dataTypeInfo!=null? dataTypeInfo: type;
     
     pageCache.inputTypes.put(tagKey, formType);
+  }
+
+  /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
+   *  If method is overriden in child class, the child's method must call super.initialiseState(). 
+   */
+  public void initialiseState() {
+      super.initialiseState();
+
+      // if type is "file", make the form multipart (should this be here or in doMakumbaStartTag() ?)
+      if ("file".equals(params.get("type"))) {
+          getForm().setMultipart();
+      }
   }
 
   public int doMakumbaStartTag() 
