@@ -1,114 +1,107 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="Author" content="Stefan Baebler">
    <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
-   <title>Makumba</title>
-   <link rel="stylesheet" type="text/css" media="all" href="main.css">
-   <script type="text/javascript" src="main.js"></script>
+   <title>Makumba documentation index</title>
 </head>
 <body>
-<script type="text/javascript">
-   makeNavBar("");
-</script>
-
-<center>
-<a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0" style="border: 0px solid ; width: 329px; height: 100px;"></a></center>
-<p>
-<b>Makumba</b> is a technology designed by <a href="http://www.BEST.eu.org">BEST</a>
-that helps you to rapidly develop web applications that keep their data in a database   (i.e. data driven web
-applications). It is implemented in Java and offers a Java API and a JSP
-tag library to the web app developer. The technology   has been in use since
-late 2001, and is being further developed continuously,   based on users'
-experience and requests.
+&nbsp;
+<table COLS=2 WIDTH="100%" >
+<tr>
+<td VALIGN=TOP WIDTH="10%">
 <br>&nbsp;
-<center><table BORDER="0" CELLSPACING="0" CELLPADDING="5" WIDTH="90%" BGCOLOR="#e0ffe0" >
+<p><a href="index.html">Home</a>
+<p><a href="whitepaper.html">Whitepaper</a>
+<p><a href="makumba-spec.html">Specification</a>
+<p><a href="makumba-example.html">Example</a>
+<p><a href="Makumba-reference.pdf">Taglib Reference(pdf)</a>
+<p><a href="api/org/makumba/package-summary.html">API docs</a><a href="api/org/makumba/package-summary.html"></a>
+<p><a href="http://download.makumba.org/makumba/download/">Download</a>
+<p><a href="SQL-drivers.html">Database configuration</a>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><a href="hacking/index.html">Developer</a>
+<p><a href="makumba.html">Design Issues</a>
+<p><a href="tasks.html">Tasks</a>
+<p><a href="http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba">CVS source
+tree</a>
+<br>&nbsp;
+<p>&nbsp;
+
+<p>Worldwide mirrors:
+
+<br><a href="http://www.europe.makumba.org">Europe</a><br>
+<A href="http://www.best.eu.org"><img src="http://www.best.eu.org/navbar/bestint2.gif" width="85" height="65" border="0" alt="BEST - Board of European Students of Technology"></A>
+<br>
+<a href="http://si.makumba.org" title="Slovenia">SI</a>,
+<a href="http://ee.makumba.org" title="Estonia">EE</a>,
+<a href="http://ro.makumba.org" title="Romania">RO</a>...
+
+<p><a href="http://usa.makumba.org">USA</a><br>
+<A href="http://sourceforge.net/projects/makumba"><IMG src="http://sourceforge.net/sflogo.php?group_id=25704" width="88" height="31" border="0" alt="SourceForge Logo"></A>
+</td>
+
+<td valign="top">
+<center>
+<h1><a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0"></a></h1></center>
+<b>Makumba </b>is a technology designed by <a href="http://www.BEST.eu.org">BEST</a>
+for their WWW applications. It helps you develop rapidly web applications
+that keep their data in a database (i.e. data driven web applications).
+It is implemented in Java. Implementation of some components is still under
+way but it will finish some time in March 2001.
+<br>&nbsp;
+<center><table BORDER=0 CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="90%" BGCOLOR="#F0F9FF" >
 <tr>
 <td>First you <b>describe the data</b> in a text file (complex applications
 have of course more types of data, with pointers from one to the other).
 The text file (called <a href="makumba-spec.html#Data_Description">data
 definition</a>) contains lines like:
-
-<pre class="example">
-name= char[30] ;Name
-dob= date      ;Date of birth
-</pre>
-
-<p>Say you call the above record a "Person". Makumba
-can use this information in many ways. It can
-<b>generate SQL</b> statements that create the needed tables,
-do read/write/search operations in a <a href="SQL-drivers.html">database</a>
-of your choice. It currently supports MySQL, Informix, DB2, PostgreSQL and ODBC but many
-other database engines can be easily suported if needed. What's more, you can copy data from one
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp; zipcode= int&nbsp;&nbsp; ;ZIP</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; name= char[20] ;Name</tt>
+<p>Say you call the above record a "Person". Having this information, Makumba
+can generate a lot of things. It can
+<b>generate SQL</b> statements that
+do read/write/search operations to <a href="SQL-drivers.html">database</a>
+of your choice. We currently support MySQL, PostgreSQL and ODBC but many
+other databases can be suported. What's more, you can copy data from one
 database to another (this is very important in BEST, we port data a lot,
 we develop on Windows with ODBC or MySQL and run on Linux with Postgres,
-etc).
-<p>At the interface level, Makumba can <b>generate html
-              </b>for inserting, editing, viewing and deleting data from the
-  database. You don't have to care about details of HTML forms, parsing
-  the CGI arguments, composing SQL statements etc. A lot is done for you.<br>
-</p>
-<p>For instance, this will show a selected person. You mix HTML
-  and Makumba jsp tags to get the desired view</p>
-
-<pre class="example">
-&lt;mak:object from="general.Person p" where="<i>uniqueCondition</i>"&gt;
-           &lt;b&gt;&lt;mak:value expr="p.name"/&gt;&lt;/b&gt;
-           was born on &lt;mak:value expr="p.dob"/&gt;
-&lt;/mak:object&gt;
-</pre>
-
-            <p>If you wish to add a new Person to your database, you can just
-write the following code. It takes care of creating an input form in HTML,
-and arranges for all necessary database commands to be performed after submit.
-            </p>
-
-<pre class="example">
-&lt;mak:newForm type="general.Person" ... &gt;
-        Name : &lt;mak:input name="name"/&gt; &lt;br&gt;
-        Date of birth : &lt;mak:input name="dob"/&gt;
-&lt;/mak:newForm&gt;
-</pre>
-
-            <p>Makumba will choose appropriate input controls for each datatype,
-as indicated by the data definition  above. </p>
-
-            <p>Behind the HTML pages, developers can optionally write "business
-logic" in Java that adds certain operations to the basic actions (insert,
-edit, delete). For this, the full power of Java, enhanced with the <a href="api/org/makumba/package-summary.html">Makumba
-API</a> for e.g. database handling, is available.</p>
-
-<p>
-You can see more in a slightly more detailed <a href="makumba-example.html">example</a>.
-</td>
+etc).&nbsp;
+<p>At the interface<b> </b>level, Makumba can <b>generate webpages</b>
+for inserting, editing, viewing and deleting data from the database. You
+don't have to care about making the HTML forms, parsing the CGI arguments,
+etc. Everything is done for you. If you just write
+<blockquote><tt>&lt;mak:object from="organisation.Person p"/></tt></blockquote>
+you will get a nice HTML form to edit the data of the person described
+above. The zipcode, than the name will be shown, as indicated by the data
+definition above.
+<p>Still, if you want to <b>customize</b> something in the default view,
+you can do it. If you want the name to show before the zipcode, and formatted
+differently, this is what you can do:
+<blockquote><tt>&lt;mak:object from="organisation.Person p"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;h1>&lt;mak:value expr="p.name"/>&lt;/h1></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Zip code: &lt;i>&lt;mak:value expr="p.zipcode"/>&lt;/i></tt>
+<br><tt>&lt;/mak:object></tt></blockquote>
+We will soon finish the implementation of the interface level and link
+it to the database with a "business logic API". We are also considering
+other kinds of interfaces, such as Java applets.</td>
 </tr>
 </table></center>
 
- <p>So more or less this is it. Lotus Notes does the same but we found
-  it impossible to use it because of visual programming (rather than plain
- text files) and other problems. Other tools (say MS Access) have similar
-problems, plus we don't want to be dependent on one technology. We want to
-work with plain text files because it's easy to cooperate at a distance using
-them. We want everything to be simple for the web app developer.&nbsp;</p>
+<p>So more or less this is it. Lotus Notes does the same but we found it
+impossible to use it because of visual programming (rather than plain text
+files) and other problems. Other tools (say MS Access) have similar problems,
+plus we don't want to be dependent on one technology. We want to work with
+plain text files because it's easy to cooperate at a distance using them.
+We want everything to be simple.
+<br>&nbsp;</td>
+</tr>
+</table>
 
-<div class="note">These webpages might be a bit out-of-date,
-as most our efforts are going to using, developing and designing future enhancements
-of Makumba. We apologize for that.</div>
-
-
-<h4>Worldwide mirrors</h4>
-
-<a href="http://si.makumba.org" title="Slovenia">SI</a>,
-<a href="http://ee.makumba.org" title="Estonia">EE</a>,
-<a href="http://ro.makumba.org" title="Romania">RO</a>,
-<a href="http://usa.makumba.org">USA</a><br>
-<A href="http://sourceforge.net/projects/makumba"><IMG src="http://sourceforge.net/sflogo.php?group_id=25704" width="88" height="31" border="0" alt="SourceForge Logo"></A>
-
-
-<script type="text/javascript">
-   makeFooter("$Id$");
-</script>
-
+<p>
+<hr WIDTH="100%"><font size=-1>$Id$</font>
 </body>
 </html>

@@ -71,8 +71,6 @@ public class ParameterAssigner
 	      if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString || value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
 		fm.setNullArgument(ps, i+1);
 	      else
-		// there is a bug here, manifests when the value is not serializable... 
-		// maybe one should insert just a dummy
 		ps.setObject(i+1, value);
 	      continue;
 	    }

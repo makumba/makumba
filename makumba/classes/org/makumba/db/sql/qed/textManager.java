@@ -27,21 +27,6 @@ package org.makumba.db.sql.qed;
 public class textManager extends org.makumba.db.sql.textManager
 {
   /** msql needs an 'approximative size' for text fields. */
-  //public String inCreate(Database d){ return "BLOB";}
-  //public String inCreate(Database d){ return super.inCreate(d)+"(1024000)";}
+  public String inCreate(Database d){ return super.inCreate(d)+"(1024000)";}
 
-  protected String getDBType()
-  {
-      return "BLOB";
   }
-
-  protected boolean unmodified(int type, int size, java.util.Vector columns, 
-			       int index)
-       throws java.sql.SQLException
-  {
-    System.out.println(type);
-    return super.unmodified(type, size, columns, index) || 
-      type==java.sql.Types.BLOB;
-  } 
-
-}

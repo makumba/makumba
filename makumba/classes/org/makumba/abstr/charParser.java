@@ -30,10 +30,7 @@ public class charParser extends FieldParser
     if(!fc.lookup("{"))
     {
       fc.expect("[");
-      Integer size=fc.expectInteger();
-      if(size.intValue()>255 || size.intValue()<0)
-	throw fc.fail("char size must be between 0 and 255, not "+size.toString());
-      fi.extra2= size;
+      fi.extra2= fc.expectInteger();
       fc.expect("]");
       fi.description= fc.lookupDescription();
       return this;

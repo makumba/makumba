@@ -30,13 +30,8 @@ public class intEnumPrinter extends FieldPrinter
       String ret= super.valueToString() +" {";
       for(java.util.Enumeration e= getValues(), f= getNames()
       ; e.hasMoreElements(); )
-      {
-	Integer val=(Integer)e.nextElement();
-        ret+= " \""+f.nextElement()+"\"="
-	   +val
-	   +(getDeprecatedValues().contains(val)?" deprecated":"")
-	   +(e.hasMoreElements()?",":"");
-      }        
+        ret+= " "+f.nextElement()+"="+e.nextElement()+" ";
+        
       return ret+"}";
    }
 }

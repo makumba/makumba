@@ -136,9 +136,6 @@ public abstract class FieldHandler
   /** tells wether this field is not null */
    public  boolean isNotNull(){ return fi.notNull; }
 
-  /** tells wether this field is unique */
-   public  boolean isUnique(){ return fi.unique; }
-
   /** returns the default value of this field */
    public  Object getDefaultValue()
     {
@@ -152,12 +149,6 @@ public abstract class FieldHandler
   */
    public   Enumeration getValues()
     {return ((Enumerator)defa).getValues(); }
-
-  /** works only for intEnum type
-   * @exception ClassCastException for other types
-  */
-   public  Vector getDeprecatedValues()
-    {return ((Enumerator)defa).getDeprecatedValues(); }
 
   /** works only for intEnum, charEnum, setintEnum, setcharEnum types
    * @exception ClassCastException for other types
