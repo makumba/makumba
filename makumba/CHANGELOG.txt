@@ -19,6 +19,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12.4; 7 dec 2004 cristi
+fixed minor bug: the reason of a OQL failed parsing in update was not shown
+
 0.5.12.3; 27 nov 2004 cristi
 fixed minor bug: the return value of Database.read() was not a proper Dictionary
 
