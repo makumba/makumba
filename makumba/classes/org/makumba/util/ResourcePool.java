@@ -66,6 +66,7 @@ public abstract class ResourcePool
 	if(stack.isEmpty())
 	  return createAndCount();
 	timeStack.pop();
+	org.makumba.MakumbaSystem.getMakumbaLogger("util.pool.member").fine("pool members: "+ timeStack.size());
 	return stack.pop();
       }
   }
@@ -82,6 +83,7 @@ public abstract class ResourcePool
       {
 	stack.push(o); 
 	timeStack.push(new Date());
+	org.makumba.MakumbaSystem.getMakumbaLogger("util.pool.member").fine("pool members: "+ timeStack.size());
       }
   }
   
