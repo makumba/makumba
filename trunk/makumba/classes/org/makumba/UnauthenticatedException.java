@@ -36,6 +36,6 @@ public class UnauthenticatedException extends UnauthorizedException
   /** set the missing attribute name */
   public void setAttributeName(String s) { this.attName=s; }
   
-  public String getMessage() { return super.getMessage()+" could not set attribute "+attName; }
+  public String getMessage() { return super.getMessage(); }
 
 }
