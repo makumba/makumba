@@ -36,3 +36,4 @@ div.navbar {
 /* trick IE with child selector */
 body>div.navbar { position: fixed }
 
+.pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20;}
