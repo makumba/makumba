@@ -19,9 +19,13 @@ architecture</li>
   <li>db-driven web applications (clear delimitation of the technology,
 easy to migrate out from it)</li>
   <li>simple (few concepts)</li>
-  <li>easy to install (few commands/directories/files to work with)<br>
+  <li>easy to install (few commands/directories/files to work with)</li>
+  <li>independent of any commercial technology or data format</li>
+  <li>as much as possible "compiled" rather than interpreted (tell the
+developer at first page execution that somthing is rotten, rather than
+wait for it to blow in production)<br>
   </li>
-  <li>personal development towards java</li>
+  <li>personal member development towards java</li>
 </ul>
 <h2>The issue of design<br>
 </h2>
@@ -148,7 +152,8 @@ internal set/pointer, etc<br>
 </div>
 design still not finished for:<br>
 <div style="margin-left: 40px;">the initial ambition was to be
-object-oriented<br>
+object-oriented: encapsulation is more or less done, but inheritance
+and polymorphism are still not addressed. is this really needed? <br>
 subtyping is supported but can be made more explicit<br>
 business rules. a data model should not only describe data, but also
 specify rules on how it can be created and changed<br>
@@ -160,6 +165,9 @@ implementation status:<br>
 <div style="margin-left: 40px;">there is acute need for database theory
 reading (to decide whether to have it object-oriented or keep it
 relational, etc)<br>
+JDO supports (in Java&nbsp; standard, there are other tools like it) an
+object-oriented way to describe data and deal with it, and make objects
+persistent<br>
 </div>
 <h2><span style="font-weight: bold;">Database layer<br>
 </span></h2>
@@ -190,15 +198,19 @@ features that makumba does not take advantage of, including e.g. Rowsets<span
 <h2><span style="font-weight: bold;">OQL<br>
 </span></h2>
 design status:<br>
-<div style="margin-left: 40px;">we borrowed OQL (object query language)
+<div style="margin-left: 40px;">specify queries in a database-neutral
+manner. but this can increasingly be done in simple, standard SQL.<br>
+we borrowed OQL (object query language)
 from the now defunct ODMG. the initial version of their OQL grammar is
 still on the makumba CVS. <br>
+the ambition was to be object-oriented (see MDD)<br>
 an important feature of makumba OQL that distinguishes it from SQL is
 the ability to refer sets easily (FROM general.Person p, p.addresses a
 ... instead of FROM general.Person p, general.Person-&gt;addresses a
 WHERE a.person=p, though the second form should also work)<br>
 another important feature is the ability to analyze queries, including
-type checking, useful during page analysis<br>
+type checking, useful during page analysis. even if we adopt a thrid
+party technology, some form of query parsing will still be needed.<br>
 </div>
 design still not finished for:<br>
 <div style="margin-left: 40px;">functions. they should probably keep
