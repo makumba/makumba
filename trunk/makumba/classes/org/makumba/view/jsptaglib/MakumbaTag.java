@@ -59,7 +59,7 @@ public abstract class MakumbaTag extends TagSupport
   MultipleKey tagKey;
   
   /** the cache containing page analysis data */
-  MakumbaJspAnalyzer.PageCache pageCache;
+  MakumbaJspAnalyzer.PageCache pageCache; 
 
   /** Tag parameters */
   Hashtable params = new Hashtable(7);        // holds certain 'normal' tag attributes
@@ -83,16 +83,6 @@ public abstract class MakumbaTag extends TagSupport
     return sb.toString();
   }
 
-  /** Cleanup the long-term resources held by the tag, just before garbage collection */
-  public void release()
-  { 
-    // FIXME (fred): what's this? does it do what's expected of it, knowing that release() does not run after every usage of the tag.
-    if(findAncestorWithClass(this, MakumbaTag.class)==null)
-      pageContext.removeAttribute(DB_ATTR);
-
-    /* It is not necessary to set all class fields to null... They will be garbage collected anyway. */
-  } 
-
   PageContext getPageContext(){ return pageContext; }
 
   // we put this as static, as we may have to export it to packages like org.makumba.controller.jsp
@@ -101,13 +91,13 @@ public abstract class MakumbaTag extends TagSupport
     MakumbaJspAnalyzer.PageCache pageCache= (MakumbaJspAnalyzer.PageCache)pageContext.getAttribute("makumba.parse.cache");
     if(pageCache==null)
       {
-	JspParseData jpd= JspParseData.getParseData
+	Object result= JspParseData.getParseData
 	  (
 	   pageContext.getServletConfig().getServletContext().getRealPath("/"),
 	   TomcatJsp.getJspURI((HttpServletRequest)pageContext.getRequest()),
 	   MakumbaJspAnalyzer.singleton
-	    ); 
-	Object result=jpd.getAnalysisResult(null);
+	    ).getAnalysisResult(null); 
+
 	if((result instanceof Throwable)&& result.getClass().getName().startsWith("org.makumba"))
 	  {
 	    if(result instanceof MakumbaError)
@@ -119,6 +109,7 @@ public abstract class MakumbaTag extends TagSupport
       }
     return pageCache;
   }
+  
 
   public QueryTag getParentList(){return (QueryTag)findAncestorWithClass(this, QueryTag.class); }
 
@@ -157,6 +148,9 @@ public abstract class MakumbaTag extends TagSupport
     return SKIP_BODY;
   }
 
+  /** does this tag need the page cache? */
+  protected boolean needPageCache(){ return true; }
+
   /** Handle exceptions, initialise state and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
@@ -166,7 +160,8 @@ public abstract class MakumbaTag extends TagSupport
     if(wasException())
       return SKIP_PAGE;
     try{
-      pageCache=getPageCache(pageContext);
+      if(needPageCache())
+	pageCache=getPageCache(pageContext);
       setTagKey();
       initialiseState();
       return doMakumbaStartTag();
@@ -198,11 +193,20 @@ public abstract class MakumbaTag extends TagSupport
   /** HandleExceptions and call doMakumbaEndTag() */
   public int doEndTag() throws JspException
   {
-    if(wasException())
-      return SKIP_PAGE;
     try{
+      if(wasException())
+	return SKIP_PAGE;
       return doMakumbaEndTag();
     } catch(Throwable t){ treatException(t); return SKIP_PAGE; }
+    finally{ 
+      pageCache=null; 
+      tagKey=null;
+      params.clear();
+      extraFormattingParams.clear();
+      extraFormatting= null;
+      if(findAncestorWithClass(this, MakumbaTag.class)==null)
+	pageContext.removeAttribute(DB_ATTR);
+    }
   }
 
   //-------------- database name 
