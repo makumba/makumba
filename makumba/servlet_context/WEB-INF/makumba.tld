@@ -4,8 +4,8 @@
 	"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
 
 <taglib>
-	<tlibversion>1.0</tlibversion>
-	<jspversion>1.1</jspversion>
+	<tlibversion>@versionDewey@</tlibversion>
+	<jspversion>1.2</jspversion>
 	<shortname>mak</shortname>
 	<uri>http://www.makumba.org/presentation</uri>
 	<info>Makumba @version@ http://www.makumba.org</info>

@@ -47,6 +47,13 @@ class version {
 	return version;
    }
 
+   /** @return only the numeric version in dewey decimal format */
+   static String getVersionDewey()
+   {
+	String vs=getVersion();
+	return vs.substring(vs.indexOf('-')+1,vs.length());
+   }
+
    /** Reads a build date from properties file that was generated during compilation. */
    static final Date getBuildDate()
    {
@@ -69,6 +76,7 @@ class version {
 
         System.out.println("name=Makumba"); 
         System.out.println("version="+getVersion()); 
+        System.out.println("versionDewey="+getVersionDewey()); 
         System.out.println("date="+new java.util.Date()); 
         try{
           System.out.println("buildhost="+(java.net.InetAddress.getLocalHost()).getHostName()+" ("+(java.net.InetAddress.getLocalHost()).getHostAddress()+")"); 
