@@ -156,7 +156,7 @@ public class JspParseData
   String uri;
 
   /** the patterns used to parse the page */
-  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, 
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, 
     JspTagAttributePattern, Word, TagName;
 
   static String attribute(String quote){
@@ -182,7 +182,10 @@ public class JspParseData
       JspTagAttributePattern= Pattern.compile(attribute);
       JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
       JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
-      JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
+      //JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
+      JspCommentPattern  = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
+      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
+
       Word= Pattern.compile("\\w+");
       TagName= Pattern.compile("\\w+:\\w+");
     }catch(Throwable t){ t.printStackTrace(); }
@@ -213,8 +216,10 @@ public class JspParseData
     holder= analyzer.makeStatusHolder(initStatus);
 
     // remove JSP comments from the text
-    // content= syntaxPoints.unComment(content, JspCommentPattern, "JSPComment");
+    content= syntaxPoints.unComment(content, JspCommentPattern, "JspComment");
+    content= syntaxPoints.unComment(content, JspScriptletPattern, "JspScriptlet");
 
+/*
     // remove JSP comments from the text
     StringBuffer uncommentedContent= new StringBuffer(content);
     String[] commentEndNotPrecededBy = { "-" };
@@ -222,6 +227,7 @@ public class JspParseData
     String[] scriptletStartNotFollowedBy = { "@" };
     syntaxPoints.takeOut(uncommentedContent, "<%", scriptletStartNotFollowedBy, "%>", null, "jspScriplet");
     content = uncommentedContent.toString();
+*/
 
     // the page analysis as such:
     treatTags(content, analyzer);
