@@ -29,6 +29,7 @@ import org.makumba.util.MultipleKey;
 import org.makumba.FieldDefinition;
 import org.makumba.abstr.FieldInfo;
 
+import org.makumba.controller.html.FieldEditor;
 import org.makumba.controller.jsp.PageAttributes;
 
 import org.makumba.LogicException;
@@ -125,7 +126,13 @@ public class InputTag extends MakumbaTag
     pageCache.inputTypes.put(tagKey, type);
   }
 
-  public int doMakumbaStartTag() throws JspException, LogicException
+  public int doMakumbaStartTag() 
+  {
+    // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
+    return EVAL_BODY_INCLUDE;
+  }
+
+  public int doMakumbaEndTag()throws JspException, LogicException
   {
     Object val=null;
 
@@ -138,7 +145,8 @@ public class InputTag extends MakumbaTag
 
     if(val!=null)
       val=((FieldInfo)type).checkValue(val);
-    
+
+    params.put(FieldEditor.extraFormattingParam, extraFormatting.toString());
     String formatted=getForm().responder.format(name, type, val, params);
 
     if(display==null ||! display.equals("false"))
@@ -147,6 +155,6 @@ public class InputTag extends MakumbaTag
 	  pageContext.getOut().print(formatted);
 	}catch(java.io.IOException e)	  {throw new JspException(e.toString());}
       }
-    return EVAL_BODY_INCLUDE;
+    return EVAL_PAGE;
   } 
 }
