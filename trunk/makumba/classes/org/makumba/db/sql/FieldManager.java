@@ -45,13 +45,13 @@ public abstract class FieldManager extends FieldHandler
   /** what is the database level type of this field? */
   protected String getDBType()
   {
-    throw new RuntimeException(""+getClass()+"should be redefined");
+    throw new RuntimeException(""+getClass()+" should be redefined");
   }
 
   /** what is the SQL type of this field? */
   protected int getSQLType()
   {
-    throw new RuntimeException(""+getClass()+"should be redefined");
+    throw new RuntimeException(""+getClass()+" should be redefined");
   }
 
   /** check if the column from the SQL database still coresponds with the abstract definition of this field */
