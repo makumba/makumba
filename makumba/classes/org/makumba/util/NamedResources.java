@@ -164,7 +164,10 @@ public class NamedResources implements java.io.Serializable
 	  if(nvo==null)
 	    continue;
 	}
-	
+
+	if(!(((NameValue) nvo).returner instanceof NameValue))
+	  continue;
+
 	Object o= ((NameValue)nvo).getResource();
 
 	java.lang.reflect.Method m= null;
