@@ -78,6 +78,8 @@ public class OptionTag extends BasicValueTag implements BodyTag
 
   /** a value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag() */
   int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException{
+    if(isNull())
+      val=org.makumba.Pointer.Null;
     getInput().choiceSet.add(val, bodyContent.getString(), false, false);
     valueExprOriginal = dataType = expr = null;
     return EVAL_PAGE;
