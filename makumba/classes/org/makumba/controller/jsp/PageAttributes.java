@@ -72,6 +72,10 @@ public class PageAttributes implements Attributes
     Object o= reqAttrs.checkSessionForAttribute(s);
     if(o!=RequestAttributes.notFound)
       return o;
+
+    o= reqAttrs.checkServletLoginForAttribute(s);
+    if(o!=RequestAttributes.notFound)
+      return o;
     
     o=checkPageForAttribute(s);
     if(o!=RequestAttributes.notFound)

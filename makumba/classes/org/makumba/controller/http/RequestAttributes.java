@@ -145,6 +145,10 @@ public class RequestAttributes implements Attributes
     if(o!=notFound)
       return o;
 
+    o= checkServletLoginForAttribute(s);
+    if(o!=notFound)
+      return o;
+
     o= checkLogicForAttribute(s);
     if(o!=notFound)
       return o;
@@ -171,6 +175,12 @@ public class RequestAttributes implements Attributes
       return value;
     if(request.getAttribute(snull)!=null)
       return null;
+    return notFound;
+  }
+
+  public Object checkServletLoginForAttribute(String s){
+    if(request.getRemoteUser()!=null && request.isUserInRole(s))
+      return request.getRemoteUser();
     return notFound;
   }
   
