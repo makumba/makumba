@@ -245,27 +245,30 @@ public class JspParseData
     Matcher tags= JspTagPattern.matcher(content);
     Matcher systemTags= JspSystemTagPattern.matcher(content);   
 
+    int tagStart=Integer.MAX_VALUE;
+    if(tags.find())
+	tagStart=tags.start();
+    int systemStart=Integer.MAX_VALUE;
+    if(systemTags.find())
+	systemStart=systemTags.start();
+	
+
     while(true)
       {
-	int tagStart=Integer.MAX_VALUE;
-	int systemStart=Integer.MAX_VALUE;
-	
-	if(tags.find())
-	  tagStart=tags.start();
-	if(systemTags.find())
-	  systemStart=systemTags.start();
-	
+	System.out.println(tagStart+" "+systemStart);
 	if(tagStart< systemStart)
 	  {
 	    treatTag(tags, content, an);
-	    if(systemStart!=Integer.MAX_VALUE)
-	      treatSystemTag(systemTags, content, an);
+	    tagStart=Integer.MAX_VALUE;
+	    if(tags.find())
+		tagStart=tags.start();
 	  }
-	if(systemStart< tagStart)
+	else if(systemStart< tagStart)
 	  {
 	    treatSystemTag(systemTags, content, an);
-	    if(tagStart!=Integer.MAX_VALUE)
-	      treatTag(tags, content, an);
+	    systemStart=Integer.MAX_VALUE;
+	    if(systemTags.find())
+		systemStart=systemTags.start();
 	  }
 	if(tagStart==Integer.MAX_VALUE && systemStart==Integer.MAX_VALUE)
 	  break;
@@ -323,6 +326,9 @@ public class JspParseData
     TagData td= new TagData();
     td.name=tag.substring(m1.start(), m1.end());
     td.attributes= parseAttributes(tag, m.start());
+    if(dbg)
+	org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), td.name)+": "+td.name+" "+td.attributes);
+
     an.systemTag(td, holder);
   }
   
