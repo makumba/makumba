@@ -28,8 +28,8 @@ import java.util.Dictionary;
 
 public class charViewer extends FieldViewer
 {
-  static String[] params= { "urlEncode", "html", "maxLength", "ellipsis", "ellipsisLength", "addTitle" };
-  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }, null, null, null, { "true", "false", "auto" }};
+  static String[] params= { "default", "empty", "urlEncode", "html", "maxLength", "ellipsis", "ellipsisLength", "addTitle" };
+  static String[][] paramValues= { null, null, {"true", "false"}, { "true", "false", "auto" }, null, null, null, { "true", "false", "auto" }};
 
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }

@@ -65,6 +65,7 @@ public abstract class choiceEditor extends FieldEditor
       }
     
     Vector value;
+    o = getValueOrDefault(o, formatParams);
     if(o instanceof Vector)
       value=(Vector)o;
     else 
@@ -100,6 +101,19 @@ public abstract class choiceEditor extends FieldEditor
 	  }
       }
     return sb.toString();
+  }
+
+  /** Return value if not null, or finds the default option and returns it as a Vector. */
+  public Object getValueOrDefault (Object o, Dictionary formatParams) {
+     if (o == null || ( o instanceof Vector && ((Vector)o).size()==0)  ) {
+         String nullReplacer = (String) formatParams.get("default");
+         if (nullReplacer != null) { 
+             Vector v = new Vector(); 
+             v.add(nullReplacer);
+             return v; 
+         }
+     }
+     return o;
   }
   
 }

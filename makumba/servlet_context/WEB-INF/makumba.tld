@@ -212,7 +212,33 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
+                <attribute>
+                        <name>default</name>
+                        <required>false</required>
+                        <rtexprvalue>true</rtexprvalue>
+                </attribute>
+
+                <attribute>
+                        <name>empty</name>
+                        <required>false</required>
+                        <rtexprvalue>true</rtexprvalue>
+                </attribute>
 	</tag>
+	
+        <tag>
+		<name>if</name>
+		<tagclass>org.makumba.view.jsptaglib.IfTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>Evaluates an expression and shows body only if true</info>
+
+		<attribute>
+			<name>expr</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>	
 
 
 	<tag>
@@ -527,6 +553,18 @@
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
+
+                <attribute>
+                        <name>default</name>
+                        <required>false</required>
+                        <rtexprvalue>true</rtexprvalue>
+                </attribute>
+
+                <attribute>
+                        <name>empty</name>
+                        <required>false</required>
+                        <rtexprvalue>true</rtexprvalue>
+                </attribute>
 
 		<attribute>
 			<name>dataType</name>

@@ -39,7 +39,7 @@ public class ValueTag extends MakumbaTag
   String expr;
   String var;
   String printVar;
-
+  
   public void setExpr(String expr){ this.expr=expr; }
   public void setVar(String var){ this.var=var; }
   public void setPrintVar(String var){ this.printVar=var; }

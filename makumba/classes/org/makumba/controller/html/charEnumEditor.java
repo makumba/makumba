@@ -30,6 +30,9 @@ public class charEnumEditor extends FieldEditor
 {
   public String formatShow(Object o, Dictionary formatParams)
   {
+    // check if the value is to be replaced by 'default' or 'empty'.
+    o = formatValue(o, formatParams) ;
+  	
     StringBuffer sb=new StringBuffer();
     sb.append("<select name=\"").append(getInputName(formatParams))
       .append("\"").append(getExtraFormatting(formatParams)).append(">");
