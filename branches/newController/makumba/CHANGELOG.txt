@@ -1,3 +1,116 @@
+cristi: some timestamps were read from DB as BigDecimal. they are normal Timestamp now
+cristi: improved HTML guess detection to include other tags
+cristi: if <mak:input > sees both a type and a value, they are checked for compatibility
+
+stefan removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
+
+stefan LineViewer works better with strict Mozilla
+stefan fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
+
+0.5.5.26; 25 mar 2003 fred
+fixed bug 35 c7 (login form doesn't include POST parameters)
+
+0.5.5.25; 25 mar 2003 stefan
+source viewers generate valid html 4.01 + other visual improvements there
+removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
+LineViewer works better with strict Mozilla
+fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
+
+0.5.5.24; 03 mar 2003 stefan
+fixed bug 283 (some JSPX don't link pages indicated in jsp:include)
+fixed bug 282 (JSPX - absolute links to included files are broken when the makumba servlet context is not root)
+fixed bug 173 (getDataDefinition() works for java package names, should not)
+centralized version computation
+fixed bug 70 (returns field name for description if description is not set)
+
+0.5.5.23; 28 feb 2003 stefan
+fix for bug 291 in LineViewer
+
+0.5.5.22; 27 feb 2003 cristi
+fixes for bugs 
+- 300: bad treatment of root data in the case of multiple roots)
+- 310: problem with AT_BEGIN variables in jasper2, replaced with NESTED+AT_END
+- 311: problem with jasper2 reusing InputTags, fixed
+
+0.5.5.21; 20 feb 2003 cristi
+better fix for bug 301: connections seem to be closed by a non-makumba entity with mysql 4
+through a fix for bug 314: ResourcePool loses elements in garbage collection finalization
+
+0.5.5.20; 18 feb 2003 cristi
+fix for bug 301: connections seem to be closed by a non-makumba entity with mysql 4
+
+0.5.5.19; 12 feb 2003 stefan
+fixed bug 299 (content type was prefixed by ' ' on file upload)
+
+0.5.5.18; 13 jan 2003 stefan
+publish jar uses download.makumba.org and it publishes also to sourceforge.net
+makumba.jar is always the latest one
+makumba-a_b_c_d.jar files are kept for historical reasons.
+
+----------------------------------------------
+| 2003-01-08 - CVS repository lost due to HDD failure.    
+| reconstructed all sources, but lost history, hence lover revision numbers
+----------------------------------------------
+
+0.5.5.17; 6 jan 2003 cristi
+better ways of buiding jars, without interfering with ../../util-java/lib
+
+better util.longContent logging level and documentation (too little change for a new version)
+
+0.5.5.16; 9 dec 2002 cristi
+added the path info to login form action to make login work in the pages that use path info in the URL, e.g. /archive/doc/xx-yy
+
+0.5.5.15; 6 dec 2002 cristi
+added a small servlet so parade can set the logging root at webapp runtime.
+some more meaningful cache names
+
+0.5.5.14; 4 dec 2002 cristi
+fixed bug 208 "comparing Date to a timestamp field (TS_*) always fails"
+
+0.5.5.13; 3 dec 2002 cristi
+fix for bug 189  "mak:LIST SEPARATOR not working if list is on top level"
+added cache size info
+soft reference alternative for static caches now available (util.SoftNamedResources)
+
+0.5.5.12; 30 nov 2002 cristi
+startup/cleanup functionality needed for web applications
+now makumba will correctly clean up its caches at webapp reload if its servlet context listener is used
+
+0.5.5.11; 27 nov 2002 cristi
+makumba registers the loading time for applications to know it
+
+0.5.5.10; 27 nov 2002 cristi
+refactored to expose the OQL analyzer and remove dependencies between packages
+
+0.5.5.9; 26 nov 2002 cristi
+removed some memory leaks: better OQL parse caching, no more prepared statement caching
+
+0.5.5.8; 20 nov 2002 cristi
+simpler AttributeParametrizer (will need rewrite anyway)
+autoReconnect=true is default now (to address bug 139)
+minor bug fixed in RecordManager (guards against DBConnectionWrapper class cast exception)
+
+0.5.5.7; 20 nov 2002 cristi
+better database information
+
+0.5.5.6; 20 nov 2002 cristi
+fix for bug 139
+
+0.5.5.5; 19 nov 2002 stefan
+jdbc driver info shown at startup
+
+0.5.5.4; 18 nov 2002 cristi
+more info logged, in the attempt to fix bug 139, "Communication link failure"
+
+0.5.5.3; 8 nov 2002 cristi
+standard logging for all classes. took out logging directly to console
+
+0.5.5.2; 7 nov 2002 cristi
+db is now a variable argument to the tags. may break in pages that change it often
+
+0.5.5.1; 6 nov 2002 cristi
+fixed deletion of objects coming from another db
+
 0.5.6.1; 6 jan 2003 cristi
 - refactored the forms further, only the jsptaglib1-dependent features are now left in org.makumba.view.jsptaglib, the rest of the stuff is in form responders, org.makumba.controller
 action
