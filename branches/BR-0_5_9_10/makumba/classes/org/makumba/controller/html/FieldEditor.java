@@ -26,10 +26,10 @@ import org.makumba.view.*;
 import javax.servlet.*;
 import java.util.*;
 
-public class FieldEditor extends FieldFormatter
+public class FieldEditor extends org.makumba.view.FieldFormatter
 {
-  static String[] params={"type"};
-  static String[][] paramValues={{"hidden"}};
+  static String[] params={"default", "empty", "type"};
+  static String[][] paramValues={null, null, {"hidden"}};
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -67,11 +67,14 @@ public class FieldEditor extends FieldFormatter
     return "<input type=\"hidden\" name=\""+getInputName(formatParams)+"\" value=\""+formatHiddenValue(o, formatParams)+"\">";
   }
 
-  public String formatHiddenValue(Object o, Dictionary formatParams)
-  {
-    if(o==null || o.equals(getNull()))
-      return super.formatNull(formatParams);
-    return super.formatNotNull(o, formatParams);
+  /** Formats the value to appear in hidden input statement. */
+  public String formatHiddenValue(Object o, Dictionary formatParams) {
+      return super.format(o, formatParams);
+  }
+
+  /** Formats the value to appear in an input statement. */
+  public String formatValue(Object o, Dictionary formatParams) {
+      return super.format(o, formatParams);
   }
 
   public void onStartup(RecordEditor re){}
