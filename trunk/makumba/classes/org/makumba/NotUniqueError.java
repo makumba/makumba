@@ -31,6 +31,11 @@ public class NotUniqueError extends DBError
   String type;
   Dictionary duplicates;
 
+  public NotUniqueError(java.sql.SQLException se){
+    super("Not unique exception. "+se.getMessage());
+  }
+       
+
   /** Build a NotUniqueError for the given type, with the duplicated field names and values indicated as a Dictionary */
   public NotUniqueError(String type, Dictionary duplicates)
   {
