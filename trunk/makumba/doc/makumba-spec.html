@@ -2296,6 +2296,7 @@ only as a separate object</li>
 By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:list</code> (or <code>mak:object</code>) that have a <code>choice</code> label. The <code>choice</code> name is standard for this purpose (maybe it should be reserved?).<p>
 All text from the mak:input that is not inside a mak:list will be shown in the choser as a nil option. Such nil options will be ignored at form submission.<p> 
 If an option is returned many times by the <code>mak:lists</code>, it will only be shown the first time it occurs.<p>
+All option titles will be trimmed before display.<p>
 <pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;
 Please choose:
 &lt;mak:list from="T choice" where="someCondition" &gt;
