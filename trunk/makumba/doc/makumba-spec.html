@@ -1138,9 +1138,9 @@ also present within the value, it must be escaped by a backslash.
 </p>
 
 <pre class="example">
-  &lt;mak:list from="best.Student s" where="s.gender=\"male\"" >
-  &lt;mak:list from="best.Student s" where='s.gender="male"' >
-  &lt;mak:list from="best.Student s" where="s.gender='male'" >
+  &lt;mak:list from="general.Person p" where="p.gender=\"male\"" >
+  &lt;mak:list from="general.Person p" where='p.gender="male"' >
+  &lt;mak:list from="general.Person p" where="p.gender='male'" >
   &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " >    <!-- FIXME (fred) I'm not 100% sure this is correct -->
   &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' >
 </pre>
@@ -1760,14 +1760,14 @@ Makes a form for creating a new object of the indicated type.
 </p>
 
 <p>
-Example (personEdit.jsp):
+Example (personNew.jsp):
 </p>
 
 <pre class="example">
-&lt;mak:newForm type="general.Person" action="personView.jsp" method="post">
+&lt;mak:newForm type="general.Person" action="personList.jsp" method="post">
         &lt;mak:input field="name"/>
         &lt;mak:input field="surname"/>
-        &lt;input type="submit"/>
+        &lt;input type="submit">
 &lt;/mak:newForm>
 </pre>
 
