@@ -2,7 +2,7 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
-none
+stefan; 25 sep 2003: bug 101 (more JSP author control over the HTML produced by mak: tagsmore JSP author control over the HTML produced by mak: tags)
 
 NOT TO BE RELEASED YET:
 cristi;21 sep 2003: [fred: "cristi, please document transaction changes"]

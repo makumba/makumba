@@ -104,7 +104,9 @@ public class FormResponder extends Responder
 	  .append(responderName)
 	  .append("=")
 	  .append(getPrototype())
-	  .append("\">");
+	  .append("\" ")
+	  .append(extraFormatting)
+	  .append(">");
       }
     else
       {
