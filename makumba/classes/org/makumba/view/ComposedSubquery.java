@@ -36,13 +36,10 @@ public class ComposedSubquery extends ComposedQuery
     super(subsections);
     superQuery=cq; 
     superQuery.addSubquery(this);
-    derivedSections= new String[4];
-    derivedSections[FROM]=superQuery.derivedSections[FROM];
-    if(sections[FROM]!=null)
-      if(derivedSections[FROM]!=null)
-	derivedSections[FROM]+=","+sections[FROM];
-      else
-	derivedSections[FROM]= sections[FROM];
+    derivedSections= new String[5];
+    deriveFrom(FROM);
+    deriveFrom(VARFROM);
+
     concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
     //    concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
     String gpb= sections[GROUPBY];
@@ -53,6 +50,15 @@ public class ComposedSubquery extends ComposedQuery
     String order=sections[ORDERBY];
     if(order!=null)
       derivedSections[ORDERBY]=order;
+  }
+
+  void deriveFrom(int n){
+    derivedSections[n]=superQuery.derivedSections[n];
+    if(sections[n]!=null)
+      if(derivedSections[n]!=null)
+	derivedSections[n]+=","+sections[n];
+      else
+	derivedSections[n]= sections[n];
   }
 
   /** concatenate sections on the given index, with the given separator */
