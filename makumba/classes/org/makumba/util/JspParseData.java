@@ -34,6 +34,9 @@ import javax.servlet.jsp.tagext.Tag;
  */
 public class JspParseData
 {
+    /** since debugging is resource-intensive, we guard it with a system property*/
+    static boolean dbg=System.getProperty("makumba.jspparse.debug")!=null;
+
   /** this method will perform the analysis if not performed already, or if the file has changed
    * the method is synchronized, so other accesses are blocked if the current access determines that an analysis needs be performed 
    *@param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
@@ -292,8 +295,9 @@ public class JspParseData
       }
     else
       debug="/"+tagName;
-
-    //    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
+    
+    if(dbg)
+	org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
 
     if(tagEnd)
       {
