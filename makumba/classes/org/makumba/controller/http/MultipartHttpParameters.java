@@ -100,7 +100,7 @@ public class MultipartHttpParameters extends HttpParameters
 
 		    if (byteRead == 13 && (header.charAt(NrBytesRead-2)) == 10 && (header.charAt(NrBytesRead-3)) == 13 ) {
 			if ( (x = pis.read()) != 10)
-			    throw new org.makumba.MakumbaError("Multipart Not recognized"); //read the ´LF' that comes after the 'CR' (13)
+			    throw new org.makumba.MakumbaError("Multipart Not recognized"); //read the ³LF' that comes after the 'CR' (13)
 			//System.out.println("DEBUG-mul: ending of the header+empty Char["+
 			//(int)header.charAt(NrBytesRead-3)+"]["+(int)header.charAt(NrBytesRead-2)+"] and ["+(int)header.charAt(NrBytesRead-1)+"]["+x+"]");
 			
