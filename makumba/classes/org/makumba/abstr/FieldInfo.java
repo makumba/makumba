@@ -106,7 +106,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
 
   }
 
-  public boolean compatible(FieldDefinition fi) { return defa().compatible((FieldInfo)fi); }
+  public boolean isAssignableFrom(FieldDefinition fi) { return defa().isAssignableFrom((FieldInfo)fi); }
   public String toString(){ return defa().toString(); }
 
   String name;

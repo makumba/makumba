@@ -36,4 +36,7 @@ public class intHandler extends FieldHandler
   public Object getNull() { return Pointer.NullInteger; }
 
   public Object checkValueImpl(Object value) { return normalCheck(value); }
+
+  public boolean isAssignableFrom(FieldInfo fi){ return super.isAssignableFrom(fi) || fi.getType().equals("intEnum"); }
+
 }
