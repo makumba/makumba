@@ -390,7 +390,7 @@ public abstract class Database
   public void copyFrom(DBConnection c, String table, DBConnection sourceDB)
   {
     DataDefinition dd= MakumbaSystem.getDataDefinition(table);
-    getTable(table).copyFrom(c, c.db.getTable(table), sourceDB);
+    getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB);
 
     for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
       {
@@ -428,11 +428,8 @@ public abstract class Database
       for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
 	{
 	  FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
-	  if(fi.getType().equals("setComplex") || fi.getType().equals("ptrOne"))
-	    {
-	      DataDefinition sub= fi.getSubtype();
-	      getTable(sub.getName());
-	    }
+	  if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+	    getTable(fi.getSubtype().getName());
 	}
     }
   }
