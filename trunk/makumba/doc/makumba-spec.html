@@ -201,20 +201,10 @@ type name. If another field by that name is defined by the makumba
 user, this field will be renamed in the database. </li>
   <li>Object creation time
     <div class="note">Can be accessed as TS_create.</div>
-<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
-
-      "This might change, but there are specific methods to retrieve it"
-
- -->
   </li>
   <li>Last modification time. Updates whenever the object is changed.
 The initicial value is TS_create.
     <div class="note">Can be accessed as TS_modify.</div>
-<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
-
-      "This might change, but there are specific methods to retrieve it"
-
- -->
   </li>
 </ul>
 <h3><a name="SimpleFieldTypes">Simple field types</a></h3>
@@ -860,8 +850,7 @@ such as <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a>.
 The corresponding <b>WEB-INF/makumba.tld</b> is already included in
 the <a href="download.html">distribution</a>
 <code>makumba.jar</code>. The example <b>WEB-INF/web.xml</b> can be
-found in Makumba cvs repository
-(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">http://cvs.makumba.org/servlet_context/WEB-INF/</a>).
+found in Makumba <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">cvs repository</a>.
 </p>
 <p>Before using Makumba tags in your JSP pages you also need to declare
 the taglib with:
@@ -911,7 +900,7 @@ instead of the requested page.</li>
   </li>
 </ul>
 <p>For this to work, the correct configuration must be applied in <code>WEB-INF/web.xml</code>
-(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">example file</a>).
+(<a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">example file</a>).
 The following would tell the makumba controller to filter all requests
 for .jsp files.
 </p>
@@ -1189,21 +1178,7 @@ not specified.</td>
 variable by this name, as
 well as to a page-scope attribute, also by the same name (accessible as
       <code>$attributename</code>).
-<!-- =================================================================
-
-     ================ THIS IS FIXED IN makumba-0.5.7+ ================
-
-
-
-<br><b>Warning: such objects may not be of the expected type at the first
-
-iteration after re-compiling the page. Casting to another type without
-
-checking (instanceof) first will result in a ClassCastException (though
-
-the page might work at later runs).</b>
-
---></td>
+      </td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
 exist in the Java scope at that point in the JSP. <br>
@@ -1217,19 +1192,7 @@ Date, Text, Pointer, Vector) before using it as such. </td>
 instead stored in a new <code>java.lang.String</code>
 variable by this name, as well as to a page-scope attribute by the same
 name (accessible as <code>$attributename</code>).
-<!-- =================================================================
-
-     ================ THIS IS FIXED IN makumba-0.5.7+ ================
-
-
-
-<br><b>Warning: such objects may be null at the first iteration after re-compiling
-
-the page. Calling a String method withoug checking for null will result
-
-in a NullPointerException (though the page might work at later runs).</b>
-
---></td>
+      </td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
 exist in the Java scope at that point in the JSP. </td>
