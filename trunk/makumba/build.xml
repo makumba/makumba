@@ -251,10 +251,7 @@
 	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
 	<mkdir dir="${bundle_base}/makumba.distrib" />
 	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
-	<cvs command="checkout makumba" dest="${bundle_base}/makumba.distrib/"/>
-	<cvs command="tag -d ${tag}" dest="${bundle_base}/makumba.distrib/makumba/" />
-	<cvs command="tag ${tag}" dest="${bundle_base}/makumba.distrib/makumba/" />
-
+	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagJar</echo>
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
 	<ftp server="download.makumba.org"
@@ -327,15 +324,15 @@
 		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
 	</target>
 
-	<target name= "test.table" depends="compile" description="run all test cases" >	
+	<target name= "test.table" depends="compile" description="run database test cases" >	
 		<java classname="test.table" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
 	</target>
 
-	<target name= "test.mdd" depends="compile" description="run all test cases" >	
+	<target name= "test.mdd" depends="compile" description="run MDD test cases" >	
 		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
 	</target>
 
-	<target name= "test.config" depends="compile" description="run all test cases" >	
+	<target name= "test.config" depends="compile" description="run config test cases" >	
 		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
 	</target>
 
