@@ -103,7 +103,7 @@ public class mddViewer extends LineViewer
 	      break;
 	    if(e.length()>0 && e.equals(s))
 	      {
-		w.print("<span style=\"background:#cc0000\">");
+		w.print("<span style=\"background-color: pink;\">");
 		super.printLine(w, s);
 		w.print("</span>\t<font color=red>"+
 			lr.readLine()+" "+before.substring(before.indexOf(':')+1)+"</font>\r\n");
