@@ -60,6 +60,10 @@ public class PageAttributes implements Attributes
       }
   }
 
+  public Object setAttribute(String s, Object o) throws LogicException{
+    return RequestAttributes.getAttributes((HttpServletRequest)pageContext.getRequest()).setAttribute(s, o);
+  }
+
   public Object getAttribute(String s) 
        throws LogicException
   {

@@ -35,4 +35,12 @@ public interface Attributes
    *@throws AttributeNotFoundException if there was no error but the attribute could not be found.
    */
   public Object getAttribute(String name) throws LogicException;
+
+  /** Set the value of an attribute 
+    @param name the name of the attribute
+    @param value the value of the attribute
+    @return the old value of the attribue, or null if there was none
+    *@throws LogicException if a business logic problem occured while trying to set the attribute (though at present the BL has no supported way to check that
+    */
+  public Object setAttribute(String name, Object value) throws LogicException;
 }
