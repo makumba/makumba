@@ -105,10 +105,12 @@ public class BoundaryInputStream extends InputStream {
 	    if (index == 0) //the boundary begins at the 1st byte read
 		return -1;
 
+	    // to eliminate the CR and/or LF before the boundary 
+	    index-= (myBuffer[index-1]==10)?2:1; // 10 = LF
 	    System.arraycopy((Object) myBuffer, 0, //from, position
 			     (Object) buffer, 0, //to, position
-			     index-2); // -2 to eliminate the CR LF before the boundary 
-	    return index-2;
+			     index); 
+	    return index;
 	}
 
     }// end method 'read(buffer, start, n)'
