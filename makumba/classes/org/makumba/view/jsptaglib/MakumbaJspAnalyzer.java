@@ -1,15 +1,20 @@
 package org.makumba.view.jsptaglib;
+
 import org.makumba.util.JspParseData;
+import org.makumba.util.RuntimeWrappedException;
+import org.makumba.util.MultipleKey;
+
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.ComposedSubquery;
+
+import org.makumba.LogicException;
+import org.makumba.MakumbaError;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-
-// this should go away when the cache becomes per-page and not example-based
-import javax.servlet.jsp.PageContext;
-import org.makumba.util.RuntimeWrappedException;
-import org.makumba.LogicException;
+import java.util.Iterator;
 
 public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 {
@@ -37,57 +42,76 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       }catch(Throwable t){ t.printStackTrace(); }
   }
 
+  class Types extends HashMap
+  {
+    public void setType(Object key, Object value)
+    {
+      Object o= get(key);
+      // FIXME: this should do type compatibility check
+      if(o!=null)
+	System.out.println("changing type for "+key+" from "+o+" to "+value);
+      put(key, value);
+    }
+  }
+
+  class PageCache
+  {
+    HashMap formatters= new HashMap();
+    HashMap valueComputers= new HashMap();
+    Types types= new Types();
+    HashMap queries= new HashMap();
+
+    public ComposedQuery getQuery(Object key)
+    {
+      ComposedQuery ret= (ComposedQuery)queries.get(key);
+      if(ret==null)
+	throw new MakumbaError("unknown query for key "+key);
+      return ret;
+    }
+
+    /** return a composed query that will associated to the given key. 
+     */
+    public ComposedQuery cacheQuery(Object key, String[] sections, MultipleKey parentKey)
+    {
+      ComposedQuery ret= (ComposedQuery)queries.get(key);
+      if(ret!=null)
+	return ret;
+      ret=parentKey==null? new ComposedQuery(sections):
+	new ComposedSubquery(sections, getQuery(parentKey));
+      
+      ret.init();
+      queries.put(key,ret);
+      return ret;
+    }
+  }
+
   class ParseStatus
   {
     String makumbaPrefix;
-    Map tags= new HashMap();
+    List tags= new ArrayList();
     List parents= new ArrayList();
-    
-    // should go away:
-    PageContext pageContext;
+    PageCache pageCache= new PageCache();
 
     void addTag(MakumbaTag t, JspParseData.TagData td)
     {
-      // should go away:
-      t.setPageContext(pageContext);
-      
-      Object key;
       if(!parents.isEmpty())
 	t.setParent((MakumbaTag)parents.get(parents.size()-1));
       else
 	t.setParent(null);
 
+      t.pageCache=pageCache;
+
       JspParseData.fill(t, td.attributes);
       
-      if(t.getMakumbaParent()!=null)
-	{
-	  key=t.getRegistrationKey();
-	  if(key!=null)
-	    tags.put(key, t);
-	}
-      else
-	{
-	  key=t.getRootRegistrationKey();
-	  if(key!=null)
-	    tags.put(key, t);
-	}
-
-      try{
-	if(key!=null)
-	  t.getRootData().setStrategy(key, t);
-	else
-	  t.strategy= t.makeStrategy(null);
-	t.setPage(pageContext);
-	t.strategy.doAnalyze();
-      }catch(Exception e)
-	{ throw new RuntimeWrappedException(e); }
+      t.doStartAnalyze();
+      tags.add(t);
     }
 
     public void start(MakumbaTag t)
     {
       if(t==null)
 	return;
-      if(!(t instanceof MakumbaBodyTag))
+      if(!(t instanceof QueryTag) && ! (t instanceof FormTagBase))
 	throw new RuntimeException("body tag expected");
       parents.add(t);
     }
@@ -99,7 +123,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	return;
       tagName= tagName.substring(makumbaPrefix.length()+1);
       MakumbaTag t= (MakumbaTag)parents.get(parents.size()-1);
-      if(!(t instanceof MakumbaBodyTag))
+      if(!(t instanceof QueryTag) && ! (t instanceof FormTagBase))
 	throw new RuntimeException("body tag expected");
       if(!t.getClass().equals(tagClasses.get(tagName)))
 	  {
@@ -117,6 +141,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	  }
 
       parents.remove(parents.size()-1);
+    }
+
+    public void endPage()
+    {
+      for(Iterator i= tags.iterator(); i.hasNext(); )
+	((MakumbaTag)i.next()).doEndAnalyze();
     }
   }
 
@@ -146,7 +176,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     try{ t= (MakumbaTag)c.newInstance();}catch(Throwable thr){ thr.printStackTrace(); }
     td.tagObject=t;
     t.tagData=td;
-    t.template=true;
     ((ParseStatus)status).addTag(t, td);
   }
 
@@ -161,15 +190,14 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     ((ParseStatus)status).end(td);
   }
 
-  public Object makeStatusHolder(Object pageContext)
+  public Object makeStatusHolder(Object initialStatus)
   { 
-    ParseStatus status= new ParseStatus();
-    status.pageContext=(PageContext)pageContext;
-    return status;
+    return new ParseStatus();
   } 
   
   public Object endPage(Object status)
   {
-    return ((ParseStatus)status).tags;
+    ((ParseStatus)status).endPage();
+    return ((ParseStatus)status).pageCache;
   }
 }
