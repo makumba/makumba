@@ -114,6 +114,13 @@ public class Database extends org.makumba.db.Database
       MakumbaSystem.getMakumbaLogger("db.init").info("Makumba "+MakumbaSystem.getVersion()+" INIT: "+url);
       Class.forName(driver);
       initConnections();
+      String staleConn= sqlDrivers.getProperty(getConfiguration("#sqlEngine")+".staleConnectionTime");
+
+      if(staleConn!=null){
+	long l= Long.parseLong(staleConn)*60000l;
+	connections.startStalePreventionThread(l/2, l);
+      }
+
       DBConnectionWrapper dbcw=(DBConnectionWrapper)getDBConnection();
       SQLDBConnection dbc=(SQLDBConnection)dbcw.getWrapped();
       try
