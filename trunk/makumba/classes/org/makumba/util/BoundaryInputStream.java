@@ -105,8 +105,16 @@ public class BoundaryInputStream extends InputStream {
 	    if (index == 0) //the boundary begins at the 1st byte read
 		return -1;
 
-	    // to eliminate the CR and/or LF before the boundary 
-	    index-= (myBuffer[index-1]==10)?2:1; // 10 = LF
+	    // to eliminate the CR (13) and/or LF (10) before the boundary 
+	    //index-= (myBuffer[index-1]==10 && myBuffer[index-2]==13)?2:1;
+	    if (myBuffer[index-1]==10 && myBuffer[index-2]==13) {
+		//System.out.println("DEBUG-bis: ----- ending before boundary CR LF");
+		index-=2;
+	    } else if (myBuffer[index-1]==13) {
+		System.out.println("\t - * - DEBUG-bis: -*-*-*-- ending before boundary CR");
+		index-=1;
+	    } else throw new IOException("*DEBUG-bis: prob with endings");
+
 	    System.arraycopy((Object) myBuffer, 0, //from, position
 			     (Object) buffer, 0, //to, position
 			     index); 
