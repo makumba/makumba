@@ -22,8 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
-import java.util.regex.*;
 
 /** Keep track of important points in a file. Syntax points are typically stored in a sorted set, and used for syntax colouring. A syntax colourer would load the file, then go thru the syntax points and change the coloring context at each syntax point. 
  * This is an abstract class, but can be easily instantiated with an anonymous inner class like this:
@@ -46,6 +44,12 @@ public abstract class SyntaxPoint implements Comparable
   /** the position in the file  */
   public int getPosition(){return position; }
 
+  /** the line number in the file  */
+  public int getLine(){return line; }
+
+  /** the column number in the file  */
+  public int getColumn(){return column; }
+
   /** is this point a begin or an end of something? ends are stored one position after the last character of the entity so substring() works right away */
   public boolean isBegin() {return begin; }
 
@@ -61,88 +65,18 @@ public abstract class SyntaxPoint implements Comparable
     return new End(begin, position);
   }
 
-  /** utility method to insert 2 syntax points (begin and end) for every line in a text. Most syntax colourers need to do specific operations at every line */
-  public static void addLines(String text, SortedSet points) 
-  {
-    int start=0;
-    int line=1;
-    
-    int max= text.length();
-    for(int i=0; i<max; i++)
-      {
-	if(text.charAt(i)=='\r')
-	  {
-	    if(i+1 <max && text.charAt(i+1)=='\n')
-	      i++;
-	  }
-	else if(text.charAt(i)!='\n')
-	  continue;
-	addSyntaxPoints(points, start, i, "TextLine", new Integer(line));
-	start=i+1;
-	line++;
-      }
-    if(start<max)
-      addSyntaxPoints(points, start, max, "TextLine", new Integer(line));
-  }
-
-  /** find the line number of a certain position */
-  public static int getLineNumber(SortedSet points, int position, String debug)
-  {
-    SyntaxPoint sp=null;
-    for(Iterator i= points.iterator(); i.hasNext(); )
-      {
-	sp= (SyntaxPoint)i.next();
-	if(!sp.begin && sp.getType().equals("TextLine") && sp.position > position)
-	  return ((Integer)((SyntaxPoint)sp.getOtherInfo()).getOtherInfo()).intValue();
-      }
-    throw new IllegalArgumentException("cannot find line for position "+position+" debug info "+debug);
-  }
-
-  /** go thru the comments in a text, defined according to a pattern, return the text uncommented (for further processing) but of the same length by replacing every comment with whitespace, put the comments limits in the syntax point set */
-  static public String unComment(String content, Pattern commentPattern, String commentPointType, SortedSet syntaxPoints)
-  {
-    Matcher m= commentPattern.matcher(content);
-    int endOfLast=0;
-    StringBuffer uncommentedContent= new StringBuffer();
-    final String commentType=commentPointType;
-    while(m.find())
-      {
-	uncommentedContent.append(content.substring(endOfLast, m.start()));
-	for(int i=m.start(); i<m.end(); i++)
-	  uncommentedContent.append(' ');
-	endOfLast=m.end();
-	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine(m.group());
-	// add the comment to the syntax point set
-	SyntaxPoint comment=new SyntaxPoint(m.start())
-	  { public String getType(){ return commentType;}};
-	syntaxPoints.add(SyntaxPoint.makeEnd(comment, m.end()));
-	syntaxPoints.add(comment);
-      }
-    uncommentedContent.append(content.substring(endOfLast));
-    return uncommentedContent.toString();
-  }
-
-  /** add a begining and end for a syntax entity */
-  static public void addSyntaxPoints(SortedSet syntaxPoints, int start, int end, String type, Object extra)
-  {
-    final String type1=type;
-    final Object extra1=extra;
-    SyntaxPoint point=new SyntaxPoint(start){
-      public String getType(){ return type1;}
-      public Object getOtherInfo(){ return extra1;}	  
-    };
-    syntaxPoints.add(point);
-    syntaxPoints.add(SyntaxPoint.makeEnd(point, end));
-  }
-
-
-
   /** the position in the file */
   int position;
   
   /** is this point a begin or an end of something (where applicable)*/
   boolean begin;
   
+  /** redundant but useful data: line of the position in the text */
+  int line;
+
+  /** redundant but useful data: column of the position in the text */
+  int column;
+
   /** for sorting in the syntaxPoints collection */
   public int compareTo(Object o)
   { 
@@ -153,11 +87,18 @@ public abstract class SyntaxPoint implements Comparable
       return n;
 
     if(begin == sp.begin)  /* two things begin at the same place? strange. but possible, e.g. lines can begin or end at the same place where tags begin or end. at some point there should be a special case here for lines begins and ends to be before, respectively after anything else. */
-      return getType().compareTo(sp.getType());  // a random, really...
+      {
+	if(sp.getType().equals("TextLine"))
+	  return sp.begin?1:-1;
+	if(getType().equals("TextLine"))
+	  return begin?-1:1;
+	return getType().compareTo(sp.getType());  // a random, really...
+      }
 
     // the thing that begins must come after the thing that ends
     return begin?1:-1;
   }
+
   /** simple comparison, for hashing reasons */
   public boolean equals(Object o)
   {
@@ -168,21 +109,25 @@ public abstract class SyntaxPoint implements Comparable
   public int hashCode() { return position*getType().hashCode()*(begin?1:-1); }
   /** for debugging */
   public String toString(){ return ""+position+":"+(begin?"<"+getType():getType()+">"); }
+
+  /** a simple implementation: ends of strings marked by other syntax points */
+  public static class End extends SyntaxPoint
+  {
+    SyntaxPoint begin;
+    /** constructor */
+    public End(SyntaxPoint begin, int position)
+    {
+      super(position, false);
+      this.begin=begin;
+    }
+    /** returns the begining */
+    public Object getOtherInfo(){ return begin; }
+    /** returns same type as the begining */
+    public String getType(){ return begin.getType(); }
+  }
+
+
 }
 
-/** a simple implementation: ends of strings marked by other syntax points */
-class End extends SyntaxPoint
-{
-  SyntaxPoint begin;
-  /** constructor */
-  public End(SyntaxPoint begin, int position)
-  {
-    super(position, false);
-    this.begin=begin;
-  }
-  /** returns the begining */
-  public Object getOtherInfo(){ return begin; }
-  /** returns same type as the begining */
-  public String getType(){ return begin.getType(); }
-}
+
 
