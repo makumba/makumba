@@ -34,6 +34,9 @@ public class ActionTag extends MakumbaTag implements BodyTag
   BodyContent bodyContent;
   public void setBodyContent(BodyContent bc){ bodyContent=bc; }
 
+  /** does this tag need the page cache? */
+  protected boolean needPageCache(){ return false; }
+
   /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
   public int doMakumbaStartTag()
   {
