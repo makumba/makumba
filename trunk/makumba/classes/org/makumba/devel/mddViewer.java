@@ -61,8 +61,7 @@ public class mddViewer extends LineViewer
     }
     w.print("<td align=\"center\" bgcolor=\"darkblue\"><font color=\"lightblue\">mdd</font></td>");
     //w.print("<td align=\"center\"><font color=\"darkblue\">data</font></td>");
-    //w.print("<td align=\"center\"><a href=\""+virtualPath.substring(0,virtualPath.lastIndexOf(.)).replace('.','/')+"\"><font color=\"darkblue\">browse</font></a></td>");
-    w.print("<td align=\"center\"><a href=\""+virtualPath.replace('.','/').substring(0,virtualPath.lastIndexOf('.'))+"\"><font color=\"darkblue\">browse</font></a></td>");
+    w.print("<td align=\"center\"><a href=\""+virtualPath.replace('.','/').substring(0,virtualPath.lastIndexOf('.')+1)+"\"><font color=\"darkblue\">browse</font></a></td>");
   }
 
   void footer(PrintWriter pw) throws IOException 
