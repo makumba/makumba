@@ -44,7 +44,19 @@ public class JspParseData
   public synchronized Object getAnalysisResult(Object initStatus)
   {
     if(!unchanged())
-      parse(initStatus);
+	try
+	{
+	    parse(initStatus);
+	}catch(Error e)
+	    {
+		holder=e;
+		throw e;
+	    }
+	catch(RuntimeException re)
+	    {
+		holder=re;
+		throw re;
+	    }
     return holder;
   }
 
