@@ -1,18 +1,9 @@
 /* $Id$ */
+@import "../main.css";
+
 /* Javadoc style sheet */
 
 /* Define colors, fonts and other style attributes here to override the defaults */
-
-/* Page background color */
-BODY {  //font-family: arial;
-        color:black;
-        background-color:white;
-	margin-right:10;
-        margin-left:120; }
-
-a {color:#044a2c;}
-hr {color:#044a2c;}
-
 /* Table colors */
 .TableHeadingColor     { background: #74C27A; }
 .TableSubHeadingColor  { background: #CBBE1D; } 
@@ -36,20 +27,3 @@ hr {color:#044a2c;}
 
 .NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
 .NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
-
-
-/* the makumba site navigation bar */
-div.navbar { 
-	background: #e7e7e7; 
-	padding:5;
-	margin:0;
-	position:absolute;
-	top:0;
-	left:0;
-	width:100;
-	font-size:0.8em;
-	font-family: arial;
-}
-
-/* trick IE with child selector */
-body>div.navbar { position: fixed }
