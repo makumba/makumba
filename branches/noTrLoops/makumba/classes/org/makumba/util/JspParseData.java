@@ -255,7 +255,6 @@ public class JspParseData
 
     while(true)
       {
-	System.out.println(tagStart+" "+systemStart);
 	if(tagStart< systemStart)
 	  {
 	    treatTag(tags, content, an);
