@@ -202,6 +202,8 @@ public class Logic
   public static Object getAttribute(Object controller, String attname, Attributes a, String db) 
        throws NoSuchMethodException, LogicException
   {
+    if(controller instanceof LogicNotFoundException)
+      throw new NoSuchMethodException("no controller=> no attribute method");
     Database d=MakumbaSystem.getConnectionTo(db);
     Object [] args= {a, d};
     try{
@@ -248,9 +250,10 @@ public class Logic
   public static void doInit(Object controller, Attributes a, String dbName)
        throws LogicException
   {
+    if(controller instanceof LogicNotFoundException)
+      return;
     Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
-      if(!(controller instanceof LogicNotFoundException))
+    try
 	{
 	  Method init= getMethod("checkAttributes", argDb, controller);
 	  Method oldInit= getMethod("requiredAttributes", noClassArgs, controller);
@@ -304,23 +307,22 @@ public class Logic
 	      return;
 	    }
 	}
-    }finally{db.close(); }
+    finally{db.close(); }
   }
 
   public static Object doOp(Object controller, String opName, 
-			       Dictionary data, Attributes a, String dbName) 
+			    Dictionary data, Attributes a, String dbName) 
        throws LogicException
   {
     if(opName==null)
       return null;
-
+    if((controller instanceof LogicNotFoundException) )
+      throw new ProgrammerError("there is no controller object to look for the Form handler method "+opName);
+    
     Database db=MakumbaSystem.getConnectionTo(dbName);
     try{
       Object [] editArg= {data, a, db};
       Method op=null;
-      if((controller instanceof LogicNotFoundException) )
-	throw new ProgrammerError("there is no controller object to look for the Form handler method "+opName);
-      
       op=getMethod(opName, opArgs, controller);
       if(op==null)
 	throw new 
