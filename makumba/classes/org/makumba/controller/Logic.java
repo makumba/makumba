@@ -227,7 +227,11 @@ public class Logic
 
   public static String getControllerFile(Object controller)
   {
-    return getFilePath(org.makumba.util.ClassResource.get(controller.getClass().getName().replace('.', '/')+".java"));
+    String ctrlClass= controller.getClass().getName();
+    java.net.URL u= org.makumba.util.ClassResource.get(ctrlClass.replace('.', '/')+".java");
+    if(u!=null)
+      return getFilePath(u);
+    return org.makumba.util.ClassResource.get(ctrlClass.replace('.', '/')+".class").toString();
   }
 
   public static String getFilePath(java.net.URL u)
