@@ -1,0 +1,149 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Stefan Baebler">
+   <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>Makumba application example</title>
+</head>
+<body>
+
+<h1>
+<a NAME="Example"></a>Makumba application example</h1>
+$Revision$
+<h2>
+Data Definition</h2>
+For explanation please refer to <a href="makumba-spec.html#Data_Description">Data
+Definition</a> section of the specification.
+<p>File <b><tt>dataDefinitions/organisation/Partner</tt></b> (somewhere
+in classpath):
+<blockquote>&nbsp;
+<table BORDER CELLSPACING=0 COLS=1 >
+<tr>
+<td><tt>name=char[1..40]&nbsp;&nbsp;&nbsp; ;Name</tt>
+<br><tt>logo=char[80]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;Logo (URL)</tt>
+<br><tt>dept=char[60]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;Department/Office</tt>
+<br><tt>streetno=char[60]&nbsp;&nbsp; ;Street</tt>
+<br><tt>zipcode=char[10]&nbsp;&nbsp;&nbsp; ;Zipcode</tt>
+<br><tt>city=char[40]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;City</tt>
+<br><tt>country= ptr <b>general.Country</b> ;Country</tt>
+<br><tt>phone=char[20]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;Phone</tt>
+<br><tt>fax=char[40]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;Fax</tt>
+<br><tt>email=char[40]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;E-Mail</tt>
+<br><tt>homepage=char[50]&nbsp;&nbsp; ;Home Page on the Internet</tt>
+<br><tt>comment=text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;Other comments</tt></td>
+</tr>
+</table>
+</blockquote>
+File <b><tt>dataDefinitions/general/country</tt></b> (somewhere in classpath):
+<blockquote>&nbsp;
+<table BORDER CELLSPACING=0 COLS=1 >
+<tr>
+<td><tt>name=char[60]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;Country</tt>
+<br><tt>phonePrefix=char[1..3]&nbsp;&nbsp;&nbsp; ;Phone prefix</tt>
+<br><tt>iso2letterCode=char[2..2] fixed ;2-letter ISO code</tt></td>
+</tr>
+</table>
+</blockquote>
+
+<h2>
+JSP files</h2>
+For explanation please referr to <a href="makumba-spec.html#Makumba JSP tags">Makumba
+JSP tags</a> section of the specification.
+<h3>
+partner-list.jsp</h3>
+
+<blockquote>&nbsp;
+<table BORDER CELLSPACING=0 COLS=1 >
+<tr>
+<td><tt>&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>"
+prefix="<font color="#FF0000">mak</font>" %></tt>
+<p><tt>&lt;<font color="#FF0000">mak</font>:<font color="#000099">list
+from</font><font color="#006600">="<i>organisation.Partner p</i>" </font><font color="#000099">separator</font><font color="#006600">=<i>"&lt;br>"</i></font>></tt>
+<blockquote><tt>&lt;a href="partner.jsp?partner=&lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font>=<i><font color="#006600">"p"&nbsp;</font> </i>/>"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; &lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font>="<i>p.name"</i>></tt>
+<br><tt>&lt;/a>,&nbsp;</tt>
+<br><tt>&lt;i>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">=<i>"p.city"</i></font>/>&lt;/i></tt></blockquote>
+<tt>&lt;/<font color="#FF0000">mak</font>:<font color="#000099">list</font>></tt></td>
+</tr>
+
+<tr>
+<td></td>
+</tr>
+</table>
+</blockquote>
+is rendered to
+<blockquote>&nbsp;
+<table COLS=1 BGCOLOR="#CCCCCC" >
+<tr>
+<td><a href="partner.jsp?type=organisation.partner&id=8&operation=view">PlasticWing
+Airlines</a>, <i>Cambridge</i>
+<br><a href="partner.jsp?type=organisation.partner&id=9&operation=view">Pasta
+al'Dente s.p.a</a>,
+<i>Turin</i>
+<br><a href="partner.jsp?type=organisation.partner&id=11&operation=view">Some
+Company Ltd.</a>, <i>Somewherewille</i>
+<br><a href="partner.jsp?type=organisation.partner&id=21&operation=view">ACME
+gadgets</a>, <i>Death Walley</i>
+<br><a href="partner.jsp?type=organisation.partner&id=22&operation=view">Protect
+gamblers</a>,
+<i>Las Vegas</i></td>
+</tr>
+</table>
+</blockquote>
+
+<h3>
+partner.jsp</h3>
+
+<blockquote>&nbsp;
+<table BORDER CELLSPACING=0 COLS=1 >
+<tr>
+<td><tt>&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>"
+prefix="<font color="#FF0000">mak</font>" %></tt>
+<p><tt>&lt;<font color="#FF0000">mak</font>:<font color="#000099">object
+from</font><font color="#006600">="<i>organisation.Partner p</i>" </font><font color="#000099">where</font><font color="#006600">=<i>"p=$partner"</i></font>></tt>
+<blockquote><tt>&lt;h2>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="p.<i>name</i>"</font>/>&lt;/h2></tt>
+<br><tt>Country: &lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="p.<i>country<b>.name</b></i>"</font>/>&lt;br></tt>
+<br><tt>Home Page on the Internet: &lt;b>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="p.<i>homepage</i>"</font>/>&lt;/b></tt>
+<br><tt>&lt;p></tt>
+<br><tt>You can send them an email to: &lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="<i>p.email</i>"</font>/>&lt;br></tt>
+<br><tt>Call me: &lt;b>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="p.<i>phone</i>"</font>/>&lt;/b>&lt;br></tt>
+<br><tt>Comment: &lt;<font color="#FF0000">mak</font>:<font color="#000099">value
+expr</font><font color="#006600">="p.<i>comment</i>"</font>/></tt></blockquote>
+<tt>&lt;/<font color="#FF0000">mak</font>:object></tt></td>
+</tr>
+</table>
+</blockquote>
+Is rendered to
+<blockquote>&nbsp;
+<table COLS=1 BGCOLOR="#CCCCCC" >
+<tr>
+<td>
+<h2>
+Some company Ltd.</h2>
+Country: Bangladesh
+<br>Home Page on the Internet: <b><a href="http://www.example.com">http://www.example.com</a></b>
+<p>You can send them an email to: <a href="mailto:info@example.com">info@example.com</a>
+<br>Call me: <b>+1 23 456789</b>
+<br>Comment: As seen on <a href="http://cnn.com">http://cnn.com</a>, they
+are very likely to join <a href="wiki?term=BestSupportGroup" title="Wiki-Wiki term">BestSupportGroup</a>.
+<br>&nbsp;</td>
+</tr>
+</table>
+</blockquote>
+New and edit operations will come here soon.
+<p>
+<hr WIDTH="100%"><font size=-1>
+$Id$
+</font>
+</body>
+</html>
