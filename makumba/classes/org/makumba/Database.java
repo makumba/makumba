@@ -63,7 +63,8 @@ public interface Database
    */
   public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
 
-  /** @see Database#executeQuery(java.lang.String, java.lang.Object, int, int), execute query without limiting the results */
+    /** Execute query without limiting the results. 
+     * @see org.makumba.Database#executeQuery(java.lang.String,java.lang.Object,int,int) */
   public java.util.Vector executeQuery(String OQL, Object parameterValues);
 
   /** Insert a record of the given type. <BR>
