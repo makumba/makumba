@@ -144,7 +144,7 @@
 		<attribute>
 			<name>expr</name>
 			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 		<attribute>
@@ -269,7 +269,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -982,13 +982,13 @@
 		<attribute>
 			<name>field</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 		<attribute>
 			<name>name</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 		<attribute>
@@ -1018,7 +1018,7 @@
 		<attribute>
 			<name>display</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 		<attribute>
