@@ -512,7 +512,7 @@ public class table extends TestCase
   public void testCopy()
   {
     Properties p=new Properties();
-    p.put("birthdate", new Date(77, 7, 7));
+    p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7).getTime());
     p.put("indiv.name", "john");
     p.put("indiv.surname", "Copy");
     p.put("extraData.something", "else");
