@@ -2,6 +2,7 @@
 BODY {	font-family: arial;
 	color:black; 
 	background-color:white; 
+	margin-right:10;
 	margin-left:120; }
   H1 {	background: #044a2c; 
 	color:white;
