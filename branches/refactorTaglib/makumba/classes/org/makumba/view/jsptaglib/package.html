@@ -159,12 +159,12 @@ used to generate HTML &lt;select&gt; for <span
  style="font-weight: bold;">setFieldValueQuery</span></li>
   <li><span style="font-weight: bold;">queryMak:value</span>: <span
  style="font-style: italic;">mak:value/input</span> that does generates
-a <span style="font-weight: bold;">valueQuery</span>,</li>
+a <span style="font-weight: bold;">valueQuery</span>, i.e. a query that
+is forced not by the mak:list per-se, but because of the special data
+type of the projections</li>
   <li><span style="font-weight: bold;"> nonQueryMak:value</span>: <span
  style="font-style: italic;">mak:value/input</span> that does not
-generate a <span style="font-weight: bold;">valueQuery</span>, i.e. a
-query that is forced not by the mak:list per-se, but because of the
-special data type of the projections </li>
+generate a <span style="font-weight: bold;">valueQuery</span></li>
   <li><span style="font-weight: bold;"> valueProjection</span>: a query
 projection that corresponds to an <span style="font-weight: bold;">nonQueryMak:value</span>.<br>
 Basically every <span style="font-weight: bold;">nonQueryMak:value</span><span
@@ -208,9 +208,9 @@ all the<span style="font-weight: bold;"> listQueries</span> and <span
   <li><span style="font-weight: bold;">queryProjection</span>: a column
 selected in a query (i.e. between SELECT and FROM, comma-separated)</li>
   <li><span style="font-weight: bold;">currentListData</span>: the data
-row (all <span style="font-weight: bold;">queryProjections</span>)
-from the current <span style="font-weight: bold;">iteration </span>of
-a <span style="font-style: italic;">mak:list </span>or <span
+row (all <span style="font-weight: bold;">queryProjections</span>) from
+the current <span style="font-weight: bold;">iteration </span>of a <span
+ style="font-style: italic;">mak:list </span>or <span
  style="font-style: italic;">mak:object. </span>Also referred to as
 the data of an <span style="font-weight: bold;">iteration</span><br>
     <span style="font-weight: bold;"></span></li>
@@ -231,8 +231,7 @@ the end.</li>
 declared in the FROM of a query</li>
 </ul>
 <div style="margin-left: 80px;">
-<pre>&lt;mak:object from="best.johnny.Season ssn" where="ssn.name = $season" &gt;
-</pre>
+<pre>&lt;mak:object from="best.johnny.Season ssn" where="ssn.name = $season" &gt;<br></pre>
 -&gt; key label is ssn <br>
 </div>
 <ul>
