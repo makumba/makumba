@@ -27,10 +27,11 @@ import org.makumba.controller.html.FormResponder;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.FieldDefinition;
-import org.makumba.abstr.FieldInfo;
 import org.makumba.DataDefinition;
+
 import org.makumba.LogicException;
 import org.makumba.NoSuchFieldException;
+import org.makumba.ProgrammerError;
 
 import org.makumba.util.MultipleKey;
 
@@ -101,12 +102,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public void doEndAnalyze()
   {
+    if(responder.getAction()==null)
+      throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
     if(baseObject==null)
       return;
-
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
-    pageCache.basePointerTypes.put(tagKey, ((FieldInfo)vc.type).getPointedType().getName());
+    pageCache.basePointerTypes.put(tagKey, vc.type.getReferredType().getName());
   }
 
   public int doMakumbaStartTag() throws JspException, LogicException
@@ -150,33 +152,31 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     return EVAL_PAGE;
   }
 
-  // -------------- for input tags to compute types and values 
-
+  /** The default expression for an input tag, if none is indicated */
   public String getDefaultExpr(String fieldName) { return null; }
-  public FieldDefinition getDefaultType(String fieldName) { return null; }
 
+  /** The basic data type inside the form. null for generic forms */
+  public DataDefinition getDataType(){return null; }
 
-  public boolean canComputeTypeFromEnclosingQuery() 
-  { return false; }
-
-  public FieldDefinition computeTypeFromEnclosingQuery(String fieldName) 
-  { return null;  }
-
-  public static FieldDefinition deriveType(DataDefinition dd, String s)
-  {
+  /** The type of an input tag */
+  public FieldDefinition getInputType(String fieldName) 
+  { 
+    DataDefinition dd= getDataType();
+    if(dd==null)
+      return null;
     int dot=-1;
     while(true)
       {
-	int dot1=s.indexOf(".", dot+1);
+	int dot1=fieldName.indexOf(".", dot+1);
 	if(dot1==-1)
-	  return dd.getFieldDefinition(s.substring(dot+1));
-	String fname=s.substring(dot+1, dot1);
+	  return dd.getFieldDefinition(fieldName.substring(dot+1));
+	String fname=fieldName.substring(dot+1, dot1);
 	FieldDefinition fd=dd.getFieldDefinition(fname);
 	if(fd==null)
 	  throw new org.makumba.NoSuchFieldException(dd, fname);
-	if(!fd.getType().equals("ptr")|| !fd.isNotNull())
-	  throw new org.makumba.InvalidFieldTypeException(fd, s+"must be linked via not null pointers, "+fname+" is not");  
-	dd=((org.makumba.abstr.FieldInfo)fd).getPointedType();
+	if(!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
+	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not");  
+	dd= fd.getReferredType();
 	dot=dot1;
       }
   }
