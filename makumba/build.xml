@@ -147,7 +147,9 @@
 		doctitle="Documentation of Makumba classes for Makumba develpers"
 	>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
-	    <link href="http://java.sun.com/products/servlet/2.3/javadoc/"/>
+	    <link href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/"/>
+	    <!--link href="http://java.sun.com/products/servlet/2.3/javadoc/"/-->
+	    <link href="http://barracuda.enhydra.org/webdocs/junit3.7/javadoc/"/>
 	</javadoc> 
 
 	</target>
