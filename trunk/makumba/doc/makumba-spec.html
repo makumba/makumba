@@ -28,12 +28,12 @@
       <li> <a href="#DefaultFields">Default fields</a></li>
       <li> <a href="#SimpleFieldTypes">Simple field types</a>
               <ul>
-                  <li>int - char - text - date</li>
+                  <li><a href="#int">int</a> - <a href="#char">char</a> - <a href="#text">text</a> - <a href="#date">date</a></li>
               </ul>
       </li>
       <li> <a href="#StructuralTypes">Structural (relational) types</a>
               <ul>
-                  <li>ptr - set</li>
+                  <li><a href="#ptr">ptr</a> - <a href="#set">set</a></li>
               </ul>
       </li>
       <li> <a href="#MacroTypes">Macro types</a></li>
@@ -221,7 +221,7 @@ name. If another field by that name is defined by the makumba user, this field w
 
 <h3><a NAME="SimpleFieldTypes">Simple field types</a></h3>
 
-<h4>int</h4>
+<h4><a name="int">int</a></h4>
 <p>
 A 32-bit integer. For example
 </p>
@@ -245,7 +245,7 @@ This will help the presentation layer to present a suitable input control
 <div class="internals note">In the present implementation, this type is called
 "intEnum" internally</div>
 
-<h4>char</h4>
+<h4><a name="char">char</a></h4>
 <p>
 A char field contains a number of characters. Maximal width must be specified and is limited
 to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max)
@@ -287,7 +287,7 @@ This will help the presentation layer to present a suitable input control
 "charEnum" internally</div>
 
 
-<h4>text</h4>
+<h4><a name="text">text</a></h4>
 <p>
 An unlimited-length string of bytes or characters. This type was
 designed to accomodate large text or binary content. It is implemented
@@ -299,7 +299,7 @@ application= text ; Application letter
 description=text  ; Description of object
 image= text	  ; Picture attachment</pre>
 
-<h4>date</h4>
+<h4><a name="date">date</a></h4>
 <p>
 A date and/or time.
 </p>
@@ -320,7 +320,7 @@ arrivalTime= date; Arrival time
 
 <h3><a NAME="StructuralTypes">Structural (relational) types</a></h3>
 
-<h4>Pointers (ptr)</h4>
+<h4><a name="ptr">Pointers (ptr)</a></h4>
 <p>
 Pointers define a reference to an object of a certain type. For example
 </p>
@@ -355,7 +355,7 @@ address= ptr{
 <div class="note internals">this type is known internally as ptrOne</div>
 
 
-<h4>Sets (set, bag, list)</h4>
+<h4><a name="set">Sets (set, bag, list)</a></h4>
 <p>
 Sets define a number of references to multiple objects of a certain type.
 For example:
