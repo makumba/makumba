@@ -37,4 +37,10 @@ public class logicViewer extends LineViewer
     Logic.getLogic(virtualPath);
     reader=new StringReader(Logic.getSearchMessage(virtualPath));
   }
+
+  void intro(PrintWriter w)
+  {
+    w.print("<td>Logic for "+virtualPath+"</td>");
+  }
+
 }
