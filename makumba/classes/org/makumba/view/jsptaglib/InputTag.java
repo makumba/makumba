@@ -104,7 +104,7 @@ public class InputTag extends MakumbaTag
 	  if(type!=null && type.equals("unknown yet"))
 	    return EVAL_BODY_INCLUDE;
 	}
-      else
+      if(type==null)
 	{
 	  type= getForm().getDefaultType(name);
 	  
@@ -114,7 +114,7 @@ public class InputTag extends MakumbaTag
 	     ==null)
 	    return EVAL_BODY_INCLUDE;
 	}
-      
+     
       if(dataTypeInfo!=null)
 	if(type!=null && !dataTypeInfo.compatible(FieldInfo.getFieldInfo(name, type, true)))
 	  throw new InvalidValueException("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type+" , value known is "+val);
@@ -123,7 +123,9 @@ public class InputTag extends MakumbaTag
       
       if(type==null)
 	throw new InvalidValueException("cannot determine input type: "+this+" value known: "+val+" . Please specify the type using dataType=...");
-      
+      if(val!=null)
+	  val=FieldInfo.getFieldInfo(name, type, true).checkValue(val);
+
       String formatted=getForm().responder.format(name, type, val, getRootQueryBuffer().bufferParams);
       if(display==null ||! display.equals("false"))
 	{
