@@ -37,17 +37,14 @@ import org.makumba.db.sql.oql.QueryAST;
 
 public class SQLUpdate implements Update
 {
-  // PreparedStatement ps;
   ParameterAssigner assigner;
   String debugString;
-  DBConnection dbc;
   String updateCommand;
 
-  SQLUpdate(SQLDBConnection dbc, String from, String set, String where)
+  SQLUpdate(org.makumba.db.Database db, String from, String set, String where)
   {
     debugString= (set==null?"delete":"update")+" on type: <"+from+">"+
       (set==null?" ":" setting: <"+set+">")+" where: <"+where+">";
-    this.dbc=dbc;
 
     if(set!=null && set.trim().length()==0)
       throw new org.makumba.OQLParseError("Invalid empty update 'set' section in "+debugString); 
@@ -78,14 +75,14 @@ public class SQLUpdate implements Update
     OQLAnalyzer tree;
     try{
       // FIXME: we should make sure here that the tree contains one single type!
-      assigner= new ParameterAssigner(dbc, tree=MakumbaSystem.getOQLAnalyzer(OQLQuery));
+      assigner= new ParameterAssigner(db, tree=MakumbaSystem.getOQLAnalyzer(OQLQuery));
     }catch(OQLParseError e){
       throw new org.makumba.OQLParseError(e.getMessage()+"\r\nin "+debugString+"\n"+OQLQuery, e);
     }
     
     
     String fakeCommand;
-    try{ fakeCommand= ((QueryAST)tree).writeInSQLQuery(dbc.getHostDatabase()); }
+    try{ fakeCommand= ((QueryAST)tree).writeInSQLQuery(db); }
     catch(RuntimeException e){ throw new MakumbaError(debugString+"\n"+OQLQuery); }
 
     StringBuffer replaceLabel=new StringBuffer();
@@ -157,11 +154,9 @@ public class SQLUpdate implements Update
     
     debugString+="\n generated SQL: "+command;
     updateCommand=command.toString();
-    // finally we can prepare a statement
-    //    ps=dbc.getPreparedStatement(command.toString());
   }
 
-  public int execute(Object[] args) 
+  public int execute(org.makumba.db.DBConnection dbc, Object[] args) 
   { 
     PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(updateCommand);
     try{
@@ -169,7 +164,7 @@ public class SQLUpdate implements Update
       if(s!=null)
 	throw new InvalidValueException("Errors while trying to assign arguments to update:\n"+debugString+"\n"+s);
       
-      org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
+      //org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
       MakumbaSystem.getMakumbaLogger("db.update.execution").fine(""+ps);
       java.util.Date d= new java.util.Date();

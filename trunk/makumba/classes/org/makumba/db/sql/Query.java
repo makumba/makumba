@@ -39,10 +39,6 @@ import org.makumba.db.sql.oql.QueryAST;
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.Query
 {
-  DBConnection dbc;
-  OQLAnalyzer tree;
-  //  PreparedStatement ps;
-
   String query;
   RecordManager resultHandler;
   String command;
@@ -50,36 +46,22 @@ public class Query implements org.makumba.db.Query
 
   public String getCommand(){ return command; }
 
-
-  public Query(DBConnection dbc, String OQLQuery){ this(dbc, MakumbaSystem.getOQLAnalyzer(OQLQuery)); }
-  public Query(DBConnection dbc, OQLAnalyzer t) 
+  public Query(org.makumba.db.Database db, String OQLQuery){ this(db, MakumbaSystem.getOQLAnalyzer(OQLQuery)); }
+  public Query(org.makumba.db.Database db, OQLAnalyzer tree) 
   {
-    tree=t;
-    if(dbc instanceof org.makumba.db.DBConnectionWrapper)
-	dbc=((org.makumba.db.DBConnectionWrapper)dbc).getWrapped();
-    command= ((QueryAST)tree).writeInSQLQuery(dbc.getHostDatabase());
-    this.dbc=dbc;
+    command= ((QueryAST)tree).writeInSQLQuery(db);
 
-    resultHandler= (RecordManager)dbc.getHostDatabase().getTable((RecordInfo)getResultType());
-    assigner= new ParameterAssigner(dbc, tree);
-    //ps=((SQLDBConnection)dbc).getPreparedStatement(command);
+    resultHandler= (RecordManager)db.getTable((RecordInfo)tree.getProjectionType());
+    assigner= new ParameterAssigner(db, tree);
   }
 
-  public DataDefinition getResultType() { return tree.getProjectionType(); }
-
-  /** Get the data type of the given label */
-  public DataDefinition getLabelType(String label){ return tree.getLabelType(label); }
-
-
-  public Vector execute(Object [] args)
+  public Vector execute(Object [] args, DBConnection dbc)
   {
     PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command);
     try{
       String s=assigner.assignParameters(ps, args);
       if(s!=null)
 	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+command+"\n"+s);
-
-      org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
       MakumbaSystem.getMakumbaLogger("db.query.execution").fine(""+ps);
       java.util.Date d= new java.util.Date();

@@ -29,11 +29,5 @@ import java.util.*;
 public interface Query
 {
   /** Execute the query with the given arguments */
-  public Vector execute(Object [] args);
-
-  /** Get the data type returned by the query, as given by its SELECT section */
-  public DataDefinition getResultType();
-
-  /** Get the data type of the given label */
-  public DataDefinition getLabelType(String label);
+  public Vector execute(Object [] args, DBConnection dbc);
 }

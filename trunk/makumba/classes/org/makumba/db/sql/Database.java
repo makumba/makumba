@@ -206,14 +206,14 @@ public class Database extends org.makumba.db.Database
     return url+p.getProperty("#database");
   }
 
-  public org.makumba.db.Query prepareQueryImpl(DBConnection dbc, String oqlQuery)
+  public org.makumba.db.Query prepareQueryImpl(String oqlQuery)
   {
-    return new Query(dbc, oqlQuery);
+    return new Query(this, oqlQuery);
   }
 
-  public Update prepareUpdateImpl(DBConnection dbc, String type, String set, String where)
+  public Update prepareUpdateImpl(String type, String set, String where)
   {
-    return new SQLUpdate((SQLDBConnection)dbc, type, set, where);
+    return new SQLUpdate(this, type, set, where);
   }
 
   public int getMinPointerValue(){ return getDbsv()<<SQLPointer.getMaskOrder(); }
