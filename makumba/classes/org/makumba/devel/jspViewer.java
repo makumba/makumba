@@ -52,8 +52,17 @@ public class jspViewer extends LineViewer
   String findPage(String s)
   {
     if(s.startsWith("/"))
-      return (new File(sv.getServletConfig().getServletContext().getRealPath(s)).exists())?s:null;
-    return (new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar)).exists())?s:null;
+    { //absolute url?
+      //return (new File(sv.getServletConfig().getServletContext().getRealPath(s)).exists())?s:null;
+      if(new File(sv.getServletContext().getRealPath(s)).exists())
+        return contextPath+s;
+      else return null;
+    } else { //relative url?
+      //return (new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar)).exists())?s:null;
+      if(new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar)).exists())
+        return s;
+      else return null;
+    }
   }
 
   void writeSourceLink(PrintWriter w) throws IOException
