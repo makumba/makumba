@@ -60,13 +60,21 @@ public class LineViewer implements SourceViewer
   /** parse the text and write the output */
   public void parseText(PrintWriter w) throws IOException
   {
+    w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+    w.println("<html><head>");
+    w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
+    String title="";
     if(realPath!=null && virtualPath!=null)
-      {
-	w.println("<html><head><title>"+virtualPath+" - source</title></head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr>");
-	w.print("<td><font size=+2><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font><br>"+new File(realPath).getCanonicalPath()+"</td>");
-	intro(w);
-	w.println("</tr></table>");	
-      }
+	title=virtualPath+" - source";
+    w.println("<title>"+title+"</title>");
+    if(lineNumbers)
+	w.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
+    w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr>");
+    if(realPath!=null && virtualPath!=null)
+	w.print("<td><font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font><br>"+new File(realPath).getCanonicalPath()+"</td>");
+    intro(w);
+    w.print("</tr></table>\n<pre style=\"margin-top:0\">");	
+
     // we go line by line as an MDD references cannot span over newlines
     // as a bonus, we print the line numbers as well.
     LineNumberReader lr= new LineNumberReader(reader);
@@ -77,25 +85,31 @@ public class LineViewer implements SourceViewer
 	if(lineNumbers)
 	  {
 	    int n= lr.getLineNumber();
-	    w.print("<a name=\""+n+"\"><font color=\"darkblue\">"+n+":\t</font></a>");
+	    w.print("<a name=\""+n+"\" href=\"#"+n+"\" class=\"lineNo\">"+n+":\t</a>");
 	  }
 	printLine(w, s);
       }
+    w.println("\n</pre>");
     footer(w);
+    w.println("\n</body></html>");	
     reader.close();
   }
 
   void intro(PrintWriter pw) throws IOException {} 
-  void footer(PrintWriter pw) throws IOException {} 
+  void footer(PrintWriter pw) throws IOException
+  {
+      pw.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "+org.makumba.MakumbaSystem.getVersion()+"</font>");
+  }
+
   void printLine(PrintWriter pw, String s) throws IOException 
   {
     String t= getLineTag(s);
     if(t!=null)
-      pw.print("<a name=\""+t+"\">");
+      pw.print("<a name=\""+t+"\"></a>");
     pw.print(highlighted); 
     
-    // not sure of this fix...
-    pw.print("<br>");
+    // not sure of this fix...was "<br>"
+    pw.print("\n");
   }
 
   

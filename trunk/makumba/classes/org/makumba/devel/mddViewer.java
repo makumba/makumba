@@ -56,17 +56,19 @@ public class mddViewer extends LineViewer
     }
     catch(MakumbaError pe){
       err=pe;
-      w.print("<td align=\"center\"><font color=\"red\">errors!<br><a href=#errors>details</a></font></td>");
+      w.print("<td align=\"center\"><font color=\"red\">errors!<br><a href=\"#errors\">details</a></font></td>");
       
     }
     w.print("<td align=\"center\" bgcolor=\"darkblue\"><font color=\"lightblue\">mdd</font></td>");
-    w.print("<td align=\"center\"><font color=\"darkblue\">data</font></td>");
+    //w.print("<td align=\"center\"><font color=\"darkblue\">data</font></td>");
+    //w.print("<td align=\"center\"><a href=\""+virtualPath.substring(0,virtualPath.lastIndexOf(.)).replace('.','/')+"\"><font color=\"darkblue\">browse</font></a></td>");
+    w.print("<td align=\"center\"><a href=\""+virtualPath.replace('.','/').substring(0,virtualPath.lastIndexOf('.'))+"\"><font color=\"darkblue\">browse</font></a></td>");
   }
 
   void footer(PrintWriter pw) throws IOException 
   {
     if(err!=null)
-      pw.println("<a name=errors><hr><pre>"+err.getMessage()+"</pre>");
+      pw.println("<hr><a name=\"errors\"></a><pre>"+err.getMessage()+"</pre>");
   } 
 
   void parseLine(String s)
@@ -105,8 +107,8 @@ public class mddViewer extends LineViewer
 	      {
 		w.print("<span style=\"background-color: pink;\">");
 		super.printLine(w, s);
-		w.print("</span>\t<font color=red>"+
-			lr.readLine()+" "+before.substring(before.indexOf(':')+1)+"</font>\r\n");
+		w.print("</span>\t<span style=\"color:red;\">"+
+			lr.readLine()+" "+before.substring(before.indexOf(':')+1)+"</span>\r\n");
 		return;
 	      }
 	  }
@@ -119,16 +121,16 @@ public class mddViewer extends LineViewer
     switch(current)
       {
       case '=': 
-	highlighted.append("=<font color=\"#000077\">");
-	closeLine="</font>"+closeLine;
+	highlighted.append("=<span style=\"color:#000077\">");
+	closeLine="</span>"+closeLine;
 	break;
       case '#': 
-	highlighted.append("<span style=\"background:#eeeeee\"><i>#");
-	closeLine="</i></span>"+closeLine;
+	highlighted.append("<span style=\"background:#eeeeee; color:#777777\">#");
+	closeLine="</span>"+closeLine;
 	break;
       case ';': 
-	highlighted.append("<font color=\"green\">;");
-	closeLine="</font>"+closeLine;
+	highlighted.append("<span style=\"color:green\">;");
+	closeLine="</span>"+closeLine;
 	break;
       default:
 	super.treat();
