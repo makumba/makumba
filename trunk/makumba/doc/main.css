@@ -1,7 +1,6 @@
 /* $Id$ */
   BODY { font-family: arial; }
   H1 { background: #044a2c; color:white; margin-top: 30; padding-left: 10 }
-  H2 { background: #CBBE1D; margin-top: 50 ; padding-left: 10}
   H2 { background: #74C27A; margin-top: 50 ; padding-left: 10}
   H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10}
   H4 { background: #DAD3B8; margin-top: 40 ; padding-left: 10}
@@ -10,4 +9,3 @@
   .oldfeat { color: #000099 }
   .futfeat { color: #990000 }
   .unusedcolor (#74C27A #CBBE1D)
-
