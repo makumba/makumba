@@ -54,7 +54,8 @@ public abstract class choiceEditor extends FieldEditor
     StringBuffer sb= new StringBuffer();
     if(!hidden)
       {
-	sb.append("<select name=\"").append(getInputName(formatParams)).append("\"");
+	sb.append("<select name=\"").append(getInputName(formatParams))
+	  .append("\"").append(getExtraFormatting(formatParams));
 	sb.append(getMultiple());
 	int size=getIntParam(formatParams,"size");
 	if(size==-1)
