@@ -32,14 +32,95 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.makumba.MakumbaSystem;
 
+
 /** This class performs a rudimentary detection of JSP-relevant tags in a JSP page.
  * @author cristi
  */
 public class JspParseData
 {
-  /** this method will perform the analysis if not performed already, or if the file has changed
+
+  /** The path of the JSP page. */
+  File file;
+  
+  /** The timestamp of the JSP page. If the page is found newer on disk, the cached object is discarded. */
+  long lastChanged; 
+
+  /** The analyzer plugged in. */
+  JspAnalyzer analyzer;
+
+  /** The syntax points of this page. */
+  SourceSyntaxPoints syntaxPoints;
+
+  /** The holder of the analysis status, and partial results. */
+  Object holder;
+
+  /** The JSP URI, for debugging purposes. */
+  String uri;
+
+  /** The patterns used to parse the page. */
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, 
+    JspTagAttributePattern, Word, TagName;
+
+  /** Cache of all analyzed pages. */
+  static int analyzedPages=  NamedResources.makeStaticCache
+         ("JSP mak:list root tags", 
+          new NamedResourceFactory()
+              {
+                 public Object getHashObject(Object o)
+                 {
+	           Object[]o1= (Object[])o;
+                    return ((String)o1[0])+o1[1].getClass().getName();
+                 }
+
+                 public Object makeResource(Object o, Object hashName)
+                        throws Throwable
+                 {
+                    Object[]o1= (Object[])o;
+                    return new JspParseData((String)o1[0], (JspAnalyzer)o1[1], (String)o1[2]);
+                 }
+              });
+
+
+  /** This helps to create regex for the 'attribute' pattern easily. */
+  static String attribute(String quote){
+    String bs="\\";
+    String q=bs+quote;
+    String backslash=bs+bs;
+    
+    return 
+      bs+"s*"+
+      bs+"w+"+
+      bs+"s*="+
+      bs+"s*"+
+      q+
+      "([^"+q+backslash+"]|"+
+      backslash+q+")*"+
+      q;
+  }
+
+
+  /** Initialiser for the class variables. */ 
+  static{
+    String attribute="("+attribute("\"")+"|"+attribute("\'")+")";
+
+    try{
+      JspTagAttributePattern= Pattern.compile(attribute);
+      JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
+      JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
+      //JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
+      JspCommentPattern  = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL); 
+      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);     
+
+      Word= Pattern.compile("\\w+");
+      TagName= Pattern.compile("\\w+:\\w+");
+    }catch(Throwable t){ t.printStackTrace(); }
+  }
+
+
+
+  /** This method will perform the analysis if not performed already, or if the file has changed.
    * the method is synchronized, so other accesses are blocked if the current access determines that an analysis needs be performed 
-   *@param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
+   * @param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
    */
   public synchronized Object getAnalysisResult(Object initStatus)
   {
@@ -60,27 +141,11 @@ public class JspParseData
     return holder;
   }
 
-  static int analyzedPages=  NamedResources.makeStaticCache
-  ("JSP mak:list root tags",
-   new NamedResourceFactory()
-   {
-     public Object getHashObject(Object o)
-       {
-	 Object[]o1= (Object[])o;
-	 return ((String)o1[0])+o1[1].getClass().getName();
-       }
 
-     public Object makeResource(Object o, Object hashName)
-       throws Throwable
-       {
-	 Object[]o1= (Object[])o;
-	 return new JspParseData((String)o1[0], (JspAnalyzer)o1[1], (String)o1[2]);
-       }
-   });
-
-    /** return the pageData of the page at the given path in the given webapp 
-    this is the only way for clients of this class to obtain instances 
-    of JspPageData
+  /** 
+   * Return the pageData of the page at the given path in the given webapp.
+   * This is the only way for clients of this class to obtain instances 
+   * of JspPageData
    */
   static public JspParseData getParseData(String webappRoot, String path, JspAnalyzer an)
   {
@@ -88,120 +153,27 @@ public class JspParseData
     return (JspParseData)NamedResources.getStaticCache(analyzedPages).getResource(arg);
   }
 
-  /** the interface of a JSP analyzer */
-  public interface JspAnalyzer
-  {
-    /** make a status holder, which is passed to all other methods 
-     *@param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer      
-     */
-    Object makeStatusHolder(Object initStatus);
 
-    /** start a body tag 
-     * @see endTag(TagData, Object)
-     */
-    void startTag(TagData td, Object status);
-    
-    /** the end of a body tag, like </...> */
-    void endTag(TagData td, Object status);
-    
-    /** a simple tag, like <... /> */
-    void simpleTag(TagData td, Object status);
-
-    /** a system tag, like <%@ ...%> */
-    void systemTag(TagData td, Object status);
-
-    /** the end of the page
-      @returns the result of the analysis */
-    Object endPage(Object status);
-  }
-
-  /** a composite object passed to the analyzers */
-  public class TagData
-  {
-    /** the parse data where this TagData was produced */
-    JspParseData parseData;
-
-    /**name of the tag*/
-    public String name; 
-
-    /**tag attributes */
-    public Map attributes; 
-
-    /**tag object, if one is created by the analyzer */
-    public Object tagObject;
-   
-    /** the syntax points where the whole thing begins and ends */
-    SyntaxPoint start, end;
-  }
-
-  /** the path of the JSP page */
-  File file;
-  
-  /** the timestamp of the JSP page. if the page is found newer on disk, 
-    the object is discarded */
-  long lastChanged; 
-
-  /** the analyzer plugged in */
-  JspAnalyzer analyzer;
-
-  /** the syntax points of this page */
-  SourceSyntaxPoints syntaxPoints;
-
+  /** Gets the collection of syntax points. */
   public SourceSyntaxPoints getSyntaxPoints(){ return syntaxPoints; }
 
-  /** the holder of the analysis status, and partial results */
-  Object holder;
 
-  /** the JSP URI, for debugging purposes */
-  String uri;
-
-  /** the patterns used to parse the page */
-  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, 
-    JspTagAttributePattern, Word, TagName;
-
-  static String attribute(String quote){
-    String bs="\\";
-    String q=bs+quote;
-    String backslash=bs+bs;
-    
-    return 
-      bs+"s*"+
-      bs+"w+"+
-      bs+"s*="+
-      bs+"s*"+
-      q+
-      "([^"+q+backslash+"]|"+
-      backslash+q+")*"+
-      q;
-  }
-
-  static{
-    String attribute="("+attribute("\"")+"|"+attribute("\'")+")";
-
-    try{
-      JspTagAttributePattern= Pattern.compile(attribute);
-      JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
-      JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
-      JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
-      Word= Pattern.compile("\\w+");
-      TagName= Pattern.compile("\\w+:\\w+");
-    }catch(Throwable t){ t.printStackTrace(); }
-  }
-
-  /** private  constructor, construction can only be made by getPageData() */
+  /** Private constructor, construction can only be made by getParseData(). */
   private JspParseData(String path, JspAnalyzer an, String uri)
   {
-    file= new File(path);
+    this.file= new File(path);
     this.uri=uri;
-    lastChanged= 0l;
-    analyzer=an;
+    this.lastChanged= 0l;
+    this.analyzer=an;
   }
 
+  /** Is file changed on disk since it was last analysed. */
   boolean unchanged()
   {
     return file.lastModified()==lastChanged;
   }
 
+  /** Parses the file. */
   void parse(Object initStatus)
   {
     long start= new java.util.Date().getTime();
@@ -213,7 +185,20 @@ public class JspParseData
     holder= analyzer.makeStatusHolder(initStatus);
 
     // remove JSP comments from the text
-    content= syntaxPoints.unComment(content, JspCommentPattern, "JSPComment");
+    content= syntaxPoints.unComment(content, JspCommentPattern, "JspComment");
+    content= syntaxPoints.unComment(content, JspScriptletPattern, "JspScriptlet");
+
+ /* // This is an alternate way for removing JSP comments. See bug 465 for details.
+    // Can be removed from the code in future.
+
+    // remove JSP comments from the text
+    StringBuffer uncommentedContent= new StringBuffer(content);
+    String[] commentEndNotPrecededBy = { "-" };
+    syntaxPoints.takeOut(uncommentedContent, "<%--", null, "--%>", commentEndNotPrecededBy , "jspComment");
+    String[] scriptletStartNotFollowedBy = { "@" };
+    syntaxPoints.takeOut(uncommentedContent, "<%", scriptletStartNotFollowedBy, "%>", null, "jspScriplet");
+    content = uncommentedContent.toString();
+ */
 
     // the page analysis as such:
     treatTags(content, analyzer);
@@ -224,7 +209,8 @@ public class JspParseData
       ("analysis of "+uri+" took "+(new java.util.Date().getTime()-start)+" ms");
   }
 
-  /** identify tag attributes from a tag string and put them in a Map. set the attribute syntax points */
+
+  /** Identify tag attributes from a tag string and put them in a Map. Sets the attribute syntax points. */
   Map parseAttributes(String s, int origin)
   {
     Map ret= new HashMap(13);
@@ -256,7 +242,8 @@ public class JspParseData
     return ret;
   }
 
-  /** go thru the tags in the page */
+
+  /** Go thru the tags in the page. */
   void treatTags(String content, JspAnalyzer an)
   {
     Matcher tags= JspTagPattern.matcher(content);
@@ -291,6 +278,8 @@ public class JspParseData
       }
   }
 
+
+  /** Treat a jsp or taglib tag: parse its different parts and store the analysis. */
   void treatTag(Matcher m, String content, JspAnalyzer an)
   {
     String tag= content.substring(m.start(), m.end());
@@ -335,7 +324,8 @@ public class JspParseData
       an.startTag(td, holder);
   }
 
-  /** treat system tags */
+
+  /** Treat a system tag: parse its different parts and store the analysis. */
   void treatSystemTag(Matcher m, String content, JspAnalyzer an)
   {
     String tag= content.substring(m.start(), m.end());
@@ -361,8 +351,9 @@ public class JspParseData
 
     an.systemTag(td, holder);
   }
+
   
-  /** return the content of the JSP file in a string */
+  /** Return the content of the JSP file in a string. */
   String readFile()
   {
     StringBuffer sb=new StringBuffer();
@@ -376,16 +367,19 @@ public class JspParseData
     return sb.toString();
   }
 
-    public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
-    {
+
+  /** FIXME: This seems to build some nice illustration for a parse-error message */
+  public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
+  {
 	sb.append(td.start.getLine()).append(":\n").
 	    append(td.parseData.getSyntaxPoints().getLineText(td.start.getLine())).
 	    append('\n');
 	for(int i=1; i<td.start.getColumn(); i++)
 	    sb.append(' ');
 	sb.append('^');
-    }
-    
+  }
+  
+  
   public static void fill(Tag t, Map attributes)
   {
     Class c= t.getClass();
@@ -412,6 +406,62 @@ public class JspParseData
 	}			 
       }
   }
-}
 
+
+  // ==========================================================================================
+  //
+  // THIS CLASS ALSO HAS AN INNER INTERFACE, AND INNER CLASS DEFINITION:
+  // 
+  // ==========================================================================================
+
+
+  /** The interface of a JSP analyzer. */
+  public interface JspAnalyzer
+  {
+    /** make a status holder, which is passed to all other methods 
+     *@param initStatus an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer      
+     */
+    Object makeStatusHolder(Object initStatus);
+
+    /** start a body tag 
+     * @see endTag(TagData, Object)
+     */
+    void startTag(TagData td, Object status);
+    
+    /** the end of a body tag, like </...> */
+    void endTag(TagData td, Object status);
+    
+    /** a simple tag, like <... /> */
+    void simpleTag(TagData td, Object status);
+
+    /** a system tag, like <%@ ...%> */
+    void systemTag(TagData td, Object status);
+
+    /** the end of the page
+      @returns the result of the analysis */
+    Object endPage(Object status);
+  }
+
+
+  /** A composite object passed to the analyzers. */
+  public class TagData
+  {
+    /** the parse data where this TagData was produced */
+    JspParseData parseData;
+
+    /**name of the tag*/
+    public String name; 
+
+    /**tag attributes */
+    public Map attributes; 
+
+    /**tag object, if one is created by the analyzer */
+    public Object tagObject;
+   
+    /** the syntax points where the whole thing begins and ends */
+    SyntaxPoint start, end;
+  }
+
+
+} // end class
 
