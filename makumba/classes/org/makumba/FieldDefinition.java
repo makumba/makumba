@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba;
+import java.util.Dictionary;
 
 /** Information about a field from a makumba data definition as obtained from an MDD file.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is not needed usually, as the application programmer knows the makumba data structure.
@@ -150,7 +151,14 @@ public interface FieldDefinition
    * @exception ClassCastException for other types
    */
   public DataDefinition getSubtype();
-  
+
+  /** The type referred. Will return getRelationType() for ptr, ptrRel and set types and getSubtype() for ptrOne, set, setComplex types.
+   * Works only for ptrOne, set, setComplex types
+   * @return the subtype indicated in set or ptr definition
+   * @exception ClassCastException for other types
+   */
+  public DataDefinition getReferredType();
+
   /** Get the alternative title field, if the title to be used is indicated specifically on a ptr or set. 
    * Works only for ptr and set types
    * @return title field of the record in the foreign table, as indicated in this field definition or in the respective foreign table record definition
@@ -165,6 +173,20 @@ public interface FieldDefinition
    * @exception ClassCastException for other types
   */
   public boolean hasTitleFieldIndicated();
+
+  /** check compatibility with the given type */
+  public boolean compatible(FieldDefinition fd) ;
+
+  /** check if the value can be assigned */
+  public Object checkValue(Object value);
+
+  /** check if the corresponding field from the dictionary can be inserted */
+  public void checkInsert(Dictionary d);
+
+  /** check if the corresponding field from the dictionary can be updated */
+  public void checkUpdate(Dictionary d);
+
+
 }
 
 
