@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Created-By: Java @java.version@ (@java.vendor@)
 
 Name: Makumba
 Version: @version@
