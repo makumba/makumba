@@ -3,14 +3,15 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>makumba design</title>
+  <title>Makumba Design</title>
+  <link rel="stylesheet" type="text/css" media="all" href="main.css">
 </head>
 <body>
-<h1>Makumba design<br>
-</h1>
+<h1>Makumba design</h1>
 <h2>Statement of purpose </h2>
-What do we design makumba for?<br>
-(should be put in sentences and posted on www.makumba.org)<br>
+<h3>What do we design makumba for?</h3>
+<p>(should be put in sentences and posted on www.makumba.org)<br>
+</p>
 <ul>
   <li>fast member involvement</li>
   <li>rapid development<br>
@@ -37,8 +38,7 @@ wait for it to blow in production)<br>
 other technologies involved<br>
   </li>
 </ul>
-<h2>The issue of design<br>
-</h2>
+<h2>The issue of design</h2>
 the biggest issue with makumba today is design. <br>
 reasons:<br>
 <ul>
@@ -54,8 +54,7 @@ or 3rd party technologies at the time (1999-2001) were non-existent, in
 bad shape, or uncertain. Even the ubiquitous Tomcat did not exist at
 the time, and JSP was in its conceiving stages</li>
 </ul>
-<h2>Objectives of makumba design work<br>
-</h2>
+<h2>Objectives of makumba design work</h2>
 we should adjust the makumba design so that:<br>
 <ul>
   <li>keeps its strength and originality as expressed in the statement
@@ -78,9 +77,8 @@ write code, except where design is straight-forward and experience from
 karamba and other applications clearly shows that a feature is needed,
 and can't wait much for redesign.<br>
 <span style="font-weight: bold;"></span>
-<h2>3rd party technologies<br>
-</h2>
-<span style="font-weight: bold;"></span>how to look at a technology:<br>
+<h2>3rd party technologies</h2>
+<h3><span style="font-weight: bold;"></span>how to look at a technology:</h3>
 <ul>
   <li>is it used by makumba already? if so, does makumba use it to its
 full potential (e.g. it may be that makumba adopted the technology
@@ -99,7 +97,7 @@ bit more difficult, are the other advantages important enough?<br>
   <li>in general, how will makumba+that technology respect the
 statement of purpose?</li>
 </ul>
-technologies used by makumba today, and their versions<br>
+<h3>technologies used by makumba today, and their versions</h3>
 <ul>
   <li>Java of course. the latest 1.5 version brings a lot of useful
 stuff, e.g. for business logic code (e.g. using int and Integer
@@ -162,33 +160,31 @@ the user as far as makumba is concerned (Ant is also used in karamba,
 but that's another story). We went from ant 1.3 to 1.6, increasingly
 using its new features</li>
 </ul>
-<h1>Makumba components and their design status<br>
-</h1>
+<h1>Makumba components and their design status</h1>
 <h2>mak:list engine</h2>
-design status:<br>
-<div style="margin-left: 40px;">this is clearly the most original and
+<h3>design status:</h3>
+<p>this is clearly the most original and
 powerful part of makumba. <br>
 familiarity with SQL within HTML is well encouraged. groups of
 mak:lists are nicely combined in a high-performance original way<br>
 $attributes are transformed into $1 OQL attributes in an easy
-transparent manner<br>
-</div>
-design still not finished for<br>
-<div style="margin-left: 40px;">parametrized query fragments
+transparent manner</p>
+<h3>design still not finished for</h3>
+<p>parametrized query fragments
 (especially in orderBy, etc). what should be allowed? should such
 parameters (attributes) be expressed differently than nomral
 $attributes which become normal OQL query $1 parameters? should they be
 declared?<br>
-</div>
-implementation status:<br>
-<div style="margin-left: 40px;">the JSP taglib API is still not enough
+</p>
+<h3>implementation status:</h3>
+<p>the JSP taglib API is still not enough
 for makumba's needs. makumba-specific JSP page parsing needed to be
 introduced in the last taglib version<br>
 there are small features missing but the new architecture of
 org.makumba.view.jsptaglib allows for easy extensions <br>
-</div>
-3rd-party tools and standards: <br>
-<div style="margin-left: 40px;">of course many tag libraries (incl the
+</p>
+<h3>3rd-party tools and standards:</h3>
+<p>of course many tag libraries (incl the
 standard JSTL) know how to do
 SQL queries or display tables (JSF) but none combine the two like
 mak:list does (for better or worse)<br>
@@ -199,66 +195,65 @@ especially the Expression Language (EL) of JSP 2.0 makes it much easier
 to display values by using ${expression } notation<br>
 JSTL helps replace java scriptlets. makumba should be integrated more
 with it<br>
-</div>
+</p>
 <h2>forms</h2>
-design status:<br>
-<div style="margin-left: 40px;">keep nice familiarity with HTML, while
+<h3>design status:</h3>
+<p>keep nice familiarity with HTML, while
 taking good advantage of the MDD information. this is a strength of
 makumba design<br>
 multiple forms are powerful and original<br>
-</div>
-design still not finished for:<br>
-<div style="margin-left: 40px;">form annotations<br>
+</p>
+<h3>design still not finished for</h3>
+<p>form annotations<br>
 expanding form interaction over more pages<br>
 chooser flexibility<br>
-</div>
+</p>
 <div style="margin-left: 40px;"></div>
-implementation status:<br>
-<div style="margin-left: 40px;">see unfinished design above<br>
+<h3>implementation status</h3>
+<p>see unfinished design above<br>
 form responders are lost at webapp reload<br>
-</div>
-3rd-party tools and standards: <br>
-<div style="margin-left: 40px;">JSF (Java server faces) has excellent
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>JSF (Java server faces) has excellent
 design towards transforming web interaction into component-based
 interaction. however, that goes too far into breaking the familiarity
 with HTML forms, while bringing in a much less spread familiarity (GUI
 component programming)<br>
-</div>
+</p>
 <h2><span style="font-weight: bold;">MDD (data model)</span></h2>
-design status:<br>
-<div style="margin-left: 40px;">a simple, easy to read,
+<h3>design status</h3>
+<p>a simple, easy to read,
 database-neutral data description. <br>
 a small number of types, that cover
 most needs. more types would bring better performance, but create more
 confusion<br>
 some concepts could have better names (more related to db theory): set,
 internal set/pointer, etc<br>
-</div>
-design still not finished for:<br>
-<div style="margin-left: 40px;">the initial ambition was to be
+</p>
+<h3>design still not finished for</h3>
+<p>the initial ambition was to be
 object-oriented: encapsulation is more or less done, but inheritance
 and polymorphism are still not addressed. is this really needed? <br>
 subtyping (a database theory concept) is supported but can be made more
 explicit<br>
 business rules. a data model should not only describe data, but also
 specify rules on how it can be created and changed<br>
-</div>
-implementation status:<br>
-<div style="margin-left: 40px;">the parser is a bit messy but it works<br>
+</p>
+<h3>implementation status</h3>
+<p>the parser is a bit messy but it works<br>
 multiple-field uniqueness still not done<br>
-</div>
-3rd-party tools and standards: <br>
-<div style="margin-left: 40px;">there is acute need for database theory
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>there is acute need for database theory
 reading (to decide whether to have it object-oriented or keep it
 relational, etc)<br>
 JDO supports (in Java&nbsp; standard, there are other tools like it) an
 object-oriented way to describe data and deal with it, and make objects
 persistent<br>
-</div>
-<h2><span style="font-weight: bold;">Database layer<br>
-</span></h2>
-design status:<br>
-<div style="margin-left: 40px;">a pretty straightforward API for
+</p>
+<h2><span style="font-weight: bold;">Database layer</span></h2>
+<h3>design status</h3>
+<p>a pretty straightforward API for
 accessing MDD-generated tables in a database-neutral manner<br>
 the Dictionary usage for data arguments is a bit heavy (needs casts, is
 not type-safe, etc)<br>
@@ -266,19 +261,19 @@ maybe Database should be really called Transaction, or Connection.<br>
 maps MDDs to DB tables. when reading a non-makumba DB this is
 especially useful<br>
 maps makumba types on their best representation in the host DB engine<br>
-</div>
-design still not finished for:<br>
-<div style="margin-left: 40px;">uncertainty about object-orientation
+</p>
+<h3>design still not finished for</h3>
+<p>uncertainty about object-orientation
 (see MDD)<br>
-</div>
-implementation status:<br>
-<div style="margin-left: 40px;">old, trusted code, using JDBC 1<br>
+</p>
+<h3>implementation status</h3>
+<p>old, trusted code, using JDBC 1<br>
 there is a discussion on whether to use foreign keys or not<br>
 presently indexes are created for almost every field. this results in
 the SQL engine not knowing which to use<br>
-</div>
-3rd-party tools and standards: <br>
-<div style="margin-left: 40px;">database-neutrality made lots of
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>database-neutrality made lots of
 progress in the past years. JDO, JDBC Connector, even JDBC itself&nbsp;
 do much better then they used to. dropping the db layer for one of
 these technologies could be very beneficial<br>
@@ -286,11 +281,11 @@ the JDBC API (currently at version 3 and going towards version 4) made
 lots of progress since JDBC 1, most probably there are loads of
 features that makumba does not take advantage of, including e.g. Rowsets<span
  style="font-weight: bold;"><br>
-</span></div>
+</span></p>
 <h2><span style="font-weight: bold;">OQL </span><span
  style="font-weight: bold;"> (object query language)</span></h2>
-design status:<br>
-<div style="margin-left: 40px;">specify queries in a database-neutral
+<h3>design status</h3>
+<p>specify queries in a database-neutral
 manner. but this can increasingly be done in simple, standard SQL.<br>
 OQL is also used to translate from MDD names to DB table names in
 queries (by calling the DB layer)<br>
@@ -305,45 +300,42 @@ WHERE a.person=p, though the second form should also work)<br>
 another important feature is the ability to analyze queries, including
 type checking, useful during page analysis. even if we adopt a thrid
 party technology, some form of query parsing will still be needed.<br>
-</div>
-design still not finished for:<br>
-<div style="margin-left: 40px;">functions. they should probably keep
+</p>
+<h3>design still not finished for</h3>
+<p>functions. they should probably keep
 the object oriented manner (object.call(arguments) )<br>
-</div>
-implementation status:<br>
-<div style="margin-left: 40px;">subqueries are badly missed<br>
+</p>
+<h3>implementation status</h3>
+<p>subqueries are badly missed<br>
 patchy, hard to add new features. one should start fresh from the
 original OQL grammar and reimplement it to add functions and subqueries<br>
-</div>
-3rd-party tools and standards: <br>
-<div style="margin-left: 40px;">database-neutrality made lots of
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>database-neutrality made lots of
 progress in the past years. JDO (which has its own form of OQL), JDBC
 Connector, even JDBC itself&nbsp; do
 much better then they used to. dropping or adapting OQL for one of
 these
 technologies could be very beneficial. JDO is explicitely recommended
 by ODMG as the natural place to go<br>
-</div>
+</p>
 <h2>Login</h2>
-design status:<br>
-<div style="margin-left: 40px;">based on "secret attributes". <br>
+<h3>design status</h3>
+<p>based on "secret attributes". <br>
 the design was so poor that it had to be patched with "checkAttributes".<br>
 the design led to a number of problems, including secret attributes
 with identical names in different parts of the site<br>
 the design also hides the concept of session, which is important to
 learn (and use) for developers. sessions can be used for more than login<br>
-</div>
-3rd-party tools: <br>
-<div style="margin-left: 40px;">the servlet speficication itself has a
+</p>
+<h3>3rd-party tools</h3>
+<p>the servlet speficication itself has a
 good login design, and that standard login (and the design of its
 integration in makumba) should be looked at first<br>
-there are other tools like jSai that seem to work in this department<br>
-</div>
-<br>
-<h2>"Business Logic"<br>
-</h2>
-design status:<br>
-<div style="margin-left: 40px;">bad design, mixture between logic and
+there are other tools like jSai that seem to work in this department</p>
+<h2>"Business Logic"</h2>
+<h3>design status</h3>
+<p>bad design, mixture between logic and
 controller.<br>
 thus the "clean MVC" part of the statement of purpose is still not well
 addressed<br>
@@ -351,57 +343,50 @@ it's clear that business rules should live with the data, maybe in MDD
 files, maybe near them. <br>
 parts that are more dependent on the interface (on the way the form was
 shown, etc) should be part of the controller<br>
-</div>
-design still not finished for:<br>
-<div style="margin-left: 40px;">i think this part should be completely
+</p>
+<h3>design still not finished for</h3>
+<p>i think this part should be completely
 restructured. <br>
 stuff that does pure data processing should move to "data model"<br>
 stuff that does data adaptation from and to the dialogs (forms) should
 go to the controller<br>
 sessions should be visible to the model, the controller, or both <br>
-</div>
-3rd-party tools: <br>
-<div style="margin-left: 40px;">Jakarta Struts, JSF, EJB (e.g. for
-session design)<br>
-</div>
-<h2>Controller<br>
-</h2>
-design status:<br>
-<div style="margin-left: 40px;">transparent for now. executes at every
-page access, via a servlet filter<br>
-</div>
-design still not finished for:
-<div style="margin-left: 40px;">see "business logic" above: stuff
+</p>
+<h3>3rd-party tools</h3>
+<p>Jakarta Struts, JSF, EJB (e.g. for
+session design)</p>
+<h2>Controller</h2>
+<h3>design status:</h3>
+<p>transparent for now. executes at every
+page access, via a servlet filter</p>
+<h3>design still not finished for:</h3>
+<p>see "business logic" above: stuff
 that's
 specific to the form should be specified in/near the JSP and executed
 by the controller<br>
 not able to show different pages after form submission ("view
 selection")<br>
-in general, not enough flexibility in treating the errors<br>
-</div>
-3rd-party tools: <br>
-<div style="margin-left: 40px;">Jakarta Struts, JSF<br>
-</div>
-<h2>Developer tools<br>
-</h2>
-design status:<br>
-<div style="margin-left: 40px;">pretty original, building on the
-originality of MDD and JSP parts<br>
-</div>
-design still not finished for:
-<br>
-<div style="margin-left: 40px;">&nbsp;interacting more with the
+in general, not enough flexibility in treating the errors</p>
+<h3>3rd-party tools:</h3>
+<p><a href="http://struts.apache.org/" target="_blank">Jakarta Struts</a>, JSF<br>
+</p>
+<h2>Developer tools</h2>
+<h3>design status:</h3>
+<p>pretty original, building on the
+originality of MDD and JSP parts</p>
+<h3>design still not finished for:</h3>
+<p>interacting more with the
 programming during development<br>
-</div>
-implementation status:<br>
-<div style="margin-left: 40px;">"page summary" is still not
+</p>
+<h3>implementation status:</h3>
+<p>"page summary" is still not
 implemented, although the recent page analysis code makes it much easier<br>
 "pages and BL classes affected by an MDD" still not implemented,
 although most of the tools are in place (page analysis, etc)<br>
-</div>
-3rd-party tools: <br>
-<div style="margin-left: 40px;">Ant<br>
-Eclipse<br>
-</div>
+</p>
+<h3>3rd-party tools</h3>
+<p><a href="http://ant.apache.org/" target="_blank">Ant</a><br>
+<a href="http://www.eclipse.org/" target="_blank">Eclipse</a><br>
+</p>
 </body>
 </html>
