@@ -30,7 +30,7 @@ import org.makumba.abstr.*;
 public class InputTag extends MakumbaTag
 {
   String name;
-  String valueExpr;
+  String valueExprOriginal;
   String dataType;
   FieldInfo dataTypeInfo;
   String display;
@@ -38,7 +38,8 @@ public class InputTag extends MakumbaTag
   /** demand a QueryTag enclosing query */
   protected Class getParentClass(){ return FormTagBase.class; }
 
-  public String toString() { return "INPUT name="+name+" value="+valueExpr+" dataType="+dataType; }
+  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
+  
 
   /** return false, register an exception */ 
   protected boolean canBeRoot()
@@ -54,7 +55,7 @@ public class InputTag extends MakumbaTag
   public void setName(String field) {   this.name=field.trim(); }
 
   /** set the expression */
-  public void setValue(String value) {   this.valueExpr=value.trim(); }
+  public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
 
   /** set the type */
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
@@ -83,6 +84,7 @@ public class InputTag extends MakumbaTag
       Object val=null;
       Object type=null;
       
+      String valueExpr=valueExprOriginal;
       if(valueExpr==null)
 	valueExpr=getForm().getDefaultExpr(name);
       if(valueExpr!=null)	
