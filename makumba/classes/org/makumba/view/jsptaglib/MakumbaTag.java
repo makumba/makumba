@@ -39,13 +39,20 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 
   public PageContext getPageContext() {return pageContext; }
 
+  protected RootData created;
+  protected RootData pushed;
+
   /** identifies the closest parent of the class desired by getParentClass() */
   public void setParent(Tag t)
   { 
     super.setParent(t); 
     if(getMakumbaParent()==null)
       {
-	pageContext.setAttribute(ROOT_DATA_NAME, new RootData(this, pageContext), PageContext.PAGE_SCOPE);
+	// there can be more than one root tag in a tag structure. only the 
+	// "rootest" should create root data
+	pushed=getRootData();
+	
+	pageContext.setAttribute(ROOT_DATA_NAME, created= new RootData(this, pageContext), PageContext.PAGE_SCOPE);
 	canBeRoot();
 	getRootData().buffer=makeBuffer();
       }
@@ -145,9 +152,21 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
   /** delegate the strategy to end */
   public int doEndTag() throws JspException
   {
-    if(wasException())
-      return SKIP_PAGE;
-    return strategy.doEnd();
+    try{
+      if(wasException())
+	return SKIP_PAGE;
+      return strategy.doEnd();
+    }    finally
+      {
+	if(created!=null)
+	  {
+	    getRootData().close();
+	    if(pushed!=null)
+	      pageContext.setAttribute(ROOT_DATA_NAME, pushed, PageContext.PAGE_SCOPE);
+	    else
+	      pageContext.removeAttribute(ROOT_DATA_NAME, PageContext.PAGE_SCOPE);
+	  }
+      }
   }
 
   public void release(){ if(strategy!=null)strategy.doRelease(); }
