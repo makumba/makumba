@@ -68,7 +68,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
 	</tag>
@@ -130,7 +130,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -269,7 +269,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -455,7 +455,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
 		<attribute>
