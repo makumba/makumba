@@ -18,6 +18,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.13.7; 27 jan 2005 cristi
+fixed LIMIT bug with mysql 5
+reversed two arguments in 2 calls.
+
 0.5.13.6; 18 jan 2005 cristi
 fixed bug 793, errors computing error messages at @include
 
