@@ -43,6 +43,10 @@ public class ComparisonTree extends AnalysisTree
        ||t2.equals("timestamp") && t1.equals("datetime") )
       return;
 
+    if(t1.equals("int") && t2.equals("real")
+       ||t2.equals("int") && t1.equals("real") )
+      return;
+
     if(right.makumbaType!=null && right.makumbaType.equals("nil"))
       return;
     if(checkAssign(left, right) || checkAssign(right, left))
