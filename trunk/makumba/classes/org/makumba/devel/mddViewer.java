@@ -38,9 +38,9 @@ public class mddViewer extends LineViewer
     contextPath=req.getContextPath();
     if(virtualPath==null)
       virtualPath="/";
-    java.net.URL u= org.makumba.abstr.RecordParser.findDataDefinition(virtualPath, "mdd");
+    java.net.URL u= RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
     if(u==null)
-      u= org.makumba.abstr.RecordParser.findDataDefinition(virtualPath, "idd");
+      u= RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
     readFromURL(u);
     virtualPath= virtualPath.substring(1);
   }
