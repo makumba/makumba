@@ -28,6 +28,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
   private Iterator _values = null;      // iterator over the values (Strings)
   private Iterator _labels = null;      // iterator over the labels (Strings)
   private String[] _selectedValues = EMPTY_ARRAY;  // list of selected values (String)
+  private String[] _deprecatedValues = EMPTY_ARRAY;  // list of deprecated values (String)
   private boolean  _ismultiple   = false;       // is it a multiple choice?
   private int      _size = 1;                  // size of the select box
   private int      _convert2Html = NO_CONV;     // configuration whether to convert to HTML
@@ -74,6 +75,32 @@ public class HtmlChoiceWriter extends HtmlUtils {
       	  _selectedValues = EMPTY_ARRAY;
       }
   }
+
+  /** Setter method. */
+  public void setDeprecatedValues(String deprecated) {
+      if (deprecated != null) {
+          String[] ss = { deprecated }; // [java] can't assign literal array directly to existing variable.
+          _deprecatedValues = ss; 
+      } else {
+      	  _deprecatedValues = EMPTY_ARRAY;
+      }
+  }
+  /** Setter method. The input array is changed by this method (sorted). */
+  public void setDeprecatedValues(String[] deprecated) { 
+      if (deprecated != null) {
+          Arrays.sort(_deprecatedValues = deprecated); 
+      } else {
+      	  _deprecatedValues = EMPTY_ARRAY;
+      }
+  }
+  /** Setter method. The input List is not changed by this method. */
+  public void setDeprecatedValues(List deprecated) { 
+      if (deprecated != null) {
+          Arrays.sort(_deprecatedValues = (String[])deprecated.toArray()); 
+      } else {
+      	  _deprecatedValues = EMPTY_ARRAY;
+      }
+  }
   
   public void setMultiple(boolean yn) { _ismultiple = yn; }
   /** Setter method, any string that contains 'multiple' will be regarded as 'true'. */
@@ -111,12 +138,15 @@ public class HtmlChoiceWriter extends HtmlUtils {
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if (yn_convert2Html) {
-              value = HtmlUtils.string2html(value);
-              label = HtmlUtils.string2html(label);
+          if( Arrays.binarySearch(_deprecatedValues, value) < 0 || value.equals(selectedValue) )
+          {
+               if (yn_convert2Html) {
+                   value = HtmlUtils.string2html(value);
+                   label = HtmlUtils.string2html(label);
+               }
+               String selected = value.equals(selectedValue) ? " SELECTED" : "" ;
+               selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
-          String selected = value.equals(selectedValue) ? " SELECTED" : "" ;
-          selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
       }
       selectStatement.append("</SELECT>\n");
   
@@ -135,12 +165,15 @@ public class HtmlChoiceWriter extends HtmlUtils {
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if (yn_convert2Html) {
-              value = HtmlUtils.string2html(value);
-              label = HtmlUtils.string2html(label);
+          if( Arrays.binarySearch(_deprecatedValues, value) < 0 || Arrays.binarySearch(_selectedValues, value) >= 0 )
+          {
+              if (yn_convert2Html) {
+                  value = HtmlUtils.string2html(value);
+                  label = HtmlUtils.string2html(label);
+              }
+              String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? "" : " SELECTED" ;
+              selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
-          String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? "" : " SELECTED" ;
-          selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
       }
       selectStatement.append("</SELECT>\n");
   
@@ -162,15 +195,18 @@ public class HtmlChoiceWriter extends HtmlUtils {
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if (yn_convert2Html) {
+          if(Arrays.binarySearch(_deprecatedValues, value) < 0 || Arrays.binarySearch(_selectedValues, value) >= 0 )
+          {
+            if (yn_convert2Html) {
               value = HtmlUtils.string2html(value);
               label = HtmlUtils.string2html(label);
-          }
-          String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? " " : " CHECKED " ;
-          j = (j+1) % _elementSeparator.length;
+            }
+            String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? " " : " CHECKED " ;
+            j = (j+1) % _elementSeparator.length;
                     
-          inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
-          inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + _tickLabelSeparator + label + _elementSeparator[j]);
+            inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
+            inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + _tickLabelSeparator + label + _elementSeparator[j]);
+          }
       }
   
       // cut of the last elementSeparator and return
