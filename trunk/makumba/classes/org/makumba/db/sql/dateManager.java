@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
 import org.makumba.abstr.FieldHandler;
 
 /** This handler just replaces itself with two handlers, one for the date part, the other for the time part

@@ -22,12 +22,17 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
-import java.util.*;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-// wrong dependence
-import org.makumba.db.*;
+import org.makumba.DBError;
+import org.makumba.InvalidValueException;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.OQLAnalyzer;
+import org.makumba.OQLParseError;
+import org.makumba.db.DBConnection;
+import org.makumba.db.Update;
 import org.makumba.db.sql.oql.QueryAST;
 
 public class SQLUpdate implements Update

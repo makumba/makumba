@@ -22,8 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oracle;
-import java.sql.*;
-import java.util.*;
+import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
 public class Database extends org.makumba.db.sql.Database

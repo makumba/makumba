@@ -22,10 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import java.util.*;
-import org.makumba.abstr.*;
-import org.makumba.db.*;
-import java.io.*;
+import java.util.Vector;
 
 /** Copies one database to the other.
 */

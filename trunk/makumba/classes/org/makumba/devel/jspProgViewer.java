@@ -22,9 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
-import org.makumba.abstr.*;
-import java.io.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 public class jspProgViewer extends jspViewer
 {

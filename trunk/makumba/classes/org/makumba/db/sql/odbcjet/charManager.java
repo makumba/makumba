@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.odbcjet;
-import java.sql.*;
 
 /** odbcjet might represent char fields as text fields */
 public class charManager extends org.makumba.db.sql.charManager

@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.Enumeration;
 
 public abstract class subtableParser extends FieldParser
 {

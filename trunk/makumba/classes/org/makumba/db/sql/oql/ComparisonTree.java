@@ -22,9 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.abstr.FieldInfo;
 import org.makumba.Pointer;
-import java.util.*;
+import org.makumba.abstr.FieldInfo;
 
 /** comparison operations have operands of the same type */
 public class ComparisonTree extends AnalysisTree

@@ -22,9 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
-import java.io.*;
-import org.makumba.*;
 
 /** this deals with SQL double precision numeric fields */
 public class realManager extends FieldManager

@@ -22,13 +22,25 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import org.makumba.db.*;
-import java.sql.*;
-import java.util.*;
-import java.lang.reflect.*;
-import org.makumba.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.DBError;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.NotUniqueError;
+import org.makumba.Pointer;
+import org.makumba.db.DBConnection;
+import org.makumba.db.DBConnectionWrapper;
+import org.makumba.db.Table;
 
 /** This is the SQL RecordHandler, corresponding to a SQL table. When building its field handlers, it uses the rules in org.makumba.db.sql/redirectManager.properties file:
 <pre>

@@ -23,17 +23,14 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
-
-import org.makumba.util.MultipleKey;
-
-import org.makumba.view.ComposedQuery;
-import org.makumba.view.html.RecordViewer;
-import org.makumba.controller.jsp.PageAttributes;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.IterationTag;
+
+import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
+import org.makumba.util.MultipleKey;
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.html.RecordViewer;
 
 /** Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the environment can be passed as $attrName to the query 
  * 

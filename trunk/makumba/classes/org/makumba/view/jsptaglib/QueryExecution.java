@@ -23,23 +23,19 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.Attributes;
-import org.makumba.LogicException;
-import org.makumba.Database;
-import org.makumba.MakumbaSystem;
-
-import org.makumba.view.Grouper;
-import org.makumba.view.ComposedQuery;
-import org.makumba.util.ArrayMap;
-import org.makumba.util.MultipleKey;
-import org.makumba.controller.jsp.PageAttributes;
-
 import java.util.Dictionary;
-import java.util.Vector;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
+
+import org.makumba.Database;
+import org.makumba.LogicException;
+import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.util.ArrayMap;
+import org.makumba.util.MultipleKey;
+import org.makumba.view.Grouper;
 
 
 /** This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at every parentIteration, and iterates through the iterationGroupData */

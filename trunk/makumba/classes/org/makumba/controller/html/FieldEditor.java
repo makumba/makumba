@@ -22,10 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+import java.util.Dictionary;
+
 import org.makumba.ProgrammerError;
-import org.makumba.view.*;
-import javax.servlet.*;
-import java.util.*;
+import org.makumba.view.InvalidValueException;
 
 public class FieldEditor extends org.makumba.view.FieldFormatter
 {

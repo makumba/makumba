@@ -22,11 +22,14 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import org.makumba.view.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.makumba.abstr.RecordInfo;
+import org.makumba.view.RecordFormatter;
 
 public class RecordEditor extends RecordFormatter
 {

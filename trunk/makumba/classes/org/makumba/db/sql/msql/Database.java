@@ -22,9 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.msql;
-import org.makumba.abstr.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /** The msql particularities of the database
  */

@@ -22,8 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
-import java.io.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /** the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the filter architecture */
 public class javaViewer extends LineViewer

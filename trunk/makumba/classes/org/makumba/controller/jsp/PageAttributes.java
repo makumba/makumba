@@ -22,12 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.controller.jsp;
-import org.makumba.*;
-import org.makumba.controller.http.*;
-import javax.servlet.jsp.*;
-import javax.servlet.http.*;
-import java.util.*;
-import org.makumba.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
+
+import org.makumba.AttributeNotFoundException;
+import org.makumba.Attributes;
+import org.makumba.LogicException;
+import org.makumba.controller.http.RequestAttributes;
 
 public class PageAttributes implements Attributes
 {

@@ -22,12 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.controller.jsp;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpUtils;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /** The Tag class used for <mak:login>. This class is a normal {@link javax.servlet.jsp.tagext.BodyTag} not a {@link org.makumba.view.jsptaglib.MakumbaTag }
 */

@@ -23,9 +23,7 @@
 
 package org.makumba.db.sql.oql;
 import org.makumba.db.Database;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import antlr.collections.AST;
+
 import antlr.CommonAST;
 
 public class OQLAST extends CommonAST

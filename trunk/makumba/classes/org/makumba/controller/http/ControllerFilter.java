@@ -22,13 +22,20 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.makumba.*;
 import java.net.URL;
-import java.util.Hashtable;
-import java.util.Date;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import org.makumba.MakumbaError;
+import org.makumba.UnauthorizedException;
 import org.makumba.util.DbConnectionProvider;
 
 /** The filter that controls each makumba HTTP access. Performs login, form response, exception handling. */

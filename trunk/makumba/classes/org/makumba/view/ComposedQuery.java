@@ -22,26 +22,20 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
 import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import org.makumba.util.ArgumentReplacer;
-import org.makumba.util.NamedResources;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.MultipleKey;
-
-import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
+import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.Attributes;
-
-import org.makumba.LogicException;
-import org.makumba.MakumbaError;
 import org.makumba.InvalidFieldTypeException;
+import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
+import org.makumba.OQLAnalyzer;
+import org.makumba.util.ArgumentReplacer;
 
 
 /** An OQL query composed from various elements found in script pages. 

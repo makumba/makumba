@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.abstr.*;
 import org.makumba.db.Database;
 
 public class ParamAST extends OQLAST

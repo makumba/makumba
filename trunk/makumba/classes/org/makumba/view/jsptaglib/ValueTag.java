@@ -22,17 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.MakumbaSystem;
-import org.makumba.LogicException;
-
-import org.makumba.util.MultipleKey;
-import org.makumba.controller.jsp.PageAttributes;
-import org.makumba.view.html.RecordViewer;
-import org.makumba.view.ComposedQuery;
-
 import javax.servlet.jsp.JspException;
 
-import java.util.Vector;
+import org.makumba.MakumbaSystem;
 
 public class ValueTag extends MakumbaTag
 {

@@ -22,12 +22,21 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
-import org.makumba.db.*;
-import org.makumba.abstr.*;
-import java.util.*;
-import java.sql.*;
-import org.makumba.db.sql.oql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.DBError;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.db.DBConnection;
+import org.makumba.db.DBConnectionWrapper;
+import org.makumba.db.Update;
 
 /** An SQL database, using JDBC.
  * This class should comply with SQL-92
