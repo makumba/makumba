@@ -28,10 +28,10 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import org.makumba.DBError;
+import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
-import org.makumba.abstr.RecordInfo;
 import org.makumba.db.DBConnection;
 import org.makumba.db.sql.oql.QueryAST;
 
@@ -50,7 +50,7 @@ public class Query implements org.makumba.db.Query
   {
     command= ((QueryAST)tree).writeInSQLQuery(db);
 
-    resultHandler= (RecordManager)db.makePseudoTable((RecordInfo)tree.getProjectionType());
+    resultHandler= (RecordManager)db.makePseudoTable((DataDefinition)tree.getProjectionType());
     assigner= new ParameterAssigner(db, tree);
   }
 
@@ -97,7 +97,7 @@ public class Query implements org.makumba.db.Query
 	  ret.addElement(new org.makumba.util.ArrayMap(rm.keyIndex, dt));
 	}
       rs.close();
-    }catch(SQLException e){ throw new org.makumba.DBError(e, rm.getRecordInfo().getName()); }
+    }catch(SQLException e){ throw new org.makumba.DBError(e, rm.getDataDefinition().getName()); }
     return ret;
   }
    

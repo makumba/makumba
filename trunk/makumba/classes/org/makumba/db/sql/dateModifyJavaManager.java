@@ -54,7 +54,7 @@ public class dateModifyJavaManager extends wrapperManager
   {
     Object o=d.get(getName());
     if(o!=null)
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "you cannot update a modification date");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "you cannot update a modification date");
   }
 
   public void setInsertArgument(PreparedStatement ps, int n, Dictionary d) throws SQLException

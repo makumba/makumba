@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.OQLAnalyzer;
-import org.makumba.abstr.RecordInfo;
 
 /** this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The order in the two is different, because OQL paramters are numbered. Also, strict type checking is performed for the parameters */
 public class ParameterAssigner 
@@ -41,7 +41,7 @@ public class ParameterAssigner
   {
     this.tree=tree;
     if(tree.parameterNumber()>0)
-      paramHandler=(RecordManager)db.makePseudoTable((RecordInfo)tree.getParameterTypes());
+      paramHandler=(RecordManager)db.makePseudoTable((DataDefinition)tree.getParameterTypes());
   }
   static final Object[] empty=new Object[0];
 

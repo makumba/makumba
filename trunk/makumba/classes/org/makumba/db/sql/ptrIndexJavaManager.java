@@ -40,7 +40,7 @@ public class ptrIndexJavaManager extends ptrDBManager
     n= rm.getSQLDatabase().getMinPointerValue();
   }
 
-  protected String getPtrType() { return getFieldInfo().getRecordInfo().getName(); }
+  protected String getPtrType() { return getFieldDefinition().getDataDefinition().getName(); }
 
   /** called at table open. determines the maximum index with this database's  dbsv */
   public void onStartup(RecordManager rm, java.util.Properties p, SQLDBConnection dbc) 
@@ -98,7 +98,7 @@ public class ptrIndexJavaManager extends ptrDBManager
   {
     Object o=d.get(getName());
     if(o!=null)
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "you cannot update an index pointer");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "you cannot update an index pointer");
   }
 
   public void setInsertArgument(PreparedStatement ps, int n, Dictionary d) 
