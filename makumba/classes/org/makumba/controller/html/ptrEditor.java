@@ -49,9 +49,6 @@ public class ptrEditor extends choiceEditor
   public Object getOptionValue(Object options, int i)
   { return ((Dictionary)((Vector)options).elementAt(i)).get("choice"); }
 
-  public String formatOptionValue(Object val)
-  { return ((Pointer)val).toExternalForm(); }
-  
   public String formatOptionValue(Object opts, int i, Object val)
   { return ((Pointer)val).toExternalForm(); }
   
@@ -59,7 +56,6 @@ public class ptrEditor extends choiceEditor
   { return ""+((Dictionary)((Vector)options).elementAt(i)).get("title"); }
 
   public String getMultiple() { return ""; }
-  public boolean isMultiple() { return false; }
 
   public int getDefaultSize() { return 1; }
 }

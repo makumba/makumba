@@ -26,31 +26,9 @@ import org.makumba.view.*;
 import javax.servlet.*;
 import java.util.*;
 
-public class charEnumEditor extends choiceEditor{
-
-  public Object getOptions(){return null; }
-
-  public int getOptionsLength(Object opts){ return getEnumeratorSize(); }
-
-  public Object getOptionValue(Object options, int i)
-  { return getStringAt(i); }
-
-  public String formatOptionValue(Object val)
-  { return val.toString(); }
-
-  public String formatOptionValue(Object opts, int i, Object val)
-  { return val.toString(); }
-  
-  public String formatOptionTitle(Object options, int i)
-  { return getNameAt(i); } 
-
-  public String getMultiple() { return ""; }
-  public boolean isMultiple() { return false; }
-
-  public int getDefaultSize() { return 1; }
-	
-	
-  public String formatShowHIDE(Object o, Dictionary formatParams)
+public class charEnumEditor extends FieldEditor
+{
+  public String formatShow(Object o, Dictionary formatParams)
   {
     // check if the value is to be replaced by 'default' or 'empty'.
     o = formatValue(o, formatParams) ;

@@ -146,15 +146,11 @@
 		Author="true"
 		additionalparam="-breakiterator"
 		doctitle="Makumba API Documentation"
-		stylesheetfile="doc/api/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
                 <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
                 </td></tr></TABLE>
-
-		<script language="JavaScript" src="../../../main.js"></script>
-		<script language="JavaScript">makeNavBar("../../../");</script>
             ]]></bottom>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
@@ -171,7 +167,6 @@
 		access="package"
 		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
-		stylesheetfile="doc/hacking/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -179,30 +174,34 @@
                 </td></tr></TABLE>
             ]]></bottom>
             <header><![CDATA[
-                <TABLE BORDER='0' CELLPADDING='3' CELLSPACING='3'>
-                <TD aCLASS='NavBarCell1' valign=top>
-		   <a href='http://www.makumba.org' target='_top'><img src='http://www.makumba.org/makumba-logo-small.gif' border=0></a>
+                <TABLE BORDER="0" CELLPADDING="3" CELLSPACING="3">
+                <TD aCLASS="NavBarCell1" valign=top>
+		   <a href="http://www.makumba.org" target='_top'><img src="http://www.makumba.org/makumba-logo-small.gif" border=0></a>
                 </TD><TR>
-                <TD VALIGN='top' CLASS='NavBarCell3'><FONT SIZE='-2'>
-                <script language='javascript'>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+                <script language="javascript">
                    url=document.location.href;
-                   clas=url.substring(url.indexOf('/javadoc/'));
+                   clas=url.substring(url.indexOf("/javadoc/"));
                    clas=clas.substring(9);
-                   clas=clas.substring(0, clas.indexOf('.html') );
-                   clasUrl='';
-                   if((clas.indexOf('org/makumba')==0||clas.indexOf('test/')==0) && clas.indexOf('package-use')<=0 && clas.indexOf('class-use')<=0)
+                   clas=clas.substring(0, clas.indexOf(".html") );
+                   //clas=clas.replace(new RegExp("/", "gi") ,".");
+                   //document.write(clas);
+                   //clasUrl=url.substring(0,url.indexOf("/javadoc/"));
+                   //clasUrl=clasUrl+"/classes/"+clas;
+                   clasUrl="";
+                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) )
 		   {
-                        cvsLink='';
-			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
+                        cvsLink="";
+			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
 			{
-				clasUrl=clasUrl.concat('',clas,'.java');
-				cvsLink=cvsLink.concat('<a href=http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/',clasUrl,'?content-type=text/plain>SOURCE</a> in ');
+				clasUrl=clasUrl.concat("",clas,".java");
+				cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/",clasUrl,"?content-type=text/plain'>SOURCE</a> in ");
 			} else {
-				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
+				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
 			}
-                        cvsLink=cvsLink.concat('<a href=http://cvs.makumba.org/classes/',clasUrl,'>CVS</a>');
+                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba/classes/",clasUrl,"'>CVS</a>");
 		   	document.write(cvsLink);
-		   } 
+		   } //else document.write('(no cvs)');
                 </script>
                 </font>
                 </td>
@@ -379,11 +378,6 @@
 package org.makumba]]></replacevalue>
 	  </replace>
 	</target>
-
-	<target name="fixcrlf" >
-	  <fixcrlf srcDir="." includes="**/*.jsp, **/*.mdd, **/*.idd, **/*.java, **/*.properties" />
-	</target>
-
 
 </project>
 

@@ -41,8 +41,6 @@ public class Database extends org.makumba.db.Database
   boolean addUnderscore= true; 
   Hashtable catalog= null;
   
-  static final int DESIRED_TRANSACTION_LEVEL= java.sql.Connection.TRANSACTION_REPEATABLE_READ;
-
   static Properties sqlDrivers;
 
   public String getEngine(){ return eng; }
@@ -129,9 +127,6 @@ public class Database extends org.makumba.db.Database
 	       "\n\tusing "+p.get("jdbc_driver.name") +" version: "
 	       +p.get("jdbc_driver.version")
 	       +"\n\tusing DBSV "+p.get("dbsv"));
-	if(!dbc.getMetaData().supportsTransactionIsolationLevel(DESIRED_TRANSACTION_LEVEL))
-	  MakumbaSystem.getMakumbaLogger("db.init").
-	    warning("transaction isolation level "+DESIRED_TRANSACTION_LEVEL+" not supported!");
 
 	readCatalog(dbc);
 	

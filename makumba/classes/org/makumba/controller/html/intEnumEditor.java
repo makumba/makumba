@@ -26,26 +26,9 @@ import org.makumba.view.*;
 import javax.servlet.*;
 import java.util.*;
 
-
-public class intEnumEditor extends charEnumEditor
+public class intEnumEditor extends intEditor
 {
-	
-  public Object getOptionValue(Object options, int i)
-  { return new Integer(getIntAt(i)); }
-
-  // copy/paste from intEditor.java
-  public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
-  { 
-    Object o=par.getParameter(getInputName(suffix));
-    
-    if(o instanceof java.util.Vector)
-      { throw new InvalidValueException(this, "multiple value not accepted for integer: "+o); }
-    return toInt(o);
-  }
-}
-
-/*	
-  public String formatShowHIDE(Object o, Dictionary formatParams)
+  public String formatShow(Object o, Dictionary formatParams)
   {
     // check if the value is to be replaced by 'default' or 'empty'.
     o = toInt( formatValue(o, formatParams) );
@@ -67,23 +50,4 @@ public class intEnumEditor extends charEnumEditor
     sb.append("</select>");
     return sb.toString();
   }
-  
-  public String formatShowHIDE2(Object o, Dictionary formatParams)
-  {
-    // check if the value is to be replaced by 'default' or 'empty'.
-    o = toInt( formatValue(o, formatParams) );
-
-    HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(formatParams));
-    hcw.setValues(new EnumerationWrapper( getValues() ));
-    hcw.setLabels(new EnumerationWrapper( getNames() ));
-    if (o != null) hcw.setSelectedValues(o.toString());
-    hcw.setLiteralHtml(getExtraFormatting(formatParams));
-    hcw.setMultiple(false);
-    hcw.setSize(1);
-    // FIXME: set convert2html to true!?
-   
-    return hcw.getSelectOne();  
-  }
-*/
-
-
+}
