@@ -24,6 +24,9 @@
 package org.makumba.controller.html;
 import org.makumba.controller.http.Responder;
 import org.makumba.controller.http.RequestAttributes;
+
+import org.makumba.FieldDefinition;
+
 import org.makumba.abstr.RecordInfo;
 import org.makumba.abstr.FieldInfo;
 
@@ -52,7 +55,7 @@ public class FormResponder extends Responder
   Hashtable fieldNames= new Hashtable();
   
   /** Format a field using the editor, and grow the editor as needed */
-  public String format(String fname, Object ftype, Object fval, Dictionary formatParams)
+  public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams)
   {
     FieldEditor.setSuffix(formatParams, suffix);
     Integer i=(Integer)indexes.get(fname);
