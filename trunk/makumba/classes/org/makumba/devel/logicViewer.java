@@ -36,11 +36,12 @@ public class logicViewer extends LineViewer
     contextPath=req.getContextPath();
     Logic.getLogic(virtualPath);
     reader=new StringReader(Logic.getSearchMessage(virtualPath));
+    title="Logic for "+virtualPath;
   }
 
-  void intro(PrintWriter w)
-  {
-    w.print("<td>Logic for "+virtualPath+"</td>");
-  }
+ void intro(PrintWriter w)
+ {
+   w.print("<td><a href=\""+virtualPath+"x\">page</a></td>");
+ }
 
 }
