@@ -27,11 +27,12 @@ import java.sql.*;
 /** deals with SQL ints */
 public class intManager extends FieldManager
 {
-  /** returns int */
+  /** Use standard SQL name, unless defined otherwise in sqlEngines.properties. */
   protected String getDBType()
   {
-    return "INT";
+      return "INTEGER"; //standard name
   }
+
 
   protected int getSQLType()
   {
