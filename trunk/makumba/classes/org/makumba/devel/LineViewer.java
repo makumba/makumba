@@ -77,7 +77,7 @@ public class LineViewer implements SourceViewer
 	if(lineNumbers)
 	  {
 	    int n= lr.getLineNumber();
-	    w.print("<a name=\""+n+"\"><font color=\"darkblue\">"+n+":\t</font>");
+	    w.print("<a name=\""+n+"\"><font color=\"darkblue\">"+n+":\t</font></a>");
 	  }
 	printLine(w, s);
       }
