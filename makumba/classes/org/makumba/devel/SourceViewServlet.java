@@ -63,19 +63,18 @@ public class SourceViewServlet extends HttpServlet
 	res.sendError(404, e.toString()); 
 	return; 
       }
-    if(sw!=null)
+    if(sw!=null)  //we have a known handler
       {
 	File dir= sw.getDirectory();
 	if(dir==null)
 	  {
 	    res.setContentType("text/html");
-	    w.println("<pre>");
 	    
 	    try{
 	      sw.parseText(w);
 	    }catch(Exception e){e.printStackTrace(); }
 	  }
-	else
+	else //try to handle anyway
 	  {
 	    if(req.getPathInfo()==null)
 	      {
@@ -89,15 +88,21 @@ public class SourceViewServlet extends HttpServlet
 		res.sendRedirect(servletPath+req.getPathInfo()+"/");
 		return; 
 	      }
+
+	    // make a directory listing
 	    res.setContentType("text/html");
-	    w.println("<pre>");
+	    w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+	    w.println("<html><head><title>"+dir.getName()+"</title>");
+	    w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
+	    w.println("</head>\n<body><pre>");
 	    String[] list= dir.list();
 	    
+	    w.println("<b><a href=\"../\">../</a></b> (up one level)");
 	    for(int i=0; i<list.length; i++)
 	      {
 		String s= list[i];
 		if(s.indexOf(".")==-1 && !s.equals("CVS"))
-		  w.println("<b><a href=\""+s+"/\">"+s+"</a></b>");
+		  w.println("<b><a href=\""+s+"/\">"+s+"/</a></b>");
 	      }
 
 	    for(int i=0; i<list.length; i++)
@@ -115,8 +120,8 @@ public class SourceViewServlet extends HttpServlet
 		    w.println("<a href=\""+addr+"\">"+s+"</a>");
 		  }
 	      }
+	    w.println("</pre></body></html>");
 	  }
-	w.println("</pre></body></html>");
       }
     else
       w.println("unknown source type: "+servletPath);
