@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.util.*;
@@ -6,6 +29,7 @@ import org.makumba.view.html.RecordViewer;
 import org.makumba.controller.jsp.PageAttributes;
 
 import javax.servlet.jsp.*;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.*;
 import java.util.*;
 import java.io.*;
@@ -242,7 +266,7 @@ implements Observer, QueryTagStrategy
    * We need to check if we have it in a query projection, if we do, we print the result, 
    * else the query has to be changed and the iteration will restart at the next doAfterBody()
    */
-  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException 
+  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException, NewProjectionException
   {
     int n= knewProjectionAtStart(expr);
     if(n!=-1 && startedWithData)
@@ -253,12 +277,31 @@ implements Observer, QueryTagStrategy
 	    pageContext.getOut().print(s);
 	}catch(IOException e){ throw new JspException(e.toString()); }
       }
-    else if(var!=null)
+    else
       {
-	pageContext.setAttribute(var, PleaseCheckTypeBeforeCasting.singleton); 
-	pageContext.setAttribute(var+"_type", "unknown yet");
+	if(var!=null || printVar!=null)
+	    reloadSelf(var, printVar);
       }
   }
+
+    void reloadSelf(String var, String printVar)
+    {
+	String s=((HttpServletRequest)pageContext.getRequest()).getRequestURI();
+	s=s.substring(((HttpServletRequest)pageContext.getRequest()).getContextPath().length());
+	String vname=( var==null?printVar:var);
+	
+	System.out.println("could not determine \'"+vname+"\' -> reloading "+s);	    
+	try{
+	    pageContext.forward(s);
+
+	    // the self-forward was succesful 
+	    // we now give up this request. this will be caught by the 
+	    // controller filter, and ignored
+	    throw new NewProjectionException(vname, s);
+	}
+	catch(javax.servlet.ServletException se){ se.printStackTrace(); }
+	catch(IOException ioe){ ioe.printStackTrace(); }
+    }
   
   public String formatProjection(int n, Dictionary formatParams, String var, String printVar)
   {
@@ -276,10 +319,7 @@ implements Observer, QueryTagStrategy
 	    PageAttributes.setAttribute(pageContext, var, o);
 	  }
 	else
-	  {
-	    pageContext.setAttribute(var+"_type", "unknown yet");
-	    pageContext.setAttribute(var, PleaseCheckTypeBeforeCasting.singleton); 
-	  }
+	    reloadSelf(var, printVar);
       }
     if(printVar!=null)
       {
@@ -491,17 +531,5 @@ implements Observer, QueryTagStrategy
   }
   
   public String getType() {return "LIST"; }
-}
-
-
-class PleaseCheckTypeBeforeCasting
-{
-  static final public PleaseCheckTypeBeforeCasting singleton= new PleaseCheckTypeBeforeCasting();
-  private PleaseCheckTypeBeforeCasting(){}
-  public String toString() { return "At the begining of the Makumba page execution, \nJava variables created with \'var=\"...\"' will not be of the type you expect\n. So before using (T)var you should always check if(var instanceof T) \nwhere T is the type you expect. \nNote that Makumba labels generally have the type org.makumba.Pointer.\n"; }
-
-  //  public boolean equals(Object o){ return false;
-    // throw new org.makumba.ProgrammerError("At the begining of the Makumba page execution, \nJava variables created with \'var=\"...\"' will not be of the type you expect. \nSo, before checking var1.equals(var2) you should check \nif(var1 instanceof T && var2 instanceof T && var1.equals(var2), \nwhere T is the type you expect. \nNote that Makumba labels generally have the type org.makumba.Pointer.\n"); 
-  //}
 }
 
