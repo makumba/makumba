@@ -68,6 +68,9 @@
 		/>
        		<fileset dir="doc/api/org" />
        		<fileset dir="doc/hacking/javadoc" />
+       		<fileset dir="META-INF"/>
+       		<fileset dir="lib"/>
+       		<fileset dir="." includes="manifest-replace.properties,manifest.mf"/>
        </delete>
        </target>
 
