@@ -56,8 +56,7 @@
        <target name="clean"
 	description="delete all generated files and backups"
 	>
-	<mkdir dir="doc/api/org" />
-       <delete includeEmptyDirs="true">
+       <delete includeEmptyDirs="true" failonerror="false">
        		<fileset dir="classes" 
 		includes="**/*.class,**/*.*~,org/makumba/db/sql/oql/OQLParser.java"
 		defaultExcludes="no"	
@@ -68,6 +67,7 @@
 		defaultExcludes="no"	
 		/>
        		<fileset dir="doc/api/org" />
+       		<fileset dir="doc/hacking/javadoc" />
        </delete>
        </target>
 
@@ -134,6 +134,20 @@
 		doctitle="Documentation of Makumba classes"
 	>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+	</javadoc> 
+
+	<javadoc 
+		destdir="doc/hacking/javadoc" 
+		sourcepath="classes" 	
+		packagenames="*"
+		windowtitle="Makumba [hacking docs]"
+		classpathref="project.class.path"
+		Version="true"
+		Author="true"
+		doctitle="Documentation of Makumba classes for Makumba develpers"
+	>
+	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+	    <link href="http://java.sun.com/products/servlet/2.3/javadoc/"/>
 	</javadoc> 
 
 	</target>
