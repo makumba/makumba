@@ -95,7 +95,7 @@ public class mdd extends TestCase
 		}
 	}
 	if(errors.size()>0)
-		fail(errors.toString()); 
+		fail("\n  Tested "+mdds.size()+" valid MDDs, but found "+errors.size()+" problems: "+errors.toString()); 
   }
 
 
@@ -120,10 +120,10 @@ public class mdd extends TestCase
 
 		if(expected==actual) errors.add("\n ."+(errors.size()+1)+") Error report missing from broken MDD <"+mdd+"> ");
 		if(!expected.getClass().equals(actual.getClass()))
-			errors.add(mdd+" threw <"+actual.getClass()+"> instead of expected <"+expected.getClass()+">");
+			errors.add("\n ."+(errors.size()+1)+") MDD "+mdd+" threw <"+actual.getClass()+"> instead of expected <"+expected.getClass()+">");
 	}
 	if(errors.size()>0)
-		fail(errors.toString()); 
+		fail("\n  Tested "+mdds.size()+" broken MDDs, but "+errors.size()+" reported wrong/no error: "+errors.toString()); 
   }
 
 
