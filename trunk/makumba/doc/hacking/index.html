@@ -24,16 +24,17 @@ No need to read all that javadoc. Makumba makes use mostly of the<b> java.lang
  href="http://java.sun.com/products/jdbc">JDBC</a>), <b>javax.servlet</b> 
 (<a href="http://java.sun.com/products/servlet">Java Servlet </a>API, its 
 javadoc can be found e.g. <a
- href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/index.html">here</a>),&nbsp; 
+ href="http://java.sun.com/products/servlet/2.3/javadoc/">here</a>),&nbsp; 
 <b>javax.servlet.jsp </b>(<a href="http://java.sun.com/products/jsp">Java 
 Server Pages</a> API, javadoc together with servlet) and <b>java.text</b> 
 packages.<br>
  <br>
- Major makumba components<br>
+<h2>Major makumba components</h2>
+(with links to <a href="javadoc">generated javadocs</a>)<br>
  
 <ul>
    <li>The <b>build environment </b>is an <a
- href="http://jakarta.apache.org/ant">Ant</a> script. One single file (<b>build.xml)</b> 
+ href="http://ant.apache.org">Ant</a> script. One single file (<b>build.xml)</b> 
 but still has <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=building-environment&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">problems</a> 
 :). Execute <b>ant -projecthelp</b> to see what it can do</li>
@@ -42,30 +43,32 @@ to ordinary makumba programmers. Lots of stuff will happen in other parts
 of makumba, while <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=API&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">little</a> 
 should change here. Few classes actually do things in this package, among 
-them <b>MakumbaSystem. </b>Rest are just interfaces, that is,&nbsp; facades 
+them <b><a href="../api/org/makumba/MakumbaSystem.html">MakumbaSystem</a>. </b>Rest are just interfaces, that is,&nbsp; facades 
 to the rest of the library, exceptions, etc. As a rule, makumba parts described 
 below should use the API to communicate between them, not use classes from 
 the other packages directly. <br>
    </li>
    <li>Handler families. Makumba has all sorts of handlers that achieve different 
 goals (from managing SQL tables to generating HTML content) and need to treat 
-each field type (int, char, date, text, etc) differently. See a <a
- href="handler_families.txt">chat</a> about this. Handler families derive 
-from <b>org.makumba.abstr.RecordHandler </b>and <b>org.makumba.abstr.FieldHandler</b>. 
+each field type (int, char, date, text, etc) differently. See a
+ <a href="handler_families.txt">chat</a> about this. Handler families derive 
+from <b><a href="javadoc/org/makumba/abstr/RecordHandler.html">org.makumba.abstr.RecordHandler</a></b> 
+and <b><a href="javadoc/org/makumba/abstr/FieldHandler.html">org.makumba.abstr.FieldHandler</a></b>. 
 See org.makumba.abstr.printer.RecordPrinter for an example. Handler families 
-can be referred by their package name and their suffix, e.g. <b>org.makumba.abstr.printer.*Printer</b>, 
+can be referred by their package name and their suffix, e.g. <b><a 
+href="javadoc/org/makumba/abstr/package-summary.html">org.makumba.abstr.printer.*Printer</a></b>, 
 where * stands for {Record, Field, int, intEnum, char, date, text,....},. 
 Handler families can be regarded as more complicated classes (a handler family 
 X inherits from another one Y if it's RecordX extends RecordY). Maybe it would
 be good for future makumba developers to actually <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=111">transform them into classes</a> 
 since browsing around families of classes can be difficult at first.</li>
-   <li>The MDD parser, is the<b> org.makumba.abstr.*Parser</b> handler family. 
+   <li>The MDD parser, is the <b><a href="javadoc/org/makumba/abstr/package-summary.html">org.makumba.abstr.*Parser</a></b> handler family. 
 Very rudimentary, an <a href="http://www.antlr.org/">ANTLR</a>-based parser 
 (like the OQL one) could be used. See <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=Model-MDD&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">other 
 things to do</a> about it</li>
-   <li>The OQL parser, <b>org.makumba.db.sql.oql</b>,  <a
+   <li>The OQL parser, <b><a href="javadoc/org/makumba/db/sql/oql/package-summary.html">org.makumba.db.sql.oql</b>,  <a
  href="http://www.antlr.org/">ANTLR</a>-based. The grammar is in the file 
     <b>oql-translator.g</b>. There is <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=OQL&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">quite 
@@ -79,29 +82,33 @@ to do</a>). To hack on this package, you will probably need to know how <a
 test it by executing <b>ant test</b></li>
    
   <ul>
-     <li><b>org.makumba.db.sql.Database </b>contains DB configuration code 
+     <li><b><a href="javadoc/org/makumba/db/sql/Database.html">org.makumba.db.sql.Database</a></b> contains DB configuration code 
 (reading from MakumbaDatabase properties, localhost_mysql_dbname.properties 
 etc)<br>
      </li>
-     <li><b>org.makumba.db.sql.*Manager</b> is the handler family described 
+     <li><b><a href="javadoc/org/makumba/db/sql/package-summary.html">org.makumba.db.sql.*Manager</a></b> is the handler family described 
 in the <a href="/handler_families.txt">chat</a> , dealing with SQL table
 management: see if the table in the DB is conform to the MDD and if not create
 or alter it, do inserts, deletes, updates, etc.</li>
-     <li>all table operations are done through <b>org.makumba.db.sql.SQLDBConnection</b><br>
+     <li>all table operations are done through <b><a 
+href="javadoc/org/makumba/db/sql/SQLDBConnection.html">org.makumba.db.sql.SQLDBConnection</b><br>
      </li>
    
   </ul>
    
   <ul>
      <li>Besides the handler family, the package contains <b>sqlEngines.properties</b>, 
-with stuff specific for each sql driver, and subpackages such as <b>odbcject, 
-pgsql, firstsql</b>, etc, containing SQL stuff specific to each of these SQL
+with stuff specific for each sql driver, and subpackages such as <b><a href="javadoc/org/makumba/db/sql/odbcjet/package-summary.html">odbcjet</a>, 
+<a href="javadoc/org/makumba/db/sql/pgsql/package-summary.html">pgsql</a>, 
+<a href="javadoc/org/makumba/db/sql/firstsql/package-summary.html">firstsql</a></b>, 
+etc, containing SQL stuff specific to each of these SQL
 engines. A SQL-92 standard SQL engine (like <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=DB-driver-MySQL&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">mysql</a>) 
 will not need a separate package, maybe just additions to sqlEngines.properties. 
 &nbsp;There is a description of <a href="../SQL-drivers.html#new">how to build
 makumba drivers for other SQL engines</a></li>
-     <li><b>org.makumba.db.sql.Query</b> is the query caller. Users <b>org.makumba.db.sql.ParameterAssigner</b> 
+     <li><b><a href="javadoc/org/makumba/db/sql/Query.html">org.makumba.db.sql.Query</a></b> is the query caller. Users 
+<b><a href="javadoc/org/makumba/db/sql/ParameterAssigner.html">org.makumba.db.sql.ParameterAssigner</a></b> 
 &nbsp;to transform parameters from OQL <b>$x</b> to SQL <b>? </b>in the right 
 order, and to set them to the JDBC <a
  href="http://java.sun.com/j2se/1.4.1/docs/api/java/sql/PreparedStatement.html">PreparedStatement</a>. 
@@ -109,24 +116,29 @@ To transform parameter data from Makumba to SQL, the<b> *Manager</b> handler
 family is used (as that one does it anyway for things like inserts and updates). 
 To transform the query results from SQL to Makumba format, also the <b>*Manager 
       </b>family is used by <b>Query.&nbsp;</b></li>
-     <li><b>org.makumba.db.sql.SQLUpdate</b> does similar stuff with Query 
+     <li><b><a href="javadoc/org/makumba/db/sql/SQLUpdate.html">org.makumba.db.sql.SQLUpdate</a></b> does similar stuff with Query 
 to send UPDATE ... WHERE and DELETE ... WHERE to the database (uses <b>ParameterAssigner</b> 
 to set PreparedStatement parameters, etc).</li>
    
   </ul>
-   <li><b>org.makumba.db </b>contains some abstract stuff about databases, 
+   <li><b><a href="javadoc/org/makumba/db/package-summary.html">org.makumba.db</a></b>contains some abstract stuff about databases, 
 mostly SQL-independent. It should probably be <a
- href="http://bugs.best.eu.org/show_bug.cgi?id=169">joined</a> with <b>org.makumba.db.sql</b>. 
+ href="http://bugs.best.eu.org/show_bug.cgi?id=169">joined</a> with <b><a 
+href="javadoc/org/makumba/db/sql/package-summary.html">org.makumba.db.sql</a></b>. 
 &nbsp;The <b>org.makumba.db.*Handler</b> handler family is the parent of 
    <b>org.makumba.db.sql.*Manager</b>. <b>org.makumba.db.Database </b>represents 
 a generic database, <b>org.makumba.db.Table </b>represents a generic table. 
-    <b>org.makumba.db.DBConnection</b> represents a connection to the database, 
+    <b><a href="javadoc/org/makumba/db/DBConnection.html">org.makumba.db.DBConnection</a></b> represents 
+a connection to the database, 
 and implements functionalty exported by <a
  href="../api/org/makumba/Database.html">org.makumba.Database</a><b> </b>, 
-    <b>org.makumba.db.DBConnectionWrapper </b>&nbsp;is an DBConnection that 
+    <b><a href="javadoc/org/makumba/db/DBConnectionWrapper.html">org.makumba.db.DBConnectionWrapper</a></b>
+is an DBConnection that 
 can be given to other classes without risking that those apps will destroy 
 makumba internal structure</li>
-   <li><b>org.makumba.view.jsptaglib</b> is the JSP tag library. To see which 
+   <li><b><a href="javadoc/org/makumba/view/jsptaglib/package-summary.html">org.makumba.view.jsptaglib</a></b> 
+is the JSP tag library. To see 
+which 
     <b>mak:</b> tag is implemented by which class, look in <b>servlet-context/makumba.tld</b>. 
 Tag libraries are specified in the <a
  href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/index.html">JSP 
@@ -134,7 +146,7 @@ Tag libraries are specified in the <a
    
   <ul>
      <li>There are plans to completely re-write this package (currently a 
-modest begininig is in <b>org.makumba.view.jsptaglib2</b>) mostly because 
+modest begininig is in <b><a href="javadoc/org/makumba/view/jsptaglib2/package-summary.html">org.makumba.view.jsptaglib2</a></b>) mostly because 
 the "training loops" needed for&nbsp; <b>mak:list</b> tags to learn about 
 their internal <b>mak:value</b> and <b>mak:list</b> tags are cool, but have 
       <a href="http://bugs.best.eu.org/show_bug.cgi?id=5">problems</a> and 
@@ -146,7 +158,9 @@ to extend</a>.&nbsp;</li>
    
   <ul>
      <li>since the JSP specification does not take care of caching, &nbsp;every 
-      <b>MakumbaTag</b> has a <b>TagStrategy</b>. Whenever a new makumba tag
+      <b><a href="javadoc/org/makumba/view/jsptaglib/MakumbaTag.html">MakumbaTag</a></b> has a 
+<b><a href="javadoc/org/makumba/view/jsptaglib/TagStrategy.html">TagStrategy</a></b>. 
+Whenever a new makumba tag
 is constructed by Tomcat, it looks if a strategy was already cached for it,
 then &nbsp;asks the strategy to perform each of the operations. In the future,
 this may not be needed as modern servlet contexts re-use tag objects that
@@ -155,21 +169,27 @@ have completed their job instead of destroying them</li>
 tags (not contained in any other mak:list or mak:object) have <b>RootQueryStrategy</b> 
 as strategy. Other mak:list tags use <b>QueryStrategy</b><br>
      </li>
-     <li>the <b>org.makumba.view.jsptaglib.*Viewer</b> handler family takes 
+     <li>the <b><a 
+href="javadoc/org/makumba/view/jsptaglib/package-summary.html">org.makumba.view.jsptaglib.*Viewer</a></b> 
+handler family takes 
 care of displaying different sorts of data in HTML</li>
-     <li>makumba forms all inherit from <b>org.makumba.view.jsptaglib.FormTagBase</b>. 
+     <li>makumba forms all inherit from <b><a 
+href="javadoc/org/makumba/view/jsptaglib/FormTagBase.html">org.makumba.view.jsptaglib.FormTagBase</a></b>. 
       <br>
      </li>
    
   </ul>
-   <li><b>org.makumba.view </b>implements some generic stuff needed for the 
+   <li><b><a href="javadoc/org/makumba/view/package-summary.html">org.makumba.view</a></b>implements some 
+generic stuff needed for the 
 taglib.&nbsp;</li>
    
   <ul>
-     <li><b>ComposedQuery </b>makes up queries from the from=, where= used 
+     <li><b><a href="javadoc/org/makumba/view/ComposedQuery.html">ComposedQuery </b>makes up queries from the from=, 
+where= used 
 in JSP tags. It also knows how to make up bigger queries when a mak:list is
 embedded in another mak:list</li>
-    <li><b>org.makumba.view.Grouper</b> does the equivalent of a SQL "left
+    <li><b><a href="javadoc/org/makumba/view/Grouper.html">org.makumba.view.Grouper</a></b> does the 
+equivalent of a SQL "left
 join". It's fast enough, but <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=56">problematic</a><br>
     </li>
@@ -206,32 +226,39 @@ and asking <b>org.makumba.abstr.Logic </b>to invoke business logic. See <a
 to do</a></li>
      
     <ul>
-       <li>Each type of form (<b>org.makumba.abstr.view.jsptaglib.NewTag</b>, 
-        <b>EditTag</b>) defines a <b>org.makumba.view.jsptaglib.FormResponder</b> 
+       <li>Each type of form (<b><a 
+href="javadoc/org/makumba/view/jsptaglib/NewTag.html">org.makumba.abstr.view.jsptaglib.NewTag</a></b>, 
+        <b><a href="javadoc/org/makumba/view/jsptaglib/EditTag.html">EditTag</a></b>) defines a <b><a 
+href="javadoc/org/makumba/view/jsptaglib/FormResponder.html">org.makumba.view.jsptaglib.FormResponder</a></b> 
 &nbsp;that knows which business logic to invoke</li>
        <li><b>org.makumba.view.jsptaglib.*Editor </b>knows how to format
 HTML &lt;input&gt;s and &lt;select&gt;s for each type of Makumba data, and
 how to read their data from HTTP query strings in form responses</li>
-       <li><b>org.makumba.view.jsptaglib.MultpartHttpParameters </b>reads 
-Http parameters from file upload forms<br>
+       <li><b><a 
+href="javadoc/org/makumba/view/jsptaglib/MultipartHttpParameters.html">org.makumba.view.jsptaglib.MultipartHttpParameters</a></b> 
+reads Http parameters from file upload forms<br>
        </li>
      
     </ul>
    
   </ul>
-   <li><b>org.makumba.util </b>contains generic makumba implementation stuff,
+   <li><b><a href="javadoc/org/makumba/util/package-summary.html">org.makumba.util</a></b> contains generic 
+makumba implementation stuff,
 such as</li>
    
   <ul>
      <li>&nbsp;caches: <b>NamedResources </b>&nbsp;and<a
  href="http://bugs.best.eu.org/show_bug.cgi?id=188"> lately</a> <b>SoftNamedResources&nbsp;</b></li>
      <li><b>LargeData </b>can keep large data in little memory by swapping 
-it to disk (used by large <b>org.makumba.Text</b> as well as mak:lists that 
-produce large output (in <b>org.makumba.view.jsptaglib.RootQueryStrategy</b>). 
+it to disk (used by large <b><a href="javadoc/org/makumba/Text.html">org.makumba.Text</a></b> 
+as well as mak:lists that 
+produce large output (in <b><a 
+href="javadoc/org/makumba/view/jsptaglib/RootQueryStrategy.html">org.makumba.view.jsptaglib.RootQueryStrategy</a></b>). 
       <a href="http://bugs.best.eu.org/show_bug.cgi?id=103">Should</a> also 
 be used by MultipartHttpParameters <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=19">and</a> the SQL table manager</li>
-    <li><b>MultipleKey</b> provides vectorial keys for caches, used by <b>org.makumba.view.Grouper</b></li>
+    <li><b>MultipleKey</b> provides vectorial keys for caches, used by <b><a 
+href="javadoc/org/makumba/view/Grouper.html">org.makumba.view.Grouper</b></li>
     <li><b>ResourcePool </b>keeps a pool of identical resources. Used for
       <b>org.makumba.db.DBConenction</b>s</li>
     <li><b>WrappedException</b> and <b>RuntimeWrappedException </b>are used
@@ -240,7 +267,8 @@ to transform exception types.<br>
     </li>
    
   </ul>
-   <li><b>org.makumba.devel </b>is the makumba developer support, such as 
+   <li><b><a href="javadoc/org/makumba/devel/package-summary.html">org.makumba.devel</a></b> is the makumba 
+developer support, such as 
 MDD, JSP and Java viewers. There are things to <a
  href="http://bugs.best.eu.org/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Makumba&amp;component=developer-support&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=">improve</a> 
 there.</li>
