@@ -39,10 +39,10 @@ class version {
 	if(version.length()>2) version=version.replace('_','.');
 	else 
 	{
-		//SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
- 		//version="devel-"+df.format(getBuildDate());
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+ 		version="devel-"+df.format(getBuildDate());
  		//version="devel-"+getBuildDate();
-		version="development";
+		//version="development";
 	}
 	return version;
    }
@@ -55,29 +55,13 @@ class version {
 	String filename = "org/makumba/versionBuildDate.properties";            
 	Date buildDate=null;
 
-	FileInputStream fStream = null; 
-	try { 
-	    fStream = new FileInputStream(filename); 
-	} catch(FileNotFoundException fnfe) {
-	  try{
-	    fStream = new FileInputStream("classes/"+filename); 
-	  } catch (Exception e) {}
-	}
 	try{
-	    prop.load(fStream); 
+	    prop.load(org.makumba.util.ClassResource.get(filename).openStream());
 	    buildDate=df.parse(prop.getProperty("buildDate"),new java.text.ParsePosition(0));
 	} catch (Exception e) { 
 	  //some error handling here 
 	  System.out.println(e);
-	} finally { 
-	    if (fStream != null) { 
-	        try { 
-	            fStream.close(); 
-	        } catch (IOException e) { 
-	            //some error handling here            
-	        } 
-	    } 
-	}
+	} 
 	return buildDate;
    }
 
