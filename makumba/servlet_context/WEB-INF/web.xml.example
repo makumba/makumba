@@ -1,55 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/j2ee/dtds/web-app_2.3.dtd">
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	      version="2.4">
 
-<!-- NOTE for co-developers: 
- 1) To put changes into action you have to uninstall, then install the webapp again 
-    (A simple webapp reload is NOT reloading web.xml)
- 2) Order of xml elements within this file matters and should be:
-    The content of element type "web-app" must match: "(icon?,display-name?,description?,distributable?,context-param*,servlet*,servlet-mapping*,session-config?,mime-mapping*,welcome-file-list?,error-page*,taglib*,resource-ref*,security-constraint*,login-config?,security-role*,env-entry*,ejb-ref*)".
-
- => see http://java.sun.com/dtd/web-app_2_3.dtd
--->
-
-<web-app>
-
-<!-- disable for older makumba versions (prior to 0.5.7.x), also filter mapping below: -->
   <filter>
      <filter-name>makumba_controller</filter-name>
      <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
   </filter>
 
-<!-- disable for older makumba versions -->
   <filter-mapping>
     <filter-name>makumba_controller</filter-name>
     <url-pattern>*.jsp</url-pattern>
   </filter-mapping>
 
-
-<!-- this is needed for makumba to correctly clean up its caches at webapp reload -->
-   <listener >
-	<listener-class>org.makumba.util.NamedResourcesContextListener</listener-class>
-   </listener>
-
-    <servlet>
-        <servlet-name>
-            mddLinker
-        </servlet-name>
-        <servlet-class>
-	    org.makumba.devel.SourceViewServlet
-        </servlet-class>
-    </servlet>
-
+  <servlet>
+     <servlet-name>mddLinker</servlet-name>
+     <servlet-class>org.makumba.devel.SourceViewServlet</servlet-class>
+  </servlet>
 
     <servlet-mapping>
 	<servlet-name>mddLinker</servlet-name>
 	<url-pattern>*.jspx</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-	<servlet-name>mddLinker</servlet-name>
-	<url-pattern>*.jsps</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
 	<servlet-name>mddLinker</servlet-name>
@@ -67,14 +40,4 @@
 	<servlet-name>mddLinker</servlet-name>
 	<url-pattern>/logic/*</url-pattern>
     </servlet-mapping>
-
-    <taglib>
-        <taglib-uri>
-	   http://www.makumba.org/presentation
-        </taglib-uri>
-        <taglib-location>
-           /WEB-INF/lib/makumba.jar
-        </taglib-location>
-    </taglib>
-
 </web-app>
