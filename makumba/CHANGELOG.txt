@@ -2,6 +2,9 @@
 <!-- ============ THESE CHANGES ARE NOT YET PART OF A STABLE RELEASE ============= -->
 
 --------------------------------------
+18 feb 2005 cristi
+fixed bug 63, allowing for semiconstants in where, orderBy, groupBy, and variableFrom. Eliminated AttributeParametrizer heuristix.
+
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
