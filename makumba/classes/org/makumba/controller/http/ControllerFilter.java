@@ -29,6 +29,8 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Date;
 
+import org.makumba.util.DbConnectionProvider;
+
 /** The filter that controls each makumba HTTP access. Performs login, form response, exception handling. */
 public class ControllerFilter implements Filter
 {
@@ -43,24 +45,32 @@ public class ControllerFilter implements Filter
         throws ServletException, java.io.IOException
   {
     boolean filter= shouldFilter((HttpServletRequest)req);
-      if(filter){
+    DbConnectionProvider prov= new DbConnectionProvider();
+
+    req.setAttribute(org.makumba.controller.Logic.PROVIDER_ATTRIBUTE, prov);
+
+    if(filter){
 	try{
-	  RequestAttributes.getAttributes((HttpServletRequest)req);
-	}
-	catch(Throwable e)
-	  { 
-	    treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
-	    return; 
+	  try{
+	    RequestAttributes.getAttributes((HttpServletRequest)req);
 	  }
+	  catch(Throwable e)
+	    { 
+	      treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
+	      return; 
+	    }
 	
-	Responder.response((HttpServletRequest)req, (HttpServletResponse)resp);
-	if(wasException((HttpServletRequest)req))
-	  return;
+	  Responder.response((HttpServletRequest)req, (HttpServletResponse)resp);
+	  if(wasException((HttpServletRequest)req))
+	    return;
+	}finally{ prov.close(); } // commit everything after response
       }
+
       try{
 	  chain.doFilter(req, resp);
       }catch(AllowedException e)
 	  { }
+      finally{ prov.close(); }
   }
 
   /** decide if we filter or not */
