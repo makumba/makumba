@@ -7,6 +7,7 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
  - add your changes -
+cristi; 24 may 2004: fixed bug 430, real type
 cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
 cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
 cristi; 1 apr 2004: db= can be a <%= jsp runtime expression %>
