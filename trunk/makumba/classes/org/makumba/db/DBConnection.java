@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.InvalidValueException;
@@ -37,8 +38,6 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.abstr.FieldHandler;
-import org.makumba.abstr.FieldInfo;
-import org.makumba.abstr.RecordInfo;
 
 public abstract class DBConnection implements org.makumba.Database
 {
@@ -102,55 +101,63 @@ public abstract class DBConnection implements org.makumba.Database
 
   public Dictionary read(Pointer p, Object flds)
   {
-    Enumeration e=null;
-    if(flds==null)
-      {
-	RecordInfo ri= RecordInfo.getRecordInfo(p.getType());
-	Vector v= new Vector();
-	for(Enumeration f=ri.getFieldNames().elements(); f.hasMoreElements(); )
-	  {
-	    String s=(String)f.nextElement();
-	    if(ri.getKeyIndex().get(s)!=null)
-	      v.addElement(s);
-	  }
-	e=v.elements();
-      }
-    else if (flds instanceof Vector)
-      e=((Vector)flds).elements();
-    else if (flds instanceof Enumeration)
-      e=(Enumeration)flds;
-    else if( flds instanceof String[])
-      {
-	Vector v=new Vector();
-	String [] fl=(String[])flds;
-	for(int i=0; i<fl.length; i++)
-	  v.addElement(fl[i]);
-	e=v.elements();
-      }
-    else throw new InvalidValueException("read() argument must be Enumeration, Vector, String[] or null");
-    StringBuffer sb= new StringBuffer();
-    sb.append("SELECT ");
-    String separator="";
-    while(e.hasMoreElements())
-      {
-	String s=RecordInfo.getRecordInfo(p.getType()).checkFieldName(e.nextElement());
-	sb.append(separator).append("p.").append(s).append(" as ").append(s);
-	separator=",";
-      }
-    sb.append(" FROM "+p.getType()+" p WHERE p=$1");
-    Object [] params= {p};
-    Vector v= executeQuery(sb.toString(), params);
-    if(v.size()==0)
-      return null;
-    if(v.size()>1)
-      throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: "+p);
-    Dictionary d= (Dictionary)v.elementAt(0); 
-    Hashtable h= new Hashtable(13);
-    for(Enumeration en= d.keys(); en.hasMoreElements(); ){
-      Object o= en.nextElement();
-      h.put(o, d.get(o));
-    }
-    return h;
+      	Enumeration e = null;
+        if (flds == null) {
+            DataDefinition ri = MakumbaSystem.getDataDefinition(p.getType());
+            Vector v = new Vector();
+            for (Enumeration f = ri.getFieldNames().elements(); f
+                    .hasMoreElements();) {
+                String s = (String) f.nextElement();
+                if (!ri.getFieldDefinition(s).getType().startsWith("set"))
+                    v.addElement(s);
+            }
+            e = v.elements();
+        } else if (flds instanceof Vector)
+            e = ((Vector) flds).elements();
+        else if (flds instanceof Enumeration)
+            e = (Enumeration) flds;
+        else if (flds instanceof String[]) {
+            Vector v = new Vector();
+            String[] fl = (String[]) flds;
+            for (int i = 0; i < fl.length; i++)
+                v.addElement(fl[i]);
+            e = v.elements();
+        } else
+            throw new InvalidValueException(
+                    "read() argument must be Enumeration, Vector, String[] or null");
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT ");
+        String separator = "";
+        while (e.hasMoreElements()) {
+            Object o = e.nextElement();
+            DataDefinition r = MakumbaSystem.getDataDefinition(p.getType());
+            if (!(o instanceof String))
+                throw new org.makumba.NoSuchFieldException(r,
+                        "Dictionaries passed to makumba DB operations should have String keys. Key <"
+                                + o + "> is of type " + o.getClass()
+                                + r.getName());
+            if (r.getFieldDefinition((String) o) == null)
+                throw new org.makumba.NoSuchFieldException(r, (String) o);
+            String s = (String) o;
+            sb.append(separator).append("p.").append(s).append(" as ")
+                    .append(s);
+            separator = ",";
+        }
+        sb.append(" FROM " + p.getType() + " p WHERE p=$1");
+        Object[] params = { p };
+        Vector v = executeQuery(sb.toString(), params);
+        if (v.size() == 0)
+            return null;
+        if (v.size() > 1)
+            throw new org.makumba.MakumbaError(
+                    "MAKUMBA DATABASE INCOSISTENT: Pointer not unique: " + p);
+        Dictionary d = (Dictionary) v.elementAt(0);
+        Hashtable h = new Hashtable(13);
+        for (Enumeration en = d.keys(); en.hasMoreElements();) {
+            Object o = en.nextElement();
+            h.put(o, d.get(o));
+        }
+        return h;
   }
 
   /** insert a record*/
@@ -220,12 +227,12 @@ public abstract class DBConnection implements org.makumba.Database
    * @return a Pointer to the inserted record */ 
   public Pointer insert(Pointer base, String field, java.util.Dictionary data)
   {
-    FieldInfo fi=RecordInfo.getRecordInfo(base.getType()).getField(field);
+    FieldDefinition fi=MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
     
     if(fi.getType().equals("setComplex")) 
       {
-	data.put(fi.getSubtable().getMainTablePointerName(), base);
-	return insert(fi.getSubtable().getName(), data);
+		data.put(fi.getSubtype().getSetOwnerFieldName(), base);
+		return insert(fi.getSubtype().getName(), data);
       }
     else throw new InvalidFieldTypeException(fi, "subset");
   }
@@ -233,7 +240,7 @@ public abstract class DBConnection implements org.makumba.Database
   /** Delete the record pointed by the given pointer. If the pointer is a 1-1, the oringinal is set to null. All the subrecords and subsets are automatically deleted. */
   public void delete(Pointer ptr)
   {
-    RecordInfo ri= RecordInfo.getRecordInfo(ptr.getType());
+    DataDefinition ri= MakumbaSystem.getDataDefinition(ptr.getType());
     FieldDefinition fi= ri.getParentField();
 
     // if this is a ptrOne, we nullify the pointer in the parent record
@@ -246,7 +253,7 @@ public abstract class DBConnection implements org.makumba.Database
 
   void delete1(Pointer ptr)
   {
-    RecordInfo ri= RecordInfo.getRecordInfo(ptr.getType());
+    DataDefinition ri= MakumbaSystem.getDataDefinition(ptr.getType());
     Object param[]={ptr};
     
     // delete the ptrOnes
@@ -255,7 +262,7 @@ public abstract class DBConnection implements org.makumba.Database
     for(Enumeration e=ri.getFieldNames().elements(); e.hasMoreElements(); )
       {
 	String s= (String)e.nextElement();
-	if(ri.getField(s).getType().equals("ptrOne"))
+	if(ri.getFieldDefinition(s).getType().equals("ptrOne"))
 	  ptrOnes.addElement(s);
       }
 
@@ -268,7 +275,7 @@ public abstract class DBConnection implements org.makumba.Database
     // delete all the subfields
     for(Enumeration e= ri.getFieldNames().elements(); e.hasMoreElements(); )
       {
-	FieldInfo fi= ri.getField((String)e.nextElement());
+	FieldDefinition fi= ri.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set"))
 	  if(fi.getType().equals("setComplex"))
 	    executeUpdate(fi.getSubtype().getName()+" this", null, 
@@ -280,15 +287,15 @@ public abstract class DBConnection implements org.makumba.Database
   }
 
   // delete a set
-  void deleteSet(Pointer base, FieldInfo fi)
+  void deleteSet(Pointer base, FieldDefinition fi)
   {
-    executeUpdate(fi.getSubtable().getName()+" this", null, "this."+fi.getSubtable().getMainTablePointerName()+"=$1", base);
+    executeUpdate(fi.getSubtype().getName()+" this", null, "this."+fi.getSubtype().getSetOwnerFieldName()+"=$1", base);
   }
 
   /** Update the given external set */
   void updateSet(Pointer base, String field, Object val)
   {
-    FieldInfo fi= RecordInfo.getRecordInfo(base.getType()).getField(field);
+    FieldDefinition fi= MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
     if(!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum"))
       throw new InvalidFieldTypeException(fi, "set");
     
@@ -298,11 +305,11 @@ public abstract class DBConnection implements org.makumba.Database
     Vector values=(Vector)val;
 
     Dictionary data= new Hashtable(10);
-    data.put(fi.getSubtable().getMainTablePointerName(), base);
+    data.put(fi.getSubtype().getSetOwnerFieldName(), base);
     for(Enumeration e= values.elements(); e.hasMoreElements(); )
       {
-	data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
-	db.getTable(fi.getSubtable()).insertRecord(this, data);
+		data.put(fi.getSubtype().getSetMemberFieldName(), e.nextElement());
+		db.getTable(fi.getSubtype()).insertRecord(this, data);
       }
   }
 
@@ -338,7 +345,7 @@ class DataHolder
   DataHolder(DBConnection d, Dictionary data, String type)
   {
     this.d=d;
-    t=d.db.getTable(RecordInfo.getRecordInfo(type).getName());
+    t=d.db.getTable(MakumbaSystem.getDataDefinition(type).getName());
     
     for(Enumeration e=data.keys(); e.hasMoreElements(); )
        {
@@ -350,14 +357,14 @@ class DataHolder
       {
 	Object o= e.nextElement();
 	if(!(o instanceof String))
-	  throw new org.makumba.NoSuchFieldException(t.getRecordInfo(), "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+t.getRecordInfo().getName());
+	  throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+t.getDataDefinition().getName());
 	String s=(String)o;
 	int dot= s.indexOf(".");
 	if(dot==-1)
 	  {
-	    FieldInfo fi=t.getRecordInfo().getField(s);
+	    FieldDefinition fi=t.getDataDefinition().getFieldDefinition(s);
 	    if(fi==null)
-	      throw new org.makumba.NoSuchFieldException(t.getRecordInfo(), (String)o);
+	      throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), (String)o);
 	    if(fi.getType().equals("set") ||
 	       fi.getType().equals("setintEnum")||
 	       fi.getType().equals("setcharEnum")
@@ -384,11 +391,11 @@ class DataHolder
 	String fld= (String)e.nextElement();
 	FieldHandler fh=t.getFieldHandler(fld);
 	if(fh==null)
-	  throw new org.makumba.NoSuchFieldException(t.getRecordInfo(), fld);
+	  throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), fld);
 	if(dt.get(fld)!=null)
-	  throw new org.makumba.InvalidValueException(fh.getFieldInfo(), "you cannot indicate both a subfield and the field itself. Values for "+fld+"."+others.get(fld)+" were also indicated");
+	  throw new org.makumba.InvalidValueException(fh.getFieldDefinition(), "you cannot indicate both a subfield and the field itself. Values for "+fld+"."+others.get(fld)+" were also indicated");
 	if(!fh.getType().equals("ptrOne") &&  (!fh.isNotNull() || ! fh.isFixed()))
-	  throw new InvalidFieldTypeException(fh.getFieldInfo(), "subpointer or base pointer, so it cannot be used for composite insert/edit");
+	  throw new InvalidFieldTypeException(fh.getFieldDefinition(), "subpointer or base pointer, so it cannot be used for composite insert/edit");
 	others.put(fld, new DataHolder(d, (Dictionary)others1.get(fld), fh.getPointedType().getName()));
       }
   }
@@ -443,7 +450,7 @@ class DataHolder
     for(Enumeration e=dt.keys(); e.hasMoreElements(); )
       {
 	String s= (String)e.nextElement();
-	if(dt.get(s).equals(Pointer.Null) && t.getRecordInfo().getField(s).getType().equals("ptrOne"))
+	if(dt.get(s).equals(Pointer.Null) && t.getDataDefinition().getFieldDefinition(s).getType().equals("ptrOne"))
 	  ptrsx.addElement(s);
       }
     // read the pointers if there any to read
@@ -481,7 +488,7 @@ class DataHolder
 	comma=",";
       }
     if(set.trim().length()>0)
-      d.executeUpdate(t.getRecordInfo().getName()+" this", set, "this."+MakumbaSystem.getDataDefinition(p.getType()).getIndexPointerFieldName()+"=$1", params);
+      d.executeUpdate(t.getDataDefinition().getName()+" this", set, "this."+MakumbaSystem.getDataDefinition(p.getType()).getIndexPointerFieldName()+"=$1", params);
 
     for(Enumeration e= sets.keys(); e.hasMoreElements();)
       {

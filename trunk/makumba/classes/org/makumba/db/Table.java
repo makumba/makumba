@@ -29,12 +29,12 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DBError;
+import org.makumba.DataDefinition;
 import org.makumba.DataTransformer;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.abstr.FieldHandler;
 import org.makumba.abstr.RecordHandler;
-import org.makumba.abstr.RecordInfo;
 
 /** This is a generic database table RecordHandler. Upon building, it uses the rules in org.makumba/db/redirectHandler.properties :
 <pre>
@@ -61,14 +61,14 @@ public abstract class Table extends RecordHandler
   public org.makumba.db.Database getDatabase() { return db; }
 
   /** set the RecordInfo */
-  protected void setRecordInfo(RecordInfo ri){ super.setRecordInfo(ri); }
+  protected void setRecordInfo(DataDefinition ri){ super.setRecordInfo(ri); }
 
   Hashtable relatedTables= new Hashtable();
 
   /** get the related table for the field indicated by name (of any set or ptr type) */
   public Table getRelatedTable(String field)
   {
-    return getDatabase().getTable((RecordInfo)relatedTables.get(field));
+    return getDatabase().getTable((DataDefinition)relatedTables.get(field));
     //    return (Table)relatedTables.get(field);
   }
 
@@ -96,7 +96,7 @@ public abstract class Table extends RecordHandler
   /** copies all records from the table1 to table2 */
   void copyFrom(DBConnection dest, Table source, DBConnection sourceDB) 
   {
-    final String nm= getRecordInfo().getName();
+    final String nm= getDataDefinition().getName();
     if(!source.exists()|| nm.equals("org.makumba.db.Catalog"))
       // catalog is never copied
       return;
@@ -113,7 +113,7 @@ public abstract class Table extends RecordHandler
 	    String name=((FieldHandler)e.nextElement()).getName(); 
 	    list.append("t.").append(name);
 	  }
-	String indexName= getRecordInfo().getIndexName();
+	String indexName= getDataDefinition().getIndexPointerFieldName();
 	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t."+indexName+ ">=$1 AND t."+indexName+" <=$2";
 
 	final int dbsv=sourceDB.getHostDatabase().getDbsv();
@@ -159,7 +159,7 @@ public abstract class Table extends RecordHandler
 	    data.put(nameKey.get(k), d.get(k));
 	  }
 
-	dest.insert(getRecordInfo().getName(), data);
+	dest.insert(getDataDefinition().getName(), data);
 	
 	// free up some memory
 	data.clear();
@@ -192,7 +192,7 @@ public abstract class Table extends RecordHandler
   {
     if(insertHook==null)
       {
-	String s=getDatabase().getConfiguration("insert#"+getRecordInfo().getName());
+	String s=getDatabase().getConfiguration("insert#"+getDataDefinition().getName());
 	if(s!=null)
 	  {
 	    try{
