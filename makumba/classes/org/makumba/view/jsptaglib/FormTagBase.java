@@ -22,22 +22,22 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import java.io.*;
 import org.makumba.controller.html.FormResponder;
 
-public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
-{
-  // jsptaglib1-specific methods
-  public Class getParentClass() { return MakumbaTag.class; }
-  public boolean canBeRoot() { return true; }
-  protected RootTagStrategy makeRootStrategy(Object key) { return this; }
-  public void onInit(TagStrategy ts) {}
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.FieldDefinition;
+import org.makumba.DataDefinition;
+import org.makumba.LogicException;
+import org.makumba.NoSuchFieldException;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
+
+public class FormTagBase extends MakumbaTag  
+{
   // the tag attributes
   String baseObject;
 
@@ -72,11 +72,13 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
   
   public void doAnalyze()
   {
-    if(baseObject!=null)
-      getEnclosingQuery().getQuery().checkProjectionInteger(baseObject);
+    //if(baseObject!=null)
+    // we need a key, then a value computer
+    // old code:
+    //  getEnclosingQuery().getQuery().checkProjectionInteger(baseObject);
   }
 
-  public int doStart() throws JspException 
+  public int doMakumbaStartTag() throws JspException 
   {
     l= new java.util.Date().getTime();
 
@@ -86,35 +88,36 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
     String basePointerType=null;
     if(baseObject!=null)
       {
-	int n= getEnclosingQuery().getQuery().checkProjectionInteger(baseObject).intValue();
-	Object o= getEnclosingQuery().getProjectionValue(n);
+	// we need to invoke the value computer
+	//int n= getEnclosingQuery().getQuery().checkProjectionInteger(baseObject).intValue();
+	Object o= null; 
+	//        getEnclosingQuery().getProjectionValue(n);
 	if(!(o instanceof Pointer))
 	  throw new RuntimeException("Pointer expected");
-	responder.setBasePointerType
-	  (((FieldInfo)getEnclosingQuery().getQuery().getResultType().getFieldDefinition(n))
-	   .getPointedType().getName());
+	//responder.setBasePointerType
+	//  (((FieldInfo)getEnclosingQuery().getQuery().getResultType().getFieldDefinition(n))
+	//   .getPointedType().getName());
 	basePointer=((Pointer)o).toExternalForm();
       }
 
     try{
       responder.setHttpRequest((HttpServletRequest)pageContext.getRequest());
+      StringBuffer sb= new StringBuffer();
+      responder.writeFormPreamble(sb, basePointer);
+      //bodyContent.getEnclosingWriter().print(sb.toString()); 
+      pageContext.getOut().print(sb.toString());
+
     }catch(LogicException e){ treatException(e); }
-    return EVAL_BODY_TAG; 
+    catch(IOException ioe){throw new JspException(ioe.toString()); }
+    return EVAL_BODY_INCLUDE; 
   }
 
-  public int doEnd() throws JspException 
+  public int doMakumbaEndTag() throws JspException 
   {
     try{
       StringBuffer sb= new StringBuffer();
-      responder.writeFormPreamble(sb, basePointer);
-      bodyContent.getEnclosingWriter().print(sb.toString()); 
-
-      bodyContent.writeOut(bodyContent.getEnclosingWriter());
-
-      sb= new StringBuffer();
       responder.writeFormPostamble(sb, basePointer);
-      bodyContent.getEnclosingWriter().print(sb.toString()); 
-
+      pageContext.getOut().print(sb.toString());
       MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-l)));
     }catch(IOException e){ throw new JspException(e.toString()); }
     return EVAL_PAGE;
@@ -129,10 +132,10 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
   public boolean canComputeTypeFromEnclosingQuery() 
   { return false; }
 
-  public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
+  /*public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
   {
     return null;
-  }
+  }*/
 
   public static FieldDefinition deriveType(DataDefinition dd, String s)
   {

@@ -38,11 +38,11 @@ public class AddTag extends FormTagBase
   public boolean canComputeTypeFromEnclosingQuery() 
   { return true; }
 
-  public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
+  /*  public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
   {
     DataDefinition dd= ((FieldInfo)qs.query.getLabelType(baseObject).getFieldDefinition(field)).getPointedType();
     return deriveType(dd, fieldName);
-  }
+  }*/
 
 }
 

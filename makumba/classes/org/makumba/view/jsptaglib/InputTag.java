@@ -37,18 +37,15 @@ public class InputTag extends ValueTag
   // -------- page analysis
   FieldInfo dataTypeInfo;
 
-  /** demand a QueryTag enclosing query */
-  protected Class getParentClass(){ return FormTagBase.class; }
-
   public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
   
 
-  /** return false, register an exception */ 
+  /** return false, register an exception 
   protected boolean canBeRoot()
   {
     treatException(new MakumbaJspException(this, "INPUT tag should always be enclosed in a form, editForm, newForm or addForm tag"));
     return false;
-  }
+  }*/ 
 
   /** set the name */
   public void setField(String field)  { setName(field);}
@@ -68,29 +65,29 @@ public class InputTag extends ValueTag
   public void setType(String s) 
   {
     super.setType(s);
-    if(s.equals("file"))
-      getForm().setMultipart();
+    //if(s.equals("file"))
+    //  getForm().setMultipart();
   }  
 
-  FormTagBase getForm() { return (FormTagBase)getMakumbaParent(); }
+  //  FormTagBase getForm() { return (FormTagBase)getMakumbaParent(); }
 
   boolean isValue()
   {
     return expr!=null && !expr.startsWith("$");
   }
 
-  public Object getRegistrationKey() 
+  public void setKey() 
   {
     expr=valueExprOriginal;
-    if(expr==null)
-      expr=getForm().getDefaultExpr(name);
-    if(!isValue())
-      return null;
+    //if(expr==null)
+    //  expr=getForm().getDefaultExpr(name);
+    //if(!isValue())
+    //   return null;
     var= expr.replace('.', '_');
-    return super.getRegistrationKey();
+    super.setKey();
   }
 
-  public TagStrategy makeNonRootStrategy(Object key)
+  /*public TagStrategy makeNonRootStrategy(Object key)
   {
     if(isValue())
       return super.makeNonRootStrategy(key);
@@ -106,7 +103,7 @@ public class InputTag extends ValueTag
       super.doAnalyze();
   }
 
-    public int doStartTag() throws JspException
+  public int doMakumbaStartTag() throws JspException
   {
       super.doStartTag();
       if(strategy!=this)
@@ -116,7 +113,6 @@ public class InputTag extends ValueTag
       return EVAL_BODY_INCLUDE;
   }
 
-  /** ask the enclosing query to present the expression */
   public int doStart() throws JspException, org.makumba.LogicException
   {
       if(dataType!=null)
@@ -176,5 +172,5 @@ public class InputTag extends ValueTag
 	  }catch(java.io.IOException e)	  {throw new JspException(e.toString());}
 	}
       return EVAL_BODY_INCLUDE;
-  }
+  } */
 }
