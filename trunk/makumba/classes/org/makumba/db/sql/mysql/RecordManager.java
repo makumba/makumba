@@ -72,12 +72,5 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
    }
   }
 
-  /** a table creation, from this table's RecordInfo */
-  protected void create(SQLDBConnection dbc, String tblname, boolean really)
-       throws SQLException
-  {
-    super.create( dbc, tblname, really);
-  }
-
 
 }
