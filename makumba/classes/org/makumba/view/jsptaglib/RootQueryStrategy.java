@@ -83,7 +83,7 @@ implements RootTagStrategy, QueryTagStrategy
 	  {
 	    Database dbc= MakumbaSystem.getConnectionTo(decorated.tag.getDatabaseName());
 	    try{
-	      qs.doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()), false);
+	      qs.doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()));
 	    }finally{dbc.close(); }
 	  }
       }
@@ -99,6 +99,11 @@ implements RootTagStrategy, QueryTagStrategy
   public int doStart() throws JspException 
   {
     return decorated.doRootStart();
+  }
+
+  public void doAnalyze() 
+  {
+    decorated.doRootAnalyze();
   }
 
   public int doAfter() throws JspException 
@@ -118,13 +123,8 @@ implements RootTagStrategy, QueryTagStrategy
   {
     try{
       if(s!=null)
-	decorated.rootData.pageContext.include(s); 
+	decorated.tag.getRootData().pageContext.include(s); 
     }catch(Exception e) { throw new MakumbaJspException(e); }
-  }
-
-  protected ComposedQuery getSuperQuery() 
-  { 
-    return null;
   }
 
   //----------------------------
@@ -133,26 +133,15 @@ implements RootTagStrategy, QueryTagStrategy
     queries.put(qs.getKey(), qs.getQuery());
   }
 
-  /** checks if new projections were found in the whole root tag */
-  public boolean foundMoreProjectionsInAnyTag()
-  {
-    if(dirty)
-      return true;
-    for(Enumeration e= decorated.rootData.subtagData.elements(); e.hasMoreElements();)
-      if(((QueryTagStrategy)e.nextElement()).getQueryStrategy().foundMoreProjections())
-       return dirty=true;
-    return false;
-  }
-
   /** execute all queries from the tags */
-  public void doQueries(boolean noProj)throws JspException
+  public void doQueries()throws JspException
   {
     Database dbc= MakumbaSystem.getConnectionTo(decorated.tag.getDatabaseName());
     try
       {
-	for(Enumeration e= decorated.rootData.subtagData.elements(); e.hasMoreElements();)
+	for(Enumeration e= decorated.tag.getRootData().subtagData.elements(); e.hasMoreElements();)
 	  {
-	    ((QueryTagStrategy)e.nextElement()).getQueryStrategy().doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()), noProj);
+	    ((QueryTagStrategy)e.nextElement()).getQueryStrategy().doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()));
 	  }
       }
     catch(Throwable e){ decorated.tag.treatException(e); }
@@ -168,31 +157,13 @@ implements RootTagStrategy, QueryTagStrategy
 
   public void nextLoop() throws IOException
   {
-    /*    decorated.bodyContent.print(decorated.separator);
-    if(file==null)
-      {
-	int av= decorated.bodyContent.getRemaining();
-	if(av>lastAv)
-	  length+=av;
-	lastAv=av;
-	if(length<org.makumba.Text.FILE_LIMIT)
-	  return;
-	file= new org.makumba.util.LongData();
-      }
-    if(file!=null)*/
-    //  {
-    decorated.bodyContent.print(decorated.separator);
+    decorated.bodyContent.print(decorated.getQueryTag().separator);
     decorated.writeBody(file);
     decorated.bodyContent.clearBuffer();
-	//   }
   }
 
   public void writeLoop() throws IOException
   {
-    //if(file==null)
-    //  decorated.writeBody(decorated.bodyContent.getEnclosingWriter());
-    //else
-    //  {
     decorated.writeBody(file);
     Reader r= new InputStreamReader(file.getInputStream());
     
@@ -201,7 +172,6 @@ implements RootTagStrategy, QueryTagStrategy
     while((n=r.read(buff))>0)
       decorated.bodyContent.getEnclosingWriter().write(buff, 0, n);
     r.close();
-    // }
   }
 
   // ---- decorator methods
