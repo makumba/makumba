@@ -48,6 +48,11 @@
 	<target name="compile" depends="OQLParserGeneration"
 		description="compile all java files"
 	>
+		<tstamp>
+		  <format property="CURDATE" pattern="yyyyMMddHHmmss" locale="en"/> 
+		</tstamp> 
+		<echo message="buildDate=${CURDATE}" file="classes/org/makumba/versionBuildDate.properties"/> 
+
 		<javac srcdir="classes">
 		     <classpath refid="project.class.path" />
 		</javac>

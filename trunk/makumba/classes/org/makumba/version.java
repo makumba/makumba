@@ -23,10 +23,12 @@
 
 package org.makumba;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
+import java.io.*;
 
 /** Computes the version from cvs Name tag. */
 class version {
+
 
    /** @see MakumbaSystem.getVersion() */
    static String getVersion()
@@ -37,11 +39,46 @@ class version {
 	if(version.length()>2) version=version.replace('_','.');
 	else 
 	{
-		//SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
- 		//version="devel-"+formatter.format(new Date());
-		version="development";
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+ 		version="devel-"+df.format(getBuildDate());
+ 		//version="devel-"+getBuildDate();
+		//version="development";
 	}
 	return version;
+   }
+
+   /** Reads a build date from properties file that was generated during compilation. */
+   static final Date getBuildDate()
+   {
+	SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+	Properties prop=new Properties(); 
+	String filename = "org/makumba/versionBuildDate.properties";            
+	Date buildDate=null;
+
+	FileInputStream fStream = null; 
+	try { 
+	    fStream = new FileInputStream(filename); 
+	} catch(FileNotFoundException fnfe) {
+	  try{
+	    fStream = new FileInputStream("classes/"+filename); 
+	  } catch (Exception e) {}
+	}
+	try{
+	    prop.load(fStream); 
+	    buildDate=df.parse(prop.getProperty("buildDate"),new java.text.ParsePosition(0));
+	} catch (Exception e) { 
+	  //some error handling here 
+	  System.out.println(e);
+	} finally { 
+	    if (fStream != null) { 
+	        try { 
+	            fStream.close(); 
+	        } catch (IOException e) { 
+	            //some error handling here            
+	        } 
+	    } 
+	}
+	return buildDate;
    }
 
     public static void main(String[] args) {
