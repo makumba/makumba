@@ -59,9 +59,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   static private String[] JspCommentPatternNames={"JspComment", "JspScriptlet"};
   static private Pattern[] JspCommentPatterns;
 
-  /** Cache of all analyzed pages. */
+  /** Cache of all page analyses. */
   static int analyzedPages=  NamedResources.makeStaticCache
-         ("JSP mak:list root tags", 
+         ("JSP page analyses", 
           new NamedResourceFactory()
               {
                  public Object getHashObject(Object o)
@@ -76,7 +76,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
                     Object[]o1= (Object[])o;
                     return new JspParseData((String)o1[0], (JspAnalyzer)o1[1], (String)o1[2]);
                  }
-              });
+              }
+		 ,
+		 true
+	   );
 
 
   static String attribute(String attName){

@@ -47,7 +47,7 @@ public class Logic
 		    .getSupplementary()).get(cls);
   }
 
-  static int logix= NamedResources.makeStaticCache("JSP pages that have mak: tags", 
+  static int logix= NamedResources.makeStaticCache("Business logic classes", 
 						   new NamedResourceFactory()
    {
      {
@@ -154,7 +154,9 @@ public class Logic
 	 
 	 return lastFound;
        }
-   });
+   },
+     true
+     );
 
 
   static String[]separators= { ".", "->" };
