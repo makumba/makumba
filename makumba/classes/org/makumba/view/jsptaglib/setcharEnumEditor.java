@@ -22,24 +22,23 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
 
-public class EditTag extends FormTagBase 
+public class setcharEnumEditor extends choiceEditor
 {
-  public String getDefaultExpr(String fieldName) 
-  { return enclosingLabel+"."+fieldName; }
+  public Object getOptions(){return null; }
 
-  public FormResponder makeResponder() { return new EditResponder(); }
-}
+  public int getOptionsLength(Object opts){ return getEnumeratorSize(); }
 
-class EditResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doEdit(controller, type, getHttpBasePointer(pc), 
-			getHttpData(pc), makeAttributes(pc), database);
-  }
+  public Object getOptionValue(Object options, int i)
+  { return getStringAt(i); }
+
+  public String formatOptionValue(Object opts, int i, Object val)
+  { return val.toString(); }
+  
+  public String formatOptionTitle(Object options, int i)
+  { return getNameAt(i); } 
+
+  public String getMultiple() { return " multiple"; }
+
+  public int getDefaultSize() { return getEnumeratorSize(); }
 }

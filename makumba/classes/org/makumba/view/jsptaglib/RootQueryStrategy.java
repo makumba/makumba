@@ -25,7 +25,6 @@ package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.util.*;
 import org.makumba.*;
-import org.makumba.controller.jsp.PageAttributes;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -83,7 +82,7 @@ implements RootTagStrategy, QueryTagStrategy
 	  {
 	    Database dbc= MakumbaSystem.getConnectionTo(decorated.tag.getDatabaseName());
 	    try{
-	      qs.doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()), false);
+	      qs.doQuery(dbc, HttpAttributes.getAttributes(decorated.tag.getPageContext()), false);
 	    }finally{dbc.close(); }
 	  }
       }
@@ -152,7 +151,7 @@ implements RootTagStrategy, QueryTagStrategy
       {
 	for(Enumeration e= decorated.rootData.subtagData.elements(); e.hasMoreElements();)
 	  {
-	    ((QueryTagStrategy)e.nextElement()).getQueryStrategy().doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()), noProj);
+	    ((QueryTagStrategy)e.nextElement()).getQueryStrategy().doQuery(dbc, HttpAttributes.getAttributes(decorated.tag.getPageContext()), noProj);
 	  }
       }
     catch(Throwable e){ decorated.tag.treatException(e); }

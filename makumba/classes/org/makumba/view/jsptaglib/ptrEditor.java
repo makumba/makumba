@@ -22,40 +22,40 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
 import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
+import java.util.*;
 
-public class DeleteTag extends EditTag
+public class ptrEditor extends choiceEditor
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
+  String db;
+  String query;
 
-  // no input tags allowed!!
-
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public void onStartup(RecordEditor re)
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    db=re.database;
+    query= "SELECT choice as choice, choice."+getTitleField()+ " as title FROM "+getPointedType().getName()+" choice ORDER BY title";
   }
 
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
+  public Object getOptions()
   {
-    pw.print("</a>");
+    Database dbc= MakumbaSystem.getConnectionTo(db);
+    try{
+      return dbc.executeQuery(query, null); 
+    }finally{dbc.close(); }
   }
 
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
+  public int getOptionsLength(Object opts){ return ((Vector)opts).size(); }
+
+  public Object getOptionValue(Object options, int i)
+  { return ((Dictionary)((Vector)options).elementAt(i)).get("choice"); }
+
+  public String formatOptionValue(Object opts, int i, Object val)
+  { return ((Pointer)val).toExternalForm(); }
+  
+  public String formatOptionTitle(Object options, int i)
+  { return ""+((Dictionary)((Vector)options).elementAt(i)).get("title"); }
+
+  public String getMultiple() { return ""; }
+
+  public int getDefaultSize() { return 1; }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

@@ -60,17 +60,4 @@ public class timestampManager extends FieldManager
 	return o;
     }
 
-    public Object getValue(ResultSet rs, int i)
-       throws SQLException
-    {
-	Object o= rs.getTimestamp(i);
-	if(rs.wasNull())
-	    return null;
-	//  return getDefaultValue();
-	//        if(o instanceof java.lang.BigDecimal)
-
-	// System.out.println(o.getClass());
-	return o;
-    }
-
 }

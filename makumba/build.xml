@@ -7,7 +7,7 @@
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
+	 <fileset dir="../../util-java/tomcat4/common/lib">
 	  <include name="**/servlet.jar" />
 	 </fileset>	
        </path>
@@ -121,6 +121,18 @@
 	</jar>
        </target>
 
+       <target name="zipSrc" description="make a zip of sources"  depends="compile">
+	<delete file="${temp.dir}/makumba-src.zip" />
+	<zip zipfile="${temp.dir}/makumba-src.zip">
+		<fileset dir="..">
+		<include name="makumba/**/*" />
+      		<exclude name="makumba/classes/**/*.class" />
+      		<exclude name="makumba/doc/**" />
+      		<exclude name="makumba/lib/**" />
+		</fileset>
+	</zip>
+
+       </target>
 
 	<target name="doc" depends="compile" 
 	description="generates documentation">
@@ -138,7 +150,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
-		doctitle="Makumba API Documentation"
+		doctitle="Documentation of Makumba classes"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -214,17 +226,10 @@
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 	</target>
 
-	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
+	<target name="makeJar" if="tag" description="makes the jar of the given version">
 	<mkdir dir="../../makumba.distrib" />
 	<delete dir="../../makumba.distrib/makumba/" />
 	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
-	<!-- make the source tarball: -->
-	<zip zipfile="lib/${tag}-src.zip">
-		<fileset dir="../../makumba.distrib/">
-		  <include name="makumba/**" />
-		</fileset>
-	</zip>
-	<!-- make the jar: -->
 	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
         	<classpath>
 		<pathelement path="${project.class.path}"/>
@@ -236,6 +241,7 @@
 	<delete dir="../../makumba.distrib" />
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
+
 
 
 	<target name="publishJar" depends="compile" if="tag" 
@@ -257,7 +263,6 @@
     	<fileset dir="lib/">
       		<include name="makumba.jar" />
                 <include name="${tag}.jar"/>
-                <include name="${tag}-src.zip"/>
     	</fileset>
 	</ftp>
 
@@ -269,10 +274,9 @@
 	>
     	<fileset dir="lib/">
                 <include name="${tag}.jar"/>
-                <include name="${tag}-src.zip"/>
 	</fileset>
 	</ftp>
-	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
+	<echo>${tag}.jar uploaded to sourceforge.net. To make it a release visit:
 		http://sourceforge.net/project/admin/qrs.php?group_id=25704
 		within the next 24 hours.
 	</echo>

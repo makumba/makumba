@@ -23,39 +23,26 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
+import javax.servlet.*;
+import java.util.*;
 
-public class DeleteTag extends EditTag
+public class intEnumEditor extends intEditor
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
-
-  // no input tags allowed!!
-
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public String formatShow(Object o, Dictionary formatParams)
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    StringBuffer sb=new StringBuffer();
+    sb.append("<select name=\"").append(getInputName()).append("\">");
+    Enumeration v=getValues();
+    Enumeration n=getNames();
+    while(v.hasMoreElements())
+      {
+	Object vl=v.nextElement();
+	sb.append("<option value=\"").append(vl).append("\"");
+	if(vl.equals(o))
+	  sb.append(" selected");
+	sb.append(">").append(n.nextElement()).append("</option>");
+      }
+    sb.append("</select>");
+    return sb.toString();
   }
-
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("</a>");
-  }
-
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

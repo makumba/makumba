@@ -64,7 +64,6 @@ public class intEnumHandler extends intHandler implements intEnumerator
     for(int i=0; i<names.size(); i++)
       if(names.elementAt(i).equals(value))
 	return values.elementAt(i);
-    
     throw new org.makumba.InvalidValueException(getFieldInfo(), "string value set to int enumerator ("+value+") is neither a member of "+names+" nor amember of "+values);
   }
 }

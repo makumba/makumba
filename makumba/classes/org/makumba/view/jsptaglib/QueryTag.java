@@ -51,7 +51,6 @@ public class QueryTag extends MakumbaBodyTag
     mk.setAt(new Integer(System.identityHashCode
 			 (pageContext.getPage().getClass())), 
 	     queryProps().length+1);
-    //    System.out.println(mk);
     return mk;
   }
 
@@ -59,7 +58,6 @@ public class QueryTag extends MakumbaBodyTag
   {
     MultipleKey mk= getBasicKey();
     mk.setAt(getParentQueryStrategy().getKey(), queryProps().length+1);
-    //    System.out.println(mk);
     return mk;
   }
 

@@ -398,7 +398,7 @@ query :
 
 selectExpr :
 
-        s:"select"^<AST=org.makumba.db.sql.oql.QueryAST>
+        s:"select"^<AST=QueryAST>
 	{ #s.setSuperQuery(currentQuery); currentQuery=#s; }
 
         (
@@ -736,7 +736,7 @@ primaryExpr :
 	   undefinedExpr  
 
         |   collectionConstruction{ ((OQLAST)#primaryExpr).makumbaType="inSet";} 
-        |   a:aggregateExpr  
+        |   aggregateExpr  { ((OQLAST)#primaryExpr).makumbaType="int";} 
 	|   !mi: makumbaIdentifier
 	{ 
 		#primaryExpr=new IdAST();
@@ -814,14 +814,7 @@ aggregateExpr :
             |   mx:"max"{#mx.setText("max("); }
             |   av:"avg"{#av.setText("avg("); }
             )
-            l:TOK_LPAREN {#l.setText("");} q:query TOK_RPAREN  
-
-	{
-        AggregateAST ag= new AggregateAST();
-        ag.setText(#aggregateExpr.getText());
-		ag.setExpr((OQLAST)#q);
-        #aggregateExpr=ag;
-	}
+            l:TOK_LPAREN {#l.setText("");} query TOK_RPAREN
 
         |   c:"count" {#c.setText("count("); }
             lp:TOK_LPAREN{#lp.setText("");}
@@ -829,7 +822,7 @@ aggregateExpr :
                 query
             |   TOK_STAR
             )
-            TOK_RPAREN   { ((OQLAST)#aggregateExpr).makumbaType="int";}
+            TOK_RPAREN
         )
     ;
 

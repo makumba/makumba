@@ -495,7 +495,7 @@ is associated with the session</font>
 UnauthenticatedException), and the engine will act accordingly (i.e. ask
 for authentication).</font>
 <p><font color="#000000">2) execute action methods in response to makumba
-forms. See <a href="#forms">makumba
+forms. See <a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/forms">makumba
 forms and actions</a> below.</font>
 <p><tt><font color="#990000">3) later: return query parts, as methods.
 e.g.</font></tt>
@@ -1118,8 +1118,8 @@ for maxCountVar and countVar indicate that the object does not exist.
 <a NAME="forms"></a>Forms</h3>
 Makumba can produce 4 types of forms: new, add, edit and generic forms.
 All forms have a number of common features.
-<br>They can include &lt;mak:input >&nbsp; tags. 
-They all can have "action", "method", "handler", "name" and "message"
+<br>They can include &lt;mak:input >&nbsp; tags (except for the &lt;mak:form
+> forms). They all can have "action", "method", "handler", "name" and "message"
 arguments.
 <p>Handler methods (if they exist) are executed at the point of the first
 makumba tag in the response page.
@@ -1174,7 +1174,7 @@ db)</font></td>
 
 <td>the response page of the form</td>
 
-<td>Mandatory if a <a href="#action">&lt;mak:action></a> is absent</td>
+<td>Mandatory</td>
 </tr>
 
 <tr>
@@ -1268,7 +1268,7 @@ and after_new), the action is not allowed.
 <br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input type="submit"/></tt>
 <br><tt>&lt;/mak:newForm></tt>
 <p>At response:
-<p><tt>PersonLogic handler; // see <a href="#javahand">handler
+<p><tt>PersonLogic handler; // see <a href="javahand">handler
 discovery</a></tt>
 <br><tt>handler.<b>on_newGeneralPerson(data, attr, db)</b>;</tt>
 <br><tt>Pointer created= db.insert("general.Person", attr);</tt>
@@ -1316,7 +1316,7 @@ db)</td>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="4">see newForm</td>
 </tr>
 
 <tr>
@@ -1383,7 +1383,7 @@ a, Database db)</font></td>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="4">see newForm</td>
 </tr>
 
 <tr>
@@ -1639,16 +1639,6 @@ well, via pointers.</font>
 only as a separate object</font></li>
 </ul>
 
-<h4>
-<a NAME="action"></a>&lt;mak:action>....&lt;/mak:action></h4>
-If the action URI of a form or deleteLink is more complex, possibly including other makumba tags
-the action attribute of the form tag can be ommitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.
-<p>Example:
-<br><tt>&lt;mak:editForm object="ins" method="post"></tt>
-<br><tt>&nbsp;&nbsp;<b>&lt;mak:action></b>memberView.jsp?person=&lt;mak:value expr="p"/><b>&lt;/mak:action></b></tt>
-<br><tt>...</tt>
-<br><tt>&lt;/mak:editForm></tt>
-
 <h3>
 <a NAME="delete"></a>&lt;mak:deleteLink>...&lt;/mak:deleteLink></h3>
 Produces a link to the page that will delete the object indicated by any
@@ -1675,7 +1665,7 @@ of the labels of the mandatory enclosing &lt;mak:object> or &lt;mak:list>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="2">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="2">see newForm</td>
 </tr>
 
 <tr>

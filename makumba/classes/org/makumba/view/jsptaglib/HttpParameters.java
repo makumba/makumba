@@ -22,40 +22,37 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
 import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
+import javax.servlet.http.*;
+import java.util.*;
 
-public class DeleteTag extends EditTag
+public class HttpParameters
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
+  HttpServletRequest req;
 
-  // no input tags allowed!!
-
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public HttpParameters(PageContext pc)
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    req=(HttpServletRequest)pc.getRequest();
   }
 
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
+  public Object getParameter(String s)
   {
-    pw.print("</a>");
+    Object value=null;
+    String[]param=req.getParameterValues(s);
+    if(param==null)
+      return null;
+
+    if(param.length==1)
+      value=param[0];
+    else
+      {
+	Vector v=new java.util.Vector();
+	value=v;
+	for(int i= 0; i<param.length; i++)
+	  v.addElement(param[i]);
+      }
+    //    req.setAttribute(s, value);
+    return value;
   }
 
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

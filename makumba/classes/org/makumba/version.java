@@ -31,8 +31,7 @@ class version {
    /** @see MakumbaSystem.getVersion() */
    static String getVersion()
    {
-        String vs="$Name$";
-        String version= vs.substring(7,vs.length()-2);
+	String version=("$Name$".substring(7,"$Name$".length()-2));
 	if(version.indexOf('-')>0) version=version.substring(version.indexOf('-')+1);
 	if(version.length()>2) version=version.replace('_','.');
 	else 
