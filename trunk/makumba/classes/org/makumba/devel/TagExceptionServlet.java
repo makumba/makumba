@@ -27,6 +27,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.*;
 import org.makumba.util.RuntimeWrappedException;
+import org.makumba.util.JspParseData;
+import org.makumba.view.jsptaglib.MakumbaTag;
 
 /** 
  * the servlet that receives errors in any makumba page and treats them 
@@ -88,6 +90,8 @@ public class TagExceptionServlet extends HttpServlet
 	  String title="Makumba "+errors[i][1] +" error";
 	  String body=t.getMessage();
 	  String hiddenBody=null;
+
+	  body=formatTagData()+ body;
 	  if(original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic")!=-1)
 	    {
 	      body=body+"\n\n"+trc;
@@ -106,6 +110,27 @@ public class TagExceptionServlet extends HttpServlet
     wr.flush();
   }
   
+  String formatTagData(){
+    String tagExpl="During analysis of:";
+    JspParseData.TagData tagData=MakumbaTag.getAnalyzedTag();
+    if(tagData==null){
+      tagExpl="During running of:";
+      tagData= MakumbaTag.getRunningTag();
+    }
+    if(tagData==null){
+      tagExpl="While executing inside this body tag, but most probably _not_ due to the tag:";
+      tagData= MakumbaTag.getCurrentBodyTag();
+    }
+    if(tagData==null) return "";
+    StringBuffer sb= new StringBuffer();
+    JspParseData.tagDataLine(tagData, sb);
+    try{
+      return tagExpl+"\n"+tagData.getStart().getFile().getCanonicalPath()+":"+
+	tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
+	tagData.getEnd().getLine()+":"+tagData.getEnd().getColumn()+"\n"+
+	sb.toString()+"\n\n";
+    }catch(java.io.IOException e) { throw new MakumbaError(e.toString()); }
+  }
 
   String trace(Throwable t) 
   {
@@ -178,7 +203,7 @@ public class TagExceptionServlet extends HttpServlet
 		+body;
       }
 
-    body=body+shortTrace(trace(traced));
+    body=formatTagData()+body+shortTrace(trace(traced));
     try{
        SourceViewer sw=new errorViewer(req,this,title,body,null);
        sw.parseText(wr);
