@@ -170,37 +170,12 @@ public class RequestAttributes implements Attributes
     return notFound;
   }
 
+
   public Object checkParameterForAttribute(String s)
   {
     Object value= getParameters(request).getParameter(s);
     if(value!=null)
-	{
-	    /*
-	      if the parameter is passed by an include
-	      and all its values are equal
-	      we probably have a repeated include due to FLE protection
-	      so we return only one of the equal values, not the whole vector
-	    */
-	      if(value instanceof Vector && 
-		 // test for include:
-		 !getParameters(request).knownAtStart(s))
-		  // test for "all values are equal":
-		{
-		    Object p=null;
-		    for(Enumeration e= ((Vector)value).elements(); 
-			e.hasMoreElements();)
-			{
-			    Object o=(Object)e.nextElement();
-			    if(p==null)
-				p=o;
-			    else
-				if(!p.equals(o))
-				    return value;
-			}
-		    return p;
-		}
-	    return value;
-	}
+      return value;
     return notFound;
   }
 }

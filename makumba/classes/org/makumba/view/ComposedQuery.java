@@ -354,7 +354,7 @@ public class ComposedQuery extends Observable
   MultipleAttributeParametrizer fromTypes=null;
 
   /** check if an expression is valid, nullable or set  */
-  public Object checkExpr(String s, Attributes a) 
+  public Object checkExprSetOrNullable(String s, Attributes a) 
   {
     int n=0;
     int m=0;

@@ -48,6 +48,9 @@ public interface TagStrategy
   /** called by the tag's doStartTag */
   public int doStart() throws JspException, org.makumba.LogicException;
 
+  /** called by the analyzer */
+  public void doAnalyze() ;
+
   /** called by the tag's doAfterBody, if any */
   public int doAfter() throws JspException;
 
