@@ -134,27 +134,37 @@ public class JspParseData
   String uri;
 
   /** the patterns used to parse the page */
-  static final String bs="\\";
-  static final String q="\"";
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, 
+    JspTagAttributePattern, Word, TagName;
 
-  static final String attribute= 
-  bs+"s+"+
-  bs+"w+"+
-  bs+"s*="+
-  bs+"s*"+
-  bs+q+
-  "([^"+bs+q+bs+bs+"]|"+
-  bs+bs+bs+q+")*"+
-  bs+q;
-  
-  static final Pattern JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
-  static final Pattern JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
-  static final Pattern JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
+  static String attribute(String quote){
+    String bs="\\";
+    String q=bs+quote;
+    String backslash=bs+bs;
+    
+    return 
+      bs+"s+"+
+      bs+"w+"+
+      bs+"s*="+
+      bs+"s*"+
+      q+
+      "([^"+q+backslash+"]|"+
+      backslash+q+")*"+
+      q;
+  }
 
-  static final Pattern JspTagAttributePattern= Pattern.compile(attribute);
+  static{
+    String attribute="("+attribute("\"")+"|"+attribute("\'")+")";
 
-  static final Pattern Word= Pattern.compile("\\w+");
-  static final Pattern TagName= Pattern.compile("\\w+:\\w+");
+    try{
+      JspTagAttributePattern= Pattern.compile(attribute);
+      JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
+      JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
+      JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
+      Word= Pattern.compile("\\w+");
+      TagName= Pattern.compile("\\w+:\\w+");
+    }catch(Throwable t){ t.printStackTrace(); }
+  }
 
   /** private  constructor, construction can only be made by getPageData() */
   private JspParseData(String path, JspAnalyzer an, String uri)
@@ -209,9 +219,10 @@ public class JspParseData
 	
 	// we use a streamtokenizer to do the complicated parsing of "...\"\t ...\n...."
 	StreamTokenizer st= new StreamTokenizer(new StringReader(val));
-	st.quoteChar('\"');
+	char quote=val.charAt(0);
+	st.quoteChar(quote);
 	try{
-	  if(st.nextToken()!='\"')
+	  if(st.nextToken()!=quote)
 	    throw new RuntimeException("quoted string expected, found "+val);
 	}catch(java.io.IOException ioe) { throw new RuntimeWrappedException(ioe);}
 	String attName= attr.substring(0, n).trim();
@@ -269,43 +280,31 @@ public class JspParseData
     String type=tagEnd?"JspTagEnd":(tagClosed?"JspTagSimple":"JspTagBegin");
     SyntaxPoint.addSyntaxPoints(syntaxPoints, m.start(), m.end(), type, null);
     String tagName= tag.substring(m1.start(), m1.end());
+    
+    String debug;
+    TagData td= null;
+    if(!tagEnd)
+      {
+	td=new TagData();
+	td.name=tagName;
+	td.attributes= parseAttributes(tag, m.start());
+	debug=td.name+" "+td.attributes;
+      }
+    else
+      debug="/"+tagName;
+
+    //    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
 
     if(tagEnd)
       {
 	an.endTag(tagName, holder);
 	return;
       }
-    
-    TagData td= new TagData();
-    td.name=tagName;
-    td.attributes= parseAttributes(tag, m.start());
-    String debug=td.name+" "+td.attributes;
-    //    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
 
     if(tagClosed)
       an.simpleTag(td, holder);
     else
       an.startTag(td, holder);
-
-    /*
-    if(isMakumbaTag)
-      if(tag.startsWith("</"))
-	{
-	  t= (MakumbaTag)parents.get(parents.size()-1);
-	  t.endAnalysis(this);
-	  parents.remove(parents.size()-1);
-	}
-      else
-	{
-	  Map attrs= parseAttributes(tag, m.start());
-	  t= MakumbaTag.makeTag(tagName.substring(tagName.indexOf(":")+1));
-	  t.analyzeInPage(this, attrs, parents);
-	  if(!tag.endsWith("/>"))
-	    parents.add(t);
-	  else
-	    t.endAnalysis(this);
-	}
-	*/
   }
 
   /** treat system tags */
@@ -347,12 +346,20 @@ public class JspParseData
       {
 	Map.Entry me= (Map.Entry)i.next();
 	String s= (String)me.getKey();
+	String methodName="set"+Character.toUpperCase(s.charAt(0))+s.substring(1);
 	try{
-	  Method m= c.getMethod("set"+Character.toUpperCase(s.charAt(0))+s.substring(1), argTypes);
+	  Method m= c.getMethod(methodName, argTypes);
 	  args[0]= me.getValue();
 	  m.invoke(t, args);
-	}catch(Throwable thr){ throw new RuntimeWrappedException(thr); }
-				 
+	}
+	catch(java.lang.reflect.InvocationTargetException ite){
+	  System.out.println("error invoking method "+methodName +" on object of class "+c.getName()+" with argument "+args[0]);
+	  throw new RuntimeWrappedException(ite.getTargetException());
+	}
+	catch(Throwable thr){ 
+	  System.out.println("error invoking method "+methodName +" on object of class "+c.getName()+" with argument "+args[0]);
+	  throw new RuntimeWrappedException(thr);
+	}			 
       }
   }
 }
