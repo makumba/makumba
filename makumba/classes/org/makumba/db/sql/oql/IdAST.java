@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.abstr.FieldInfo;
 import org.makumba.db.Database;
 
 public class IdAST extends OQLAST
@@ -30,7 +29,6 @@ public class IdAST extends OQLAST
   QueryAST query;
   String field;
   String label;
-  FieldInfo fieldInfo;
   String projectionLabel;
 
   public IdAST(){}

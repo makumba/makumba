@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.abstr.FieldInfo;
+import org.makumba.FieldDefinition;
 
 public class AnalysisTree
 {
@@ -126,10 +126,10 @@ public class AnalysisTree
   public void checkOperandTypes(Object t1, Object t2)
        throws antlr.RecognitionException
   { 
-    if(t1 instanceof FieldInfo)
-      t1=((FieldInfo)t1).getDataType();
-    if(t2 instanceof FieldInfo)
-      t2=((FieldInfo)t2).getDataType();
+    if(t1 instanceof FieldDefinition)
+      t1=((FieldDefinition)t1).getDataType();
+    if(t2 instanceof FieldDefinition)
+      t2=((FieldDefinition)t2).getDataType();
 
     if(!t1.equals(t2))
       negociateOperandTypes(t1, t2);

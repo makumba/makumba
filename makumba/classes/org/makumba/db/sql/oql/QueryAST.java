@@ -26,8 +26,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.makumba.abstr.FieldInfo;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
 import org.makumba.db.Database;
 
 import antlr.collections.AST;
@@ -95,10 +96,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   Vector parameters= new Vector();
 
   /** the type of the returned result */
-  RecordInfo resultInfo;
+  DataDefinition resultInfo;
 
   /** the parameter types */
-  RecordInfo paramInfo;
+  DataDefinition paramInfo;
 
   /** add a projection during parsing*/
   public void addProjection(Projection p)
@@ -124,12 +125,12 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   public org.makumba.DataDefinition getProjectionType()
   {
     if(oneProjectionLabel!=null)
-      return (RecordInfo) labels.get(oneProjectionLabel);
+      return (DataDefinition) labels.get(oneProjectionLabel);
 
     return resultInfo;
   }
 
-  public org.makumba.DataDefinition getParameterTypes()
+  public DataDefinition getParameterTypes()
   {
     return paramInfo;
   }
@@ -140,7 +141,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
     String s1=(String)aliases.get(s);
     if(s1!=null)
       s=s1;
-    return (RecordInfo)labels.get(s);
+    return (DataDefinition)labels.get(s);
   }
 
   /** set the unique projection during parsing, doesn't work */
@@ -158,7 +159,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
       }
     else
       {
-	resultInfo= new RecordInfo();
+	resultInfo= MakumbaSystem.getTemporaryDataDefinition("Result for "+originalQuery);
 
 	for(int i=0; i<projections.size(); i++)
 	  {
@@ -175,8 +176,16 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 	      }
 	    
 	    if(type.toString().startsWith("set"))
-	      throw new antlr.SemanticException("You cannot select a set; projection \""+proj.as+"\" with expression \""+proj.expr+"\" has type "+type);    
-	    resultInfo.addField(FieldInfo.getFieldInfo(proj.as, type, false));
+	      throw new antlr.SemanticException("You cannot select a set; projection \""+proj.as+"\" with expression \""+proj.expr+"\" has type "+type);
+	    
+	    FieldDefinition fd;
+		
+		if(type instanceof String)
+		    fd=MakumbaSystem.makeFieldOfType(proj.as, (String)type);
+		else
+		    fd=MakumbaSystem.makeFieldWithName(proj.as, (FieldDefinition)type);
+	 
+	    resultInfo.addField(fd);
 	  }
       }
   }
@@ -185,12 +194,19 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   {
     if(parameters.size()==0)
       return;
-    paramInfo= new RecordInfo();
+    paramInfo= MakumbaSystem.getTemporaryDataDefinition("Parameters for "+originalQuery);
     
     for(int i=0; i<parameters.size(); i++)
       {
 	ParamAST param= (ParamAST)parameters.elementAt(i);
-	paramInfo.addField(FieldInfo.getFieldInfo("param"+i, param.makumbaType, false));
+
+	FieldDefinition fd;
+	String nm="param"+i;
+	if(param.makumbaType instanceof String)
+	    fd=MakumbaSystem.makeFieldOfType(nm, (String)param.makumbaType);
+	else
+	    fd=MakumbaSystem.makeFieldWithName(nm, (FieldDefinition)param.makumbaType);
+	paramInfo.addField(fd);
       }
   }
 
@@ -221,7 +237,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   }
 
   /** make a new join with the name and associate teh label with the type */
-  String addJoin(String l1, String f1, String name, String f2, RecordInfo type)
+  String addJoin(String l1, String f1, String name, String f2, DataDefinition type)
   {
     joins.addElement(new Join(l1, f1, name, f2));
     joinNames.put(l1+"."+f1, name);
@@ -241,19 +257,19 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
        return s;
 
     // need protection to avoid repeating a join
-    RecordInfo foreign=null, sub=null;
-    RecordInfo type= (RecordInfo)labels.get(label);
-    String index= type.getIndexName();
+    DataDefinition foreign=null, sub=null;
+    DataDefinition type= (DataDefinition)labels.get(label);
+    String index= type.getIndexPointerFieldName();
 
-    FieldInfo fi= type.getField(field);
+    FieldDefinition fi= type.getFieldDefinition(field);
     if(fi==null)
       throw new antlr.SemanticException("no such field \""+field+"\" in makumba type \""+ type.getName()+"\"");
 
     try{
-      foreign=fi.getForeignTable();
+      foreign=fi.getRelationType();
     }catch(Exception e){}
     try{
-      sub=fi.getSubtable();
+      sub=fi.getSubtype();
     }catch(Exception e){}
 
     String label2= label;
@@ -264,9 +280,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
       label2+="x";
 
     if(fi.getType().equals("ptr"))
-      return addJoin(label, field, label2, foreign.getIndexName(), foreign);
+      return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign);
     else if(fi.getType().equals("ptrOne"))
-      return addJoin(label, field, label2, sub.getIndexName(), sub);
+      return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub);
 
     else if(fi.getType().equals("setComplex") || 
 	    fi.getType().equals("setintEnum") || 
@@ -287,7 +303,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 	while(labels.get(label3)!=null)
 	  label3+="x";
 
-	return addJoin(label2, sub.getForeignTablePointerName(), label3, foreign.getIndexName(), foreign);
+	return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign);
       }
     else
       throw new antlr.RecognitionException("\""+field+"\" is not a set or pointer in makumba type \""+ type.getName()+"\"");
@@ -298,10 +314,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
        throws antlr.RecognitionException
   {
     String iterator=frm;
-    RecordInfo type=null;
+    DataDefinition type=null;
     try {
       // if it's a type, we just add it as such
-      type= RecordInfo.getRecordInfo(iterator);
+      type= MakumbaSystem.getDataDefinition(iterator);
     }catch(org.makumba.DataDefinitionNotFoundError e){}
     catch(org.makumba.DataDefinitionParseError p){ throw new antlr.RecognitionException(p.getMessage()); }
     if(type!=null)
@@ -397,7 +413,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 	String l1=(String)aliases.get(label);
 	if(l1!=null)
 	  label=l1;
-	RecordInfo ri= (RecordInfo)labels.get(label);
+	DataDefinition ri= (DataDefinition)labels.get(label);
 	if(ri==null)
 	  {
 	    if(i==-1 && projectionLabelSearch.get(label)!=null)
@@ -430,7 +446,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 	      i= s.indexOf('.');
 	      if(i!=-1)
 		field=s.substring(0, i);
-	      FieldInfo fi= ri.getField(field);
+	      FieldDefinition fi= ri.getFieldDefinition(field);
 	      if(fi==null)
 		throw new antlr.SemanticException("no such field \""+field+"\" in makumba type \""+ ri.getName()+"\"");
 	      
@@ -441,20 +457,20 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 		break;
 	      
 	      label=join(label, field, null);
-	      ri= (RecordInfo)fi.getPointedType();
+	      ri= fi.getReferredType();
 	    }
 	id.label=label;
 	id.field=field;
-	if(id.field==null && ri.isSubtable())
+	if(id.field==null && (ri.getParentField()!= null))
 	  {
-	    String stp= ri.getMainTable().getField(ri.getFieldName()).getType();
+	    String stp= ri.getParentField().getType();
 	    if(stp.equals("setintEnum") || stp.equals("setcharEnum"))
 	      id.field="enum";
 	  }
 	if(id.field==null)
-	    id.field=ri.getIndexName();
+	    id.field=ri.getIndexPointerFieldName();
 	
-	id.makumbaType=id.fieldInfo= ri.getField(id.field);
+	id.makumbaType= ri.getFieldDefinition(id.field);
       }
   }
 
@@ -502,7 +518,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   /** return the database-level name of the type of the given label */
   protected String getTableName(String label, Database d)
   {
-    RecordInfo ri= (RecordInfo)labels.get(label);
+    DataDefinition ri= (DataDefinition)labels.get(label);
     try{
       return ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getDBName();
     }catch(NullPointerException e)
@@ -512,7 +528,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   /** return the database-level name of the given field of the given label*/
   protected String getFieldName(String label, String field, Database d)
   {
-    RecordInfo ri= (RecordInfo)labels.get(label);
+    DataDefinition ri= (DataDefinition)labels.get(label);
     try{
       return ((org.makumba.db.sql.FieldManager)
 	    ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getFieldHandler(field))
@@ -528,18 +544,16 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
     boolean and=false;
     for(Enumeration e= joins.elements(); e.hasMoreElements(); )
       {
-	Join j=(Join)e.nextElement();
-	if(and)
-	  ret.append(" AND ");
-	and=true;
+        	Join j = (Join) e.nextElement();
+            if (and)
+                ret.append(" AND ");
+            and = true;
 
-	ret
-	  .append(j.label1).append(".")
-	  .append(getFieldName(j.label1, j.field1, d))
-	  .append("= ")
-	  .append(j.label2).append(".")
-	  .append(getFieldName(j.label2, j.field2, d));
-      }
+            ret.append(j.label1).append(".").append(
+                    getFieldName(j.label1, j.field1, d)).append("= ").append(
+                    j.label2).append(".").append(
+                    getFieldName(j.label2, j.field2, d));
+        }
   }
 
   /** writes the where conditions */
