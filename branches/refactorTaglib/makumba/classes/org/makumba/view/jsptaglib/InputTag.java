@@ -84,7 +84,7 @@ public class InputTag extends ValueTag
     //if(!isValue())
     //   return null;
     var= expr.replace('.', '_');
-    super.setKey();
+    super.setTagKey();
   }
 
   /*public TagStrategy makeNonRootStrategy(Object key)
