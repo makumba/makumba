@@ -277,6 +277,14 @@ public class RecordParser extends RecordHandler
     for(Enumeration e= fields.keys(); e.hasMoreElements(); line++ )
       {
         nm= (String)e.nextElement();
+	//check name for validity:
+	for(int i=0; i<nm.length(); i++)
+	{
+	  if( i==0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i>0 && !Character.isJavaIdentifierPart(nm.charAt(i)) )
+	    mpe.add(fail("Invalid character \""+nm.charAt(i)+"\" in field name \""+nm+"\"", nm));
+	}
+	if(fields.getProperty(nm).trim().length()==0)
+	   mpe.add(fail("Expecting definition of field \""+nm+"\"", nm));
 	fi= new FieldInfo(ri, nm);
 	ri.addField1(fi);
 	FieldHandler fh;
@@ -436,7 +444,10 @@ public class RecordParser extends RecordHandler
 	    while(op.get(kt)!=null)
 	      kt= kt+"_";
 	  }
-	if(op.putLast(kt, k, s.substring(l+1))!=null)
+	String val= s.substring(l+1);
+	if(val.length()==0)
+	  mpe.add(fail("missing value of "+kt, s));
+	if(op.putLast(kt, k, val)!=null)
 	  mpe.add(fail("ambiguous key "+kt, s));
       }
     rd.close();
