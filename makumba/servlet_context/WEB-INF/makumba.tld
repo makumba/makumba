@@ -230,12 +230,12 @@
 		<name>if</name>
 		<tagclass>org.makumba.view.jsptaglib.IfTag</tagclass>
 		<bodycontent>JSP</bodycontent>
-		<info>Evaluates an expression and shows body only if true</info>
+		<info>Evaluates a test-expression and shows body only if true</info>
 
 		<attribute>
-			<name>expr</name>
+			<name>test</name>
 			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 	</tag>	
