@@ -422,16 +422,21 @@ public abstract class Database
   public void openTables(String [] tables) 
   {
     for (int i=0;i<tables.length;i++) {
-      DataDefinition dd= MakumbaSystem.getDataDefinition(tables[i]);
-      getTable(tables[i]);
-      
-      for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
-	{
-	  FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
-	  if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	    getTable(fi.getSubtype().getName());
-	}
+      openTable(tables[i]);
     }
+  }
+  
+  public void openTable(String table) 
+  {
+    getTable(table);
+    DataDefinition dd= MakumbaSystem.getDataDefinition(table);
+
+    for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
+      {
+	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
+	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+	  openTable(fi.getSubtype().getName());
+      }
   }
 
   protected void finalize() throws Throwable
