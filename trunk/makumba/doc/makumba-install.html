@@ -233,7 +233,7 @@ default=dbhost.yourdomain.org_mysql_maktest
 <p>In order to be able to manipulate information from a database <b>Makumba</b> needs 
 to know what this info looks like. For each table you're using you need to provide 
 a data definition file. We recommend putting these files in a special folder: 
-<tt>WEB-INF/classes/dataDefinitons</tt> and giving them an <i>*.mdd</i> extension. 
+<tt>WEB-INF/classes/dataDefinitions</tt> and giving them an <i>*.mdd</i> extension. 
 For example:</p>
 
 <pre class="example">
@@ -263,7 +263,7 @@ create an <tt>index.jsp</tt> file in our applications root folder:</p>
 
 &lt;Persons:&gt;
 &lt;mak:list from="Person p"&gt;
-&nbsp;&nbsp;&lt;mak:value expr="p.name"&gt;, &lt;mak:value expr="p.age"&gt; &lt;br/&gt;
+&nbsp;&nbsp;&lt;mak:value expr="p.name"/&gt;, &lt;mak:value expr="p.age"/&gt; &lt;br/&gt;
 &lt;/mak:list&gt;
 
 &lt;/body&gt;
