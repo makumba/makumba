@@ -335,4 +335,10 @@ public class SourceSyntaxPoints
 
   String getContent(){return content; }
 
+    /**
+     * @return Returns the syntaxPoints.
+     */
+    public TreeSet getSyntaxPoints() {
+        return syntaxPoints;
+    }
 }// end class
