@@ -57,6 +57,37 @@ div.navbar {
 /* trick IE with child selector */
 body>div.navbar { position: fixed }
 
+form.search{
+	margin:0px;
+}
+
+input.search{
+	border:solid 1px #e7e7e7;
+	background:#f5f5f5;
+	width:100%;
+	color:#044a2c;
+	padding:0px;
+	text-decoration:underline;
+	margin-left:-2px;
+	padding-left:2px;
+}
+
+/*IE will ignore this:*/
+div.navbar>form .search{
+	background:#e7e7e7;
+}
+
+#searchBox:hover{
+	color:red;
+}
+input.search:focus{
+	background:white !important;
+	color:black;
+	text-decoration:none;
+	border:solid 1px #999999;
+}
+
+
 .pageFooter {color: #666666; background: #eeeeee; font-size:80%; text-align:right; margin-top:20px; margin-left:-140px;}
 
 /* Tables in specification */
