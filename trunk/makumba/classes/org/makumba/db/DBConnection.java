@@ -180,9 +180,12 @@ public abstract class DBConnection implements org.makumba.Database
 
   /** Execute a parametrized OQL query.
    * @return a Vector of Dictionaries */
-  public java.util.Vector executeQuery(String OQL, Object args)
+  public java.util.Vector executeQuery(String OQL, Object args, int offset, int limit)
   {
-    return ((Query)getHostDatabase().queries.getResource(OQL)).execute(treatParam(args), this); 
+    return ((Query)getHostDatabase().queries.getResource(OQL)).execute(treatParam(args), this, limit, offset); 
+  }
+  public java.util.Vector executeQuery(String OQL, Object args){
+    return executeQuery(OQL, args, 0, -1);
   }
 
   /** Execute a parametrized update or delete. A null set means "delete"

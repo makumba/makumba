@@ -29,5 +29,5 @@ import java.util.*;
 public interface Query
 {
   /** Execute the query with the given arguments */
-  public Vector execute(Object [] args, DBConnection dbc);
+  public Vector execute(Object [] args, DBConnection dbc, int offset, int limit);
 }

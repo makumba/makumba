@@ -40,8 +40,8 @@ public class DBConnectionWrapper extends DBConnection
     public java.util.Dictionary read(Pointer ptr, Object fields)
     { return getWrapped().read(ptr, fields); }
     
-    public java.util.Vector executeQuery(String OQL, Object parameterValues)
-    { return getWrapped().executeQuery(OQL, parameterValues); }
+    public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit)
+    { return getWrapped().executeQuery(OQL, parameterValues, offset, limit); }
     
     public Pointer insert(String type, java.util.Dictionary data)
     { return getWrapped().insert(type, data); }
