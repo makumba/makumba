@@ -202,7 +202,11 @@ public abstract class FieldManager extends FieldHandler
   {
     this.rm=rm;
     if(rm.alter && shouldIndex())
-	manageIndexes(dbc);
+      manageIndexes(dbc);
+
+    if(shouldIndex())
+      rm.extraIndexes.remove(getDBIndexName().toLowerCase());
+
     checkDuplicate="SELECT 1 FROM "+rm.getDBName()+" WHERE "+getDBName()+"=?";
   }
 
@@ -233,7 +237,7 @@ public abstract class FieldManager extends FieldHandler
   {
      String keyName=getDBIndexName();
      String brief=rm.getRecordInfo().getName()+"#"+getName()+" ("+getDescription()+")";
-
+     
      if(!isIndexOk(dbc)) 
      {
        //org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(

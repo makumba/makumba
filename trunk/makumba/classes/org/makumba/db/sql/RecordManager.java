@@ -167,6 +167,7 @@ public class RecordManager extends Table
   }
 
   Hashtable indexes= new Hashtable();
+  Hashtable extraIndexes;
 
   protected void initFields(SQLDBConnection dbc, Properties config) 
   {  
@@ -186,6 +187,8 @@ public class RecordManager extends Table
       throw new DBError(e);
     }
 
+    extraIndexes= (Hashtable)indexes.clone();
+
     Object a[]= { this, config, dbc};
     try{
       callAll(getHandlerMethod("onStartup"), a);
@@ -198,6 +201,27 @@ public class RecordManager extends Table
 	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").severe("unusable table: "+getRecordInfo().getName());
       } 
     
+    if(alter)
+      for(Enumeration ei= extraIndexes.keys(); ei.hasMoreElements(); ){
+	String indexName= (String)ei.nextElement();
+	try{
+	  Statement st= dbc.createStatement();
+	  st.executeUpdate("DROP INDEX "+indexName+" ON "+getDBName());
+	  org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("INDEX DROPPED on "+getRecordInfo().getName()+"#"+indexName );
+	  st.close();
+	}catch(SQLException e){}
+      }
+    else{
+      StringBuffer extraList=new StringBuffer();
+      String separator="";
+      for(Enumeration ei= extraIndexes.keys(); ei.hasMoreElements(); ){
+	extraList.append(separator).append(ei.nextElement());
+	separator=", ";
+      }
+      if(extraList.length()>0)
+	MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("Extra indexes on "+getRecordInfo().getName()+": "+extraList);
+    }
+
     StringBuffer sb= new StringBuffer();
     fieldList(sb, handlerOrder.elements());
     handlerList=sb.toString();
