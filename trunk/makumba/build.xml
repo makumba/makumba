@@ -204,11 +204,13 @@
 
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
+ <echo>updating individual files via ftp</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
 		remotedir="makumba/doc"
 		binary="no"
+		newer="yes"
 	>
     	<fileset dir="doc/">
       		<include name="api/**/*.html" />
@@ -218,6 +220,7 @@
       		<exclude name="api/API_users_guide.html" />
     	</fileset>
 	</ftp>
+ <echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
