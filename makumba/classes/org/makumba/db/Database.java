@@ -199,14 +199,33 @@ public abstract class Database
     return getDatabase(findDatabaseName(s));
   }
 
+  static int dbsel= NamedResources.makeStaticCache
+  ("Database selection files",
+   new NamedResourceFactory()
+   {
+     protected Object makeResource(Object nm) 
+       {
+	 Properties p= new Properties();
+	 try{
+	   java.io.InputStream input=org.makumba.util.ClassResource.get((String)nm).openStream();
+	   p.load(input);
+	   input.close();
+	 }catch(Exception e){ throw new org.makumba.ConfigFileError((String)nm); }
+	 return p;
+       }
+   });
+
   public static String findDatabaseName(String s) 
   {
-    Properties p= new Properties();
     try{
-      p.load(org.makumba.util.ClassResource.get(s).openStream());
-    }catch(Exception e){ throw new org.makumba.ConfigFileError(s); }
-
-    return findDatabaseName(p);
+      return findDatabaseName((Properties)NamedResources.getStaticCache(dbsel)
+			      .getResource(s));
+        }catch(RuntimeWrappedException e)
+	  {
+	    if(e.getReason() instanceof org.makumba.MakumbaError)
+	      throw (org.makumba.MakumbaError)e.getReason();
+	    throw e;
+	  }
   }
 
   /** Initializes a Database object from the given properties.
