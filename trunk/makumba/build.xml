@@ -27,6 +27,7 @@
 	<available file="lib/junit.jar" />
 	<available file="lib/jsp-api.jar" />
 	<available file="lib/servlet-api.jar" />
+	<available file="lib/mysql.jar" />
 	</and>
 	</condition>
 	</target>
@@ -48,7 +49,7 @@
 	</target>
 
 	<!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
-	<target name= "OQLParserGeneration" depends="checkAntlr, install"
+	<target name= "OQLParserGeneration" depends="checkAntlr, install, version"
                 unless="antlr.notRequired">
 
 		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/sql/oql/"
@@ -58,15 +59,17 @@
 			<arg value="OQL-translator.g"/>
 	 	</java>
 	</target>
-
-	<target name="compile" depends="OQLParserGeneration"
-		description="compile all java files"
-	>
+    
+	<target name="version">
 		<tstamp>
 		  <format property="CURDATE" pattern="yyyyMMddHHmmss" locale="en"/> 
 		</tstamp> 
 		<echo message="buildDate=${CURDATE}" file="classes/org/makumba/versionBuildDate.properties"/> 
-
+    </target>
+	
+	<target name="compile" depends="OQLParserGeneration"
+		description="compile all java files"
+	>
 		<javac srcdir="classes" source="1.4" target="1.4">
 		     <classpath refid="project.class.path" />
 		</javac>
