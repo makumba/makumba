@@ -44,6 +44,11 @@ public abstract class SyntaxPoint implements Comparable
   /** the position in the file  */
   public int getPosition(){return position; }
 
+  /** how much this has moved from the original position due to includes */
+  public int getIncludeOffset(){return offset; }
+
+  public int getOriginalPosition(){ return getPosition()-getIncludeOffset(); }
+
   /** the line number in the file  */
   public int getLine(){return line; }
 
@@ -71,6 +76,14 @@ public abstract class SyntaxPoint implements Comparable
   /** the position in the file */
   int position;
   
+  /** the offset sufferred due to includes */
+  int offset=0; 
+
+  void moveByInclude(int delta){
+    position+=delta;
+    offset+=delta; 
+  }
+
   /** is this point a begin or an end of something (where applicable)*/
   boolean begin;
   
