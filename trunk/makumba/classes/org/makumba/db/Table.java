@@ -119,8 +119,14 @@ public abstract class Table extends RecordHandler
       }    
       
     Vector v=sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
-    
+    if(v.size()==0)
+      {
+	MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": no records to copy");
+	return;
+      }
+
     MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying "+v.size()+" records");
+    
     
     System.out.print("|");
     for(int b=0; b<BAR; b++)
@@ -160,7 +166,6 @@ public abstract class Table extends RecordHandler
 	  }
       }
     System.out.println();
-    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": copied "+v.size()+" objects");
   }
   
   /**
