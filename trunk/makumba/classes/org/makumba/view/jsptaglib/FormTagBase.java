@@ -245,12 +245,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   public String getDefaultExpr(String fieldName) { return null; }
 
   /** The basic data type inside the form. null for generic forms */
-  public DataDefinition getDataType(){return null; }
+  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache){return null; }
 
   /** The type of an input tag */
-  public FieldDefinition getInputType(String fieldName) 
+  public FieldDefinition getInputTypeAtAnalysis(String fieldName, MakumbaJspAnalyzer.PageCache pageCache) 
   { 
-    DataDefinition dd= getDataType();
+    DataDefinition dd= getDataTypeAtAnalysis(pageCache);
+    System.out.println(dd);
     if(dd==null)
       return null;
     int dot=-1;

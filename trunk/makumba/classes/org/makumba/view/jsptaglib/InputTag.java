@@ -108,7 +108,7 @@ public class InputTag extends MakumbaTag
     if(nameVar!=null)
       pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
 
-    FieldDefinition formType= getForm().getInputType(name);
+    FieldDefinition formType= getForm().getInputTypeAtAnalysis(name, pageCache);
     FieldDefinition dataTypeInfo=null;  
     FieldDefinition type=null;
 
