@@ -70,7 +70,9 @@ public class SetValueStrategy extends QueryStrategy
     bodyContent=getValueTag().getEnclosingQuery().bodyContent;
     done=super.doStart();
     if(done!=BodyTag.EVAL_BODY_TAG)
-      return done;
+	{
+	    return done;
+	}
     String sep="";
     String total="";
     do{
@@ -89,7 +91,10 @@ public class SetValueStrategy extends QueryStrategy
 	}
     }while(super.doAfter()==BodyTag.EVAL_BODY_TAG);
     if(var!=null)
-      PageAttributes.setAttribute(pageContext, var, v);
+	{
+	    pageContext.setAttribute(var+"_type", getValueTag().set);
+	    PageAttributes.setAttribute(pageContext, var, v);
+	}
     if(printVar!=null)
       PageAttributes.setAttribute(pageContext, printVar, total);
     if(var==null && printVar==null){
