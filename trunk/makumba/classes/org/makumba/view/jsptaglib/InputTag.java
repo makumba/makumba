@@ -114,7 +114,7 @@ public class InputTag extends MakumbaTag
 
     if(dataType!=null)
       {
-	dataTypeInfo= MakumbaSystem.makeFieldDefinition(name, dataType);
+	dataTypeInfo= MakumbaSystem.makeFieldDefinition(name.replace('.', '_'), dataType);
 	if(formType!=null && ! formType.isAssignableFrom(dataTypeInfo))
 	  throw new ProgrammerError("declared data type '"+dataType+"' not compatible with the type computed from form '"+formType+"' in \n"+getTagText());
       }
