@@ -87,15 +87,15 @@ public class JspParseData
     String q=bs+quote;
     String backslash=bs+bs; // backslash in a regex in a java String (escaped)
 
-    // the pattern is \s*\w*\s*=\s*"(.*?[^\\])??" or idem with single quote ' ; with DOTALL MODE: (?s)
+    // BAD TRY: pattern is (?s)\s*\w+\s*=\s*"(.*?[^\\])??" or idem with single quote ' 
+    // the pattern is \s*\w+\s*=\s*"(\\.|[^"\\])*?" or idem with single quote ' 
     return 
-      "(?s)"+ 
       bs+ "s*" +
       bs+ "w+" +
       bs+ "s*=" +
       bs+ "s*" +
       q+
-      "(.*?[^" +backslash+ "])??" +
+      "(" +backslash+ ".|[^" +q+backslash+ "])*?" +
       q;
   }
 
