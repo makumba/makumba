@@ -148,7 +148,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
       }
-      selectStatement.append("</SELECT>\n");
+      selectStatement.append("</SELECT>");
   
       return selectStatement.toString();
   }
@@ -175,7 +175,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
               selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
       }
-      selectStatement.append("</SELECT>\n");
+      selectStatement.append("</SELECT>");
   
       return selectStatement.toString();
   }
@@ -261,7 +261,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
           String selected = value.equals(selectedValue) ? " SELECTED" : "" ;
           selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
       }
-      selectStatement.append("</SELECT>\n");
+      selectStatement.append("</SELECT>");
   
       return selectStatement.toString();
   }
@@ -299,7 +299,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
           String selected = value.equals(selectedValue) ? " SELECTED" : "" ;
           selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
       }
-      selectStatement.append("</SELECT>\n");
+      selectStatement.append("</SELECT>");
   
       return selectStatement.toString();
   }
@@ -348,7 +348,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
           String selected = (Arrays.binarySearch(selectedValues, value) < 0) ? "" : " SELECTED" ;
           selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
       }
-      selectStatement.append("</SELECT>\n");
+      selectStatement.append("</SELECT>");
   
       return selectStatement.toString();
   }
