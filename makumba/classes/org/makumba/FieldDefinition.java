@@ -175,7 +175,7 @@ public interface FieldDefinition
   public boolean hasTitleFieldIndicated();
 
   /** check compatibility with the given type */
-  public boolean compatible(FieldDefinition fd) ;
+  public boolean isAssignableFrom(FieldDefinition fd) ;
 
   /** check if the value can be assigned */
   public Object checkValue(Object value);
