@@ -59,7 +59,7 @@ public class JspParseData
        throws Throwable
        {
 	 Object[]o1= (Object[])o;
-	 return new JspParseData((String)o1[0], (JspAnalyzer)o1[1]);
+	 return new JspParseData((String)o1[0], (JspAnalyzer)o1[1], (String)o1[2]);
        }
    });
 
@@ -69,7 +69,7 @@ public class JspParseData
    */
   static public JspParseData getParseData(String webappRoot, String path, JspAnalyzer an)
   {
-    Object arg[]= {webappRoot+path, an };
+    Object arg[]= {webappRoot+path, an, path };
     return (JspParseData)NamedResources.getStaticCache(analyzedPages).getResource(arg);
   }
 
@@ -121,6 +121,7 @@ public class JspParseData
     the object is discarded */
   long lastChanged; 
 
+  /** the analyzer plugged in */
   JspAnalyzer analyzer;
 
   /** the syntax points of this page, in the order of their page position */
@@ -129,8 +130,23 @@ public class JspParseData
   /** the holder of the analysis status, and partial results */
   Object holder;
 
+  /** the JSP URI, for debugging purposes */
+  String uri;
+
   /** the patterns used to parse the page */
-  static final String attribute= "\\s+\\w+\\s*=\\s*\\\"([^\\\"]|\\\\\")*\\\"";
+  static final String bs="\\";
+  static final String q="\"";
+
+  static final String attribute= 
+  bs+"s+"+
+  bs+"w+"+
+  bs+"s*="+
+  bs+"s*"+
+  bs+q+
+  "([^"+bs+q+bs+bs+"]|"+
+  bs+bs+bs+q+")*"+
+  bs+q;
+  
   static final Pattern JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
   static final Pattern JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
   static final Pattern JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
@@ -141,9 +157,10 @@ public class JspParseData
   static final Pattern TagName= Pattern.compile("\\w+:\\w+");
 
   /** private  constructor, construction can only be made by getPageData() */
-  private JspParseData(String path, JspAnalyzer an)
+  private JspParseData(String path, JspAnalyzer an, String uri)
   {
     file= new File(path);
+    this.uri=uri;
     lastChanged= 0l;
     analyzer=an;
   }
@@ -174,7 +191,7 @@ public class JspParseData
     holder= analyzer.endPage(holder);
 
     org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.time").fine
-      ("analysis of "+file+" took "+(new java.util.Date().getTime()-start)+" ms");
+      ("analysis of "+uri+" took "+(new java.util.Date().getTime()-start)+" ms");
   }
 
   /** identify tag attributes from a tag string and put them in a Map. set the attribute syntax points */
@@ -264,7 +281,7 @@ public class JspParseData
     td.attributes= parseAttributes(tag, m.start());
     String debug=td.name+" "+td.attributes;
     org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").fine
-      (SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
+      (uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
 
     if(tagClosed)
       an.simpleTag(td, holder);
