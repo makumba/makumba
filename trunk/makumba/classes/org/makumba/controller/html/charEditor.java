@@ -29,8 +29,8 @@ import org.makumba.view.*;
 
 public class charEditor extends FieldEditor
 {
-  static String[] params= { "type", "size", "maxlength" };
-  static String[][] paramValues= { {"text", "password"}, null, null };
+  static String[] params= { "default", "empty", "type", "size", "maxlength" };
+  static String[][] paramValues= { null,  null, {"text", "password"}, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -46,15 +46,23 @@ public class charEditor extends FieldEditor
   }
 
   public String formatNull(Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\"\" "+getParams(formatParams)+getExtraFormatting(formatParams)+">"; }
+  { return formatNotNull(null, formatParams); }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+getLiteral(o, formatParams)+"\" "+getParams(formatParams)+
+  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+formatValue(o, formatParams)+"\" "+getParams(formatParams)+
       getExtraFormatting(formatParams)+">"; }
 
+  /** Formats the value to appear in an input statement. */
+  public String formatValue(Object o, Dictionary formatParams) {
+     if (o == null) {
+     	 return resetValueFormat(null, formatParams);
+     } else { 
+         return resetValueFormat(HtmlUtils.string2html(o.toString()), formatParams);
+     }
+  }
 
-  public String getLiteral(Object o, Dictionary formatParams) 
-  {return HtmlUtils.string2html(o.toString()); }
+  // public String getLiteral(Object o, Dictionary formatParams) 
+  // {  }
 
   public String getInputType(Dictionary formatParams)
   {

@@ -23,21 +23,27 @@
 
 package org.makumba.controller.html;
 import org.makumba.view.*;
+import java.util.Dictionary;
 
 public class intEditor extends charEditor
 {
-  static String[] params= {  "size", "maxlength" };
-  static String[][] paramValues= { null, null };
+  static String[] params= { "default", "empty", "size", "maxlength" };
+  static String[][] paramValues= { null, null, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
   public int getWidth() { return 10; }
 
-  public String getLiteral(Object o, java.util.Dictionary formatParams) 
-  {
-    return o.toString();
+  
+  /** Formats the value to appear in an input statement. */
+  public String formatValue(Object o, Dictionary formatParams) {
+     if (o == null) {
+     	 return resetValueFormat(null, formatParams);
+     } else { 
+         return resetValueFormat(o.toString(), formatParams);
+     }
   }
-
+  
   public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
   { 
     Object o=par.getParameter(getInputName(suffix));

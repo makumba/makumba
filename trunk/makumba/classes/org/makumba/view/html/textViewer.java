@@ -28,8 +28,8 @@ import java.util.Dictionary;
 
 public class textViewer extends FieldViewer
 {
-  static String[] params= { "lineSeparator", "longLineLength", "html"};
-  static String[][] paramValues= { null,  null, {"true", "false" , "auto"}};
+  static String[] params= { "default", "empty", "lineSeparator", "longLineLength", "html"};
+  static String[][] paramValues= { null,  null, null,  null, {"true", "false" , "auto"}};
 
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }

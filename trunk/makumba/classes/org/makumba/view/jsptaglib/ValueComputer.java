@@ -110,9 +110,10 @@ public class ValueComputer
   {
     Object o= getValue(running);
     String s=null;
-    if(running.printVar!=null || running.var==null)
+    if(running.printVar!=null || running.var==null){
       s=((RecordViewer)running.pageCache.formatters.get(getQueryKey()))
 	.format(projectionIndex, o, running.params);
+    }
 
     if(running.var!=null)
       PageAttributes.setAttribute(running.getPageContext(), running.var, o);
@@ -281,6 +282,10 @@ class SetValueComputer extends QueryValueComputer
 	print.append(ex.currentListData().data[nameIndex]);
       }
     String s= print.toString();
+
+    if (v.isEmpty() && running.params.get("default") != null)
+        s = (String) running.params.get("default");
+
 
     if(running.var!=null)
       PageAttributes.setAttribute(running.getPageContext(), running.var, v);

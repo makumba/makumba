@@ -27,8 +27,8 @@ import java.util.*;
 
 public class FieldFormatter extends FieldHandler
 {
-  static String[] params={};
-  static String[][] paramValues={};
+  static String[] params={ "default", "empty" };
+  static String[][] paramValues={ null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -81,14 +81,33 @@ public class FieldFormatter extends FieldHandler
       throw new InvalidValueException(this, "invalid value for format parameter \'"+name+"\': <"+val+">");
   }
 
+  /** 
+   * Format the object to pure text. If text-format is blank, try the "empty" replacer value.
+   */
   public String format(Object o, Dictionary formatParams)
   {
-    if(o==null || o.equals(getNull()))
-      return formatNull(formatParams);
-    return formatNotNull(o, formatParams);
+    String formatted;
+    if( o==null || o.equals(getNull()) ) {
+       formatted = formatNull(formatParams);
+    } else {
+       formatted = formatNotNull(o, formatParams);
+    }
+    if ( "".equals(formatted) ) {
+      return getEmptyValueFormat(formatParams);
+    }
+    return formatted;
   }
 
-  public String formatNull(Dictionary formatParams) { return ""; }
+  /** 
+   * Format the null-object to pure text. Try the "default" format parameter.
+   */
+  public String formatNull(Dictionary formatParams) { 
+      return getDefaultValueFormat(formatParams);
+  }
+  
+  /** 
+   * Format the not-null-object to pure text. To be over-ridden by subclasses.
+   */
   public String formatNotNull(Object o, Dictionary formatParams) {return o.toString(); }
 
   public int getIntParam(Dictionary formatParams, String name)
@@ -108,4 +127,31 @@ public class FieldFormatter extends FieldHandler
       return "";
     return name+"=\""+n+"\" ";
   }
+ 
+ 
+  // FIXME? these 2 might get more complicated, if {default, empty} are OQL expressions.
+  
+  /** Gets the formatted default value, used if real value is null. Returns blank if not set.*/
+  public String getDefaultValueFormat(Dictionary formatParams) {
+      String s = (String) formatParams.get("default");
+      return (s == null)? "" : s ;
+  }
+  
+  /** Gets the formatted empty value, used if real value is empty. Returns blank if not set. */
+  public String getEmptyValueFormat(Dictionary formatParams) {
+      String s = (String) formatParams.get("empty");
+      return (s == null)? "" : s ;
+  }
+
+  /** Chooses between the real (formatted) value and possible replacements (default, empty). */
+  public String resetValueFormat( String s, Dictionary formatParams){
+     if (s == null) {
+         s = getDefaultValueFormat(formatParams);
+     }
+     if ( "".equals(s) ) {
+         return getEmptyValueFormat(formatParams);
+     }     
+     return s;     
+  }
 }
+// end class

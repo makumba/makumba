@@ -22,33 +22,37 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.MakumbaSystem;
 import org.makumba.LogicException;
 
 import org.makumba.util.MultipleKey;
-import org.makumba.controller.jsp.PageAttributes;
-import org.makumba.view.html.RecordViewer;
-import org.makumba.view.ComposedQuery;
 
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.JspException;
 
-import java.util.Vector;
 
-public class ValueTag extends MakumbaTag
+/**
+ * If tag, will accept expr=... similar to value tag, and will show body only if OQL expression evaluates to true (integer 1).
+ * @author fred
+ */
+
+public class IfTag extends MakumbaTag implements BodyTag
 {
   String expr;
-  String var;
-  String printVar;
+  private static final Integer TRUE_INT = new Integer(1);
   
-  public void setExpr(String expr){ this.expr=expr; }
-  public void setVar(String var){ this.var=var; }
-  public void setPrintVar(String var){ this.printVar=var; }
+  
+  public void setExpr(String expr) { this.expr = expr; }
+
+  // these 2 are required to implement BodyTag, no action needed inside.
+  public void setBodyContent(BodyContent bc) { }        
+  public void doInitBody() { }                          
   
   /** cleanup the state to make this reusable */
   public void cleanState()
   {
     super.cleanState();
-    expr=var=printVar=null;
+    expr = null;
   }
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
@@ -68,24 +72,24 @@ public class ValueTag extends MakumbaTag
   {
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
-
-    if(var!=null)
-      pageCache.types.setType(var, vc.type, this);
-
-    if(printVar!=null)
-      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"), this);
   }
   
-  /** ask the ValueComputer to present the expression */
+  /** ask the ValueComputer to calculate the expression, and SKIP_BODY if false */
   public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
   {
-    ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
+    Object exprvalue = ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
     
-    return EVAL_BODY_INCLUDE;
+    if (TRUE_INT.equals(exprvalue)) {
+    	return EVAL_BODY_INCLUDE;
+    } 
+    else {
+    	return SKIP_BODY;
+    }
   }
 
+  /* FIXME: what should this output? */
   public String toString() { 
-    return "VALUE expr="+expr+ 
+    return "IF expr="+expr+ 
       " parameters: "+ params; 
   }
 }
