@@ -184,6 +184,8 @@ public class RecordParser extends RecordHandler
   {
     String s1=null;
     java.net.URL u= null;
+    if(s.startsWith("/"))
+      s=s.substring(1);
     if(s.endsWith(".") || s.endsWith("//"))
       return null;
     u= getResource(s.replace('.', '/')+"."+ext);

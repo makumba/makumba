@@ -50,9 +50,14 @@ public class LineViewer implements SourceViewer
     if(u==null)
       throw new FileNotFoundException(virtualPath);
     realPath= u.getFile();
-    dir= new File(realPath);
-    if(!dir.isDirectory())
-      reader= new InputStreamReader(new FileInputStream(dir)); 
+    try{
+      dir= new File(realPath);
+      if(!dir.isDirectory())
+	reader= new InputStreamReader(new FileInputStream(dir)); 
+    }catch(FileNotFoundException fnfe){
+      realPath=null;
+      reader= new InputStreamReader((InputStream)u.getContent());
+    }
   }
 
   public LineViewer(boolean b){ lineNumbers=b; }
