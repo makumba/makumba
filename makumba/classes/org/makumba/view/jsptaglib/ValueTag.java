@@ -30,53 +30,50 @@ import org.makumba.controller.jsp.PageAttributes;
 
 public class ValueTag extends MakumbaTag
 {
-  // need to check the type of the first label in the enclosing query
-  // if there is a possibly null pointer, there will be different strategy, that has its own query
+  String expr;
+  String var;
+  String printVar;
 
-  static final String EVAL_BUFFER="makumba.eval.buffer";
+  //--------- page analysis: 
+  FieldDefinition set;
+  String nullableExpr;
 
-  public static Object evaluate(String s, MakumbaTag t) throws JspException
+  public void cleanState()
   {
-    Hashtable h=t.getRootQueryBuffer().bufferParams;
-    t.getRootQueryBuffer().bufferParams=new Hashtable();
-    ValueTag vt= new ValueTag();
-    vt.setPageContext(t.getPageContext());
-    vt.setParent(findAncestorWithClass(t, QueryTag.class));
-    vt.setExpr(s);
-    vt.setVar(EVAL_BUFFER);
-    vt.doStartTag();
-    t.getRootQueryBuffer().bufferParams=h;
-    return t.getPageContext().getAttribute(EVAL_BUFFER);
+    super.cleanState();
+    expr=var=printVar=null;
+    set=null;
+    nullableExpr=null;
   }
 
-  public Object getRegistrationKey() throws LogicException
+  public Object getRegistrationKey() 
   {
-    String expr=getRootQueryBuffer().bufferExpr.trim();
+    String expr=this.expr.trim();
     QueryStrategy p=getParentQueryStrategy();
-    Object check= p.query.checkExpr(expr, PageAttributes.getAttributes(pageContext));
-    if(check==null)
-      return null;
-    MultipleKey mk= new MultipleKey((Vector)p.key, 10);
+
+    MultipleKey mk= new MultipleKey((Vector)p.key, 7);
     mk.setAt(expr, 6);
-    if(check instanceof String)
-      mk.setAt((String)check, 7);
-    else 
-      {
-	getRootQueryBuffer().bufferSet=(FieldDefinition)check;
-	mk.setAt(getRootQueryBuffer().bufferSet.getName(), 7);
-      }
-    mk.setAt(getRootQueryBuffer().bufferVar, 8);
-    mk.setAt(getRootQueryBuffer().bufferPrintVar, 9);
+
     return mk;
   }
   
   public TagStrategy makeNonRootStrategy(Object key)
   {
-    if(key==null)
+    String expr=this.expr.trim();
+    QueryStrategy p=getParentQueryStrategy();
+    Object check= p.query.checkExprSetOrNullable(expr, PageAttributes.getAttributes(pageContext));
+
+    if(check instanceof String)
+      nullableExpr=(String)check;
+
+    else 
+      set=(FieldDefinition)check;
+
+    if(nullableExpr==null && set==null)
       return this;
-    Object o=((MultipleKey)key).elementAt(7);
-    if(getRootQueryBuffer().bufferSet==null)
-      return getParentQueryStrategy().getNullableStrategy(o);
+
+    if(set==null)
+      return getParentQueryStrategy().getNullableStrategy(nullableExpr);
     return new SetValueStrategy();
   }
   
@@ -85,11 +82,8 @@ public class ValueTag extends MakumbaTag
   protected Class getParentClass(){ return QueryTag.class; }
 
   public String toString() { 
-    if(getRootQueryBuffer()==null)
-      return "uninitialized value tag";
-    
-    return "VALUE expr="+getRootQueryBuffer().bufferExpr+ 
-      " parameters: "+ getRootQueryBuffer().bufferParams; 
+    return "VALUE expr="+expr+ 
+      " parameters: "+ params; 
   }
 
   /** return false, register an exception */ 
@@ -102,42 +96,30 @@ public class ValueTag extends MakumbaTag
   /** set the expression */
   public void setExpr(String expr)
   { 
-    getRootQueryBuffer().bufferExpr=expr;
+    this.expr=expr;
   }
 
   /** set the expression */
   public void setVar(String var)
   { 
-    getRootQueryBuffer().bufferVar=var;
+    this.var=var;
   }
 
   /** set the expression */
   public void setPrintVar(String var)
   { 
-    getRootQueryBuffer().bufferPrintVar=var;
+    this.printVar=var;
   }
   
+  public void doAnalyze() 
+  {
+    getParentQueryStrategy().getQuery().checkProjectionInteger(expr);
+  }
+
   /** ask the enclosing query to present the expression */
   public int doStart() throws JspException 
   {
-    displayIn(getParentQueryStrategy());
+    getParentQueryStrategy().insertEvaluation(this);
     return EVAL_BODY_INCLUDE;
   }
-
-  public static void displayIn(QueryStrategy qs) throws JspException
-  {
-    try{
-      qs.insertEvaluation(qs.getBuffer().bufferExpr, 
-			  qs.getBuffer().bufferParams,
-			  qs.getBuffer().bufferVar,
-			  qs.getBuffer().bufferPrintVar
-			  );
-    }finally{
-      qs.getBuffer().bufferVar=null;
-      qs.getBuffer().bufferPrintVar=null;
-      qs.getBuffer().bufferParams.clear();
-      qs.getBuffer().bufferSet=null;
-    }
-  }
-
 }

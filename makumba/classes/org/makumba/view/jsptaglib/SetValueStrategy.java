@@ -35,41 +35,47 @@ public class SetValueStrategy extends QueryStrategy
 {
   String label;
   String name;
+  QueryTag dummy= new QueryTag();
+  public QueryTag getQueryTag(){ return dummy; }
+  public ValueTag getValueTag(){ return (ValueTag)tag; }
 
   protected void adjustQueryProps()
   {
     super.adjustQueryProps();
-    name=getBuffer().bufferSet.getRelationType().getTitleFieldName();
-    label=getBuffer().bufferExpr.replace('.', '_');
-    queryProps[ComposedQuery.FROM]=getBuffer().bufferExpr+" "+label;
-    queryProps[ComposedQuery.ORDERBY]=label+"."+name;
+    name=getValueTag().set.getRelationType().getTitleFieldName();
+    label=getValueTag().expr.replace('.', '_');
+    getQueryTag().queryProps[ComposedQuery.FROM]=getValueTag().expr+" "+label;
+    getQueryTag().queryProps[ComposedQuery.ORDERBY]=label+"."+name;
   }
   int done;
 
+  public void doAnalyze() 
+  { 
+    super.doAnalyze();
+    getQuery().checkProjectionInteger(label);
+    getQuery().checkProjectionInteger(label+"."+name);
+  }
+
   public int doStart() throws JspException 
   {
-    String     var= getBuffer().bufferVar;
-    String     printVar= getBuffer().bufferPrintVar;
+    String     var= getValueTag().var;
+    String     printVar= getValueTag().printVar;
 
     if(var!=null){
-      pageContext.setAttribute(var+"_type", getBuffer().bufferSet);
+      pageContext.setAttribute(var+"_type", getValueTag().set);
       PageAttributes.setAttribute(pageContext, var, null);
     }
     Vector v=new Vector();
-    bodyContent=((ValueTag)tag).getParentQueryStrategy().bodyContent;
+    bodyContent=getValueTag().getParentQueryStrategy().bodyContent;
     done=super.doStart();
     if(done!=BodyTag.EVAL_BODY_TAG)
       return done;
     String sep="";
     String total="";
     do{
-      getBuffer().bufferExpr=label;
-      getBuffer().bufferVar=label;
-      ValueTag.displayIn(this);
-      getBuffer().bufferVar=null;
-      getBuffer().bufferPrintVar=label+"_print";
-      getBuffer().bufferExpr=label+"."+name;
-      ValueTag.displayIn(this);
+      Hashtable prms= getValueTag().params;
+      insertEvaluation(label, prms, label, null);
+      insertEvaluation(label+"."+name, prms, null, label+"_print");
 
       Object o=pageContext.getAttribute(label);
       if(o instanceof Pointer)
@@ -88,9 +94,6 @@ public class SetValueStrategy extends QueryStrategy
 	pageContext.getOut().print(total);
       }catch(java.io.IOException e){ throw new JspException (e.toString()); }
     }
-    getBuffer().bufferVar=null;
-    getBuffer().bufferPrintVar=null;
-    getBuffer().bufferParams.clear();
     
     return BodyTag.SKIP_BODY;
   }
