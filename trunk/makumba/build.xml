@@ -39,7 +39,7 @@
                 unless="antlr.notRequired">
 
 		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/sql/oql/"
-			failonerror="true"
+			failonerror="true" taskname="antlr"
 		>
 		     <classpath refid="project.class.path" />
 			<arg value="OQL-translator.g"/>
@@ -244,7 +244,7 @@
 	</zip>
 
 	<!-- make the jar: -->
-	<java classname="org.apache.tools.ant.Main" fork="true" dir="${bundle_base}/makumba.distrib/makumba/" >
+	<java classname="org.apache.tools.ant.Main" fork="true" dir="${bundle_base}/makumba.distrib/makumba/" taskname="buildingJar">
         	<classpath>
 		<pathelement path="${project.class.path}"/>
 		<pathelement path="${java.class.path}"/>
@@ -331,19 +331,19 @@
         </target>	
 
 	<target name= "test" depends="compile" description="run all test cases" >	
-		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
+		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
 	<target name= "test.table" depends="compile" description="run database test cases" >	
-		<java classname="test.table" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
+		<java classname="test.table" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
 	<target name= "test.mdd" depends="compile" description="run MDD test cases" >	
-		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
+		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
 	<target name= "test.config" depends="compile" description="run config test cases" >	
-		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
+		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
 
