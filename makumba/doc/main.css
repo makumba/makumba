@@ -21,5 +21,17 @@ BODY {	font-family: arial;
 ul {margin-top:0}
 a {color:#044a2c;}
 
-body>div.navbar { background: #e7e7e7; padding:5; margin:0; position:fixed; top:0; left:0; width:100; }
-body>div.navbar>a { font-size:0.8em; }
+div.navbar { 
+	background: #e7e7e7; 
+	padding:5;
+	margin:0;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100;
+	font-size:0.8em;
+}
+
+/* trick IE with child selector */
+body>div.navbar { position: fixed }
+
