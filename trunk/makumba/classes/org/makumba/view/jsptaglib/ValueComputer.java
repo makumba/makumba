@@ -262,6 +262,7 @@ class SetValueComputer extends QueryValueComputer
   }
 
   /** Go through the iterationGroupData and print the set values, comma-separated; also set var (Vector with the set values) and printVar */
+  // FIXME (fred) shouldn't the formatting be in view.html package, instead of here?
   public void print(ValueTag running) throws JspException, LogicException
   {
     QueryExecution ex= runQuery(running);
@@ -283,9 +284,12 @@ class SetValueComputer extends QueryValueComputer
       }
     String s= print.toString();
 
-    if (v.isEmpty() && running.params.get("default") != null)
+    // replace by 'default' or 'empty' if necessary
+    if (n==0 && running.params.get("default") != null)
         s = (String) running.params.get("default");
 
+    if (s.length()==0 && running.params.get("empty") != null)
+        s = (String) running.params.get("empty");
 
     if(running.var!=null)
       PageAttributes.setAttribute(running.getPageContext(), running.var, v);
