@@ -202,14 +202,18 @@ user, this field will be renamed in the database. </li>
   <li>Object creation time
     <div class="note">Can be accessed as TS_create.</div>
 <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+
       "This might change, but there are specific methods to retrieve it"
+
  -->
   </li>
   <li>Last modification time. Updates whenever the object is changed.
 The initicial value is TS_create.
     <div class="note">Can be accessed as TS_modify.</div>
 <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+
       "This might change, but there are specific methods to retrieve it"
+
  -->
   </li>
 </ul>
@@ -249,8 +253,8 @@ specified and is limited to 255. <span class="futfeat">(Optionally a
 minimal number of characters (lesser than max) can be indicated).</span>
 Both must be positive integers. For example: </p>
 <pre class="example">#<i>fieldName</i>= char[<i>maxWidth</i>]<br>name= unique char[80]; Username<br>#<span
- class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span>
-<span class="futfeat">password= encrypted char[6..10]; Secret password</span>
+ class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span><br><span
+ class="futfeat">password= encrypted char[6..10]; Secret password</span>
 </pre>
 <p>
 "<code>unique</code>" and "<code>encrypted</code>" are <a
@@ -287,10 +291,15 @@ A date and/or time.
 </p>
 <pre class="example">birthdate= date; Date of birth<br>arrivalTime= date; Arrival time<br></pre>
 <!-- FIXME. (fred, 2003-10-13) bug 606
+
      Should there be a warning about "time".
+
      Because it really isn't a "time", it would be a "date" where d/m/y fields
+
      are not set explicitly... but they are filled in with 'random'/'current'
+
      values. So comparison as "time" < 9am or so is not possible?
+
  -->
 <h3><a name="StructuralTypes">Structural (relational) types</a></h3>
 <h4><a name="ptr">Pointers (ptr)</a></h4>
@@ -356,15 +365,14 @@ file. This can be done with a !type directive
 <pre class="example">!type.yesno= int{"yes"=1, "no"=0}<br>!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}<br>married=yesno<br>happyInLife=rank<br></pre>
 <h3><a name="FieldAttributes">Field attributes</a></h3>
 <ul>
-  <li>
-    <b>fixed</b> fields can only set during the record's insertion
+  <li> <b>fixed</b> fields can only set during the record's insertion
 in the database. The subsequent updates will not update the field</li>
-  <li>
-    <b>not null</b> fields will produce a exception if an attempt is
+  <li> <b>not null</b> fields will produce a exception if an attempt
+is
 made to
 insert/update without them being initialized</li>
-  <li>
-    <b>unique</b> fields have a unique value in the respective object,
+  <li> <b>unique</b> fields have a unique value in the respective
+object,
 for
 the respective type</li>
   <li class="futfeat"> <b>(encrypted</b> fields are encrypted when
@@ -389,7 +397,6 @@ like
 <div class="note">
 for the on-the spot types in the current implementation,
 the following notation works:
-<p></p>
 <pre class="example">address-&gt;!title= street<br></pre>
 </div>
 <h3><a name="Include">Include mechanism</a></h3>
@@ -437,9 +444,13 @@ In expressions, also <code>label.ptr{.ptr}.simplefield</code> is
 valid.
 </p>
 <!-- FIXME (fred, 2003-10-14):
+
      ? add some warning about expressions (e.g. in WHERE or ORDERBY) across
+
        nullable pointers
+
        = result is not having the records with null value in the list)
+
 -->
 <p>If a label, representing a type, appears alone in an expression,
 a default field will be added. The default field depends on the type of
@@ -516,8 +527,7 @@ the following criteria are applied, in order:
     </tr>
     <tr>
       <td>parent directory name(s)</td>
-      <td><tt>StudentLogic</tt>
-      <br>
+      <td><tt>StudentLogic</tt> <br>
       <tt>Logic</tt></td>
     </tr>
   </tbody>
@@ -541,24 +551,19 @@ contain:
     </tr>
     <tr>
       <td><tt>/student/mycv/index.jsp</tt></td>
-      <td><tt>org.eu.best.MycvIndexLogic</tt>
-      <br>
-      <tt>org.eu.best.MycvLogic</tt>
-      <br>
+      <td><tt>org.eu.best.MycvIndexLogic</tt> <br>
+      <tt>org.eu.best.MycvLogic</tt> <br>
       <tt>org.eu.best.Logic</tt></td>
     </tr>
     <tr>
       <td><tt>/makumba/tests/x.jsp</tt></td>
-      <td><tt>org.makumba.TestsXLogic</tt>
-      <br>
-      <tt>org.makumba.TestsLogic</tt>
-      <br>
+      <td><tt>org.makumba.TestsXLogic</tt> <br>
+      <tt>org.makumba.TestsLogic</tt> <br>
       <tt>org.makumba.Logic</tt></td>
     </tr>
     <tr>
       <td><tt>/some.jsp</tt></td>
-      <td><tt>test.SomeLogic</tt>
-      <br>
+      <td><tt>test.SomeLogic</tt> <br>
       <tt>test.Logic</tt></td>
     </tr>
   </tbody>
@@ -585,43 +590,33 @@ in the parent of that class. For example:
 <h4>Role of Java handlers</h4>
 <ol>
   <li><b>find attributes</b> unknown by pages. e.g.
-    <p></p>
     <pre class="example">&lt;mak:object from="best.Student stud" where="stud=$student"&gt; ...&lt;/mak:object&gt;<br></pre>
-    <p>
-If the <code>$student</code> attribute is not known in the
+    <p>If the <code>$student</code> attribute is not known in the
 page (from a http argument) or in the session, the <code>find{AttributeName}(Dictionary
 existingAttributes, Database d, String expression)</code> method is
 called for
 the Handler object. In this case findStudent(). The handler has to
 compute
-the attribute, based on existing attributes, making DB accesses.
-    </p>
-    <div class="note">
-The find{AttributeName} method's name is constructed literally from the
+the attribute, based on existing attributes, making DB accesses. </p>
+    <div class="note">The find{AttributeName} method's name is
+constructed literally from the
 name of the
 attribute (capitalising only the first letter),
 so dots and other illegal characters for java identifier names, are not
 to be used. Also, one shouldn't use 2 attribute names that differ only
-in the capitalisation of the first letter.
-    </div>
-    <p>
-For example "<code>lbg.$lbg_order</code>" (in an example elsewhere in
+in the capitalisation of the first letter. </div>
+    <p>For example "<code>lbg.$lbg_order</code>" (in an example
+elsewhere in
 the specs),
-will generate a call
-    <code>findLbg_order(otherAttributes, db)</code>
+will generate a call <code>findLbg_order(otherAttributes, db)</code>
 and the Java handler will return the default
-ordering for LBGs (say "name").
-    </p>
-    <p>
-If the attribute is computed successfully, it
+ordering for LBGs (say "name"). </p>
+    <p>If the attribute is computed successfully, it
 is associated with the session (i.e. set as JSP attribute in session
-scope)
-    </p>
-    <p>
-If not, an exception will be thrown (typically
-    <a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>),
-and the engine will act accordingly (i.e. ask for authentication).
-    </p>
+scope) </p>
+    <p>If not, an exception will be thrown (typically <a
+ href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>),
+and the engine will act accordingly (i.e. ask for authentication). </p>
   </li>
   <li><b>execute action methods</b> in response to makumba
 forms. See <a href="#forms">makumba forms and actions</a> below.
@@ -670,20 +665,16 @@ will return that company. </p>
 <ol>
   <li class="futfeat"> (Http basic authentication login: will set the
 attributes $username, $password )</li>
-  <li>
-cookie login: done in a page called <code>login.jsp</code>,
+  <li>cookie login: done in a page called <code>login.jsp</code>,
 in the same directory or (if missing) in any of the parents.
 It should contain at least:
-    <p></p>
     <pre class="example">&lt;mak:login&gt;<br>  &lt;input type=text name=username&gt;<br>  &lt;input type=password name=password&gt;<br>  &lt;input type=submit&gt;<br>&lt;/mak:login&gt;<br></pre>
-    <p>
-The login form will pass further (as hidden arguments)
+    <p>The login form will pass further (as hidden arguments)
 all the http parameters it got. Note that <code>&lt;mak:login&gt;</code>
 is only needed
 upon automatic login (a page displayed when the user requested another
 page, that needs authentication). If you wish to ask for login manually
-in a startup page, a normal HTML form is enough.
-    </p>
+in a startup page, a normal HTML form is enough. </p>
   </li>
 </ol>
 <p>
@@ -880,17 +871,14 @@ the taglib with:
 </p>
 <ul>
   <li><a href="http://java.sun.com/products/jsp/docs.html">JSP
-documentation by Sun</a>
-  </li>
+documentation by Sun</a> </li>
   <li><a href="http://java.sun.com/webservices/tutorial.html">J2EE web
 services documentation by Sun</a>. This is an introduction on the
 various technologies that you might use when building webapplications
-using Java2 (J2EE).
-  </li>
+using Java2 (J2EE). </li>
   <li><a
  href="http://www.apl.jhu.edu/%7Ehall/java/Servlet-Tutorial/Servlet-Tutorial-JSP.html">Gentle
-introduction to JSPs</a>
-  </li>
+introduction to JSPs</a> </li>
 </ul>
 <h4>
 <a name="controller">Makumba Controller</a></h4>
@@ -957,9 +945,7 @@ stringLiteral on DATE must be quoted with "). The choice of quote can
 be determined by the need to use either double or single quote as part
 of the value itself. If the quote is also present within the value, it
 must be escaped by a backslash. </p>
-<pre class="example">  &lt;mak:list from="general.Person p" where="p.gender=\"male\"" &gt;<br>  &lt;mak:list from="general.Person p" where='p.gender="male"' &gt;<br>  &lt;mak:list from="general.Person p" where="p.gender='male'" &gt;<br>  &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " &gt;    <!-- FIXME (fred) I'm not 100% sure this is correct -->
-  &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' &gt;
-</pre>
+<pre class="example">  &lt;mak:list from="general.Person p" where="p.gender=\"male\"" &gt;<br>  &lt;mak:list from="general.Person p" where='p.gender="male"' &gt;<br>  &lt;mak:list from="general.Person p" where="p.gender='male'" &gt;<br>  &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " &gt;    <!-- FIXME (fred) I'm not 100% sure this is correct --><br>  &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' &gt;<br></pre>
 <p>
 Quotes in <b>extra HTML formatting</b> parameters, such as
 <code>styleClass</code>, <code>title</code>, <code>styleId</code>, <code>onClick</code>
@@ -988,8 +974,7 @@ it.
 Queries are generated on the spot and can be nested.
 </p>
 <p>Example:</p>
-<pre class="example">&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""<br>          orderBy="p.name" countVar="counter" maxCountVar="number"&gt;<br><br>    &lt;% if(counter.intValue()==1) { %&gt;<br>       &lt;p&gt; There are &lt;%= number %&gt; male students:<br>    &lt;% } %&gt;<br><br>    &lt;br&gt; &lt;%= counter %&gt;.<br>    &lt;mak:value expr="p.name"/&gt;<br>    &lt;mak:value expr="p.surname"/&gt; &lt;br&gt;<br>    &lt;mak:list from="p.addresses a"&gt;<br>       &lt;mak:value expr="a.streetno"/&gt; &lt;mak:value expr="a.city"/&gt;<br>    &lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br><br>&lt;% if (number.intValue()==0) { %&gt; There are no male students. &lt;% } %&gt;<br></pre>
-<br>
+<pre class="example">&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""<br>          orderBy="p.name"&gt;<br><br>    &lt;c:if test="${mak:count()}"&gt;<br>       &lt;p&gt; There are ${mak:maxCount()} male students:<br>    &lt;/c:if&gt;<br><br>    &lt;br&gt; &lt;%= counter %&gt;.<br>    &lt;mak:value expr="p.name"/&gt;<br>    &lt;mak:value expr="p.surname"/&gt; &lt;br&gt;<br>    &lt;mak:list from="p.addresses a"&gt;<br>       &lt;mak:value expr="a.streetno"/&gt; &lt;mak:value expr="a.city"/&gt;<br>    &lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br><br>&lt;c:if expr="${mak:lastCount()==0}"&gt; There are no male students. &lt;/c:if&gt;<br></pre>
 <p>
 </p>
 <table class="tagParamDef">
@@ -1006,10 +991,8 @@ Queries are generated on the spot and can be nested.
 If not present, the default database is used.
 See <a href="SQL-drivers.html">database
 configuration and lookup</a>.</td>
-      <td>Fixed, cannot contain attributes, for now.
-      <br>
-The default database is chosen if this argument is not set.
-      <br>
+      <td>Fixed, cannot contain attributes, for now. <br>
+The default database is chosen if this argument is not set. <br>
 Can only be set for top-level (root) query tags<br>
 Can be a Rtexpr &lt;%= ...%&gt;</td>
     </tr>
@@ -1064,30 +1047,36 @@ dramatically, but the children mak:lists are not yet limited.</span><br>
       </td>
     </tr>
     <tr>
-      <td><tt>countVar</tt></td>
-      <td>The <code>java.lang.Integer</code> variable that will
+      <td><tt class="oldfeat">countVar</tt></td>
+      <td><span class="oldfeat">The <code>java.lang.Integer</code>
+variable that will
 contain the number of the current
-iteration.
-      </td>
-      <td>Fixed. A new Java variable is created, so no other variable
-by the same name can exist in the Java scope at that point in the JSP. <span
- class="oldfeat">Prior to version 0.5.6, counting iterations using
-simple Java counting might not lead to a correct result.</span></td>
+iteration.</span> </td>
+      <td><span class="oldfeat">Fixed. A new Java variable is created,
+so no other variable
+by the same name can exist in the Java scope at that point in the JSP.
+Deprecated, use mak:count() expression language function instead</span></td>
     </tr>
     <tr>
-      <td><tt>maxCountVar</tt></td>
-      <td>The <code>java.lang.Integer</code> variable that will
-contain the total number of iterations.</td>
-      <td>Fixed. A new Java variable is created, so no other variable
+      <td><tt class="oldfeat">maxCountVar</tt></td>
+      <td><span class="oldfeat">The <code>java.lang.Integer</code>
+variable that will
+contain the total number of iterations.</span></td>
+      <td><span class="oldfeat">Fixed. A new Java variable is
+created, so no other variable
 by the same name can exist
-in the Java scope at that point in the JSP.</td>
+in the Java scope at that point in the JSP. Deprecated,
+use mak:maxCount() expression language function instead</span></td>
     </tr>
     <tr>
-      <td><tt>separator</tt></td>
-      <td>Character string as separator between two list elements.
-It is not included before the first or after the last
-      </td>
-      <td>Rtexpr.</td>
+      <td><tt class="oldfeat">separator</tt></td>
+      <td> <span class="oldfeat">Character string as separator between
+two list elements.
+It is not included before the first or after the last</span><span
+ class="oldfeat"></span></td>
+      <td><span class="oldfeat">D</span><span class="oldfeat"></span><span
+ class="oldfeat">eprecated,
+use &lt;c:if test="${mak:count&lt;mak:maxCount()}"&gt; instead</span>.</td>
     </tr>
     <tr>
       <td><tt>id</tt></td>
@@ -1108,6 +1097,7 @@ the object does not exist.
 <p>Example: See <a href="#maklist"><code>&lt;mak:list&gt;</code></a>.
 </p>
 <!-- FIXME; fred: "this needs to be rewritten, assuming no knowledge of the concept of jsp attributes,
+
                    thus with an intro on the subject. Explaining the diff between Java scope and Attribute scope." -->
 <h4><a name="usageOFAttributes">Attributes and OQL</a> in &lt;mak:list
 &gt; and
@@ -1195,21 +1185,26 @@ variable by this name, as
 well as to a page-scope attribute, also by the same name (accessible as
       <code>$attributename</code>).
 <!-- =================================================================
+
      ================ THIS IS FIXED IN makumba-0.5.7+ ================
 
+
+
 <br><b>Warning: such objects may not be of the expected type at the first
+
 iteration after re-compiling the page. Casting to another type without
+
 checking (instanceof) first will result in a ClassCastException (though
+
 the page might work at later runs).</b>
+
 --></td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
-exist in the Java scope at that point in the JSP.
-      <br>
+exist in the Java scope at that point in the JSP. <br>
 Note: the Java variable must be cast to its specific type (Integer,
 String,
-Date, Text, Pointer, Vector) before using it as such.
-      </td>
+Date, Text, Pointer, Vector) before using it as such. </td>
     </tr>
     <tr>
       <td><tt>printVar</tt></td>
@@ -1218,11 +1213,17 @@ instead stored in a new <code>java.lang.String</code>
 variable by this name, as well as to a page-scope attribute by the same
 name (accessible as <code>$attributename</code>).
 <!-- =================================================================
+
      ================ THIS IS FIXED IN makumba-0.5.7+ ================
 
+
+
 <br><b>Warning: such objects may be null at the first iteration after re-compiling
+
 the page. Calling a String method withoug checking for null will result
+
 in a NullPointerException (though the page might work at later runs).</b>
+
 --></td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
@@ -1248,8 +1249,7 @@ Default is "<code>false</code>".</td>
     <tr>
       <td><tt>format</tt></td>
       <td>Format string to specify the formatting of a date value,
-according to
-      <code><a title="external link, servlet API"
+according to <code><a title="external link, servlet API"
  href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a></code>
       </td>
       <td>Rtexpr. Only for date. Defaults to "<code>dd MMMM yyyy</code>"</td>
@@ -1292,27 +1292,22 @@ not exceed <code>maxLength</code>.</td>
       <td>The equivalent character length of <code>ellipsis</code>.
 By default, this is the number of characters in <code>ellipsis</code>.
 But if <code>ellipsis</code> is e.g. HTML code, then that is not
-appropriate.
-      </td>
-      <td>Rtexpr.
-      <br>
+appropriate. </td>
+      <td>Rtexpr. <br>
       <u>Example</u>, the ellipsis is an image of approx 3 characters
-wide.
-      <code>ellipsis="&lt;img src=icon.gif width=10 height=10&gt;"
-ellipsisLength="3"</code>
-      </td>
+wide. <code>ellipsis="&lt;img src=icon.gif width=10 height=10&gt;"
+ellipsisLength="3"</code> </td>
     </tr>
     <tr>
       <td><tt>addTitle</tt></td>
-      <td>
-If "<code>true</code>", add an HTML tooltip with the value, to the
+      <td>If "<code>true</code>", add an HTML tooltip with the value,
+to the
 printed output.
 If "<code>auto</code>", add tooltip only if the printed output
 is cut (cfr <code>maxLength</code>). Default is "<code>false</code>". <br>
       </td>
       <td>Rtexpr.
-Note: implementated by producing as output:
-      <code>&lt;span title="<i>printVar</i>"&gt;<i>possibly-cut-printVar</i>&lt;/span&gt;</code>
+Note: implementated by producing as output: <code>&lt;span title="<i>printVar</i>"&gt;<i>possibly-cut-printVar</i>&lt;/span&gt;</code>
       </td>
     </tr>
     <tr>
@@ -1320,7 +1315,8 @@ Note: implementated by producing as output:
       <td>The character string to print if the <code>expr</code>
 results in a NULL value. Default is <code>default=""</code> (i.e.
 zero-length string)<br>
-Support not available for: date, "choice" = ptr, set, setCharEnum<!-- bug 501--> </td>
+Support not available for: date, "choice" = ptr, set, setCharEnum<!-- bug 501-->
+      </td>
       <td>Rtexpr</td>
     </tr>
     <tr>
@@ -1338,14 +1334,11 @@ These are JSP EL (expression language) functions that give information
 about the iterations in a list.
 <ul>
   <li> mak:count() gives the number of the current iteration inside a
-mak:list. it has no value outside the list
-  </li>
+mak:list. it has no value outside the list </li>
   <li> mak:maxCount() gives the total number of iterations inside a
-mak:list. it has no value outside the list
-  </li>
+mak:list. it has no value outside the list </li>
   <li> mak:lastCount() gives the total number of iterations of the
-previous mak:list. it has no value inside the list
-  </li>
+previous mak:list. it has no value inside the list </li>
 </ul>
 Example using the Java Standard Tag Library (<a
  href="http://java.sun.com/products/jsp/jstl/">JSTL</a>, prefix "c"): <br>
@@ -1380,18 +1373,23 @@ must be a test, resulting in a 'boolean' in SQL : 0 or 1. </p>
       <i>(in first implementation, this was called <code>expr</code>,
 but changed to reflect practice in XSL and <a
  href="http://java.sun.com/products/jsp/jstl/"
- title="JSP Standard Tag Library">JSTL</a>)</i>
-      </td>
+ title="JSP Standard Tag Library">JSTL</a>)</i> </td>
     </tr>
   </tbody>
 </table>
 <h4><a name="mak_attrib">&lt;mak:attribute&nbsp; .../&gt;</a></h4>
 <!-- when bug 64 is fixed uncomment this:
+
 <b>DEPRECATED</b>, use <a href="#makvalue">&lt;mak:value></a> instead, like:
+
 <pre class="example">
+
 &lt;mak:value expr="$pattern" ... />
+
 </pre>
+
 <p>
+
 -->
 <p>Displays the value of an attribute, or sets it to a Java variable.
 </p>
@@ -1484,7 +1482,8 @@ error is thrown (the site is not allowed to do the operation, e.g.
 StudentHandler will never have a on_newLibraryBook() method). If the
 handler class wishes to allow the action, it can define an empty
 handler method. </p>
-<p><strong>Multiple forms</strong><!-- http://bugs.best.eu.org/show_bug.cgi?id=37 --> <br>
+<p><strong>Multiple forms</strong><!-- http://bugs.best.eu.org/show_bug.cgi?id=37 -->
+<br>
 - addForms can add to the subsets of object produced by the enclosing
 newForm.<br>
 - any number of levels of form inclusion is possible but only the
@@ -1495,38 +1494,7 @@ back by the controller filter if there is an error. <br>
 - after_ methods are not executed in correct order (<a
  href="http://bugs.best.eu.org/show_bug.cgi?id=689">bug 689</a>)
 </p>
-<p>Example:<br>
-&lt;mak:form action="blabla"&gt;<br>
-&lt;%-- the topmost form, will result in a HTML form, may have no
-logic, or it can be a <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; specialized form (new,
-edit, add...)<br>
---%&gt;<br>
-&lt;mak:input name="first" /&gt; &lt;%-- the topmost form can have
-fields of its own --%&gt;
-</p>
-<p> &lt;mak:list .... &gt; <br>
-&nbsp;&nbsp; &lt;mak:input name="second" /&gt;&lt;%-- the topmost form
-can have fields of its own, even <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-repeated in loops --%&gt;<br>
-&nbsp;&nbsp;&nbsp;&lt;mak:addForm object="bla" field="bla" &gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;%-- note that there is no
-action indicated here, it's the action of the topmost form<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a
-normal on_add BL method will be called<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%&gt;<br>
-&nbsp;&nbsp;&nbsp;...<br>
-&nbsp;&nbsp;&nbsp;&lt;/mak:addForm&gt;<br>
-&lt;/mak:list&gt;</p>
-<p> &lt;mak:list .... &gt; &lt;%-- there can be more than one loops in
-a root form -- %&gt;<br>
-...<br>
-&lt;/mak:list&gt;</p>
-<p> &lt;input type=submit&gt; &lt;%-- it's easy to add a submit button
-anywhere --%&gt;<br>
-&lt;/mak:form&gt;<br>
-<!-- bug: the after_ BL method should be invoked after the subform responders : http://bugs.best.eu.org/show_bug.cgi?id=689 --></p>
+<pre class="example">&lt;mak:form action="blabla"&gt;<br>&lt;%-- the topmost form, will result in a HTML form, may or may not have logic, <br>     or it can be a specialized form (new, edit, add...)<br>--%&gt;<br><br>  &lt;mak:input name="first" /&gt; &lt;%-- the topmost form can have fields of its own --%&gt;<br><br>&lt;mak:list .... &gt; <br>&nbsp; &lt;mak:addForm object="bla" field="bla" &gt;<br>  &lt;%-- note that there is no action indicated here, it's the action of the <br>       topmost form a normal on_add BL method will be called <br>   --%&gt;<br>&nbsp;&nbsp;   &lt;mak:input name="second" /&gt;&lt;%-- the topmost form can have fields of its own, <br>                                     even repeated in loops <br>                                --%&gt;<br>     ...<br>  &lt;/mak:addForm&gt;<br>&lt;/mak:list&gt;<br><br>&lt;mak:list .... &gt; &lt;%-- there can be more than one loop in a root form -- %&gt;<br>...<br>&lt;/mak:list&gt;<br>&lt;input type=submit&gt; &lt;%-- it's easy to add a submit button anywhere --%&gt;<br>&lt;/mak:form&gt;<!-- bug: the after_ BL method should be invoked after the subform responders : http://bugs.best.eu.org/show_bug.cgi?id=689 --></pre>
 <p class="futfeat">(Later, new and edit forms that have no body, will
 build default forms. )</p>
 <h4><a name="maknew">&lt;mak:newForm&nbsp; ...&gt;....
@@ -1534,10 +1502,16 @@ build default forms. )</p>
 <p>
 Makes a form for creating a new object of the indicated type.
 <!-- FIXME (fred 2003-10-18) should include description of
+
  how also related object can be created at the same time
 
+
+
    ptr.externalpointer (needs be fixed, notnull, ... ????)
+
    ptr.internalpointer ????
+
+
 
 --></p>
 <p>
@@ -1564,8 +1538,7 @@ creation</td>
       <td><tt><span class="futfeat">(handler)</span></tt></td>
       <td><span class="futfeat">the Java class.method that handles the
 response</span></td>
-      <td>defaults to on_new+NameOfMakumbaType. Arguments:
-      <br>
+      <td>defaults to on_new+NameOfMakumbaType. Arguments: <br>
 (Dictionary newData,&nbsp; Attributes a, Database
 db)</td>
     </tr>
@@ -1592,15 +1565,12 @@ for the name of the html form (<code>&lt;form name="..." ...&gt;</code>)</td>
 success</td>
       <td>Fixed. Defaults to "changes done".</td>
     </tr>
-<!--form specific:-->
-    <tr>
+<!--form specific:--> <tr>
       <td><tt>target</tt></td>
       <td rowspan="3">Form-specific html tag attributes</td>
-      <td rowspan="3">
-The content is copied to the resulting <code>&lt;form...&gt;</code>
+      <td rowspan="3">The content is copied to the resulting <code>&lt;form...&gt;</code>
 tag.
-Careful with (escaping) <a href="#tagparameters">quotes</a>.
-      </td>
+Careful with (escaping) <a href="#tagparameters">quotes</a>. </td>
     </tr>
     <tr>
       <td><tt>onReset</tt></td>
@@ -1608,11 +1578,9 @@ Careful with (escaping) <a href="#tagparameters">quotes</a>.
     <tr>
       <td><tt>onSubmit</tt></td>
     </tr>
-<!-- generic: -->
-    <tr>
+<!-- generic: --> <tr>
       <td><tt>styleId</tt></td>
-      <td rowspan="14">Generic HTML tag attributes.
-      </td>
+      <td rowspan="14">Generic HTML tag attributes. </td>
       <td>results in <code>id="..."</code></td>
     </tr>
     <tr>
@@ -1621,10 +1589,9 @@ Careful with (escaping) <a href="#tagparameters">quotes</a>.
     </tr>
     <tr>
       <td><tt>style</tt></td>
-      <td rowspan="12">
-The content is copied to the resulting html tags.
-Careful with (escaping) <a href="#tagparameters">quotes</a>.
-      </td>
+      <td rowspan="12">The content is copied to the resulting html
+tags.
+Careful with (escaping) <a href="#tagparameters">quotes</a>. </td>
     </tr>
     <tr>
       <td><tt>title</tt></td>
@@ -1669,8 +1636,7 @@ Careful with (escaping) <a href="#tagparameters">quotes</a>.
 opportunity
 to validate/change the data.
 If the data is not correct, the handler can throw an exception to
-prevent insertion in database.
-    </p>
+prevent insertion in database. </p>
     <pre class="example">handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;<br></pre>
   </li>
   <li>
@@ -1681,8 +1647,7 @@ prevent insertion in database.
   <li>
     <p>By defining <tt>after_new*</tt>, the handler class gets the
 opportunity
-to do supplementary operations with the inserted record.
-    </p>
+to do supplementary operations with the inserted record. </p>
     <pre class="example">handler.<b>after_new<i>TypeName</i>(created, data, attr, db)</b>;<br></pre>
   </li>
 </ol>
@@ -1727,8 +1692,7 @@ and <code>after_new</code>), the action is not allowed.
 <p>
 At response the following calls are executed (in this order):
 </p>
-<pre class="example">PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a>
-handler_obj.<b>checkAttributes(attr, db)</b>;<br>handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;<br>Pointer created= db.insert("general.Person", data);<br>handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;<br></pre>
+<pre class="example">PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a><br>handler_obj.<b>checkAttributes(attr, db)</b>;<br>handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;<br>Pointer created= db.insert("general.Person", data);<br>handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;<br></pre>
 <h4><a name="makadd">&lt;mak:addForm&nbsp; ...&gt;....
 &lt;/mak:addForm&gt;</a></h4>
 <p>
@@ -1768,12 +1732,19 @@ Arguments: <code>(Pointer baseObject, Dictionary newData,&nbsp;
 Attributes a, Database db)</code></td>
     </tr>
 <!-- 
+
   <tr> 
+
     <td>multiple</td>
+
     <td>true ???</td>
+
     <td>II didn't find this in makumba taglib but it's in the changelog
+
 	<br>http://bugs.best.eu.org/show_bug.cgi?id=37</td>
+
   </tr>
+
   -->
     <tr>
       <td><tt>action</tt></td>
@@ -1898,8 +1869,7 @@ a, Database db)</code></td>
     <tr>
       <td><tt>message</tt></td>
     </tr>
-<!--form specific:-->
-    <tr>
+<!--form specific:--> <tr>
       <td><tt>target</tt></td>
       <td rowspan="3" colspan="2">Form-specific html tag attributes,
 see <a href="#maknew"><code>newForm</code></a></td>
@@ -1910,12 +1880,10 @@ see <a href="#maknew"><code>newForm</code></a></td>
     <tr>
       <td><tt>onSubmit</tt></td>
     </tr>
-<!-- generic: -->
-    <tr>
+<!-- generic: --> <tr>
       <td><tt>styleId</tt></td>
-      <td rowspan="14" colspan="2">
-Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
-      </td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
     </tr>
     <tr>
       <td><tt>styleClass</tt></td>
@@ -1991,8 +1959,7 @@ Example:
       <td><tt>handler</tt></td>
       <td>the Java method that handles the response</td>
       <td>Arguments: <code>(Dictionary formFields, Attributes
-restOfArguments, Database db)</code>
-      <br>
+restOfArguments, Database db)</code> <br>
 Not mandatory. A form without handler will simply
 set attributes (as makumba objects) for the next page</td>
     </tr>
@@ -2009,8 +1976,7 @@ set attributes (as makumba objects) for the next page</td>
     <tr>
       <td><tt>message</tt></td>
     </tr>
-<!--form specific:-->
-    <tr>
+<!--form specific:--> <tr>
       <td><tt>target</tt></td>
       <td rowspan="3" colspan="2">Form-specific html tag attributes,
 see <a href="#maknew"><code>newForm</code></a></td>
@@ -2021,12 +1987,10 @@ see <a href="#maknew"><code>newForm</code></a></td>
     <tr>
       <td><tt>onSubmit</tt></td>
     </tr>
-<!-- generic: -->
-    <tr>
+<!-- generic: --> <tr>
       <td><tt>styleId</tt></td>
-      <td rowspan="14" colspan="2">
-Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
-      </td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
     </tr>
     <tr>
       <td><tt>styleClass</tt></td>
@@ -2081,15 +2045,14 @@ The difference between <code>&lt;mak:input &gt;</code> and normal
 HTML <code>&lt;input&gt;</code> in a makumba form are:
 </p>
 <ul>
-  <li>
-    <code>&lt;mak:input&gt;</code> produces objects prepared for
+  <li> <code>&lt;mak:input&gt;</code> produces objects prepared for
 setting/comparing
 makumba fields (e.g. Pointer, Date, Text).</li>
-  <li>
-the fields produced by <code>&lt;input&gt;</code> will be available
+  <li>the fields produced by <code>&lt;input&gt;</code> will be
+available
 as page $attributes but will all be of type String</li>
-  <li>
-the fields produced by <code>&lt;mak:input&gt;</code> are available
+  <li>the fields produced by <code>&lt;mak:input&gt;</code> are
+available
 separately as a Dictionary to the handler method</li>
 </ul>
 <pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="p" action="studentView.jsp" method="post"&gt;<br>        name      &lt;mak:input name="name"/&gt;<br>        surname   &lt;mak:input name="surname"/&gt;<br>        gender    &lt;mak:input name="gender" type="tickbox" /&gt;<br>        dob       &lt;mak:input name="birthdate" format="yyyy-MM-dd" /&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
@@ -2104,8 +2067,7 @@ separately as a Dictionary to the handler method</li>
       <th>comments</th>
     </tr>
     <tr>
-      <td><tt>name</tt>
-      <br>
+      <td><tt>name</tt> <br>
       <tt class="oldfeat">(or field)</tt></td>
       <td>Makumba field (from the edited record or via base pointers or
 sub-record
@@ -2113,9 +2075,19 @@ pointers)</td>
       <td>Fixed, mandatory</td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><tt>nameVar</tt> </td>
+      <td style="vertical-align: top;">The name of the java variable in
+which to store the name of the HTML input. In multiple forms,&nbsp;
+there may be more HTML inputs generated by one mak:input, so a suffix
+is added by makumba to the name to generate unique names for each.<br>
+      </td>
+      <td style="vertical-align: top;">Fixed<br>
+      </td>
+    </tr>
+    <tr>
       <td><tt>value</tt></td>
-<!-- FIXME (fred 2003-10-19): can also be a constant, i think ? -->
-      <td>OQL expression relative to enclosing query tags or a <code>$attribute</code>
+<!-- FIXME (fred 2003-10-19): can also be a constant, i think ? --> <td>OQL
+expression relative to enclosing query tags or a <code>$attribute</code>
 computed
 previously in the page (with <code>&lt;mak:value var=.../&gt;</code>
 or <code>pageContext.setAttribute(...)</code>),
@@ -2126,23 +2098,20 @@ or read by in the previous page by an <code>&lt;mak:input /&gt;</code></td>
       <td><tt>type</tt></td>
       <td>HTML INPUT type to be used
       <ul>
-        <li>
-"<code>hidden</code>" works for all fields</li>
-        <li>
-for <code>char[]</code> , type can be "<code>text</code>" or "<code>password</code>",
+        <li>"<code>hidden</code>" works for all fields</li>
+        <li>for <code>char[]</code> , type can be "<code>text</code>"
+or "<code>password</code>",
 default is "<code>text</code>"</li>
-        <li>
-default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>,
+        <li>default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>,
           <code>ptr</code> and <code>set</code>
 is "<code>select</code>" (dropdown or scroll list depending on <code>size</code>).
 Alternative is "<code>tickbox</code>" (checkboxes or radio buttons)</li>
-        <li>
-          <code>date</code> is splitted in 3 inputs, <code>&lt;fieldname&gt;_0</code>
-(day), <code>_1</code> (month),
-          <code>_2</code> (year), and likewise for <code>time</code>
+        <li> <code>date</code> is splitted in 3 inputs, <code>&lt;fieldname&gt;_0</code>
+(day), <code>_1</code> (month), <code>_2</code> (year), and likewise
+for <code>time</code>
 elements</li>
-        <li>
-for <code>text</code>, default is "<code>textarea</code>"; "<code>file</code>"
+        <li>for <code>text</code>, default is "<code>textarea</code>";
+"<code>file</code>"
 will create file upload box, and
 will create supplementary attributes <code>&lt;fieldname&gt;_filename</code>,
           <code>&lt;fieldname&gt;_contentType</code> and <code>&lt;fieldname&gt;_contentLength</code>
@@ -2170,12 +2139,10 @@ Type, set Type</code></td>
     </tr>
     <tr>
       <td><tt>format</tt></td>
-      <td>Format string, according to java.text.SimpleDateFormat
-      <br>
+      <td>Format string, according to java.text.SimpleDateFormat <br>
 Can only countain <code>d, M, y, H, m, s</code> formatting chars, and
 any kind of
-separators. Ex:
-      <br>
+separators. Ex: <br>
       <code>'the day' dd 'of the month' MMMM 'in the year' yyyy</code>.
       <br>
 Default is "<code>dd MMMM yyyy</code>"</td>
@@ -2197,8 +2164,7 @@ Defaults to makumba width of the <code>char[]</code></td>
     <tr>
       <td><tt>labelSeparator</tt></td>
       <td>The string that separates the tickbox (radio/check) from the
-label. Default is <code>" "</code> (space).
-      <br>
+label. Default is <code>" "</code> (space). <br>
 The output will be <code>&lt; tick &gt;&lt; labelSeparator &gt;&lt;
 label &gt;</code></td>
       <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
@@ -2206,8 +2172,7 @@ label &gt;</code></td>
     <tr>
       <td><tt>elementSeparator</tt></td>
       <td>The string that separates the different options. Default is <code>"
-"</code> (space).
-      <br>
+"</code> (space). <br>
 The output will be <code>&lt; [x] label &gt;&lt; elementSeparator
 &gt;&lt; [x] label &gt;</code></td>
       <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
@@ -2219,8 +2184,7 @@ active by default.
 The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any
 character
 (not appearing inside the separators) can be used as delimiter, e.g.
-'!'.
-      <br>
+'!'. <br>
 The output will be <br>
       <code>&lt; [x] label &gt;&lt; sep[1] &gt;&lt; [x] label &gt;&lt;
 sep[2] &gt; ... &lt; [x] label &gt;&lt; sep[n] &gt;&lt; [x] label
@@ -2235,32 +2199,31 @@ if it exists.</td>
     </tr>
     <tr>
       <td><tt>default</tt></td>
-      <td>
-<!--
+      <td><!--
+
 The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)
--->
-FIXME
+
+-->FIXME
       </td>
       <td>Rtexpr</td>
     </tr>
     <tr>
       <td><tt>empty</tt></td>
-      <td>
-<!--
+      <td><!--
+
 The character string to print if the normal printed output would be empty (i.e. zero-length string).
+
 Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.
--->
-FIXME
+
+-->FIXME
       </td>
       <td>Rtexpr<br>
       </td>
     </tr>
-<!-- generic: -->
-    <tr>
+<!-- generic: --> <tr>
       <td><tt>styleId</tt></td>
-      <td rowspan="14" colspan="2">
-Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
-      </td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
     </tr>
     <tr>
       <td><tt>styleClass</tt></td>
@@ -2315,14 +2278,10 @@ form :
 <p>Restrictions for different field types:
 </p>
 <ul>
-  <li>
-fixed fields: cannot be edited</li>
-  <li>
-relational and index pointer: cannot be edited</li>
-  <li>
-timestamps (create and modify): cannot be edited</li>
-  <li>
-subset, subpointer: cannot be edited as a field,
+  <li>fixed fields: cannot be edited</li>
+  <li>relational and index pointer: cannot be edited</li>
+  <li>timestamps (create and modify): cannot be edited</li>
+  <li>subset, subpointer: cannot be edited as a field,
 only as a separate object</li>
 </ul>
 <!-- ========================================================= -->
@@ -2338,10 +2297,7 @@ form tag.
 <p>
 Example:
 </p>
-<pre class="example">&lt;mak:editForm object="ins" method="post"&gt;<br>  <b>&lt;mak:action&gt;</b>memberView.jsp?person=&lt;mak:value expr="p"/&gt;<b>&lt;/mak:action&gt;</b>
-...
-&lt;/mak:editForm&gt;
-</pre>
+<pre class="example">&lt;mak:editForm object="ins" method="post"&gt;<br>  <b>&lt;mak:action&gt;</b>memberView.jsp?person=&lt;mak:value expr="p"/&gt;<b>&lt;/mak:action&gt;</b><br>...<br>&lt;/mak:editForm&gt;<br></pre>
 <!-- ========================================================= -->
 <!-- ==================== mak:deleteLink ===================== -->
 <h3><a name="delete">&lt;mak:deleteLink&gt;...&lt;/mak:deleteLink&gt;</a></h3>
@@ -2375,8 +2331,7 @@ Example:
       <td class="futfeat">the Java class.method that handles the
 response</td>
       <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>.
-Arguments:
-      <code>(Pointer object, Attributes a, Database db)</code></td>
+Arguments: <code>(Pointer object, Attributes a, Database db)</code></td>
     </tr>
     <tr>
       <td><tt>action</tt></td>
@@ -2391,12 +2346,10 @@ Arguments:
     <tr>
       <td><tt>name</tt></td>
     </tr>
-<!-- generic: -->
-    <tr>
+<!-- generic: --> <tr>
       <td><tt>styleId</tt></td>
-      <td rowspan="14" colspan="2">
-Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
-      </td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
     </tr>
     <tr>
       <td><tt>styleClass</tt></td>
@@ -2460,7 +2413,9 @@ or (in red) the message of a uncaught <code>LogicException</code>
 resulting from
 Business Logic. Other exception types will provoke an exception page.
 <!-- Fred: not true:
+
 <p>Absence of the &lt;mak:response/> tag on a page that is the response to a form, will result in an run-time error.
+
 --></p>
 <p>The unformatted message is available as request-scope attribute <code>makumba.response</code>.
 The jsp page can get hold of the message using e.g. </p>
