@@ -69,14 +69,10 @@ public abstract class DBConnection implements org.makumba.Database
   /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
   public String getName(){ return db.getName(); }
   
-  public void close(){ throw new RuntimeException("org.makumba.db.DBConnection.close() should never be called"); 
+    public void close(){ throw new RuntimeException("org.makumba.db.DBConnection.close() should never be called"); 
     }
-  
-  public void commit() {throw new RuntimeException("org.makumba.db.DBConnection.commit() should never be called"); 
-  }
 
-  public void rollback()  {throw new RuntimeException("org.makumba.db.DBConnection.rollback() should never be called"); 
-  }
+
 
   /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
   public void update(Pointer ptr, java.util.Dictionary fieldsToChange)

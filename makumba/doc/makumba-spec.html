@@ -1138,9 +1138,9 @@ also present within the value, it must be escaped by a backslash.
 </p>
 
 <pre class="example">
-  &lt;mak:list from="general.Person p" where="p.gender=\"male\"" >
-  &lt;mak:list from="general.Person p" where='p.gender="male"' >
-  &lt;mak:list from="general.Person p" where="p.gender='male'" >
+  &lt;mak:list from="best.Student s" where="s.gender=\"male\"" >
+  &lt;mak:list from="best.Student s" where='s.gender="male"' >
+  &lt;mak:list from="best.Student s" where="s.gender='male'" >
   &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " >    <!-- FIXME (fred) I'm not 100% sure this is correct -->
   &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' >
 </pre>
@@ -1177,22 +1177,22 @@ Queries are generated on the spot and can be nested.
 <p>Example:</p>
 
 <pre class="example">
-&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""
-          orderBy="p.name" countVar="counter" maxCountVar="number">
+&lt;mak:list from="best.Student s" where="s.gender=\"male\""
+          orderBy="s.name" countVar="counter" maxCountVar="number">
 
     &lt;% if(counter.intValue()==1) { %>
-       &lt;p> There are &lt;%= number %> male students:
+        There are &lt;%= number %> students: &lt;p>
     &lt;% } %>
 
-    &lt;br> &lt;%= counter %>.
-    &lt;mak:value expr="p.name"/>
-    &lt;mak:value expr="p.surname"/> &lt;br>
-    &lt;mak:list from="p.addresses a">
+    &lt;%= counter %>.
+    &lt;mak:value expr="s.person.surname"/>
+    &lt;mak:value expr="s.person.name"/> &lt;br>
+    &lt;mak:list from="s.person.addresses a">
        &lt;mak:value expr="a.streetno"/> &lt;mak:value expr="a.city"/>
     &lt;/mak:list>
 &lt;/mak:list>
 
-&lt;% if (number.intValue()==0) { %> There are no male students. &lt;% } %>
+&lt;% if (number.intValue()==0) { %> There are no students. &lt;% } %>
 </pre>
 
 
@@ -1385,11 +1385,10 @@ Displays the value of an expression from within the query.
 Example:
 </p>
 <pre class="example">
-&lt;mak:list from="best.Student s, s.person p"
-	where="p.gender=\"male\"" orderBy="p.name">
-    &lt;mak:value expr="p.name"/>
-    &lt;mak:value expr="p.surname"/>
-    &lt;mak:value expr="p.birthdate" var="birth" printVar="printBirth"/>
+&lt;mak:list from="best.Student s" where="s.gender=\"male\"" orderBy="s.name">
+    &lt;mak:value expr="s.person.name"/>
+    &lt;mak:value expr="s.person.surname"/>
+    &lt;mak:value expr="s.person.birthdate" var="birth" printVar="printBirth"/>
     &lt;% // we only print the birthdate if it's after some date
          if ( ((java.util.Date)birth).after(new java.util.Date(1980, 0, 1)) )
              out.print(printBirth);
@@ -1760,14 +1759,14 @@ Makes a form for creating a new object of the indicated type.
 </p>
 
 <p>
-Example (personNew.jsp):
+Example (personEdit.jsp):
 </p>
 
 <pre class="example">
-&lt;mak:newForm type="general.Person" action="personList.jsp" method="post">
+&lt;mak:newForm type="general.Person" action="personView.jsp" method="post">
         &lt;mak:input field="name"/>
         &lt;mak:input field="surname"/>
-        &lt;input type="submit">
+        &lt;input type="submit"/>
 &lt;/mak:newForm>
 </pre>
 
@@ -1894,7 +1893,7 @@ handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;
 </li>
 <li><p>The standard Database call for insertion:</p>
 <pre class="example">
-Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, data)</a>;
+Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, attr)</a>;
 </pre>
 </li>
 <li>
@@ -1964,7 +1963,7 @@ At response the following calls are executed (in this order):
 PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a>
 handler_obj.<b>checkAttributes(attr, db)</b>;
 handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;
-Pointer created= db.insert("general.Person", data);
+Pointer created= db.insert("general.Person", attr);
 handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;
 </pre>
 
@@ -2205,8 +2204,8 @@ on_editBestStudent(Pointer student, Dictionary fieldsToChange, Attributes pagePa
 <h4><a NAME="makform">&lt;mak:form&nbsp; ...>....&lt;/mak:form></a></h4>
 <p>
 Creates a <b>generic form</b>, that may call a handler
-method in response. It allows the JSP author to make any kind of form. They
-are suitable for more complex operations than new, add, edit.
+method in response. Allows the JSP author to make any kind of form. They
+are suitable for more complex operations then new, add, edit.
 </p>
 
 <p>

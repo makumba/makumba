@@ -82,15 +82,6 @@ public class FieldCursor
       throw fail(s+" expected");
   }
 
-  /** expect the whitespace*/
-  public void expectWhitespace() throws DataDefinitionParseError
-  {
-    int indexBefore=index;
-    skipBlank();
-    if(indexBefore==index)
-      throw fail("some whitespace expected");
-  }
-
   /** a type name */
   public String lookupTypeLiteral()
   {

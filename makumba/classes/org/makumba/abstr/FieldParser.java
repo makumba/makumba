@@ -40,27 +40,16 @@ public class FieldParser extends FieldHandler
       {
         if(fi.notNull)
           throw fc.fail("too many not null");
-        fc.expect("null");
-        fc.expectWhitespace();
+        fc.expect("null ");
         fi.notNull= true;
         continue;
       }
       
-      if(fc.lookup("fixed"))
+      if(fc.lookup("fixed "))
       {
-        fc.expectWhitespace();
         if(fi.fixed)
           throw fc.fail("too many fixed");
         fi.fixed= true;
-        continue;
-      }
-
-      if(fc.lookup("unique"))
-      {
-        fc.expectWhitespace();
-        if(fi.unique)
-          throw fc.fail("already unique");
-        fi.unique= true;
         continue;
       }
       
