@@ -350,6 +350,34 @@
 		<java classname="test.lock" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
+	<target name="statcvs" description="generate CVS statistics with StatCVS">
+		<echo>Get StatCVS, http://statcvs.sf.net/:
+		cd .. (you should be in sources/ afterwards)
+		cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/statcvs login
+		cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/statcvs co statcvs
+		Get needed libs from: http://belnet.dl.sourceforge.net/sourceforge/statcvs/developer-libs-0.7.zip
+		..and unzip them into statcvs/lib directory.
+		cd statcvs
+		ant compile
+		ant dist
+
+		yep, ant could do all this automagically in a seperate target getStatCvs ;)
+		note: statistics looks better if you update the sources first (cvs update)
+		</echo>
+		<mkdir dir="./doc/statcvs"/>
+		<cvs command="log" dest="." output="./doc/statcvs/cvs.log"/>
+		<!--property name="java.awt.headless" value="true" /-->
+                <java classname="net.sf.statcvs.Main" fork="yes">
+                        <arg line="-title Makumba -output-dir ./doc/statcvs -viewcvs http://cvs.makumba.org ./doc/statcvs/cvs.log ."/>
+                        <classpath>
+				<fileset dir="../statcvs/">
+				        <include name="**/*.jar"/>
+			        </fileset>
+                                <!--path refid="project.class.path"/-->
+                        </classpath>
+                </java>
+
+	</target>
 
 	<target name="insertLicense">
 	  <replace dir="classes" includes="**/*.java" summary="true">
