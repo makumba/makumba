@@ -199,7 +199,7 @@ abstract class QueryValueComputer extends ValueComputer
 /** The manager of a nullableValueQuery */
 class NullableValueComputer extends QueryValueComputer
 {
-  static final String emptyQueryProps[]= new String[4];
+  static final String emptyQueryProps[]= new String[5];
   
   /** Make a query that is identical to the parentQuery, but has expr as projection */
   NullableValueComputer(MakumbaTag analyzed, String nullableExpr, String expr, MakumbaJspAnalyzer.PageCache pageCache)
@@ -234,7 +234,7 @@ class SetValueComputer extends QueryValueComputer
   {
     type=set;
     String label= setExpr.replace('.', '_');
-    String queryProps[]= new String[4];
+    String queryProps[]= new String[5];
     queryProps[ComposedQuery.FROM]=setExpr+" "+label;
 
     if(analyzed instanceof ValueTag)
