@@ -4,7 +4,7 @@ public class HtmlUtils
 {
   // special HTML codes
   static public String[] specials={"\"", "quot", "<", "lt", "&", "amp", ">", "gt"};
-  static public String[] tagExamples={"<br>", "<p>", "</p>", "<b>", "</b>", "<font", "</font>", "</a>", "<ol>", "<ul>", "<li>", "<img ", "</table>", "<tr>", "</tr>", "<td>", "</td>"};
+  static public String[] tagExamples={"<head>","<title>", "<html", "<meta", "<br>", "<p>", "</p>", "<b>", "</b>", "<font", "</font>", "</a>", "<ol>", "<ul>", "<li>", "<img ", "</table>", "<tr>", "</tr>", "<td>", "</td>"};
 
   /** heuristic HTML detection */
   public static boolean detectHtml(String s)
