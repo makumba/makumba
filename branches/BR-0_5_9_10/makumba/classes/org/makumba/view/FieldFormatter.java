@@ -27,8 +27,8 @@ import java.util.*;
 
 public class FieldFormatter extends FieldHandler
 {
-  static String[] params={};
-  static String[][] paramValues={};
+  static String[] params={ "default", "empty" };
+  static String[][] paramValues={ null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -81,14 +81,38 @@ public class FieldFormatter extends FieldHandler
       throw new InvalidValueException(this, "invalid value for format parameter \'"+name+"\': <"+val+">");
   }
 
+  /** 
+   * Format the object to pure text. If text-format is blank, try the "empty" format parameter.
+   */
   public String format(Object o, Dictionary formatParams)
   {
-    if(o==null || o.equals(getNull()))
-      return formatNull(formatParams);
-    return formatNotNull(o, formatParams);
+    String formatted;
+    if( o==null || o.equals(getNull()) ) {
+       formatted = formatNull(formatParams);
+    } else {
+       formatted = formatNotNull(o, formatParams);
+    }
+    if ( "".equals(formatted) ) {
+      String emptyReplacer = (String) formatParams.get("empty");
+      if (emptyReplacer != null) {
+          return emptyReplacer;
+      }
+    }
+    return formatted;
   }
 
-  public String formatNull(Dictionary formatParams) { return ""; }
+  /** 
+   * Format the null-object to pure text. Try the "default" format parameter.
+   */
+  public String formatNull(Dictionary formatParams) { 
+      String nullReplacer = (String) formatParams.get("default");
+      if (nullReplacer != null) { 
+          return nullReplacer; 
+      } else { 
+          return ""; 
+      }
+  }
+  
   public String formatNotNull(Object o, Dictionary formatParams) {return o.toString(); }
 
   public int getIntParam(Dictionary formatParams, String name)

@@ -46,7 +46,7 @@ public class charEditor extends FieldEditor
   }
 
   public String formatNull(Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\"\" "+getParams(formatParams)+getExtraFormatting(formatParams)+">"; }
+  { return formatNotNull(null, formatParams); }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
   { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+getLiteral(o, formatParams)+"\" "+getParams(formatParams)+
@@ -54,7 +54,22 @@ public class charEditor extends FieldEditor
 
 
   public String getLiteral(Object o, Dictionary formatParams) 
-  {return HtmlUtils.string2html(o.toString()); }
+  { 
+     String literal;
+     if (o == null) {
+         String nullReplacer = (String) formatParams.get("default");
+         if (nullReplacer != null) { literal = nullReplacer; }
+         else { literal = ""; }
+     } else { 
+         literal = HtmlUtils.string2html(o.toString()); 	
+     }
+     
+     if ( "".equals(literal) ) {
+         String emptyReplacer = (String) formatParams.get("emtpy");
+         if (emptyReplacer != null) { literal = emptyReplacer; }
+     }     
+     return literal;     
+  }
 
   public String getInputType(Dictionary formatParams)
   {
