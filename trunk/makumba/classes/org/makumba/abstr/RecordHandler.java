@@ -212,8 +212,13 @@ public abstract class RecordHandler
 	 
 	 Properties p= new Properties();
 
-	 java.io.InputStream is= org.makumba.util.ClassResource.get
-	   (pkg.replace('.','/')+"redirect"+suffix+".properties").openStream();
+	 java.net.URL u= org.makumba.util.ClassResource.get
+	   (pkg.replace('.','/')+"redirect"+suffix+".properties");
+
+	 if(u==null)
+	   return null;
+
+	 java.io.InputStream is= u.openStream();
 
 	 if(is==null)
 	   return null;
