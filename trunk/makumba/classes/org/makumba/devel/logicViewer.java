@@ -22,26 +22,25 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
+
 import java.io.*;
 import javax.servlet.http.*;
 import org.makumba.controller.Logic;
 
-/** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used.*/
-public class logicViewer extends LineViewer
-{
-  public logicViewer(HttpServletRequest req, HttpServlet sv) throws Exception
-  {
-    super(false);
-    virtualPath=req.getPathInfo();
-    contextPath=req.getContextPath();
-    Logic.getLogic(virtualPath);
-    reader=new StringReader(Logic.getSearchMessage(virtualPath));
-    title="Logic for "+virtualPath;
-  }
+/** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used. */
+public class logicViewer extends LineViewer {
+    public logicViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
+        super(false, req, sv);
+        //this.request=req;
+        virtualPath = req.getPathInfo();
+        contextPath = req.getContextPath();
+        Logic.getLogic(virtualPath);
+        reader = new StringReader(Logic.getSearchMessage(virtualPath));
+        title = "Logic for " + virtualPath;
+    }
 
- void intro(PrintWriter w)
- {
-   w.print("<td><a href=\""+contextPath+virtualPath+"x\">page</a></td>");
- }
+    public void intro(PrintWriter w) {
+        w.print("<td><a href=\"" + contextPath + virtualPath + "x\">page</a></td>");
+    }
 
 }
