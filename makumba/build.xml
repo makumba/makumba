@@ -15,7 +15,7 @@
 
 	<!-- jikes as default compiler -->
        	<property name="build.compiler" value="jikes" />
- 
+
 	<!-- jikes options for ant -emacs  -->
        	<property name="build.compiler.emacs" value="true" />
 
@@ -344,6 +344,10 @@
 
 	<target name= "test.config" depends="compile" description="run config test cases" >	
 		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
+	</target>
+
+	<target name= "test.lock" depends="compile" description="run locking test cases" >	
+		<java classname="test.lock" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
 	</target>
 
 
