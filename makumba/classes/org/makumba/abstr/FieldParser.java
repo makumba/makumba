@@ -52,14 +52,6 @@ public class FieldParser extends FieldHandler
         fi.fixed= true;
         continue;
       }
-
-      if(fc.lookup("unique "))
-      {
-        if(fi.unique)
-          throw fc.fail("already unique");
-        fi.unique= true;
-        continue;
-      }
       
       break;
     }
