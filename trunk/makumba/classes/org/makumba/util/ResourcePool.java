@@ -148,6 +148,7 @@ class StalePreventionThread extends Thread implements Runnable
   StalePreventionThread(WeakReference poolRef, long sleeping) {
     this.poolRef= poolRef;
     this.sleeping=sleeping;
+    this.setDaemon(true);
   }
 
   public void run(){
