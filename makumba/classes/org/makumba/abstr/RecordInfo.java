@@ -73,7 +73,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
     fi.description= "Unique index";
     fi.fixed= true;
     fi.notNull=true;
-    fi.unique=true;
     addField1(fi);
 
     fi= new FieldInfo(this, modifyName);

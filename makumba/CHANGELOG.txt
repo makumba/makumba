@@ -1,16 +1,3 @@
-fred; 24 aug 2003: bug 530 (added HtmlUtils to org.makumba package, the old class in org.makumba.util extends the new)
-stefan; 20 aug 2003: extended test suite, now ready for additional tests
-stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
-stefan; 23 jul 2003: bug 518: MakumbaSystem.getBuildDate(), development version 'number' includes it
-stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
-stefan; 16 jul 2003: bug 3 fixeed (ptrIndex and ptrOne are declared as unique)
-stefan; 15 jul 2003: bug 4 fixeed (unique indexes created and dropped in the DB as needed during table checking)
-stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
-stefan; 2 jul 2003:improved solution for bug 449 (mak:value  maxLength, ellipsis...)
-stefan; 2 jul 2003: fix for bug 366 (printVar for empty texts should be empty)
-fred; 1 jul 2003: fixed bug 34 (logout design, with wildcard "*") 
-stefan; 30 jun 2003: bug 449 (limiting output of mak:value with new tag parameter e.g. maxLength)  semi fixed
-
 0.5.9.4; 30 jun 2003 cristi
 bug 58: query tags now check for identical keys. the id attribute is suported and the programmer advised to use it to fix
 bug 17: accepted for "value": 1, 'Yes', nil, $xxx (see also bug 375, bug 59)

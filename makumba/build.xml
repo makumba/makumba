@@ -1,25 +1,24 @@
 <!-- $Header$ -->
 
 <project name="Makumba" default="compile" basedir=".">
-      	<property name="bundle_base" value="../.." />
 
        <path id="project.class.path">
-	 <fileset dir="${bundle_base}/util-java/lib">
+	 <fileset dir="../../util-java/lib">
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="${bundle_base}/util-java/tomcat-4.1/common/lib">
+	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
 	  <include name="**/servlet.jar" />
 	 </fileset>	
        </path>
 
 	<!-- jikes as default compiler -->
        	<property name="build.compiler" value="jikes" />
- 
+
 	<!-- jikes options for ant -emacs  -->
        	<property name="build.compiler.emacs" value="true" />
 
-	<property name="temp.dir" value="${bundle_base}/temp" />
+	<property name="temp.dir" value="../../temp" />
 
 	<property environment="env"/>
 
@@ -49,11 +48,6 @@
 	<target name="compile" depends="OQLParserGeneration"
 		description="compile all java files"
 	>
-		<tstamp>
-		  <format property="CURDATE" pattern="yyyyMMddHHmmss" locale="en"/> 
-		</tstamp> 
-		<echo message="buildDate=${CURDATE}" file="classes/org/makumba/versionBuildDate.properties"/> 
-
 		<javac srcdir="classes">
 		     <classpath refid="project.class.path" />
 		</javac>
@@ -144,7 +138,6 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
-		additionalparam="-breakiterator"
 		doctitle="Makumba API Documentation"
 	>
             <bottom><![CDATA[
@@ -163,9 +156,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
-		additionalparam="-breakiterator"
 		access="package"
-		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
 	>
             <bottom><![CDATA[
@@ -208,8 +199,9 @@
                 </table>
             ]]></header>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
-	    <link href="http://java.sun.com/products/servlet/2.2/javadoc/"/>
-	    <link href="http://junit.sourceforge.net/javadoc/"/>
+	    <link href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/"/>
+	    <!--link href="http://java.sun.com/products/servlet/2.3/javadoc/"/-->
+	    <link href="http://barracuda.enhydra.org/webdocs/junit3.7/javadoc/"/>
 	</javadoc> 
 
 	</target>
@@ -223,18 +215,18 @@
 	</target>
 
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
-	<mkdir dir="${bundle_base}/makumba.distrib" />
-	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" dest="${bundle_base}/makumba.distrib/"/>
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
         <mkdir dir="${jar.place}/lib" />
 	<!-- make the source tarball: -->
 	<zip zipfile="lib/${tag}-src.zip">
-		<fileset dir="${bundle_base}/makumba.distrib/">
+		<fileset dir="../../makumba.distrib/">
 		  <include name="makumba/**" />
 		</fileset>
 	</zip>
 	<!-- make the jar: -->
-	<java classname="org.apache.tools.ant.Main" fork="true" dir="${bundle_base}/makumba.distrib/makumba/" >
+	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
         	<classpath>
 		<pathelement path="${project.class.path}"/>
 		<pathelement path="${java.class.path}"/>
@@ -242,16 +234,19 @@
             <sysproperty key="jar.place" path="${jar.place}" />
             <arg value="jar"/>
 	</java>
-	<delete dir="${bundle_base}/makumba.distrib" />
+	<delete dir="../../makumba.distrib" />
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
 
 
 	<target name="publishJar" depends="compile" if="tag" 
 	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
-	<mkdir dir="${bundle_base}/makumba.distrib" />
-	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
-	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagJar</echo>
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
+	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
+	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
+
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
 	<ftp server="download.makumba.org"
@@ -320,20 +315,15 @@
 	</zip>
         </target>	
 
-	<target name= "test" depends="compile" description="run all test cases" >	
-		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
-	</target>
-
-	<target name= "test.table" depends="compile" description="run database test cases" >	
-		<java classname="test.table" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
-	</target>
-
-	<target name= "test.mdd" depends="compile" description="run MDD test cases" >	
-		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
-	</target>
-
-	<target name= "test.config" depends="compile" description="run config test cases" >	
-		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" />
+	<target name= "test" depends="compile" description="run the test cases" >	
+		<java	classname="test.table" fork="true"  
+			failonerror="true"
+		>
+		     <classpath>
+			<pathelement path="classes"/>			
+			<path refid="project.class.path" />
+		      </classpath>
+	 	</java>
 	</target>
 
 
