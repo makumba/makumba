@@ -487,7 +487,7 @@ projection :
         e:expr 
         (
             ( a:"as" {#a.setText(" AS");})?
-            lb:	labelIdentifier { label=#lb.getText(); #lb.setText(" "+label); }
+            lb:	labelIdentifier { label=#lb.getText(); #lb.setText(" "+label+"_"); }
         )?
 	{
 	  
@@ -917,12 +917,12 @@ type :
         |   "string"
         |   "boolean"
         |   "octet"
-        |   "enum"
-            (
-                typeIdentifier
-                TOK_DOT
-            )?
-            labelIdentifier
+//        |   "enum"
+//            (
+//                typeIdentifier
+//                TOK_DOT
+//            )?
+//            labelIdentifier
         |   "date"
         |   "time"
         |   "interval"
