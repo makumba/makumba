@@ -85,8 +85,8 @@ mak:lastCount()</a></li>
           <li><a href="#makadd">&lt;mak:addForm&gt;</a></li>
           <li><a href="#makedit">&lt;mak:editForm&gt;</a></li>
           <li><a href="#makform">&lt;mak:form&gt;</a></li>
-          <li><a href="#input">&lt;mak:input/&gt;</a> and <a href="#choiceDisplay">selector option display</a></li>
-          <li><a href="#action">&lt;mak:action/&gt;</a></li>
+          <li><a href="#input">&lt;mak:input&gt;</a> and <a href="#choiceDisplay">&lt;mak:option&gt;</a></li>
+          <li><a href="#action">&lt;mak:action&gt;</a></li>
         </ul>
       </li>
       <li><a href="#delete">&lt;mak:deleteLink/&gt;</a></li>
@@ -2292,22 +2292,38 @@ only as a separate object</li>
 </ul>
 
 
-<h5><a name="choiceDisplay" >Selector option display</h5>
-By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:list</code> (or <code>mak:object</code>) that have a <code>choice</code> label. The <code>choice</code> name is standard for this purpose (maybe it should be reserved?).<p>
-All text from the mak:input that is not inside a mak:list will be shown in the choser as a nil option. Such nil options will be ignored at form submission.<p> 
-If an option is returned many times by the <code>mak:lists</code>, it will only be shown the first time it occurs.<p>
-All option titles will be trimmed before display.<p>
+<h5><a name="choiceDisplay" >&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
+By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:option</code>. Options can be repeated using <code>mak:list</code>, <code>c:foreach</code>, and in general can appear inside any other tag.<p>
+Text inside <code>mak:option</code> will become an option title. The <code>value</code> attribute will become the option. All text produced inside the mak:input that is not inside a mak:option must be blank!<p>
+If <code>mak:option</code> doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.<p> 
+If an option value appears many times it will only be shown the first time it occurs.<p>
+
 <pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;
-Please choose:
+&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;
 &lt;mak:list from="T choice" where="someCondition" &gt;
-    &lt;mak:value expr="choice.someField /&gt;
+    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;
 &lt;/mak:list&gt;
-   -------- separator----------
+&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;
 &lt;mak:list from="T choice" where="someOtherCondition" &gt;
-    &lt;mak:value expr="choice.someField /&gt;
+   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;
 &lt;/mak:list&gt;
 &lt;/mak:input&gt;
 <br></pre>
+
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>value</tt> <br>
+      <td>Value of the option, can be an OQL expression or a $attribute
+</td>
+      <td>Fixed, if not indicated, nil (null option) is default</td>
+    </tr>
+</table>
 
 <!-- ========================================================= -->
 <!-- ====================== mak:action ======================= -->
