@@ -81,37 +81,45 @@ public class TagExceptionServlet extends HttpServlet
 	t=t1;
       }
 
+    if(t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())){
+      knownError("JSP compilation error", t, original, req, wr);
+      return;
+    }
+
     for(int i=0; i<errors.length; i++)
       if((((Class)errors[i][0])).isInstance(t) || t1!=null && 
 	 (((Class)errors[i][0])).isInstance(t=t1))
 	{
-	  String trcOrig=trace(t);
-	  String trc= shortTrace(trcOrig);
-	  String title="Makumba "+errors[i][1] +" error";
-	  String body=t.getMessage();
-	  String hiddenBody=null;
-
-	  body=formatTagData()+ body;
-	  if(original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic")!=-1)
-	    {
-	      body=body+"\n\n"+trc;
-	    }
-	  else
-	    {
-	      hiddenBody=trc;
-	    }
-	  try{
-	     SourceViewer sw=new errorViewer(req,this,title,body,hiddenBody);
-	     sw.parseText(wr);
-	  } catch (IOException e) {e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
+	  knownError("Makumba "+errors[i][1] +" error", t, original, req, wr);
 	  return;
 	}
     unknownError(original, t, wr,req);
     wr.flush();
   }
-  
+    
+  void knownError(String title, Throwable t, Throwable original, HttpServletRequest req, PrintWriter wr){
+    String trcOrig=trace(t);
+    String trc= shortTrace(trcOrig);
+    String body=t.getMessage();
+    String hiddenBody=null;
+    
+    body=formatTagData()+ body;
+    if(original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic")!=-1)
+      {
+	body=body+"\n\n"+trc;
+      }
+    else
+      {
+	hiddenBody=trc;
+      }
+      try{
+	SourceViewer sw=new errorViewer(req,this,title,body,hiddenBody);
+	sw.parseText(wr);
+      } catch (IOException e) {e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
+  }
+    
   String formatTagData(){
-    String tagExpl="During analysis of:";
+    String tagExpl="During analysis of the following tag (and possibly tags inside it):";
     JspParseData.TagData tagData=MakumbaTag.getAnalyzedTag();
     if(tagData==null){
       tagExpl="During running of:";
@@ -183,8 +191,12 @@ public class TagExceptionServlet extends HttpServlet
       {
 	title="Internal Makumba error";
 	body="Please report to the developers.\n\n";
-	if(t instanceof ServletException)
+	if(t instanceof ServletException){
 	  traced=((ServletException)t).getRootCause();
+	  // maybe there's no root cause...
+	  if(traced==null)
+	    traced=t;
+	}
       }
     else
       {
