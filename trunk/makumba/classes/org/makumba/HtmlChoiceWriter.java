@@ -204,8 +204,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
             String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? " " : " CHECKED " ;
             j = (j+1) % _elementSeparator.length;
                     
+	    String id="AutoLabel_"+java.lang.Long.toString(java.lang.Math.round(java.lang.Math.random()*100000000));
             inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
-            inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + _tickLabelSeparator + label + _elementSeparator[j]);
+            inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\""+id+"\">" + _tickLabelSeparator + "<LABEL for=\""+id+"\">" + label + "</LABEL>" + _elementSeparator[j]);
           }
       }
   
