@@ -3,6 +3,7 @@
 
 TO RELEASE IMMEDIATELY:
 ? fred: new features in choosers
+stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
 
 NOT TO BE RELEASED YET:
 cristi;21 sep 2003: bug 48: added transactions: commit() and rollback() in org.makumba.Database. Database.close() commits the transaction. Business logic rolls back the transaction in case of errors in the BL code, and committs it otherwise by calling . default transaction isolation is REPEATABLE READ. Autocommit is always OFF.
