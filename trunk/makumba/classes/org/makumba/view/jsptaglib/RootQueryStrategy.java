@@ -91,10 +91,6 @@ implements RootTagStrategy, QueryTagStrategy
   public void doRelease()
   {
     MakumbaSystem.getMakumbaLogger("taglib.performance").fine("queries: "+queryTime+" ms");
-    if(decorated==null || decorated.rootData==null)
-      return;
-    decorated.rootData.close();
-    decorated.rootData.pageContext.removeAttribute(MakumbaTag.ROOT_DATA_NAME, PageContext.PAGE_SCOPE);
   }
 
   /** See whether we execute the body or not. If we have a query, it depends on it, if not, 
