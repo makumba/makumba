@@ -28,33 +28,41 @@ package org.makumba;
  * Note: previously this was an existing class in the internal "util" package (fred, 2003-08-24).
  */
 
-public class HtmlUtils
-{
+public class HtmlUtils {
+
   // special HTML codes
   static public String[] specials={"\"", "quot", "<", "lt", "&", "amp", ">", "gt"};
   static public String[] tagExamples={"<head>","<title>", "<html", "<meta", "<br>", "<p>", "</p>", "<b>", "</b>", "<font", "</font>", "</a>", "<ol>", "<ul>", "<li>", "<img ", "</table>", "<tr>", "</tr>", "<td>", "</td>"};
 
-  /** heuristic HTML detection */
-  public static boolean detectHtml(String s)
-  {
-    if(s.length()>1024)
-      s=s.substring(0, 1024);
-    s=s.toLowerCase();
-    for(int i=1; i<specials.length; i+=2)
-      if(s.indexOf("&"+specials[i]+";")!=-1)
-	return true;
+  /** Tries to detect whether input string is HTML-formatted; heuristic detection. 
+   *  Implementation note: For long input String, checks only first 1024 characters. 
+   */
+  public static boolean detectHtml(String s) {
+    if (s.length()>1024) { 
+        s = s.substring(0, 1024); 
+    }
+    s = s.toLowerCase();
 
-    for(int i=0; i<tagExamples.length; i++)
-      if(s.indexOf(tagExamples[i])!=-1)
-	return true;
+    // try to find HTML specific "&XXX;" strings
+    for (int i=1; i<specials.length; i+=2){
+        if (s.indexOf("&"+specials[i]+";") != -1) return true;
+    }
+
+    // try to find HTML tags
+    for (int i=0; i<tagExamples.length; i++){
+        if (s.indexOf(tagExamples[i]) != -1) return true;
+    }
+
     return false;
   }
-  /** convert a string into its html correspondent using special codes */
+
+
+  /** Converts a string into its HTML correspondent using special codes. */
   public static String string2html(String s)
   {
     boolean special;
     
-    if(s==null)
+    if (s==null)
       return "null";
     StringBuffer sb= new StringBuffer();
     int l=s.length();
@@ -74,7 +82,8 @@ public class HtmlUtils
     return sb.toString();
   }
 
-  /** the maximum length of a line */
+
+  /** Determines the maximum length of a line in a text. */
   public static int maxLineLength(String s)
   {
     int r=0;
@@ -101,30 +110,34 @@ public class HtmlUtils
       }
   }
   
-  /** print a text with very long lines */
+
+  /** 
+   * Prints a text with very long lines. Surrounds every paragraph with start|end- separator.
+   * FIXME bug 38.
+   */
   public static String text2html(String s, String startSeparator, String endSeparator)
   {
-    // conver the special characters
-    s= string2html(s);
-    String r= startSeparator;
-    while(true)
-      {
-	// look for end of line
-	int i= s.indexOf('\n');
-	// if it's the last line
-	if(i==-1)
-	  // add it to the previous formatted text, add a new line and return it
-	  return r+s+endSeparator;
-	if(i>0)
-	  // add the nex line
-	  r+=s.substring(0, i);
-	// add a new line markup
-	r+=endSeparator+startSeparator;
-	// erase the current line already processed
-	if(i+1<s.length())
-	  s=s.substring(i+1);
-	else
-	  return r+endSeparator;
+    // convert the special characters
+    s = string2html(s);
+
+    String formatted = startSeparator;
+    while (true) {
+        // look for "newline"
+        int i= s.indexOf('\n');
+
+        if (i == -1) { // not found!
+          // add last part to the previously formatted text, add finisher and return it
+          return formatted + s + endSeparator;
+        }
+        else if (i>0) { // found, add it to formatted text.
+          formatted += s.substring(0, i) + endSeparator + startSeparator;
+        }
+
+        // test if there is more text
+        if (i+1 < s.length())
+          s = s.substring(i+1); // continue with the rest of the input string
+        else
+          return formatted + endSeparator;
       }
   }
 }
