@@ -127,11 +127,6 @@ implements RootTagStrategy, QueryTagStrategy
     }catch(Exception e) { throw new MakumbaJspException(e); }
   }
 
-  protected ComposedQuery getSuperQuery() 
-  { 
-    return null;
-  }
-
   //----------------------------
   protected void addQuery(QueryStrategy qs)
   {
