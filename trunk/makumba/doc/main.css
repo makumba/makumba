@@ -1,18 +1,18 @@
 /* $Id$ */
-BODY {	font-family: arial;
+BODY {	font-family: Arial, Helvetica, sans-serif;
 	color:black; 
 	background-color:white; 
-	margin-right:10;
-	margin-left:150; }
+	margin-right:10px;
+	margin-left:150px; }
   H1 {	background: #044a2c; 
 	color:white;
-	margin-top: 30;
-	padding-left: 10;
-	margin-left:-40; }
-  H2 { background: #74C27A; margin-top: 50 ; padding-left: 10; margin-left:-30;}
-  H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10; margin-left:-20;}
-  H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left:10; margin-left:-10;}
-  H5 { background: #E0D9CF; color: #666666 ; margin-top: 40; padding-left: 10}
+	margin-top: 30px;
+	padding-left: 10px;
+	margin-left:-40px; }
+  H2 { background: #74C27A; margin-top: 50px ; padding-left: 10px; margin-left:-30px;}
+  H3 { background: #C2FE8D; margin-top: 40px ; padding-left: 10px; margin-left:-20px;}
+  H4 { background: #DAD3B8; margin-top: 40px ; margin-bottom:5px; padding-left:10px; margin-left:-10px;}
+  H5 { background: #E0D9CF; color: #666666 ; margin-top: 40px; padding-left: 10px;}
   
   H2 a, H3 a, H4 a {color:black;}
   H1 a {color:white;}
@@ -27,30 +27,30 @@ BODY {	font-family: arial;
   .futfeat { color: #990000 }
   /*  .unusedcolor (#74C27A #CBBE1D) */
 
-  .exampleBlock { background: #e7e7e7; padding-left: 10; padding-right:10; padding-top:10; padding-bottom:2 ; }
+  .exampleBlock { background: #e7e7e7; padding-left: 10px; padding-right:10px; padding-top:10px; padding-bottom:2px ; }
 
 ul {margin-top:0}
 a {color:#044a2c;}
 
 div.navbar { 
 	background: #e7e7e7; 
-	padding:5;
+	padding:5px;
 	margin:0;
 	position:absolute;
 	top:0;
 	left:0;
-	width:100;
+	width:100px;
 	font-size:0.8em;
 }
 
 /* trick IE with child selector */
 body>div.navbar { position: fixed }
 
-.pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20; margin-left:-140;}
+.pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20px; margin-left:-140px;}
 
 /* Tables in specification */
 table.tagParamDef {
-	margin-left:20;
+	margin-left:20px;
 	border:solid #E0D9CF 1px ;
 	border-spacing:0;
 }
@@ -70,7 +70,7 @@ pre.example {
 .note{
 	font-size:0.9em;
 	font-style:italic;
-	margin-left: 50;
+	margin-left: 50px;
 	padding:0.2em;
 	background: white url("note.gif") no-repeat;
 	padding-left:25px;
@@ -79,9 +79,9 @@ pre.example {
 
 div.plainStyle {
 	background:#DDDDDD;
-	margin-left:20;
+	margin-left:20px;
 	font-family:serif;
-	padding:5;
+	padding:5px;
 	width:50%;
 }
 
