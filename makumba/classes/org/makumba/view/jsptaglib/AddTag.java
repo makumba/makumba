@@ -23,7 +23,6 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.FieldDefinition;
-import org.makumba.abstr.FieldInfo;
 import org.makumba.DataDefinition;
 import org.makumba.util.MultipleKey;
 
@@ -41,15 +40,10 @@ public class AddTag extends FormTagBase
     tagKey=new MultipleKey(keyComponents);
   }
 
-  public boolean canComputeTypeFromEnclosingQuery() 
-  { return true; }
-
-  public FieldDefinition computeTypeFromEnclosingQuery(String fieldName) 
+  public DataDefinition getDataType()
   {
-    DataDefinition dd= ((FieldInfo)pageCache.getQuery(getParentListKey()).getLabelType(baseObject).getFieldDefinition(field)).getPointedType();
-    return deriveType(dd, fieldName);
+    return pageCache.getQuery(getParentListKey()).getLabelType(baseObject).getFieldDefinition(field).getSubtype();
   }
-
 }
 
 

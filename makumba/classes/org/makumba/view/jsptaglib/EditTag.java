@@ -23,9 +23,16 @@
 
 package org.makumba.view.jsptaglib;
 
+import org.makumba.DataDefinition;
+
 public class EditTag extends FormTagBase 
 {
   // for input tags:
   public String getDefaultExpr(String fieldName) 
   { return baseObject+"."+fieldName; }
+
+  public DataDefinition getDataType()
+  {
+    return pageCache.getQuery(getParentListKey()).getLabelType(baseObject);
+  }
 }
