@@ -93,7 +93,7 @@ public class MultipartHttpParameters extends HttpParameters
 	    n= header.indexOf("Content-Type:");
 	    if(n!=-1)
 	      {
-		String type= header.substring(n+13);
+		String type= header.substring(n+13).trim();
 	    
 		parameters.put(name+"_contentType", type);
 		if(type.indexOf("application/x-macbinary") !=-1)
