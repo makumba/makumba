@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+   <title>Search Makumba</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+
+<h1>Search Makumba</h1>
+You could just single click on the "Search" in the navigation menu on the left,
+write your query there and press enter to submit it to Google...
+but of course can search makumba.org domain or all the web with a
+more traditional form if you find it more convenient:
+<p>
+
+<!-- Search Google -->
+<center>
+<FORM method=GET action=http://www.google.com/custom id="theForm">
+<TABLE bgcolor=#FFFFFF cellspacing=0 border=0>
+<tr valign=top><td>
+<A HREF=http://www.google.com/search>
+<IMG SRC=http://www.google.com/logos/Logo_40wht.gif border=0 ALT=Google align=middle></A>
+</td>
+<td>
+<INPUT TYPE=text name=q size=31 maxlength=255 value="" id="query">
+<INPUT type=submit name=sa VALUE="Google Search">
+<INPUT type=hidden name=cof VALUE="S:http://www.makumba.org;VLC:#044a2c;AH:center;BGC:white;LH:100;LC:#044a2c;GFNT:#999999;L:http://www.makumba.org/makumba-logo.gif;ALC:red;LW:329;T:black;GIMP:red;AWFID:ae27560a86a9a04e;">
+<input type=hidden name=domains value="makumba.org">
+<br>
+Search
+<input type=radio name=sitesearch value="" id="chkWww"><label for="chkWww">WWW</label>
+&nbsp;
+<input type=radio name=sitesearch value="makumba.org" checked id="chkSite"><label for="chkSite">makumba.org</label>
+
+
+</td></tr></TABLE>
+</FORM>
+</center>
+<!-- Search Google -->
+
+
+
+<script type="text/javascript">
+   //document.theForm.query.setFocus();
+   makeFooter("$Id$");
+</script>
+
+</body>
+</html>
