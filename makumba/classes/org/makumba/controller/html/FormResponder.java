@@ -59,9 +59,10 @@ public class FormResponder extends Responder
     FieldEditor.setSuffix(paramCopy, storedSuffix);
     FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
 
+    boolean display=formatParams.get("org.makumba.noDisplay")==null;
     Integer i=(Integer)indexes.get(fname);
     if(i!=null)
-      return editor.format(i.intValue(), fval, paramCopy);
+      return display?editor.format(i.intValue(), fval, paramCopy):"";
 
     indexes.put(fname, new Integer(max));
     String colName=("col"+max);
@@ -70,7 +71,7 @@ public class FormResponder extends Responder
     dd.addField(FieldInfo.getFieldInfo(colName, ftype, true));
     editor= new RecordEditor(dd, fieldNames, database);
     editor.config();
-    return editor.format(max++, fval, paramCopy);
+    return display?editor.format(max++, fval, paramCopy):"";
   }
 
   public String responderKey()

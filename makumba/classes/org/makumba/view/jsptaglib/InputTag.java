@@ -135,6 +135,9 @@ implements javax.servlet.jsp.tagext.BodyTag
     if(choiceSet!=null)
       params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
 
+    if("false".equals(display))
+      params.put("org.makumba.noDisplay", "dummy" );
+
     String formatted=getForm().responder.format(name, type, val, params, extraFormatting.toString());
 
     if(nameVar!=null)
