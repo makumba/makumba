@@ -46,12 +46,30 @@ public class config extends TestCase
     return new TestSuite(config.class);
   }
 
-  static Database db;
+  public void testBiuldInfo()
+  {
+    System.out.println(
+	 "\nTesting Makumba version: "+MakumbaSystem.getVersion()
+	+"\n		   built on: "+MakumbaSystem.getBuildDate()
+	+"\n	       using locale: "+MakumbaSystem.getLocale()
+    );
+  }
+
+  public void testNoDefaultDB() {
+        try {
+		String defaultDB=MakumbaSystem.getDefaultDatabaseName();
+                fail("Should raise ConfigFileError, but found: "+defaultDB);
+        } catch (ConfigFileError e) { }
+  }
 
   public void testDBDiscovery()
   {
-    db=MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
+    String preferredDB=MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties");
+    Database db=MakumbaSystem.getConnectionTo(preferredDB);
+    assertEquals(preferredDB, db.getName());
+    db.close();
   }
+
 
 
 }
