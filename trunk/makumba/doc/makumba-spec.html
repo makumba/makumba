@@ -158,7 +158,7 @@ the same in:
 </ul>
 </div>
 
-<p class="futfeat">
+<p class="futfeat">Automatic labeling: 
 The field description is used at interface levels to present that field.
 It is typically shown at the left of, or somewhere near to, the input control
 (text box, radio button, chooser, etc) that allows for data input in that
@@ -416,9 +416,9 @@ file. This can be done with a !type directive
 
 <pre class="example">
 !type.yesno= int{"yes"=1, "no"=0}
-!type.rank= int{"neutral"=0, "good"=5, "bad"=-5}
+!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}
 married=yesno
-happilyMarried=rank
+happyInLife=rank
 </pre>
 
 <h3><a NAME="FieldAttributes">Field attributes</a></h3>
@@ -525,46 +525,67 @@ to the <a href="SQL-drivers.html">host SQL</a> when necessary.
 </pre>
 
 <p>
-Notations like <code>label.field{.field}</code> only allow "field" to be of pointer
-type in <b><i>expression</i></b> and set type in <b>FROM</b>.
+Notations like <code>label.field{.field}</code> only allow "<code>field</code>" to be of pointer
+type in <b><i>expression</i></b> and set type in <b>FROM</b>. 
+In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid. 
 </p>
-<p>If a label appears alone in an expression, a default field will be
-added. The default field depends on the type of the label:
+
+<!-- FIXME (fred, 2003-10-14): 
+     ? add some warning about expressions (e.g. in WHERE or ORDERBY) across 
+       nullable pointers 
+       = result is not having the records with null value in the list)
+-->
+
+<p>If a label, representing a type, appears alone in an expression, 
+a default field will be added. The default field depends on the type of the label:
 <ul>
-<li>
-for set XXX types (sets of foreign objects), the label denotes the pointer
+<li>for set XXX types (sets of foreign objects), the label denotes the pointer
 to the set member</li>
 
-<li>
-for set int { } and set char { } types, the label denotes the set member
+<li>for set int { } and set char { } types, the label denotes the set member
 (i.e. and int or a string)</li>
 
-<li>
-for all other types, the label denotes the pointer to that object</li>
+<li>for all other types, the label denotes the pointer to that object</li>
+
 </ul>
 </p>
 
 
-<h2><a NAME="Business">Business logic</a></h2>
+<h2><a NAME="Business">Business Logic (BL)</a></h2>
+
 
 <h3><a NAME="Attributes">Attributes</a></h3>
-Attributes keep the read-only state of a makumba
-task. They represent the "environment" of that makumba task. The typical
+<p>
+Java Server Pages use attributes to keep the state of the application. 
+Makumba builds upon that its own notion of Attributes that keep the read-only state 
+of a makumba task. They represent the "environment" of that makumba task. The typical
 example is a JSP page during execution, with its HTTP and session parameters
 as attributes. Since other kinds of attributes are possible, the attribute
-specification is kept HTTP-independent. Makumba code sees the attributes
+specification is kept HTTP-independent. Makumba BL code sees the attributes
 as an <a href="api/org/makumba/Attributes.html">org.makumba.Attributes</a>
 object.
+</p>
 
 <h3><a NAME="javahand">Java handler classes</a></h3>
+<p>
 Java handler classes are classes that implement the
 "business logic" of the organisation. Every makumba page will look for
 a handler, and will call its methods when needed.
+</p>
+
 
 <h4>Handler Discovery</h4>
-<br>is done at first access after a page is recompiled.
-For example, with the page path <b><tt>/student/mycv/indexPersonal.jsp</tt></b>,
-the following criteria are applied, in orer:
+<p>
+Each page will determine its handler class on first access, after being compiled. 
+If the class changes on disk, a webapp reload is generally needed for the new class to take effect.
+<p>
+The handler is 'discovered' by decomposing the full path of the JSP page, 
+and finding a class with a matching name. Decomposition breaks the full path 
+at every capital letter, or forward slash. 
+For example, with the page path <b><code>/student/mycv/indexPersonal.jsp</code></b>,
+the following criteria are applied, in order:
+</p>
+
 <table class="tagParamDef" >
 <tr>
 <th>criterium</th>
@@ -597,15 +618,19 @@ the following criteria are applied, in orer:
 </tr>
 </table>
 
-<p>The class name prefix can be regulated per parts of the site in a file
+<p>
+The class name prefix (e.g. java package name) can be regulated per parts of the site in a file
 called <b>MakumbaController.properties</b> which can be found in the CLASSPATH
 (just like MakumbaDatabase.properties). For example, the file can contain:
+</p>
+
 <pre class="example">
 /student=org.eu.best
 /makumba=org.makumba
 /=test
 </pre>
 
+<p>
 <table class="tagParamDef" >
 <tr>
 <th>path</th>
@@ -642,64 +667,93 @@ Still, it is the name of the page that contains the form which matters.
 It is good practice for both pages to actually have the same handler class.
 </p>
 
-<p>All methods of the handlers are http-independent.
-Methods are non-static, so inheritance can be taken advantage of. Still,
-handlers are singletons (only one of a certain class in a JVM, if the class
-changes on disk, the handler object might be rebuilt). For example, the
-validation of a form can be in a class that is closer to the actual JSP
+<p>
+All methods of the handlers are http-independent.
+Methods are non-static, so the handler classes can use inheritance to their advantage. 
+Still, handler classes are singletons (only one instance of a certain class in a JVM).  
+For example, the validation of a form can be in a class that is closer to the actual JSP
 application (view level) while the more view-independent methods can be
 in the parent of that class. For example:
+</p>
+
 <pre class="example">
 org.eu.best.minerva.StudentHandler extends org.eu.best.StudentHandler
 </pre>
-<p>Role of Java handlers:
+
+
+<h4>Role of Java handlers</h4>
+
 <ol>
-<li> find attributes unknown by pages. e.g.
-<br>&lt;mak:object from="best.Student stud" where="stud=$student">
-...&lt;/mak:object>
-<br>If the $student attribute is not known in the
-page (from a http argument) or in the session, the find{AttributeName}(Dictionary
-existingAttributes, Database d, String expression) method is called for
+<li><b>find attributes</b> unknown by pages. e.g.
+<p><pre class="example">
+&lt;mak:object from="best.Student stud" where="stud=$student"> ...&lt;/mak:object>
+</pre></p>
+<p>
+If the <code>$student</code> attribute is not known in the
+page (from a http argument) or in the session, the <code>find{AttributeName}(Dictionary
+existingAttributes, Database d, String expression)</code> method is called for
 the Handler object. In this case findStudent(). The handler has to compute
 the attribute, based on existing attributes, making DB accesses.
-<p>for example "lbg.$lbg_order" above, will generate
-a call
-<br>findLbgOrder(otherAttributes, db)
-<br>and the Java handler will return the default
-odering for LBGs (say "name").
-<p>If the attribute is computed susccesfully, it
-is associated with the session
-<p>If not, an exception will be thrown (typically
-UnauthenticatedException), and the engine will act accordingly (i.e. ask
-for authentication).
+</p>
+<div class="note">
+The find{AttributeName} method's name is constructed literally from the name of the 
+attribute (capitalising only the first letter), 
+so dots and other illegal characters for java identifier names, are not 
+to be used. Also, one shouldn't use 2 attribute names that differ only 
+in the capitalisation of the first letter.
+</div>
+
+
+<p>
+For example "<code>lbg.$lbg_order</code>" (in an example elsewhere in the specs), 
+will generate a call
+<code>findLbg_order(otherAttributes, db)</code>
+and the Java handler will return the default
+ordering for LBGs (say "name").
+</p>
+
+<p>
+If the attribute is computed successfully, it
+is associated with the session (i.e. set as JSP attribute in session scope)
+</p>
+
+<p>
+If not, an exception will be thrown (typically
+<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>), 
+and the engine will act accordingly (i.e. ask for authentication).
+</p>
 </li>
-<li>execute action methods in response to makumba
-forms. See <a href="#forms">makumba
-forms and actions</a> below.
+
+<li><b>execute action methods</b> in response to makumba
+forms. See <a href="#forms">makumba forms and actions</a> below. <p>
 </li>
+
 <li class="futfeat">
 later: return query parts, as methods.
-e.g.
-<br><tt>&lt;mak:value expr="lbg.$title()" /></tt>
-will generate a call to method <tt>BestInternalLbgTile(lbg)</tt>
-<br>which can return an OQL expression "concat(lbg.id, \"-\" lbg.name)"
+e.g. <code>&lt;mak:value expr="lbg.$title()" /></code>
+will generate a call to method <code>BestInternalLbgTitle(lbg)</code>
+which can return an OQL expression "<code>concat(lbg.id, \"-\" lbg.name)</code>"
 (such methods can be put directly in the Makumba data definitions)
 
 For now, OQL only accepts count() and sum(),
 but that can be easily fixed, till then, the method can be replaced by
 hand:
-<tt>&lt;mak:value expr="lbg.id"/>-&lt;mak:value expr="lbg.name"/></tt>
+<code>&lt;mak:value expr="lbg.id"/>-&lt;mak:value expr="lbg.name"/></code>
 </li>
 </ol>
 
 <h4>Handler Initialization</h4>
+<p>
 Whenever a handler is used in a new context (i.e.
 with a different set of attributes, e.g. a new page access), a method called
-checkAttributes(Attributes a, Database db) is looked for and executed,
+<code>checkAttributes(Attributes a, Database db)</code> is looked for and executed,
 if it is defined.
-<p><b>checkAttributes</b> can perform sanity checks
-for attributes used in the respective logic (in case of mismatches, <a href="api/org/makumba/UnauthorizedException.html">org.makumba.UnauthorizedException</a>
-is usually thorwn), can load attributes that are absolutely needed for
+</p>
+
+<p><b><code>checkAttributes</code></b> can perform sanity checks
+for attributes used in the respective logic (in case of mismatches, 
+<a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>
+is usually thrown), can load attributes that are absolutely needed for
 page execution
 (<span class="oldfeat">formerly given by the requiredAttributes()
 method</span>), etc.
@@ -707,17 +761,20 @@ method</span>), etc.
 
 <h3><a NAME="Login">Login</a></h3>
 Login is done as a result of a missing attribute
-(possibly invoked in <b>checkAttributes</b>), when a findXXX method is
+(possibly invoked in <b><code>checkAttributes</code></b>), when a <code>find{AttributeName}</code> method is
 called. The missing attribute is the principal that needs to log in.
 
-<p>If the attribute cannot be found due to wrong
-login information, <a href="api/org/makumba/UnauthenticatedException.html">org.makumba.UnauthenticatedException</a>
+<p>If the attribute cannot be found due to wrong login information, 
+<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>
 is usually thrown.
-<p>The principal can have more members (e.g. group,
+
+<p>
+The principal can have more members (e.g. group,
 Lbg, Company representatives). E.g. the findCompany() method will check
 to see if the authentication (email_address and password) corresponds to
 any company representative of that company. If yes, it will return that
 company.
+</p>
 
 <p class="futfeat">Login can be done in 2 ways:</p>
 <ol>
@@ -728,7 +785,9 @@ $password
 
 <li>
 cookie login: done in a page called <code>login.jsp</code>,
-in that dir or in any of the parents. It should contain at least:
+in the same directory or (if missing) in any of the parents. 
+It should contain at least:
+<p>
 <pre class="example">
 &lt;mak:login>
   &lt;input type=text name=username>
@@ -737,66 +796,74 @@ in that dir or in any of the parents. It should contain at least:
 &lt;/mak:login>
 </pre>
 
-<p>The login form will pass further (as hidden arguments)
-all the http parameters it got. Note that &lt;mak:login> is only needed
+<p>
+The login form will pass further (as hidden arguments)
+all the http parameters it got. Note that <code>&lt;mak:login></code> is only needed
 upon automatic login (a page displayed when the user requested another
 page, that needs authentication). If you wish to ask for login manually
 in a startup page, a normal HTML form is enough.
 </li>
 </ol>
 
-<p>To cancel out a certain attribute, in order to produce a new login,
+<p>
+To cancel out a certain attribute, in order to produce a new login,
 the logout tag is available
-
+</p>
 <pre class="example">
 &lt;mak:logout actor="student"/>
 </pre>
 
+<p>
 You can remove (cancel-out, logout) multiple attributes from the session by using
-<code>&lt;mak:logout></code> several times and/or by using a "*" wildcard, eg:
+<code>&lt;mak:logout></code> several times and/or by using the star (*) wildcard, e.g.:
+</p>
+
 <pre class="example">
 &lt;mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
 &lt;mak:logout actor="*app"/> (attributes whose names end with "app")
-&lt;mak:logout actor="*"/> (all attributes)
+&lt;mak:logout actor="*"/> (all attributes; this "invalidates" the session)
 </pre>
 
-<div class="futfeat">
+<p>
 
-Later on, Logout request might be done in the business logic,
-with a method deleteAttributes(param) that can accept either a String
-(with optional '*') or a String[].
+<div class="futfeat">
+Later on, logout request might be done in the business logic,
+with a method <code>deleteAttributes(param)</code> that can accept 
+either a String (with optional '*') or a String[].
 
 <p>Later: to accomodate servers that don't do
 session tracking, login can be done by a query condition rather than by
 doing a query (once per session) to find an attribute. This way, it won't
 need to do a query (to check the authentication) at every access, but that
 condition will make sure that authentication is done.
+
 <p><tt>&lt;mak:object from="best.Student stud" where
 ="stud.$login()"> ...&lt;/mak:object></tt>
 <br>then methodBestSudentLogin("stud") will return
 "stud.auth.email=$username AND stud.auth.password=$password"
 <br>This can be used for http authentication
 with no session tracking.
+
 <p>Later: if an attribute has multiple values,
-a choose{AttributeName}.jsp page is shown. For example, a super user (for
+a <code>choose{AttributeName}.jsp</code> page is shown. For example, a super user (for
 that area) can choose to act as any student, Lbg, or company... A student
 member of more local Vivaldi teams can choose to act for any of the viv
 teams, etc.
 </div>
 
-<h2>
-<a NAME="PresentationSummary"></a>Presentation and internal representation
-summary</h2>
+
+<h2><a NAME="PresentationSummary">Presentation and internal representation summary</a></h2>
+<p>
 This table describes the data types and their default user interface representation.
 That user interface can be altered with the <a href="#Presentation">Presentation
 language</a> described below. Orientative SQL and Java types are presented.
-<br>&nbsp;
+</p>
 <br>&nbsp;
 
 <table class="tagParamDef">
 <tr>
 <th>Data definition type</th>
-<th>Default user interface</th>
+<th>Default edit user interface</th>
 <th>Relational database type (orientative)</th>
 <th>Java type (orientative)</th>
 </tr>
@@ -804,7 +871,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>type (table)</td>
 
-<td>list of records, with add, delete, edit controls; titles emphasized</td>
+<td><span class="futfeat">list of records, with add, delete, edit controls; titles emphasized</span></td>
 
 <td>table</td>
 
@@ -814,7 +881,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>record</td>
 
-<td>all fields, as shown below</td>
+<td><span class="futfeat">all fields, as shown below</span></td>
 
 <td>record</td>
 
@@ -824,7 +891,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>int&nbsp;</td>
 
-<td>text field or slider</td>
+<td>text field <span class="futfeat">or slider</span></td>
 
 <td ROWSPAN="2">integer</td>
 
@@ -834,7 +901,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>int{}&nbsp;</td>
 
-<td>simple choice or radio button</td>
+<td>dropdown choice or radio button</td>
 </tr>
 
 <tr>
@@ -850,14 +917,14 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>char{}</td>
 
-<td>simple choice or radio button</td>
+<td>dropdown choice or radio button</td>
 </tr>
 
 <tr>
 <td>text</td>
 
 <td>text area&nbsp;
-<br>or upload</td>
+<br>or file upload</td>
 
 <td>unlimited byte</td>
 
@@ -875,11 +942,11 @@ language</a> described below. Orientative SQL and Java types are presented.
 </tr>
 
 <tr>
-<td>ptr&nbsp;</td>
+<td>ptr</td>
 
-<td>link to the pointed record</td>
+<td>dropdown select of record titles</td>
 
-<td>preferrably a long</td>
+<td>preferably a long (foreign index)</td>
 
 <td ROWSPAN="3">org.makumba.Pointer</td>
 </tr>
@@ -888,9 +955,9 @@ language</a> described below. Orientative SQL and Java types are presented.
 <td>xx=ptr
 <br>xx->...</td>
 
-<td>the record, if any</td>
+<td><span class="futfeat">the record, if any</span></td>
 
-<td>preferrably a long&nbsp;
+<td>preferably a long (foreign index)
 <br>+ table</td>
 </tr>
 
@@ -899,12 +966,12 @@ language</a> described below. Orientative SQL and Java types are presented.
 
 <td>(nothing)</td>
 
-<td>preferrably long,&nbsp;
+<td>preferably long,
 <br>autoincrement, or other unique</td>
 </tr>
 
 <tr>
-<td>creation date&nbsp;
+<td>creation date
 <br>modification date</td>
 
 <td>date, not editable</td>
@@ -915,7 +982,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 </tr>
 
 <tr>
-<td>set&nbsp;</td>
+<td>set</td>
 
 <td>multiple choice of record titles</td>
 
@@ -928,7 +995,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <td>xx=set
 <br>xx-> ...</td>
 
-<td>like a table, under corrent record&nbsp;</td>
+<td><span class="futfeat">like a table, under current record</span></td>
 
 <td>table with ptrRel to the parent table, and the rest of the fields</td>
 
@@ -950,7 +1017,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 
 <td>multiple choice from values</td>
 
-<td>table with ptrRel to the parent table, and an int field</td>
+<td>table with ptrRel to the parent table, and a char field</td>
 
 <td>java.util.Vector of java.lang.String</td>
 </tr>
