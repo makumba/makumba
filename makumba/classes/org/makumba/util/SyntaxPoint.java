@@ -59,6 +59,9 @@ public abstract class SyntaxPoint implements Comparable
   /** subclasses can return other info */
   public Object getOtherInfo(){ return null; }
 
+  /** the file that contains this point */
+  public java.io.File getFile(){ return sourceFile.file ; }
+
   /** make an end for a given syntax point */
   static public SyntaxPoint makeEnd(SyntaxPoint begin, int position)
   {
@@ -76,6 +79,9 @@ public abstract class SyntaxPoint implements Comparable
 
   /** redundant but useful data: column of the position in the text */
   int column;
+
+  /** the file in which this syntax point was detected */
+  SourceSyntaxPoints sourceFile;
 
   /** for sorting in the syntaxPoints collection */
   public int compareTo(Object o)

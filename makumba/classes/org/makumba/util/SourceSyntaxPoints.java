@@ -38,40 +38,70 @@ import java.io.*;
  */
 public class SourceSyntaxPoints
 {
+  static interface PreprocessorClient {
+    public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host);
+    public Pattern[] getCommentPatterns();
+    public String[] getCommentPatternNames();
+    public Pattern getIncludePattern();
+    public String getIncludePatternName();
+  }
+  
   /** The path of the analyzed file */
   File file;
-  
+
+  PreprocessorClient client;
+
   /** The timestamp of the analyzed file. If the it is found newer on disk, the cached object is discarded. */
   long lastChanged; 
 
+  /** The syntax points, sorted */
   TreeSet syntaxPoints= new TreeSet();
+  
+  /** The line beginnings, added in occuring order */
   ArrayList lineBeginnings= new ArrayList();
+
+  /** The file beginnings, added in occuring order. When file F includes file I, I begins, then F begins again */
+  ArrayList fileBeginningIndexes= new ArrayList();
+  ArrayList fileBeginnings= new ArrayList();
+
+  /** The original text */
   String originalText;
+  
+  /** The content, where comments are replaced by whitespace and include directives are replaced by included text */
   String content;
+
+  /** offset in the including file */
+  int offset;
 
   /** 
    * The constructor inserts syntax points (begin and end) for every line in a text, and does preprocessing (uncomments text, includes other text). 
    * Most syntax colourers need to do specific operations at every line 
    */
-  public SourceSyntaxPoints(File f, Pattern commentPatterns[], String commentPatternNames[], Pattern includePattern, String includePatternName)
+  public SourceSyntaxPoints(File f, PreprocessorClient cl){
+    this(f, cl, null, 0);
+  } 
+
+  public SourceSyntaxPoints(File f, PreprocessorClient cl, SourceSyntaxPoints parent, int offset) 
   {
+    this.offset=offset;
     file= f;
+    client=cl;
+
     lastChanged=file.lastModified();
-   
+
     content=originalText=readFile();
+
+    fileBeginningIndexes.add(new Integer(0));
+    fileBeginnings.add(this);
 
     findLineBreaks();
 
     // remove comments from the text
-    for(int i=0; i<commentPatterns.length; i++)
-      unComment(commentPatterns[i], commentPatternNames[i]);
+    for(int i=0; i<client.getCommentPatterns().length; i++)
+      unComment(i);
 
-    // for each include tag
-    // compute length
-    // diff= length - included file length
-    // include file text by creating a new sourceSyntaxPoints
-    // shift all following points with diff
-    // insert 1-2 syntax points?
+    if(client.getIncludePattern()!=null)
+      include();
   }
 
   void findLineBreaks()
@@ -115,13 +145,53 @@ public class SourceSyntaxPoints
       return originalText.substring(line.position, nextline.position-1);
   }
 
+  void include()
+  {
+    while(true){
+      Matcher m= client.getIncludePattern().matcher(content);
+      if(!m.find())
+	return;
+      client.treatInclude(m.start(), content.substring(m.start(), m.end()), this);
+    }
+  }
+
+  /** include the given file, at the given position, included by the given directive */
+  public void include(File f, int position, String includeDirective){
+    SourceSyntaxPoints sf= new SourceSyntaxPoints(f, client, this, position);
+    
+    // FIXME: add a syntax point for the include
+    // record the next position in this file for @include, also the text
+
+    int delta= sf.getContent().length()- includeDirective.length();
+
+    StringBuffer sb= new StringBuffer();
+    sb.append(content.substring(0, position)).
+      append(sf.getContent()).
+      append(content.substring(position+includeDirective.length()));
+    
+    content=sb.toString();
+    
+    for(Iterator i= syntaxPoints.iterator(); i.hasNext(); ){
+      SyntaxPoint sp= (SyntaxPoint)i.next();
+      if(sp.position>position)
+	sp.position+=delta;
+    }
+    
+    int n = fileBeginningIndexes.size()-1;
+    if(((Integer)fileBeginningIndexes.get(n)).intValue()==position)
+      fileBeginnings.set(n, sf);
+    else{
+      fileBeginningIndexes.add(new Integer(position));
+      fileBeginnings.add(sf);
+    }
+  }
 
   /** Replaces comments from a text by blanks, and stores syntax points. Comment is defined by a Pattern. 
    * @return The text with comments replaced by blanks, of equal length as the input.
    */
-  void unComment(Pattern commentPattern, String commentPointType)
+  void unComment(int patternIndex)
   {
-    Matcher m= commentPattern.matcher(content);
+    Matcher m= client.getCommentPatterns()[patternIndex].matcher(content);
     int endOfLast=0;
     StringBuffer uncommentedContent= new StringBuffer();
     while(m.find())
@@ -130,8 +200,8 @@ public class SourceSyntaxPoints
 	for(int i=m.start(); i<m.end(); i++)
 	  uncommentedContent.append(' ');
 	endOfLast=m.end();
-	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine("UNCOMMENT " +commentPointType+ " : " +m.group());
-	addSyntaxPoints(m.start(), m.end(), commentPointType, null);
+	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine("UNCOMMENT " + client.getCommentPatternNames()[patternIndex]+ " : " +m.group());
+	addSyntaxPoints(m.start()+offset, m.end()+offset, client.getCommentPatternNames()[patternIndex], null);
       }
     uncommentedContent.append(content.substring(endOfLast));
     content= uncommentedContent.toString();
@@ -147,12 +217,16 @@ public class SourceSyntaxPoints
    */
   public SyntaxPoint.End addSyntaxPoints(int start, int end, String type, Object extra)
   {
+    return findSourceFile(start).addSyntaxPoints1(start, end, type, extra);
+  }
+
+  SyntaxPoint.End addSyntaxPoints1(int start, int end, String type, Object extra)
+  {
     SyntaxPoint.End e= addSyntaxPointsCommon(start, end, type, extra);
     setLineAndColumn(e);
     setLineAndColumn((SyntaxPoint)e.getOtherInfo());
     return e;
   }
-
 
   /** Fills in the Line and Column for the given SyntaxPoint, based on the collection of lineBeginnings syntaxPoints. */
   void setLineAndColumn(SyntaxPoint point)
@@ -160,8 +234,16 @@ public class SourceSyntaxPoints
     SyntaxPoint lineBegin= (SyntaxPoint)lineBeginnings.get((-1)*Collections.binarySearch(lineBeginnings, point)-2);
     point.line=lineBegin.line;
     point.column=point.position-lineBegin.position+1;
+    point.sourceFile= this;
   }
-
+  
+  /** Find the source file that contains the given syntax point */
+  SourceSyntaxPoints findSourceFile(int position){
+    int index= Collections.binarySearch(fileBeginningIndexes, new Integer(position));
+    if(index<0)
+      index=-index-2;
+    return (SourceSyntaxPoints)fileBeginnings.get(index);
+  }
 
   /** 
    * Creates begin- and end- syntaxpoints (but without setting the line and column fields) 
@@ -188,18 +270,18 @@ public class SourceSyntaxPoints
     return theEnd;
   }
 
-
-   /** 
+  /** 
    * Creates begin- and end- syntaxpoints for a full line in text.
    * @return   the created <tt>SyntaxPoint.End</tt>
    */
   void addSyntaxPointsLine(int start, int end, String type, Object extra)
   {
-    SyntaxPoint.End e= addSyntaxPointsCommon(start, end, type, extra);
+    SyntaxPoint.End e= addSyntaxPointsCommon(start+offset, end+offset, type, extra);
     SyntaxPoint lineBegin= (SyntaxPoint)e.getOtherInfo();
     lineBegin.line= e.line= ((Integer)lineBegin.getOtherInfo()).intValue();
     lineBegin.column=1;
     e.column= end-start+1;
+    e.sourceFile=lineBegin.sourceFile=this;
     lineBeginnings.add(lineBegin);
   }
 
@@ -224,64 +306,5 @@ public class SourceSyntaxPoints
   }
 
   String getContent(){return content; }
-
-  /**
-   * Takes out pieces of text according to specified start and stop symbols, and sets SyntaxPoints around the removed substrings.
-   * (2003-06-18) Function added for fix bug 465, but is not used now, as 465 was fixed with regex. Leaving it as it may be used in future.
-   * @param start  String that indicates the start of a substring to remove, if it's not followed by any String in startNotFollowedBy array
-   * @param end    String that indicates the end of a substring to remove, if it's not preceded by any String in the endNotPrecededBy array
-   * @param syntaxPointType  the type of the syntaxPoints that are created to mark the removed substrings
-   */
-  void takeOut(StringBuffer sourceCode, String start, String[] startNotFollowedBy, String end, String[] endNotPrecededBy, String syntaxPointType)
-  {
-    int startPos, startPosInner, endPos=0, i;
-    boolean wrongMatch;
-
-    while(true){
-       startPos = sourceCode.indexOf(start, endPos);
-       if(startPos == -1) break; // no more substrings to remove!
-       
-       // found start symbol: check if not followed by any of forbidden follower-symbols.
-       wrongMatch = false;
-       startPosInner = startPos + start.length();
-       for (i=0; startNotFollowedBy!=null && i<startNotFollowedBy.length; i++ ){
-          //org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").finest( "CHECKING forbidden follower " +startNotFollowedBy[i]+ " in " + sourceCode.substring(startPosInner, startPosInner +25) );          
-          if( sourceCode.indexOf( startNotFollowedBy[i], startPosInner ) == startPosInner ) { 
-             //org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").finest( "FOUND forbidden follower " +startNotFollowedBy[i] );          
-             wrongMatch=true; 
-             break; 
-          }
-       }
-       if (wrongMatch) { endPos = startPos+1; continue; } // move forward by 1, look for another start symbol. 
-
-       // start symbol 'approved'; find end symbol
-       wrongMatch=true; // looking for end match
-       endPos = startPosInner; //endPos holds the position from where to start searching for the end symbol
-       while(wrongMatch){
-          endPos = sourceCode.indexOf(end, endPos); 
-          if(endPos == -1)
-            throw new RuntimeException("closure missing, how did this pass tomcat's parser???");
-
-          // found end symbol: check if not preceded by any of forbidden preceding-symbols.
-          wrongMatch=false;
-          for (i=0; endNotPrecededBy != null && i<endNotPrecededBy.length; i++ ){
-             if( sourceCode.substring( endPos-endNotPrecededBy[i].length(), endPos ).equals(endNotPrecededBy[i]) ) { 
-                wrongMatch=true; 
-                break; 
-             }
-          }
-          if (wrongMatch) {endPos++; continue; } // move forward by 1, look for another end symbol (Java note: 'continue' will continue the inner loop!)
-       }
-       endPos+=end.length(); 
-
-       // found both start and end now.
-       org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine( "REMOVE " +syntaxPointType+ " : " +sourceCode.substring(startPos, endPos) );
-       for(i=startPos; i<endPos; i++) sourceCode.setCharAt(i, ' '); 
-
-       // add a syntax point pair for the removed substring, with the type indicated by syntaxPointType
-       addSyntaxPoints(startPos, endPos, syntaxPointType, null);
-    }
-
-  } //end function takeOut.
 
 }// end class
