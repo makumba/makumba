@@ -411,7 +411,7 @@ selectExpr :
 
         projectionAttributes
 
-        fromClause
+        ( fromClause )?
         ( whereClause )?
         ( groupClause )?
         ( orderClause )? 
@@ -951,7 +951,12 @@ literal :
 
 objectLiteral :
 
-        "nil" {lastEQop.setText(is); #objectLiteral.setText("null"); ((OQLAST)#objectLiteral).makumbaType="null";}
+        "nil" 
+	{if(lastEQop!=null)
+		lastEQop.setText(is); 
+	#objectLiteral.setText("null"); 
+	((OQLAST)#objectLiteral).makumbaType="nil";
+	}
     ;
 
 booleanLiteral :
