@@ -22,10 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.*;
 
 public class ObjectTag extends QueryTag
 {
-  public TagStrategy makeNonRootStrategy(Object key)
-  { return new ObjectStrategy(); }
+  protected void setMaxCountVar(int max) throws JspException
+  {
+    if(max>1)
+      throw new MakumbaJspException(this, "Object tag should have only one result");
+    super.setMaxCountVar(max);
+  }
 }
