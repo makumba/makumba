@@ -192,6 +192,10 @@ public class RecordParser extends RecordHandler
 	  }
 	}
       }
+    //must specify a filename, not a directory (or package), see bug 173
+    if(u!=null) {
+	if( u.toString().endsWith("/") ) return null;
+    }
     return u;
   }
 
