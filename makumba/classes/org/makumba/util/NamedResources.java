@@ -42,61 +42,72 @@ public class NamedResources implements java.io.Serializable
   }
 
   NamedResourceFactory f;
-    String name;
+  String name;
   Map values= new HashMap();
-
+  int hits, misses;
+  
   static List staticCaches= new ArrayList();
-
-    static Vector allCaches= new Vector();
-
-    static void cleanup()
-    {
-	for(int i=0;i<staticCaches.size(); i++)
-	    ((NamedResources)staticCaches.get(i)).close();
-	staticCaches.clear();
-	for(int i=0;i<allCaches.size(); i++)
-	    ((java.lang.ref.WeakReference)allCaches.elementAt(i)).clear();
-	allCaches.clear();
-
-    }
-  public synchronized static int makeStaticCache(String name,
-						 NamedResourceFactory fact)
+  
+  static Vector allCaches= new Vector();
+  
+  static void cleanup()
   {
-    staticCaches.add(soft_static_caches?new SoftNamedResources(name, fact):
+    for(int i=0;i<staticCaches.size(); i++)
+      ((NamedResources)staticCaches.get(i)).close();
+    staticCaches.clear();
+    for(int i=0;i<allCaches.size(); i++)
+      ((java.lang.ref.WeakReference)allCaches.elementAt(i)).clear();
+    allCaches.clear();
+    
+  }
+  
+  public synchronized static int makeStaticCache(String name,
+						 NamedResourceFactory fact,
+						 boolean soft)
+  {
+    staticCaches.add(soft?new SoftNamedResources(name, fact):
 		     new NamedResources(name, fact));
     return staticCaches.size()-1;
   }
 
+  public synchronized static int makeStaticCache(String name,
+						 NamedResourceFactory fact)
+  {
+    return makeStaticCache(name, fact, soft_static_caches);
+  }
+  
   public static NamedResources getStaticCache(int n)
   {
     return (NamedResources)staticCaches.get(n);
   }
-
-    public static Map getCacheInfo()
-    {
-	Map m= new HashMap();
-	for(int i=0; i<allCaches.size(); i++)
-	    {
-		NamedResources nr=(NamedResources)
-		    ((java.lang.ref.WeakReference)allCaches.elementAt(i)).get();
-		if(nr==null)
-		    continue;
-		Integer n=(Integer)m.get(nr.name);
-		if(n==null)
-		    m.put(nr.name, new Integer(nr.values.size()));
-		else
-		    m.put(nr.name, new Integer(nr.values.size()+n.intValue()));
-	    }
-	return m;
-    }
-
+  
+  public static Map getCacheInfo()
+  {
+    Map m= new HashMap();
+    for(int i=0; i<allCaches.size(); i++)
+      {
+	NamedResources nr=(NamedResources)
+	  ((java.lang.ref.WeakReference)allCaches.elementAt(i)).get();
+	if(nr==null)
+	  continue;
+	int[] n= (int[]) m.get(nr.getName());
+	if(n==null){
+	  m.put(nr.getName(), n=new int[3]);
+	}
+	n[0]+= nr.size();
+	n[1]+= nr.hits;
+	n[2]+= nr.misses;
+      }
+    return m;
+  }
+  
   /** initialize, using the given factory */
   public NamedResources(String name, NamedResourceFactory f) 
-    {
-	this.name=name; this.f= f;
-	allCaches.addElement(new java.lang.ref.WeakReference(this));
-    }
-
+  {
+    this.name=name; this.f= f;
+    allCaches.addElement(new java.lang.ref.WeakReference(this));
+  }
+  
   public boolean knowResource(Object name)
   {
     try{
@@ -132,17 +143,29 @@ public class NamedResources implements java.io.Serializable
   protected NameValue getNameValue(Object name, Object hash)
   {
     NameValue nv= (NameValue)values.get(hash);
-    if(nv==null)
+    if(nv==null){
+      misses++;
       values.put(hash, nv=new NameValue(name, hash, f));
+    }else hits++;
     return nv;
   }
-  
+
+  public int size() {return values.size(); }
+
+  public String getName() { return name; }
+
   /** close each contained object by calling its close() method, if any */
-  protected void close(){
+  public  void close(){
     for(Iterator i= values.keySet().iterator(); i.hasNext(); )
       {
-	NameValue nv= (NameValue)values.get(i.next());
-	Object o= nv.getResource();
+	Object nvo= values.get(i.next());
+	if(nvo instanceof java.lang.ref.Reference){
+	  nvo= ((java.lang.ref.Reference)nvo).get();
+	  if(nvo==null)
+	    continue;
+	}
+	
+	Object o= ((NameValue)nvo).getResource();
 
 	java.lang.reflect.Method m= null;
 	if(o==null)
