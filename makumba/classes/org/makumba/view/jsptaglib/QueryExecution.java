@@ -20,7 +20,7 @@ import javax.servlet.jsp.PageContext;
 
 
 /** This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at every parentIteration, and iterates through the iterationGroupData */
-public class ListQueryExecution
+public class QueryExecution
 {
   /** the results of the query associated with the list or queryMak:value*/
   Grouper listData;
@@ -37,11 +37,11 @@ public class ListQueryExecution
   /** stuff for queryData to be kept */
   HashMap valueQueryData= new HashMap();
 
-  static final private String EXECUTIONS= "org.makumba.ListQueryExecutions";
+  static final private String EXECUTIONS= "org.makumba.taglibQueryExecutions";
   static final private String CURRENT_DATA_SET="org.makumba.currentDataSet";  
   static final private Dictionary nothing= new ArrayMap();
 
-  /** Allocate a currentDataSet and a container for the ListQueryExecutions of the listGroup.
+  /** Allocate a currentDataSet and a container for the QueryExecutions of the listGroup.
    * Executed by the rootList
    */
   static void startListGroup(PageContext pageContext)
@@ -53,7 +53,7 @@ public class ListQueryExecution
     pageContext.setAttribute(CURRENT_DATA_SET, currentDataSet);
   }
 
-  /** De-allocate all ListQueryExecutions in the listGroup, and the currentDataSet 
+  /** De-allocate all QueryExecutions in the listGroup, and the currentDataSet 
    * Executed by the rootList
    */
   static void endListGroup(PageContext pageContext)
@@ -62,23 +62,23 @@ public class ListQueryExecution
     pageContext.removeAttribute(CURRENT_DATA_SET);
   }
 
-  /** Get the ListQueryExecution for the given key, build one if needed.
+  /** Get the QueryExecution for the given key, build one if needed.
    * Every list tag (QueryTag) calls this method. A ListQueryTag will be built only in the first
    parentIteration and will be returned at next parentIterations.
    */
-  static ListQueryExecution getFor(MultipleKey key, PageContext pageContext)
+  static QueryExecution getFor(MultipleKey key, PageContext pageContext)
        throws LogicException
   {
     HashMap executions= (HashMap)pageContext.getAttribute(EXECUTIONS);
 
-    ListQueryExecution lqe=(ListQueryExecution)executions.get(key);
+    QueryExecution lqe=(QueryExecution)executions.get(key);
     if(lqe==null)
-      executions.put(key, lqe= new ListQueryExecution(key, pageContext));
+      executions.put(key, lqe= new QueryExecution(key, pageContext));
     return lqe;
   }
 
   /** Execute the given query, in the given db, with the given attributes, to form the listData; keep the reference to the currentDataSet for future push and pop operations, find the nested valueQueries */
-  private ListQueryExecution(MultipleKey key, PageContext pageContext)
+  private QueryExecution(MultipleKey key, PageContext pageContext)
        throws LogicException
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
