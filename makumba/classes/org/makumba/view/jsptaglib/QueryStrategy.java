@@ -2,6 +2,8 @@ package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.util.*;
 import org.makumba.*;
+import org.makumba.view.html.RecordViewer;
+import org.makumba.controller.jsp.PageAttributes;
 
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
@@ -117,6 +119,8 @@ implements Observer, QueryTagStrategy
   /** the typical condition at the begining of looping */
   protected int startLooping() throws JspException
   {
+    //System.out.println(/*getRoot().currentData+" "+bigResults+" "+results+" "+ index +" "+*/System.identityHashCode(this));
+
     startedWithData=obtainData(getRoot().currentData)&&nextDataRow();
     if(startedWithData)
       {
@@ -158,12 +162,15 @@ implements Observer, QueryTagStrategy
 
     if(getRoot().foundMoreProjectionsInAnyTag())
       {
+	//	System.out.println(bigResults+"doing queries");
 	getRoot().doQueries(false);
 	if(tag.wasException())
 	  {
+	    //    System.out.println("was exception");
 	    return BodyTag.SKIP_BODY;
 	  }
 	bodyContent.clearBody();
+	//System.out.println("trying to repeat");
 	return startLooping();
       }
 
@@ -185,9 +192,11 @@ implements Observer, QueryTagStrategy
 	getRoot().doQueries(true);
 	if(tag.wasException())
 	  {
+	    //  System.out.println("was exception 1");
 	    return BodyTag.SKIP_BODY;
 	  }
 	bodyContent.clearBody();
+	//	System.out.println("trying to repeat 1");
 	return startLooping();
       }
   }
@@ -264,7 +273,7 @@ implements Observer, QueryTagStrategy
 	if(query.getResultType()!=null)
 	  {
 	    pageContext.setAttribute(var+"_type", query.getResultType().getFieldDefinition(n));
-	    HttpAttributes.setAttribute(pageContext, var, o);
+	    PageAttributes.setAttribute(pageContext, var, o);
 	  }
 	else
 	  {
@@ -365,6 +374,7 @@ implements Observer, QueryTagStrategy
   /** initialize the reference values for query change detection */
   public void resetQueryVersion()
   {
+    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
     queryVersion= query.getVersion();
     startProjections=query.getProjections();
   }
@@ -401,6 +411,7 @@ implements Observer, QueryTagStrategy
        throws LogicException
   {
     boolean proj= noProj || query.getVersion()>0;
+    //    System.out.println(index+" "+(executed()?(""+bigResults.size()):""));
     if(proj && !(executed() && 
 		 // if the grouper has been emptied, we have to re-do the query
 		 !bigResults.isEmpty()))
@@ -424,8 +435,11 @@ implements Observer, QueryTagStrategy
   /** checks if any new projections were found in this tag */
   public boolean foundMoreProjections()
   {
+    //    System.out.println(query.getVersion() + " "+queryVersion);
+    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
     if(query.getVersion()!=queryVersion)
       {
+	//	System.out.println(this+" "+query.getVersion()+" "+queryVersion);
 	return true;
       }
     return false;

@@ -3,6 +3,7 @@ import javax.servlet.jsp.*;
 import java.util.*;
 import org.makumba.*;
 import org.makumba.util.*;
+import org.makumba.controller.jsp.PageAttributes;
 
 public class ValueTag extends MakumbaTag
 {
@@ -29,7 +30,7 @@ public class ValueTag extends MakumbaTag
   {
     String expr=getRootQueryBuffer().bufferExpr.trim();
     QueryStrategy p=getParentQueryStrategy();
-    Object check= p.query.checkExpr(expr, HttpAttributes.getAttributes(pageContext));
+    Object check= p.query.checkExpr(expr, PageAttributes.getAttributes(pageContext));
     if(check==null)
       return null;
     MultipleKey mk= new MultipleKey((Vector)p.key, 10);
