@@ -53,7 +53,8 @@ public class SetValueStrategy extends QueryStrategy
   { 
     super.doAnalyze();
     getQuery().checkProjectionInteger(label);
-    getQuery().checkProjectionInteger(label+"."+name);
+    if(getValueTag().var==null || getValueTag().printVar!=null)
+      getQuery().checkProjectionInteger(label+"."+name);
   }
 
   public int doStart() throws JspException 
@@ -66,7 +67,7 @@ public class SetValueStrategy extends QueryStrategy
       PageAttributes.setAttribute(pageContext, var, null);
     }
     Vector v=new Vector();
-    bodyContent=getValueTag().getParentQueryStrategy().bodyContent;
+    bodyContent=getValueTag().getEnclosingQuery().bodyContent;
     done=super.doStart();
     if(done!=BodyTag.EVAL_BODY_TAG)
       return done;
@@ -75,13 +76,15 @@ public class SetValueStrategy extends QueryStrategy
     do{
       Hashtable prms= getValueTag().params;
       insertEvaluation(label, prms, label, null);
-      insertEvaluation(label+"."+name, prms, null, label+"_print");
+      if(var==null || printVar!=null)
+	insertEvaluation(label+"."+name, prms, null, label+"_print");
 
       Object o=pageContext.getAttribute(label);
       if(o instanceof Pointer)
 	{
 	  v.addElement(o);
-	  total+=sep+pageContext.getAttribute(label+"_print");
+	  if(var==null || printVar!=null)
+	    total+=sep+pageContext.getAttribute(label+"_print");
 	  sep=",";
 	}
     }while(super.doAfter()==BodyTag.EVAL_BODY_TAG);
