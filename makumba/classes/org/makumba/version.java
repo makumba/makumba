@@ -23,12 +23,10 @@
 
 package org.makumba;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.io.*;
+import java.util.Date;
 
 /** Computes the version from cvs Name tag. */
 class version {
-
 
    /** @see MakumbaSystem.getVersion() */
    static String getVersion()
@@ -39,30 +37,11 @@ class version {
 	if(version.length()>2) version=version.replace('_','.');
 	else 
 	{
-		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
- 		version="devel-"+df.format(getBuildDate());
- 		//version="devel-"+getBuildDate();
-		//version="development";
+		//SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+ 		//version="devel-"+formatter.format(new Date());
+		version="development";
 	}
 	return version;
-   }
-
-   /** Reads a build date from properties file that was generated during compilation. */
-   static final Date getBuildDate()
-   {
-	SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-	Properties prop=new Properties(); 
-	String filename = "org/makumba/versionBuildDate.properties";            
-	Date buildDate=null;
-
-	try{
-	    prop.load(org.makumba.util.ClassResource.get(filename).openStream());
-	    buildDate=df.parse(prop.getProperty("buildDate"),new java.text.ParsePosition(0));
-	} catch (Exception e) { 
-	  //some error handling here 
-	  System.out.println(e);
-	} 
-	return buildDate;
    }
 
     public static void main(String[] args) {

@@ -184,14 +184,6 @@ public abstract class FieldManager extends FieldHandler
     return getDBName()+cond+writeConstant(d.get(getDataName()));
   }
 
-  /** what is the property of the current engine? */
-  protected String getEngineProperty(String s)
-  {
-    Database d=rm.getSQLDatabase();
-    return d.getEngineProperty(d.getEngine()+"."+s);
-  }
-
-
   /** ask this field to perform actions when the table is open 
    */
   public void onStartup(RecordManager rm, Properties config, SQLDBConnection dbc) 
@@ -199,101 +191,14 @@ public abstract class FieldManager extends FieldHandler
   {
     this.rm=rm;
     if(rm.alter && shouldIndex())
-	manageIndexes(dbc);
+      {
+	try{
+	  Statement st= dbc.createStatement();
+	  st.executeUpdate("CREATE INDEX "+ rm.getDBName()+"_"+getDBName()+ " ON "+ rm.getDBName()+"("+getDBName()+")");
+	}catch(SQLException e) { }
+      }
   }
 
-
-  /** Ask this field how to name the index on this field. Normally called from manageIndexes().  */
-  public String getDBIndexName() 
-  {
-     return rm.getDBName()+"_"+getDBName();  
-  }
-
-
-  /** Examine DB indexes. */
-  public boolean isIndexOk(SQLDBConnection dbc)
-  {
-       boolean ok=false;
-       String DBIndexName=getDBIndexName();
-       try{
-	   ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,rm.getDBName(),true,false);
-	   while(rs.next()){
-		if( DBIndexName.equals(rs.getString("INDEX_NAME")) ) // found index for this column
-		{
-		  ok=(isUnique()==!rs.getBoolean("NON_UNIQUE") ); //compare current MDD and DB declarations
-		  break;
-		}
-	   }
-       } catch(SQLException e) {System.out.println(e);}
-       return ok;
-  } //end isIndexOk()
-
-
-
-  /** Ask this field to add/remove indexes as needed, normally called from onStartup().
-   */
-  public void manageIndexes(SQLDBConnection dbc) 
-       throws SQLException
-  {
-     String keyName=getDBIndexName();
-     String brief=rm.getRecordInfo().getName()+"#"+getName()+" ("+getDescription()+")";
-
-     if(!isIndexOk(dbc)) 
-     {
-       //org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-       //	"ALTERING INDEX on field "+getName()+" of "+rm.getRecordInfo().getName() );
-
-       try{	//drop the old, wrong index if it exists
-		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" DROP INDEX "+keyName+" ");
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX DROPPED on "+brief );
-       }catch(SQLException e) {}
-
-       boolean createNormalEvenIfUnique=false;
-
-       if(isUnique())
-	{
-	   try{
-		//try creating unique index
-		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD UNIQUE "+keyName+" ("+getDBName()+")");
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"UNIQUE INDEX ADDED on "+brief );
-	   }catch(SQLException e) 
-	   { 
-		//log all errors 
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
-			//rm.getDatabase().getConfiguration()+": "+ //DB name
-			"Problem adding UNIQUE INDEX on "+brief
-			+": "+e.getMessage() );
-		createNormalEvenIfUnique=true;
-	   }
-	}
-
-       if(createNormalEvenIfUnique || !isUnique()) 
-        {
-	   try{
-		//create normal index
-		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD INDEX "+keyName+" ("+getDBName()+")");
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX ADDED on "+brief );
-	   }catch(SQLException e) 
-	   { 
-		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
-			//rm.getDatabase().getConfiguration()+": "+ //DB name
-			"Problem adding INDEX on "+brief
-			+": "+e.getMessage() );
-	   }
-	} 
-
-     }//isIndexOk
-
-  }//method
-
-
-  /** Tell whether this type of field should be indexed. */
   public boolean shouldIndex() {return true; }
 
   /* sets the database-level name of this field, normally identical with its abstract-level name, unless the database has some restrictions, or the configuration indicates that the field exists in the table with another name */

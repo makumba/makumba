@@ -212,30 +212,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>maxLength</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>ellipsis</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>ellipsisLength</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>addTitle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 
