@@ -68,6 +68,18 @@ public abstract class MakumbaTag extends TagSupport
 
   static final String DB_ATTR="org.makumba.database";
 
+  /** used at analysis to dump the tag line */
+  public void addTagText(StringBuffer sb)
+  {
+    JspParseData.tagDataLine(tagData, sb);
+  }
+  
+  public String getTagText()
+  {
+    StringBuffer sb= new StringBuffer();
+    addTagText(sb);
+    return sb.toString();
+  }
 
   /** Cleanup the data, in preparation for reuse in the tag pool */
   public void cleanState()
@@ -121,12 +133,15 @@ public abstract class MakumbaTag extends TagSupport
   {
     QueryTag parentList= getParentList();
     if(parentList== null)
-      throw new org.makumba.ProgrammerError("VALUE tags, INPUT or FORM tags that compute a value should always be enclosed in a LIST or OBJECT tag");
+      throw new org.makumba.ProgrammerError("VALUE tags, INPUT or FORM tags that compute a value should always be enclosed in a LIST or OBJECT tag: \n"+getTagText());
     tagKey= new MultipleKey(parentList.tagKey, o);
   }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey() {}
+
+  /** can this tag have the same key as others in the page? */
+  public boolean allowsIdenticalKey() { return true; }
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. Typically this method will allocate initial data structures, that are then completed at doEndAnalyze() */
   public void doStartAnalyze(){}
