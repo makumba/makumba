@@ -49,25 +49,4 @@ public class charEnumEditor extends choiceEditor{
 
   public int getDefaultSize() { return 1; }
 	
-	
-  public String formatShowHIDE(Object o, Dictionary formatParams)
-  {
-    // check if the value is to be replaced by 'default' or 'empty'.
-    o = formatValue(o, formatParams) ;
-  	
-    StringBuffer sb=new StringBuffer();
-    sb.append("<select name=\"").append(getInputName(formatParams))
-      .append("\"").append(getExtraFormatting(formatParams)).append(">");
-    Enumeration n=getNames();
-    while(n.hasMoreElements())
-      {
-	Object nl=n.nextElement();
-	sb.append("<option value=\"").append(nl).append("\"");
-	if(nl.equals(o))
-	  sb.append(" selected");
-	sb.append(">").append(nl).append("</option>");
-      }
-    sb.append("</select>");
-    return sb.toString();
-  }
 }

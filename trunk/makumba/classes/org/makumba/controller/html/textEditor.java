@@ -55,12 +55,13 @@ public class textEditor extends FieldEditor
 
   /** Formats the value to appear in an input statement. For textarea type data only!*/
   public String formatValue(Object o, Dictionary formatParams) {
-     if (o == null) {
-     	 return resetValueFormat(null, formatParams);
-     } else { 
-         return resetValueFormat(HtmlUtils.string2html(o.toString()), formatParams);
-     }
+     String s = (o == null)? null : HtmlUtils.string2html(o.toString());
+     return resetValueFormat(s, formatParams);
   }
+  
+  /* Formats the value to appear in hidden input statement: don't overload default behaviour set in FieldEditor. */
+  // public String formatHiddenValue(Object o, Dictionary formatParams) {}
+
   
   String fileInput(Dictionary formatParams)
   {
