@@ -303,8 +303,8 @@ decrypted when read</li>
 <b>unique</b> fields have a unique value in the respective object, for
 the respective type</li>
 </ul>
-<font color="#990000"><u>Note:&nbsp;</u> currently only field attributes 
-<b>fixed</b> and <b>not null</b> are working (and the current parser only 
+<font color="#990000"><u>Note:&nbsp;</u> currently only field attributes
+<b>fixed</b> and <b>not null</b> are working (and the current parser only
 recognizes fixed and notnull)</font>
 <h3>
 <a NAME="ObjectTitle"></a>Object title</h3>
@@ -799,7 +799,7 @@ but can contain makumba attributes like $attr
 <td><font color="#000000">The makumba database to connect to n Host_SQLEngineType_DatabaseName
 format.</font>
 <br><font color="#000000">If not present, the default database is used.
-See <a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/SQL-drivers.html">database
+See <a href="SQL-drivers.html">database
 configuration and lookup</a></font><font color="#990000">.</font></td>
 
 <td>cannot contain arguments, for now
@@ -1212,7 +1212,7 @@ At form response, makumba invokes the following methods:
 <br><tt>// if the data is not correct, the handler can throw an exception</tt>
 <br><tt>handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;</tt>
 <p><tt>// the standard Database call</tt>
-<br><tt>Pointer created= <a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type,
+<br><tt>Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type,
 attr)</a>;</tt>
 <p><tt>// by defining after_new, the handler class gets the opportunity</tt>
 <br><tt>// to do supplementary operations with the inserted record</tt>
@@ -1240,7 +1240,7 @@ interpreting the form.</td>
 <tr>
 <td><tt>attr</tt></td>
 
-<td><a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/api/org/makumba/Attributes.html">org.makumba.Attributes</a></td>
+<td><a href="api/org/makumba/Attributes.html">org.makumba.Attributes</a></td>
 
 <td>Other attributes in the page (sent as HTTP arguments or present in
 the HTTP session).</td>
@@ -1249,7 +1249,7 @@ the HTTP session).</td>
 <tr>
 <td><tt>db</tt></td>
 
-<td><a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/api/org/makumba/Database.html">org.makumba.Database</a></td>
+<td><a href="api/org/makumba/Database.html">org.makumba.Database</a></td>
 
 <td>The database where the record will be inserted</td>
 </tr>
@@ -1257,7 +1257,7 @@ the HTTP session).</td>
 <tr>
 <td><tt>created</tt></td>
 
-<td><a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+<td><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
 
 <td>The pointer to the created record. Only for after_new&nbsp;</td>
 </tr>
@@ -1272,7 +1272,7 @@ and after_new), the action is not allowed.
 <br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input type="submit"/></tt>
 <br><tt>&lt;/mak:newForm></tt>
 <p>At response:
-<p><tt>PersonLogic handler; // see <a href="file:////Cristi-lap/c$/itcwork/sources/makumba/doc/javahand">handler
+<p><tt>PersonLogic handler; // see <a href="javahand">handler
 discovery</a></tt>
 <br><tt>handler.<b>on_newGeneralPerson(data, attr, db)</b>;</tt>
 <br><tt>Pointer created= db.insert("general.Person", attr);</tt>
@@ -1690,11 +1690,11 @@ Database db)</tt></b>
 <h3>
 <a NAME="response"></a>&lt;mak:response/></h3>
 The first makumba tag in a page triggers the execution of the action
-of a &lt;mak:*form > or &lt;mak:deleteLink> (in previous page). 
+of a &lt;mak:*form > or &lt;mak:deleteLink> (in previous page).
 <p>
-&lt;mak:response/> prints information about the results of the action: 
-It either displays the message="..." parameter of the form tag (in green) 
-in case of success, 
+&lt;mak:response/> prints information about the results of the action:
+It either displays the message="..." parameter of the form tag (in green)
+in case of success,
 or (in red) the message in a uncaught LogicException resulting from
 Business Logic. Other exception types will provoke an exception page.
 
@@ -1704,11 +1704,11 @@ Business Logic. Other exception types will provoke an exception page.
 
 <p>The jsp page can get hold of the message using e.g.
 <br><tt> &lt;% (String) request.getAttribute("makumba.response") %> </tt>
-<br>Similarly, attribute <tt>makumba.successfulResponse</tt> is set (only) in case of successful action execution. 
+<br>Similarly, attribute <tt>makumba.successfulResponse</tt> is set (only) in case of successful action execution.
 <p>
 <font color="#990000">
-A body-tag style (&lt;mak:response>...&lt;/mak:response>) will be added later, 
-to display different messages for different circumstances (errors). It will also be possible 
+A body-tag style (&lt;mak:response>...&lt;/mak:response>) will be added later,
+to display different messages for different circumstances (errors). It will also be possible
 to get hold of the actual exception object.
 </font>
 
