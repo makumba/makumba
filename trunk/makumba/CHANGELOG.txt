@@ -5,6 +5,7 @@ TO RELEASE IMMEDIATELY:
  - add your changes -
  
 NOT TO BE RELEASED YET:
+cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
 stefan; 16 jan 2004: bug 512 fixed (Makumba fails to create new tables with Connector/J 3.0.8 and later). Ready, but halted by unfinished work done on bug 4. cristi: this is blocked mainly by work related to the fix of bug 48, that can only be relesed afer thorough tests. 
 stefan; 24 dec 2003: bug 661 fixed (whitespace in field definitions), fixed file also contains unique keyword support, so it needs to wait for that to be released
 stefan; 18 nov 2003: bug 638 fixed (Makumba altered InnoDB tables to InnoDB on MySQL 4.1)

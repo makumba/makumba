@@ -48,13 +48,18 @@ public abstract class Database
   public String getName(){ return configName; }
     
     int nconn=0;  
-  ResourcePool connections= new ResourcePool(){
+  protected ResourcePool connections= new ResourcePool(){
       public Object create()
 	{
 	    nconn++;
 	    config.put("jdbc_connections", ""+nconn);
 	    return makeDBConnection();
 	}
+      
+      // preventing stale connections
+      public void renew(Object o){
+	((DBConnection)o).commit();
+      }
     };
   
   public void initConnections()
@@ -66,7 +71,11 @@ public abstract class Database
     }catch(Exception e){ throw new DBError(e); }
   }
   
-  protected void closeConnections() { } // FIXME
+  protected void closeConnections() 
+  { 
+    connections.close();
+  } 
+
   public void close() 
   {
     MakumbaSystem.getMakumbaLogger("db.init").info("closing  "+getConfiguration()+"\n\tat "+org.makumba.view.dateFormatter.debugTime.format(new java.util.Date()));
