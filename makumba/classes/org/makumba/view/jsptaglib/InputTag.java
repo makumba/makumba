@@ -27,13 +27,15 @@ import java.util.*;
 import org.makumba.*;
 import org.makumba.abstr.*;
 
-public class InputTag extends MakumbaTag
+public class InputTag extends ValueTag
 {
   String name;
   String valueExprOriginal;
   String dataType;
-  FieldInfo dataTypeInfo;
   String display;
+
+  // -------- page analysis
+  FieldInfo dataTypeInfo;
 
   /** demand a QueryTag enclosing query */
   protected Class getParentClass(){ return FormTagBase.class; }
@@ -72,37 +74,63 @@ public class InputTag extends MakumbaTag
 
   FormTagBase getForm() { return (FormTagBase)getMakumbaParent(); }
 
+  boolean isValue()
+  {
+    return expr!=null && !expr.startsWith("$");
+  }
+
+  public Object getRegistrationKey() 
+  {
+    expr=valueExprOriginal;
+    if(expr==null)
+      expr=getForm().getDefaultExpr(name);
+    if(!isValue())
+      return null;
+    var= expr.replace('.', '_');
+    return super.getRegistrationKey();
+  }
+
+  public TagStrategy makeNonRootStrategy(Object key)
+  {
+    if(isValue())
+      return super.makeNonRootStrategy(key);
+    return this;
+  }
+
+  public void doAnalyze()
+  {
+    if(name==null)
+      throw new RuntimeException("name attribute is required");
+
+    if(isValue())
+      super.doAnalyze();
+  }
 
   /** ask the enclosing query to present the expression */
   public int doStart() throws JspException, org.makumba.LogicException
   {
-    if(dataType!=null)
-      dataTypeInfo=FieldInfo.getFieldInfo(name, dataType, true);
-    if(name==null)
-      throw new JspException("name attribute is required");
-    try{
+      if(dataType!=null)
+        dataTypeInfo=FieldInfo.getFieldInfo(name, dataType, true);
+
       Object val=null;
       Object type=null;
       
-      String valueExpr=valueExprOriginal;
-      if(valueExpr==null)
-	valueExpr=getForm().getDefaultExpr(name);
-      if(valueExpr!=null)	
+      if(expr!=null)	
 	{
 	  String attrName;
-	  if(valueExpr.startsWith("$"))
-	    attrName=valueExpr.substring(1);
+	  if(expr.startsWith("$"))
+	    attrName=expr.substring(1);
 	  else
 	    {
-	      ValueTag.evaluate(valueExpr, this);
-	      attrName=ValueTag.EVAL_BUFFER;
+	      super.doStart();
+	      attrName=var;
 	    }
 	  val=getAttributes().getAttribute(attrName);
 	  try{
 	      type=getAttributes().getAttribute(attrName+"_type");
 	  }catch(AttributeNotFoundException anfe){ }
 	  if(type!=null && type.equals("unknown yet"))
-	    return EVAL_BODY_INCLUDE;
+	    throw new RuntimeException("type should be known");
 	}
       if(type==null)
 	{
@@ -129,7 +157,7 @@ public class InputTag extends MakumbaTag
       if(val!=null)
 	  val=((FieldInfo)type).checkValue(val);
 
-      String formatted=getForm().responder.format(name, type, val, getRootQueryBuffer().bufferParams);
+      String formatted=getForm().responder.format(name, type, val, params);
       if(display==null ||! display.equals("false"))
 	{
 	  try{
@@ -137,9 +165,5 @@ public class InputTag extends MakumbaTag
 	  }catch(java.io.IOException e)	  {throw new JspException(e.toString());}
 	}
       return EVAL_BODY_INCLUDE;
-    }finally
-      {
-	getRootQueryBuffer().bufferParams.clear();
-      }
   }
 }

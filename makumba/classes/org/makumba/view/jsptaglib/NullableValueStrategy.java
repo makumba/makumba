@@ -30,10 +30,10 @@ import javax.servlet.jsp.*;
 
 public class NullableValueStrategy extends QueryStrategy
 {
-  protected void adjustQueryProps()
-  {
-    queryProps=new String[4];
-  }
+  QueryTag dummy= new QueryTag();
+  public QueryTag getQueryTag(){ return dummy; }
+  public ValueTag getValueTag(){ return (ValueTag)tag; }
+
   int done;
   int parentRun=-2;
   int parentIndex=-2;
@@ -42,21 +42,27 @@ public class NullableValueStrategy extends QueryStrategy
   {
     // if the parent did not move through its results, 
     // we keep returning whatever data we had before
-    if(getParentStrategy().index==parentIndex && getParentStrategy().run==parentRun)
+    if(tag.getEnclosingQuery().index==parentIndex && tag.getEnclosingQuery().run==parentRun)
 	return results;
 
-    parentRun=getParentStrategy().run;
-    parentIndex=getParentStrategy().index;
+    parentRun=tag.getEnclosingQuery().run;
+    parentIndex=tag.getEnclosingQuery().index;
     return super.obtainData1(v);
+  }
+
+  public void doAnalyze() 
+  {
+    super.doAnalyze();
+    getQuery().checkProjectionInteger(getValueTag().expr);
   }
 
   public int doStart() throws JspException 
   {
-    bodyContent=((ValueTag)tag).getParentQueryStrategy().bodyContent;
+    bodyContent=getValueTag().getEnclosingQuery().bodyContent;
     done=super.doStart();
     if(done!=BodyTag.EVAL_BODY_TAG)
       return done;
-    ValueTag.displayIn(this);
+    insertEvaluation(getValueTag());
     return BodyTag.EVAL_BODY_INCLUDE;
   }
 
