@@ -24,6 +24,10 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
 
+0.5.9.18; 18 jan 2004 fred
+fred; 18 jan 2004: bug 62c30 : implemented type check on IfTag at analysis time
+fred; 18 jan 2004: fix in .17 for bug 654 & bug 583 created an error for InputTag's setType()
+
 0.5.9.17; 6 dec 2003 fred
 fred; 1 dec 2003: bug 28 comment 12: error with getDeprecatedValues()
 fred; 6 dec 2003: bug 654 & bug 583: bad tag life cycle implementation; not ready for pooling.
