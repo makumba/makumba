@@ -22,40 +22,24 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
 import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
+import java.util.Dictionary;
 
-public class DeleteTag extends EditTag
+public class charViewer extends FieldViewer
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
+  static String[] params= { "urlEncode", "html" };
+  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }};
 
-  // no input tags allowed!!
+  public String[] getAcceptedParams(){ return params; }
+  public String[][] getAcceptedValue(){ return paramValues; }
 
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public String formatNotNull(Object o, Dictionary formatParams) 
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
-  }
+    String txt=o.toString();
+    String ht= (String)formatParams.get("html");
+    if(ht!=null && (ht.equals("true") || ht.equals("auto") && HtmlUtils.detectHtml(txt)))
+      return txt;
+    return HtmlUtils.string2html(txt);
 
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("</a>");
   }
-
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

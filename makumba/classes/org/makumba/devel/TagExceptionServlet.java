@@ -55,7 +55,6 @@ public class TagExceptionServlet extends HttpServlet
   public void service(HttpServletRequest req, HttpServletResponse resp) 
        throws IOException, ServletException
   {
-    resp.setContentType("text/html");
     PrintWriter wr=resp.getWriter();
     Throwable t= (Throwable)req.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION);
     Throwable t1=null;    

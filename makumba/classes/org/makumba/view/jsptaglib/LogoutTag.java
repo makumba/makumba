@@ -22,40 +22,21 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
 import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
+import javax.servlet.jsp.tagext.*;
 
-public class DeleteTag extends EditTag
+public class LogoutTag extends TagSupport
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
+  String attr;
 
-  // no input tags allowed!!
-
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public void setActor(String a){ attr=a; }
+  
+  public int doStartTag() throws JspException 
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    if(pageContext.getAttribute(attr, PageContext.SESSION_SCOPE)!=null)
+      {
+	pageContext.removeAttribute(attr, PageContext.SESSION_SCOPE);
+      }
+    return EVAL_BODY_INCLUDE;
   }
-
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("</a>");
-  }
-
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

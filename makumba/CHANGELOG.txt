@@ -1,18 +1,3 @@
-0.5.7.6; 21 may 2003 cristi
-several bugs of the FLE protection are fixed. 
-the newController branch (0.5.6, 0.5.7) is now in the main CVS trunk
-
-stefan;23 apr 2003: source tarball is published whenever jar is published
-
-0.5.7; in preparation, cristi
-first-load errors are fixed, no need for more workarounds to avoid them, no need for instanceof checks
-
-bug 6 is finally fixed, the controller/form responder code is now separated
-
-cristi: some timestamps were read from DB as BigDecimal. they are normal Timestamp now
-cristi: improved HTML guess detection to include other tags
-cristi: if <mak:input > sees both a type and a value, they are checked for compatibility (bugs 371 and 372 resulted, were fixed).
-
 0.5.5.27; 27 mar 2003 stefan
 fixed bug 367 (Makumba Error messages are messy HTML)
 bug 327 (TagExceptions are linking wrongly)
@@ -121,20 +106,6 @@ db is now a variable argument to the tags. may break in pages that change it oft
 
 0.5.5.1; 6 nov 2002 cristi
 fixed deletion of objects coming from another db
-
-0.5.6.1; 6 jan 2003 cristi
-- refactored the forms further, only the jsptaglib1-dependent features are now left in org.makumba.view.jsptaglib, the rest of the stuff is in form responders, org.makumba.controller
-action
-- while refactoring, i got more acquainted to the jsptaglib code, especially forms, so there are more features...
-- <mak:action> is now added and documented to support complex form actions that include makumba tags
-- infrastructure for multiple forms is now in place, and runs ok in the 'particular' case of the simple form. 
-
-0.5.6; 17 dec 2002 cristi
-- the need for "first makumba tag" is eliminated for login and form response
-- now anything can be a response or can request login, including plain HTTPs or JPGs. that also means that all separate (non-include) accesses (e.g. images) are authenticated!
-- as excpected, authentication is only done once, included JSPs are not authenticated
-- some tag classes moved (login, logout, response) so tomcat/work/Standalone/localhost/context_name will have to be deleted before working with this version
-- quite a lot of the form response code moved from org.makumba.view.jsptaglib to org.makumba.controller.http, org.makumba.controller.html, org.makumba.controller.jsp. that should make the taglib rewrite easier.
 
 0.5.5; 3 nov 2002
 cristi: joined the 0.5.4 branch with the main branch

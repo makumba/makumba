@@ -46,7 +46,7 @@ public class jspViewer extends LineViewer
     reader= new FileReader(realPath);
     servletPath=servletPath.substring(0, servletPath.indexOf("."))+".jsp";
     logicPath= contextPath+"/logic"+servletPath;
-    hasLogic=!(org.makumba.controller.Logic.getLogic(servletPath) instanceof org.makumba.LogicNotFoundException);
+    hasLogic=!(Logic.getLogic(servletPath) instanceof org.makumba.LogicNotFoundException);
   }
 
   String findPage(String s)
@@ -80,7 +80,7 @@ public class jspViewer extends LineViewer
     w.print("<td align=\"center\"><a href=\""+contextPath+virtualPath+"\"><font color=\"darkblue\">execute</font></a></td>");
     writeSourceLink(w);    
     w.print("<td align=\"center\"><a href=\""+logicPath+"\"><font color=\"darkblue\">business logic"+(hasLogic?"":" (none)")+"</font></a></td>");
-    String lg= org.makumba.controller.http.ControllerFilter.getLoginPage(virtualPath);
+    String lg= org.makumba.view.jsptaglib.MakumbaTag.getLoginPage(virtualPath, sv);
     if(lg!=null)
       w.print("<td align=\"center\"><a href=\""+contextPath+lg+"x\"><font color=\"darkblue\">login page</font></a></td>");
     writeProgLink(w);

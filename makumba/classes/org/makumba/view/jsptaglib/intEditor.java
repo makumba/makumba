@@ -23,39 +23,28 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
-import java.io.*;
 
-public class DeleteTag extends EditTag
+public class intEditor extends charEditor
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
+  static String[] params= {  "size", "maxlength" };
+  static String[][] paramValues= { null, null };
+  public String[] getAcceptedParams(){ return params; }
+  public String[][] getAcceptedValue(){ return paramValues; }
 
-  // no input tags allowed!!
+  public int getWidth() { return 10; }
 
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public String getLiteral(Object o, java.util.Dictionary formatParams) 
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    return o.toString();
   }
 
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("</a>");
+  public Object readFrom(HttpParameters par)
+  { 
+    Object o=par.getParameter(getInputName());
+    
+    if(o instanceof java.util.Vector)
+      { throw new InvalidValueException(this, "multiple value not accepted for integer: "+o); }
+    return toInt(o);
   }
-
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
-}
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
 
 }
-
