@@ -25,7 +25,7 @@ package org.makumba.view;
 import java.util.*;
 
 /** a subquery of a composed query */
-class ComposedSubquery extends ComposedQuery
+public class ComposedSubquery extends ComposedQuery
 {
   /** the enclosing query */
   ComposedQuery superQuery;
@@ -39,7 +39,10 @@ class ComposedSubquery extends ComposedQuery
     derivedSections= new String[4];
     derivedSections[FROM]=superQuery.derivedSections[FROM];
     if(sections[FROM]!=null)
-      derivedSections[FROM]+=","+sections[FROM];
+      if(derivedSections[FROM]!=null)
+	derivedSections[FROM]+=","+sections[FROM];
+      else
+	derivedSections[FROM]= sections[FROM];
     concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
     //    concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
     String gpb= sections[GROUPBY];

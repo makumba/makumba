@@ -1,3 +1,36 @@
+0.5.9.4; 30 jun 2003 cristi
+bug 58: query tags now check for identical keys. the id attribute is suported and the programmer advised to use it to fix
+bug 17: accepted for "value": 1, 'Yes', nil, $xxx (see also bug 375, bug 59)
+support for dummy queries like "SELECT 5, nil, 'blabla'" for forms not included in a query
+special type handlers for nil OQL projectons
+bug 464: printing tag lines
+fred: fix for bug 275
+stefan; 27 jun 2003: bug 329 (chmod before ziping doc)  fixed
+stefan; 27 jun 2003: bug 488 (ant tagJar will not work if lib/ doesn't exist) fixed
+
+0.5.9.3; 26 jun 2003 cristi
+0.5.9 major improvements:
+completely refactored tag library, taking more advantage of page analysis
+static page analysis, no need for attributes to be passed to the analysis. 
+non-OQL-parameters restricted to where=, orderby= and groupBy=
+0.5.9.3-specific
+org.makumba.FieldDefinition exposes more functionality of org.makumba.abstr.FieldInfo
+org.makumba.view.jsptaglib uses no org.makumba.abstr (it was using RecordInfo and FieldInfo)
+better type checking in mak:input (addressing bugs 17, 451)
+check for existence of form action (bug 357)
+support for style, styleClass, styleId (bug 101) and possibility of adding more extra formatting
+
+0.5.8.8; 21 jun 2003 fred
+fixed bug 479 and 486 : parser cannot handle \n (newline) or \\ (backslash) in attribute value
+
+0.5.8.7; 18 jun 2003 fred
+fixed bug 465 (JSP parser should recognize and ignore JSP comments and Java scriplets)
+
+0.5.8.6; 8 jun 2003 cristi
+added page parsing, and page analysis (not yet static)
+removed training loops and lots of code that dealt with them. tr-loop structures are still in place, more refactoring is needed
+incorporated a potential fix for bug 403 (config file not found)
+
 0.5.7.6; 21 may 2003 cristi
 several bugs of the FLE protection are fixed. 
 the newController branch (0.5.6, 0.5.7) is now in the main CVS trunk

@@ -22,10 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import java.util.*;
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
-
+import java.util.Vector;
+import javax.servlet.jsp.tagext.TagData;
+import javax.servlet.jsp.tagext.VariableInfo;
+import javax.servlet.jsp.tagext.TagExtraInfo;
 
 public class AttrTEI extends TagExtraInfo 
 {

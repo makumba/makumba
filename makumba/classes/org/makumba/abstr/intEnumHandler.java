@@ -36,6 +36,8 @@ public class intEnumHandler extends intHandler implements intEnumerator
   
   public String getNameAt(int i){ return (String)((Vector)fi.extra2).elementAt(i); }
 
+  public boolean isAssignableFrom(FieldInfo fi){ return super.isAssignableFrom(fi) || fi.getType().equals("int") || fi.getType().equals("char"); }
+
   public String getNameFor(int n){ 
     Vector names=(Vector)fi.extra2;
     Vector values=(Vector)fi.extra1;

@@ -168,6 +168,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 		System.out.println(((char)7)+"\n\nno type computed for "+proj.expr.getText()+"\n\n");
 		type="int";
 	      }
+	    
+	    if(type.toString().startsWith("set"))
+	      throw new antlr.SemanticException("You cannot select a set; projection \""+proj.as+"\" with expression \""+proj.expr+"\" has type "+type);    
 	    resultInfo.addField(FieldInfo.getFieldInfo(proj.as, type, false));
 	  }
       }

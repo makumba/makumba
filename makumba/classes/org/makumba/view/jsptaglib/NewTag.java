@@ -22,19 +22,28 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.abstr.*;
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
+import org.makumba.util.MultipleKey;
 
 public class NewTag extends FormTagBase
 {
-  public void setType(String s) { responder.setNewType(type=RecordInfo.getRecordInfo(s)); }
-
   // for input tags:
-  RecordInfo type;
+  DataDefinition type;
 
-  public FieldDefinition getDefaultType(String fieldName) 
+  public void setType(String s){ responder.setNewType(type=MakumbaSystem.getDataDefinition(s));}
+
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
   {
-    return deriveType(type, fieldName);
+    Object keyComponents[]= {type.getName(), handler,  getParentListKey(), getClass()};
+    tagKey=new MultipleKey(keyComponents);
+  }
+
+  public DataDefinition getDataType() 
+  {
+    return type;
   }
 }
 

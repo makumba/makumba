@@ -7,7 +7,7 @@
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="../../util-java/tomcat4/common/lib">
+	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
 	  <include name="**/servlet.jar" />
 	 </fileset>	
        </path>
@@ -121,18 +121,6 @@
 	</jar>
        </target>
 
-       <target name="zipSrc" description="make a zip of sources"  depends="compile">
-	<delete file="${temp.dir}/makumba-src.zip" />
-	<zip zipfile="${temp.dir}/makumba-src.zip">
-		<fileset dir="..">
-		<include name="makumba/**/*" />
-      		<exclude name="makumba/classes/**/*.class" />
-      		<exclude name="makumba/doc/**" />
-      		<exclude name="makumba/lib/**" />
-		</fileset>
-	</zip>
-
-       </target>
 
 	<target name="doc" depends="compile" 
 	description="generates documentation">
@@ -150,7 +138,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
-		doctitle="Documentation of Makumba classes"
+		doctitle="Makumba API Documentation"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -226,10 +214,18 @@
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 	</target>
 
-	<target name="makeJar" if="tag" description="makes the jar of the given version">
+	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="../../makumba.distrib" />
 	<delete dir="../../makumba.distrib/makumba/" />
 	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
+        <mkdir dir="${jar.place}/lib" />
+	<!-- make the source tarball: -->
+	<zip zipfile="lib/${tag}-src.zip">
+		<fileset dir="../../makumba.distrib/">
+		  <include name="makumba/**" />
+		</fileset>
+	</zip>
+	<!-- make the jar: -->
 	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
         	<classpath>
 		<pathelement path="${project.class.path}"/>
@@ -243,10 +239,15 @@
 	</target>
 
 
-
 	<target name="publishJar" depends="compile" if="tag" 
-	description="tags a version from the current branch, puts it in ./lib and publishes it on the web" >
-	<antcall target="tagJar"/>
+	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
+	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
+	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
+
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -257,6 +258,7 @@
     	<fileset dir="lib/">
       		<include name="makumba.jar" />
                 <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
     	</fileset>
 	</ftp>
 
@@ -268,32 +270,18 @@
 	>
     	<fileset dir="lib/">
                 <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
 	</fileset>
 	</ftp>
-	<echo>${tag}.jar uploaded to sourceforge.net. To make it a release visit:
+	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
 		http://sourceforge.net/project/admin/qrs.php?group_id=25704
 		within the next 24 hours.
 	</echo>
         </target>
 
+
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
- <!--echo>updating individual files via ftp</echo>
-	<ftp server="download.makumba.org"
-		userid="ftp-mak"
-		password="ftp-mak"
-		remotedir="makumba/doc"
-		binary="no"
-		newer="yes"
-	>
-    	<fileset dir="doc/">
-      		<include name="api/**/*.html" />
-      		<include name="api/**/*.txt" />
-      		<include name="api/**/*.css" />
-      		<include name="api/**/package-list" />
-      		<exclude name="api/API_users_guide.html" />
-    	</fileset>
-	</ftp-->
  <echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -309,22 +297,21 @@
 
 	<target name="zipdoc"  >
 	<delete file="${temp.dir}/makumbadoc.zip" />
-	<zip zipfile="${temp.dir}/makumbadoc.zip">
-		<fileset dir="..">
+	<antcall target="doc" />
+	<fileset id="wwwdocs" dir="..">
 		<include name="makumba/CHANGELOG.txt" />
 		<include name="makumba/COPYING.txt" />
 		<include name="makumba/README.txt" />
-     		<include name="makumba/doc/**/*.html" />
-     		<include name="makumba/doc/**/*.txt" />
-     		<include name="makumba/doc/**/*.doc" />
-     		<include name="makumba/doc/**/*.pdf" />
-     		<include name="makumba/doc/**/*.gif" />
-     		<include name="makumba/doc/api/**/*.html" />
-      		<include name="makumba/doc/api/**/*.txt" />
-      		<include name="makumba/doc/api/**/*.css" />
-      		<include name="makumba/doc/api/**/package-list" />
+     		<include name="makumba/doc/**" />
       		<exclude name="makumba/doc/api/API_users_guide.html" />
-		</fileset>
+	</fileset>
+
+	<!-- make sure the files to be published are radable to everyone (zip keeps permissions, bug 329) -->
+	<chmod perm="ugo+r" type="both">
+	  <fileset refid="wwwdocs"/>
+	</chmod>
+	<zip zipfile="${temp.dir}/makumbadoc.zip">
+	  <fileset refid="wwwdocs"/>
 	</zip>
         </target>	
 
@@ -338,6 +325,7 @@
 		      </classpath>
 	 	</java>
 	</target>
+
 
 	<target name="insertLicense">
 	  <replace dir="classes" includes="**/*.java" summary="true">
