@@ -41,7 +41,6 @@ implements Observer, QueryTagStrategy
 
   public QueryStrategy getQueryStrategy(){return this; }
   public RootQueryStrategy getRoot() { return (RootQueryStrategy)root; }
-  public QueryStrategy getParentStrategy(){return ((QueryTagStrategy)tag.getMakumbaParent().strategy).getQueryStrategy(); }
 
   public QueryTag getQueryTag(){ return (QueryTag)tag; }
 
@@ -60,12 +59,9 @@ implements Observer, QueryTagStrategy
   
   public ComposedQuery getQuery(){return query; }
   
-  // the query that serves as parent for enclosed queries
-  public ComposedQuery getParentingQuery(){return getQuery(); }
-
   public void doAnalyze() 
   { 
-    setQuery(ComposedQuery.getQuery(key, getQueryTag().queryProps, getParentStrategy().getParentingQuery()));
+    setQuery(ComposedQuery.getQuery(key, getQueryTag().queryProps, tag.getEnclosingQuery().getQuery()));
     getRoot().addQuery(this);
   }
 
@@ -195,10 +191,10 @@ implements Observer, QueryTagStrategy
     if(tag.wasException())
       return BodyTag.SKIP_PAGE;
     try{
-      getRoot().include(rootData.header);
+      getRoot().include(tag.getRootData().header);
       if(startedWithData)
 	getRoot().writeLoop();
-      getRoot().include(rootData.footer);
+      getRoot().include(tag.getRootData().footer);
     }catch(IOException e){ throw new JspException(e.toString()); }
     return BodyTag.EVAL_PAGE;
   }
