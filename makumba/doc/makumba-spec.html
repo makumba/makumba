@@ -1490,7 +1490,7 @@ Makes a form for creating a new object of the indicated type.
 <p>
 Example (personNew.jsp):
 </p>
-<pre class="example">&lt;mak:newForm type="general.Person" action="personList.jsp" method="post"&gt;<br>        &lt;mak:input field="name"/&gt;<br>        &lt;mak:input field="surname"/&gt;<br>        &lt;input type="submit"&gt;<br>&lt;/mak:newForm&gt;<br></pre>
+<pre class="example">&lt;mak:newForm type="general.Person" action="personList.jsp" method="post"&gt;<br>        &lt;mak:input name="name"/&gt;<br>        &lt;mak:input name="surname"/&gt;<br>        &lt;input type="submit"&gt;<br>&lt;/mak:newForm&gt;<br></pre>
 <br>
 <p>
 </p>
@@ -1675,7 +1675,7 @@ Makes a form for creating a sub-object of the mandatory enclosing <code>&lt;mak:
 <p>
 Example:
 </p>
-<pre class="example">&lt;mak:object from="best.Student s" where="s=$student"&gt;<br>    &lt;mak:addForm object="s" field="languages"<br>    		 action="studentView.jsp" method="post"&gt;<br>        &lt;mak:value expr="s.name"/&gt;<br>        &lt;mak:input field="level"/&gt;<br>        &lt;mak:input field="comments"/&gt;<br>    &lt;/mak:addForm&gt;<br>&lt;/mak:object&gt;<br></pre>
+<pre class="example">&lt;mak:object from="best.Student s" where="s=$student"&gt;<br>    &lt;mak:addForm object="s" field="languages"<br>    		 action="studentView.jsp" method="post"&gt;<br>        &lt;mak:value expr="s.name"/&gt;<br>        &lt;mak:input name="level"/&gt;<br>        &lt;mak:input name="comments"/&gt;<br>    &lt;/mak:addForm&gt;<br>&lt;/mak:object&gt;<br></pre>
 <br>
 <p>
 </p>
@@ -1805,7 +1805,7 @@ Also linked objects can be edited through the same form.
 <p>
 Example:
 </p>
-<pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="s" action="studentView.jsp" method="post"&gt;<br>        &lt;mak:input field="person.name"/&gt;<br>        &lt;mak:input field="person.surname"/&gt;<br>        &lt;mak:input field="graduated"/&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
+<pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="s" action="studentView.jsp" method="post"&gt;<br>        &lt;mak:input name="person.name"/&gt;<br>        &lt;mak:input name="person.surname"/&gt;<br>        &lt;mak:input name="graduated"/&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
 <br>
 <p>
 </p>
@@ -2247,7 +2247,7 @@ capital city
 of the country of which person is a citizen, through the person edit
 form :
 </p>
-<pre class="example">&lt;mak:input field="person.citizenship.capital.name" /&gt;<br></pre>
+<pre class="example">&lt;mak:input name="person.citizenship.capital.name" /&gt;<br></pre>
 
 <p>Restrictions for different field types:
 </p>
@@ -2260,7 +2260,7 @@ only as a separate object</li>
 </ul>
 
 
-<h5><a name="choiceDisplay" >&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
+<h5><a name="choiceDisplay" ></a>&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
 By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:option</code>. Options can be repeated using <code>mak:list</code>, <code>c:foreach</code>, and in general can appear inside any other tag.<p>
 Text inside <code>mak:option</code> will become an option title. The <code>value</code> attribute will become the option. All text produced inside the mak:input that is not inside a mak:option must be blank!<p>
 If <code>mak:option</code> doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.<p> 
