@@ -167,9 +167,13 @@ public class QueryTag extends MakumbaTag implements IterationTag
     return SKIP_BODY;
   }
   
+
   /** Cleanup operations, especially for the rootList */
   public int doMakumbaEndTag() throws JspException
   {
+
+    execution.endIterationGroup();
+
     if(getParentList()==null)
       execution.endListGroup(pageContext);
 
