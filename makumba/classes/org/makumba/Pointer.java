@@ -41,6 +41,9 @@ public class Pointer implements java.io.Serializable
   /** null constant for integers */
   public static Object NullInteger= new NullObject("null integer");
 
+  /** null constant for real numbers */
+  public static Object NullReal= new NullObject("null real");
+
   /** null constant for characters */
   public static Object NullString= new NullObject("null char");
 

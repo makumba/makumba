@@ -941,7 +941,7 @@ literal :
             objectLiteral
         |   booleanLiteral { ((OQLAST)#literal).makumbaType="int";} 
         |   longLiteral  { ((OQLAST)#literal).makumbaType="int";} 
-        |   doubleLiteral
+        |   doubleLiteral { ((OQLAST)#literal).makumbaType="real";}
         |   charLiteral  { ((OQLAST)#literal).makumbaType="char";}  
         |   stringLiteral { ((OQLAST)#literal).makumbaType="char";} 
         |   dateLiteral   { ((OQLAST)#literal).makumbaType="datetime";} 

@@ -111,4 +111,22 @@ public class FieldEditor extends org.makumba.view.FieldFormatter
     }catch(NumberFormatException e) { throw new InvalidValueException(this, "invalid integer: "+o); }
   }
 
+  protected Double toReal(Object o)
+  {
+    if(o==null)
+      return null;
+    String s=(""+o).trim();
+    if(s.length()==0)
+      return null;
+    try{  return new Double(Double.parseDouble(s));}
+    catch(NumberFormatException e) 
+     {  try{ return new Double(Double.parseDouble(s.replace(',','.')) );  }
+	catch(NumberFormatException e2) 	
+	{ try{ return new Double(Double.parseDouble(s.replace('.',',')) );}
+	  catch(NumberFormatException e3) 
+	  {  throw new InvalidValueException(this, "invalid real: "+o); }
+	}
+     }
+  }
+
 }

@@ -45,17 +45,27 @@ public class AggregateAST extends OQLAST
 	String os= ""+o;
 	if(getText().startsWith("max")||getText().startsWith("min"))
 	    {
-		if(os.startsWith("int") ||os.startsWith("date") || os.startsWith("ptr") || os.startsWith("char") || os.startsWith("text"))
+		if(os.startsWith("int") ||os.startsWith("real") || os.startsWith("date") || os.startsWith("ptr") || os.startsWith("char") || os.startsWith("text"))
 		    return o;
 		throw new antlr.SemanticException("cannot min() or max() a "+os);
 	    }
 
-	if(getText().startsWith("sum")||getText().startsWith("avg"))
+	if(getText().startsWith("sum"))
 	    {
 		if(os.startsWith("int"))
 		    return "int";
-		throw new antlr.SemanticException("cannot sum() or avg() a "+os);
+		if(os.startsWith("real"))
+		    return "real";
+		throw new antlr.SemanticException("cannot sum() a "+os);
 	   } 
+
+	if(getText().startsWith("avg"))
+	    {
+		if(os.startsWith("int") || os.startsWith("real"))
+		    return "real";
+		throw new antlr.SemanticException("cannot avg() a "+os);
+	   } 
+
 	throw new antlr.SemanticException("aggregate expressions can be sum, min, max, avg");
     }
 
