@@ -86,7 +86,7 @@ import org.makumba.util.*;
  * @see org.makumba.abstr.FieldHandler
  */
 
-public abstract class RecordHandler
+public abstract class RecordHandler implements java.io.Serializable
 {
   RecordInfo ri;
   protected Hashtable handlers= new Hashtable();

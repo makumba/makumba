@@ -401,7 +401,7 @@ public abstract class Responder implements java.io.Serializable
 }
 
 /** this class helps to differentiate between the different types of forms */
-abstract class ResponderOp
+abstract class ResponderOp implements java.io.Serializable
 {
   /** respond to the given request, with the data from the given responder, read using the given multiple form suffix */
   public abstract Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
