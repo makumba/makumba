@@ -23,7 +23,25 @@
 
 package org.makumba;
 
+/** Specifies interface for data transformation. 
+ Some of your application's class should implement this DataTransformer in order to be used my Makumba during DB operations. 
+ <p>
+ 
+ In your db configuration file (eg <code>localhost_mysql_myapp.properties</code>) it should be specified with a line 
+ <pre>insert#<i>makumba.Type</i>=<i>yourClassThatImplementsDataTransformer</i></pre>
+ to run your transformer (<code>yourClassThatImplementsDataTransformer</code>) on all the records of that makumba type 
+(<code><i>makumba.Type</i></code>) before being inserted into the database.
+
+<p> eg:
+ <pre>insert#<i>general.Person</i>=<i>org.eu.best.PersonHook</i></pre>
+ */
 public interface DataTransformer
 {
+    /** Performs the data transformation.
+	@param d data to transform
+	@param db database
+	@return true if specified database operation should be done (eg data transformed succesfully or data is valid), false 
+otherwise.
+    */
     public boolean transform(java.util.Dictionary d, Database db);
 }
