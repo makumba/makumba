@@ -743,12 +743,22 @@ language</a> described below. Orientative SQL and Java types are presented.
 <a NAME="Presentation"></a>Presentation with JSP taglib</h2>
 Data can be presented and adjusted per record and field. The current presentation
 language uses JSP taglibs and corresponding notation, but principles can
-be applied in any other HTML-centric presentation language such as PHP
-<p>Makumba tags are written according to <a href="ftp://212.206.127.195/pub/servlet/22final-182874/servlet2_2-spec.pdf">Servlet
-2.2 specification</a> and <a href="ftp://212.206.127.195/pub/jsp/11final-87721/jsp1_1-spec.pdf">JSP
-1.1 specification</a>. The corresponding <b>WEB-INF/web.xml</b> and <b>WEB-INF/makumba.tld
-</b>can
-be found in the distribution.
+be applied in any other HTML-centric presentation language such as PHP.
+
+<p>Makumba tags are written according to 
+<a href="http://java.sun.com/products/servlet/">Servlet 2.3 specification</a> 
+and <a href="http://java.sun.com/products/jsp/">JSP 1.1 specification</a>. 
+You will need a servlet container that supports them, both, such as
+ <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a>
+<p>
+The corresponding <b>WEB-INF/makumba.tld</b> is already included in the distribution 
+<code>makumba-<i>version</i>.jar</code>.
+ The example <b>WEB-INF/web.xml</b> can be found in Makumba cvs repository 
+(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">http://cvs.makumba.org/servlet_context/WEB-INF/</a>).
+
+<p>Before using Makumba tags in your  .jsp pages you also need to declare the taglib with: 
+<pre>&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;</pre>
+
 <blockquote>
 <h3>
 <a NAME="maklist"></a>&lt;mak:list...>...&lt;/mak:list></h3>
