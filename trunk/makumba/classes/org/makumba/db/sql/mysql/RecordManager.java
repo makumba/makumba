@@ -37,7 +37,8 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
     Statement st= dbc.createStatement();
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
     rs.next();
-    if(!rs.getString(2).trim().endsWith("TYPE=InnoDB")){
+    String def=rs.getString(2).trim();
+    if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB")){
       String s="ALTER TABLE "+getDBName()+" TYPE=InnoDB";
       MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
       st.executeUpdate(s);
