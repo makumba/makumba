@@ -1,0 +1,2 @@
+#$Id$
+name of person = not null char[10]
