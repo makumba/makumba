@@ -153,8 +153,8 @@
                 Docs generated on ${javadoc.startup.time}
                 </div>
 
-		<script language='JavaScript' src='../../../main.js'></script>
-		<script language='JavaScript'>makeNavBar('../../../');</script>
+		<script type='text/javascript' src='../../../main.js'></script>
+		<script type='text/javascript'>makeNavBar('../../../');</script>
             ]]></bottom>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
@@ -184,7 +184,7 @@
 		   <a href='http://www.makumba.org' target='_top'><img src='http://www.makumba.org/makumba-logo-small.gif' border='0'></a>
                 </TD><TR>
                 <TD VALIGN='top' CLASS='NavBarCell3'><FONT SIZE='-2'>
-                <script language='javascript'>
+                <script type='text/javascript'>
                    url=document.location.href;
                    clas=url.substring(url.indexOf('/javadoc/'));
                    clas=clas.substring(9);
