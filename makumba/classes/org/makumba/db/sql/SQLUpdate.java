@@ -67,7 +67,7 @@ public class SQLUpdate implements Update
       // FIXME: we should make sure here that the tree contains one single type!
       assigner= new ParameterAssigner(dbc, tree=MakumbaSystem.getOQLAnalyzer(OQLQuery));
     }catch(OQLParseError e){
-      throw new org.makumba.OQLParseError(e.getMessage()+"\r\nin "+debugString+"\n"+OQLQuery);
+      throw new org.makumba.OQLParseError(e.getMessage()+"\r\nin "+debugString+"\n"+OQLQuery, e);
     }
     
     
