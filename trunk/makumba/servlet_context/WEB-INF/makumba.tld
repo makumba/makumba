@@ -52,6 +52,12 @@
 		</attribute>
 
 		<attribute>
+			<name>variableFrom</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>where</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
@@ -117,6 +123,12 @@
 		<attribute>
 			<name>from</name>
 			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>variableFrom</name>
+			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
