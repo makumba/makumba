@@ -35,19 +35,28 @@ public class SoftNamedResources extends NamedResources
   protected NameValue getNameValue(Object name, Object hash)
   {
     NameValue nv=null;
+    cleanCleared();
     SoftReference sr=(SoftReference)values.get(hash);
-    final Object h= hash;
-    if(sr==null || (nv=(NameValue)sr.get())==null)
-      values.put(hash, new SoftReference(nv=new NameValue(name, hash, f))
-		 {
-		   // possible improvement: rather redefine get(), 
-		   // if it returns null, re-make the resource?
-		   public void clear()
-		     { 
-		       super.clear();
-		       values.remove(h);
-		     }
-		 }); 
+    if(sr==null || (nv=(NameValue)sr.get())==null){
+      values.put(hash, new SoftReference(nv=new NameValue(name, hash, f)));
+      misses++;
+    }else hits++;
     return nv;
+  }
+
+  public String getName() { return name+" (soft cache)"; }
+
+  /** remove the residue data structures which were used to refer the resources that were cleared by the garbage collector */
+  void cleanCleared(){
+    for(java.util.Iterator i= values.keySet().iterator(); i.hasNext(); ){
+      SoftReference sr=(SoftReference)values.get(i.next());
+      if(sr.get()==null)
+	i.remove();
+    }
+  }
+  
+  public synchronized int size() {
+    cleanCleared();
+    return super.size();
   }
 }
