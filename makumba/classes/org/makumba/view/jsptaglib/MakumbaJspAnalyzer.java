@@ -123,6 +123,15 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       String tagName= td.name;
       if(!tagName.startsWith(makumbaPrefix))
 	return;
+
+      if (parents.isEmpty()) {
+          StringBuffer sb= new StringBuffer();
+          sb.append("Error: Closing tag never opened:\ntag \"").
+             append(td.name).
+             append("\" at line ");
+          JspParseData.tagDataLine(td, sb);
+          throw new org.makumba.ProgrammerError(sb.toString());
+      }
       tagName= tagName.substring(makumbaPrefix.length()+1);
       MakumbaTag t= (MakumbaTag)parents.get(parents.size()-1);
       if(!(t instanceof QueryTag) && ! (t instanceof FormTagBase))
