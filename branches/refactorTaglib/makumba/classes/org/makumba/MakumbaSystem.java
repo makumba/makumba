@@ -120,6 +120,25 @@ public class MakumbaSystem
   public static DataDefinition getDataDefinition(String typeName) 
   { return org.makumba.abstr.RecordInfo.getRecordInfo(typeName); }
 
+
+  /** Make a field definition from the indicated string */
+  public static FieldDefinition makeFieldDefinition(String name, String definition)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, definition, true);
+  }
+
+  /** Make a field definition with the elementary type*/
+  public static FieldDefinition makeFieldOfType(String name, String type)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+  }
+
+  /** Make a field definition identical with the given one, except for the name*/
+  public static FieldDefinition makeFieldWithName(String name, FieldDefinition type)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+  }
+
   /** Get the DataDefinition of the records returned by the given OQL query 
    *@deprecated use {@link #getOQLAnalyzer} for better OQL functionality
    */
