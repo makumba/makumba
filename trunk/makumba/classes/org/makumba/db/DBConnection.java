@@ -78,6 +78,36 @@ public abstract class DBConnection implements org.makumba.Database
   public void rollback()  {throw new RuntimeException("org.makumba.db.DBConnection.rollback() should never be called"); 
   }
 
+  Map locks= new HashMap(13);
+  Hashtable lockRecord= new Hashtable(5);
+  
+  public void lock(String symbol)
+  {
+    lockRecord.clear();
+    lockRecord.put("name", symbol);
+    locks.put(symbol, insert("org.makumba.db.Lock", lockRecord));
+  }
+  
+  public void unlock(String symbol)
+  {
+    Pointer p= (Pointer)locks.get(symbol);
+    if(p==null)
+      throw new ProgrammerError(symbol+" not locked in connection "+ this);
+    deleteLock(symbol);
+  }
+
+  protected void deleteLock(String symbol){
+    locks.remove(symbol);
+    // we need to delete after the lock name instead of the pointer
+    // in order not to produce deadlock 
+    delete("org.makumba.db.Lock l", "l.name=$1", symbol);
+  }
+  protected void unlockAll(){
+    for(Iterator i= locks.keySet().iterator(); i.hasNext(); ){
+      deleteLock((String)i.next());
+    }
+  }
+
   /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
   public void update(Pointer ptr, java.util.Dictionary fieldsToChange)
   {
