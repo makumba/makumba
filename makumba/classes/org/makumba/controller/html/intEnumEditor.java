@@ -33,57 +33,15 @@ public class intEnumEditor extends charEnumEditor
   public Object getOptionValue(Object options, int i)
   { return new Integer(getIntAt(i)); }
 
-  // copy/paste from intEditor.java
   public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
   { 
     Object o=par.getParameter(getInputName(suffix));
-    
+// DB level should complain in this case:
+//  if(o==null && isNotNull())
+//    { throw new InvalidValueException(this, "null value not allowed for a not null field"); }
     if(o instanceof java.util.Vector)
       { throw new InvalidValueException(this, "multiple value not accepted for integer: "+o); }
     return toInt(o);
   }
 }
-
-/*	
-  public String formatShowHIDE(Object o, Dictionary formatParams)
-  {
-    // check if the value is to be replaced by 'default' or 'empty'.
-    o = toInt( formatValue(o, formatParams) );
-    
-    StringBuffer sb=new StringBuffer();
-    sb.append("<select name=\"").append(getInputName(formatParams))
-      .append("\"").append(getExtraFormatting(formatParams)).append(">");
-    Enumeration v=getValues();
-    Enumeration n=getNames();
-    while(v.hasMoreElements())
-      {
-	Object vl=v.nextElement();
-	sb.append("<option value=\"").append(vl).append("\"");
-	if(vl.equals(o))
-	  sb.append(" selected");
-	// FIXME (fred): do string2html on the label (name) ??
-	sb.append(">").append(n.nextElement()).append("</option>");
-      }
-    sb.append("</select>");
-    return sb.toString();
-  }
-  
-  public String formatShowHIDE2(Object o, Dictionary formatParams)
-  {
-    // check if the value is to be replaced by 'default' or 'empty'.
-    o = toInt( formatValue(o, formatParams) );
-
-    HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(formatParams));
-    hcw.setValues(new EnumerationWrapper( getValues() ));
-    hcw.setLabels(new EnumerationWrapper( getNames() ));
-    if (o != null) hcw.setSelectedValues(o.toString());
-    hcw.setLiteralHtml(getExtraFormatting(formatParams));
-    hcw.setMultiple(false);
-    hcw.setSize(1);
-    // FIXME: set convert2html to true!?
-   
-    return hcw.getSelectOne();  
-  }
-*/
-
 

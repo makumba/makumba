@@ -2,6 +2,7 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
+stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
 stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer)
 fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
 stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer

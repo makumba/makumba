@@ -97,6 +97,8 @@ public class FieldEditor extends org.makumba.view.FieldFormatter
 
   protected Integer toInt(Object o)
   {
+    if(o==null)
+      return null;
     String s=(""+o).trim();
     if(s.length()==0)
       return null;
