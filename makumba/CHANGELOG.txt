@@ -1,3 +1,5 @@
+stefan; 27 jun 2003 bug 488 fixed
+
 0.5.9.3; 26 jun 2003 cristi
 0.5.9 major improvements:
 completely refactored tag library, taking more advantage of page analysis
