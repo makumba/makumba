@@ -77,6 +77,15 @@ pre.example {
 	padding-bottom:5px;
 }
 
+.internals{
+	background: white url("gears.gif") no-repeat;
+	color:#666666;
+	padding:0.2em;
+	padding-left:32px;
+	padding-bottom:5px;
+
+}
+
 div.plainStyle {
 	background:#DDDDDD;
 	margin-left:20px;
