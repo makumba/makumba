@@ -166,6 +166,11 @@ public class MakumbaSystem
     return org.makumba.version.getVersion();
   }
 
+  /** Returns build date (as recorded during building) */
+  public static java.util.Date getBuildDate() {
+    return org.makumba.version.getBuildDate();
+  }
+
   static String loggingRoot="org.makumba";
 
   /** Get a logger for logging during makumba operations. See {@link java.util.logging.Logger}, {@link #setLoggingRoot(java.lang.String)}. This method is mostly used by makumba code. From application code, use {@link #getLogger(java.lang.String)} or {@link #getLogger() }.   
