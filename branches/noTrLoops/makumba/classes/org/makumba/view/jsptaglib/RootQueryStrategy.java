@@ -123,7 +123,7 @@ implements RootTagStrategy, QueryTagStrategy
   {
     try{
       if(s!=null)
-	decorated.rootData.pageContext.include(s); 
+	decorated.tag.getRootData().pageContext.include(s); 
     }catch(Exception e) { throw new MakumbaJspException(e); }
   }
 
@@ -144,7 +144,7 @@ implements RootTagStrategy, QueryTagStrategy
     Database dbc= MakumbaSystem.getConnectionTo(decorated.tag.getDatabaseName());
     try
       {
-	for(Enumeration e= decorated.rootData.subtagData.elements(); e.hasMoreElements();)
+	for(Enumeration e= decorated.tag.getRootData().subtagData.elements(); e.hasMoreElements();)
 	  {
 	    ((QueryTagStrategy)e.nextElement()).getQueryStrategy().doQuery(dbc, PageAttributes.getAttributes(decorated.tag.getPageContext()), noProj);
 	  }
