@@ -36,8 +36,7 @@ public class FieldPrinter extends FieldHandler
         return getName()+"= "
             +(isFixed()?"fixed ":"")
             +(isNotNull()?"notnull ":"")
-            +(isUnique()?"unique ":"")
             +valueToString()
-            +(hasDescription()?"\t;"+getDescription():"");
+            +(hasDescription()?" ; "+getDescription():"");
     }
 }
