@@ -71,6 +71,8 @@ public class RecordManager extends Table
 
   protected boolean usesHidden(){ return true; }
 
+  protected String getTmpName() { return "tmp"+tbname; }
+
   /** the SQL table opening. might call create() or alter() */
   protected void open(Properties config) 
   {
@@ -143,6 +145,8 @@ public class RecordManager extends Table
     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getDatabase().getConfiguration()+": checking "+getRecordInfo().getName()+" as "+tbname);
 
     try{
+      Statement st= dbc.createStatement();
+
       CheckingStrategy cs= null;
       if(getSQLDatabase().catalog!=null)
 	cs= new CatalogChecker(getSQLDatabase().catalog);
@@ -151,8 +155,7 @@ public class RecordManager extends Table
       
       if(cs.shouldCreate())
 	{
-	  create(dbc, tbname, alter);
-	  
+	  create(st, tbname, alter);
 	  exists_=alter;
 	  config.put("makumba.wasCreated", "");
 	  keyIndex=getRecordInfo().getKeyIndex();
@@ -160,8 +163,11 @@ public class RecordManager extends Table
       else
 	{
 	  exists_=true;
-	  alter(dbc, cs);
+	  alter(st, cs);
 	}
+      cs.close();
+      
+      st.close();
     }catch(SQLException sq)
       { sq.printStackTrace(); throw new org.makumba.DBError(sq); }
   }
@@ -187,8 +193,9 @@ public class RecordManager extends Table
     indexDBField=((FieldManager)handlers.get(indexField)).getDBName();
   }
   
-  protected interface CheckingStrategy
+  interface CheckingStrategy
   {
+    void close()throws SQLException;
     boolean hasMoreColumns()throws SQLException;
     String columnName()throws SQLException;
     int columnType()throws SQLException;
@@ -249,6 +256,8 @@ public class RecordManager extends Table
     {
       return fm.unmodified(columnType(), columnSize(), columns, i);
     }
+
+    public void close(){ }
   }
 
     public int deleteFrom(DBConnection here, DBConnection source)
@@ -276,7 +285,7 @@ public class RecordManager extends Table
     }
 
   /** checks if an alteration is needed, and calls doAlter if so */
-  protected void alter(SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
+  protected void alter(Statement st, CheckingStrategy cs) throws SQLException
   {
     Vector present= new Vector();
     Vector add= new Vector();
@@ -295,7 +304,7 @@ public class RecordManager extends Table
 	      {
 		handlerExist.put(fm.getName(), withness);
 		present.addElement(fm);
-		if(!cs.checkColumn(fm) && !(alter && alter(dbc, fm, "MODIFY")))
+		if(!cs.checkColumn(fm) && !(alter && alter(st, fm, "MODIFY")))
 		  {
 		    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("should modify: "+
 				       fm.getDataName()+" "+
@@ -323,7 +332,7 @@ public class RecordManager extends Table
     for(Enumeration e= handlerOrder.elements(); e.hasMoreElements();)
       {
 	FieldManager fm=(FieldManager)e.nextElement();
-	if(handlerExist.get(fm.getName())==null && !(alter && alter(dbc, fm, "ADD")))
+	if(handlerExist.get(fm.getName())==null && !(alter && alter(st, fm, "ADD")))
 	  {
 	    add.addElement(fm);
 	    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("should add "+
@@ -339,12 +348,11 @@ public class RecordManager extends Table
       }
     handlerOrder=v; 
 
-    doAlter(dbc, drop, present, add, modify);
+    doAlter(st, drop, present, add, modify);
   }
 
-  boolean alter(SQLDBConnection dbc, FieldManager fm, String op) throws SQLException
+  boolean alter(Statement st, FieldManager fm, String op) throws SQLException
   {
-    Statement st= dbc.createStatement();
     String s="ALTER TABLE "+getDBName()+" "+op+" "+fm.inCreate(getSQLDatabase());
     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
     try{
@@ -352,7 +360,6 @@ public class RecordManager extends Table
     }catch(SQLException e) {}
     st.executeUpdate(s);
     handlerExist.put(fm.getName(), "");
-    st.close();
     return true;
   }
 
@@ -365,7 +372,7 @@ public class RecordManager extends Table
     *@param add the abstract fields that are not present in the db and need to be added
     *@param modify the abstract fields that exist in the db but need to be modified to the new abstract definition
     */
-  protected void doAlter(SQLDBConnection dbc, Vector drop,
+  protected void doAlter(Statement st, Vector drop,
 			 Vector present, Vector add, Vector modify)
        throws SQLException
   {
@@ -378,33 +385,90 @@ public class RecordManager extends Table
       return;
 
     if(present.size()==0)
-      create(dbc, tbname, alter);
+      create(st, tbname, alter);
   }
 
-  /** for odbc */
-  protected void indexCreated(SQLDBConnection dbc) {}
-  
-  /** for mysql */
-  protected String createDbSpecific(String command){return command; }
+  /*  the automatic alteration is really risky, so we skip it 
+ int n= present.size();
 
-  /** a table creation, from this table's RecordInfo */
-  protected void create(SQLDBConnection dbc, String tblname, boolean really)
+    String fields=null;
+
+    if(n>0)
+      {
+	StringBuffer sb= new StringBuffer();
+	fieldList(sb, present.elements());
+
+	fields= sb.toString();
+	if(alter)
+	  create(st, getTmpName(), true);
+
+	if(alter)
+	  cp(st, tbname, getTmpName(), fields, present);
+      }
+
+    create(st, tbname, alter);
+
+    if(n>0)
+      if(alter)
+	cp(st, "tmp"+tbname, tbname, fields, present);
+  }
+  */
+
+  /** a table copy function. tables should have this table's RecordInfo */
+  protected void cp(Statement st, String tb1, String tb2, String fields,
+		    Vector fms)
        throws SQLException
   {
-    Statement st= dbc.createStatement();
+	  DBConnectionWrapper dbcw=(DBConnectionWrapper)getSQLDatabase().getDBConnection();
+	  SQLDBConnection dbc=(SQLDBConnection)dbcw.getWrapped();
+    try{
+      ResultSet rs= st.executeQuery("SELECT "+fields+" FROM "+tb1);
+      Statement st1= dbc.createStatement();
+      int cols=rs.getMetaData().getColumnCount()+1;
+      
+      while(rs.next())
+	{
+	  StringBuffer cmd= new StringBuffer().append("INSERT INTO ")
+	    .append(tb2)
+	    .append("(").append(fields).append(") VALUES (");
+	  
+	  String sep= null;
+	  for(int i=1; i<cols; i++)
+	    {
+	      try{cmd.append(sep.toString());}
+	      catch(NullPointerException npe){ sep=", "; }
+	      
+	      try{
+		FieldManager fm= ((FieldManager)fms.elementAt(i-1));
+		cmd.append(fm.writeConstant(fm.getValue(rs, i)));
+	      }
+	      catch(NullPointerException npe){ cmd.append("null"); }
+	      catch(ClassCastException cce){ cmd.append("null"); }
+	    }
+	  cmd.append(")");
+	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(cmd.toString());
+	  st1.executeUpdate(cmd.toString());
+	}
+      st1.close();
+      rs.close();
+    }finally{ dbcw.close(); }
+  }
+
+  /** a table creation, from this table's RecordInfo */
+  protected void create(Statement st, String tblname, boolean really)
+       throws SQLException
+  {
     Object [] dbArg= { getSQLDatabase() };
     if(really)
       try
       {
 	st.executeUpdate("DROP TABLE "+tblname);
       }catch(SQLException e){ getSQLDatabase().checkState(e, "tableMissing"); }
-      
+
     try{
       String command="CREATE TABLE "+tblname+"("+
 	concatAll(getHandlerMethod("inCreate"), dbArg, ",")+
 	")";
-
-      command= createDbSpecific(command);
       if(!really)
 	{
 	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("would be:\n"+command);
@@ -414,7 +478,6 @@ public class RecordManager extends Table
       st.executeUpdate(command);
     }catch(InvocationTargetException e)
       { throw new org.makumba.DBError(e.getTargetException()); }
-    st.close();
   }
 
   /** list the given fields in a command field1, field2 ... */
@@ -473,14 +536,12 @@ public class RecordManager extends Table
 	    try{
 	      fm.setInsertArgument(ps, n, d);
 	    }catch(Throwable ex){ 
-	      //throw new DBError(ex, (getRecordInfo().getName())+"  "+(fm.getName())+"   "+(d.get(fm.getName())));
 	      throw new org.makumba.DBError(ex, 
-					    "insert into \""+ getRecordInfo().getName()+
-					    "\" at field \""+fm.getName()+
-					    "\" could not assign value \""+d.get(fm.getName())+
-					    "\" "+(d.get(fm.getName())!=null?("of type \""+
-					    d.get(fm.getName()).getClass().getName()+"\""):"")); 
-					    
+					    "insert into "+ getRecordInfo().getName()+
+					    " at field "+fm.getName()+
+					    " could not assign value \""+d.get(fm.getName())+
+					    "\" of type "+d.get(fm.getName())!=null?
+					    d.get(fm.getName()).getClass().getName():""); 
 	    }
 	  }
 	getSQLDatabase().exec(ps);

@@ -173,18 +173,11 @@ public interface Database
    */
   public int delete(String from, String where, Object parameterValues);
 
-  /** Give this connection back to the system. This will automatically commit the transaction if it was not committed. A connection cannot be used after closing.
+  /** Give this connection back to the system. Later on, this will automatically commit the transaction if it was not committed. A connection cannot be used after closing.
    * @exception DBError if a fatal database error occurs
    * @exception IllegalStateException if the connection was already closed
    */  
   public void close();
-
-  /** Commit the transaction associated with this connection. Normally, simply closing the connection will do, but more often committs may be needed. The business logic manager will close (and therefore commit) all transaction that it provides for usage.*/
-  public void commit();
-
-  /** Rollback the transaction associated with this connection. Typically rollback should be doneif an error occurs in a business logic operation. The business logic manager will rollback a transaction that it provided for usage if it catches any exception during the business logic execution.*/
-  public void rollback();
-  
 }
 
 

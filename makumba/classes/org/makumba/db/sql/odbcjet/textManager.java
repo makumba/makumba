@@ -53,11 +53,5 @@ public class textManager extends org.makumba.db.sql.textManager
     else
       ps.setBinaryStream(n, t.toBinaryStream(), t.length());
   }
-
-  public void setNullArgument(PreparedStatement ps, int n)
-       throws SQLException
-  {
-    ps.setNull(n, Types.LONGVARCHAR);
-  }
 }
 
