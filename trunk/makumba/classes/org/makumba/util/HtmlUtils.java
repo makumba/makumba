@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-
+/**
+ * @deprecated This class was moved to {@link org.makumba.HtmlUtils}. This inherited class temporarily stays for backward compatibility.
+ */
 public class HtmlUtils extends org.makumba.HtmlUtils
 { 
-   // this class was moved to org.makumba.HtmlUtils. This inherited class stays for backward compatibility.
 }
