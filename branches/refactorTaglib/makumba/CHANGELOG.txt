@@ -1,3 +1,15 @@
+0.5.9.3; 26 jun 2003 cristi
+0.5.9 major improvements:
+completely refactored tag library, taking more advantage of page analysis
+static page analysis, no need for attributes to be passed to the analysis. 
+non-OQL-parameters restricted to where=, orderby= and groupBy=
+0.5.9.3-specific
+org.makumba.FieldDefinition exposes more functionality of org.makumba.abstr.FieldInfo
+org.makumba.view.jsptaglib uses no org.makumba.abstr (it was using RecordInfo and FieldInfo)
+better type checking in mak:input (addressing bugs 17, 451)
+check for existence of form action (bug 357)
+support for style, styleClass, styleId (bug 101) and possibility of adding more extra formatting
+
 0.5.8.8; 21 jun 2003 fred
 fixed bug 479 and 486 : parser cannot handle \n (newline) or \\ (backslash) in attribute value
 
