@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.Vector;
 
 /** This class models a search tree. All keys are transformed into their toString and used to search in the search tree. For performance reasons, it is not thread safe. 
 */

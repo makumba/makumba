@@ -22,9 +22,14 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import java.util.*;
-import org.makumba.util.*;
-import org.makumba.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.makumba.Database;
+import org.makumba.LogicException;
+import org.makumba.util.ArgumentReplacer;
 
 /** Map $name to $n */
 public class AttributeParametrizer

@@ -22,9 +22,14 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import org.makumba.abstr.*;
-import java.util.*;
-import org.makumba.*;
+import java.util.Dictionary;
+import java.util.Properties;
+
+import org.makumba.Database;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.abstr.FieldHandler;
 
 public class FieldImporter extends FieldHandler
 {

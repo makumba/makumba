@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /** Represents a timestamp. Used by dateCreate and dateModify for their DB representation */
 public class timestampManager extends FieldManager

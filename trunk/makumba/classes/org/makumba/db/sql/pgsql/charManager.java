@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.pgsql;
-import java.sql.*;
+import java.sql.ResultSetMetaData;
 
 /** the Postgres jdbc driver seems to be dum about the width of character fields */
 public class charManager extends org.makumba.db.sql.charManager

@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /** standard SQL drivers have to break the org.makumba date in two. This represents a strictly SQL date (i.e. only the date part)
   *@see org.makumba.db.sql.timeManager

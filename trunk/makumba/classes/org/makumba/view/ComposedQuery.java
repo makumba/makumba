@@ -34,11 +34,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
 import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.MultipleKey;
-import org.makumba.util.NamedResources;
 import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
 
 /** An OQL query composed from various elements found in script pages. 
  * It can be enriched when a new element is found. 

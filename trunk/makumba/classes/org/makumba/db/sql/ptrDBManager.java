@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+
+import org.makumba.Pointer;
 
 /** this deals with pointers in SQL */
 public class ptrDBManager extends FieldManager

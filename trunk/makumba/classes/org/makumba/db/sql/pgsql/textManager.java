@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.pgsql;
-import java.sql.*;
-import org.makumba.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+
+import org.makumba.Text;
 
 /** the Postgres jdbc driver seems to be dum about the width of character fields */
 public class textManager extends org.makumba.db.sql.textManager

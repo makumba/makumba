@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.io.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /** wrap an exception to throw it further as a RuntimeException. stacktraces of this exception will actually print the stracktrace of the wrapped exception */
 public class RuntimeWrappedException extends RuntimeException

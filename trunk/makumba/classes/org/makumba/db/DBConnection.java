@@ -22,10 +22,23 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import org.makumba.*;
-import java.util.*;
-import org.makumba.abstr.*;
-import org.makumba.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+import org.makumba.FieldDefinition;
+import org.makumba.InvalidFieldTypeException;
+import org.makumba.InvalidValueException;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
+import org.makumba.abstr.FieldHandler;
+import org.makumba.abstr.FieldInfo;
+import org.makumba.abstr.RecordInfo;
 
 public abstract class DBConnection implements org.makumba.Database
 {

@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
-import javax.servlet.http.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class HttpParameters
 {

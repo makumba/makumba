@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
+import org.makumba.InvalidValueException;
+import org.makumba.Pointer;
 
 public class ptrIndexHandler extends FieldHandler
 {

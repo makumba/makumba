@@ -22,13 +22,14 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
-import java.util.*;
-import org.makumba.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
-// wrong dependencies
-import org.makumba.abstr.*;
-import org.makumba.db.*;
+import org.makumba.InvalidValueException;
+import org.makumba.OQLAnalyzer;
+import org.makumba.abstr.RecordInfo;
 
 /** this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The order in the two is different, because OQL paramters are numbered. Also, strict type checking is performed for the parameters */
 public class ParameterAssigner 

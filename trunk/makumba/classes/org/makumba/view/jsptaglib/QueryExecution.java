@@ -36,7 +36,6 @@ import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.Grouper;
-import org.makumba.view.ComposedQuery;
 
 /** This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at every parentIteration, and iterates through the iterationGroupData */
 public class QueryExecution

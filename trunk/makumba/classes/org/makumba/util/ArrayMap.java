@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /** this class exports an Object[] array as a dictionary */
 public class ArrayMap extends Dictionary

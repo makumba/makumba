@@ -22,8 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.abstr.*;
-import java.util.*;
+import java.util.Dictionary;
+
+import org.makumba.abstr.RecordHandler;
+import org.makumba.abstr.RecordInfo;
 
 public class RecordFormatter extends RecordHandler
 {

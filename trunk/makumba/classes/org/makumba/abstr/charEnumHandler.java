@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class charEnumHandler extends charHandler implements Enumerator
 {

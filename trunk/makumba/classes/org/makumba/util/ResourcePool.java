@@ -22,8 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
 import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.Stack;
+import java.util.Vector;
 
 /** Keeps a number of identical creation-expensive resources. Avoids resource re-creation/deletion
  * @author cristi

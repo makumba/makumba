@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.view.*;
 import java.util.Dictionary;
+
+import org.makumba.view.InvalidValueException;
 
 public class intEditor extends charEditor
 {

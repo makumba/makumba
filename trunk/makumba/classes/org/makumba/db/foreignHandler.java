@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import org.makumba.abstr.*;
+import org.makumba.abstr.FieldHandler;
+import org.makumba.abstr.RecordHandler;
 
 /** At RecordHandler building, this FieldHandler will replace itself with 
  * a record handler of class type+DB from the same package */

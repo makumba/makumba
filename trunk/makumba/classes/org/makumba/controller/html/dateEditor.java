@@ -22,9 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.view.*;
-import java.util.*;
-import java.text.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
+import org.makumba.view.InvalidValueException;
+import org.makumba.view.dateFormatter;
 
 public class dateEditor extends FieldEditor
 {

@@ -22,9 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.mysql;
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.makumba.MakumbaSystem;
 import org.makumba.db.sql.SQLDBConnection;
 

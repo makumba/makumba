@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +40,6 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.JspParseData;
 import org.makumba.util.MultipleKey;
-import java.util.Stack;
 
 /** this class provides utility methods for all makumba tags 
  * exception handling

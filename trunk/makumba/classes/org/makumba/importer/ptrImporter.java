@@ -22,8 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import java.util.*;
-import org.makumba.*;
+import java.util.Dictionary;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.Database;
+import org.makumba.Pointer;
 
 public class ptrImporter extends FieldImporter
 {

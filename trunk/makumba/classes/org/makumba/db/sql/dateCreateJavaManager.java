@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Dictionary;
 
 /** this sets a creation date in inserts, and keeps it fixed in updates. At insert, it creates a timestamp at the java level (which is then used by dateModifyManager too). At update it does nothing. SQL drivers might provide better implementations

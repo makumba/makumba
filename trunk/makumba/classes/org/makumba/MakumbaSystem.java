@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba;
-import org.makumba.util.*;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.RuntimeWrappedException;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Database} and {@link DataDefinition} objects */
 public class MakumbaSystem 

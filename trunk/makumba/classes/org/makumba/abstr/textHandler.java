@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
+import org.makumba.InvalidValueException;
+import org.makumba.Pointer;
+import org.makumba.Text;
 
 public class textHandler extends FieldHandler implements stringType
 {

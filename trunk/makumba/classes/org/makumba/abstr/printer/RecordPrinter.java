@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.abstr.printer;
-import org.makumba.abstr.*;
+import org.makumba.abstr.RecordInfo;
 
 /** This class just prepares a more complex toString. The toString is still
   (like in the generic RecordHandler) a concatenation of the FieldHandlers toString, but those FieldHandlers are different in this handler family. The FieldHandlers are built according to rules in org.makumba/abstr/printer/redirectPrinter.properties :

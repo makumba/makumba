@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Dictionary;
 
 /** This deals with unique indexes in SQL, ensuring the uniqueness at the java level. Most SQL drivers provide internal mechanisms for this.
  * This class contains a simple syncronized incrementor*/

@@ -22,8 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.makumba.Pointer;
 
 public class setintEnumHandler extends ptrOneHandler implements intType, intEnumerator
 {

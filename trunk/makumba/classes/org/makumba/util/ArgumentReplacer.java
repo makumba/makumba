@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /** parse a string and identify the arguments, to allow operations with them 
  * for now, arguments are of the form $javaid[$] but the class can be extended for them to take 

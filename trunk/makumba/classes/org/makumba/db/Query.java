@@ -22,8 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import org.makumba.*;
-import java.util.*;
+import java.util.Vector;
 
 /** A query prepared for execution. Returns all its results at once, in a Vector */
 public interface Query

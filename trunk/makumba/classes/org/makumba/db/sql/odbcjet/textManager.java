@@ -22,9 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.odbcjet;
-import java.sql.*;
-import org.makumba.*;
-import java.io.*;
+import java.io.InputStream;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+
+import org.makumba.Text;
 
 /** the odbc text is called "longbinary" and works with streams instead of large byte arrays */
 public class textManager extends org.makumba.db.sql.textManager

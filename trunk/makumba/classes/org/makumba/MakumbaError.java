@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba;
-import java.io.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /** A generic Makumba fatal error, due to misconfiguration, bad Data Definition (MDD) syntax, bad OQL syntax, database fatal error, etc. 
   Such an error usually denotes either a configuration mistake from the makumba API user, either a fatal database problem that makes it impossible for the makumba application to work. Like all errors, Makumba errors don't need to be caught, as they occur in "terminal" conditions anyway. Most makumba errors come from exceptions, which can be retrieved calling getReason()

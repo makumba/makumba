@@ -22,8 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.util.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.makumba.util.ArrayMap;
+import org.makumba.util.MultipleKey;
 
 /** This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is defined by a set of keys of the dictionary. Elements of each group come in a Vector that is guaranteed to respect the order in the original enumeration. */ 
 public class Grouper extends Hashtable

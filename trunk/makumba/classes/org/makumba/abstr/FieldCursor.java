@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
-import org.makumba.*;
+import java.util.Vector;
+
+import org.makumba.DataDefinitionParseError;
 
 /** This is the field definition tokenizer.
   * The lookup metods return false or null if the

@@ -22,18 +22,16 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.util.MultipleKey;
-import org.makumba.controller.jsp.PageAttributes;
-
-import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
-
-import org.makumba.view.ComposedQuery;
-import org.makumba.view.html.RecordViewer;
+import java.util.Vector;
 
 import javax.servlet.jsp.JspException;
 
-import java.util.Vector;
+import org.makumba.FieldDefinition;
+import org.makumba.LogicException;
+import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.util.MultipleKey;
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.html.RecordViewer;
 
 /** Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running */
 public class ValueComputer

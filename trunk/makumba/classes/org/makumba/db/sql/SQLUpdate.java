@@ -31,7 +31,6 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
 import org.makumba.OQLParseError;
-import org.makumba.db.DBConnection;
 import org.makumba.db.Update;
 import org.makumba.db.sql.oql.QueryAST;
 

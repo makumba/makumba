@@ -22,10 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import antlr.collections.AST;
-import java.util.*;
-import org.makumba.abstr.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.makumba.abstr.FieldInfo;
+import org.makumba.abstr.RecordInfo;
 import org.makumba.db.Database;
+
+import antlr.collections.AST;
 
 /** an OQL query, writes out the translated SQL query */
 public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer

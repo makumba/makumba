@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /** The general field handler. Knows how to read the data of its field info. Can replace itself with other FieldHandlers upon RecordHandler construction */
 public abstract class FieldHandler

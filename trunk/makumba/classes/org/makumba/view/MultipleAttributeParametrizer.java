@@ -22,9 +22,18 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.*;
-import java.util.*;
-import org.makumba.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.makumba.Attributes;
+import org.makumba.Database;
+import org.makumba.LogicException;
+import org.makumba.util.ArgumentReplacer;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.RuntimeWrappedException;
 
 /** Take care of multiple parameters, as a "decorator" of AttributeParametrizer which knows nothing about them */
 public class MultipleAttributeParametrizer

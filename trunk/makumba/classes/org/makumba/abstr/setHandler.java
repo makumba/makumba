@@ -23,7 +23,8 @@
 
 package org.makumba.abstr;
 import java.util.Vector;
-import org.makumba.*;
+
+import org.makumba.Pointer;
 
 public class setHandler extends ptrHandler implements subtableHandler
 {   

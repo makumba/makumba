@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /** this deals with SQL chars */
 public class charManager extends FieldManager

@@ -22,11 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import org.makumba.db.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import org.makumba.MakumbaSystem;
+import org.makumba.abstr.RecordInfo;
+import org.makumba.db.DBConnection;
 
 /** This class imports makumba objects from fields of Java objects. 
  * Imported classes have the opportunity to say what not to import (field String[] noImport). 

@@ -23,11 +23,11 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.ProgrammerError;
-
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import org.makumba.ProgrammerError;
 
 public class ActionTag extends MakumbaTag implements BodyTag
 {

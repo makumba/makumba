@@ -22,8 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.cloudscape;
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
 public class Database extends org.makumba.db.sql.Database
