@@ -1,6 +1,0 @@
-Developer support in makumba/parade
------------------------------------
-
-bug: dot in source view is shown as a link
-
-refactor devel to use filters mddViewer | mddLinker | lineNumberer
