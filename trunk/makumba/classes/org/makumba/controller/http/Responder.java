@@ -161,11 +161,13 @@ public abstract class Responder implements java.io.Serializable
   /** the form suffix, "" for the root form, _+increment for subforms */
   protected transient String storedSuffix="";
 
+  static final char suffixSeparator='_';
+
   /** pass the parent responder */
   public void setParentResponder(Responder resp)
   {
     if(resp.storedSuffix.equals(""))
-      storedSuffix="_"+(++resp.groupCounter);
+      storedSuffix=""+suffixSeparator+(++resp.groupCounter);
     else
       throw new RuntimeException("responders that include other responders cannot be included in responders");
   }
@@ -173,7 +175,7 @@ public abstract class Responder implements java.io.Serializable
   static Integer ZERO= new Integer(0);
   static Integer suffix(String s)
   {
-    int n=s.indexOf("_");
+    int n=s.indexOf(suffixSeparator);
     if(n==-1)
       return ZERO;
     return new Integer(Integer.parseInt(s.substring(n+1)));
@@ -216,7 +218,7 @@ public abstract class Responder implements java.io.Serializable
 	String code=(String)responderCodes.next();
 	String responderCode=code;
 	String suffix="";
-	int n=code.indexOf("_");
+	int n=code.indexOf(suffixSeparator);
 	if(n!=-1)
 	  {
 	    responderCode=code.substring(0, n);
