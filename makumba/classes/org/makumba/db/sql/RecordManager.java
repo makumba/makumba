@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DBError;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.NotUniqueError;
@@ -68,7 +69,7 @@ public class RecordManager extends Table
   boolean exists_;
   Hashtable handlerExist= new Hashtable();
   Dictionary keyIndex;
-    String preparedInsertString, preparedDeleteString, preparedDeleteFromString;
+  String preparedInsertString, preparedDeleteString, preparedDeleteFromString;
 
   public boolean exists(){ return exists_; }
   public boolean exists(String s){ return handlerExist.get(s)!=null; }
@@ -83,25 +84,39 @@ public class RecordManager extends Table
 
   protected boolean usesHidden(){ return true; }
 
+  void makeKeyIndex(){
+     if( keyIndex == null) {
+                keyIndex = new Hashtable();
+              
+                for (int i=0; i< getDataDefinition().getFieldNames().size(); i++) {
+                    FieldDefinition fi = getDataDefinition().getFieldDefinition(i);
+                    if (!fi.getType().startsWith("set"))
+                        keyIndex.put(fi.getName(), new Integer(i));
+                }
+            }
+      }
+  
   /** the SQL table opening. might call create() or alter() */
   protected void open(Properties config) 
   {
     setTableAndFieldNames(config);
-    if(!getRecordInfo().isTemporary())
-      {
-	  DBConnectionWrapper dbcw=(DBConnectionWrapper)getSQLDatabase().getDBConnection();
-	  SQLDBConnection dbc=(SQLDBConnection)dbcw.getWrapped();
-	try{
-	  checkStructure(dbc, config);
-	  initFields(dbc, config);
-	  preparedInsertString=prepareInsert();
-	  preparedDeleteString=prepareDelete();
-	  preparedDeleteFromString=
-	      "DELETE FROM "+getDBName()+" WHERE "+indexDBField+" >= ?"+
-	      " AND "+indexDBField+" <= ?";
-	}finally{ dbcw.close(); }
-      }
-    else keyIndex=getRecordInfo().getKeyIndex();
+    if (!getDataDefinition().isTemporary()) {
+            DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase()
+                    .getDBConnection();
+            SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
+            try {
+                checkStructure(dbc, config);
+                initFields(dbc, config);
+                preparedInsertString = prepareInsert();
+                preparedDeleteString = prepareDelete();
+                preparedDeleteFromString = "DELETE FROM " + getDBName()
+                        + " WHERE " + indexDBField + " >= ?" + " AND "
+                        + indexDBField + " <= ?";
+            } finally {
+                dbcw.close();
+            }
+        } else
+           makeKeyIndex();
     
   }
 
@@ -110,7 +125,7 @@ public class RecordManager extends Table
   {
     Object a[]= { this, config};
 
-    tbname= config.getProperty(getRecordInfo().getName());
+    tbname= config.getProperty(getDataDefinition().getName());
     /* find the shortest possible table name, according to what is defined in config
        a config with rule and table:
        best.minerva.student=bms
@@ -121,10 +136,10 @@ public class RecordManager extends Table
 	   */
     if(tbname==null)
 	{
-	  String key= Database.findConfig(config, getRecordInfo().getName());
-	  String shortname=getRecordInfo().getName();
+	  String key= Database.findConfig(config, getDataDefinition().getName());
+	  String shortname=getDataDefinition().getName();
 	  if(key!=null)
-	    shortname= config.getProperty(key)+getRecordInfo().getName().substring(key.length());
+	    shortname= config.getProperty(key)+getDataDefinition().getName().substring(key.length());
 
 	  tbname= getSQLDatabase().getTableName(shortname);
 	}
@@ -144,39 +159,42 @@ public class RecordManager extends Table
 
   public boolean canAdmin(){ return admin; }
 
-  protected void checkStructure(SQLDBConnection dbc, Properties config) 
-  {
-    String s= Database.findConfig(config, "admin#"+getRecordInfo().getName());
-    admin= (s!=null && config.getProperty(s).trim().equals("true"));
+  protected void checkStructure(SQLDBConnection dbc, Properties config) {
+        String s = Database.findConfig(config, "admin#"
+                + getDataDefinition().getName());
+        admin = (s != null && config.getProperty(s).trim().equals("true"));
 
-    s= Database.findConfig(config, "alter#"+getRecordInfo().getName());
-    alter= (s!=null && config.getProperty(s).trim().equals("true"));
+        s = Database.findConfig(config, "alter#"
+                + getDataDefinition().getName());
+        alter = (s != null && config.getProperty(s).trim().equals("true"));
 
-    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getDatabase().getConfiguration()+": checking "+getRecordInfo().getName()+" as "+tbname);
+        MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                getDatabase().getConfiguration() + ": checking "
+                        + getDataDefinition().getName() + " as " + tbname);
 
-    try{
-      CheckingStrategy cs= null;
-      if(getSQLDatabase().catalog!=null)
-	cs= new CatalogChecker(getSQLDatabase().catalog);
-      else
-      	throw new MakumbaError(getDatabase().getName()+": could not open catalog");
-      
-      if(cs.shouldCreate())
-	{
-	  create(dbc, tbname, alter);
-	  
-	  exists_=alter;
-	  config.put("makumba.wasCreated", "");
-	  keyIndex=getRecordInfo().getKeyIndex();
-	}
-      else
-	{
-	  exists_=true;
-	  alter(dbc, cs);
-	}
-    }catch(SQLException sq)
-      { sq.printStackTrace(); throw new org.makumba.DBError(sq); }
-  }
+        try {
+            CheckingStrategy cs = null;
+            if (getSQLDatabase().catalog != null)
+                cs = new CatalogChecker(getSQLDatabase().catalog);
+            else
+                throw new MakumbaError(getDatabase().getName()
+                        + ": could not open catalog");
+
+            if (cs.shouldCreate()) {
+                create(dbc, tbname, alter);
+
+                exists_ = alter;
+                config.put("makumba.wasCreated", "");
+                makeKeyIndex();
+            } else {
+                exists_ = true;
+                alter(dbc, cs);
+            }
+        } catch (SQLException sq) {
+            sq.printStackTrace();
+            throw new org.makumba.DBError(sq);
+        }
+    }
 
   Hashtable indexes= new Hashtable();
   Hashtable extraIndexes;
@@ -210,7 +228,7 @@ public class RecordManager extends Table
 	if(alter)
 	  throw new org.makumba.MakumbaError(e.getTargetException());
 	else
-	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").severe("unusable table: "+getRecordInfo().getName());
+	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").severe("unusable table: "+getDataDefinition().getName());
       } 
     
     if(alter)
@@ -219,7 +237,7 @@ public class RecordManager extends Table
 	try{
 	  Statement st= dbc.createStatement();
 	  st.executeUpdate("DROP INDEX "+indexName+" ON "+getDBName());
-	  org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("INDEX DROPPED on "+getRecordInfo().getName()+"#"+indexName );
+	  org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("INDEX DROPPED on "+getDataDefinition().getName()+"#"+indexName );
 	  st.close();
 	}catch(SQLException e){}
       }
@@ -231,13 +249,13 @@ public class RecordManager extends Table
 	separator=", ";
       }
       if(extraList.length()>0)
-	MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("Extra indexes on "+getRecordInfo().getName()+": "+extraList);
+	MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("Extra indexes on "+getDataDefinition().getName()+": "+extraList);
     }
 
     StringBuffer sb= new StringBuffer();
     fieldList(sb, handlerOrder.elements());
     handlerList=sb.toString();
-    indexField=getRecordInfo().getIndexName();
+    indexField=getDataDefinition().getIndexPointerFieldName();
     indexDBField=((FieldManager)handlers.get(indexField)).getDBName();
   }
   
@@ -310,7 +328,7 @@ public class RecordManager extends Table
 	if(!exists())
 	    return 0;
 	if(!canAdmin())
-	    throw new MakumbaError("no administration approval for "+getRecordInfo().getName());
+	    throw new MakumbaError("no administration approval for "+getDataDefinition().getName());
     
 	if(here instanceof DBConnectionWrapper)
 	    here=((DBConnectionWrapper)here).getWrapped();
@@ -536,7 +554,7 @@ public class RecordManager extends Table
 	    }catch(Throwable ex){ 
 	      //throw new DBError(ex, (getRecordInfo().getName())+"  "+(fm.getName())+"   "+(d.get(fm.getName())));
 	      throw new org.makumba.DBError(ex, 
-					    "insert into \""+ getRecordInfo().getName()+
+					    "insert into \""+ getDataDefinition().getName()+
 					    "\" at field \""+fm.getName()+
 					    "\" could not assign value \""+d.get(fm.getName())+
 					    "\" "+(d.get(fm.getName())!=null?("of type \""+
@@ -575,7 +593,7 @@ public class RecordManager extends Table
 	if(fm.checkDuplicate(dbc, d))
 	  duplicates.put(fm.getName(), d.get(fm.getName()));
       }
-    return new NotUniqueError(getRecordInfo().getName(), duplicates);
+    return new NotUniqueError(getDataDefinition().getName(), duplicates);
   }
 
   protected String prepareDelete()
@@ -626,7 +644,7 @@ public class RecordManager extends Table
 	Object fld= e.nextElement();
 	FieldManager fm= (FieldManager)handlers.get(fld);
 	if(fm==null)
-	  throw new org.makumba.DBError(new Exception("no such field "+ fld+ " in "+getRecordInfo().getName()));
+	  throw new org.makumba.DBError(new Exception("no such field "+ fld+ " in "+getDataDefinition().getName()));
 	command.append(s=fm.inPreparedUpdate());
       }
 
@@ -673,7 +691,7 @@ public class RecordManager extends Table
 	}catch(ArrayIndexOutOfBoundsException e)
 	  {
 	    org.makumba.MakumbaSystem.getMakumbaLogger("db.query.execution").log
-	      (java.util.logging.Level.SEVERE, ""+i+" "+getRecordInfo().getName()+" "+getRecordInfo().getKeyIndex()+" "+handlerOrder, e);
+	      (java.util.logging.Level.SEVERE, ""+i+" "+getDataDefinition().getName()+" "+keyIndex+" "+handlerOrder, e);
 	    throw e;
 	  }
       }

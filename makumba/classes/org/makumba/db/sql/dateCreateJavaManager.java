@@ -39,7 +39,7 @@ public class dateCreateJavaManager extends wrapperManager
 
   protected void setRecord(org.makumba.abstr.RecordHandler rh)
   {
-    modfield= rh.getRecordInfo().getModifyName();
+    modfield= rh.getDataDefinition().getLastModificationDateFieldName();
   }
 
   void nxt(Dictionary d)
@@ -61,7 +61,7 @@ public class dateCreateJavaManager extends wrapperManager
   {
     Object o=d.get(getName());
     if(o!=null)
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "you cannot update a creation date");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "you cannot update a creation date");
   }
 
   public void setInsertArgument(PreparedStatement ps, int n, Dictionary d) throws SQLException

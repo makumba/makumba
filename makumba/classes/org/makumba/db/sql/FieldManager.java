@@ -243,7 +243,7 @@ public abstract class FieldManager extends FieldHandler
        throws SQLException
   {
      String keyName=getDBIndexName();
-     String brief=rm.getRecordInfo().getName()+"#"+getName()+" ("+getDescription()+")";
+     String brief=rm.getDataDefinition().getName()+"#"+getName()+" ("+getDescription()+")";
      
      if(!isIndexOk(dbc)) 
      {
@@ -328,7 +328,7 @@ public abstract class FieldManager extends FieldHandler
   public void setDBName(RecordManager rm, Properties config) 
   {
     String dbname1=null;
-    dbname1= config.getProperty(rm.getRecordInfo().getName()+"#"+getName());
+    dbname1= config.getProperty(rm.getDataDefinition().getName()+"#"+getName());
     if(dbname1==null)
       {
 	dbname1= rm.getSQLDatabase().getFieldName(getName());
@@ -372,7 +372,7 @@ public abstract class FieldManager extends FieldHandler
   protected void checkCopy(String s)
   {
     if(!rm.admin)
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "you cannot insert an "+s+" field unless the type "+rm.getRecordInfo().getName()+" has administration approval in the database connection file");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "you cannot insert an "+s+" field unless the type "+rm.getDataDefinition().getName()+" has administration approval in the database connection file");
   }
 
   /** return whether there was a duplicate for this field when inserting the given data */

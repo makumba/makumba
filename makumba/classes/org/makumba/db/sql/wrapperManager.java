@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.Properties;
 
+import org.makumba.FieldDefinition;
 import org.makumba.abstr.FieldHandler;
-import org.makumba.abstr.FieldInfo;
 import org.makumba.abstr.RecordHandler;
 
 /** this field manager wraps around another field manager and constructs wrappers of whatever it wants to replace itself with */
@@ -41,11 +41,11 @@ public class wrapperManager extends FieldManager
 
   public wrapperManager(){}
   
-  public void setFieldInfo(FieldInfo fi)
+  public void setFieldDefinition(FieldDefinition fi)
   {
-    super.setFieldInfo(fi);
+    super.setFieldDefinition(fi);
     try{
-      wrapped.setFieldInfo(fi);
+      wrapped.setFieldDefinition(fi);
     }catch(NullPointerException e){}
   }
 

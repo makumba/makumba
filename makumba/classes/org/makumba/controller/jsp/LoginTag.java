@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpUtils;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
@@ -41,7 +40,7 @@ public class LoginTag extends BodyTagSupport
   /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
   public int doStartTag() 
   {
-    return EVAL_BODY_TAG;
+    return EVAL_BODY_BUFFERED;
   }
   
   /** given a list of parameter values A= {a1, a2, ... an}, 
@@ -99,8 +98,11 @@ public class LoginTag extends BodyTagSupport
       // we read the GET parameters in a Dictionary => we will avoid printing them as hidden POST param
       Dictionary dGetParams = new Hashtable(); //default: empty 
       if (req.getQueryString()!=null){
-           // System.out.println(HttpUtils.parseQueryString(req.getQueryString())+"\n");
-           dGetParams = HttpUtils.parseQueryString(req.getQueryString());
+          // System.out.println(HttpUtils.parseQueryString(req.getQueryString())+"\n");
+          // The official replacement for parseQueryString is req.getParameterMap()
+          // Problem is, that will give us both the GET and the POST params.
+          // So we use the deprecated method.
+           dGetParams = javax.servlet.http.HttpUtils.parseQueryString(req.getQueryString());
       }
 
       // Note on use of Request object (fred)
