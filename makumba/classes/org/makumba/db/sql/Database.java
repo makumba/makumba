@@ -271,8 +271,12 @@ public class Database extends org.makumba.db.Database
     name=name+(addUnderscore?"_":"");
     if(name.length()<=getMaxTableNameLength())
 	return name;
-    else  //compose "HASH_startingpartoflongnam"
-	return (Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_')+"___"+name).substring(0,getMaxTableNameLength());
+    else  //compose "startingpartoflongnam___HASH"
+	{
+	 String hash=Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_');
+	 String shortname=name.substring(0,getMaxTableNameLength()-3-hash.length());
+	 return (shortname+"___"+hash);
+	}
   }
 
   /** get the database-level name of a field with the given abstract name. This simply returns the same name, but it can be otherwise for certain more restrictive SQL engines
@@ -288,8 +292,12 @@ public class Database extends org.makumba.db.Database
      name= name+(addUnderscore?"_":"");
      if(name.length()<=getMaxFieldNameLength())
 	return name;
-     else  //compose "HASH_startingpartoflongnam"
-	return (Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_')+"___"+name).substring(0,getMaxFieldNameLength());
+    else  //compose "startingpartoflongnam___HASH"
+	{
+	 String hash=Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_');
+	 String shortname=name.substring(0,getMaxFieldNameLength()-3-hash.length());
+	 return (shortname+"___"+hash);
+	}
   }
 
   /** check the sql state of a SQL exception and throw a DBError if it is not equal with the given state */
