@@ -1,0 +1,51 @@
+# you can replace 1560 in the file name with the actual port number where your informix server listens
+
+sql.user=you
+sql.informixserver=yourserver
+sql.password=#######CENSORED#########
+dbsv=0
+addUnderscore=true
+
+test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers=test.toys
+test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers#allTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers=index_
+alter#=true
+alter#general=false
+admin#test=true
+#debug.query=true
+
+
+# here is some java code to interact with an informix server
+#
+# informix.java:
+#---------------
+#
+# public class informix{
+#   public static void main(String []argv) throws Throwable
+#   {
+#
+#      DriverManager.registerDriver((Driver)
+#				   Class.forName("com.informix.jdbc.IfxDriver").newInstance());
+#      Properties p= new Properties();
+#      p.load(ClassLoader.getSystemResourceAsStream("informix.properties"));
+#
+#      // if there are two arguments, the first is the db
+#      Connection dbConn = DriverManager.getConnection
+#	("jdbc:informix-sqli://yourserver:1561"+(argv.length>1?"/"+argv[0]:""), p);
+#      
+#      Statement st=dbConn.createStatement();
+#      st.executeUpdate(argv.length>1?argv[1]:argv[0]);
+#    }
+#}
+#
+# informix.properties:
+#---------------------
+#informixserve=yourserver
+#user=you
+#password=yourpass
+#
+# for tables to work with makumba, you need to create them with transactions enabled, like
+# 	java informix "create database makumba with log"
+# and then operate with the makumba db
+# 	java informix makumba "create table mytab(a int)"
+
+
