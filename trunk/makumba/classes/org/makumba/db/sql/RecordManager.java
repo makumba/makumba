@@ -171,9 +171,11 @@ public class RecordManager extends Table
   protected void initFields(SQLDBConnection dbc, Properties config) 
   {  
     try{
-      ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,getDBName(),true,false);
+      ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,getDBName(),false,false);
       while(rs.next()){
-	indexes.put(rs.getString("INDEX_NAME").toLowerCase(), new Boolean(rs.getBoolean("NON_UNIQUE")));
+	String iname= rs.getString("INDEX_NAME");
+	if(iname!=null)
+	  indexes.put(iname.toLowerCase(), new Boolean(rs.getBoolean("NON_UNIQUE")));
       }
       rs.close();
 
