@@ -188,38 +188,34 @@ Every datatype has some additional fields by default, as follows:
 </p>
 
 <ul>
-<li>Index field, consisting of two parts:
-
+  <li>Primary Key field, consisting of two parts [DBSV with 8 bits | UID with 
+    24 bits]: 
     <ul>
-    <li>Database identifier. It is unique (within the webapp) per database.
-            All objects created thru that webapp and in that database get the
-            same value. It is set by property dbsv in the database config
-            file.</li>
-
-    <li>Object identifier: unique id for the object in the given database.</li>
+      <li>Database identifier (DBSV). It is unique (within the webapp) per database. 
+        All objects created thru that webapp and in that database get the same 
+        value. It is set by property dbsv in the database config file.</li>
+      <li>Object identifier (UID): unique id for the object in the given database.</li>
     </ul>
-This combination ensures that no two objects of one type have the same
-Index field.
-
-<br>The name of the index field is the same with the last part of the type
-name. If another field by that name is defined by the makumba user, this field will be renamed in the database.
-</li>
-
-<li>Object creation time
-<div class="note">Can be accessed as TS_create.</div>
- <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+    <br>
+    This combination ensures that no two objects of one type have the same primary 
+    key field. See <a href="SQL-drivers.html#ConfigProperties">how to configure</a> 
+    this.<br>
+    The name of the primary key field is the same with the last part of the type 
+    name. If another field by that name is defined by the makumba user, this field 
+    will be renamed in the database. </li>
+  <li>Object creation time 
+    <div class="note">Can be accessed as TS_create.</div>
+    <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
       "This might change, but there are specific methods to retrieve it"
  -->
-</li>
-
+  </li>
   <li>Last modification time. Updates whenever the object is changed. The initicial 
     value is TS_create. 
     <div class="note">Can be accessed as TS_modify.</div>
-<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+    <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
       "This might change, but there are specific methods to retrieve it"
  -->
-</li>
-
+  </li>
 </ul>
 
 <h3><a NAME="SimpleFieldTypes">Simple field types</a></h3>
