@@ -3,6 +3,7 @@
 
 TO RELEASE IMMEDIATELY:
  - add your changes -
+stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
  
 NOT TO BE RELEASED YET:
 cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
