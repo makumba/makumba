@@ -76,33 +76,81 @@ public class mdd extends TestCase
   }
 
 
-  /** See <a href="see http://bugs.best.eu.org/show_bug.cgi?id=526">bug 526</a>. */
-  public void testBrokenMddBug526() {
-	try {
-		MakumbaSystem.getDataDefinition("test.brokenMdds.Bug526");
-		fail("Should raise DataDefinitionParseError");
-	} catch (DataDefinitionParseError e) { }
+  public void testAllValidMdds()
+  {
+	String base="test/validMdds/";
+	Vector mdds=mddsInDirectory(base);
+
+	//we have to collect all errors if we want to run tests on all 
+	//MDDs in directory instead of stoping at first fail()ure.
+	Vector errors=new Vector();
+	for (Enumeration e = mdds.elements() ; e.hasMoreElements() ;) 
+	{
+		String mdd=(String)e.nextElement();
+		try {
+			MakumbaSystem.getDataDefinition(mdd);
+		} catch (DataDefinitionParseError ex) { 
+			errors.add("\n ."+(errors.size()+1)+") Error reported in valid MDD <"+mdd+">:\n"+ex);
+			//ex.printStackTrace();
+		}
+	}
+	if(errors.size()>0)
+		fail(errors.toString()); 
   }
 
-  public void testBrokenMddBug() {
-	try {
-		MakumbaSystem.getDataDefinition("test.brokenMdds.BrokenType");
-		fail("Should raise DataDefinitionParseError");
-	} catch (DataDefinitionParseError e) { }
+
+  public void testIfAllBrokenMddsThrowErrors()
+  {
+	String base="test/brokenMdds/";
+	Vector mdds=mddsInDirectory(base);
+
+	//we have to collect all errors if we want to run tests on all 
+	//MDDs in directory instead of stoping at first fail()ure.
+	Vector errors=new Vector();
+	for (Enumeration e = mdds.elements() ; e.hasMoreElements() ;) 
+	{
+		DataDefinitionParseError expected=new DataDefinitionParseError();
+		DataDefinitionParseError actual=expected;
+		String mdd=(String)e.nextElement();
+		try {
+			MakumbaSystem.getDataDefinition(mdd);
+		} catch (DataDefinitionParseError thrown) { 
+			actual=thrown;
+		}
+
+		if(expected==actual) errors.add("\n ."+(errors.size()+1)+") Error report missing from broken MDD <"+mdd+"> ");
+		if(!expected.getClass().equals(actual.getClass()))
+			errors.add(mdd+" threw <"+actual.getClass()+"> instead of expected <"+expected.getClass()+">");
+	}
+	if(errors.size()>0)
+		fail(errors.toString()); 
   }
 
-  public void testRepeatedFieldName() {
-	try {
-		MakumbaSystem.getDataDefinition("test.brokenMdds.RepeatedField");
-		fail("Should raise DataDefinitionParseError");
-	} catch (DataDefinitionParseError e) { }
+
+  /** 
+  * Discover mdds in a directory in classpath.
+  * @return filenames (with .mdd extension) as Vector of Strings. 
+  */
+  Vector mddsInDirectory(String dirInClasspath)
+  {
+	java.net.URL u=org.makumba.util.ClassResource.get(dirInClasspath);
+	File dir=new File(u.getFile());
+	String[] list= dir.list();
+	Vector mdds=new Vector();
+	for(int i=0; i<list.length; i++)
+	{
+		String s= list[i];
+		if(s.endsWith(".mdd"))
+		{
+			s=s.substring(0, s.length()-4); //cut off the ".mdd"
+			s=dirInClasspath+s;
+			s=s.replace(File.separatorChar,'.'); 
+			mdds.add(s);
+		}
+	}
+	return mdds;
   }
 
-  public void testbadTitle() {
-	try {
-		MakumbaSystem.getDataDefinition("test.brokenMdds.BadTitle");
-		fail("Should raise DataDefinitionParseError");
-	} catch (DataDefinitionParseError e) { }
-  }
+
 
 }
