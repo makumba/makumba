@@ -1,14 +1,36 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.view.jsptaglib;
 import javax.servlet.jsp.*;
 import java.util.*;
 import org.makumba.*;
 import org.makumba.abstr.*;
-import org.makumba.controller.jsp.PageAttributes;
 
 public class InputTag extends MakumbaTag
 {
   String name;
-  String valueExpr;
+  String valueExprOriginal;
   String dataType;
   FieldInfo dataTypeInfo;
   String display;
@@ -16,7 +38,8 @@ public class InputTag extends MakumbaTag
   /** demand a QueryTag enclosing query */
   protected Class getParentClass(){ return FormTagBase.class; }
 
-  public String toString() { return "INPUT name="+name+" value="+valueExpr+" dataType="+dataType; }
+  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
+  
 
   /** return false, register an exception */ 
   protected boolean canBeRoot()
@@ -32,7 +55,7 @@ public class InputTag extends MakumbaTag
   public void setName(String field) {   this.name=field.trim(); }
 
   /** set the expression */
-  public void setValue(String value) {   this.valueExpr=value.trim(); }
+  public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
 
   /** set the type */
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
@@ -61,6 +84,7 @@ public class InputTag extends MakumbaTag
       Object val=null;
       Object type=null;
       
+      String valueExpr=valueExprOriginal;
       if(valueExpr==null)
 	valueExpr=getForm().getDefaultExpr(name);
       if(valueExpr!=null)	
@@ -74,7 +98,7 @@ public class InputTag extends MakumbaTag
 	      attrName=ValueTag.EVAL_BUFFER;
 	    }
 	  val=getAttributes().getAttribute(attrName);
-	  type=pageContext.getAttribute(attrName+"_type");
+	  type=getAttributes().getAttribute(attrName+"_type");
 	  if(type!=null && type.equals("unknown yet"))
 	    return EVAL_BODY_INCLUDE;
 	}
