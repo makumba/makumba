@@ -58,7 +58,14 @@ File <b><tt>dataDefinitions/general/Country.mdd</tt></b> (somewhere in classpath
 name=char[60]               ;Country
 iso2letterCode=fixed char[2];2-letter ISO code
 </pre>
-
+<h3>Changes in the table in the database</h3>
+<p>To be able to change the table in the database you need to add the following 
+  line to the database proprieties &lt;server_name&gt;_&lt;database_engine&gt;_&lt;database_name&gt;.properties, 
+  e.g. public_html\WEB-INF\classes\devel-server.org_mysql_testdatabase.properties</p>
+<p>alter#MDD_name=true<br>
+  (you should comment it after the changes: #alter#MDD_name=true)</p>
+<p><strong>Create the table </strong>or make the MDD changes available: you will 
+  have to reload tomcat (or any engine that implement Java Servlet API).</p>
 <h2><a name="jsp">&nbsp;</a>JSP - Java Server Pages</h2>
 For explanation please refer to <a href="makumba-spec.html#Presentation">Makumba
 JSP tags</a> section of the specification.
@@ -165,18 +172,18 @@ For additional options see the specification of <a href="makumba-spec.html#makob
 
 
 
-Page <code><b>partnerNew.jsp</b></code> will require only the basic info when creating a new object:
-
+Page <code><b>partnerNew.jsp</b></code> will require only the basic info when 
+creating a new object: 
 <pre class="example">
 &lt;%@ taglib uri="<span style="color:#FF0000;">http://www.makumba.org/presentation</span>" prefix="<span style="color:#FF0000;">mak</span>" %>
 
 &lt;h2>New partner&lt;/h2>
 
 &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">newForm type</span><span style="color:#006600;">="<i>organisation.Partner</i>" </span><span style="color:#000099;">action</span><span style="color:#006600;">=<i>"partnerList.jsp"</i></span>>
-   Name: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>name</i>"</span>/> &lt;br>
+   Name: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input name</span><span style="color:#006600;">="<i>name</i>"</span>/> &lt;br>
 
-   City: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>city</i>"</span>/> &lt;br>
-   Country: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>country</i>"</span>/> &lt;a href="partnerList.jsp">Add countries&lt;/a>&lt;br>
+   City: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input name</span><span style="color:#006600;">="<i>city</i>"</span>/> &lt;br>
+   Country: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input name</span><span style="color:#006600;">="<i>country</i>"</span>/> &lt;a href="partnerList.jsp">Add countries&lt;/a>&lt;br>
    &lt;input type="submit" value="Create">
 &lt;/<span style="color:#FF0000;">mak</span>:newForm>
 
