@@ -23,19 +23,23 @@
 
 package org.makumba.view.jsptaglib;
 
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.Vector;
-
-import javax.servlet.jsp.PageContext;
-
-import org.makumba.Database;
+import org.makumba.Attributes;
 import org.makumba.LogicException;
-import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.Database;
+import org.makumba.MakumbaSystem;
+
+import org.makumba.view.Grouper;
+import org.makumba.view.ComposedQuery;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.Grouper;
+import org.makumba.controller.jsp.PageAttributes;
+
+import java.util.Dictionary;
+import java.util.Vector;
+import java.util.HashMap;
+import java.util.Stack;
+
+import javax.servlet.jsp.PageContext;
 
 
 /** This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at every parentIteration, and iterates through the iterationGroupData */
@@ -102,12 +106,11 @@ public class QueryExecution
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
     Database dbc= 
-      org.makumba.controller.http.RequestAttributes.getConnectionProvider
-      ((javax.servlet.http.HttpServletRequest)pageContext.getRequest())
-      .getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
-
+      MakumbaSystem.getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
+    try{
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
 	.execute(dbc, PageAttributes.getAttributes(pageContext));
+    }finally { dbc.close(); }
   }
 
   public int getIterationGroupData()
