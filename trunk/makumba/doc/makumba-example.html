@@ -1,15 +1,15 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="Author" content="Stefan Baebler">
    <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
    <title>Makumba application example</title>
-   <link rel="stylesheet" type="text/css" media="all" href="main.css" />
-   <script language="JavasCript" src="main.js"></script>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
 </head>
 <body>
-<script language="JavaScript">
+<script type="text/javascript">
    makeNavBar("");
 </script>
 
@@ -20,7 +20,7 @@ basic princpiles of building web applications with Makumba JSP tag library.
 <p>
 In thi example we will build a web application for managing data about our business partners.
 
-<h2><a name="mdd">Makumba Data Definition</a></h2>
+<h2><a name="mdd">MDD - Makumba Data Definition</a></h2>
 
 For explanation please refer to <a href="makumba-spec.html#Data_Description">Data
 Definition</a> section of the specification.
@@ -58,16 +58,16 @@ Page <code><b>partnerList.jsp</b></code> will be showing the list of all partner
  <li>link to a page with more detailed information
 </ul>
 <pre class="example">
-&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>" prefix="<font color="#FF0000">mak</font>" %>
+&lt;%@ taglib uri="<span style="color:#FF0000;">http://www.makumba.org/presentation</span>" prefix="<span style="color:#FF0000;">mak</span>" %>
 
 &lt;h2>Partners:&lt/h2>
 
-&lt;<font color="#FF0000">mak</font>:<font color="#000099">list from</font><font color="#006600">="<i>organisation.Partner p</i>"</font></font>>
-   &lt;a href="partner.jsp?partner=&lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font>=<i><font color="#006600">"p"</font></i>/>">
-                &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font>="<i>p.name"</i>>
+&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list from</span><span style="color:#006600;">="<i>organisation.Partner p</i>"</span>>
+   &lt;a href="partner.jsp?partner=&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span>=<i><span style="color:#006600;">"p"</span></i>/>">
+                &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span>="<i>p.name"</i>>
    &lt;/a>,
-   &lt;i>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">=<i>"p.city"</i></font>/>&lt;/i>  &lt;br>
-&lt;/<font color="#FF0000">mak</font>:<font color="#000099">list</font>>
+   &lt;i>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">=<i>"p.city"</i></span>/>&lt;/i>  &lt;br>
+&lt;/<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list</span>>
 
 &lt;hr>
 [&lt;a href="partnerNew.jsp">New partner entry&lt;/a>]
@@ -102,19 +102,19 @@ For additional options see the specification of <a href="makumba-spec.html#makli
 Page <code><b>partner.jsp</b></code> will be showing all fields of <code>organisation.Partner</code> objects.
 
 <pre class="example">
-&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>" prefix="<font color="#FF0000">mak</font>" %>
+&lt;%@ taglib uri="<span style="color:#FF0000;">http://www.makumba.org/presentation</span>" prefix="<span style="color:#FF0000;">mak</span>" %>
 
-&lt;<font color="#FF0000">mak</font>:<font color="#000099">object from</font><font color="#006600">="<i>organisation.Partner p</i>" </font><font color="#000099">where</font><font color="#006600">=<i>"p=$partner"</i></font>>
-    &lt;h2>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>name</i>"</font>/>&lt;/h2>
+&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">object from</span><span style="color:#006600;">="<i>organisation.Partner p</i>" </span><span style="color:#000099;">where</span><span style="color:#006600;">=<i>"p=$partner"</i></span>>
+    &lt;h2>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>name</i>"</span>/>&lt;/h2>
 
-    &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>city</i>"</font>/>,
-      &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>country<b>.name</b></i>"</font>/>&lt;br>
-    Home Page: &lt;b>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>homepage</i>"</font>/>&lt;/b>
+    &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>city</i>"</span>/>,
+      &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>country<b>.name</b></i>"</span>/>&lt;br>
+    Home Page: &lt;b>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>homepage</i>"</span>/>&lt;/b>
     &lt;p>
-    You can send them an email to: &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="<i>p.email</i>"</font>/>&lt;br>
-    Call me: &lt;b>&lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>phone</i>"</font>/>&lt;/b>&lt;br>
-    Comment: &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="p.<i>comment</i>"</font>/>
-&lt;/<font color="#FF0000">mak</font>:object>
+    You can send them an email to: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="<i>p.email</i>"</span>/>&lt;br>
+    Call me: &lt;b>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>phone</i>"</span>/>&lt;/b>&lt;br>
+    Comment: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="p.<i>comment</i>"</span>/>
+&lt;/<span style="color:#FF0000;">mak</span>:object>
 
 &lt;hr>
 [&lt;a href="partnerList.jsp">List them all&lt;/a>]
@@ -141,17 +141,17 @@ For additional options see the specification of <a href="makumba-spec.html#makob
 Page <code><b>partnerNew.jsp</b></code> will require only the basic info when creating a new object:
 
 <pre class="example">
-&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>" prefix="<font color="#FF0000">mak</font>" %>
+&lt;%@ taglib uri="<span style="color:#FF0000;">http://www.makumba.org/presentation</span>" prefix="<span style="color:#FF0000;">mak</span>" %>
 
 &lt;h2>New partner&lt;/h2>
 
-&lt;<font color="#FF0000">mak</font>:<font color="#000099">newForm type</font><font color="#006600">="<i>organisation.Partner</i>" </font><font color="#000099">action</font><font color="#006600">=<i>"partnerList.jsp"</i></font>>
-   Name: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>name</i>"</font>/> &lt;br>
+&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">newForm type</span><span style="color:#006600;">="<i>organisation.Partner</i>" </span><span style="color:#000099;">action</span><span style="color:#006600;">=<i>"partnerList.jsp"</i></span>>
+   Name: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>name</i>"</span>/> &lt;br>
 
-   City: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>city</i>"</font>/> &lt;br>
-   Country: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>country</i>"</font>/>&lt;br>
+   City: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>city</i>"</span>/> &lt;br>
+   Country: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>country</i>"</span>/>&lt;br>
    &lt;input type="submit" value="Create">
-&lt;/<font color="#FF0000">mak</font>:newForm>
+&lt;/<span style="color:#FF0000;">mak</span>:newForm>
 
 &lt;hr>
 [&lt;a href="partnerList.jsp">Back to list&lt;/a>]
@@ -184,25 +184,25 @@ For additional options see the specification of <a href="makumba-spec.html#makne
 In <code><b>partnerEdit.jsp</b></code> we could edit all (non-fixed) fields, but here we decided to not support editing of some fields (Field <code>name</code> in this case)
 
 <pre class="example">
-&lt;%@ taglib uri="<font color="#FF0000">http://www.makumba.org/presentation</font>" prefix="<font color="#FF0000">mak</font>" %>
+&lt;%@ taglib uri="<span style="color:#FF0000;">http://www.makumba.org/presentation</span>" prefix="<span style="color:#FF0000;">mak</span>" %>
 
-&lt;<font color="#FF0000">mak</font>:<font color="#000099">object from</font><font color="#006600">="<i>organisation.Partner p</i>" </font><font color="#000099">where</font><font color="#006600">=<i>"p=$partner"</i></font>>
-   &lt;h2>Edit &lt;<font color="#FF0000">mak</font>:<font color="#000099">value expr</font><font color="#006600">="<i>p.name</i>"</font>/>&lt;/h2>
-   &lt;<font color="#FF0000">mak</font>:<font color="#000099">editForm object</font><font color="#006600">="<i>p</i>" </font><font color="#000099">action</font><font color="#006600">=<i>"partnerList.jsp"</i></font>>
+&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">object from</span><span style="color:#006600;">="<i>organisation.Partner p</i>" </span><span style="color:#000099;">where</span><span style="color:#006600;">=<i>"p=$partner"</i></span>>
+   &lt;h2>Edit &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">="<i>p.name</i>"</span>/>&lt;/h2>
+   &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">editForm object</span><span style="color:#006600;">="<i>p</i>" </span><span style="color:#000099;">action</span><span style="color:#006600;">=<i>"partnerList.jsp"</i></span>>
 
-      City: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>city</i>"</font>/> &lt;br>
-      Country: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>country</i>"</font>/>&lt;br>
-      Home Page: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>homepage</i>"</font>/>
+      City: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>city</i>"</span>/> &lt;br>
+      Country: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>country</i>"</span>/>&lt;br>
+      Home Page: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>homepage</i>"</span>/>
       &lt;p>
-      Email: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>email</i>"</font>/>&lt;br>
-      Phone: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>phone</i>"</font>/>&lt;br>
-      Comment: &lt;<font color="#FF0000">mak</font>:<font color="#000099">input field</font><font color="#006600">="<i>comment</i>"</font>/>&lt;br>
+      Email: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>email</i>"</span>/>&lt;br>
+      Phone: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>phone</i>"</span>/>&lt;br>
+      Comment: &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">input field</span><span style="color:#006600;">="<i>comment</i>"</span>/>&lt;br>
       &lt;input type="submit" value="Save">
-   &lt;/<font color="#FF0000">mak</font>:editForm>
+   &lt;/<span style="color:#FF0000;">mak</span>:editForm>
 
-   &lt;<font color="#FF0000">mak</font>:<font color="#000099">delete object</font><font color="#006600">="<i>p</i>" </font><font color="#000099">action</font><font color="#006600">=<i>"partnerList.jsp"</i></font>>Delete this&lt;<font color="#FF0000">mak</font>:<font color="#000099">delete</font>>
+   &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">delete object</span><span style="color:#006600;">="<i>p</i>" </span><span style="color:#000099;">action</span><span style="color:#006600;">=<i>"partnerList.jsp"</i></span>>Delete this&lt;/<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">delete</span>>
 
-&lt;/<font color="#FF0000">mak</font>:object>
+&lt;/<span style="color:#FF0000;">mak</span>:object>
 
 &lt;hr>
 [&lt;a href="partnerList.jsp">Back to list&lt;/a>]
@@ -212,14 +212,14 @@ In <code><b>partnerEdit.jsp</b></code> we could edit all (non-fixed) fields, but
 <h2>Edit Some Company Ltd.</h2>
 <form action="partnerList.jsp">
    City: <input name="city" value="Somewherewille"> <br>
-   Country: <select name="country"/>
+   Country: <select name="country">
    		<option>Afganisthan</option><option SELECTED>Bangladesh</option><option>...</option><option>Zimbabwe</option>
    </select><br>
    Home Page: <input name="homepage" value="http://www.example.com">
    <p>
    Email: <input name="email" value="info@example.com"><br>
    Phone: <input name="phone" value="+1 23 456789"><br>
-   Comment: <textarea name="comment">They are very rich!!!</textarea><br>
+   Comment: <textarea name="comment" rows="3" cols="20">They are very rich!!!</textarea><br>
 
    <input type="submit" value="Save" onClick="alert('this is just an example'); return false;">
 </form>
@@ -245,10 +245,10 @@ down into small, human-managable files and include them in your pages with
 </pre>
 You can also take some size of the .jsp files and improve their readability by seperating the layout specification into  seperate <a href="http://www.w3.org/Style/CSS/">Cascading Style Sheets</a>.
 
-<h2>Business Logic</h2>
+<h2><a name="BL">BL - Business Logic</a></h2>
 ...coming soon...
 
-<script language="JavaScript">
+<script type="text/javascript">
    makeFooter("$Id$");
 </script>
 
