@@ -88,6 +88,18 @@ public class table extends TestCase
 	{
 	  try{
 		Vector v1=db.executeQuery("SELECT t FROM test.validMdds."+(String)v.elementAt(i)+" t",null);
+		Vector fields=MakumbaSystem.getDataDefinition("test.validMdds."+(String)v.elementAt(i)).getFieldNames();
+		String what="";
+		for (Enumeration e = fields.elements() ; e.hasMoreElements() ;) {
+			String fname=(String)e.nextElement();
+			String ftype=MakumbaSystem.getDataDefinition("test.validMdds."+(String)v.elementAt(i)).getFieldDefinition(fname).getDataType();
+			//System.out.println(fname+": "+ftype);
+			if(ftype!=null && !ftype.equals("null")) //skip setComplex fields
+			  what=what+(what.length()>0?", ":"")+"t."+fname;
+		}
+		//System.out.println(what);
+		if(what.length()>0)
+			v1=db.executeQuery("SELECT "+what+" FROM test.validMdds."+(String)v.elementAt(i)+" t",null);
 	  } catch(Exception e) {
 		errors.add("\n ."+(errors.size()+1)+") Error querying valid MDD <"+(String)v.elementAt(i)+">:\n\t "+e);
 	  }
@@ -446,7 +458,9 @@ public class table extends TestCase
     assertEquals("Sum(reals)", new Double(2.5008d), ((Dictionary)v.firstElement()).get("su"));
 
     Object[] args= {new Double(0.2), new Double(1.8)};
+ try{
     v=db.executeQuery("SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args);
+ }catch (Exception e) {e.printStackTrace();}
     assertEquals("Real comparisment", 2, v.size());
 
     //should we allow this? FIXME!
