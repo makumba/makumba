@@ -33,6 +33,7 @@ public class LineViewer implements SourceViewer
   Reader reader;
   boolean lineNumbers;
   File dir;
+  String title;
 
   /** if this resource is actually a directory, returns not null */
   public File getDirectory() 
@@ -63,17 +64,25 @@ public class LineViewer implements SourceViewer
     w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
     w.println("<html><head>");
     w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-    String title="";
     if(realPath!=null && virtualPath!=null)
-	title=virtualPath+" - source";
+	title=virtualPath+"";
+    else if(title==null || title!=null && title.equals(""))
+	title="";
     w.println("<title>"+title+"</title>");
     if(lineNumbers)
 	w.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
-    w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr>");
-    if(realPath!=null && virtualPath!=null) {
-	w.print("<td><font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font>");
-	w.print("<font size=\"-1\"><br>"+new File(realPath).getCanonicalPath()+"</font></td>");
-    }
+    w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td>");
+
+    if(title!=null && !title.equals("") && !title.equals(virtualPath)) 
+	w.print("<font size=\"+2\"><font color=\"darkblue\">"+title+"</font></font>");
+    else if(virtualPath!=null)
+	w.print("<font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font>");
+
+    if(realPath!=null) 
+	w.print("<font size=\"-1\"><br>"+new File(realPath).getCanonicalPath()+"</font>");
+
+    w.print("</td>");
+
     intro(w);
     w.print("</tr></table>\n<pre style=\"margin-top:0\">");	
 
