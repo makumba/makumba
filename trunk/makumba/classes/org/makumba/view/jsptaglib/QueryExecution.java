@@ -58,23 +58,14 @@ public class QueryExecution
 
   static final private String EXECUTIONS= "org.makumba.taglibQueryExecutions";
   static final private String CURRENT_DATA_SET="org.makumba.currentDataSet";  
-  static final private String OFFSET="org.makumba.offset";  
-  static final private String LIMIT="org.makumba.limit";  
   static final private Dictionary NOTHING= new ArrayMap();
-
-  static void startListGroup(PageContext pageContext){
-    startListGroup(pageContext, null, null);
-  }
 
   /** Allocate a currentDataSet and a container for the QueryExecutions of the listGroup.
    * Executed by the rootList
    */
-  static void startListGroup(PageContext pageContext, 
-			     String offset, String limit)
+  static void startListGroup(PageContext pageContext)
   {
     pageContext.setAttribute(EXECUTIONS, new HashMap());
-    pageContext.setAttribute(OFFSET, offset);
-    pageContext.setAttribute(LIMIT, limit);
 
     Stack currentDataSet= new Stack();
     // org.makumba.view.Grouper requires the stack not be empty
@@ -95,19 +86,19 @@ public class QueryExecution
    * Every list tag (QueryTag) calls this method. A ListQueryTag will be built only in the first
    parentIteration and will be returned at next parentIterations.
    */
-  static QueryExecution getFor(MultipleKey key, PageContext pageContext)
+  static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit)
        throws LogicException
   {
     HashMap executions= (HashMap)pageContext.getAttribute(EXECUTIONS);
 
     QueryExecution lqe=(QueryExecution)executions.get(key);
     if(lqe==null)
-      executions.put(key, lqe= new QueryExecution(key, pageContext));
+      executions.put(key, lqe= new QueryExecution(key, pageContext, offset, limit));
     return lqe;
   }
 
   /** Execute the given query, in the given db, with the given attributes, to form the listData; keep the reference to the currentDataSet for future push and pop operations, find the nested valueQueries */
-  private QueryExecution(MultipleKey key, PageContext pageContext)
+  private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit)
        throws LogicException
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
@@ -120,15 +111,13 @@ public class QueryExecution
 
       try{
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
-	.execute(dbc, PageAttributes.getAttributes(pageContext), computeLimit(pageContext, OFFSET, 0), computeLimit(pageContext, LIMIT, -1));
+	.execute(dbc, PageAttributes.getAttributes(pageContext), computeLimit(pageContext, offset, 0), computeLimit(pageContext, limit, -1));
       }finally{dbc.close(); }
   }
 
-  int computeLimit(PageContext pc, String key, int defa)
+  int computeLimit(PageContext pc, String s, int defa)
        throws LogicException
   {
-    String s= (String)pc.getAttribute(key);
-    pc.removeAttribute(key);
     if(s==null)
       return defa;
     s=s.trim();
