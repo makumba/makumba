@@ -52,6 +52,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     ,"deleteLink", "org.makumba.view.jsptaglib.DeleteTag"
     ,"input", "org.makumba.view.jsptaglib.InputTag"
     ,"action", "org.makumba.view.jsptaglib.ActionTag"
+    ,"option", "org.makumba.view.jsptaglib.OptionTag"
     ,"if", "org.makumba.view.jsptaglib.IfTag"    
   };
   
@@ -78,8 +79,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       // if we get nil here, we keep the previous, richer type information
       if(fd!=null && value.getType().equals("nil"))
 	return;
+
+      MakumbaTag.analyzedTag.set(t.tagData);
       if(fd!=null && !value.isAssignableFrom(fd))
-	throw new ProgrammerError("Attribute type changing within the page: in tag\n"+((MakumbaTag)val1[1]).getTagText()+ " attribute "+key+" was determined to have type "+fd+" and in tag\n"+t.getTagText()+"\n the incompatible type "+ value);
+	throw new ProgrammerError("Attribute type changing within the page: in tag\n"+((MakumbaTag)val1[1]).getTagText()+ " attribute "+key+" was determined to have type "+fd+" and the from this tag results the incompatible type "+ value);
+      MakumbaTag.analyzedTag.set(null);
+
       Object[] val2={value, t};
       put(key, val2);
     }
@@ -136,7 +141,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	t.setParent(null);
 
       JspParseData.fill(t, td.attributes);
-      t.setTagKey();
+      t.setTagKey(pageCache);
       if(t.getTagKey()!=null && !t.allowsIdenticalKey())
 	{
 	  MakumbaTag sameKey= (MakumbaTag)pageCache.tags.get(t.getTagKey());
@@ -154,7 +159,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	  pageCache.tags.put(t.getTagKey(), t);
 	}
       pageCache.tagData.put(t.getTagKey(), td);
-
       t.doStartAnalyze(pageCache);
       tags.add(t);
     }
@@ -204,8 +208,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
     public void endPage()
     {
-      for(Iterator i= tags.iterator(); i.hasNext(); )
-	((MakumbaTag)i.next()).doEndAnalyze(pageCache);
+      for(Iterator i= tags.iterator(); i.hasNext(); ){
+	MakumbaTag t=(MakumbaTag)i.next();
+	MakumbaTag.analyzedTag.set(t.tagData);
+	t.doEndAnalyze(pageCache);
+	MakumbaTag.analyzedTag.set(null);
+      }
     }
   }
 
@@ -239,13 +247,17 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   public void startTag(JspParseData.TagData td, Object status)
   {
+    MakumbaTag.analyzedTag.set(td);
     simpleTag(td, status);
     ((ParseStatus)status).start((MakumbaTag)td.tagObject);
+    MakumbaTag.analyzedTag.set(null);
   }
 
   public void endTag(JspParseData.TagData td, Object status)
   {
+    MakumbaTag.analyzedTag.set(td);
     ((ParseStatus)status).end(td);
+    MakumbaTag.analyzedTag.set(null);
   }
 
   public Object makeStatusHolder(Object initialStatus)
