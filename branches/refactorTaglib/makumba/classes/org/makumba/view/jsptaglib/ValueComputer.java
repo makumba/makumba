@@ -19,7 +19,7 @@ public class ValueComputer
   public static ValueComputer getValueComputer(MakumbaTag analyzed, String expr)
   {
     expr=expr.trim();
-    Object check= analyzed.pageCache.getQuery(analyzed.parentList.tagKey)
+    Object check= analyzed.pageCache.getQuery(analyzed.getParentListKey())
       .checkExprSetOrNullable(expr);
 
     FieldDefinition set=null;
@@ -56,7 +56,7 @@ public class ValueComputer
   /** a nonQueryMak:value value computer */
   ValueComputer(MakumbaTag analyzed, String expr)
   {
-    parentKey= analyzed.parentList.tagKey;
+    parentKey= analyzed.getParentListKey();
     this.expr=expr;
     analyzed.pageCache.getQuery(parentKey).checkProjectionInteger(expr);
   }
@@ -70,7 +70,7 @@ public class ValueComputer
   {
     ComposedQuery q= analyzed.pageCache.getQuery(getQueryKey());
     projectionIndex= q.checkProjectionInteger(expr).intValue();
-    
+
     if(type==null) // if type is not set in the constructor
       type=q.getResultType().getFieldDefinition(projectionIndex);
   }
@@ -117,10 +117,9 @@ abstract class QueryValueComputer extends ValueComputer
 			
   {
     this.expr=expr;
-    parentKey=analyzed.parentList.tagKey;
+    parentKey=analyzed.getParentListKey();
 
-    queryKey= new MultipleKey((Vector)parentKey, 6);
-    queryKey.setAt(keyDifference, 5);
+    queryKey= new MultipleKey(parentKey, keyDifference);
 
     analyzed.pageCache.cacheQuery(queryKey, queryProps, parentKey)
       .checkProjectionInteger(expr);

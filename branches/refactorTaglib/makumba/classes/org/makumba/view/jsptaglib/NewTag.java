@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.abstr.*;
+import org.makumba.abstr.RecordInfo;
 import org.makumba.FieldDefinition;
+import org.makumba.util.MultipleKey;
 
 public class NewTag extends FormTagBase
 {
@@ -31,6 +32,13 @@ public class NewTag extends FormTagBase
 
   // for input tags:
   RecordInfo type;
+
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
+  {
+    Object keyComponents[]= {type.getName(), handler,  getParentListKey(), getClass()};
+    tagKey=new MultipleKey(keyComponents);
+  }
 
   public FieldDefinition getDefaultType(String fieldName) 
   {

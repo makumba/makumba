@@ -75,21 +75,18 @@ public class QueryTag extends MakumbaTag implements IterationTag
     for(int i=0; i<queryProps.length; i++)
       tagKey.setAt(queryProps[i], i);
 
-    parentList= (QueryTag)findAncestorWithClass(this, QueryTag.class);
+    QueryTag parentList=getParentList();
 
     // if we have a parent, we append the key of the parent
-    tagKey.setAt(parentList!=null?(Object)parentList.tagKey: null, 
-		 queryProps.length);
+    tagKey.setAt(getParentListKey(), queryProps.length);
   }
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. 
     Define a query, set the types of variables to "int" */
   public void doStartAnalyze()
   {
-    setTagKey();
     // we make ComposedQuery cache our query
-    pageCache.cacheQuery(tagKey, queryProps, 
-			 parentList==null?null:parentList.tagKey);
+    pageCache.cacheQuery(tagKey, queryProps, getParentListKey());
 
     if(countVar!=null)
       pageCache.types.setType(countVar, "int");
@@ -119,9 +116,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
 	pageContext.include(header);
     }catch(Exception e){ throw new MakumbaJspException(e); }
     
-    setTagKey();
-    
-    if(parentList==null)
+    if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
 
     execution= QueryExecution.getFor(tagKey, pageContext);
@@ -171,7 +166,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Cleanup operations, especially for the rootList */
   public int doMakumbaEndTag() throws JspException
   {
-    if(parentList==null)
+    if(getParentList()==null)
       execution.endListGroup(pageContext);
 
     // support for the obsolete footer
