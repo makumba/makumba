@@ -30,7 +30,6 @@ public class TagStrategySupport implements TagStrategy
 {
   MakumbaTag tag;
   RootTagStrategy root;
-  RootData rootData;
   BodyContent bodyContent;
   PageContext pageContext;
   Object key;
@@ -41,7 +40,6 @@ public class TagStrategySupport implements TagStrategy
     this.tag=tag;
     this.root=(RootTagStrategy)root.strategy;
     this.key=key;
-    this.rootData= root.getRootData();
  }
 
   public void loop(){}
