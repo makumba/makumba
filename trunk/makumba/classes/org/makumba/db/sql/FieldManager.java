@@ -213,20 +213,10 @@ public abstract class FieldManager extends FieldHandler
   /** Examine DB indexes. */
   public boolean isIndexOk(SQLDBConnection dbc)
   {
-       boolean ok=false;
-       String DBIndexName=getDBIndexName();
-       try{
-	   ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,rm.getDBName(),true,false);
-	   while(rs.next()){
-		if( DBIndexName.equals(rs.getString("INDEX_NAME")) ) // found index for this column
-		{
-		  ok=(isUnique()==!rs.getBoolean("NON_UNIQUE") ); //compare current MDD and DB declarations
-		  break;
-		}
-	   }
-	   rs.close();
-       } catch(SQLException e) {System.out.println(e);}
-       return ok;
+    Boolean b= (Boolean)rm.indexes.get(getDBIndexName().toLowerCase());
+    if(b!=null)
+      return (isUnique()==!b.booleanValue()); 
+    return false;
   } //end isIndexOk()
 
 
