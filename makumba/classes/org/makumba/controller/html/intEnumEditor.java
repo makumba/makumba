@@ -30,6 +30,9 @@ public class intEnumEditor extends intEditor
 {
   public String formatShow(Object o, Dictionary formatParams)
   {
+    // check if the value is to be replaced by 'default' or 'empty'.
+    o = toInt( formatValue(o, formatParams) );
+    
     StringBuffer sb=new StringBuffer();
     sb.append("<select name=\"").append(getInputName(formatParams))
       .append("\"").append(getExtraFormatting(formatParams)).append(">");
@@ -41,6 +44,7 @@ public class intEnumEditor extends intEditor
 	sb.append("<option value=\"").append(vl).append("\"");
 	if(vl.equals(o))
 	  sb.append(" selected");
+	// FIXME (fred): do string2html on the label (name) ??
 	sb.append(">").append(n.nextElement()).append("</option>");
       }
     sb.append("</select>");

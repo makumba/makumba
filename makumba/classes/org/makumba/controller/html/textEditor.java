@@ -28,8 +28,8 @@ import org.makumba.HtmlUtils;
 
 public class textEditor extends FieldEditor
 {
-  static String[] params= { "type", "rows", "cols" };
-  static String[][] paramValues= { {"textarea", "file" }, null, null };
+  static String[] params= { "default", "empty", "type", "rows", "cols" };
+  static String[][] paramValues= { null, null, {"textarea", "file" }, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -39,18 +39,31 @@ public class textEditor extends FieldEditor
 
   public String formatNull(Dictionary formatParams) 
   { 
-    if(isTextArea(formatParams))
-      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" ></TEXTAREA>"; 
-    else
+    if(isTextArea(formatParams)) {
+      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" >" 
+               + formatValue(null, formatParams) +"</TEXTAREA>";  
+    } else {
       return fileInput(formatParams);
+    }
   }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
   { 
-    if(isTextArea(formatParams))
-      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" >"+HtmlUtils.string2html(o.toString())+"</TEXTAREA>"; 
-    else
+    if(isTextArea(formatParams)) {
+      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" >"
+              + formatValue(o, formatParams) +"</TEXTAREA>"; 
+    } else {
       return fileInput(formatParams);
+    }
+  }
+
+  /** Formats the value to appear in an input statement. For textarea type data only!*/
+  public String formatValue(Object o, Dictionary formatParams) {
+     if (o == null) {
+     	 return resetValueFormat(null, formatParams);
+     } else { 
+         return resetValueFormat(HtmlUtils.string2html(o.toString()), formatParams);
+     }
   }
   
   String fileInput(Dictionary formatParams)

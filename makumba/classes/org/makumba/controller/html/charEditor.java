@@ -29,8 +29,8 @@ import org.makumba.view.*;
 
 public class charEditor extends FieldEditor
 {
-  static String[] params= { "type", "size", "maxlength" };
-  static String[][] paramValues= { {"text", "password"}, null, null };
+  static String[] params= { "default", "empty", "type", "size", "maxlength" };
+  static String[][] paramValues= { null,  null, {"text", "password"}, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
@@ -49,27 +49,20 @@ public class charEditor extends FieldEditor
   { return formatNotNull(null, formatParams); }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+getLiteral(o, formatParams)+"\" "+getParams(formatParams)+
+  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+formatValue(o, formatParams)+"\" "+getParams(formatParams)+
       getExtraFormatting(formatParams)+">"; }
 
-
-  public String getLiteral(Object o, Dictionary formatParams) 
-  { 
-     String literal;
+  /** Formats the value to appear in an input statement. */
+  public String formatValue(Object o, Dictionary formatParams) {
      if (o == null) {
-         String nullReplacer = (String) formatParams.get("default");
-         if (nullReplacer != null) { literal = nullReplacer; }
-         else { literal = ""; }
+     	 return resetValueFormat(null, formatParams);
      } else { 
-         literal = HtmlUtils.string2html(o.toString()); 	
+         return resetValueFormat(HtmlUtils.string2html(o.toString()), formatParams);
      }
-     
-     if ( "".equals(literal) ) {
-         String emptyReplacer = (String) formatParams.get("emtpy");
-         if (emptyReplacer != null) { literal = emptyReplacer; }
-     }     
-     return literal;     
   }
+
+  // public String getLiteral(Object o, Dictionary formatParams) 
+  // {  }
 
   public String getInputType(Dictionary formatParams)
   {
