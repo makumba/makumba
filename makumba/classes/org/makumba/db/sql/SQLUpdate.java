@@ -50,6 +50,14 @@ public class SQLUpdate implements Update
     if(where!=null && where.trim().length()==0)
       where=null;
 
+    //a primitive check, better one needs to be done after OQLAnalyzer's job
+    if(from!=null && from.indexOf(',')>=0)
+      throw new org.makumba.OQLParseError("Only 1 table can be involved in "+debugString); 
+
+    //make sure whitespace only consists of spaces
+    from=from.replace('\t',' ');
+    
+
     // we determine the dummy label used in the arguments 
     String label;
     try{
@@ -75,21 +83,43 @@ public class SQLUpdate implements Update
     try{ fakeCommand= ((QueryAST)tree).writeInSQLQuery(dbc.getHostDatabase()); }
     catch(RuntimeException e){ throw new MakumbaError(debugString+"\n"+OQLQuery); }
 
-    // we remove the label and label. seqences from the command
     StringBuffer replaceLabel=new StringBuffer();
-    int n=0, lastN;
+
+    // we remove all "label." sequences from the SELECT part of the command
+    int n=0;
+    int lastN;
+    int maxN=fakeCommand.indexOf(" FROM ");
     while(true){
       lastN=n;
-      n=fakeCommand.indexOf(label, n);
+      n=fakeCommand.indexOf(label+".", lastN);
+      if(n==-1 || n>maxN)
+	{
+	  replaceLabel.append(fakeCommand.substring(lastN,maxN));
+	  break;
+	}
+      replaceLabel.append(fakeCommand.substring(lastN, n));
+      n+=label.length()+1;
+    }
+
+    // we remove the last instance of " label" from the FROM part of command
+    lastN=fakeCommand.indexOf(" WHERE ");
+    if(lastN<0)  //no where part, search to end
+      lastN=fakeCommand.length();
+    n=fakeCommand.lastIndexOf(" "+label, lastN);
+    replaceLabel.append(fakeCommand.substring(maxN, n));
+
+    // we remove all "label." sequences from the WHERE part of the command
+    n=lastN; //start where we left off above
+    while(true){
+      lastN=n;
+      n=fakeCommand.indexOf(label+".", lastN);
       if(n==-1)
 	{
 	  replaceLabel.append(fakeCommand.substring(lastN));
 	  break;
 	}
       replaceLabel.append(fakeCommand.substring(lastN, n));
-      n+=label.length();
-      if(fakeCommand.charAt(n)=='.')
-	n++;
+      n+=label.length()+1;
     }
 
     fakeCommand=replaceLabel.toString();
@@ -97,10 +127,10 @@ public class SQLUpdate implements Update
     // now we break the query SQL in pieces to form the update SQL
     StringBuffer command= new StringBuffer();
     command.append(set==null?"DELETE FROM":"UPDATE");
-    command.append(fakeCommand.substring(fakeCommand.indexOf("FROM")+4, fakeCommand.indexOf("WHERE")));
+    command.append(fakeCommand.substring(fakeCommand.indexOf(" FROM ")+5, fakeCommand.indexOf(" WHERE ")));
     if(set!=null)
       {
-	String setString=fakeCommand.substring(fakeCommand.indexOf("SELECT")+6, fakeCommand.indexOf("FROM"));
+	String setString=fakeCommand.substring(fakeCommand.indexOf("SELECT ")+7, fakeCommand.indexOf(" FROM "));
 	n=0;
 	while(true)
 	  {
@@ -109,10 +139,10 @@ public class SQLUpdate implements Update
 	      break;
 	    setString=setString.substring(0, n)+" = null"+setString.substring(n+7);
 	  }
-	command.append("SET ").append(setString);
+	command.append(" SET ").append(setString);
       }
     if(where!=null)
-      command.append(fakeCommand.substring(fakeCommand.indexOf("WHERE")));
+      command.append(fakeCommand.substring(fakeCommand.indexOf(" WHERE ")));
     
     debugString+="\n generated SQL: "+command;
     updateCommand=command.toString();
