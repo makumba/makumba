@@ -75,5 +75,7 @@ class version {
         } catch (Exception e) {
           System.out.println("buildhost=unknown.host"); 
         }
+        System.out.println("java.vendor="+java.lang.System.getProperty("java.vendor")); 
+        System.out.println("java.version="+java.lang.System.getProperty("java.version")); 
     }
 }
