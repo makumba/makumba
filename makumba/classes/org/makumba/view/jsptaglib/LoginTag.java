@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
@@ -68,88 +69,85 @@ public class LoginTag extends BodyTagSupport
       // get the original request, as written in the request attributes by MakumbaTag            
       HttpServletRequest req=(HttpServletRequest)pageContext.getRequest().getAttribute(pageAttr);
 
-      // retrieve the path info 
+      // retrieve the path info on original request
       String pathInfo=req.getPathInfo();
-      if(pathInfo==null)
-	  pathInfo="";
+      if(pathInfo==null) pathInfo="";
 
-      // retrieve the query string      
+      // retrieve the query string on original request
       String varInfo=req.getQueryString();
-      if(varInfo==null) 
-          varInfo="";
-      else 
-         varInfo="?"+varInfo; 
+      if(varInfo==null) { 
+         varInfo = ""; 
+      } else { 
+         varInfo = "?"+varInfo; 
+      }
       
-      // System.out.println(varInfo+"From LoginTag");
+      //System.out.println(varInfo+"From LoginTag");
       //System.out.println(req.getRequestURI()+"From LoginTag");
      
       // now we know the FORM action
       bodyContent.print("<form action=\""+req.getContextPath()+req.getServletPath()+pathInfo+varInfo+"\" method=\"post\">");
 
-      // we read the GET parameters in a Dictionary 
-/* IMPROVE d could have a better name */
-      Dictionary d=new Hashtable();
+
+      // ////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // next we print <input hidden ...> for all POST params: {POST-params} = { ALL params } minus { GET-params }
+      //
+
+      // we read the GET parameters in a Dictionary => we will avoid printing them as hidden POST param
+      Dictionary dGetParams = new Hashtable(); //default: empty 
       if (req.getQueryString()!=null){
-      // System.out.println(HttpUtils.parseQueryString(req.getQueryString())+"\n");
+           // System.out.println(HttpUtils.parseQueryString(req.getQueryString())+"\n");
+           dGetParams = HttpUtils.parseQueryString(req.getQueryString());
+      }
 
-      d=HttpUtils.parseQueryString(req.getQueryString());}
+      // Note on use of Request object (fred)
+      //    in a previous version, the Request's parameters (below) were taken from the 
+      //    current request, instead of the original request... 
+      //    the problem is that some param can be added in the mean time (e.g. param given to a header)
+      //    and we don't need to include those on the login form. So, I changed code to 
+      //    work only with the original request's params.
+      // => UNUSED ServletRequest pcReq = pageContext.getRequest();
 
-      // fort each parameter
-      for(Enumeration e= pageContext.getRequest().getParameterNames(); e.hasMoreElements();)
-	{
-	  String name=(String)e.nextElement();
-            // username and password are ignored, new ones should exist in the login form 
-	  if(!name.equals("username")&& !name.equals("password"))
-	    {
-             // we count the unique values of the parameter
-             Dictionary valAll=countValues(pageContext.getRequest().getParameterValues(name));
+      // for every parameter       
+      for(Enumeration e = req.getParameterNames(); e.hasMoreElements();) {  //! was pcReq
+          String name=(String)e.nextElement();
+          
+          // username and password are ignored, new ones should exist in the login form 
+	 if( !name.equals("username") && !name.equals("password") ){
 
+             // count the unique values for this parameter
+             Dictionary dParamValues = countValues(req.getParameterValues(name)); //! was pcReq
 
-             // for each unique value of this parameter,
-             for(Enumeration ee=valAll.keys();ee.hasMoreElements();)
-              {
-               String val1=(String)ee.nextElement();
-/* IMPROVE: why not "value" instead of "val1" ? :) */
-               int j=0;
+             // count the unique values for this parameter in the GET-QueryString
+             Dictionary dGetParamValues = null;
+             if ( dGetParams.get(name)!=null ) dGetParamValues = countValues( (String[])dGetParams.get(name) ) ;
 
-               if(d.get(name)!=null)  
-                     {
-/* IMPROVE PERFORMANCE: valGet is computed once per parameter value, no need, should be computed once per parameter, outside this for loop, if d.get(name) is not null */
-                       Dictionary valGet=countValues((String [])d.get(name));
+             // for each unique value for this parameter... print as hidden input
+             for(Enumeration ee = dParamValues.keys(); ee.hasMoreElements(); ){
+                 String value = (String)ee.nextElement();
 
-                       if (valGet.get(val1)!=null) 
-                          {
+                 // how many times is (paramName=value) among ALL params?
+                 int cntAllParam = ((Integer)dParamValues.get(value)).intValue();
+                 int cntHiddenInput = cntAllParam;
 
-/* IMPROVE: a should be computed anyway (even if d.get(name) is null), outside this for loop, because it's needed below */
-/* IMPROVE: a and b can have better names :) */
-                           int a=((Integer)valAll.get(val1)).intValue();
-                           int b=((Integer)valGet.get(val1)).intValue();
-                           /* we print INPUT tags for all occurences of this value that are in    
-                                parameters but are not in GET. that is, we print it a-b times */
-                           for(int ii=1;ii<a-b;ii++)
-                              bodyContent.print("<input type=\"hidden\" name=\""+name+"\" value=\""+val1+"\">");
-                          }
-                      }
-               else
-/* FIXME when the value is not present in GET, the INPUT should be printed "a" times, not just once! */
-             {
-               int a=((Integer)valAll.get(val1)).intValue();
-               for(int ii=1;ii<a;ii++)
-	       bodyContent.print("<input type=\"hidden\" name=\""+name+"\" value=\""+val1+"\">");
+                 if(dGetParams.get(name)!=null && dGetParamValues.get(value)!=null) {
+                     int cntGetParam =((Integer)dGetParamValues.get(value)).intValue();
+                     cntHiddenInput -= cntGetParam;
+                 }
+
+                 /* we print HIDDEN INPUT tags for all occurences of this value that are in    
+                    parameters but are not in GET. */
+                 for(int i=0;i<cntHiddenInput;i++){
+                     bodyContent.print("<input type=\"hidden\" name=\""+name+"\" value=\""+HtmlUtils.string2html(value)+"\">");
+                 }
              }
 
 
-/* IMPROVE
- basically the for() loop that prints INPUTs should be common, just the number of iterations is different (a-b and a respectively). so i guess it'll be sth like
-int iterations= valAll.get(...);
-if(d.get(name)!=null) iterations -= vallGet.get(...);
-for(... i<iterations...)bodyContent.print(...);
-*/
+          } //if not username...
 
-              }
-	    }
-	}
-    }catch(IOException e){ throw new JspException(e.toString()); }
+      } // for
+
+    } catch(IOException e){ throw new JspException(e.toString()); }
+
   }
   
   /** appends a /FORM to the tag body, closing the login form */
