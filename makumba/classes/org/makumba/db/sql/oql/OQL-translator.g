@@ -316,6 +316,7 @@ options {
 {
 	QueryAST currentQuery=null;
 	AST lastEQop=null;
+	int lastUnary;
 	String is=null;
 	int lastAdditive;
 	int lastMultiplicative;
@@ -678,13 +679,19 @@ unaryExpr :
 
         (
             (
-                TOK_PLUS    
-            |   TOK_MINUS
-            |   "abs"
-            |   "not"
+                TOK_PLUS  { lastUnary=0; }
+            |   TOK_MINUS { lastUnary=0; }
+            |   "abs" { lastUnary=0; }
+            |   "not" { lastUnary=1; }
             )
         )*
-        po: postfixExpr 
+        po: postfixExpr  
+	{
+	  if(lastUnary!=-1)
+	   ((OQLAST)#unaryExpr).makumbaType=
+		lastUnary==0?((OQLAST)#po).makumbaType:"int";  		
+	  lastUnary=-1;
+	}
 
     ;
 
