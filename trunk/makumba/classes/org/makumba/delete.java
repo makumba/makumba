@@ -34,7 +34,7 @@ public class delete
   public static void main(String[]argv) 
   {
     int exit=0;
-    if(argv.length<2)
+    if(argv.length<1)
       {
 	usage();
 	exit=1;
@@ -44,17 +44,28 @@ public class delete
 	Database db1=null;
 
 	try{
-	  String [] types= new String[argv.length-1];
-	  System.arraycopy(argv, 1, types, 0, types.length);
+	  String [] types;
+	  if(argv.length==1)
+	    {
+	      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+	      types= new String[v.size()];
+	      for(int i=0; i<v.size(); i++)
+		types[i]= (String)v.elementAt(i);
+	    }
+	  else
+	    {
+	      types= new String[argv.length-1];
+	      System.arraycopy(argv, 1, types, 0, types.length);
+	    }
 	  MakumbaSystem._delete(argv[0], argv[0], types);
-	}catch(Throwable tr){ usage(); tr.printStackTrace(); exit=1; }
+	}catch(Throwable tr){ tr.printStackTrace(); exit=1; usage(); }
       }
     System.exit(exit);
   }
   
   static void usage()
   {
-    System.err.println("org.makumba.delete deletes data of several types and their subtypes from  database. All types must have an admin# confirmation in the database connection file.\r\nUsage: \r\n java org.makumba.delete db type1 [type2 ...]\r\nIndicate the database as hostname_jdbcsubprotocol_databasename");
+    System.err.println("org.makumba.delete deletes data of several types and their subtypes from  the database. ONLY data originating in the local database (data with the DBSV indicated in the connection file) is deleted. All types must have an admin# confirmation in the database connection file.\r\nUsage: \r\n java org.makumba.delete db [type1 type2 ...]\r\nIndicate the database as hostname_jdbcsubprotocol_databasename. If no type is indicated, data of all known types is deleted.");
   }
   
 }
