@@ -1,3 +1,4 @@
+fred; 24 aug 2003: bug 530 (added HtmlUtils to org.makumba package, the old class in org.makumba.util extends the new)
 stefan; 20 aug 2003: extended test suite, now ready for additional tests
 stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
 stefan; 23 jul 2003: bug 518: MakumbaSystem.getBuildDate(), development version 'number' includes it
