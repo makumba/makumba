@@ -25,56 +25,74 @@ package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.*;
 import org.makumba.abstr.*;
+import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import java.io.*;
+import org.makumba.controller.html.FormResponder;
 
 public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
 {
+  // jsptaglib1-specific methods
   public Class getParentClass() { return MakumbaTag.class; }
   public boolean canBeRoot() { return true; }
   protected RootTagStrategy makeRootStrategy(Object key) { return this; }
   public void onInit(TagStrategy ts) {}
-
-  static public final String anonymousLabel="___mak___edited___";
-
-  public String getSubjectLabel(){ return name; }
-  public String getMessage() { return message; }
-  String action;
-  String handler;
-  String method="GET";
-  String name= anonymousLabel;
-  String message="changes done";
-
-  String enclosingLabel;
-  boolean multipart=false;
-
-  // for add and edit
-  public void setObject(String s) { enclosingLabel=s;}
-
-  public void setAction(String s){ action=s; }
-  public void setHandler(String s){ handler=s; }
-  public void setMethod(String s){ method=s; }
-  public void setName(String s){ name=s; }
-  public void setMessage(String s){ message=s; }
-  public void setMultipart(){ multipart=true; }
-
-  //  public Object getKeyDifference(){ return "FORM#"+action+"#"+method+"#"; }
-
-  public String getFormKey(){ return action+method+name+message+enclosingLabel+pageContext.getPage().getClass(); }
-
-  FormResponder responder;
-
-  public FormResponder makeResponder(){ return new SimpleFormResponder(); }
-
   public Object makeBuffer() { return new RootQueryBuffer(); }
 
+  // the tag attributes
+  String baseObject;
+
+  // for add, edit, delete
+  public void setObject(String s) { baseObject=s;}
+
+  public void setAction(String s){ responder.setAction(s); }
+  public void setHandler(String s){ responder.setHandler(s); }
+  public void setMethod(String s){ responder.setMethod(s); }
+  public void setName(String s){ responder.setResultAttribute(s); }
+  public void setMessage(String s){ responder.setMessage(s); }
+  public void setMultipart(){ responder.setMultipart(true);}
+  
+  FormResponder responder= new FormResponder();
+  
+  String getOperation()
+  {
+    String classname= getClass().getName();
+
+    if(classname.endsWith("FormTagBase"))
+      return "simple";
+    int n= classname.lastIndexOf("Tag");
+    if(n!=classname.length()-3)
+      throw new RuntimeException("the tag class name was expected to end with \'Tag\': "+classname);
+    classname= classname.substring(0, n);
+    int m=classname.lastIndexOf(".");
+    return classname.substring(m+1).toLowerCase();
+  }
+
   long l;
+  String basePointer;
+
   public int doStart() throws JspException 
   {
     l= new java.util.Date().getTime();
-    responder= makeResponder();
+
+    responder.setOperation(getOperation());
+
+    /** we compute the base pointer */
+    String basePointerType=null;
+    if(baseObject!=null)
+      {
+	Object o= ValueTag.evaluate(baseObject, this);
+	if(o instanceof Pointer)
+	  {
+	    responder.setBasePointerType
+	      (((FieldInfo)pageContext.getAttribute(ValueTag.EVAL_BUFFER+"_type"))
+	       .getPointedType().getName());
+	    basePointer=((Pointer)o).toExternalForm();
+	  }
+      }
+
     try{
-      responder.init(this);
+      responder.setHttpRequest((HttpServletRequest)pageContext.getRequest());
     }catch(LogicException e){ treatException(e); }
     return EVAL_BODY_TAG; 
   }
@@ -82,54 +100,26 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
   public int doEnd() throws JspException 
   {
     try{
-      writeFormPreamble(bodyContent.getEnclosingWriter()); 
+      StringBuffer sb= new StringBuffer();
+      responder.writeFormPreamble(sb, basePointer);
+      bodyContent.getEnclosingWriter().print(sb.toString()); 
+
       bodyContent.writeOut(bodyContent.getEnclosingWriter());
-      writeFormPostamble(bodyContent.getEnclosingWriter());
+
+      sb= new StringBuffer();
+      responder.writeFormPostamble(sb, basePointer);
+      bodyContent.getEnclosingWriter().print(sb.toString()); 
+
       MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-l)));
     }catch(IOException e){ throw new JspException(e.toString()); }
     return EVAL_PAGE;
   }
 
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("<form action=");
-    pw.print("\""+action+"\"");
-    pw.print(" method=");
-    pw.print("\""+method+"\"");
-    if(multipart)
-      pw.print(" enctype=\"multipart/form-data\" ");
-    pw.print(">");
-  }
-
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    if(enclosingLabel!=null)
-      writeBasePointer(pw);
-    responder.writeInput(pw, getEditedType());
-    pw.print("</form>");
-  }
-
-  public void writeBasePointer(JspWriter pw) throws JspException, IOException
-  {
-    responder.writeBasePointer(pw, getBasePointer());
-  }
-
-  public String getBasePointer() throws JspException
-  {
-    Object o= ValueTag.evaluate(enclosingLabel, this);
-    if(o instanceof Pointer)
-      {
-	responder.pointerType=((FieldInfo)pageContext.getAttribute(ValueTag.EVAL_BUFFER+"_type")).getPointedType().getName();
-
-	return ((Pointer)o).toExternalForm();
-      }
-    return null;
-  }
-
-  public String getEditedType(){ return responder.pointerType; }
+  // -------------- for input tags to compute types and values 
 
   public String getDefaultExpr(String fieldName) { return null; }
   public FieldDefinition getDefaultType(String fieldName) { return null; }
+
 
   public boolean canComputeTypeFromEnclosingQuery() 
   { return false; }
@@ -158,15 +148,4 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
       }
   }
 }
-
-class SimpleFormResponder extends FormResponder
-{
-  public int getIdentity(String type) {return getSimpleIdentity(); }
-
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doOp(controller, handler, getHttpData(pc), makeAttributes(pc), database);
-  }
-}
-
 

@@ -25,8 +25,11 @@ package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.util.*;
 import org.makumba.*;
+import org.makumba.view.html.RecordViewer;
+import org.makumba.controller.jsp.PageAttributes;
 
 import javax.servlet.jsp.*;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.*;
 import java.util.*;
 import java.io.*;
@@ -140,6 +143,8 @@ implements Observer, QueryTagStrategy
   /** the typical condition at the begining of looping */
   protected int startLooping() throws JspException
   {
+    //System.out.println(/*getRoot().currentData+" "+bigResults+" "+results+" "+ index +" "+*/System.identityHashCode(this));
+
     startedWithData=obtainData(getRoot().currentData)&&nextDataRow();
     if(startedWithData)
       {
@@ -181,12 +186,15 @@ implements Observer, QueryTagStrategy
 
     if(getRoot().foundMoreProjectionsInAnyTag())
       {
+	//	System.out.println(bigResults+"doing queries");
 	getRoot().doQueries(false);
 	if(tag.wasException())
 	  {
+	    //    System.out.println("was exception");
 	    return BodyTag.SKIP_BODY;
 	  }
 	bodyContent.clearBody();
+	//System.out.println("trying to repeat");
 	return startLooping();
       }
 
@@ -208,9 +216,11 @@ implements Observer, QueryTagStrategy
 	getRoot().doQueries(true);
 	if(tag.wasException())
 	  {
+	    //  System.out.println("was exception 1");
 	    return BodyTag.SKIP_BODY;
 	  }
 	bodyContent.clearBody();
+	//	System.out.println("trying to repeat 1");
 	return startLooping();
       }
   }
@@ -256,23 +266,55 @@ implements Observer, QueryTagStrategy
    * We need to check if we have it in a query projection, if we do, we print the result, 
    * else the query has to be changed and the iteration will restart at the next doAfterBody()
    */
-  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException 
+  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException, NewProjectionException
   {
     int n= knewProjectionAtStart(expr);
-    if(n!=-1 && startedWithData)
+    if(n!=-1 && startedWithData  && ! foundMoreProjections())
       {
+	//	    System.out.print(expr+" ");
 	String s=formatProjection(n, formatParams, var, printVar);
 	try{	
-	  if(printVar==null && var==null)
-	    pageContext.getOut().print(s);
+	    if(printVar==null && var==null)
+			pageContext.getOut().print(s);
 	}catch(IOException e){ throw new JspException(e.toString()); }
       }
-    else if(var!=null)
+    else
       {
-	pageContext.setAttribute(var, PleaseCheckTypeBeforeCasting.singleton); 
-	pageContext.setAttribute(var+"_type", "unknown yet");
+	 if(var!=null && !var.equals(ValueTag.EVAL_BUFFER) || printVar!=null)
+	    reloadSelf(var, printVar);
+	 if(ValueTag.EVAL_BUFFER.equals(var))
+	 {
+	     pageContext.setAttribute(var+"_type", "unknown yet");
+	     PageAttributes.setAttribute(pageContext, var, null);
+	 }
       }
   }
+
+    void reloadSelf(String var, String printVar)
+    {
+	String s=((HttpServletRequest)pageContext.getRequest()).getRequestURI();
+	if(pageContext.getResponse().isCommitted())
+	    {
+		System.out.println("BIGGER BUFFER needed for page "+s);
+		return;
+	    }
+	s=s.substring(((HttpServletRequest)pageContext.getRequest()).getContextPath().length());
+
+	String vname=( var==null || ValueTag.EVAL_BUFFER.equals(var) ?
+	    printVar:var);
+	
+	System.out.println("could not determine \'"+vname+"\' -> reloading "+s);	    
+	try{
+	    pageContext.forward(s);
+
+	    // the self-forward was succesful 
+	    // we now give up this request. this will be caught by the 
+	    // controller filter, and ignored
+	    throw new NewProjectionException(vname, s);
+	}
+	catch(javax.servlet.ServletException se){ se.printStackTrace(); }
+	catch(IOException ioe){ ioe.printStackTrace(); }
+    }
   
   public String formatProjection(int n, Dictionary formatParams, String var, String printVar)
   {
@@ -287,13 +329,17 @@ implements Observer, QueryTagStrategy
 	if(query.getResultType()!=null)
 	  {
 	    pageContext.setAttribute(var+"_type", query.getResultType().getFieldDefinition(n));
-	    HttpAttributes.setAttribute(pageContext, var, o);
+	    PageAttributes.setAttribute(pageContext, var, o);
 	  }
 	else
-	  {
-	    pageContext.setAttribute(var+"_type", "unknown yet");
-	    pageContext.setAttribute(var, PleaseCheckTypeBeforeCasting.singleton); 
-	  }
+	    {
+		if(!ValueTag.EVAL_BUFFER.equals(var))
+		    reloadSelf(var, printVar);
+
+		// this will only happen if response was committed
+		// or if var is the eval buffer
+		return "";
+	    }
       }
     if(printVar!=null)
       {
@@ -303,7 +349,9 @@ implements Observer, QueryTagStrategy
     return s;
   }
 
-  public boolean executed(){ return bigResults!=null; }
+  public boolean executed(){ 
+      return bigResults!=null && !foundMoreProjections();
+  }
 
   Hashtable nullables= new Hashtable();
 
@@ -388,6 +436,7 @@ implements Observer, QueryTagStrategy
   /** initialize the reference values for query change detection */
   public void resetQueryVersion()
   {
+    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
     queryVersion= query.getVersion();
     startProjections=query.getProjections();
   }
@@ -424,15 +473,19 @@ implements Observer, QueryTagStrategy
        throws LogicException
   {
     boolean proj= noProj || query.getVersion()>0;
+    //    System.out.println(index+" "+(executed()?(""+bigResults.size()):""));
     if(proj && !(executed() && 
 		 // if the grouper has been emptied, we have to re-do the query
 		 !bigResults.isEmpty()))
       {
 	long l= new java.util.Date().getTime();
+	//	System.out.println("executing "+query+"  "+query.getVersion()+">"+queryVersion);
 	bigResults=query.execute(db, a);
 	getRoot().queryTime+= (new java.util.Date().getTime())-l;
 	resetQueryVersion();
       }
+    //    else
+    //	System.out.println("not executing "+query+"  "+query.getVersion()+", "+queryVersion+ "  "+query.getProjections());
   }
 
   /** tell whether there is data or not */
@@ -447,8 +500,11 @@ implements Observer, QueryTagStrategy
   /** checks if any new projections were found in this tag */
   public boolean foundMoreProjections()
   {
+    //    System.out.println(query.getVersion() + " "+queryVersion);
+    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
     if(query.getVersion()!=queryVersion)
       {
+	//	System.out.println(this+" "+query.getVersion()+" "+queryVersion);
 	return true;
       }
     return false;
@@ -500,17 +556,5 @@ implements Observer, QueryTagStrategy
   }
   
   public String getType() {return "LIST"; }
-}
-
-
-class PleaseCheckTypeBeforeCasting
-{
-  static final public PleaseCheckTypeBeforeCasting singleton= new PleaseCheckTypeBeforeCasting();
-  private PleaseCheckTypeBeforeCasting(){}
-  public String toString() { return "At the begining of the Makumba page execution, \nJava variables created with \'var=\"...\"' will not be of the type you expect\n. So before using (T)var you should always check if(var instanceof T) \nwhere T is the type you expect. \nNote that Makumba labels generally have the type org.makumba.Pointer.\n"; }
-
-  //  public boolean equals(Object o){ return false;
-    // throw new org.makumba.ProgrammerError("At the begining of the Makumba page execution, \nJava variables created with \'var=\"...\"' will not be of the type you expect. \nSo, before checking var1.equals(var2) you should check \nif(var1 instanceof T && var2 instanceof T && var1.equals(var2), \nwhere T is the type you expect. \nNote that Makumba labels generally have the type org.makumba.Pointer.\n"); 
-  //}
 }
 

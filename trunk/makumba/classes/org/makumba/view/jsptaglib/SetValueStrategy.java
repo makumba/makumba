@@ -26,6 +26,7 @@ import org.makumba.util.*;
 import org.makumba.*;
 import org.makumba.view.ComposedQuery;
 import java.util.*;
+import org.makumba.controller.jsp.PageAttributes;
 
 import javax.servlet.jsp.tagext.*;
 import javax.servlet.jsp.*;
@@ -52,7 +53,7 @@ public class SetValueStrategy extends QueryStrategy
 
     if(var!=null){
       pageContext.setAttribute(var+"_type", getBuffer().bufferSet);
-      HttpAttributes.setAttribute(pageContext, var, null);
+      PageAttributes.setAttribute(pageContext, var, null);
     }
     Vector v=new Vector();
     bodyContent=((ValueTag)tag).getParentQueryStrategy().bodyContent;
@@ -79,9 +80,9 @@ public class SetValueStrategy extends QueryStrategy
 	}
     }while(super.doAfter()==BodyTag.EVAL_BODY_TAG);
     if(var!=null)
-      HttpAttributes.setAttribute(pageContext, var, v);
+      PageAttributes.setAttribute(pageContext, var, v);
     if(printVar!=null)
-      HttpAttributes.setAttribute(pageContext, printVar, total);
+      PageAttributes.setAttribute(pageContext, printVar, total);
     if(var==null && printVar==null){
       try{
 	pageContext.getOut().print(total);

@@ -736,7 +736,7 @@ primaryExpr :
 	   undefinedExpr  
 
         |   collectionConstruction{ ((OQLAST)#primaryExpr).makumbaType="inSet";} 
-        |   aggregateExpr  { ((OQLAST)#primaryExpr).makumbaType="int";} 
+        |   a:aggregateExpr  
 	|   !mi: makumbaIdentifier
 	{ 
 		#primaryExpr=new IdAST();
@@ -814,7 +814,14 @@ aggregateExpr :
             |   mx:"max"{#mx.setText("max("); }
             |   av:"avg"{#av.setText("avg("); }
             )
-            l:TOK_LPAREN {#l.setText("");} query TOK_RPAREN
+            l:TOK_LPAREN {#l.setText("");} q:query TOK_RPAREN  
+
+	{
+        AggregateAST ag= new AggregateAST();
+        ag.setText(#aggregateExpr.getText());
+		ag.setExpr((OQLAST)#q);
+        #aggregateExpr=ag;
+	}
 
         |   c:"count" {#c.setText("count("); }
             lp:TOK_LPAREN{#lp.setText("");}
@@ -822,7 +829,7 @@ aggregateExpr :
                 query
             |   TOK_STAR
             )
-            TOK_RPAREN
+            TOK_RPAREN   { ((OQLAST)#aggregateExpr).makumbaType="int";}
         )
     ;
 

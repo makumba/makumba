@@ -70,6 +70,8 @@ public class FieldFormatter extends FieldHandler
 
   public void checkParam(String name, String val)
   {
+    if(name.startsWith("org.makumba"))
+      return;
     Hashtable h=(Hashtable)validParams.get(name);
     if(h==null)
       throw new InvalidValueException(this, "invalid format parameter \'"+name+"\'");
