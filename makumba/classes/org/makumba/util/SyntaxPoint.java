@@ -64,7 +64,38 @@ public abstract class SyntaxPoint implements Comparable
   /** utility method to insert 2 syntax points (begin and end) for every line in a text. Most syntax colourers need to do specific operations at every line */
   public static void addLines(String text, SortedSet points) 
   {
-    /** not yet implemented; should do something like a java.io.LineNumberedReader but know precisely the position (not only the line number) */
+    int start=0;
+    int line=1;
+    
+    int max= text.length();
+    for(int i=0; i<max; i++)
+      {
+	if(text.charAt(i)=='\r')
+	  {
+	    if(i+1 <max && text.charAt(i+1)=='\n')
+	      i++;
+	  }
+	else if(text.charAt(i)!='\n')
+	  continue;
+	addSyntaxPoints(points, start, i, "TextLine", new Integer(line));
+	start=i+1;
+	line++;
+      }
+    if(start<max)
+      addSyntaxPoints(points, start, max, "TextLine", new Integer(line));
+  }
+
+  /** find the line number of a certain position */
+  public static int getLineNumber(SortedSet points, int position, String debug)
+  {
+    SyntaxPoint sp=null;
+    for(Iterator i= points.iterator(); i.hasNext(); )
+      {
+	sp= (SyntaxPoint)i.next();
+	if(!sp.begin && sp.getType().equals("TextLine") && sp.position > position)
+	  return ((Integer)((SyntaxPoint)sp.getOtherInfo()).getOtherInfo()).intValue();
+      }
+    throw new IllegalArgumentException("cannot find line for position "+position+" debug info "+debug);
   }
 
   /** go thru the comments in a text, defined according to a pattern, return the text uncommented (for further processing) but of the same length by replacing every comment with whitespace, put the comments limits in the syntax point set */
@@ -80,7 +111,7 @@ public abstract class SyntaxPoint implements Comparable
 	for(int i=m.start(); i<m.end(); i++)
 	  uncommentedContent.append(' ');
 	endOfLast=m.end();
-	org.makumba.MakumbaSystem.getMakumbaLogger("debug.syntaxpoint").info(m.group());
+	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine(m.group());
 	// add the comment to the syntax point set
 	SyntaxPoint comment=new SyntaxPoint(m.start())
 	  { public String getType(){ return commentType;}};
