@@ -95,7 +95,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       return "simple";
     int n= classname.lastIndexOf("Tag");
     if(n!=classname.length()-3)
-      throw new RuntimeException("the tag class name was expected to end with \'Tag\': "+classname+" in\n"+getTagText());
+      throw new RuntimeException("the tag class name was expected to end with \'Tag\': "+classname);
     classname= classname.substring(0, n);
     int m=classname.lastIndexOf(".");
     return classname.substring(m+1).toLowerCase();
@@ -106,7 +106,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   }
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey()
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     Object[] keyComponents= {baseObject, handler, getParentListKey(null), getClass()};
     tagKey=new MultipleKey(keyComponents);
@@ -142,7 +142,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   
   void checkNoParent(String attrName){
     if(findParentForm()!=null)
-      throw new ProgrammerError("Forms included in other forms cannot have a '"+attrName+"' attribute:\n"+getTagText());
+      throw new ProgrammerError("Forms included in other forms cannot have a '"+attrName+"' attribute");
   }
 
   public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
@@ -151,10 +151,10 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     if(dummy!=null)
       dummy.analyze();
     if(formAction==null && findParentForm()==null)
-      throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
+      throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
     if(findParentForm()!=null){
       if(formAction!=null)
-	throw new ProgrammerError("Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
+	throw new ProgrammerError("Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
     }
     if(!shouldComputeBasePointer())
       return;
@@ -251,7 +251,6 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   public FieldDefinition getInputTypeAtAnalysis(String fieldName, MakumbaJspAnalyzer.PageCache pageCache) 
   { 
     DataDefinition dd= getDataTypeAtAnalysis(pageCache);
-    System.out.println(dd);
     if(dd==null)
       return null;
     int dot=-1;
@@ -265,7 +264,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 	if(fd==null)
 	  throw new org.makumba.NoSuchFieldException(dd, fname);
 	if(!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
-	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not; in\n"+getTagText());  
+	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not");  
 	dd= fd.getReferredType();
 	dot=dot1;
       }
