@@ -54,11 +54,8 @@ import org.makumba.MakumbaSystem;
  *  
  */
 public class LineViewer implements SourceViewer {
-    protected static String regExpPossibleLink = "\\w+\\.\\w+[\\.\\w]*";
+    private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
 
-    Pattern patternUrl = Pattern.compile(regExpPossibleLink);
-
-    //protected HttpServletRequest request;
     protected ServletContext servletContext;
 
     protected String realPath;
@@ -153,7 +150,8 @@ public class LineViewer implements SourceViewer {
         printPageEnd(writer);
         reader.close();
         double timeTaken = new Date(new GregorianCalendar().getTimeInMillis() - begin.getTimeInMillis()).getTime();
-        MakumbaSystem.getLogger("devel.sourceViewer").fine("Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
+        MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").fine(
+                "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
     /**
@@ -292,8 +290,10 @@ public class LineViewer implements SourceViewer {
 
             result.append(source.substring(0, indexOf));
 
-            if (token.equals("www.makumba.org")) {
+            if (token.indexOf("www.makumba.org") != -1) {
                 result.append(formatMakumbaLink(token));
+            } else if (token.indexOf("java.sun.com") != -1) {
+                result.append(formatSunLink(token));
             } else if (searchMDD && (mdd = org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd")) != null
                     || (idd = org.makumba.abstr.RecordParser.findDataDefinition(token, "idd")) != null) {
                 result.append(formatMDDLink(token));
@@ -358,7 +358,20 @@ public class LineViewer implements SourceViewer {
      * @param token
      */
     public String formatMakumbaLink(String token) {
-        return "<a href=\"http://www.makumba.org\">" + token + "</a>";
+        return "<a href=\"http://www.makumba.org\" target=\"_blank\">" + token + "</a>";
+    }
+
+    /**
+     * @param token
+     * @return
+     */
+    public String formatSunLink(String token) {
+        if (token.indexOf("java.sun.com/jstl/") != -1 || token.indexOf("http://java.sun.com/jsp/jstl/") != -1) {
+            return "<a href=\"http://java.sun.com/products/jsp/jstl/1.1/docs/tlddocs/\" target=\"_blank\">" + token
+                    + "</a>";
+        } else {
+            return "<a href=\"http://java.sun.com\" target=\"_blank\">" + token + "</a>";
+        }
     }
 
     /**
@@ -385,21 +398,21 @@ public class LineViewer implements SourceViewer {
                 file = new File(s);
                 if (file.exists()) {// full path name?
                     return s;
-                } else {
-                    return null;
                 }
             }
-        } else if (realPath != null){ //relative reference
+        }
+        if (s.startsWith("/")) { //absolute reference to file, take two. rather a dirty hack
+            // needed e.g. for files like /usr/local/cvsroot/karamba/public_html/general/survey/user/viewStatistics.jsp
+            s = s.substring(s.lastIndexOf("/") + 1);
+        }
+        if (!s.startsWith("/") && realPath != null) { //relative reference
             File file = new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar)) + File.separatorChar
                     + s.replace('/', File.separatorChar));
             if (file.exists()) {
                 return s;
-            } else {
-                return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -475,7 +488,11 @@ public class LineViewer implements SourceViewer {
         if (c != null && c.getName().startsWith("java")) {
             return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
                     + ".html\">" + c.getName() + "</a>";
+        } else if (c != null && c.getName().startsWith("org.makumba")) {
+            return "<a href=\"http://www.makumba.org/api/" + c.getName().replaceAll("\\.", "/") + ".html\">"
+                    + c.getName() + "</a>";
         } else {
+
             String className = token.substring(0, token.lastIndexOf("."));
             String methodName = token.substring(token.lastIndexOf(".") + 1);
             try {
@@ -493,6 +510,28 @@ public class LineViewer implements SourceViewer {
                 return null;
             }
         }
+    }
+
+    public static void main(String[] args) {
+
+        String p1 = "http://www.makumba.org/presentation";
+        String p2 = "mak:object from=\"general.survey.Survey survey\" where=\"survey=$survey\">";
+        String p3 = "/layout/header.jsp?title=Statistics for ";
+        String p4 = "c:set var=\"viewStatsPage\" value=\"viewStatistics.jsp?survey=";
+
+        String[] patterns = new String[] { p1, p2, p3, p4 };
+        // patterns=new String[] {w1,w2};
+        System.out.println("pattern: " + patternUrl.pattern());
+        for (int i = 0; i < patterns.length; i++) {
+            System.out.println("\n!!!trying\n---" + patterns[i] + " ---");
+            Matcher m = patternUrl.matcher(patterns[i]);
+
+            while (m.find()) {
+                System.out.print(m.group() + " - ");
+            }
+            System.out.println();
+        }
+
     }
 }
 

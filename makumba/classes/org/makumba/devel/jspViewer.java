@@ -23,16 +23,13 @@
 
 package org.makumba.devel;
 
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,9 +56,31 @@ public class jspViewer extends LineViewer {
      * be matched - if you want a different colouring for /'key', put that as an own entry, and make sure it is put <b>before </b> the 'key' entry -
      * otherwise it will get matched twice.
      */
-    public static Properties jspSyntaxProperties = new Properties();
 
-    private static final String PROPERTIES_FILE_NAME = "config/jspSyntax.properties";
+    private static final String PROPERTIES_FILE_NAME = "jspSyntax.properties";
+
+    /**
+     * defines some default taglibs which should be highlighted. will be used when loading the properties file fails.
+     */
+    private static Properties defaultTaglibProperties = new Properties();
+    static {
+        defaultTaglibProperties.put("mak", "background:#eecccc; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("jsp", "background:lightcyan; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("fmt", "background::chartreuse; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("c", "background:lightblue; color:green; border:red thin; font-weight: bold; ");
+    }
+
+    private static Properties taglibgSytleProperties = new Properties();
+
+    private static Properties SystemStyleProperties = new Properties();
+
+    private static final String DEFAULT_JSPSYSTEMTAG_STYLE = defaultTaglibProperties.getProperty("jsp");
+
+    private static final String DEFAULT_JSPSCRIPLET_STYLE = "background:gold;color:green; border:red thin; font-weight: bold;";
+
+    private static final String DEFAULT_JSPCOMMENT_STYLE = "color:gray;";
+
+    private static final String DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE = "font-style:italic;";
 
     static {
         initProperties();
@@ -75,32 +94,45 @@ public class jspViewer extends LineViewer {
         // TODO: should we parse the tag-lib import and check for the prefix?
         try {
             URLConnection connection = (ClassResource.get(PROPERTIES_FILE_NAME)).openConnection();
+            Properties jspSyntaxProperties = new Properties();
             jspSyntaxProperties.load(connection.getInputStream());
-        } catch (Throwable t) {
-            jspSyntaxProperties = initDefaultProperties();
-            MakumbaSystem.getLogger().info(
+
+            // we load from the properties file the non-taglib properties, using defaults when necessary
+            SystemStyleProperties.put("ExpressionLanguage", jspSyntaxProperties.getProperty("ExpressionLanguage",
+                    DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE));
+            SystemStyleProperties.put("JspScriptlet", jspSyntaxProperties.getProperty("JspScriptlet",
+                    DEFAULT_JSPSCRIPLET_STYLE));
+            SystemStyleProperties.put("JspComment", jspSyntaxProperties.getProperty("JspComment",
+                    DEFAULT_JSPCOMMENT_STYLE));
+            SystemStyleProperties.put("JSPSystemTag", jspSyntaxProperties.getProperty("JSPSystemTag",
+                    jspSyntaxProperties.getProperty("jsp", DEFAULT_JSPSYSTEMTAG_STYLE)));
+
+            // now we remove the non-taglib properties, and use the remainders as taglib properties fiel
+            jspSyntaxProperties.remove("JspScriptlet");
+            jspSyntaxProperties.remove("JspComment");
+            jspSyntaxProperties.remove("JSPSystemTag");
+            jspSyntaxProperties.remove("ExpressionLanguage");
+            taglibgSytleProperties = jspSyntaxProperties;
+        } catch (Throwable t) { // the properties file was not found / readable / etc.
+
+            MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").fine(
                     "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
+
+            // we use only default values
+            SystemStyleProperties.put("ExpressionLanguage", DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE);
+            SystemStyleProperties.put("JspScriptlet", DEFAULT_JSPSCRIPLET_STYLE);
+            SystemStyleProperties.put("JspComment", DEFAULT_JSPCOMMENT_STYLE);
+            SystemStyleProperties.put("JSPSystemTag", DEFAULT_JSPSYSTEMTAG_STYLE);
+            taglibgSytleProperties = defaultTaglibProperties;
         }
     }
 
-    /**
-     * defines some default taglibs which should be highlighted. will be used when loading the properties file fails.
-     */
-    public static Properties initDefaultProperties() {
-        Properties defaultProperties = new Properties();
-        defaultProperties.put("mak", "background:#eecccc; color:green; border:red thin; font-weight: bold; ");
-        defaultProperties.put("jsp", "background:lightcyan; color:green; border:red thin; font-weight: bold; ");
-        defaultProperties.put("fmt", "background::chartreuse; color:green; border:red thin; font-weight: bold; ");
-        defaultProperties.put("c", "background:lightblue; color:green; border:red thin; font-weight: bold; ");
-        return defaultProperties;
-    }
-
-    private static Set syntaxKeys = jspSyntaxProperties.keySet();
+    private static Set syntaxKeys = taglibgSytleProperties.keySet();
 
     boolean hasLogic;
 
-    private TreeSet sourceSyntaxPoints;
+    private SyntaxPoint[] sourceSyntaxPoints;
 
     private SourceSyntaxPoints syntaxPoints;
 
@@ -187,71 +219,95 @@ public class jspViewer extends LineViewer {
                 + "<input type=\"submit\" value=\"apply\"> \n" + "</form>\n" + "</td>\n" + "</tr>\n");
     }
 
-    /** parse the text and write the output */
+    /**
+     * Parse the text and write the output <br>
+     * Known problems: when hiding parts of the code (e.g. HTML, JSTL,..) nested tags work only up to one level (i.e. a tag nested in a tag nested in
+     * a tag might not be hidden/shown as expected)
+     */
     public void parseText(PrintWriter writer) throws IOException {
         Date begin = new Date();
         Object[] syntaxElements = syntaxKeys.toArray();
-        Iterator iterator = sourceSyntaxPoints.iterator();
-
         printPageBegin(writer);
 
         SyntaxPoint lastSyntaxPoint = null;
         boolean shallWrite = true;
-        boolean inTag = false;
+        boolean lastShallWrite = false;
+        int inTag = 0;
 
         StringBuffer currentText = new StringBuffer();
 
-        while (iterator.hasNext()) {
-            SyntaxPoint currentSyntaxPoint = (SyntaxPoint) iterator.next();
+        for (int j = 0; j < sourceSyntaxPoints.length; j++) {
+            SyntaxPoint currentSyntaxPoint = sourceSyntaxPoints[j];
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
+            String lineText = syntaxPoints.getLineText(currentLine);
+            int currentLineLength = lineText.length();
 
+            if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > syntaxPoints.getLineText(currentLine).length() + 1) {
+                MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").finest(
+                        "skipped syntax Point due to wrong offset: "
+                                + (currentSyntaxPoint.isBegin() ? "begin " : "end ") + currentSyntaxPoint.getType()
+                                + " " + currentSyntaxPoint.getLine() + ":" + currentSyntaxPoint.getColumn()
+                                + ":; linelength is: " + syntaxPoints.getLineText(currentLine).length());
+                continue;
+            }
             if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we just move the last point marker
                 lastSyntaxPoint = currentSyntaxPoint;
             } else if (type.equals("TextLine") && !currentSyntaxPoint.isBegin()) { //end of line found
 
                 // we write if we are not on column 1 (empty text line) and either are showing HTML or are in a tag
-                if (currentSyntaxPoint.getColumn() > 1 && (!hideHTML || inTag) && shallWrite) {
-                    currentText.append(parseLine(htmlEscape(syntaxPoints.getLineText(currentLine).substring(
-                            lastSyntaxPoint.getColumn() - 1, currentSyntaxPoint.getColumn() - 1))));
+                if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && (!hideHTML || inTag > 0)
+                        && shallWrite) {
+                    currentText.append(parseLine(htmlEscape(lineText.substring(
+                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                 }
 
-                // if the current line contained any text to write we print the line number
-                if ((!currentText.toString().trim().equals("") || currentSyntaxPoint.getColumn() == 1) && shallWrite
+                // if the current line contained any text to write or we are outside a tag & shall write html
+                if ((!currentText.toString().trim().equals("") || (inTag < 1 && !hideHTML) || (inTag > 0 && shallWrite))
                         && printLineNumbers) {
-                    writer.print("\n<a name=\"" + currentLine + "\" href=\"#" + currentLine + "\" class=\"lineNo\">"
-                            + currentLine + ":\t</a>");
+                    writer.print("\n<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
+                            + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
                 }
                 writer.print(currentText.toString());
                 currentText = new StringBuffer();
                 lastSyntaxPoint = currentSyntaxPoint; // move pointer to last syntax Point
             } else if (isTagToHighlight(type)) { // we are in a tag that might be highlighted
-                //debugSystemPoint(point);
                 if (currentSyntaxPoint.isBegin()) { // we are at the beginning of such a tag
-                    // we write what was possibly before
-                    if (currentSyntaxPoint.getColumn() > 1 && !hideHTML && shallWrite) {
-                        currentText.append(parseLine(htmlEscape(syntaxPoints.getLineText(currentLine).substring(
-                                lastSyntaxPoint.getColumn() - 1, currentSyntaxPoint.getColumn() - 1))));
+                    inTag++;
+                    if (inTag > 1) { // we are in a nested tag
+                        lastShallWrite = shallWrite;
+                        if (lastShallWrite) {
+                            currentText.append(parseLine(htmlEscape(lineText.substring(
+                                    lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                                    currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                        }
+                    } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) { // not in a tag, but maybe
+                        // there was HTMl before?
+                        currentText.append(parseLine(htmlEscape(lineText.substring(
+                                lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                                currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                     }
 
-                    inTag = true;
-                    String tagType = syntaxPoints.getLineText(currentLine).substring(currentSyntaxPoint.getColumn());
+                    String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
 
                     // we have a scriplet (<% ... %>)
                     if (type.equals("JspScriptlet")) {
                         if (hideJava) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span style=\"background:gold;color:green; border:red thin; font-weight: bold; \">");
+                            currentText.append("<span style=\"" + SystemStyleProperties.get("JspScriptlet") + "; \">");
                         }
                     } else if (type.equals("JspComment")) { // we have a JSP comment (<%-- ... --%>)
                         if (hideComments) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span style=\"color:gray; \">");
+                            currentText.append("<span style=\"" + SystemStyleProperties.get("JspComment") + "; \">");
                         }
-                    } else if (type.equals("JSPSystemTag")) {
-                        currentText.append("<span style=\"" + jspSyntaxProperties.getProperty("jsp") + "; \">");
+                    } else if (type.equals("JSPSystemTag")) { // we have a JSP system tag (<%@ .. %>)
+                        currentText.append("<span style=\"" + SystemStyleProperties.get("JSPSystemTag") + "; \">");
+                    } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
+                        currentText.append("<span style=\"" + SystemStyleProperties.get("ExpressionLanguage") + "; \">");
                     } else {// we have any other taglib tag
                         if (((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba)
                                 || ((tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore)
@@ -263,7 +319,7 @@ public class jspViewer extends LineViewer {
                             for (int i = 0; i < syntaxElements.length; i++) {
                                 if (tagType.startsWith(String.valueOf(syntaxElements[i]))
                                         || tagType.startsWith(String.valueOf("/" + syntaxElements[i]))) {
-                                    currentText.append("<span style=\"" + jspSyntaxProperties.get(syntaxElements[i])
+                                    currentText.append("<span style=\"" + taglibgSytleProperties.get(syntaxElements[i])
                                             + "; \">");
                                     break;
                                 }
@@ -271,23 +327,28 @@ public class jspViewer extends LineViewer {
                         }
                     }
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
-                    inTag = true;
                 } else { // we have an end-tag
                     if (shallWrite) {// write content & end of highlighting?
-                        currentText.append((parseLine(htmlEscape(syntaxPoints.getLineText(currentLine).substring(
-                                lastSyntaxPoint.getColumn() - 1, currentSyntaxPoint.getColumn() - 1)))));
+                        currentText.append((parseLine(htmlEscape(lineText.substring(
+                                lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                                currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1)))));
                         currentText.append("</span>");
                     }
-                    shallWrite = true;
+                    if (inTag > 1) { // in a nested tag?
+                        shallWrite = lastShallWrite; // remember if we were supposed to write or not.
+                    } else {
+                        shallWrite = true;
+                    }
                     lastSyntaxPoint = currentSyntaxPoint;
-                    inTag = false;
+                    inTag--;
                 }
             }
         }
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        MakumbaSystem.getLogger("devel.sourceViewer").fine("Sourcecode viewer took :" + (time / 1000) + " seconds");
+        MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").finer(
+                "Sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 
     /**
@@ -296,20 +357,11 @@ public class jspViewer extends LineViewer {
      */
     private boolean isTagToHighlight(String type) {
         return type.equals("JspTagBegin") || type.equals("JspTagEnd") || type.equals("JspTagSimple")
-                || isSystemtag(type);
+                || type.equals("ExpressionLanguage") || isSystemtag(type);
     }
 
     private boolean isSystemtag(String type) {
         return type.equals("JspComment") || type.equals("JspScriptlet") || type.equals("JSPSystemTag");
-    }
-
-    public static void main(String args[]) {
-        try {
-            jspViewer.initDefaultProperties().store(new FileOutputStream("default.properties"),
-                    "Makumba Developer Support - JSP syntax highlighting");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }
