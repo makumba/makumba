@@ -142,9 +142,9 @@ public class MakumbaSystem
     org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames);
   }
 
-  /** Returns a Makumba version (via CVS keyword substitution, eg: $Name$) */
+  /** Returns a Makumba version (derived from a CVS tag) */
   public static String getVersion() {
-    return "$Name$".substring(7,"$Name$".length()-2); 
+    return org.makumba.version.getVersion();
   }
 
   static String loggingRoot="org.makumba";

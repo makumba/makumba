@@ -22,16 +22,28 @@
 /////////////////////////////////////
 
 package org.makumba;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-class version {
+public class version {
+   public static String getVersion()
+   {
+	String version=("$Name$".substring(7,"$Name$".length()-2));
+	if(version.indexOf('-')>0) version=version.substring(version.indexOf('-')+1);
+	if(version.length()>2) version=version.replace('_','.');
+	else 
+	{
+		//SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+ 		//version="devel-"+formatter.format(new Date());
+		version="development";
+	}
+	return version;
+   }
+
     public static void main(String[] args) {
-        String version=("$Name$".substring(7,"$Name$".length()-2));
-        if(version.indexOf('-')>0) version=version.substring(version.indexOf('-')+1);
-        if(version.length()>2) version=version.replace('_','.');
-        else version="development";
 
         System.out.println("name=Makumba"); 
-        System.out.println("version="+version); 
+        System.out.println("version="+getVersion()); 
         System.out.println("date="+new java.util.Date()); 
         try{
           System.out.println("buildhost="+(java.net.InetAddress.getLocalHost()).getHostName()+" ("+(java.net.InetAddress.getLocalHost()).getHostAddress()+")"); 

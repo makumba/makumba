@@ -109,7 +109,7 @@ public class Database extends org.makumba.db.Database
       if(driver==null)
 	driver= sqlDrivers.getProperty(url.substring(5, url.indexOf(':', 6)));
       
-      MakumbaSystem.getMakumbaLogger("db.init").info("$Name$ ".substring(7)+url);		
+      MakumbaSystem.getMakumbaLogger("db.init").info("Makumba "+MakumbaSystem.getVersion()+" INIT: "+url);
       Class.forName(driver);
       initConnections();
       DBConnectionWrapper dbcw=(DBConnectionWrapper)getDBConnection();

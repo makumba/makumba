@@ -94,8 +94,8 @@
         <filter filtersfile="manifest-replace.properties"/>
 
          <!-- Copy the manifest in order to replace the version token filter -->
-         <copy file="manifest.template" tofile="manifest.mf" filtering="on"/>
-         <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on"/>
+         <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
+         <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
 
        </target>
 
