@@ -173,7 +173,7 @@
 
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
-	<ftp server="devel.best.eu.org"
+	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
 		remotedir="makumba/doc/download"
@@ -187,7 +187,7 @@
 
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
-	<ftp server="devel.best.eu.org"
+	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
 		remotedir="makumba/doc"
@@ -201,7 +201,7 @@
       		<exclude name="api/API_users_guide.html" />
     	</fileset>
 	</ftp>
-	<ftp server="devel.best.eu.org"
+	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
 		remotedir="makumba/doc/download"
