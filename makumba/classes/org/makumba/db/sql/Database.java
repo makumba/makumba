@@ -127,6 +127,9 @@ public class Database extends org.makumba.db.Database
 	       "\n\tusing "+p.get("jdbc_driver.name") +" version: "
 	       +p.get("jdbc_driver.version")
 	       +"\n\tusing DBSV "+p.get("dbsv"));
+	if(!dbc.getMetaData().supportsTransactionIsolationLevel(Connection.TRANSACTION_SERIALIZABLE))
+	  MakumbaSystem.getMakumbaLogger("db.init").
+	    warning("serializable transactions not supported!");
 
 	readCatalog(dbc);
 	
