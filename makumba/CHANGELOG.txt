@@ -19,6 +19,19 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.11.2; 15 aug 2004 cristi
+support for the standar servlet authentication mechanism (bug 663)
+the support is as follows: 
+- the users and roles can be configured in the servlet container (e.g. Tomcat)
+- security constraints limiting some parts of the site to some users and roles can be declared in the webapp descriptor (web.xml)
+- if the value of the R attribute is requested (e.g. via $R or via mak:attribute) 
+and R is not present in the HTTP session, 
+and the standard servlet authentication indicates that there is a user U logged in and has the role R, 
+- then the value U is returned. 
+BL checkAttributes() can use Attributes.setAttribute() to transform the String attribute U into a pointer, or anything else.
+- otherwise, the old mechanism is used to search for R (in the page attributes, in findR() BL method, in the HTTP parameters)
+so the old login mechanism is still supported but the standard servlet mechanism (if used) takes precedence.
+
 0.5.11.1; 30 jul 2004 cristi
 support for Attributes.setAttribute()
 fixed a problem with tomcat 5 and tomcat > 4.1.20; the jar now includes META-INF/taglib.tld
