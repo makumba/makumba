@@ -35,8 +35,12 @@ public class realHandler extends FieldHandler
   
   public Object getNull() { return Pointer.NullReal; }
 
-  public Object checkValueImpl(Object value) { return normalCheck(value); }
+  public Object checkValueImpl(Object value) { 
+    if(value instanceof Integer)
+      return value;
+    return normalCheck(value); 
+  }
 
-//  public boolean isAssignableFrom(FieldInfo fi){ return super.isAssignableFrom(fi) || fi.getType().equals("intEnum"); }
+  public boolean isAssignableFrom(FieldInfo fi){ return super.isAssignableFrom(fi) || fi.getType().equals("intEnum") || fi.getType().equals("int"); }
 
 }

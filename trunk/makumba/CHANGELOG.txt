@@ -18,8 +18,9 @@ stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
+cristi; 24 may 2004: fixed bug 686, problem with spaces in OQL queries
 cristi; 23 may 2004: fixed bug 48, transactions and locking
-cristi; 17 mai 2004: fixed bug 544, support for @include
+cristi; 17 may 2004: fixed bug 544, support for @include
 cristi; 25 apr 2004: fixed bug: NotUniqueError was not detected in updates
 cristi; 21 apr 2004: fixed bug 37 (multiple forms). 
 - addForms can add to the subsets of object produced by the enclosing newForm.
