@@ -29,7 +29,9 @@
       <li> <a href="#DefaultFields">Default fields</a></li>
       <li> <a href="#SimpleFieldTypes">Simple field types</a>
               <ul>
-                  <li><a href="#int">int</a> - <a href="#char">char</a> - <a href="#text">text</a> - <a href="#date">date</a></li>
+                  
+          <li><a href="#int">int</a> - <a href="#real">real</a> - <a href="#char">char</a> 
+            - <a href="#text">text</a> - <a href="#date">date</a></li>
               </ul>
       </li>
       <li> <a href="#StructuralTypes">Structural (relational) types</a>
@@ -102,7 +104,7 @@ in files contained in directory hierarchies, and the directory name is
 part of the type name (similar to Java packages). For example <b>the file
 best/Student.mdd </b>describes<b> the type best.Student</b>. Type names
 can contain letters, digits, underscores and dashes and cannot contain
-slashes and dots. Usually, the directories are used to separate organisations
+slashes and dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 --> Usually, the directories are used to separate organisations
 and projects.
 </p>
 <div class="note">
@@ -242,9 +244,17 @@ This will help the presentation layer to present a suitable input control
 (e.g. <select><option value="0">male</option><option value="1">female</option></select>)
 </p>
 
-<div class="internals note">In the present implementation, this type is called
-"intEnum" internally</div>
+<div class="internals note">In the present implementation, this type is called 
+  "intEnum" internally.<br>
+  Negative numbers are supported (e.g. int { &quot;aa&quot;=5, &quot;bb&quot;=2, 
+  &quot;cc&quot;=-10}).</div>
 
+<h4><a name="real" id="real">real</a></h4>
+<!-- http://bugs.best.eu.org/show_bug.cgi?id=430 -->
+<!-- http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Double.html -->
+<p> A read number with double precision with (2-2<sup>-52</sup>)&middot;2<sup>1023</sup> 
+  as max value and 2<sup>-1074</sup> as min value. For example:</p>
+<pre class="example">high= real; high of a person</pre>
 <h4><a name="char">char</a></h4>
 <p> A char field contains a number of characters. Maximal width must be specified 
   and is limited to 255. <span class="futfeat">(Optionally a minimal number of 
@@ -276,10 +286,8 @@ as follows
 gender= char{ "male", "female" }; Sex
 </pre>
 
-<p>
-This will help the presentation layer to present a suitable input control
-(e.g. a HTML SELECT)
-</p>
+<p> This will help the presentation layer to present a suitable input control 
+  (e.g. a HTML SELECT) </p>
 
 <div class="internals note">in the present implementation, this type is called
 "charEnum" internally</div>
@@ -540,17 +548,13 @@ In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid.
 <p>If a label, representing a type, appears alone in an expression,
 a default field will be added. The default field depends on the type of the label:
 <ul>
-<li>for set XXX types (sets of foreign objects), the label denotes the pointer
-to the set member</li>
-
-<li>for set int { } and set char { } types, the label denotes the set member
-(i.e. and int or a string)</li>
-
-<li>for all other types, the label denotes the pointer to that object</li>
-
+  <li>for set XXX types (sets of foreign objects), the label denotes the pointer 
+    to the set member</li>
+  <li>for set int { } and set char { } types, the label denotes the set member 
+    (i.e. and int or a string)</li>
+  <li>for all other types, the label denotes the pointer to that object</li>
 </ul>
-
-
+<p>Note: 'NULL' is OQL is 'nil'</p>
 <h2><a NAME="Business">Business Logic (BL)</a></h2>
 
 
@@ -801,11 +805,9 @@ the logout tag is available
 <pre class="example">
 &lt;mak:logout actor="student"/>
 </pre>
-
-<p>
-You can remove (cancel-out, logout) multiple attributes from the session by using
-<code>&lt;mak:logout></code> several times and/or by using the star (*) wildcard, e.g.:
-</p>
+<p> You can remove (cancel-out, logout) multiple attributes from the session by 
+  using <code>&lt;mak:logout actor=&quot;attribute name&quot;></code> several 
+  times and/or by using the star (*) wildcard, e.g.: </p>
 
 <pre class="example">
 &lt;mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
@@ -844,167 +846,115 @@ language</a> described below. Orientative SQL and Java types are presented.
 <br>&nbsp;
 
 <table class="tagParamDef">
-<tr>
-<th>Data definition type</th>
-<th>Default edit user interface</th>
-<th>Relational database type (orientative)</th>
-<th>Java type (orientative)</th>
-</tr>
-
-<tr>
-<td>type (table)</td>
-
+  <tr> 
+    <th>Data definition type</th>
+    <th>Default edit user interface</th>
+    <th>Relational database type (orientative)</th>
+    <th>Java type (orientative)</th>
+  </tr>
+  <tr> 
+    <td>type (table)</td>
     <td><span class="futfeat">(list of records, with add, delete, edit controls; 
       titles emphasized)</span></td>
-
-<td>table</td>
-
-<td></td>
-</tr>
-
-<tr>
-<td>record</td>
-
+    <td>table</td>
+    <td></td>
+  </tr>
+  <tr> 
+    <td>record</td>
     <td><span class="futfeat">(all fields, as shown below)</span></td>
-
-<td>record</td>
-
-<td>java.util.Dictionary</td>
-</tr>
-
-<tr>
-<td>int&nbsp;</td>
-
+    <td>record</td>
+    <td>java.util.Dictionary</td>
+  </tr>
+  <tr> 
+    <td>int&nbsp;</td>
     <td>text field <span class="futfeat">(or slider)</span></td>
-
-<td ROWSPAN="2">integer</td>
-
-<td ROWSPAN="2">java.lang.Integer</td>
-</tr>
-
-<tr>
-<td>int{}&nbsp;</td>
-
-<td>dropdown choice or radio button</td>
-</tr>
-
-<tr>
-<td>char[]&nbsp;</td>
-
-<td>text field</td>
-
-<td ROWSPAN="2">limited char</td>
-
-<td ROWSPAN="2">java.lang.String</td>
-</tr>
-
-<tr>
-<td>char{}</td>
-
-<td>dropdown choice or radio button</td>
-</tr>
-
-<tr>
-<td>text</td>
-
-<td>text area&nbsp;
-<br>or file upload</td>
-
-<td>unlimited byte</td>
-
-<td>org.makumba.Text</td>
-</tr>
-
-<tr>
-<td>date</td>
-
-<td>date</td>
-
-<td>date and time</td>
-
-<td>java.util.Date</td>
-</tr>
-
-<tr>
-<td>ptr</td>
-
-<td>dropdown select of record titles</td>
-
-<td>preferably a long (foreign index)</td>
-
-<td ROWSPAN="3">org.makumba.Pointer</td>
-</tr>
-
-<tr>
-<td>xx=ptr
-<br>xx->...</td>
-
+    <td ROWSPAN="2">integer</td>
+    <td ROWSPAN="2">java.lang.Integer</td>
+  </tr>
+  <tr> 
+    <td>int{}&nbsp;</td>
+    <td>dropdown choice or radio button</td>
+  </tr>
+  <tr> 
+    <td>real</td>
+    <td>text field</td>
+    <td>double</td>
+    <td>java.lang.Double</td>
+  </tr>
+  <tr> 
+    <td>char[]&nbsp;</td>
+    <td>text field</td>
+    <td ROWSPAN="2">limited char</td>
+    <td ROWSPAN="2">java.lang.String</td>
+  </tr>
+  <tr> 
+    <td>char{}</td>
+    <td>dropdown choice or radio button</td>
+  </tr>
+  <tr> 
+    <td>text</td>
+    <td>text area&nbsp; <br>
+      or file upload</td>
+    <td>unlimited byte</td>
+    <td>org.makumba.Text</td>
+  </tr>
+  <tr> 
+    <td>date</td>
+    <td>date</td>
+    <td>date and time</td>
+    <td>java.util.Date</td>
+  </tr>
+  <tr> 
+    <td>ptr</td>
+    <td>dropdown select of record titles</td>
+    <td>preferably a long (foreign index)</td>
+    <td ROWSPAN="3">org.makumba.Pointer</td>
+  </tr>
+  <tr> 
+    <td>xx=ptr <br>
+      xx->...</td>
     <td><span class="futfeat">(the record, if any)</span></td>
-
-<td>preferably a long (foreign index)
-<br>+ table</td>
-</tr>
-
-<tr>
-<td>Index field</td>
-
-<td>(nothing)</td>
-
-<td>preferably long,
-<br>autoincrement, or other unique</td>
-</tr>
-
-<tr>
-<td>creation date
-<br>modification date</td>
-
-<td>date, not editable</td>
-
-<td>timestamp</td>
-
-<td>java.sql.Timestamp</td>
-</tr>
-
-<tr>
-<td>set</td>
-
-<td>multiple choice of record titles</td>
-
-<td>table with ptrRel to the parent table and ptr to the foreign table</td>
-
-<td>java.util.Vector of org.makumba.Pointer</td>
-</tr>
-
-<tr>
-<td>xx=set
-<br>xx-> ...</td>
-
+    <td>preferably a long (foreign index) <br>
+      + table</td>
+  </tr>
+  <tr> 
+    <td>Index field</td>
+    <td>(nothing)</td>
+    <td>preferably long, <br>
+      autoincrement, or other unique</td>
+  </tr>
+  <tr> 
+    <td>creation date <br>
+      modification date</td>
+    <td>date, not editable</td>
+    <td>timestamp</td>
+    <td>java.sql.Timestamp</td>
+  </tr>
+  <tr> 
+    <td>set</td>
+    <td>multiple choice of record titles</td>
+    <td>table with ptrRel to the parent table and ptr to the foreign table</td>
+    <td>java.util.Vector of org.makumba.Pointer</td>
+  </tr>
+  <tr> 
+    <td>xx=set <br>
+      xx-> ...</td>
     <td><span class="futfeat">(like a table, under current record)</span></td>
-
-<td>table with ptrRel to the parent table, and the rest of the fields</td>
-
-<td></td>
-</tr>
-
-<tr>
-<td>set int{ ...}</td>
-
-<td>multiple choice from values</td>
-
-<td>table with ptrRel to the parent table, and an int field</td>
-
-<td>java.util.Vector of java.lang.Integer</td>
-</tr>
-
-<tr>
-<td>set char{ ...}</td>
-
-<td>multiple choice from values</td>
-
-<td>table with ptrRel to the parent table, and a char field</td>
-
-<td>java.util.Vector of java.lang.String</td>
-</tr>
+    <td>table with ptrRel to the parent table, and the rest of the fields</td>
+    <td></td>
+  </tr>
+  <tr> 
+    <td>set int{ ...}</td>
+    <td>multiple choice from values</td>
+    <td>table with ptrRel to the parent table, and an int field</td>
+    <td>java.util.Vector of java.lang.Integer</td>
+  </tr>
+  <tr> 
+    <td>set char{ ...}</td>
+    <td>multiple choice from values</td>
+    <td>table with ptrRel to the parent table, and a char field</td>
+    <td>java.util.Vector of java.lang.String</td>
+  </tr>
 </table>
 
 <h2><a NAME="Presentation">Presentation with JSP taglib</a></h2>
@@ -1110,12 +1060,11 @@ FIXED parameters can contain jsp attributes like $attr in makumba tags.
 All parameters are <b>optional</b> unless specifically mentioned as being <b>mandatory</b>.
 </p>
 
-<p>
-Specific concern can be the <b>parameter quoting</b>. Tag parameters can be written as
-name="value" or name='value'. The choice of quote can be determined by the need
-to use either double or single quote as part of the value itself. If the quote is
-also present within the value, it must be escaped by a backslash.
-</p>
+<p> Specific concern can be the <b>parameter quoting</b>. Tag parameters can be 
+  written as name="value" or name='value' (note: the stringLiteral on DATE must 
+  be quoted with &quot;). The choice of quote can be determined by the need to 
+  use either double or single quote as part of the value itself. If the quote 
+  is also present within the value, it must be escaped by a backslash. </p>
 
 <pre class="example">
   &lt;mak:list from="general.Person p" where="p.gender=\"male\"" >
@@ -1196,7 +1145,9 @@ configuration and lookup</a>.</td>
 
 <td>Fixed, cannot contain attributes, for now.
 <br>The default database is chosen if this argument is not set.
-<br>Can only be set for top-level (root) query tags</td>
+<br>
+      Can only be set for top-level (root) query tags<br>
+      Can be a Rtexpr &lt;%= ...%&gt;</td>
 </tr>
 
 <tr>
@@ -1537,8 +1488,9 @@ Note: implementated by producing as output:
 <tr>
 <td><tt>default</tt></td>
 
-<td>The character string  to print if the <code>expr</code> results in a NULL value.
-Default is <code>default=""</code> (i.e. zero-length string)</td>
+    <td>The character string to print if the <code>expr</code> results in a NULL value. 
+      Default is <code>default=""</code> (i.e. zero-length string)<br>
+      Support not available for: date, &quot;choice&quot; = ptr, set, setCharEnum <!-- bug 501--></td>
 
 <td>Rtexpr</td>
 </tr>
@@ -1713,12 +1665,54 @@ before the default action and may prevent the action from being executed
 by throwing an exception. Some forms also have an after-action handler method.
 </p>
 
-<p>If the handler class exists but no handler method
-can be found, an error is thrown (the site is not allowed to do the operation,
-e.g. StudentHandler will never have a on_newLibraryBook() method).
-If the handler class wishes to allow the action, it can define an empty
-handler method.
-
+<p>If the handler class exists but no handler method can be found, an error is 
+  thrown (the site is not allowed to do the operation, e.g. StudentHandler will 
+  never have a on_newLibraryBook() method). If the handler class wishes to allow 
+  the action, it can define an empty handler method. 
+<p><strong>Multiple forms</strong> 
+  <!-- http://bugs.best.eu.org/show_bug.cgi?id=37 -->
+  <br>
+  - addForms can add to the subsets of object produced by the enclosing newForm.<br>
+  - any number of levels of form inclusion is possible but only the outermost 
+  form can have an action, onSubmit, and method and other attributes specific 
+  to HTML forms.<br>
+  - all form actions take place in a single transaction, which is rolled back 
+  by the controller filter if there is an error. <br>
+  - after_ methods are not executed in correct order (<a href="http://bugs.best.eu.org/show_bug.cgi?id=689">bug 
+  689</a>)
+<p>Example:<br>
+  &lt;mak:form action=&quot;blabla&quot;&gt;<br>
+  &lt;%-- the topmost form, will result in a HTML form, may have no logic, or 
+  it can be a <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; specialized form (new, edit, 
+  add...)<br>
+  --%&gt;<br>
+  &lt;mak:input name=&quot;first&quot; /&gt; &lt;%-- the topmost form can have 
+  fields of its own --%&gt;
+<p> &lt;mak:list .... &gt; <br>
+  &nbsp;&nbsp; &lt;mak:input name=&quot;second&quot; /&gt;&lt;%-- the topmost 
+  form can have fields of its own, even <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  repeated in loops --%&gt;<br>
+  &nbsp;&nbsp;&nbsp;&lt;mak:addForm object=&quot;bla&quot; field=&quot;bla&quot; 
+  &gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;%-- note that there is no action indicated 
+  here, it's the action of the topmost form<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a normal 
+  on_add BL method will be called<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%&gt;<br>
+  &nbsp;&nbsp;&nbsp;...<br>
+  &nbsp;&nbsp;&nbsp;&lt;/mak:addForm&gt;<br>
+  &lt;/mak:list&gt;</p>
+<p> &lt;mak:list .... &gt; &lt;%-- there can be more than one loops in a root 
+  form -- %&gt;<br>
+  ...<br>
+  &lt;/mak:list&gt;</p>
+<p> &lt;input type=submit&gt; &lt;%-- it's easy to add a submit button anywhere 
+  --%&gt;<br>
+  &lt;/mak:form&gt;<br>
+  <!-- bug: the after_ BL method should be invoked after the subform responders : http://bugs.best.eu.org/show_bug.cgi?id=689 -->
+</p>
 <p class="futfeat">(Later, new and edit forms that have no body, will build default 
   forms. )</p>
 
@@ -1973,86 +1967,104 @@ Example:
 <br>
 <p>
 <table class="tagParamDef">
-<tr>
-<th>tag parameter</th>
-<th>description</th>
-<th>comments</th>
-</tr>
-
-<tr>
-<td><tt>object</tt></td>
-
-<td>The label of the object whose sub-object will be created</td>
-
-<td>Fixed, mandatory</td>
-</tr>
-
-<tr>
-<td><tt>field</tt></td>
-
-<td>The field name that denotes the sub-object.</td>
-
-<td>Fixed, mandatory.</td>
-</tr>
-
-<tr>
+  <tr> 
+    <th>tag parameter</th>
+    <th>description</th>
+    <th>comments</th>
+  </tr>
+  <tr> 
+    <td><tt>object</tt></td>
+    <td>The label of the object whose sub-object will be created</td>
+    <td>Fixed, mandatory</td>
+  </tr>
+  <tr> 
+    <td><tt>field</tt></td>
+    <td>The field name that denotes the sub-object.</td>
+    <td>Fixed, mandatory.</td>
+  </tr>
+  <tr> 
     <td class="futfeat"><tt>(handler)</tt></td>
-
-<td class="futfeat">the Java class.method that handles the response</td>
-
-<td>defaults to <code>on_add+MakumbaType+fieldname</code>.
-Arguments:
-<code>(Pointer baseObject, Dictionary newData,&nbsp; Attributes a, Database db)</code></td>
-</tr>
-
-<tr>
-<td><tt>action</tt></td>
-
-<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
-</tr>
-
-<tr>
-<td><tt>method</tt></td>
-</tr>
-
-<tr>
-<td><tt>name</tt></td>
-</tr>
-
-<tr>
-<td><tt>message</tt></td>
-</tr>
-
-<!--form specific:-->
-<tr><td><tt>target</tt></td>
-<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew"><code>newForm</code></a></td>
-</tr>
-
-<tr><td><tt>onReset</tt></td></tr>
-<tr><td><tt>onSubmit</tt></td></tr>
-
-<!-- generic: -->
-
-<tr>
-<td><tt>styleId</tt></td>
-<td rowspan="14" colspan="2">
-Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
-</td>
-</tr>
-<tr><td><tt>styleClass</tt></td></tr>
-<tr><td><tt>style</tt></td></tr>
-<tr><td><tt>title</tt></td></tr>
-<tr><td><tt>onClick</tt></td></tr>
-<tr><td><tt>onDblClick</tt></td></tr>
-<tr><td><tt>onKeyDown</tt></td></tr>
-<tr><td><tt>onKeyUp</tt></td></tr>
-<tr><td><tt>onKeyPress</tt></td></tr>
-<tr><td><tt>onMouseDown</tt></td></tr>
-<tr><td><tt>onMouseUp</tt></td></tr>
-<tr><td><tt>onMouseMove</tt></td></tr>
-<tr><td><tt>onMouseOut</tt></td></tr>
-<tr><td><tt>onMouseOver</tt></td></tr>
-
+    <td class="futfeat">the Java class.method that handles the response</td>
+    <td>defaults to <code>on_add+MakumbaType+fieldname</code>. Arguments: <code>(Pointer 
+      baseObject, Dictionary newData,&nbsp; Attributes a, Database db)</code></td>
+  </tr>
+<!-- 
+  <tr> 
+    <td>multiple</td>
+    <td>true ???</td>
+    <td>II didn't find this in makumba taglib but it's in the changelog
+	<br>http://bugs.best.eu.org/show_bug.cgi?id=37</td>
+  </tr>
+  -->
+  <tr> 
+    <td><tt>action</tt></td>
+    <td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
+  </tr>
+  <tr> 
+    <td><tt>method</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>name</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>message</tt></td>
+  </tr>
+  <!--form specific:-->
+  <tr> 
+    <td><tt>target</tt></td>
+    <td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew"><code>newForm</code></a></td>
+  </tr>
+  <tr> 
+    <td><tt>onReset</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onSubmit</tt></td>
+  </tr>
+  <!-- generic: -->
+  <tr> 
+    <td><tt>styleId</tt></td>
+    <td rowspan="14" colspan="2"> Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a> 
+    </td>
+  </tr>
+  <tr> 
+    <td><tt>styleClass</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>style</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>title</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onClick</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onDblClick</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onKeyDown</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onKeyUp</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onKeyPress</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onMouseDown</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onMouseUp</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onMouseMove</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onMouseOut</tt></td>
+  </tr>
+  <tr> 
+    <td><tt>onMouseOver</tt></td>
+  </tr>
 </table>
 
 <p>
@@ -2299,15 +2311,13 @@ separately as a Dictionary to the handler method</li>
 <pre class="example">
 &lt;mak:object from="best.Student s, s.person p" where="s=$student">
     &lt;mak:editForm object="p" action="studentView.jsp" method="post">
-        name      &lt;mak:input field="name"/>
-        surname   &lt;mak:input field="surname"/>
-        gender    &lt;mak:input field="gender" type="tickbox" />
-        dob       &lt;mak:input field="birthdate" format="yyyy-MM-dd" />
+        name      &lt;mak:input name="name"/>
+        surname   &lt;mak:input name="surname"/>
+        gender    &lt;mak:input name="gender" type="tickbox" />
+        dob       &lt;mak:input name="birthdate" format="yyyy-MM-dd" />
     &lt;/mak:editForm>
 &lt;/mak:object>
 </pre>
-
-
 <br>
 <p>
 <table class="tagParamDef">
