@@ -128,6 +128,12 @@ public interface FieldDefinition
    * @exception ClassCastException for other types
   */
   public String getNameAt(int i);
+
+  /** Get the name for a certain value of the enumerated field
+   * Works only for intEnum 
+   * @exception ClassCastException for other types
+  */
+  public String getNameFor(int i);
   
   /** Get the integer at a certain position in an enumerated type. 
    * Works only for intEnum types 
