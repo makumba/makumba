@@ -19,6 +19,12 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12.5; 22 dec 2004 cristi
+fixed bug 722, problem with limit and offset when mak:list is included in mak:object
+printing file and line number information when a tag is mentioned in an error message
+keeping the file and line number info at runtime (not only at analysis)
+rudi: removed a parasite printout
+
 0.5.12.4; 7 dec 2004 cristi
 fixed minor bug: the reason of a OQL failed parsing in update was not shown
 
