@@ -220,19 +220,19 @@
 		</attribute>
 
 		<attribute>
-			<name>maxLengthEllipsis</name>
+			<name>ellipsis</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
 		<attribute>
-			<name>maxLengthEllipsisLength</name>
+			<name>ellipsisLength</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
 		<attribute>
-			<name>hoverText</name>
+			<name>addTitle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

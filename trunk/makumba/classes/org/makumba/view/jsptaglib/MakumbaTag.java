@@ -253,9 +253,9 @@ public abstract class MakumbaTag extends TagSupport
   public void setSize(String s) { params.put("size", s); }
   public void setMaxlength(String s) { params.put("maxlength", s); }
   public void setMaxLength(String s) { params.put("maxLength", s); }
-  public void setMaxLengthEllipsis(String s) { params.put("maxLengthEllipsis", s); }
-  public void setMaxLengthEllipsisLength(String s) { params.put("maxLengthEllipsisLength", s); }
-  public void setHoverText(String s) { params.put("hoverText", s); }
+  public void setEllipsis(String s) { params.put("ellipsis", s); }
+  public void setEllipsisLength(String s) { params.put("ellipsisLength", s); }
+  public void setAddTitle(String s) { params.put("addTitle", s); }
   public void setRows(String s) { params.put("rows", s); }
   public void setCols(String s) { params.put("cols", s); }
   public void setLineSeparator(String s) { params.put("lineSeparator", s); }
