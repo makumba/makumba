@@ -65,7 +65,8 @@ public class RootData
 	  return;
 	subtagData.put(key, tag.strategy);
 	tag.strategy.init(rootTag, tag, key);
-	((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
+	if(!tag.template)
+	  ((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
       }
     else
       // mostly for QueryStrategy
