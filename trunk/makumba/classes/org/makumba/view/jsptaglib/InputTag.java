@@ -182,8 +182,7 @@ public class InputTag extends MakumbaTag
     if(val!=null)
       val=type.checkValue(val);
 
-    params.put(FieldEditor.extraFormattingParam, extraFormatting.toString());
-    String formatted=getForm().responder.format(name, type, val, params);
+    String formatted=getForm().responder.format(name, type, val, params, extraFormatting.toString());
 
     if(display==null ||! display.equals("false"))
       {

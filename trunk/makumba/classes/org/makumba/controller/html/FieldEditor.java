@@ -89,9 +89,14 @@ public class FieldEditor extends org.makumba.view.FieldFormatter
 
   public static final String extraFormattingParam="makumba.extraFormatting";
 
-  public String getExtraFormatting(Dictionary formatParams)
+  public static String getExtraFormatting(Dictionary formatParams)
   {
     return (String)formatParams.get(extraFormattingParam);
+  }
+
+  public static void setExtraFormatting(Dictionary formatParams, String extraFormatting)
+  {
+    formatParams.put(extraFormattingParam, extraFormatting);
   }
 
   public Object readFrom(org.makumba.controller.http.HttpParameters p, String suffix) 
