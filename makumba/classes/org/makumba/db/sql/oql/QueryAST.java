@@ -472,7 +472,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
       ret.append(" ").append(oneProjectionLabel).append(".*");
     else
       for(AST a= firstProjection; a!= fromAST; a=a.getNextSibling())
-	ret.append(((OQLAST)a).writeInSQLQuery(d));
+	ret.append(" ").append(((OQLAST)a).writeInSQLQuery(d));
 
   }
 

@@ -136,7 +136,13 @@ public class SQLUpdate implements Update
 	  {
 	    n=setString.indexOf("is null", n);
 	    if(n==-1)
-	      break;
+	      {
+		n=setString.indexOf("is  null", n);
+		if(n==-1)
+		  break;
+		setString=setString.substring(0, n)+" = null"+setString.substring(n+8);
+		continue;
+	      }
 	    setString=setString.substring(0, n)+" = null"+setString.substring(n+7);
 	  }
 	command.append(" SET ").append(setString);
