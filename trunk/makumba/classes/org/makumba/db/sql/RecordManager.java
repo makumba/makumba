@@ -143,8 +143,6 @@ public class RecordManager extends Table
     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getDatabase().getConfiguration()+": checking "+getRecordInfo().getName()+" as "+tbname);
 
     try{
-      Statement st= dbc.createStatement();
-
       CheckingStrategy cs= null;
       if(getSQLDatabase().catalog!=null)
 	cs= new CatalogChecker(getSQLDatabase().catalog);
@@ -153,7 +151,8 @@ public class RecordManager extends Table
       
       if(cs.shouldCreate())
 	{
-	  create(st, tbname, alter);
+	  create(dbc, tbname, alter);
+	  
 	  exists_=alter;
 	  config.put("makumba.wasCreated", "");
 	  keyIndex=getRecordInfo().getKeyIndex();
@@ -161,11 +160,8 @@ public class RecordManager extends Table
       else
 	{
 	  exists_=true;
-	  alter(st, cs);
+	  alter(dbc, cs);
 	}
-      cs.close();
-      
-      st.close();
     }catch(SQLException sq)
       { sq.printStackTrace(); throw new org.makumba.DBError(sq); }
   }
@@ -193,7 +189,6 @@ public class RecordManager extends Table
   
   protected interface CheckingStrategy
   {
-    void close()throws SQLException;
     boolean hasMoreColumns()throws SQLException;
     String columnName()throws SQLException;
     int columnType()throws SQLException;
@@ -254,8 +249,6 @@ public class RecordManager extends Table
     {
       return fm.unmodified(columnType(), columnSize(), columns, i);
     }
-
-    public void close(){ }
   }
 
     public int deleteFrom(DBConnection here, DBConnection source)
@@ -283,7 +276,7 @@ public class RecordManager extends Table
     }
 
   /** checks if an alteration is needed, and calls doAlter if so */
-  protected void alter(Statement st, CheckingStrategy cs) throws SQLException
+  protected void alter(SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
   {
     Vector present= new Vector();
     Vector add= new Vector();
@@ -302,7 +295,7 @@ public class RecordManager extends Table
 	      {
 		handlerExist.put(fm.getName(), withness);
 		present.addElement(fm);
-		if(!cs.checkColumn(fm) && !(alter && alter(st, fm, "MODIFY")))
+		if(!cs.checkColumn(fm) && !(alter && alter(dbc, fm, "MODIFY")))
 		  {
 		    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("should modify: "+
 				       fm.getDataName()+" "+
@@ -330,7 +323,7 @@ public class RecordManager extends Table
     for(Enumeration e= handlerOrder.elements(); e.hasMoreElements();)
       {
 	FieldManager fm=(FieldManager)e.nextElement();
-	if(handlerExist.get(fm.getName())==null && !(alter && alter(st, fm, "ADD")))
+	if(handlerExist.get(fm.getName())==null && !(alter && alter(dbc, fm, "ADD")))
 	  {
 	    add.addElement(fm);
 	    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("should add "+
@@ -346,11 +339,12 @@ public class RecordManager extends Table
       }
     handlerOrder=v; 
 
-    doAlter(st, drop, present, add, modify);
+    doAlter(dbc, drop, present, add, modify);
   }
 
-  boolean alter(Statement st, FieldManager fm, String op) throws SQLException
+  boolean alter(SQLDBConnection dbc, FieldManager fm, String op) throws SQLException
   {
+    Statement st= dbc.createStatement();
     String s="ALTER TABLE "+getDBName()+" "+op+" "+fm.inCreate(getSQLDatabase());
     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
     try{
@@ -358,6 +352,7 @@ public class RecordManager extends Table
     }catch(SQLException e) {}
     st.executeUpdate(s);
     handlerExist.put(fm.getName(), "");
+    st.close();
     return true;
   }
 
@@ -370,7 +365,7 @@ public class RecordManager extends Table
     *@param add the abstract fields that are not present in the db and need to be added
     *@param modify the abstract fields that exist in the db but need to be modified to the new abstract definition
     */
-  protected void doAlter(Statement st, Vector drop,
+  protected void doAlter(SQLDBConnection dbc, Vector drop,
 			 Vector present, Vector add, Vector modify)
        throws SQLException
   {
@@ -383,22 +378,27 @@ public class RecordManager extends Table
       return;
 
     if(present.size()==0)
-      create(st, tbname, alter);
+      create(dbc, tbname, alter);
   }
 
+  /** for odbc */
+  protected void indexCreated(SQLDBConnection dbc) {}
+  
+  /** for mysql */
   protected String createDbSpecific(String command){return command; }
 
   /** a table creation, from this table's RecordInfo */
-  protected void create(Statement st, String tblname, boolean really)
+  protected void create(SQLDBConnection dbc, String tblname, boolean really)
        throws SQLException
   {
+    Statement st= dbc.createStatement();
     Object [] dbArg= { getSQLDatabase() };
     if(really)
       try
       {
 	st.executeUpdate("DROP TABLE "+tblname);
       }catch(SQLException e){ getSQLDatabase().checkState(e, "tableMissing"); }
-
+      
     try{
       String command="CREATE TABLE "+tblname+"("+
 	concatAll(getHandlerMethod("inCreate"), dbArg, ",")+
@@ -414,6 +414,7 @@ public class RecordManager extends Table
       st.executeUpdate(command);
     }catch(InvocationTargetException e)
       { throw new org.makumba.DBError(e.getTargetException()); }
+    st.close();
   }
 
   /** list the given fields in a command field1, field2 ... */
@@ -472,12 +473,14 @@ public class RecordManager extends Table
 	    try{
 	      fm.setInsertArgument(ps, n, d);
 	    }catch(Throwable ex){ 
+	      //throw new DBError(ex, (getRecordInfo().getName())+"  "+(fm.getName())+"   "+(d.get(fm.getName())));
 	      throw new org.makumba.DBError(ex, 
-					    "insert into "+ getRecordInfo().getName()+
-					    " at field "+fm.getName()+
-					    " could not assign value \""+d.get(fm.getName())+
-					    "\" of type "+d.get(fm.getName())!=null?
-					    d.get(fm.getName()).getClass().getName():""); 
+					    "insert into \""+ getRecordInfo().getName()+
+					    "\" at field \""+fm.getName()+
+					    "\" could not assign value \""+d.get(fm.getName())+
+					    "\" "+(d.get(fm.getName())!=null?("of type \""+
+					    d.get(fm.getName()).getClass().getName()+"\""):"")); 
+					    
 	    }
 	  }
 	getSQLDatabase().exec(ps);
