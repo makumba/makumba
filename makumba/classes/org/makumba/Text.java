@@ -166,4 +166,17 @@ public class Text
     }finally{ is.close(); is1.close(); }
   }
 
+  /** Compares the content of objects. */
+  public boolean equals(Object other) 
+  { 
+    if(this.getClass() != other.getClass())
+	return false;
+    if(this.length()!=((Text)other).length())
+	return false;
+    try{
+	return this.compare( ((Text)other).toBinaryStream() );
+    }catch(IOException e){ return false; } 
+  } 
+
+
 }

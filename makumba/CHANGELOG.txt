@@ -1,3 +1,4 @@
+stefan; 15 sep 2003  added org.makumba.Text.equals()
 stefan; 11 sep 2003: bug 565 (isolated SQL syntax for index creation)
 stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
 stefan; 16 jul 2003: bug 3 fixed (ptrIndex and ptrOne are declared as unique)
