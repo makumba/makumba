@@ -262,6 +262,8 @@ public abstract class MakumbaTag extends TagSupport
   public void setLongLineLength(String s) {  params.put("longLineLength", s); }
   public void setDefault(String s) {  params.put("default", s); }
   public void setEmpty(String s) {  params.put("empty", s); }
+  public void setLabelSeparator(String s) {  params.put("labelSeparator", s); }
+  public void setElementSeparator(String s) {  params.put("elementSeparator", s); }
   
   public String toString(){ return getClass().getName()+" "+params; }
 }
