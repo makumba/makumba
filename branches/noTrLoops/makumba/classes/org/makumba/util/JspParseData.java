@@ -190,7 +190,7 @@ public class JspParseData
     
     holder= analyzer.endPage(holder);
 
-    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.time").fine
+    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.time").info
       ("analysis of "+uri+" took "+(new java.util.Date().getTime()-start)+" ms");
   }
 
@@ -280,8 +280,7 @@ public class JspParseData
     td.name=tagName;
     td.attributes= parseAttributes(tag, m.start());
     String debug=td.name+" "+td.attributes;
-    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").fine
-      (uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
+    //    org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.tags").info(uri+":"+SyntaxPoint.getLineNumber(syntaxPoints, m.start(), debug)+": "+debug);
 
     if(tagClosed)
       an.simpleTag(td, holder);
