@@ -19,6 +19,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.10.5; 9 jul 2004, cristi
+Made sure that some resources are immediately freed at context reload, without waiting for garbage collection. Connections are freed and closed that way.
+
 0.5.10.4; 17 jun 2004, cristi
 The first stable release after a long time, incorporating major changes like transactions, which needed testing and were harder to release:
 
