@@ -1,3 +1,5 @@
+stefan; 30 jun 2003: bug 449 (limiting output of mak:value with new tag parameter e.g. maxLength)  semi fixed
+
 0.5.9.4; 30 jun 2003 cristi
 bug 58: query tags now check for identical keys. the id attribute is suported and the programmer advised to use it to fix
 bug 17: accepted for "value": 1, 'Yes', nil, $xxx (see also bug 375, bug 59)
