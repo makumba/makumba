@@ -24,7 +24,7 @@
 package org.makumba.devel;
 import java.io.*;
 import javax.servlet.http.*;
-import org.makumba.abstr.Logic;
+import org.makumba.controller.Logic;
 
 /** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used.*/
 public class logicViewer extends LineViewer

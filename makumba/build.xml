@@ -7,7 +7,7 @@
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="../../util-java/tomcat4/common/lib">
+	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
 	  <include name="**/servlet.jar" />
 	 </fileset>	
        </path>

@@ -98,30 +98,37 @@ public class InputTag extends MakumbaTag
 	      attrName=ValueTag.EVAL_BUFFER;
 	    }
 	  val=getAttributes().getAttribute(attrName);
-	  type=pageContext.getAttribute(attrName+"_type");
+	  try{
+	      type=getAttributes().getAttribute(attrName+"_type");
+	  }catch(AttributeNotFoundException anfe){ }
 	  if(type!=null && type.equals("unknown yet"))
 	    return EVAL_BODY_INCLUDE;
 	}
-      else
+      if(type==null)
 	{
 	  type= getForm().getDefaultType(name);
-	  
 	  if(type==null &&
 	     getForm().canComputeTypeFromEnclosingQuery() &&
 	     (type=getForm().computeTypeFromEnclosingQuery(getEnclosingQuery(), name))
 	     ==null)
 	    return EVAL_BODY_INCLUDE;
 	}
-      
+
+      if(type!=null && !(type instanceof FieldInfo))
+	  type= FieldInfo.getFieldInfo(name, type, true);
+
       if(dataTypeInfo!=null)
-	if(type!=null && !dataTypeInfo.compatible(FieldInfo.getFieldInfo(name, type, true)))
-	  throw new InvalidValueException("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type+" , value known is "+val);
-	else
-	  type=dataTypeInfo;
+	  if(type!=null && !dataTypeInfo.compatible((FieldInfo)type))
+	     throw new InvalidValueException("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type+" , value known is "+val);
+	  else
+	     if(type==null)
+	       type=dataTypeInfo;
       
       if(type==null)
 	throw new InvalidValueException("cannot determine input type: "+this+" value known: "+val+" . Please specify the type using dataType=...");
-      
+      if(val!=null)
+	  val=((FieldInfo)type).checkValue(val);
+
       String formatted=getForm().responder.format(name, type, val, getRootQueryBuffer().bufferParams);
       if(display==null ||! display.equals("false"))
 	{
