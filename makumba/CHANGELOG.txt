@@ -2,6 +2,7 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
+fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
 fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
 stefan; 22 oct 2003: SQL errors show state & code in the error page (see bug 612)
 stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
