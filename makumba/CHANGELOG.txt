@@ -1,3 +1,4 @@
+centralized version computation
 fixed bug 70 (returns field name for description if description is not set)
 
 0.5.5.23; 28 feb 2003 stefan
