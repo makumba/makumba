@@ -55,6 +55,17 @@ public class SQLDBConnection extends DBConnection
       conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
   }
 
+  public void close()
+  {
+    try{
+      conn.close();
+    }catch(SQLException e) 
+      {
+	Database.logException(e, this);
+	throw new DBError(e);
+      } 
+  }
+
   public void commit()
   {
     try{

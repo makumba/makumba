@@ -60,6 +60,10 @@ public abstract class Database
       public void renew(Object o){
 	((DBConnection)o).commit();
       }
+
+      public void close(Object o){
+	((DBConnection)o).close();
+      }
     };
   
   public void initConnections()
