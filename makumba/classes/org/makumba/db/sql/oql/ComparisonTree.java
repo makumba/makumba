@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.db.sql.oql;
 import org.makumba.abstr.FieldInfo;
 import org.makumba.Pointer;
@@ -15,7 +38,11 @@ public class ComparisonTree extends AnalysisTree
 
   public void negociateOperandTypes(Object t1, Object t2)
        throws antlr.RecognitionException
-  {
+  { 
+    if(t1.equals("timestamp") && t2.equals("datetime")
+       ||t2.equals("timestamp") && t1.equals("datetime") )
+      return;
+
     if(right.makumbaType!=null && right.makumbaType.equals("null"))
       return;
     if(checkAssign(left, right) || checkAssign(right, left))
@@ -23,6 +50,7 @@ public class ComparisonTree extends AnalysisTree
     super.negociateOperandTypes(t1, t2);
   }
 
+  /** assume that a2 is a constant and check if it's compatible with a1 */
   boolean checkAssign(AnalysisTree a1, AnalysisTree a2)
        throws antlr.RecognitionException
   {
@@ -31,6 +59,7 @@ public class ComparisonTree extends AnalysisTree
 
     if(a2.leaf==null )
       return false;
+
     String s= a2.leaf.getText();
 
     if(a2.leaf.makumbaType.equals("char") || a2.leaf.makumbaType.equals("date"))
