@@ -44,8 +44,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
   String separator="";
   String countVar;
   String maxCountVar;
-  String header;
-  String footer;
 
   public void setFrom(String s) { queryProps[ComposedQuery.FROM]=s; }
   public void setWhere(String s){ queryProps[ComposedQuery.WHERE]=s; }
@@ -54,21 +52,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void setSeparator(String s){ separator=s; }
   public void setCountVar(String s){ countVar=s; }
   public void setMaxCountVar(String s){ maxCountVar=s; }
-  public void setHeader(String s) throws JspException  
-  { 
-    onlyRootArgument("header"); 
-    header=s;
-    org.makumba.MakumbaSystem.getMakumbaLogger("taglib").warning(
-	"Using DEPRECATED header=\""+header+"\". Use <jsp:include page=\""+header+"\" flush=\"false\"> just before object/list tag instead!");
-  }
-
-  public void setFooter(String s) throws JspException  
-  {
-    onlyRootArgument("footer"); 
-    footer=s;
-    org.makumba.MakumbaSystem.getMakumbaLogger("taglib").warning(
-	"Using DEPRECATED footer=\""+footer+"\". Use <jsp:include page=\""+footer+"\" flush=\"false\"> just after object/list tag instead!");
-  }
 
   // runtime stuff
   QueryExecution execution;
@@ -117,12 +100,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
   public int doMakumbaStartTag() throws LogicException, JspException
   {
-    // support for the obsolete header
-    try{
-      if(header!=null)
-	pageContext.include(header);
-    }catch(Exception e){ throw new MakumbaJspException(e); }
-    
     if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
 
@@ -180,11 +157,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
     if(getParentList()==null)
       execution.endListGroup(pageContext);
 
-    // support for the obsolete footer
-    try{
-      if(footer!=null)
-	pageContext.include(footer);
-    }catch(Exception e){ throw new MakumbaJspException(e); }
     return EVAL_PAGE;
   }
 
@@ -196,7 +168,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
     queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
     countVar=maxCountVar=null;
     separator="";
-    header=footer=null;
   }
 }
 
