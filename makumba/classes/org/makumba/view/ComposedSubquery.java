@@ -25,7 +25,7 @@ package org.makumba.view;
 import java.util.*;
 
 /** a subquery of a composed query */
-class ComposedSubquery extends ComposedQuery
+public class ComposedSubquery extends ComposedQuery
 {
   /** the enclosing query */
   ComposedQuery superQuery;

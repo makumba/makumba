@@ -77,10 +77,13 @@ public class FormResponder extends Responder
   protected String action;
   protected String method="GET";
   protected boolean multipart;
+  StringBuffer extraFormatting;
 
   public void setAction(String action){ this.action=action; }
   public void setMultipart(boolean multipart){ this.multipart=multipart; }
   public void setMethod(String method) {this.method=method; }
+  public void setExtraFormatting(StringBuffer extraFormatting)
+  { this.extraFormatting=extraFormatting; }
 
   public void writeFormPreamble(StringBuffer sb, String basePointer) 
   {
@@ -107,6 +110,7 @@ public class FormResponder extends Responder
 	sb.append("\""+method+"\"");
 	if(multipart)
 	  sb.append(" enctype=\"multipart/form-data\" ");
+	sb.append(extraFormatting);
 	sb.append(">");
       }
   }

@@ -22,35 +22,46 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import java.io.*;
 import org.makumba.controller.html.FormResponder;
 
-public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
-{
-  // jsptaglib1-specific methods
-  public Class getParentClass() { return MakumbaTag.class; }
-  public boolean canBeRoot() { return true; }
-  protected RootTagStrategy makeRootStrategy(Object key) { return this; }
-  public void onInit(TagStrategy ts) {}
-  public Object makeBuffer() { return new RootQueryBuffer(); }
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.FieldDefinition;
+import org.makumba.abstr.FieldInfo;
+import org.makumba.DataDefinition;
+import org.makumba.LogicException;
+import org.makumba.NoSuchFieldException;
 
+import org.makumba.util.MultipleKey;
+
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.BodyContent;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
+
+public class FormTagBase extends MakumbaTag implements BodyTag
+{
   // the tag attributes
   String baseObject;
+  String handler;
+
+  BodyContent bodyContent;
+
+  public void setBodyContent(BodyContent bc){ bodyContent=bc; }
+  public void doInitBody() {}
 
   // for add, edit, delete
   public void setObject(String s) { baseObject=s;}
 
   public void setAction(String s){ responder.setAction(s); }
-  public void setHandler(String s){ responder.setHandler(s); }
+  public void setHandler(String s){ handler=s; responder.setHandler(s); }
   public void setMethod(String s){ responder.setMethod(s); }
   public void setName(String s){ responder.setResultAttribute(s); }
   public void setMessage(String s){ responder.setMessage(s); }
-  public void setMultipart(){ responder.setMultipart(true);}
+  public void setMultipart() { responder.setMultipart(true); }
   
   FormResponder responder= new FormResponder();
   
@@ -70,34 +81,59 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
 
   long l;
   String basePointer;
-
-  public int doStart() throws JspException 
+  
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
   {
+    Object[] keyComponents= {baseObject, handler, getParentListKey(), getClass()};
+    tagKey=new MultipleKey(keyComponents);
+  }
+
+  public void doStartAnalyze()
+  {
+    if(baseObject==null)
+      return;
+    ValueComputer vc= ValueComputer.getValueComputer(this, baseObject);
+    pageCache.valueComputers.put(tagKey, vc);
+  }
+
+  static final Object dummy=new Object();
+
+  public void doEndAnalyze()
+  {
+    if(baseObject==null)
+      return;
+
+    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
+    vc.doEndAnalyze(this);
+    pageCache.basePointerTypes.put(tagKey, ((FieldInfo)vc.type).getPointedType().getName());
+  }
+
+  public int doMakumbaStartTag() throws JspException, LogicException
+  {
+    responder.setOperation(getOperation());
+    responder.setExtraFormatting(extraFormatting);
+    responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
+
     l= new java.util.Date().getTime();
 
-    responder.setOperation(getOperation());
-
     /** we compute the base pointer */
-    String basePointerType=null;
     if(baseObject!=null)
       {
-	Object o= ValueTag.evaluate(baseObject, this);
-	if(o instanceof Pointer)
-	  {
-	    responder.setBasePointerType
-	      (((FieldInfo)pageContext.getAttribute(ValueTag.EVAL_BUFFER+"_type"))
-	       .getPointedType().getName());
-	    basePointer=((Pointer)o).toExternalForm();
-	  }
+	Object o=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+	
+	if(!(o instanceof Pointer))
+	  throw new RuntimeException("Pointer expected");
+	basePointer=((Pointer)o).toExternalForm();
       }
-
     try{
       responder.setHttpRequest((HttpServletRequest)pageContext.getRequest());
     }catch(LogicException e){ treatException(e); }
-    return EVAL_BODY_TAG; 
+
+    return EVAL_BODY_BUFFERED; 
   }
 
-  public int doEnd() throws JspException 
+  public int doMakumbaEndTag() throws JspException 
   {
     try{
       StringBuffer sb= new StringBuffer();
@@ -109,7 +145,6 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
       sb= new StringBuffer();
       responder.writeFormPostamble(sb, basePointer);
       bodyContent.getEnclosingWriter().print(sb.toString()); 
-
       MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-l)));
     }catch(IOException e){ throw new JspException(e.toString()); }
     return EVAL_PAGE;
@@ -124,10 +159,8 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
   public boolean canComputeTypeFromEnclosingQuery() 
   { return false; }
 
-  public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
-  {
-    return null;
-  }
+  public FieldDefinition computeTypeFromEnclosingQuery(String fieldName) 
+  { return null;  }
 
   public static FieldDefinition deriveType(DataDefinition dd, String s)
   {

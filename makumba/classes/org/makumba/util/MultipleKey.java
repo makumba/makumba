@@ -41,6 +41,12 @@ public class MultipleKey extends Vector
       elementData[elementCount]= checkNull(v.elementAt(elementCount));
   }
 
+  public MultipleKey(Vector v, Object o)
+  {
+    this(v, v.size()+1);
+    setAt(o, v.size());
+  }
+
   public MultipleKey(Object o[]) { this(o, o.length); }
   public MultipleKey(Object o[], int size)
   {

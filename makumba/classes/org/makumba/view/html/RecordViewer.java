@@ -22,10 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import org.makumba.view.*;
-import java.util.*;
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.RecordFormatter;
+import org.makumba.view.FieldFormatter;
+import org.makumba.abstr.RecordInfo;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class RecordViewer extends RecordFormatter
 {
