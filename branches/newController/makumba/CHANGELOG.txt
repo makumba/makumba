@@ -1,6 +1,14 @@
+0.5.7; in preparation, cristi
+bug 6 is finally fixed, the controller/form responder code is now separated
+
 cristi: some timestamps were read from DB as BigDecimal. they are normal Timestamp now
 cristi: improved HTML guess detection to include other tags
-cristi: if <mak:input > sees both a type and a value, they are checked for compatibility
+cristi: if <mak:input > sees both a type and a value, they are checked for compatibility (bugs 371 and 372 resulted, were fixed).
+
+0.5.5.27; 27 mar 2003 stefan
+fixed bug 367 (Makumba Error messages are messy HTML)
+bug 327 (TagExceptions are linking wrongly)
+and bug 365 (comparison of date with TS_create or TS_modify produces type error) 
 
 0.5.5.26; 25 mar 2003 fred
 fixed bug 35 c7 (login form doesn't include POST parameters)
