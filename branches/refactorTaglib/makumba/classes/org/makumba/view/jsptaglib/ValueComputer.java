@@ -78,7 +78,7 @@ public class ValueComputer
   /** Get the value of the queryProjection from the currentListData of the enclosing query. Used mostly by InputTag */
   public Object getValue(MakumbaTag running) throws LogicException
   {
-    return ListQueryExecution.getFor(getQueryKey(), running.getPageContext())
+    return QueryExecution.getFor(getQueryKey(), running.getPageContext())
       .currentListData().data[projectionIndex];
   }
 
@@ -144,13 +144,13 @@ abstract class QueryValueComputer extends ValueComputer
   static final Object dummy= new Object();
 
   /** Obtain the iterationGroupData for the valueQuery */
-  ListQueryExecution runQuery(MakumbaTag running) throws LogicException
+  QueryExecution runQuery(MakumbaTag running) throws LogicException
   {
-    ListQueryExecution ex= 
-      ListQueryExecution.getFor(queryKey, running.getPageContext());
+    QueryExecution ex= 
+      QueryExecution.getFor(queryKey, running.getPageContext());
 
-    ListQueryExecution parentEx= 
-      ListQueryExecution.getFor(parentKey, running.getPageContext());
+    QueryExecution parentEx= 
+      QueryExecution.getFor(parentKey, running.getPageContext());
 
     // if the valueQuery's iterationGroup for this parentIteration was not computed, do it now...
     if(parentEx.valueQueryData.get(queryKey)==null)
@@ -178,7 +178,7 @@ class NullableValueComputer extends QueryValueComputer
   /** Check if the iterationGroupData is longer than 1, and throw an exception if so. Take the first result (if any) otherwise */
   public Object getValue(MakumbaTag running) throws LogicException
   {
-    ListQueryExecution ex= runQuery(running);
+    QueryExecution ex= runQuery(running);
     int n=ex.dataSize();
     if(n>1)
       throw new RuntimeException("nullable query with more than one result ??? "+n);
@@ -229,7 +229,7 @@ class SetValueComputer extends QueryValueComputer
   /** Go through the iterationGroupData and return a vector with the set values. Used only by InputTag */
   public Object getValue(MakumbaTag running) throws LogicException
   {
-    ListQueryExecution ex= runQuery(running);
+    QueryExecution ex= runQuery(running);
     int n=ex.dataSize();
     Vector v= new Vector();
 
@@ -241,7 +241,7 @@ class SetValueComputer extends QueryValueComputer
   /** Go through the iterationGroupData and print the set values, comma-separated; also set var (Vector with the set values) and printVar */
   public void print(ValueTag running) throws JspException, LogicException
   {
-    ListQueryExecution ex= runQuery(running);
+    QueryExecution ex= runQuery(running);
     int n=ex.dataSize();
     Vector v=null;
 

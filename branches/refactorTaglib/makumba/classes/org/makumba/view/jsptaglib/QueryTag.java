@@ -66,9 +66,9 @@ public class QueryTag extends MakumbaTag implements IterationTag
   }
 
   // runtime stuff
-  ListQueryExecution execution;
+  QueryExecution execution;
 
-  /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the ListQueryExecution is discovered by the tag based on the tagKey */
+  /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey */
   void setTagKey()
   {
     tagKey= new MultipleKey(queryProps.length+1);
@@ -110,7 +110,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   static final Integer zero= new Integer(0);
   static final Integer one= new Integer(1);
 
-  /** Decide if there will be any tag iteration. The ListQueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
+  /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
   public int doMakumbaStartTag() throws LogicException, JspException
   {
     // support for the obsolete header
@@ -122,9 +122,9 @@ public class QueryTag extends MakumbaTag implements IterationTag
     setTagKey();
     
     if(parentList==null)
-      ListQueryExecution.startListGroup(pageContext);
+      QueryExecution.startListGroup(pageContext);
 
-    execution= ListQueryExecution.getFor(tagKey, pageContext);
+    execution= QueryExecution.getFor(tagKey, pageContext);
 
     int n= execution.onParentIteration();
 
