@@ -179,30 +179,30 @@
                 </td></tr></TABLE>
             ]]></bottom>
             <header><![CDATA[
-                <TABLE BORDER="0" CELLPADDING="3" CELLSPACING="3">
-                <TD aCLASS="NavBarCell1" valign=top>
-		   <a href="http://www.makumba.org" target='_top'><img src="http://www.makumba.org/makumba-logo-small.gif" border=0></a>
+                <TABLE BORDER='0' CELLPADDING='3' CELLSPACING='3'>
+                <TD aCLASS='NavBarCell1' valign=top>
+		   <a href='http://www.makumba.org' target='_top'><img src='http://www.makumba.org/makumba-logo-small.gif' border=0></a>
                 </TD><TR>
-                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-                <script language="javascript">
+                <TD VALIGN='top' CLASS='NavBarCell3'><FONT SIZE='-2'>
+                <script language='javascript'>
                    url=document.location.href;
-                   clas=url.substring(url.indexOf("/javadoc/"));
+                   clas=url.substring(url.indexOf('/javadoc/'));
                    clas=clas.substring(9);
-                   clas=clas.substring(0, clas.indexOf(".html") );
-                   clasUrl="";
-                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) && clas.indexOf("package-use")<=0 && clas.indexOf("class-use")<=0)
+                   clas=clas.substring(0, clas.indexOf('.html') );
+                   clasUrl='';
+                   if((clas.indexOf('org/makumba')==0||clas.indexOf('test/')==0) && clas.indexOf('package-use')<=0 && clas.indexOf('class-use')<=0)
 		   {
-                        cvsLink="";
-			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
+                        cvsLink='';
+			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
 			{
-				clasUrl=clasUrl.concat("",clas,".java");
-				cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/",clasUrl,"?content-type=text/plain'>SOURCE</a> in ");
+				clasUrl=clasUrl.concat('',clas,'.java');
+				cvsLink=cvsLink.concat('<a href=http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/',clasUrl,'?content-type=text/plain>SOURCE</a> in ');
 			} else {
-				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
+				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
 			}
-                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/classes/",clasUrl,"'>CVS</a>");
+                        cvsLink=cvsLink.concat('<a href=http://cvs.makumba.org/classes/',clasUrl,'>CVS</a>');
 		   	document.write(cvsLink);
-		   } //else document.write('(no cvs)');
+		   } 
                 </script>
                 </font>
                 </td>
