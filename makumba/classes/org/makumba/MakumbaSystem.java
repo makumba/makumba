@@ -356,6 +356,40 @@ The programmer could just as well decide that all makumba logging at or over the
     return t;
   }
 
+  /** 
+  * Discover mdds in a directory in classpath.
+  * @return filenames as Vector of Strings. 
+  */
+  public static java.util.Vector mddsInDirectory(String dirInClasspath)
+  {
+	java.net.URL u=org.makumba.util.ClassResource.get(dirInClasspath);
+	java.io.File dir=new java.io.File(u.getFile());
+	java.util.Vector mdds=new java.util.Vector();
+	fillMdds(dir.toString().length()+1, dir, mdds);
+	return mdds;
+  }
+
+  static void fillMdds(int baselength, java.io.File dir, java.util.Vector mdds)
+  {
+	String[] list= dir.list();
+	for(int i=0; i<list.length; i++)
+	{
+		String s= list[i];
+		if(s.endsWith(".mdd"))
+		{
+			s=dir.toString()+java.io.File.separatorChar+s;
+			s=s.substring(baselength, s.length()-4); //cut off the ".mdd"
+			s=s.replace(java.io.File.separatorChar,'.'); 
+			mdds.add(s);
+		}
+		else
+		  {
+		    java.io.File f= new java.io.File(dir, s);
+		    if(f.isDirectory())
+		      fillMdds(baselength, f, mdds);
+		  }
+	}
+  }
 
 
 }
