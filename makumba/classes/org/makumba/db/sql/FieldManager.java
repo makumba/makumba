@@ -245,7 +245,7 @@ public abstract class FieldManager extends FieldHandler
 
        try{	//drop the old, wrong index if it exists
 		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" DROP INDEX "+keyName+" ");
+		st.executeUpdate(indexDropSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"INDEX DROPPED on "+brief );
        }catch(SQLException e) {}
@@ -257,7 +257,7 @@ public abstract class FieldManager extends FieldHandler
 	   try{
 		//try creating unique index
 		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD UNIQUE "+keyName+" ("+getDBName()+")");
+		st.executeUpdate(indexCreateUniqueSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"UNIQUE INDEX ADDED on "+brief );
 	   }catch(SQLException e) 
@@ -276,7 +276,7 @@ public abstract class FieldManager extends FieldHandler
 	   try{
 		//create normal index
 		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD INDEX "+keyName+" ("+getDBName()+")");
+		st.executeUpdate(indexCreateSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"INDEX ADDED on "+brief );
 	   }catch(SQLException e) 
@@ -291,6 +291,22 @@ public abstract class FieldManager extends FieldHandler
      }//isIndexOk
 
   }//method
+
+
+  /** Syntax for index creation. */
+  public String indexCreateSyntax() {
+	return "CREATE INDEX "+getDBIndexName()+" ON "+rm.getDBName()+" ("+getDBName()+")";
+  }
+
+  /** Syntax for unique index creation. */
+  public String indexCreateUniqueSyntax() {
+	return "CREATE UNIQUE INDEX "+getDBIndexName()+" ON "+rm.getDBName()+" ("+getDBName()+")";
+  }
+
+  /** Syntax for dropping index. */
+  public String indexDropSyntax() {
+	return "DROP INDEX "+getDBIndexName()+" ON "+rm.getDBName();
+  }
 
 
   /** Tell whether this type of field should be indexed. */
