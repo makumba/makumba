@@ -1,3 +1,4 @@
+stefan removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
 stefan LineViewer works better with strict Mozilla
 stefan fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
 
