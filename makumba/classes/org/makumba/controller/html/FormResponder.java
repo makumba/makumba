@@ -55,21 +55,24 @@ public class FormResponder extends Responder
   Hashtable fieldNames= new Hashtable();
   
   /** Format a field using the editor, and grow the editor as needed */
-  public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams)
+  public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams, String extraFormatting)
   {
-    FieldEditor.setSuffix(formatParams, storedSuffix);
+    Dictionary paramCopy= (Dictionary)((Hashtable)formatParams).clone();
+    FieldEditor.setSuffix(paramCopy, storedSuffix);
+    FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
+
     Integer i=(Integer)indexes.get(fname);
     if(i!=null)
-      return editor.format(i.intValue(), fval, formatParams);
+      return editor.format(i.intValue(), fval, paramCopy);
 
     indexes.put(fname, new Integer(max));
     String colName=("col"+max);
     fieldNames.put(colName, fname);
-    fieldParameters.put(colName, (Dictionary)((Hashtable)formatParams).clone());
+    fieldParameters.put(colName, formatParams);
     dd.addField(FieldInfo.getFieldInfo(colName, ftype, true));
     editor= new RecordEditor(dd, fieldNames, database);
     editor.config();
-    return editor.format(max++, fval, formatParams);
+    return editor.format(max++, fval, paramCopy);
   }
 
   public String responderKey()
