@@ -6,22 +6,27 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
- - add your changes -
-cristi; 10 jun 2004: fixed bug 697, dots in <mak:input > names produced error
-cristi; 1 jun 2004: fixed bug 695, too often occurence of "servlet call not found in stacktrace"
-cristi; 24 may 2004: fixed bug 430, real type
-cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
-cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
-cristi; 1 apr 2004: db= can be a <%= jsp runtime expression %>
-stefan; 27 feb 2004: bug 677 (".jspx" conflicting with XML & XHTML) - added support for ".jsps" alternative 
-stefan; 6 feb 2004: bug 430 fixed (floating point type needed) 
-stefan; 6 feb 2004: bug 673 fixed (delete API call generates broken SQL) 
-stefan; 4 feb 2004: bug 639 semi fixed (MDD names in Catalog are longer, but still limited in length) 
-stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
+- add your changes -
+
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
+- add your changes -
+
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+- add here releases that are not meant for production but for testing -
+
+<!-- ============================================================================= -->
+<!-- ============================== RELEASES ===================================== -->
+0.5.10.4; 17 jun 2004, cristi
+The first stable release after a long time, incorporating major changes like transactions, which needed testing and were harder to release:
+
+adler; 16 jun 2004: fixed bug 103: reduce upload memory
 cristi; 10 jun 2004: fixed bug 699, pages executed without controller (e.g. from 404 handler) lead to infinite recursion
+cristi; 10 jun 2004: fixed bug 697, dots in <mak:input > names produced error
+cristi; 1 jun 2004: fixed bug 695, too often occurence of "servlet call not found in stacktrace"
+cristi; 24 may 2004: closed bug 430, real type
 cristi; 24 may 2004: fixed bug 686, problem with spaces in OQL queries
 cristi; 23 may 2004: fixed bug 48, transactions and locking
 cristi; 17 may 2004: fixed bug 544, support for @include
@@ -34,7 +39,15 @@ cristi; 21 apr 2004: fixed bug 37 (multiple forms).
 cristi; 21 apr 2004: fixed bug 56. data inconsistencies between queries in groups of mak:lists are not possible anymore because all queries in a page are executed in a single (repeatable-read) transaction
 cristi; 7 apr 2004: fixed bug 4: unique keyword in MDDs. values that break unique constraints are detected and reported.
 cristi; 7 apr 2004: fixed bug 643: oldstyle indexes are dropped automatically 
+cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
+cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
+cristi; 1 apr 2004: db= can be a <%= jsp runtime expression %>
+stefan; 27 feb 2004: bug 677 (".jspx" conflicting with XML & XHTML) - added support for ".jsps" alternative 
 cristi; 6 apr 2004: BL may not be available in .java format, just .class
+stefan; 6 feb 2004: bug 430 fixed (floating point type needed) 
+stefan; 6 feb 2004: bug 673 fixed (delete API call generates broken SQL) 
+stefan; 4 feb 2004: bug 639 semi fixed (MDD names in Catalog are longer, but still limited in length) 
+stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
 cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
 stefan; 16 jan 2004: bug 512 fixed (Makumba fails to create new tables with Connector/J 3.0.8 and later). Ready, but halted by unfinished work done on bug 4. cristi: this is blocked mainly by work related to the fix of bug 48, that can only be relesed afer thorough tests. 
 stefan; 24 dec 2003: bug 661 fixed (whitespace in field definitions), fixed file also contains unique keyword support, so it needs to wait for that to be released
@@ -49,26 +62,6 @@ stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to man
 stefan; 16 jul 2003: bug 3 fixed (ptrIndex and ptrOne are declared as unique)
 stefan; 15 jul 2003: bug 4 fixed (unique indexes created and dropped in the DB as needed during table checking)
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
-
-
-
-<!-- ============================================================================= -->
-<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
-0.5.10.3; 23 may 2004: cristi 
-fixes for bugs 695, 697 and 699
-
-0.5.10.2; 23 may 2004: cristi 
-feature improvements on 0.5.10.1: locking (new feature using transactions), and @include (new feature, but changed the JSP preprocessor, so it can benefit from testing)
-karamba partially tested, led to problems leading to 0.5.10.3
-
-0.5.10.1; 23 apr 2004: cristi 
-untested release, contains mostly new features so it may not affect production so much
-
-0.5.10pl1; 28 jan 2004: cristi
-tested in Parade since second half of march
-
-<!-- ============================================================================= -->
-<!-- ============================== RELEASES ===================================== -->
 
 0.5.9.18; 18 jan 2004 fred
 fred; 18 jan 2004: bug 62c30 : implemented type check on IfTag at analysis time
