@@ -146,7 +146,7 @@
 		Author="true"
 		additionalparam="-breakiterator"
 		doctitle="Makumba API Documentation"
-		stylesheetfile="doc/javadoc.css"
+		stylesheetfile="doc/api/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -171,7 +171,7 @@
 		access="package"
 		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
-		stylesheetfile="doc/javadoc.css"
+		stylesheetfile="doc/hacking/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
