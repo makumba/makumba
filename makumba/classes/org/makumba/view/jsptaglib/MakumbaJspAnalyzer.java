@@ -237,20 +237,19 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     Class c= (Class)tagClasses.get(td.name.substring(prefix.length()));
     if(c==null)
       return;
-    
+    MakumbaTag.analyzedTag.set(td);    
     MakumbaTag t=null;
     try{ t= (MakumbaTag)c.newInstance();}catch(Throwable thr){ thr.printStackTrace(); }
     td.tagObject=t;
     t.setTagDataAtAnalysis(td);
     ((ParseStatus)status).addTag(t, td);
+    MakumbaTag.analyzedTag.set(null);
   }
 
   public void startTag(JspParseData.TagData td, Object status)
   {
-    MakumbaTag.analyzedTag.set(td);
     simpleTag(td, status);
     ((ParseStatus)status).start((MakumbaTag)td.tagObject);
-    MakumbaTag.analyzedTag.set(null);
   }
 
   public void endTag(JspParseData.TagData td, Object status)
