@@ -458,9 +458,7 @@ public class table extends TestCase
     assertEquals("Sum(reals)", new Double(2.5008d), ((Dictionary)v.firstElement()).get("su"));
 
     Object[] args= {new Double(0.2), new Double(1.8)};
- try{
     v=db.executeQuery("SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args);
- }catch (Exception e) {e.printStackTrace();}
     assertEquals("Real comparisment", 2, v.size());
 
     //should we allow this? FIXME!
