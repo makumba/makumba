@@ -103,7 +103,8 @@ public abstract class Table extends RecordHandler
 	    String name=((FieldHandler)e.nextElement()).getName(); 
 	    list.append("t.").append(name).append(" AS ").append(name);
 	  }
-	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t>=$1 AND t<=$2";
+	String indexName= getRecordInfo().getIndexName();
+	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t."+indexName+ ">=$1 AND t."+indexName+" <=$2";
 
 	final int dbsv=sourceDB.getHostDatabase().getDbsv();
 	selectLimits[0]=new Pointer(){
