@@ -1,7 +1,9 @@
-stefan: fixed bug 282 (JSPX - absolute links to included files are broken when the makumba servlet context is not root)
-stefan: fixed bug 173 (getDataDefinition() works for java package names, should not)
-stefan: centralized version computation
-stefan: fixed bug 70 (returns field name for description if description is not set)
+0.5.5.24; 03 mar 2003 stefan
+fixed bug 283 (some JSPX don't link pages indicated in jsp:include)
+fixed bug 282 (JSPX - absolute links to included files are broken when the makumba servlet context is not root)
+fixed bug 173 (getDataDefinition() works for java package names, should not)
+centralized version computation
+fixed bug 70 (returns field name for description if description is not set)
 
 0.5.5.23; 28 feb 2003 stefan
 fix for bug 291 in LineViewer
