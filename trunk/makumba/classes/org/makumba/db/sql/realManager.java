@@ -38,11 +38,7 @@ public class realManager extends FieldManager
   /** Use standard SQL name, unless defined otherwise in sqlEngines.properties. */
   protected String getDBType()
   {
-    String s=super.getDBType();
-    if(s==null)
       return "DOUBLE PRECISION"; //standard name
-    else
-      return s;
   }
 
 
