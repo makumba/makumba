@@ -51,7 +51,7 @@ function getPageInfo(cvsID)
 
 function makeFooter(cvsID)
 {
-	document.write('<div class="pagefooter">');
+	document.write('<div class="pageFooter">');
 	document.write(getPageInfo(cvsID));
 	document.write('</div>');
 
