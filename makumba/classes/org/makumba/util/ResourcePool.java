@@ -7,17 +7,19 @@ import java.util.*;
 public abstract class ResourcePool
 {
   Stack stack= new Stack();
-  
+    
+    // we keep a reference to all our resources here
+    Vector all= new Vector();
+
   /** re-define this method to express how to create a resource */
   public abstract Object create() throws Exception;
 
-    int number=0;
-
     Object createAndCount() throws Exception
     {
-	number++;
-	org.makumba.MakumbaSystem.getMakumbaLogger("util.pool").fine("pool size: "+number);
-	return create();
+	Object o= create();
+	all.addElement(o);
+	org.makumba.MakumbaSystem.getMakumbaLogger("util.pool").fine("pool size: "+ all.size());
+	return o;	
     }
 
   /** initialize the pool with n resources */
@@ -41,6 +43,11 @@ public abstract class ResourcePool
   /** put back one resource */
   public void put(Object o)
   { 
+      // FIXME: this leaves a door open for resources to be added to the pool
+      // without having been created by the pool. 
+      // we may want this or we may not. 
+      // if we want it, these resources should be added to "all"
+      // if not, they should be rejected (and then "all" should probably be a hashmap or so
     synchronized(stack)
       {
 	stack.push(o); 
@@ -50,5 +57,6 @@ public abstract class ResourcePool
   public void reset()
   {
     stack= new Stack();
+    all= new Vector();
   }
 }
