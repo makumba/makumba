@@ -18,6 +18,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.13.5; 13 jan 2005 cristi
+fixed bug with 0.5.13.4 at include
+
 0.5.13.4; 13 jan 2005 cristi
 fixed bug 789. errors from other pages were shown
 
