@@ -15,6 +15,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.13.3; 05 jan 2005 cristi
+fixed bug occuring at ptr mak:input if the title of the type is not string
+if mak:input has display false, the formatting of the input is not done any more (it was done, then ignored, resulting to resource waste)
+
 0.5.13.2; 04 jan 2005 cristi
 fixed small null-related problem with mak:input 
 fixed a number of teething problems of the new exception handling
