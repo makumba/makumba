@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 /*
 import javax.servlet.http.HttpServlet;
@@ -55,7 +56,11 @@ public class TomcatJsp
     }
     return jspUri;
   }
-
+  
+  	public static String getContextCompiledJSPDir(ServletContext context) {
+        return String.valueOf(context.getAttribute("javax.servlet.context.tempdir"));
+    }
+  	
   public static String getJspCompilerPackage(){ return "org.apache.jasper"; }
 
   /* when uncommenting the line below, add jasper-compiler.jar to the compilation classpath
