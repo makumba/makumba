@@ -449,7 +449,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
 
 /** This class bridges between Enumeration and Iterator. */
-public class EnumerationWrapper implements Iterator, Enumeration {
+class EnumerationWrapper implements Iterator, Enumeration {
   private Enumeration enum;
 
   private EnumerationWrapper() { } // not allowed.
