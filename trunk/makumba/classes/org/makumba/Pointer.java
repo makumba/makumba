@@ -86,7 +86,18 @@ public class Pointer implements java.io.Serializable
     long hc= (long)type.hashCode() & 0xffffffffl;
     return Long.toString((crc(n)& 0xfl)<<32| n^hc,Character.MAX_RADIX);
   }
-
+  
+  /**
+   * Constructs a pointer for the given type from the given external form.
+   * 
+   * @param type
+   *            The makumba type of the pointer. <br>
+   *            Example: given an MDD in the file, general/Country.mdd, this would be "general.Country".
+   * @param externalForm
+   *            The value of the Pointer in its external form, as derived by the {@link #toExternalForm()} method or via
+   *            the makumba tag library. <br>
+   *            Example: hhi4xw7.
+   */
   public Pointer(String type, String externalForm)
   {
     this.type=type;
