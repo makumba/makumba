@@ -295,10 +295,13 @@ The programmer could just as well decide that all makumba logging at or over the
   // later: should be configurable by config files
   public static java.util.Locale getLocale() { return java.util.Locale.UK;}
 
-    /** Get the OQL analyzer for the indicated query */
+  /** Get the OQL analyzer for the indicated query */
   static public OQLAnalyzer getOQLAnalyzer(String oqlQuery) 
   {
     try{
+      /*return parseQueryFundamental(oqlQuery);
+      }catch(antlr.RecognitionException f){   
+      */
       return (OQLAnalyzer)NamedResources.getStaticCache(parsedQueries).getResource(oqlQuery);
     }catch(RuntimeWrappedException e){
       if(e.getReason() instanceof antlr.RecognitionException)
@@ -321,7 +324,10 @@ The programmer could just as well decide that all makumba logging at or over the
       {
 	return parseQueryFundamental((String)nm);
       }
-  });
+      },
+      true
+      );
+  
 
   static OQLAnalyzer parseQueryFundamental(String oqlQuery) throws antlr.RecognitionException
   {
