@@ -140,7 +140,7 @@ public class FormResponder extends Responder
       }
     if(basePointer!=null)
       writeInput(sb, basePointerName, basePointer, storedSuffix);
-    writeInput(sb, responderName, ""+getPrototype()+storedSuffix, "");
+    writeInput(sb, responderName, ""+getPrototype()+storedSuffix+storedParentSuffix, "");
     if(storedSuffix.equals(""))
       // a root form
       sb.append("\n</form>");
