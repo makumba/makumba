@@ -23,6 +23,7 @@
 
 package org.makumba.abstr;
 import java.util.Enumeration;
+import java.util.Vector;
 
 interface Enumerator
 {
@@ -33,4 +34,5 @@ interface Enumerator
     String getNameAt(int i);
     //Needed for intEnumHandler...others ??
     String getNameFor(int i);
+    Vector getDeprecatedValues();
 }

@@ -30,6 +30,8 @@ public class intEnumHandler extends intHandler implements intEnumerator
   
   public Enumeration getNames() { return ((Vector) fi.extra2).elements(); }
     
+  public Vector getDeprecatedValues() { return (Vector)fi.extra3; }
+  
   public int getEnumeratorSize(){ return ((Vector)fi.extra1).size(); }
   
   public String getStringAt(int i){ return ((Vector)fi.extra1).elementAt(i).toString(); }

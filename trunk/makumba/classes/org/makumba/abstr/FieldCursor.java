@@ -159,6 +159,8 @@ public class FieldCursor
     int end= index;
 
     try{
+      if(toParse.charAt(end)=='-')  //allow a leading -
+	end++;
       while(Character.isDigit(toParse.charAt(end)))
 	end++;
     } catch(StringIndexOutOfBoundsException siob) {}
@@ -280,9 +282,11 @@ public class FieldCursor
   {
      Vector valueset= new Vector();
      Vector nameset= new Vector();
+     Vector deprset= new Vector();
 
      fi.extra1= valueset;
      fi.extra2= nameset;
+     fi.extra3= deprset;
 
      String s=lookupEnumName();
      if(s!= null)
@@ -293,7 +297,10 @@ public class FieldCursor
 
              nameset.addElement(s);
              expect("=");
-             valueset.addElement(expectInteger());
+             Integer val=expectInteger();
+             valueset.addElement(val);
+             if(lookup("deprecated"))
+                deprset.addElement(val);
              if(lookup(","))
              {
                s=expectEnumName();
@@ -302,7 +309,7 @@ public class FieldCursor
              break;
           }
     if(!lookup("}"))
-        throw fail(" , or } epxected" );
+        throw fail("deprecated or , or } epxected" );
   }
   /* check if there is any field description
    * throw an exception if something else then a description is left...

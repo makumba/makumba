@@ -3,6 +3,7 @@
 
 TO RELEASE IMMEDIATELY:
 ? fred: new features in choosers
+stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
 stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
 
 NOT TO BE RELEASED YET:
