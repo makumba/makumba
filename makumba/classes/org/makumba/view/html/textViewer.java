@@ -58,9 +58,12 @@ public class textViewer extends FieldViewer
     if( HtmlUtils.maxLineLength(txt) > n)
       // special text formatting
       return HtmlUtils.text2html(txt, startSeparator, endSeparator);
+    else if(txt.indexOf('\n')<0)
+      // single, short line of text
+      return HtmlUtils.string2html(txt);
     else
       // else: text preformatted
-      return "<pre>"+HtmlUtils.string2html(txt)+"</pre>";
+      return "<pre style=\"margin:0px\">"+HtmlUtils.string2html(txt)+"</pre>";
   }
   
   
