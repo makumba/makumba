@@ -15,6 +15,8 @@ function makeNavBar(pathToBase)
 
         document.write('<br>');
 	document.write('<a href="'+bDir+'index.html"><b>Home</b></a><br>');	
+	document.write('<br>');
+	document.write('<a href="'+bDir+'news.html"><b>News</b></a><br>');	
 
 	document.write('<br>');
 	document.write('<a href="'+bDir+'documentation.html"><b>Documentation</b></a><br>');
