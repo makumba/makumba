@@ -28,8 +28,8 @@ import org.makumba.util.HtmlUtils;
 
 public class charViewer extends FieldViewer
 {
-  static String[] params= { "urlEncode", "html" };
-  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }};
+  static String[] params= { "urlEncode", "html", "maxLength" };
+  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }, null};
 
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
@@ -38,8 +38,14 @@ public class charViewer extends FieldViewer
   {
     String txt=o.toString();
     String ht= (String)formatParams.get("html");
+    int maxLen= getIntParam(formatParams, "maxLength");
+
     if(ht!=null && (ht.equals("true") || ht.equals("auto") && HtmlUtils.detectHtml(txt)))
       return txt;
+
+    if(maxLen!=-1 && txt.length()>maxLen)
+      txt=txt.substring(0,maxLen);
+
     return HtmlUtils.string2html(txt);
 
   }

@@ -252,6 +252,7 @@ public abstract class MakumbaTag extends TagSupport
   public void setType(String s) { params.put("type", s); }
   public void setSize(String s) { params.put("size", s); }
   public void setMaxlength(String s) { params.put("maxlength", s); }
+  public void setMaxLength(String s) { params.put("maxLength", s); }
   public void setRows(String s) { params.put("rows", s); }
   public void setCols(String s) { params.put("cols", s); }
   public void setLineSeparator(String s) { params.put("lineSeparator", s); }
