@@ -134,7 +134,12 @@ public class ControllerFilter implements Filter
       {
 	try{
 	  req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp); 
-	}catch(Throwable q){ q.printStackTrace(); throw new MakumbaError(q); }
+	}
+	// we only catch the improbable ServletException and IOException
+	// so if something is rotten in the TagExceptionServlet, 
+	// tomcat will deal with it
+	catch(ServletException se){ se.printStackTrace(); throw new MakumbaError(se); }
+	catch(java.io.IOException ioe){ ioe.printStackTrace(); throw new MakumbaError(ioe); }
       }
     setWasException(req);
     req.setAttribute("org.makumba.exceptionTreated", "yes");
