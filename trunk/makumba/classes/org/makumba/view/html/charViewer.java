@@ -28,25 +28,22 @@ import org.makumba.util.HtmlUtils;
 
 public class charViewer extends FieldViewer
 {
-  static String[] params= { "urlEncode", "html", "maxLength" };
-  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }, null};
+  static String[] params= { "urlEncode", "html", "maxLength", "maxLengthEllipsis", "maxLengthEllipsisLength", "hoverText" };
+  static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }, null, null, null, { "true", "false", "auto" }};
 
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
+
 
   public String formatNotNull(Object o, Dictionary formatParams) 
   {
     String txt=o.toString();
     String ht= (String)formatParams.get("html");
-    int maxLen= getIntParam(formatParams, "maxLength");
+
 
     if(ht!=null && (ht.equals("true") || ht.equals("auto") && HtmlUtils.detectHtml(txt)))
       return txt;
 
-    if(maxLen!=-1 && txt.length()>maxLen)
-      txt=txt.substring(0,maxLen);
-
-    return HtmlUtils.string2html(txt);
-
+    return formatMaxLengthEllipsis(txt, formatParams);
   }
 }
