@@ -24,16 +24,46 @@
 package org.makumba;
 
 /** Specifies interface for data transformation. 
- Some of your application's class should implement this DataTransformer in order to be used my Makumba during DB operations. 
+ Some of your application's class should implement this DataTransformer in order to be used by Makumba during DB operations. 
  <p>
  
  In your db configuration file (eg <code>localhost_mysql_myapp.properties</code>) it should be specified with a line 
- <pre>insert#<i>makumba.Type</i>=<i>yourClassThatImplementsDataTransformer</i></pre>
+ <pre class="example">
+insert#<i>makumba.Type</i>=<i>yourClassThatImplementsDataTransformer</i>
+</pre>
  to run your transformer (<code>yourClassThatImplementsDataTransformer</code>) on all the records of that makumba type 
 (<code><i>makumba.Type</i></code>) before being inserted into the database.
 
-<p> eg:
- <pre>insert#<i>general.Person</i>=<i>org.eu.best.PersonHook</i></pre>
+<h3>Example</h3>
+ <pre class="example">
+insert#<i>general.Person</i>=<i>PersonHook</i>
+</pre>
+
+with a simple <code>DataTransformer</code> class <code>PersonHook</code>:
+ <pre class="example">
+import org.makumba.*;
+import java.util.*;
+
+public class PersonHook implements DataTransformer
+{
+  public boolean transform(Dictionary d, Database db)
+  {
+    //we might want to make sure a name is all lowercase with capital initial:
+    String n= (String)d.get("name");
+    if(n!=null && n.trim().length()>2)
+    {
+      d.put("name", n.substring(0,1).toLowerCase()+n.substring(1).toLowerCase());
+      return true
+    }
+    else {
+      return false;
+    }
+  }
+</pre>
+Would ensure that application writes only "properly capitalized" names to the DB, wherever in the application objects of type 
+<code>general.Person</code> 
+would be created.
+
  */
 public interface DataTransformer
 {
