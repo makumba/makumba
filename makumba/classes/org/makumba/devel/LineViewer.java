@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,243 +32,463 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/** a viewer that shows everything per line */
-public class LineViewer implements SourceViewer
-{
-  String realPath, virtualPath, contextPath;
-  Reader reader;
-  boolean lineNumbers;
-  File dir;
-  String title;
-  String jspSourceViewExtension="x"; //default for old .jspx - change this to "s" when .jsps gets adopted (bug 677)
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
-  /** if this resource is actually a directory, returns not null */
-  public File getDirectory() 
-  { 
-    if(dir!=null && dir.isDirectory())
-      return dir;
-    return null;
-  }
-  public Reader getReader(){ return reader; }
+/**
+ * a viewer that shows everything per line
+ * 
+ * 
+ * @version $ID $
+ * @author Stefan Baebler
+ * @author Rudolf Mayer
+ *  
+ */
+public class LineViewer implements SourceViewer {
+    protected static String regExpPossibleLink = "\\w+\\.\\w+[\\.\\w]*";
 
-  void readFromURL(java.net.URL u) throws IOException
-  {
-    if(u==null)
-      throw new FileNotFoundException(virtualPath);
-    realPath= u.getFile();
-    try{
-      dir= new File(realPath);
-      if(!dir.isDirectory())
-	reader= new InputStreamReader(new FileInputStream(dir)); 
-    }catch(FileNotFoundException fnfe){
-      realPath=null;
-      reader= new InputStreamReader((InputStream)u.getContent());
+    Pattern patternUrl = Pattern.compile(regExpPossibleLink);
+
+    //protected HttpServletRequest request;
+    protected ServletContext servletContext;
+
+    protected String realPath;
+
+    protected String virtualPath;
+
+    protected String contextPath;
+
+    protected Reader reader;
+
+    protected boolean printLineNumbers;
+
+    private File dir;
+
+    protected String title;
+
+    protected boolean searchJSPPages = true;
+
+    protected boolean searchCompiledJSPClasses = true;
+
+    protected boolean searchJavaClasses = true;
+
+    protected boolean searchMDD = true;
+
+    //  default for old .jspx - change this to "s" when .jsps gets adopted (bug 677)
+    protected String jspSourceViewExtension = "x";
+
+    protected String jspClasspath;
+
+    protected HttpServletRequest request;
+
+    protected HttpServlet servlet;
+
+    protected String servletPath;
+
+    protected String logicPath;
+
+    //  TODO: temporarily, to be determined by java Anlyzer
+    private String[] importedPackages = new String[] { "", "java.lang." };
+
+    /** if this resource is actually a directory, returns not null */
+    public File getDirectory() {
+        if (dir != null && dir.isDirectory())
+            return dir;
+        return null;
     }
-  }
 
-  public LineViewer(boolean b){ lineNumbers=b; }
-  public LineViewer(){ this(false); }
-  public LineViewer(Reader r){ this(false); this.reader=r; }
-  
-  /** parse the text and write the output */
-  public void parseText(PrintWriter w) throws IOException
-  {
-    w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-    w.println("<html><head>");
-    w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-    if(realPath!=null && virtualPath!=null)
-	title=virtualPath+"";
-    else if(title==null || title!=null && title.equals(""))
-	title="";
-    w.println("<title>"+title+"</title>");
-    if(lineNumbers)
-	w.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
-    w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td>");
-
-    if(title!=null && !title.equals("") && !title.equals(virtualPath)) 
-	w.print("<font size=\"+2\"><font color=\"darkblue\">"+title+"</font></font>");
-    else if(virtualPath!=null)
-	w.print("<font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font>");
-
-    if(realPath!=null) 
-	w.print("<font size=\"-1\"><br>"+new File(realPath).getCanonicalPath()+"</font>");
-
-    w.print("</td>");
-
-    intro(w);
-    w.print("</tr></table>\n<pre style=\"margin-top:0\">");	
-
-    // we go line by line as an MDD references cannot span over newlines
-    // as a bonus, we print the line numbers as well.
-    LineNumberReader lr= new LineNumberReader(reader);
-    String s=null;
-    while((s=lr.readLine())!=null)
-      {
-	parseLine(s);
-	if(lineNumbers)
-	  {
-	    int n= lr.getLineNumber();
-	    w.print("<a name=\""+n+"\" href=\"#"+n+"\" class=\"lineNo\">"+n+":\t</a>");
-	  }
-	printLine(w, s);
-      }
-    w.println("\n</pre>");
-    footer(w);
-    w.println("\n</body></html>");	
-    reader.close();
-  }
-
-  void intro(PrintWriter pw) throws IOException {} 
-  void footer(PrintWriter pw) throws IOException
-  {
-      pw.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "+org.makumba.MakumbaSystem.getVersion()+"</font>");
-  }
-
-  void printLine(PrintWriter pw, String s) throws IOException 
-  {
-    String t= getLineTag(s);
-    if(t!=null)
-      pw.print("<a name=\""+t+"\"></a>");
-    pw.print(highlighted); 
-    
-    // not sure of this fix...was "<br>"
-    pw.print("\n");
-  }
-
-  
-  String getLineTag(String s){ return null; }
-
-  StringBuffer highlighted;
-
-  void parseLine(String s)
-  {
-    highlighted= new StringBuffer();
-
-    while(true){
-      int n= s.indexOf('.');
-      if(n==-1)
-	{
-	  writeNonMdd(s);
-	  return;
-	}
-      int j=n;
-      int len= s.length();
-      while(--j>0 && isMakumbaTypeChar(s.charAt(j)));
-      j++;
-      while(++n<len&& isMakumbaTypeChar(s.charAt(n)));
-
-      String possibleMdd=s.substring(j, n);
-      if(possibleMdd.indexOf("www.makumba.org")!=-1 )
-	{
-	  writeNonMdd(s.substring(0, j));
-	  highlighted.append("<a href=\"http://www.makumba.org\">").append(possibleMdd).append("</a>");
-	}
-      else{
-	Class c=null;
-	String page=null;
-	java.net.URL u1=null, u2=null;
-
-	if((u1=org.makumba.abstr.RecordParser.findDataDefinition(possibleMdd, "mdd"))==null && 
-	   (u2=org.makumba.abstr.RecordParser.findDataDefinition(possibleMdd, "idd"))==null &&
-	   (c= findClass(possibleMdd))==null &&
-	   (page=findPage(possibleMdd))==null)
-	  writeNonMdd(s.substring(0, n));
-	else
-	{
-	  writeNonMdd(s.substring(0, j));
-	  if(u1!=null || u2!=null)
-	    highlighted.append("<a href=\""+contextPath+"/dataDefinitions/").append(possibleMdd)
-	      .append("\">").append(possibleMdd).append("</a>");
-	  else if(c!=null)
-	    highlighted.append("<a href=\""+contextPath+"/classes/").append(c.getName()).append("\">").append(possibleMdd).append("</a>");
-	  else if(page!=null)
-	    {
-	      highlighted.append("<a href=\"").append(page);
-	      if(page.endsWith("jsp"))
-		highlighted.append(jspSourceViewExtension);
-	      highlighted.append("\">").append(possibleMdd).append("</a>");
-	    }
-	}
-      }
-      if(n==len)
-	  return;
-      s=s.substring(n, len);
+    public Reader getReader() {
+        return reader;
     }
-  }
 
-  String findPage(String s)
-  {
-    return null;
-  }
-
-  // this should take into account import lines
-  Class findClass(String s)
-  {
-    Class c=null;
-    try{
-      c=Class.forName(s);
-    }catch(Throwable t) { return null; }
-    if(org.makumba.util.ClassResource.get(c.getName().replace('.', '/')+".java")!=null)
-      return c;
-    return null;
-  }
-
-  boolean isMakumbaTypeChar(char c)
-  {
-    return c=='.' || Character.isJavaIdentifierPart(c) || c=='/' || c=='-';
-  }
-
-  int position;
-  char current;
-  String text;
-
-  void writeNonMdd(String s)
-  {
-    text=s;
-    for(position=0; position<s.length(); position++)
-      {
-	current=text.charAt(position);
-	treat();
-      }
-  }
-
-  void treat()
-  {
-    htmlEscape();
-  }
-
-  void htmlEscape()
-  {
-    switch(current){
-    case '<': highlighted.append("&lt;"); break;
-    case '>': highlighted.append("&gt;"); break;
-    case '&': highlighted.append("&amp;"); break;
-    default: highlighted.append(current);
-    }   
-  }
-
-  String pattern;
-
-  boolean lookup(String p)
-  {
-    int l=p.length();
-    try{
-    if(position+l>text.length()
-       ||!text.substring(position, position+l).equals(p))
-	return false;
-
-    pattern=p;
-    return true;
-    }catch(RuntimeException e){
-      org.makumba.MakumbaSystem.getMakumbaLogger("devel").log(java.util.logging.Level.SEVERE, position+" "+l+" "+text.length(), e);
-      throw e;
+    void readFromURL(java.net.URL u) throws IOException {
+        if (u == null)
+            throw new FileNotFoundException(virtualPath);
+        realPath = u.getFile();
+        try {
+            dir = new File(realPath);
+            if (!dir.isDirectory())
+                reader = new InputStreamReader(new FileInputStream(dir));
+        } catch (FileNotFoundException fnfe) {
+            realPath = null;
+            reader = new InputStreamReader((InputStream) u.getContent());
+        }
     }
-  }
-  
-  void advance()
-  {
-    position+=pattern.length()-1;
-  }
 
+    public LineViewer(boolean printLineNumbers, HttpServletRequest request, HttpServlet servlet) {
+        this.request = request;
+        this.servlet = servlet;
+        this.printLineNumbers = printLineNumbers;
+        servletContext = servlet.getServletContext();
+        contextPath = request.getContextPath();
+    }
+
+    /**
+     * parse the text and write the output
+     */
+    public void parseText(PrintWriter writer) throws IOException {
+        GregorianCalendar begin = new GregorianCalendar();
+        printPageBegin(writer);
+
+        // we go line by line as an MDD references cannot span over newlines
+        // as a bonus, we print the line numbers as well.
+        LineNumberReader lr = new LineNumberReader(reader);
+        String s = null;
+        while ((s = lr.readLine()) != null) {
+            if (printLineNumbers) {
+                int n = lr.getLineNumber();
+                writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
+            }
+            printLine(writer, s, parseLine(htmlEscape(s)));
+        }
+        printPageEnd(writer);
+        reader.close();
+        double timeTaken = new Date(new GregorianCalendar().getTimeInMillis() - begin.getTimeInMillis()).getTime();
+        System.out.println("Code viewer took :" + (timeTaken / 1000.0) + " seconds");
+    }
+
+    /**
+     * @param writer
+     * @throws IOException
+     */
+    public void printPageEnd(PrintWriter writer) throws IOException {
+        writer.println("\n</pre>");
+        footer(writer);
+        writer.println("\n</body></html>");
+    }
+
+    /**
+     * @param writer
+     * @throws IOException
+     */
+    public void printPageBegin(PrintWriter writer) throws IOException {
+        writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+        writer.println("<html><head>");
+        writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
+        if (realPath != null && virtualPath != null)
+            title = virtualPath + "";
+        else if (title == null || title != null && title.equals(""))
+            title = "";
+        writer.println("<title>" + title + "</title>");
+        if (printLineNumbers)
+            writer.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
+        writer.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
+
+        if (title != null && !title.equals("") && !title.equals(virtualPath))
+            writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
+        else if (virtualPath != null)
+            writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
+                    + "</font></a></font>");
+
+        if (realPath != null)
+            writer.print("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
+
+        writer.print("</td>");
+
+        intro(writer);
+        writer.print("</tr></table>\n<pre style=\"margin-top:0\">");
+    }
+
+    /**
+     *  
+     */
+    public void intro(PrintWriter printWriter) throws IOException {
+    }
+
+    /**
+     *  
+     */
+    public void footer(PrintWriter printWriter) throws IOException {
+        printWriter.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
+                + org.makumba.MakumbaSystem.getVersion() + "</font>");
+    }
+
+    /**
+     *  
+     */
+    public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {
+        String t = getLineTag(s);
+        if (t != null)
+            printWriter.print("<a name=\"" + t + "\"></a>");
+        printWriter.print(toPrint);
+
+        // not sure of this fix...was "<br>"
+        printWriter.print("\n");
+    }
+
+    /**
+     *  
+     */
+    public String getLineTag(String s) {
+        return null;
+    }
+
+    /**
+     * Sets the amount of links to other files the viewer is trying to find. changing some of these parameters can significantely speed up the viewing
+     * process.
+     * 
+     * @param searchJSPPages
+     *            whether to search for .jsp files.
+     * @param searchCompiledJSPClasses
+     *            wheter to search for compiled jsp files, i.e. files with the extension _jsp.java
+     * @param searchJavaClasses
+     *            wheter to search for java source files.
+     * @param searchMDD
+     *            whether to search for Makumba Data Definitions, .mdd files (and Inlcuded Data Defitions, .idd).
+     */
+    public void setSearchLevels(boolean searchJSPPages, boolean searchCompiledJSPClasses, boolean searchJavaClasses,
+            boolean searchMDD) {
+        this.searchJSPPages = searchJSPPages;
+        this.searchCompiledJSPClasses = searchCompiledJSPClasses;
+        this.searchJavaClasses = searchJavaClasses;
+        this.searchMDD = searchMDD;
+    }
+
+    /**
+     * Processes one line of code, and adds links for
+     * <ul>
+     * <li>MDDs</li>
+     * <li>JSP pages</li>
+     * <li>Java Classes</li>
+     * <li>from JSP pages generated Java classes</li>
+     * </ul>
+     * 
+     * Subclasses that want to provide any additional formatting (syntax highlighting, etc) should extend this method, apply their formatting and
+     * before/afterwards call this method.
+     * 
+     * This method is rather time-consuming, and subclasses interested in providing links just to a part of the above should use the
+     * <code>setSearchLevels</code> method to specify for what types of files are searched for.
+     * 
+     * @param s
+     *            the unformatted code line.
+     * @return The formatted code line.
+     */
+    public String parseLine(String s) {
+        Class javaClass;
+        String jdkClass;
+        String jspPage;
+        String jspClass;
+        java.net.URL mdd;
+        java.net.URL idd;
+
+        StringBuffer source = new StringBuffer(s);
+        StringBuffer result = new StringBuffer();
+
+        Matcher matcher = patternUrl.matcher(s);
+        while (matcher.find()) {
+            String token = matcher.group();
+
+            int indexOf = source.indexOf(token);
+            int indexAfter = indexOf + token.length();
+
+            result.append(source.substring(0, indexOf));
+
+            if (token.equals("www.makumba.org")) {
+                result.append(formatMakumbaLink(token));
+            } else if (searchMDD && (mdd = org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd")) != null
+                    || (idd = org.makumba.abstr.RecordParser.findDataDefinition(token, "idd")) != null) {
+                result.append(formatMDDLink(token));
+            } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
+                result.append(formatClassLink(javaClass.getName(), token, null));
+            } else if (searchJavaClasses && (jdkClass = findJDKClass(token)) != null) {
+                result.append(jdkClass);
+            } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
+                result.append(formatJSPLink(jspPage, token, null));
+            } else if (searchCompiledJSPClasses && (jspClass = findCompiledJSP(token)) != null) {
+                result.append(formatClassLink(jspClass, token, null));
+            } else {
+                result.append(token);
+            }
+            source.delete(0, indexAfter);
+        }
+        return result.append(source).toString();
+    }
+
+    /**
+     * @param jspPage
+     * @param result
+     * @param token
+     */
+    public String formatJSPLink(String jspPage, String token, Integer lineNumber) {
+        StringBuffer result = new StringBuffer();
+        result.append("<a href=\"" + jspPage);
+        if (jspPage.endsWith("jsp")) {
+            result.append(jspSourceViewExtension);
+        }
+        if (lineNumber != null) {
+            result.append("#" + lineNumber);
+        }
+        result.append("\">").append(token).append("</a>");
+        return result.toString();
+    }
+
+    /**
+     * @param className
+     * @param token
+     * @return
+     */
+    public String formatClassLink(String className, String token, Integer lineNumber) {
+        if (lineNumber != null) {
+            return "<a href=\"" + contextPath + "/classes/" + className + "#" + lineNumber + "\">" + token + "</a>";
+        } else {
+            return "<a href=\"" + contextPath + "/classes/" + className + "\">" + token + "</a>";
+
+        }
+    }
+
+    /**
+     * @param token
+     * @return
+     */
+    public String formatMDDLink(String token) {
+        return "<a href=\"" + contextPath + "/dataDefinitions/" + token + "\">" + token + "</a>";
+    }
+
+    /**
+     * @param result
+     * @param token
+     */
+    public String formatMakumbaLink(String token) {
+        return "<a href=\"http://www.makumba.org\">" + token + "</a>";
+    }
+
+    /**
+     * @param s
+     * @return
+     */
+    public StringTokenizer getLineTokenizer(String s) {
+        return new StringTokenizer(s, "\"\' (){}[]<>,;-?#:", true);
+    }
+
+    /**
+     * Finds a JSP page with the given name.
+     * 
+     * @param s
+     *            The page to search for
+     * @return The page found, <code>null</code> otherwise
+     */
+    public String findPage(String s) {
+        if (s.startsWith("/")) { //absolute reference to file
+            File file = new File(servletContext.getRealPath(s));
+            if (file.exists()) {
+                return contextPath + s;
+            } else {
+                file = new File(s);
+                if (file.exists()) {// full path name?
+                    return s;
+                } else {
+                    return null;
+                }
+            }
+        } else { //relative reference
+            File file = new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar)) + File.separatorChar
+                    + s.replace('/', File.separatorChar));
+            if (file.exists()) {
+                return s;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Searches for Java Classes with the given name
+     * 
+     * @param s
+     *            The class name to search for
+     * @return The class, if found, <code>null</code> otherwise.
+     */
+    public Class findClass(String s) {
+        Class c = null;
+        try {
+            c = Class.forName(s);
+        } catch (Throwable t) {
+            return null;
+        }
+        if (org.makumba.util.ClassResource.get(c.getName().replace('.', '/') + ".java") != null)
+            return c;
+        return null;
+    }
+
+    public String findCompiledJSP(String s) {
+        if (jspClasspath != null && s.indexOf("_jsp") != -1) {
+            try {
+                String newClassName = s.substring(0, s.indexOf("_jsp") + 4);
+                String filePath = jspClasspath + "/" + newClassName.replace('.', '/') + ".java";
+                File file = new File(filePath);
+                if (file.exists()) {
+                    return newClassName;
+                } else {
+                    return null;
+                }
+            } catch (Throwable t) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Escapes a string to HTML-conform format.
+     * 
+     * @param s
+     *            The string to escape
+     * @return The given, with &amp;, &lt; and &gt; escaped.
+     */
+    public String htmlEscape(String s) {
+        //TODO: use internal java class?!
+
+        // we NEED to have this replacement first, otherwise we will replace the '&' from the &lt; and &gt;
+        s = s.replaceAll("&", "&amp;");
+
+        s = s.replaceAll("<", "&lt;");
+        s = s.replaceAll(">", "&gt;");
+        return s;
+    }
+
+    /**
+     * @param token
+     * @return
+     */
+    public String findJDKClass(String token) {
+        Class c = null;
+        for (int i = 0; i < importedPackages.length; i++) {
+            try {
+                c = Class.forName(importedPackages[i] + token);
+                break;
+            } catch (Throwable throwable) {
+                // we just continue with the next package
+            }
+        }
+        if (c != null && c.getName().startsWith("java")) {
+            return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
+                    + ".html\">" + c.getName() + "</a>";
+        } else {
+            String className = token.substring(0, token.lastIndexOf("."));
+            String methodName = token.substring(token.lastIndexOf(".") + 1);
+            try {
+                for (int i = 0; i < importedPackages.length; i++) {
+                    c = Class.forName(importedPackages[i] + className);
+                    break;
+                }
+            } catch (Throwable throwable) {
+                // we just continue with the next package
+            }
+            if (c != null && c.getName().startsWith("java")) {
+                return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
+                        + ".html#" + methodName + "()\">" + c.getName() + "</a>";
+            } else {
+                return null;
+            }
+        }
+    }
 }
+
