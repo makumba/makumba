@@ -69,14 +69,11 @@ public abstract class DBConnection implements org.makumba.Database
   /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
   public String getName(){ return db.getName(); }
   
-  public void close(){ throw new RuntimeException("org.makumba.db.DBConnection.close() should never be called"); 
-    }
+  public abstract void close();
   
-  public void commit() {throw new RuntimeException("org.makumba.db.DBConnection.commit() should never be called"); 
-  }
+  public abstract void commit();
 
-  public void rollback()  {throw new RuntimeException("org.makumba.db.DBConnection.rollback() should never be called"); 
-  }
+  public abstract void rollback();
 
   Map locks= new HashMap(13);
   Hashtable lockRecord= new Hashtable(5);
