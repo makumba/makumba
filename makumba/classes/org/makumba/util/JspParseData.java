@@ -81,27 +81,28 @@ public class JspParseData
               });
 
 
-  /** This helps to create regex for the 'attribute' pattern easily. */
+  /** This helps to create regex for the 'attribute' pattern easily. @param quote is either " or ' . */
   static String attribute(String quote){
-    String bs="\\";
+    String bs="\\";         // backslash in a java String (escaped)
     String q=bs+quote;
-    String backslash=bs+bs;
-    
+    String backslash=bs+bs; // backslash in a regex in a java String (escaped)
+
+    // the pattern is \s*\w*\s*=\s*"(.*?[^\\])??" or idem with single quote ' ; with DOTALL MODE: (?s)
     return 
-      bs+"s*"+
-      bs+"w+"+
-      bs+"s*="+
-      bs+"s*"+
+      "(?s)"+ 
+      bs+ "s*" +
+      bs+ "w+" +
+      bs+ "s*=" +
+      bs+ "s*" +
       q+
-      "([^"+q+backslash+"]|"+
-      backslash+q+")*"+
+      "(.*?[^" +backslash+ "])??" +
       q;
   }
 
 
   /** Initialiser for the class variables. */ 
   static{
-    String attribute="("+attribute("\"")+"|"+attribute("\'")+")";
+    String attribute="(" +attribute("\"")+ "|" +attribute("\'")+ ")";
 
     try{
       JspTagAttributePattern= Pattern.compile(attribute);
@@ -213,33 +214,60 @@ public class JspParseData
   /** Identify tag attributes from a tag string and put them in a Map. Sets the attribute syntax points. */
   Map parseAttributes(String s, int origin)
   {
-    Map ret= new HashMap(13);
+    Map attributes = new HashMap(13);
+    // System.out.println("tag = " + s); //debugging
     
     Matcher m= JspTagAttributePattern.matcher(s);
     while(m.find())
       {
-	// here we have an attribute="value"
-	String attr=s.substring(m.start(), m.end());
-	int n=attr.indexOf('=');
-	String val=attr.substring(n+1).trim();
+	// here we have an attributeName="attributeValue"
+	String attr = s.substring(m.start(), m.end());
+	int n = attr.indexOf('='); // position of the equal sign
+	String attName      = attr.substring(0, n).trim();
+	String attValQuoted = attr.substring(n+1 ).trim(); // the part after the equal sign.
+	char chQuote=attValQuoted.charAt(0);
 	
+/* 
+ * fred: I don't fully understand this code. It's meant to change \" to " (and other replacements?)
+ *       but it causes bug 479, because the token is broken at linebreak.
+
 	// we use a streamtokenizer to do the complicated parsing of "...\"\t ...\n...."
-	StreamTokenizer st= new StreamTokenizer(new StringReader(val));
-	char quote=val.charAt(0);
-	st.quoteChar(quote);
+	StreamTokenizer st= new StreamTokenizer(new StringReader(attValQuoted));
+         st.eolIsSignificant(false);
+	st.quoteChar(chQuote);
 	try{
-	  if(st.nextToken()!=quote)
+	  if(st.nextToken()!=chQuote)
 	    throw new RuntimeException("quoted string expected, found "+val);
 	}catch(java.io.IOException ioe) { throw new RuntimeWrappedException(ioe);}
-	String attName= attr.substring(0, n).trim();
-	ret.put(attName, st.sval);
-	
+         String attValue = st.sval;
+ */
+
+         // the following assertion must be ensured by the attributePattern matching
+         if (attValQuoted.charAt(0) != attValQuoted.charAt(attValQuoted.length()-1))
+	    throw new RuntimeException("Properly quoted string expected, found "+attValQuoted);
+
+         // unescape the "escaped quotes" in the attributeValue
+         if (chQuote == '\"'){
+            attValQuoted = attValQuoted.replaceAll("\\\\\"", "\""); // replace \" by "
+         } else if (chQuote == '\''){
+            attValQuoted = attValQuoted.replaceAll("\\\\\'", "\'"); // replace \' by '
+         }
+         attValQuoted = attValQuoted.replaceAll("(\\\\){2}", "\\\\"); // replace \\ by \
+
+         String attValue = attValQuoted.substring(1, attValQuoted.length()-1); 
+	attributes.put(attName, attValue);
+
 	// syntax points
-	syntaxPoints.addSyntaxPoints(origin, origin+attName.length(), "JSPTagAttributeName", null);
+	syntaxPoints.addSyntaxPoints(origin  , origin+n  , "JSPTagAttributeName"  , null);
 	syntaxPoints.addSyntaxPoints(origin+n, origin+n+1, "JSPTagAttributeEquals", null);
-	syntaxPoints.addSyntaxPoints(origin+s.indexOf('\"', n), origin+s.length(), "JSPTagAttributeValue", null);
+	syntaxPoints.addSyntaxPoints(origin+n+1, origin+s.length(), "JSPTagAttributeValue", null);
+
+         //debug
+         Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags.attribute");
+         log.finest("< Attribute : " +attr);
+         log.finest("> AttrParse : " +attName+ " = " +attValue);
       }
-    return ret;
+    return attributes;
   }
 
 
