@@ -1,3 +1,4 @@
+stefan: fixed bug 282 (JSPX - absolute links to included files are broken when the makumba servlet context is not root)
 stefan: fixed bug 173 (getDataDefinition() works for java package names, should not)
 stefan: centralized version computation
 stefan: fixed bug 70 (returns field name for description if description is not set)
