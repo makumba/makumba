@@ -837,8 +837,8 @@ undefinedExpr :
 	//* we take away is_defined and is_undefined and we replace them with SQL is null and is not null...
 	{String s; }
         (
-            undef:"is_undefined" !{s="is null"; }
-        |   def:"is_defined"!{s="is not null"; }
+            undef:"is_undefined" !{s=" is null"; }
+        |   def:"is_defined"!{s=" is not null"; }
         )
    	TOK_LPAREN 
         query
