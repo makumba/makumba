@@ -28,7 +28,7 @@ import org.makumba.util.HtmlUtils;
 
 public class charViewer extends FieldViewer
 {
-  static String[] params= { "urlEncode", "html", "maxLength", "maxLengthEllipsis", "maxLengthEllipsisLength", "hoverText" };
+  static String[] params= { "urlEncode", "html", "maxLength", "ellipsis", "ellipsisLength", "addTitle" };
   static String[][] paramValues= { {"true", "false"}, { "true", "false", "auto" }, null, null, null, { "true", "false", "auto" }};
 
   public String[] getAcceptedParams(){ return params; }

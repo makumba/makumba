@@ -48,17 +48,17 @@ public class FieldViewer extends FieldFormatter
    String sOut=s;
    int maxLen=getIntParam(formatParams, "maxLength");
 
-   String ellipsis= (String)formatParams.get("maxLengthEllipsis");
+   String ellipsis= (String)formatParams.get("ellipsis");
    if(ellipsis==null)
      ellipsis=defaultEllipsis;
 
-   int ellipsisLen=getIntParam(formatParams, "maxLengthEllipsisLength");
+   int ellipsisLen=getIntParam(formatParams, "ellipsisLength");
    if(ellipsisLen==-1) //not specified
       ellipsisLen=ellipsis.length(); //compute from actual ellipsis
 
-   String hoverText= (String)formatParams.get("hoverText");
-   if(hoverText==null)
-      hoverText="false";
+   String addTitle= (String)formatParams.get("addTitle");
+   if(addTitle==null)
+      addTitle="false";
 
    if(maxLen!=-1 && s.length()>maxLen) //content longer than allowed
     { //shorten the content
@@ -68,8 +68,8 @@ public class FieldViewer extends FieldFormatter
       postfix=ellipsis;
     }
 
-   if(hoverText.equals("true") || (hoverText.equals("auto") && maxLen!=-1 && s.length()>maxLen) )
-    { //add hover text
+   if(addTitle.equals("true") || (addTitle.equals("auto") && maxLen!=-1 && s.length()>maxLen) )
+    { //add title, to be normally shown as tooltip on mouse hover
       prefix="<span title=\""+s.replace('\"','\'')+"\">";
       postfix=postfix+"</span>";
     }
@@ -78,10 +78,5 @@ public class FieldViewer extends FieldFormatter
 
  }  // end formatMaxLengthEllipsis
 
-
- public String formatMaxLengthEllipsis(String txt, String startSeparator, String endSeparator, Dictionary formatParams)
- {
-   return formatMaxLengthEllipsis(HtmlUtils.text2html(txt, startSeparator, endSeparator), formatParams);
- }
 
 }
