@@ -1,61 +1,16 @@
-0.5.5.17; 6 jan 2003 cristi
-better ways of buiding jars, without interfering with ../../util-java/lib
+0.5.6.1; 6 jan 2003 cristi
+- refactored the forms further, only the jsptaglib1-dependent features are now left in org.makumba.view.jsptaglib, the rest of the stuff is in form responders, org.makumba.controller
+action
+- while refactoring, i got more acquainted to the jsptaglib code, especially forms, so there are more features...
+- <mak:action> is now added and documented to support complex form actions that include makumba tags
+- infrastructure for multiple forms is now in place, and runs ok in the 'particular' case of the simple form. 
 
-better util.longContent logging level and documentation (too little change for a new version)
-
-0.5.5.16; 9 dec 2002 cristi
-added the path info to login form action to make login work in the pages that use path info in the URL, e.g. /archive/doc/xx-yy
-
-0.5.5.15; 6 dec 2002 cristi
-added a small servlet so parade can set the logging root at webapp runtime.
-some more meaningful cache names
-
-0.5.5.14; 4 dec 2002 cristi
-fixed bug 208 "comparing Date to a timestamp field (TS_*) always fails"
-
-0.5.5.13; 3 dec 2002 cristi
-fix for bug 189  "mak:LIST SEPARATOR not working if list is on top level"
-added cache size info
-soft reference alternative for static caches now available (util.SoftNamedResources)
-
-0.5.5.12; 30 nov 2002 cristi
-startup/cleanup functionality needed for web applications
-now makumba will correctly clean up its caches at webapp reload if its servlet context listener is used
-
-0.5.5.11; 27 nov 2002 cristi
-makumba registers the loading time for applications to know it
-
-0.5.5.10; 27 nov 2002 cristi
-refactored to expose the OQL analyzer and remove dependencies between packages
-
-0.5.5.9; 26 nov 2002 cristi
-removed some memory leaks: better OQL parse caching, no more prepared statement caching
-
-0.5.5.8; 20 nov 2002 cristi
-simpler AttributeParametrizer (will need rewrite anyway)
-autoReconnect=true is default now (to address bug 139)
-minor bug fixed in RecordManager (guards against DBConnectionWrapper class cast exception)
-
-0.5.5.7; 20 nov 2002 cristi
-better database information
-
-0.5.5.6; 20 nov 2002 cristi
-fix for bug 139
-
-0.5.5.5; 19 nov 2002 stefan
-jdbc driver info shown at startup
-
-0.5.5.4; 18 nov 2002 cristi
-more info logged, in the attempt to fix bug 139, "Communication link failure"
-
-0.5.5.3; 8 nov 2002 cristi
-standard logging for all classes. took out logging directly to console
-
-0.5.5.2; 7 nov 2002 cristi
-db is now a variable argument to the tags. may break in pages that change it often
-
-0.5.5.1; 6 nov 2002 cristi
-fixed deletion of objects coming from another db
+0.5.6; 17 dec 2002 cristi
+- the need for "first makumba tag" is eliminated for login and form response
+- now anything can be a response or can request login, including plain HTTPs or JPGs. that also means that all separate (non-include) accesses (e.g. images) are authenticated!
+- as excpected, authentication is only done once, included JSPs are not authenticated
+- some tag classes moved (login, logout, response) so tomcat/work/Standalone/localhost/context_name will have to be deleted before working with this version
+- quite a lot of the form response code moved from org.makumba.view.jsptaglib to org.makumba.controller.http, org.makumba.controller.html, org.makumba.controller.jsp. that should make the taglib rewrite easier.
 
 0.5.5; 3 nov 2002
 cristi: joined the 0.5.4 branch with the main branch

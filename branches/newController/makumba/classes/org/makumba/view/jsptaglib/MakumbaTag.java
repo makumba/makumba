@@ -4,13 +4,12 @@ import javax.servlet.jsp.tagext.*;
 import javax.servlet.jsp.*;
 import javax.servlet.http.*;
 import org.makumba.*;
-import org.makumba.util.*;
+import org.makumba.controller.jsp.PageAttributes;
 
 /** this class provides utility methods for all makumba tags */
 public abstract class MakumbaTag extends TagSupport implements TagStrategy
 {
   static final String ROOT_DATA_NAME="makumba.root.data";
-  static final String RESPONSE_STRING_NAME="makumba.response";
 
   TagStrategy strategy;
 
@@ -87,22 +86,16 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
     return ((QueryTagStrategy)getMakumbaParent().strategy).getQueryStrategy();
   }
 
-  public HttpAttributes getAttributes()
+  public PageAttributes getAttributes()
   {
     try{
-      return HttpAttributes.getAttributes(pageContext);
+      return PageAttributes.getAttributes(pageContext);
     }catch(Throwable e){ throw new MakumbaError("should not have error here "+e); } 
   }
 
   /** find the strategy, then delegate it to execute the preamble */
   public int doStartTag() throws JspException
   {
-    try{
-      HttpAttributes.getAttributes(pageContext);
-    }catch(Throwable e){ treatException(e); return SKIP_BODY; }
-    response();
-    if(wasException())
-      return SKIP_PAGE;    
     try{
       Object key=null;
       if(getMakumbaParent()==null)
@@ -183,43 +176,6 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
     getRootData().footer=s;
   }
   
-  //------------------ form response
-  public void response()
-  {    
-    if(pageContext.getRequest().getAttribute(RESPONSE_STRING_NAME)!=null)
-      return;
-    pageContext.getRequest().setAttribute(RESPONSE_STRING_NAME, "");
-    Integer i=FormResponder.responseId(pageContext);
-    if(i==null)
-      return;
-    String s="";
-    FormResponder fr= null;
-    try{
-      fr=FormResponder.getFormResponder(i);
-      Object p=fr.respondTo(pageContext);
-      s="<font color=green>"+fr.getMessage()+"</font>";
-      if(p!=null)
-	pageContext.setAttribute(fr.getSubjectLabel(), p, pageContext.PAGE_SCOPE);
-      pageContext.getRequest().setAttribute("makumba.successfulResponse", "yes");
-    }
-    catch(AttributeNotFoundException anfe)
-      {
-	// attribute not found is a programmer error and is reported
-	treatException(anfe); 
-	return ;
-      }
-    catch(LogicException e){
-      MakumbaSystem.getMakumbaLogger("controller.logicError").log(java.util.logging.Level.INFO, "logic exception", e);
-      s=errorMessage(e);
-      pageContext.setAttribute(fr.getSubjectLabel(), Pointer.Null, pageContext.PAGE_SCOPE);
-    }
-    catch(Throwable t){
-      // all included error types should be considered here
-      treatException(t);
-    }
-    pageContext.getRequest().setAttribute(RESPONSE_STRING_NAME, s);
-  }
-
   /** root tag properties */
   static final String ROOT_PREFIX="makumba.root.prefix.";
 
@@ -241,94 +197,23 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 
   public boolean wasException()
   {
-    return getRootProperty("wasException")!=null;
+    return org.makumba.controller.http.ControllerFilter.wasException
+      ((HttpServletRequest)pageContext.getRequest());
   }
 
   public void setWasException()
   {
-    setRootProperty("wasException", "yes");
-  }
-
-  // ----------------------
-  // -----  forwarding stuff: login, exceptions 
-  // ---------------------- 
-
-  public static String errorMessage(Throwable t)
-  {
-    return "<font color=red>"+t.getMessage()+"</font>";
+    org.makumba.controller.http.ControllerFilter.setWasException
+      ((HttpServletRequest)pageContext.getRequest());
   }
 
   protected void treatException(Throwable t) 
   {
-    if(getRootProperty("exceptionTreated")==null && !((t instanceof UnauthorizedException) && login(t)))
-      {
-	pageContext.setAttribute(pageContext.EXCEPTION, t, pageContext.REQUEST_SCOPE);
-	try{
-	  pageContext.forward("/servlet/org.makumba.devel.TagExceptionServlet"); 
-	}catch(Throwable q){ q.printStackTrace(); throw new MakumbaError(q); }
-      }
-    setRootProperty("exceptionTreated", "yes");
-    setRootProperty("wasException", "yes");
+    org.makumba.controller.http.ControllerFilter.treatException
+      (t,
+       (HttpServletRequest)pageContext.getRequest(),
+       (HttpServletResponse)pageContext.getResponse());
   }
-
-  public static String getLoginPage(String servletPath, javax.servlet.ServletConfig svc)
-  {
-    String root= svc.getServletContext().getRealPath("/");    
-    String virtualRoot="/";
-    String login=null;
-    
-    java.util.StringTokenizer st= new java.util.StringTokenizer(servletPath, "/");
-    while(st.hasMoreElements())
-      {
-	try{ 
-	  new java.io.FileReader(root+"login.jsp"); 
-	  login=virtualRoot+"login.jsp";
-	}catch(java.io.IOException e) {}
-	String s=st.nextToken()+"/";
-	root+=s;
-	virtualRoot+=s;
-      }
-    return login;
-  }
-
-  /** find the closest login.jsp and forward to it */
-  protected boolean login(Throwable t)
-  {
-    //    pageContext.setAttribute(attrNameAttr, actorAttribute, pageContext.SESSION_SCOPE);
-      HttpServletRequest req=(HttpServletRequest)pageContext.getRequest();
-
-      String servletPath= req.getServletPath();
-
-      // find the original request... the inverse of the VHostWrapper
-      while(req instanceof HttpServletRequestWrapper)
-	  req=(HttpServletRequest)((HttpServletRequestWrapper) req).getRequest();
-
-/*      String pathInfo=req.getPathInfo();
-      if(pathInfo==null)
-	  pathInfo="";
-      String varInfo=req.getQueryString();
-      if(varInfo==null) 
-          varInfo=""; 
-      System.out.println(varInfo+"\n");
-      pageContext.setAttribute(LoginTag.pageAttr, req.getServletPath()+pathInfo+"?"+varInfo, pageContext.REQUEST_SCOPE); */
-
-
-      pageContext.setAttribute(LoginTag.pageAttr, req, pageContext.REQUEST_SCOPE);
-//      req.setAttribute(LoginTag.pageAttr, req);
-
-      // pageContext.getRequest().setAttribute(RESPONSE_STRING_NAME, errorMessage(t));
-      pageContext.setAttribute(pageContext.EXCEPTION, t, pageContext.REQUEST_SCOPE);
-      
-      String login= getLoginPage(servletPath, pageContext.getServletConfig());
-      if(login==null)
-	  return false;
-      try{
-           System.out.println("Forwarding to:"+login);
-	  pageContext.forward(login);
-      }catch(Throwable q){ q.printStackTrace(); return false; }
-      return true;
-  }
-
 
   ///---------------- arguments for simple tags 
   /** get the strategy of the root */

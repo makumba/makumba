@@ -3,6 +3,7 @@ import javax.servlet.jsp.*;
 import java.util.*;
 import org.makumba.*;
 import org.makumba.abstr.*;
+import org.makumba.controller.jsp.PageAttributes;
 
 public class InputTag extends MakumbaTag
 {
