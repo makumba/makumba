@@ -143,9 +143,6 @@ public abstract class BasicValueTag extends MakumbaTag
     if(val!=null)
       val=type.checkValue(val);
 
-    if(isNull())
-      val=Pointer.Null;
-
     return computedValue(val, type);
   }
 
