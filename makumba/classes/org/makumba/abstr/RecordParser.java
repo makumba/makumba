@@ -214,7 +214,7 @@ public class RecordParser extends RecordHandler
 	    String ok= text.getOriginal(st);
             String incl=(String)text.remove(st);
             line--;
-            String s=incl;
+            String s=incl.trim();
 	    java.net.URL u= findDataDefinition(s, "idd");
 	    String n="."+ri.name;
 	    //if(u==null && s.indexOf('.')==-1)
