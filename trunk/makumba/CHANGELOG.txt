@@ -1,7 +1,8 @@
-stefan source viewers generate valid html 4.01
-stefan removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
-stefan LineViewer works better with strict Mozilla
-stefan fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
+0.5.5.25; 25 mar 2003 stefan
+source viewers generate valid html 4.01 + other visual improvements there
+removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
+LineViewer works better with strict Mozilla
+fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
 
 0.5.5.24; 03 mar 2003 stefan
 fixed bug 283 (some JSPX don't link pages indicated in jsp:include)
