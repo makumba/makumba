@@ -37,7 +37,6 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
   public boolean canBeRoot() { return true; }
   protected RootTagStrategy makeRootStrategy(Object key) { return this; }
   public void onInit(TagStrategy ts) {}
-  public Object makeBuffer() { return new RootQueryBuffer(); }
 
   // the tag attributes
   String baseObject;

@@ -41,7 +41,7 @@ public class NullableValueSecondaryStrategy extends TagStrategySupport implement
     int n=main.done;
     if(n!=BodyTag.EVAL_BODY_TAG)
       return n;
-    ValueTag.displayIn(main);
+    main.insertEvaluation((ValueTag)tag);
     return BodyTag.EVAL_BODY_INCLUDE;
   }
 

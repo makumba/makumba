@@ -28,10 +28,15 @@ import javax.servlet.jsp.*;
 import javax.servlet.http.*;
 import org.makumba.*;
 import org.makumba.controller.jsp.PageAttributes;
+import java.util.Hashtable;
 
 /** this class provides utility methods for all makumba tags */
 public abstract class MakumbaTag extends TagSupport implements TagStrategy
 {
+  Hashtable params= new Hashtable(7);
+
+  public void cleanState(){ params.clear(); strategy=null; } 
+
   static final String ROOT_DATA_NAME="makumba.root.data";
 
   TagStrategy strategy;
@@ -44,7 +49,7 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
   /** identifies the closest parent of the class desired by getParentClass() */
   public void setParent(Tag t)
   { 
-    super.setParent(t); 
+    super.setParent(t);
     if(getMakumbaParent()==null)
       {
 	// there can be more than one root tag in a tag structure. only the 
@@ -53,12 +58,8 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 	
 	pageContext.setAttribute(ROOT_DATA_NAME, created= new RootData(this, pageContext), PageContext.PAGE_SCOPE);
 	canBeRoot();
-	getRootData().buffer=makeBuffer();
       }
   }
-
-  /** make common data for all queries to be stored in the root data */
-  public Object makeBuffer() { return null; }
 
   /** return true if this tag can be root tag, else throw an exception */
   protected abstract boolean canBeRoot();
@@ -164,7 +165,7 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
       }
   }
 
-  public void release(){ if(strategy!=null)strategy.doRelease(); }
+  public void release(){ cleanState(); if(strategy!=null)strategy.doRelease(); }
 
   /** obtain the makumba database; this can be more complex (accept arguments, etc) */
   public String getDatabaseName() {return getDatabaseName(pageContext); }
@@ -259,61 +260,53 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
        (HttpServletResponse)pageContext.getResponse());
   }
 
-  ///---------------- arguments for simple tags 
-  /** get the strategy of the root */
-  protected RootQueryBuffer getRootQueryBuffer() 
-  { 
-    return (RootQueryBuffer)getRootData().buffer;
-  }
-
-
   public void setUrlEncode(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("urlEncode", s); 
+    params.put("urlEncode", s); 
   }
 
   public void setHtml(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("html", s); 
+    params.put("html", s); 
   }
   
   public void setFormat(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("format", s); 
+    params.put("format", s); 
   }
 
   public void setType(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("type", s); 
+    params.put("type", s); 
   }
 
   public void setSize(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("size", s); 
+    params.put("size", s); 
   }
 
   public void setMaxlength(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("maxlength", s); 
+    params.put("maxlength", s); 
   }
 
   public void setRows(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("rows", s); 
+    params.put("rows", s); 
   }
 
   public void setCols(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("cols", s); 
+    params.put("cols", s); 
   }
 
   public void setLineSeparator(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("lineSeparator", s); 
+    params.put("lineSeparator", s); 
   }
 
   public void setLongLineLength(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("longLineLength", s); 
+    params.put("longLineLength", s); 
   }
 }

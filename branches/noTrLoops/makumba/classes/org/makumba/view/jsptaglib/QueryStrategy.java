@@ -38,15 +38,12 @@ public class QueryStrategy extends TagStrategySupport
 implements Observer, QueryTagStrategy
 {
   public static final Integer zero= new Integer(0);
-  String [] queryProps;
-  String separator;
-  String countVar;
-  String maxCountVar;
 
   public QueryStrategy getQueryStrategy(){return this; }
-  public RootQueryBuffer getBuffer(){ return (RootQueryBuffer)rootData.buffer; }
   public RootQueryStrategy getRoot() { return (RootQueryStrategy)root; }
   public QueryStrategy getParentStrategy(){return ((QueryTagStrategy)tag.getMakumbaParent().strategy).getQueryStrategy(); }
+
+  public QueryTag getQueryTag(){ return (QueryTag)tag; }
 
   public Object getKey(){return key; }
 
@@ -57,24 +54,7 @@ implements Observer, QueryTagStrategy
     adjustQueryProps();
   }
 
-  protected void adjustQueryProps()
-  {
-    queryProps= getBuffer().bufferQueryProps;
-    getBuffer().bufferQueryProps=new String[4];
-
-    countVar= getBuffer().bufferCountVar;
-    maxCountVar= getBuffer().bufferMaxCountVar; 
-    getBuffer().bufferCountVar=getBuffer().bufferMaxCountVar=null;
-  }
-
-  public void loop()
-  {
-    separator= getBuffer().bufferSeparator;
-    getBuffer().bufferSeparator="";
-
-    for(int i=0; i<getBuffer().bufferQueryProps.length; i++)
-      getBuffer().bufferQueryProps[i]=null;
-  }
+  protected void adjustQueryProps(){  }
 
   boolean startedWithData=false;
   
@@ -91,7 +71,7 @@ implements Observer, QueryTagStrategy
     initCountVars();
     boolean unknown= query==null;
     if(unknown)
-      setQuery(ComposedQuery.getQuery(key, queryProps, getParentStrategy().getParentingQuery()));
+      setQuery(ComposedQuery.getQuery(key, getQueryTag().queryProps, getParentStrategy().getParentingQuery()));
     resetQueryVersion();
     if(unknown)
       {
@@ -112,7 +92,7 @@ implements Observer, QueryTagStrategy
     initCountVars();
     boolean unknown= query==null;
     if(unknown)
-      setQuery(ComposedQuery.getQuery(getKey(), queryProps, null));
+      setQuery(ComposedQuery.getQuery(getKey(), getQueryTag().queryProps, null));
     resetQueryVersion();
     if(unknown)
       {
@@ -172,7 +152,7 @@ implements Observer, QueryTagStrategy
 	setCountVar();
 	pushData();
 	try{
-	  bodyContent.print(separator);
+	  bodyContent.print(getQueryTag().separator);
 	}catch(IOException e){ throw new JspException(e.toString()); }
 	return BodyTag.EVAL_BODY_TAG;
       }
@@ -261,6 +241,10 @@ implements Observer, QueryTagStrategy
     return BodyTag.EVAL_PAGE;
   }
 
+  public void insertEvaluation(ValueTag t)throws JspException, NewProjectionException
+  {
+    insertEvaluation(t.expr, t.params, t.var, t.printVar);
+  }
 
   /** an enclosed VALUE tag requests the evaluation of a certain expression. 
    * We need to check if we have it in a query projection, if we do, we print the result, 
@@ -370,16 +354,16 @@ implements Observer, QueryTagStrategy
 
   protected void initCountVars()
   {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
-    if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, zero);
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, zero);
+    if(getQueryTag().maxCountVar!=null)
+      pageContext.setAttribute(getQueryTag().maxCountVar, zero);
   }
 
   protected void setCountVar()
   {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, new Integer(index+1));
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, new Integer(index+1));
   }
 // ---- the result walker part 
 
@@ -456,15 +440,15 @@ implements Observer, QueryTagStrategy
       return false;
     results= obtainData1(v);
 
-    if(maxCountVar!=null)
+    if(getQueryTag().maxCountVar!=null)
       {
 	Integer i= zero;
 	if(results!=null)
 	  i= new Integer(results.size());
-	pageContext.setAttribute(maxCountVar, i);
+	pageContext.setAttribute(getQueryTag().maxCountVar, i);
       }
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, zero);
     return results!=null;
   }
 
@@ -548,11 +532,11 @@ implements Observer, QueryTagStrategy
 
   public String toString(){ 
     return getType()+" "+
-      printHeader("\nfrom",queryProps[ComposedQuery.FROM])+
-      printHeader("\nwhere",queryProps[ComposedQuery.WHERE])+
-      printHeader("\norderBy",queryProps[ComposedQuery.ORDERBY])+
-      printHeader("\ngroupBy",queryProps[ComposedQuery.GROUPBY])+
-      printHeader("\nseparator",separator);
+      printHeader("\nfrom",getQueryTag().queryProps[ComposedQuery.FROM])+
+      printHeader("\nwhere",getQueryTag().queryProps[ComposedQuery.WHERE])+
+      printHeader("\norderBy",getQueryTag().queryProps[ComposedQuery.ORDERBY])+
+      printHeader("\ngroupBy",getQueryTag().queryProps[ComposedQuery.GROUPBY])+
+      printHeader("\nseparator",getQueryTag().separator);
   }
   
   public String getType() {return "LIST"; }
