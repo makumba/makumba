@@ -1004,16 +1004,21 @@ resulting query</td>
       <td>Fixed, Mandatory.</td>
     </tr>
     <tr>
+      <td><tt>variableFrom</tt></td>
+      <td>supplementary, variable <a href="#OQL">OQL FROM</a> section.</td>
+      <td>Fixed, can contain #{ JSP EL expressions }</td>
+    </tr>
+    <tr>
       <td><tt>where</tt></td>
       <td><a href="#OQL">OQL WHERE</a> section. If the query is nested,
 the WHERE section from the parent's query, is added to this in the
 resulting query</td>
-      <td>Fixed</td>
+      <td>Fixed, can contain #{ JSP EL expressions }</td>
     </tr>
     <tr>
       <td><tt>groupBy</tt></td>
       <td><a href="#OQL">OQL GROUP BY</a>&nbsp; section</td>
-      <td>Fixed</td>
+      <td>Fixed, can contain #{ JSP EL expressions }</td>
     </tr>
     <tr>
       <td><tt><span class="futfeat">(having)</span></tt></td>
@@ -1024,7 +1029,7 @@ section</span></td>
     <tr>
       <td><tt>orderBy</tt></td>
       <td><a href="#OQL">OQL ORDER BY</a>&nbsp; section</td>
-      <td>Fixed. Attributes are allowed in this way: groupBy="p.$sortby"</td>
+      <td>Fixed, can contain #{ JSP EL expressions } <tt class="oldfeat">label.$fieldname used to be supported, not anymore</tt></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><tt>offset</tt></td>
