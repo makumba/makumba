@@ -86,6 +86,9 @@ public abstract class Database
   public void close() 
   {
     MakumbaSystem.getMakumbaLogger("db.init").info("closing  "+getConfiguration()+"\n\tat "+org.makumba.view.dateFormatter.debugTime.format(new java.util.Date()));
+    tables.close();
+    queries.close();
+    updates.close();
     closeConnections();
   }
 
@@ -160,7 +163,7 @@ public abstract class Database
 	       .getConstructor(theProp)
 	       .newInstance(pr);
 	     d.configName= (String)name;
-	     d.tables= new NamedResources("Database tables and query result structures for "+name,
+	     d.tables= new NamedResources("Database tables for "+name,
 					  d.tableFactory);
 	     return d;
 	   }
@@ -278,7 +281,7 @@ public abstract class Database
     }catch(Exception e){ throw new org.makumba.MakumbaError(e); }
 
     
-    queries= new NamedResources
+    queries= new SoftNamedResources
       ("Database "+getName()+" query objects",
        new NamedResourceFactory(){
 	public Object makeResource(Object name) 
@@ -287,7 +290,7 @@ public abstract class Database
 	  }
       });
 
-    updates= new NamedResources
+    updates= new SoftNamedResources
       ("Database "+getName()+" update objects",
        new NamedResourceFactory(){
 	public Object makeResource(Object o) 
@@ -503,6 +506,22 @@ public abstract class Database
 	    }
     }finally{ c.close(); }
   }
+  
+  public Table makePseudoTable(RecordInfo ri)
+  {
+    Table ret= null;
+    try{
+      ret=(Table)tableclass.newInstance();
+    }catch(Throwable t){throw new MakumbaError(t); }
+    configureTable(ret, ri);
+    return ret;
+  }
+
+  void configureTable(Table tbl, RecordInfo ri){
+    tbl.db= Database.this;
+    tbl.setRecordInfo(ri);
+    tbl.open(config);
+  }
 
     NamedResourceFactory tableFactory= new NamedResourceFactory()
     {
@@ -519,13 +538,8 @@ public abstract class Database
 	
 	public void configureResource(Object name, Object hashName, Object resource)
 	{
-	    Table tbl= (Table)resource;
-	    tbl.db= Database.this;
-	    tbl.setRecordInfo((RecordInfo)name);
-	    //	 tbl.setTableRecordInfo((RecordInfo)name);
-	    tbl.open(config);
-	    if(!tbl.getRecordInfo().isTemporary())
-		addTable(tbl.getRecordInfo().getName());
+	  configureTable((Table)resource, (RecordInfo)name);
+	  addTable(((Table)resource).getRecordInfo().getName());
 	}
     };
 
