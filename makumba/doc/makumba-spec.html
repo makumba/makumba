@@ -138,12 +138,6 @@ Every data definition file contains <b>field definitions</b>, separated
 by newline.
 </p>
 
-<!-- FIXME: is this still correct? Bug 603 -->
-<div class="note futfeat">
-There will be another separator,
-to accomodate for more fields defined per line
-</div>
-
 <p>
 A field definition looks like:
 </p>
@@ -159,11 +153,6 @@ default values are supported
 internally, but not by the mdd parser
 </div>
 
-<!-- FIXME: is this relevant? Bug 604 -->
-<div class="note futfeat">
-In the future "=" might be replaced with ":".
-</div>
-
 <div class="internals note">
 As an implementation guideline, field names tend to stay approximately
 the same in:
@@ -175,7 +164,7 @@ the same in:
 </ul>
 </div>
 
-<p class="futfeat">Automatic labeling: 
+<p class="futfeat">Automatic labeling:
 The field description is used at interface levels to present that field.
 It is typically shown at the left of, or somewhere near to, the input control
 (text box, radio button, chooser, etc) that allows for data input in that
@@ -200,11 +189,11 @@ Every datatype has some additional fields by default, as follows:
 <li>Index field, consisting of two parts:
 
     <ul>
-    <li>Database identifier. It is unique (within the webapp) per database. 
-            All objects created thru that webapp and in that database get the  
-            same value. It is set by property dbsv in the database config  
+    <li>Database identifier. It is unique (within the webapp) per database.
+            All objects created thru that webapp and in that database get the
+            same value. It is set by property dbsv in the database config
             file.</li>
-    
+
     <li>Object identifier: unique id for the object in the given database.</li>
     </ul>
 This combination ensures that no two objects of one type have the same
@@ -216,14 +205,14 @@ name. If another field by that name is defined by the makumba user, this field w
 
 <li>Object creation time
 <div class="note">Can be accessed as TS_create.</div>
- <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13) 
+ <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
       "This might change, but there are specific methods to retrieve it"
  -->
 </li>
 
 <li>Last modification time. Updates whenever the object is changed
 <div class="note">Can be accessed as TS_modify.</div>
-<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13) 
+<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
       "This might change, but there are specific methods to retrieve it"
  -->
 </li>
@@ -258,8 +247,8 @@ This will help the presentation layer to present a suitable input control
 
 <h4>char</h4>
 <p>
-A char field contains a number of characters. Maximal width must be specified and is limited 
-to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max) 
+A char field contains a number of characters. Maximal width must be specified and is limited
+to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max)
 can be indicated.</span> Both must be positive integers.
 
 For example:
@@ -275,8 +264,8 @@ name= unique char[80]; Username
 </p>
 
 <div class="note">
-Pay close attention to the character set (charset) for encoding the characters. 
-In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings, 
+Pay close attention to the character set (charset) for encoding the characters.
+In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings,
 as well as the database, etc.
 </div>
 
@@ -321,9 +310,9 @@ arrivalTime= date; Arrival time
 </pre>
 
 <!-- FIXME. (fred, 2003-10-13) bug 606
-     Should there be a warning about "time". 
+     Should there be a warning about "time".
      Because it really isn't a "time", it would be a "date" where d/m/y fields
-     are not set explicitly... but they are filled in with 'random'/'current' 
+     are not set explicitly... but they are filled in with 'random'/'current'
      values. So comparison as "time" < 9am or so is not possible?
  -->
 
@@ -403,7 +392,7 @@ addresses: set{
 
 <div class="internals note">this type is known internally as setComplex</div>
 
-<p>The set can contain enumerated int values : 
+<p>The set can contain enumerated int values :
 <pre class="example">
 place= set int {"home"=1, "away"=0} ; Home or away
 </pre>
@@ -417,7 +406,7 @@ internally as setintEnum</div>
 place= set char {"home", "away"} ; Home or away
 </pre>
 
-<div class="note">It means that place is a 
+<div class="note">It means that place is a
 set that can take only the "home" and "away" values.
 </div>
 
@@ -467,7 +456,7 @@ while support for <b>unique</b> is in progress.
 <h3><a NAME="ObjectTitle">Object title</a></h3>
 <p>
 One of the fields is always the object title, and is normally presented
-differently from other fields in user interface. This is the field called "name" 
+differently from other fields in user interface. This is the field called "name"
 if that exists, otherwise it is the first non-pointer field in the record
 description. If another field needs to be title, it can be specified like
 </p>
@@ -477,7 +466,7 @@ description. If another field needs to be title, it can be specified like
 
 <div class="note">
 for the on-the spot types in the current implementation,
-the following notation works: 
+the following notation works:
 <p>
 <pre class="example">
 address->!title= street
@@ -542,17 +531,17 @@ to the <a href="SQL-drivers.html">host SQL</a> when necessary.
 
 <p>
 Notations like <code>label.field{.field}</code> only allow "<code>field</code>" to be of pointer
-type in <b><i>expression</i></b> and set type in <b>FROM</b>. 
-In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid. 
+type in <b><i>expression</i></b> and set type in <b>FROM</b>.
+In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid.
 </p>
 
-<!-- FIXME (fred, 2003-10-14): 
-     ? add some warning about expressions (e.g. in WHERE or ORDERBY) across 
-       nullable pointers 
+<!-- FIXME (fred, 2003-10-14):
+     ? add some warning about expressions (e.g. in WHERE or ORDERBY) across
+       nullable pointers
        = result is not having the records with null value in the list)
 -->
 
-<p>If a label, representing a type, appears alone in an expression, 
+<p>If a label, representing a type, appears alone in an expression,
 a default field will be added. The default field depends on the type of the label:
 <ul>
 <li>for set XXX types (sets of foreign objects), the label denotes the pointer
@@ -571,8 +560,8 @@ to the set member</li>
 
 <h3><a NAME="Attributes">Attributes</a></h3>
 <p>
-Java Server Pages use attributes to keep the state of the application. 
-Makumba builds upon that its own notion of Attributes that keep the read-only state 
+Java Server Pages use attributes to keep the state of the application.
+Makumba builds upon that its own notion of Attributes that keep the read-only state
 of a makumba task. They represent the "environment" of that makumba task. The typical
 example is a JSP page during execution, with its HTTP and session parameters
 as attributes. Since other kinds of attributes are possible, the attribute
@@ -591,12 +580,12 @@ a handler, and will call its methods when needed.
 
 <h4>Handler Discovery</h4>
 <p>
-Each page will determine its handler class on first access, after being compiled. 
+Each page will determine its handler class on first access, after being compiled.
 If the class changes on disk, a webapp reload is generally needed for the new class to take effect.
 <p>
-The handler is 'discovered' by decomposing the full path of the JSP page, 
-and finding a class with a matching name. Decomposition breaks the full path 
-at every capital letter, or forward slash. 
+The handler is 'discovered' by decomposing the full path of the JSP page,
+and finding a class with a matching name. Decomposition breaks the full path
+at every capital letter, or forward slash.
 For example, with the page path <b><code>/student/mycv/indexPersonal.jsp</code></b>,
 the following criteria are applied, in order:
 </p>
@@ -684,8 +673,8 @@ It is good practice for both pages to actually have the same handler class.
 
 <p>
 All methods of the handlers are http-independent.
-Methods are non-static, so the handler classes can use inheritance to their advantage. 
-Still, handler classes are singletons (only one instance of a certain class in a JVM).  
+Methods are non-static, so the handler classes can use inheritance to their advantage.
+Still, handler classes are singletons (only one instance of a certain class in a JVM).
 For example, the validation of a form can be in a class that is closer to the actual JSP
 application (view level) while the more view-independent methods can be
 in the parent of that class. For example:
@@ -711,16 +700,16 @@ the Handler object. In this case findStudent(). The handler has to compute
 the attribute, based on existing attributes, making DB accesses.
 </p>
 <div class="note">
-The find{AttributeName} method's name is constructed literally from the name of the 
-attribute (capitalising only the first letter), 
-so dots and other illegal characters for java identifier names, are not 
-to be used. Also, one shouldn't use 2 attribute names that differ only 
+The find{AttributeName} method's name is constructed literally from the name of the
+attribute (capitalising only the first letter),
+so dots and other illegal characters for java identifier names, are not
+to be used. Also, one shouldn't use 2 attribute names that differ only
 in the capitalisation of the first letter.
 </div>
 
 
 <p>
-For example "<code>lbg.$lbg_order</code>" (in an example elsewhere in the specs), 
+For example "<code>lbg.$lbg_order</code>" (in an example elsewhere in the specs),
 will generate a call
 <code>findLbg_order(otherAttributes, db)</code>
 and the Java handler will return the default
@@ -734,7 +723,7 @@ is associated with the session (i.e. set as JSP attribute in session scope)
 
 <p>
 If not, an exception will be thrown (typically
-<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>), 
+<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>),
 and the engine will act accordingly (i.e. ask for authentication).
 </p>
 </li>
@@ -766,7 +755,7 @@ if it is defined.
 </p>
 
 <p><b><code>checkAttributes</code></b> can perform sanity checks
-for attributes used in the respective logic (in case of mismatches, 
+for attributes used in the respective logic (in case of mismatches,
 <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>
 is usually thrown), can load attributes that are absolutely needed for
 page execution
@@ -779,7 +768,7 @@ Login is done as a result of a missing attribute
 (possibly invoked in <b><code>checkAttributes</code></b>), when a <code>find{AttributeName}</code> method is
 called. The missing attribute is the principal that needs to log in.
 
-<p>If the attribute cannot be found due to wrong login information, 
+<p>If the attribute cannot be found due to wrong login information,
 <a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>
 is usually thrown.
 
@@ -800,7 +789,7 @@ $password
 
 <li>
 cookie login: done in a page called <code>login.jsp</code>,
-in the same directory or (if missing) in any of the parents. 
+in the same directory or (if missing) in any of the parents.
 It should contain at least:
 <p>
 <pre class="example">
@@ -843,7 +832,7 @@ You can remove (cancel-out, logout) multiple attributes from the session by usin
 
 <div class="futfeat">
 Later on, logout request might be done in the business logic,
-with a method <code>deleteAttributes(param)</code> that can accept 
+with a method <code>deleteAttributes(param)</code> that can accept
 either a String (with optional '*') or a String[].
 
 <p>Later: to accomodate servers that don't do
@@ -1080,23 +1069,23 @@ The corresponding <b>WEB-INF/makumba.tld</b> is already included in the <a href=
 <a NAME="controller">Makumba Controller</a></h4>
 <p>
 The makumba controller is a component running in the 'servlet container'.
-When a request for a makumba page enters the servlet container, 
+When a request for a makumba page enters the servlet container,
 the controller will intercept the request, and perform its "controller"
-activities (cfr. the model-view-controller pattern) : 
+activities (cfr. the model-view-controller pattern) :
 </p>
 
 <ul>
  <li>checking if the page has the appropriate attributes (see handler initialisation; e.g. force login).
-     
+
  <li>checking if the page request is the result of a form submit or a deleteLink.
-     If so, perform the relevant actions in the handler and database. 
-     
+     If so, perform the relevant actions in the handler and database.
+
  <li>deal with problems (exceptions) during the controller activity:
      <ul>
-       <li>if <a href="api/org/makumba/LogicException.html"><code>org.makumba.LogicException</code></a> 
+       <li>if <a href="api/org/makumba/LogicException.html"><code>org.makumba.LogicException</code></a>
            is thrown, the Exception can write a message to the <a href="#response"><code>&lt;mak:response&gt;</code></a>
            in the requested page.</li>
-       <li><a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a> and 
+       <li><a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a> and
        <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a> will force
        login <span class="futfeat">(although UnauthorizedException probably shouldn't, <a href="http://bugzilla.makumba.org/show_bug.cgi?id=444">bug 444</a>)</span></li>
        <li>if another exception occurs, an errorPage will be shown instead of the requested page.</li>
@@ -1105,8 +1094,8 @@ activities (cfr. the model-view-controller pattern) :
 
 
 <p>For this to work, the correct configuration must be applied in <code>WEB-INF/web.xml</code>
-(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">example file</a>). 
-The following would tell the makumba controller to filter all requests for .jsp files. 
+(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">example file</a>).
+The following would tell the makumba controller to filter all requests for .jsp files.
 </p>
 
 <pre class="example">
@@ -1122,9 +1111,9 @@ The following would tell the makumba controller to filter all requests for .jsp 
 </pre>
 
 <p>
-Note that if (in this example) the result page for a makumba form would 
-be an <code>.html</code> page, then the makumba controller would not intercept 
-the <code>.html</code> page request, and the actions implied by the form, 
+Note that if (in this example) the result page for a makumba form would
+be an <code>.html</code> page, then the makumba controller would not intercept
+the <code>.html</code> page request, and the actions implied by the form,
 would not be performed.
 </p>
 
@@ -1143,8 +1132,8 @@ All parameters are <b>optional</b> unless specifically mentioned as being <b>man
 
 <p>
 Specific concern can be the <b>parameter quoting</b>. Tag parameters can be written as
-name="value" or name='value'. The choice of quote can be determined by the need 
-to use either double or single quote as part of the value itself. If the quote is 
+name="value" or name='value'. The choice of quote can be determined by the need
+to use either double or single quote as part of the value itself. If the quote is
 also present within the value, it must be escaped by a backslash.
 </p>
 
@@ -1158,7 +1147,7 @@ also present within the value, it must be escaped by a backslash.
 
 <h3><a NAME="maklist">&lt;mak:list...>...&lt;/mak:list></a></h3>
 <p>
-Performs a query on the database. The body of the list, if present, is run 
+Performs a query on the database. The body of the list, if present, is run
 once for every item in the resulting data (size 0..N), e.g. to display it.
 Queries are generated on the spot and can be nested.
 </p>
@@ -1286,7 +1275,7 @@ It is not included before the first or after the last
 
 <td>Tag's identifier</td>
 
-<td>Fixed. Can be used to distinguish otherwise identical tags on a page 
+<td>Fixed. Can be used to distinguish otherwise identical tags on a page
 (to avoid confusion by Makumba's JSP analyser)</td>
 </tr>
 
@@ -1334,7 +1323,7 @@ with <code>$</code> at both ends.
 
 <p>The http parameters are automatically set as page
 attributes. Other attributes can be set by the Java code as attributes in any scope
-(page, request, session, application) using 
+(page, request, session, application) using
 <code><a title="external link, servlet API" href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/jsp/PageContext.html">pageContext.setAttribute(name, value, scope)</a></code>.
 
 <p>The query generator is setting all the attributes
@@ -1398,7 +1387,7 @@ Example:
 <tr>
 <td><tt>expr</tt></td>
 
-<td><a href="#OQL">OQL SELECT</a> projection expression. 
+<td><a href="#OQL">OQL SELECT</a> projection expression.
 It will be displayed if <code>var</code> nor <code>printVar</code> are
 not specified.</td>
 
@@ -1485,7 +1474,7 @@ Default is "<code>false</code>".</td>
 <td>Separator for long lines. If a text consists of short lines only, it will be surrounded by <code>&lt;pre>...&lt;/pre></code>.
 Default is "<code>&lt;p></code>".</td>
 
-<td>Rtexpr. Only for text. Current implementation is <a href="http://bugzilla.makumba.org/show_bug.cgi?id=38">buggy</a>: 
+<td>Rtexpr. Only for text. Current implementation is <a href="http://bugzilla.makumba.org/show_bug.cgi?id=38">buggy</a>:
 separator is added before every long line, instead of between every long line.</td>
 </tr>
 
@@ -1540,7 +1529,7 @@ is cut (cfr <code>maxLength</code>). Default is "<code>false</code>". <br>
 </td>
 
 <td>Rtexpr.
-Note: implementated by producing as output: 
+Note: implementated by producing as output:
 <code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span></code>
 </td>
 </tr>
@@ -1548,7 +1537,7 @@ Note: implementated by producing as output:
 <tr>
 <td><tt>default</tt></td>
 
-<td>The character string  to print if the <code>expr</code> results in a NULL value. 
+<td>The character string  to print if the <code>expr</code> results in a NULL value.
 Default is <code>default=""</code> (i.e. zero-length string)</td>
 
 <td>Rtexpr</td>
@@ -1601,7 +1590,7 @@ It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
 
 <td>Fixed, Mandatory.
     <br><i>(in first implementation, this was called <code>expr</code>,
-    but changed to reflect practice in XSL and <A 
+    but changed to reflect practice in XSL and <A
 href="http://java.sun.com/products/jsp/jstl/" title="JSP Standard Tag Library">JSTL</a>)</i>
 </td>
 </tr>
@@ -1671,7 +1660,7 @@ Note that you will have to cast it to its specific type.</td>
 <tr>
 <td><tt>exceptionVar</tt></td>
 
-<td>The name of the created <code>java.lang.Throwable</code> variable that will 
+<td>The name of the created <code>java.lang.Throwable</code> variable that will
 hold eventual exceptions
 raised when trying to compute the attribute. If <code>exceptionVar</code> is missing,
 any raised exception will stop page execution. If it is present, and <code>AttibuteNotFoundException</code>
@@ -1700,7 +1689,7 @@ Makumba can produce four types of forms: new, add, edit and generic forms.
 </p>
 
 <p>
-All forms have a number of common features: 
+All forms have a number of common features:
 They can include <code>&lt;mak:input ></code> tags.
 They all can have "<code>action</code>", "<code>method</code>", "<code>handler</code>",
 "<code>name</code>" and "<code>message</code>"
@@ -1708,7 +1697,7 @@ arguments.
 </p>
 
 <p>
-Handler methods (if they exist) are executed by the 
+Handler methods (if they exist) are executed by the
 <a href="#controller">makumba controller</a>, when
 the form is submitted to another makumba page.
 
@@ -1736,14 +1725,14 @@ handler method.
 
 <h4><a NAME="maknew">&lt;mak:newForm&nbsp; ...>.... &lt;/mak:newForm></a></h4>
 <p>
-Makes a form for creating a new object of the indicated type. 
+Makes a form for creating a new object of the indicated type.
 
-<!-- FIXME (fred 2003-10-18) should include description of 
+<!-- FIXME (fred 2003-10-18) should include description of
  how also related object can be created at the same time
-   
+
    ptr.externalpointer (needs be fixed, notnull, ... ????)
    ptr.internalpointer ????
- 
+
 -->
 
 
@@ -2011,7 +2000,7 @@ Example:
 
 <td class="futfeat">the Java class.method that handles the response</td>
 
-<td>defaults to <code>on_add+MakumbaType+fieldname</code>. 
+<td>defaults to <code>on_add+MakumbaType+fieldname</code>.
 Arguments:
 <code>(Pointer baseObject, Dictionary newData,&nbsp; Attributes a, Database db)</code></td>
 </tr>
@@ -2362,7 +2351,7 @@ or read by in the previous page by an <code>&lt;mak:input /></code></td>
 for <code>char[]</code> , type can be "<code>text</code>" or "<code>password</code>", default is "<code>text</code>"</li>
 
 <li>
-default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>, <code>ptr</code> and <code>set</code> 
+default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>, <code>ptr</code> and <code>set</code>
 is "<code>select</code>" (dropdown or scroll list depending on <code>size</code>).
 Alternative is "<code>tickbox</code>" (checkboxes or radio buttons)</li>
 
@@ -2372,9 +2361,9 @@ Alternative is "<code>tickbox</code>" (checkboxes or radio buttons)</li>
 
 <li>
 for <code>text</code>, default is "<code>textarea</code>"; "<code>file</code>"
-will create file upload box, and 
+will create file upload box, and
 will create supplementary attributes <code>&lt;fieldname>_filename</code>,
-<code>&lt;fieldname>_contentType</code> and <code>&lt;fieldname>_contentLength</code> 
+<code>&lt;fieldname>_contentType</code> and <code>&lt;fieldname>_contentLength</code>
 that have to be handled separately by the handler method</li>
 </ul>
 </td>
@@ -2432,7 +2421,7 @@ and <code>set</code>, <code>ptr</code> (height of the select)</td>
 
 <td>Max length of a text control</td>
 
-<td>Rtexpr. Only for <code>char[]</code> and <code>int</code>. 
+<td>Rtexpr. Only for <code>char[]</code> and <code>int</code>.
 Defaults to makumba width of the <code>char[]</code></td>
 </tr>
 
@@ -2440,7 +2429,7 @@ Defaults to makumba width of the <code>char[]</code></td>
 <tr>
 <td><tt>labelSeparator</tt></td>
 
-<td>The string that separates the tickbox (radio/check) from the label. Default is <code>" "</code> (space). 
+<td>The string that separates the tickbox (radio/check) from the label. Default is <code>" "</code> (space).
 <br>The output will be <code>&lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</code></td>
 
 <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
@@ -2450,7 +2439,7 @@ Defaults to makumba width of the <code>char[]</code></td>
 <tr>
 <td><tt>elementSeparator</tt></td>
 
-<td>The string that separates the different options. Default is <code>" "</code> (space). 
+<td>The string that separates the different options. Default is <code>" "</code> (space).
 <br>The output will be <code>&lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</code></td>
 
 <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
@@ -2460,9 +2449,9 @@ Defaults to makumba width of the <code>char[]</code></td>
 <tr class="futfeat">
 <td><tt>elementSeparatorList</tt></td>
 
-<td>The list of strings that separates the different options. Not active by default. 
-The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any character 
-(not appearing inside the separators) can be used as delimiter, e.g. '!'. 
+<td>The list of strings that separates the different options. Not active by default.
+The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any character
+(not appearing inside the separators) can be used as delimiter, e.g. '!'.
 <br>The output will be <br>
 <code>&lt; [x] label &gt;&lt; sep[1] &gt;&lt; [x] label &gt;&lt; sep[2] &gt; ... &lt; [x] label &gt;&lt; sep[n] &gt;&lt; [x] label &gt;&lt; sep[1] &gt; ...</code></td>
 
@@ -2529,7 +2518,7 @@ Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
 
 <p>
 Fields of related records can be reference and edited as well, via pointers.
-In this (somewhat strange) example, one can edit the name of the capital city 
+In this (somewhat strange) example, one can edit the name of the capital city
 of the country of which person is a citizen, through the person edit form :
 </p>
 
@@ -2560,9 +2549,9 @@ only as a separate object</li>
 
 <h4><a NAME="action">&lt;mak:action>....&lt;/mak:action></a></h4>
 <p>
-If the action URI of a form or deleteLink is more complex, possibly 
-including other makumba tags, 
-the action parameter of the form tag can be omitted, and the action URI 
+If the action URI of a form or deleteLink is more complex, possibly
+including other makumba tags,
+the action parameter of the form tag can be omitted, and the action URI
 can be indicated in a <code>mak:action</code>, anywhere inside the form tag.
 </p>
 
@@ -2696,15 +2685,15 @@ Business Logic. Other exception types will provoke an exception page.
 <p>Absence of the &lt;mak:response/> tag on a page that is the response to a form, will result in an run-time error.
 -->
 
-<p>The unformatted message is available as request-scope attribute <code>makumba.response</code>. 
+<p>The unformatted message is available as request-scope attribute <code>makumba.response</code>.
 The jsp page can get hold of the message using e.g. </p>
 <pre class="example">
 &lt;% String s = (String) request.getAttribute("makumba.response") %>
 </pre>
 
 <p>
-Similarly, request-scope attribute <code>makumba.successfulResponse</code> is set 
-<i>only</i> in case of successful action execution. 
+Similarly, request-scope attribute <code>makumba.successfulResponse</code> is set
+<i>only</i> in case of successful action execution.
 </p>
 
 <pre class="example">
