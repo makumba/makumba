@@ -96,8 +96,11 @@ public abstract class ResourcePool
     synchronized(stack){
       if(stalePreventionThread!=null)
 	stalePreventionThread.interrupt();
+      
       stack.clear();
       timeStack.clear();
+      for(int i=0; i<all.size(); i++)
+	close(all.elementAt(i));
       all.clear();
     }    
   }
@@ -113,6 +116,9 @@ public abstract class ResourcePool
 
   /** refresh a resource that was unused for a long time to prevent it from staling */
   public void renew(Object o) {}
+  
+  /** close a resource */
+  public void close(Object o) {}
 
   /** start a stale prevention thread */
   public void startStalePreventionThread(long sleepingTime, long staleTime){
