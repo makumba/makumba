@@ -405,7 +405,6 @@ addresses: set{
 <pre class="example">
 place= set int {"home"=1, "away"=0} ; Home or away
 </pre>
-</p>
 
 <div class="internals note">this is currently known
 internally as setintEnum</div>
@@ -415,7 +414,6 @@ internally as setintEnum</div>
 <pre class="example">
 place= set char {"home", "away"} ; Home or away
 </pre>
-</p>
 
 <div class="note">It means that place is a 
 set that can take only the "home" and "away" values.
@@ -482,7 +480,6 @@ the following notation works:
 <pre class="example">
 address->!title= street
 </pre>
-</p>
 </div>
 
 <h3><a NAME="Include">Include mechanism</a></h3>
@@ -565,7 +562,6 @@ to the set member</li>
 <li>for all other types, the label denotes the pointer to that object</li>
 
 </ul>
-</p>
 
 
 <h2><a NAME="Business">Business Logic (BL)</a></h2>
@@ -704,7 +700,7 @@ org.eu.best.minerva.StudentHandler extends org.eu.best.StudentHandler
 <li><b>find attributes</b> unknown by pages. e.g.
 <p><pre class="example">
 &lt;mak:object from="best.Student stud" where="stud=$student"> ...&lt;/mak:object>
-</pre></p>
+</pre>
 <p>
 If the <code>$student</code> attribute is not known in the
 page (from a http argument) or in the session, the <code>find{AttributeName}(Dictionary
@@ -2308,7 +2304,6 @@ as page $attributes but will all be of type String</li>
 the fields produced by <code>&lt;mak:input></code> are available
 separately as a Dictionary to the handler method</li>
 </ul>
-</p>
 
 <pre class="example">
 &lt;mak:object from="best.Student s, s.person p" where="s=$student">
