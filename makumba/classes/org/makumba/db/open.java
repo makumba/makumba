@@ -35,9 +35,23 @@ public class open
   {
     Database d=null;
     try{
-      d= Database.getDatabase(argv[0]);
-      String[] tables= new String[argv.length-1];
-      System.arraycopy(argv, 1, tables, 0, tables.length);
+      if(argv.length==0)
+	d= Database.findDatabase("MakumbaDatabase.properties");
+      else
+	d= Database.getDatabase(argv[0]);
+      String[] tables;
+      if(argv.length<2)
+	{
+	  Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+	  tables= new String[v.size()];
+	  for(int i=0; i<v.size(); i++)
+	    tables[i]= (String)v.elementAt(i);
+	}
+      else
+	{
+	  tables= new String[argv.length-1];
+	  System.arraycopy(argv, 1, tables, 0, tables.length);
+	}
       d.openTables(tables);
     }
     catch(Throwable t)
