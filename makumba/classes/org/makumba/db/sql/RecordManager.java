@@ -632,7 +632,8 @@ public class RecordManager extends Table
 	
 	((FieldManager)handlers.get(indexField)).setUpdateArgument(st, n, uid);
 	
-	getSQLDatabase().exec(st);
+	if(getSQLDatabase().exec(st)==-1)
+	  throw findDuplicates((SQLDBConnection)dbc, d);
 	return;
       }//catch(ReconnectedException re)	{ continue; }
       catch(SQLException se)
