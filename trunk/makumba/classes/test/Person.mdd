@@ -11,6 +11,8 @@ field=char[80]           ;another reserved word
 militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
 driver=yesNo		 ;Driving Licence
 
+weight=real ; weight in kilos
+
 hobbies=text             ;Hobbies
 comment=text		 ;Comments
 

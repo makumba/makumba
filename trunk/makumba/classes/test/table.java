@@ -68,7 +68,7 @@ public class table extends TestCase
 
   String readPerson= "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
 
-  String readPerson1= "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment FROM test.Person p WHERE p= $1";
+  String readPerson1= "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment FROM test.Person p WHERE p= $1";
 
   String readIntSet="SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
   String readCharSet="SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
@@ -107,6 +107,8 @@ public class table extends TestCase
     p.put("birthdate", birth);
     p.put("comment", new Text(getExampleData()));
 
+    p.put("weight", new Double(85.7d));
+
     p.put("indiv.name", "john");
     p.put("indiv.surname", "doe");
     p.put("extraData.something", "else");
@@ -138,6 +140,7 @@ public class table extends TestCase
     ptrOne=(Pointer)pc.get("extraData");
     assertEquals("Name","john", pc.get("name"));
     assertEquals("Surname", "doe", pc.get("surname"));
+    assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
     assertEquals("Birthdate", birth, pc.get("birthdate"));
     assertEquals("Something else", "else", pc.get("something"));
     assertEquals("Comment text", pc.get("comment"), new Text(getExampleData()) );
@@ -416,6 +419,59 @@ public class table extends TestCase
     assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
     assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr).size());
     assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr).size());
+
+    //delete all entries, bug 673:
+    db.delete("test.validMdds.CharWithLength t", "5=5",null); 
+  }
+
+
+  public void testRealAggregation()
+  {
+    db.delete("test.validMdds.Real r", "r=r",null); //delete all entries first
+    Dictionary p= new Hashtable();
+    p.put("r", new Double(.5d));
+    db.insert("test.validMdds.Real", p);
+    p.put("r", new Double(.2d));
+    db.insert("test.validMdds.Real", p);
+    p.put("r", new Double(1.8d));
+    db.insert("test.validMdds.Real", p);
+    p.put("r", new Double(.0008d));
+    db.insert("test.validMdds.Real", p);
+    Vector v=db.executeQuery("SELECT avg(r.r) as av, sum(r.r) as su FROM  test.validMdds.Real r", null);
+    assertEquals("Real aggregation", 1, v.size());
+    assertEquals("Avg(reals)", new Double(0.6252d), ((Dictionary)v.firstElement()).get("av"));
+    assertEquals("Sum(reals)", new Double(2.5008d), ((Dictionary)v.firstElement()).get("su"));
+
+    Object[] args= {new Double(0.2), new Double(1.8)};
+    v=db.executeQuery("SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args);
+    assertEquals("Real comparisment", 2, v.size());
+
+    //should we allow this? FIXME!
+    Object[] args2= {new Integer(-1), new Double(1.5)};
+    v=db.executeQuery("SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args2);
+    assertEquals("Real comparisment with integer", new Integer(3), ((Dictionary)v.firstElement()).get("cnt") );
+  }
+
+  public void testIntAggregation()
+  {
+    db.delete("test.validMdds.Int iii", "5=5",null); //delete all entries first
+    Dictionary p= new Hashtable();
+    p.put("i", new Integer(0));
+    db.insert("test.validMdds.Int", p);
+    p.put("i", new Integer(1));
+    db.insert("test.validMdds.Int", p);
+    p.put("i", new Integer(2));
+    db.insert("test.validMdds.Int", p);
+    p.put("i", new Integer(3));
+    db.insert("test.validMdds.Int", p);
+    p.put("i", new Integer(4));
+    db.insert("test.validMdds.Int", p);
+    p.put("i", new Integer(5));
+    db.insert("test.validMdds.Int", p);
+    Vector v=db.executeQuery("SELECT avg(i.i) as av, sum(i.i) as su FROM  test.validMdds.Int i", null);
+    assertEquals("Int aggregation", 1, v.size());
+    assertEquals("Avg(ints)", new Double(2.5d), ((Dictionary)v.firstElement()).get("av"));
+    assertEquals("Sum(ints)", new Integer(15), ((Dictionary)v.firstElement()).get("su"));
   }
 
   public void testCopy()
