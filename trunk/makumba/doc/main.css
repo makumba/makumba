@@ -3,14 +3,15 @@ BODY {	font-family: arial;
 	color:black; 
 	background-color:white; 
 	margin-right:10;
-	margin-left:120; }
+	margin-left:150; }
   H1 {	background: #044a2c; 
 	color:white;
 	margin-top: 30;
-	padding-left: 10 }
-  H2 { background: #74C27A; margin-top: 50 ; padding-left: 10}
-  H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10}
-  H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left: 10}
+	padding-left: 10;
+	margin-left:-40; }
+  H2 { background: #74C27A; margin-top: 50 ; padding-left: 10; margin-left:-30;}
+  H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10; margin-left:-20;}
+  H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left:10; margin-left:-10;}
   H5 { background: #E0D9CF; color: #666666 ; margin-top: 40; padding-left: 10}
   
   H1 a, H2 a, H3 a, H4 a {color:black;}
@@ -61,4 +62,15 @@ pre.example {
 	padding-left: 5px;
 	background: #F5F5FF;
 	margin-top:0.5em;
+}
+
+
+.note{
+	font-size:0.9em;
+	font-style:italic;
+	margin-left: 50;
+	padding:0.2em;
+	background: white url("note.gif") no-repeat;
+	padding-left:25px;
+	padding-bottom:5px;
 }
