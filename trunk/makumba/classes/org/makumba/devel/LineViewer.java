@@ -205,6 +205,7 @@ public class LineViewer implements SourceViewer
     switch(current){
     case '<': highlighted.append("&lt;"); break;
     case '>': highlighted.append("&gt;"); break;
+    case '&': highlighted.append("&amp;"); break;
     default: highlighted.append(current);
     }   
   }
