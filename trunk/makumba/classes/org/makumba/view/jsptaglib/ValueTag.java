@@ -38,7 +38,7 @@ public class ValueTag extends MakumbaTag
   
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey()
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     addToParentListKey(expr.trim());
   }
