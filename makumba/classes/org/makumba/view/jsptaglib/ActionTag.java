@@ -47,7 +47,7 @@ public class ActionTag extends MakumbaTag implements BodyTag
   {
     FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
     if(form==null)
-      throw new ProgrammerError("\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag:\n"+getTagText());
+      throw new ProgrammerError("\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag");
     form.setAction("dummy");
   }
 
