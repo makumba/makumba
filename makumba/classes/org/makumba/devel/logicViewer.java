@@ -41,7 +41,7 @@ public class logicViewer extends LineViewer
 
  void intro(PrintWriter w)
  {
-   w.print("<td><a href=\""+virtualPath+"x\">page</a></td>");
+   w.print("<td><a href=\""+contextPath+virtualPath+"x\">page</a></td>");
  }
 
 }
