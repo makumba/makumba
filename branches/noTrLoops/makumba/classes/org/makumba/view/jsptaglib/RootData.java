@@ -45,12 +45,6 @@ public class RootData
     MakumbaSystem.getMakumbaLogger("taglib.performance").fine("---- tag start ---");
     stamp= new Date().getTime();
     this.pageContext=pageContext;
-    if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
-      t.setWasException();
-
-    //    String attName[]=pageContext.getRequest().getParameterValues(attrNameAttr);
-    //if(pageContext.getAttribute(attrNameAttr, PageContext.SESSION_SCOPE) == null && attName!=null)
-    //      pageContext.setAttribute(attrNameAttr, attName[0], PageContext.SESSION_SCOPE);
   }
 
   public void setStrategy(Object key, MakumbaTag tag) throws LogicException
