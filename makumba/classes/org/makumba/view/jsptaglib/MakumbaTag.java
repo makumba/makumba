@@ -35,6 +35,8 @@ import java.util.Map;
 /** this class provides utility methods for all makumba tags */
 public abstract class MakumbaTag extends TagSupport implements TagStrategy
 {
+  JspParseData.TagData tagData;
+
   Hashtable params= new Hashtable(7);
 
   public void cleanState(){ params.clear(); strategy=null; } 
