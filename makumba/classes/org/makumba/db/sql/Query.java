@@ -51,7 +51,7 @@ public class Query implements org.makumba.db.Query
   {
     command= ((QueryAST)tree).writeInSQLQuery(db);
 
-    resultHandler= (RecordManager)db.getTable((RecordInfo)tree.getProjectionType());
+    resultHandler= (RecordManager)db.makePseudoTable((RecordInfo)tree.getProjectionType());
     assigner= new ParameterAssigner(db, tree);
   }
 

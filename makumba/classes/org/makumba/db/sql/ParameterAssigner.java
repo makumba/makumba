@@ -40,7 +40,7 @@ public class ParameterAssigner
   {
     this.tree=tree;
     if(tree.parameterNumber()>0)
-      paramHandler=(RecordManager)db.getTable((RecordInfo)tree.getParameterTypes());
+      paramHandler=(RecordManager)db.makePseudoTable((RecordInfo)tree.getParameterTypes());
   }
   static final Object[] empty=new Object[0];
 
