@@ -32,8 +32,9 @@ import javax.servlet.jsp.JspException;
 
 
 /**
- * If tag, will accept expr=... similar to value tag, and will show body only if OQL expression evaluates to true (integer 1).
+ * If tag will accept expr="..." similar to value tag, and will show body only if OQL expression evaluates to true (integer 1).
  * @author fred
+ * @since makumba-0.5.9.11
  */
 
 public class IfTag extends MakumbaTag implements BodyTag
