@@ -47,10 +47,18 @@ import java.io.IOException;
 public class FormTagBase extends MakumbaTag implements BodyTag
 {
   // the tag attributes
-  String baseObject;
-  String handler;
+  String baseObject = null;
+  String handler = null;
+  String formMethod = null;
+  String formAction = null;
+  String formName = null;
+  String formMessage = null;
+  FormResponder responder = null;
 
-  BodyContent bodyContent;
+  long starttime;
+  String basePointer = null;
+
+  BodyContent bodyContent = null;
 
   public void setBodyContent(BodyContent bc){ bodyContent=bc; }
   public void doInitBody() {}
@@ -58,23 +66,22 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   // for add, edit, delete
   public void setObject(String s) { baseObject=s;}
 
-  public void setAction(String s){ responder.setAction(s); }
-  public void setHandler(String s){ handler=s; responder.setHandler(s); }
-  public void setMethod(String s){ responder.setMethod(s); }
+  public void setAction(String s){ formAction=s; }
+  public void setHandler(String s){ handler=s; }
+  public void setMethod(String s){ formMethod=s; }
   public void setName(String s){ 
-	responder.setResultAttribute(s);
-	extraFormatting.append(" name=\"").append(s).append("\" "); 
+	formName = s;
+	extraFormattingParams.put("name", s); 
   }
-  public void setMessage(String s){ responder.setMessage(s); }
+  public void setMessage(String s){ formMessage = s ; }
   public void setMultipart() { responder.setMultipart(true); }
 
   //additional html attributes:
-  public void setTarget(String s) { extraFormatting.append(" target=\"").append(s).append("\" "); }
-  public void setOnReset(String s) { extraFormatting.append(" onReset=\"").append(s).append("\" "); }
-  public void setOnSubmit(String s) { extraFormatting.append(" onSubmit=\"").append(s).append("\" "); }
+  public void setTarget(String s)   { extraFormattingParams.put("target", s); }
+  public void setOnReset(String s)  { extraFormattingParams.put("onReset", s); }
+  public void setOnSubmit(String s) { extraFormattingParams.put("onSubmit", s); }
   // setName is defined above (approx 10 lines higher)
   
-  FormResponder responder= new FormResponder();
   
   String getOperation()
   {
@@ -90,8 +97,6 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     return classname.substring(m+1).toLowerCase();
   }
 
-  long l;
-  String basePointer;
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
@@ -99,12 +104,16 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     Object[] keyComponents= {baseObject, handler, getParentListKey(), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
-  final static String[] dummyQuerySections= {null, null, null, null};
+
+  static final String[] dummyQuerySections= {null, null, null, null};
+  static final Object dummy=new Object();
  
   public void cacheDummyQuery()
   {
     pageCache.cacheQuery(tagKey, dummyQuerySections, null);
   }
+
+
   public void doStartAnalyze()
   {
     if(baseObject==null)
@@ -113,20 +122,33 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     pageCache.valueComputers.put(tagKey, vc);
   }
 
-  static final Object dummy=new Object();
 
   public void doEndAnalyze()
   {
     ComposedQuery dummy= (ComposedQuery)pageCache.queries.get(tagKey);
     if(dummy!=null)
       dummy.analyze();
-    if(responder.getAction()==null)
+    if(formAction==null)
       throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
     if(baseObject==null)
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
     pageCache.basePointerTypes.put(tagKey, vc.type.getReferredType().getName());
+  }
+
+  /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
+   *  If method is overriden in child class, the child's method must call super.resetState(). 
+   */
+  public void initialiseState() {
+      super.initialiseState();
+      	  
+      responder= new FormResponder();
+      if (formName    != null) responder.setResultAttribute(formName);
+      if (handler != null)     responder.setHandler(handler);
+      if (formAction  != null) responder.setAction(formAction); 
+      if (formMethod  != null) responder.setMethod(formMethod); 
+      if (formMessage != null) responder.setMessage(formMessage); 
   }
 
   public int doMakumbaStartTag() throws JspException, LogicException
@@ -142,7 +164,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     responder.setExtraFormatting(extraFormatting);
     responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
 
-    l= new java.util.Date().getTime();
+    starttime = new java.util.Date().getTime();
 
     /** we compute the base pointer */
     if(baseObject!=null)
@@ -175,10 +197,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       sb= new StringBuffer();
       responder.writeFormPostamble(sb, basePointer);
       bodyContent.getEnclosingWriter().print(sb.toString()); 
-      MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-l)));
+      MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-starttime)));
     }catch(IOException e){ throw new JspException(e.toString()); }
+    
     return EVAL_PAGE;
   }
+
+
 
   /** The default expression for an input tag, if none is indicated */
   public String getDefaultExpr(String fieldName) { return null; }
@@ -208,5 +233,6 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 	dot=dot1;
       }
   }
+  
 }
 

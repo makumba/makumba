@@ -49,12 +49,6 @@ public class IfTag extends MakumbaTag implements BodyTag
   public void setBodyContent(BodyContent bc) { }        
   public void doInitBody() { }                          
   
-  /** cleanup the state to make this reusable */
-  public void release()
-  {
-    super.release();
-    testExpr = null;
-  }
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()

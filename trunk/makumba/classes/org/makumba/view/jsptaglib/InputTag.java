@@ -37,11 +37,11 @@ import org.makumba.ProgrammerError;
 
 public class InputTag extends MakumbaTag
 {
-  String name;
-  String valueExprOriginal;
-  String dataType;
-  String display;
-  String expr;
+  String name = null;
+  String valueExprOriginal = null;
+  String dataType = null;
+  String display = null;
+  String expr = null;
 
   public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
   
@@ -51,21 +51,20 @@ public class InputTag extends MakumbaTag
   public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
   public void setDisplay(String d) {   this.display=d; }
-  public void setType(String s) 
-  {
+  public void setType(String s) {
     super.setType(s);
     if(s.equals("file"))
       getForm().setMultipart();
   }  
 
   //Extra html formatting parameters
-  public void setAccessKey(String s) { extraFormatting.append(" accessKey=\"").append(s).append("\" "); }
-  public void setDisabled(String s) { extraFormatting.append(" disabled=\"").append(s).append("\" "); }
-  public void setOnChange(String s) { extraFormatting.append(" onChange=\"").append(s).append("\" "); }
-  public void setOnBlur(String s) { extraFormatting.append(" onBlur=\"").append(s).append("\" "); }
-  public void setOnFocus(String s) { extraFormatting.append(" onFocus=\"").append(s).append("\" "); }
-  public void setOnSelect(String s) { extraFormatting.append(" onSelect=\"").append(s).append("\" "); }
-  public void setTabIndex(String s) { extraFormatting.append(" tabIndex=\"").append(s).append("\" "); }
+  public void setAccessKey(String s){ extraFormattingParams.put("accessKey", s); }
+  public void setDisabled(String s) { extraFormattingParams.put("disabled", s); }
+  public void setOnChange(String s) { extraFormattingParams.put("onChange", s); }
+  public void setOnBlur(String s)   { extraFormattingParams.put("onBlur", s); }
+  public void setOnFocus(String s)  { extraFormattingParams.put("onFocus", s); }
+  public void setOnSelect(String s) { extraFormattingParams.put("onSelect", s); }
+  public void setTabIndex(String s) { extraFormattingParams.put("tabIndex", s); }
 
   FormTagBase getForm() 
   { return (FormTagBase)TagSupport.findAncestorWithClass(this, FormTagBase.class); }
@@ -186,4 +185,5 @@ public class InputTag extends MakumbaTag
       }
     return EVAL_PAGE;
   } 
+
 }
