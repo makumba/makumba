@@ -22,13 +22,14 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+import javax.servlet.jsp.JspException;
 
 public class ObjectTag extends QueryTag
 {
-  protected void setMaxCountVar(int max) throws JspException
+  protected void setNumberOfIterations(int max) throws JspException
   {
     if(max>1)
       throw new MakumbaJspException(this, "Object tag should have only one result");
-    super.setMaxCountVar(max);
+    super.setNumberOfIterations(max);
   }
 }
