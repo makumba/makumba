@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type"
  content="text/html; charset=iso-8859-1">
-  <meta name="Author" content="makumba-dev group">
+  <meta name="author" content="makumba-dev group">
   <title>Makumba Specification</title>
   <link rel="stylesheet" type="text/css" media="all" href="main.css">
   <script type="text/javascript" src="main.js"></script>
@@ -1338,7 +1338,12 @@ mak:list. it has no value outside the list </li>
   <li> mak:maxCount() gives the total number of iterations inside a
 mak:list. it has no value outside the list </li>
   <li> mak:lastCount() gives the total number of iterations of the
-previous mak:list. it has no value inside the list </li>
+previous mak:list or mak:object, respectively. it has no value inside the 
+mak:list/object.
+<div class="note">Note: if you want to store the value of some mak:list/object
+for usage in/after a later mak:list/object, you can do that with &lt;c:set 
+var="<i>someVariableName</i>" value="${mak:lastCount()}" just after that
+mak:list/object.</div></li>
 </ul>
 Example using the Java Standard Tag Library (<a
  href="http://java.sun.com/products/jsp/jstl/">JSTL</a>, prefix "c"): <br>
