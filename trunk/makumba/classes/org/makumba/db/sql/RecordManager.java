@@ -370,6 +370,7 @@ public class RecordManager extends Table
     }catch(SQLException e) {}
     st.executeUpdate(s);
     handlerExist.put(fm.getName(), "");
+    dbc.commit();
     st.close();
     return true;
   }
