@@ -1,0 +1,3 @@
+surname=char[40]         ;Family Name
+name=char[40]            ;First Name
+
