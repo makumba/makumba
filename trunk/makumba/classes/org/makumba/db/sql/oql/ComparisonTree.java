@@ -22,8 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
+import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
-import org.makumba.abstr.FieldInfo;
 
 /** comparison operations have operands of the same type */
 public class ComparisonTree extends AnalysisTree
@@ -57,7 +57,7 @@ public class ComparisonTree extends AnalysisTree
   boolean checkAssign(AnalysisTree a1, AnalysisTree a2)
        throws antlr.RecognitionException
   {
-    if(!(a1.makumbaType instanceof FieldInfo))
+    if(!(a1.makumbaType instanceof FieldDefinition))
       return false;
 
     if(a2.leaf==null )
@@ -70,7 +70,7 @@ public class ComparisonTree extends AnalysisTree
 
     Object o= null;
     try{
-      o= ((FieldInfo)a1.makumbaType).checkValue(s);
+      o= ((FieldDefinition)a1.makumbaType).checkValue(s);
     }catch(org.makumba.InvalidValueException e)
       { throw new antlr.SemanticException(e.getMessage());}
     if(o instanceof Pointer)
