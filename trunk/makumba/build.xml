@@ -149,12 +149,12 @@
 		stylesheetfile="doc/api/javadoc.css"
 	>
             <bottom><![CDATA[
-                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
-                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
-                </td></tr></TABLE>
+                <div class='pageFooter'>
+                Docs generated on ${javadoc.startup.time}
+                </div>
 
-		<script language="JavaScript" src="../../../main.js"></script>
-		<script language="JavaScript">makeNavBar("../../../");</script>
+		<script language='JavaScript' src='../../../main.js'></script>
+		<script language='JavaScript'>makeNavBar('../../../');</script>
             ]]></bottom>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
@@ -174,14 +174,14 @@
 		stylesheetfile="doc/hacking/javadoc.css"
 	>
             <bottom><![CDATA[
-                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
-                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
-                </td></tr></TABLE>
+                <div class='pageFooter'>
+                Docs generated on ${javadoc.startup.time}
+                </div>
             ]]></bottom>
             <header><![CDATA[
                 <TABLE BORDER='0' CELLPADDING='3' CELLSPACING='3'>
                 <TD aCLASS='NavBarCell1' valign=top>
-		   <a href='http://www.makumba.org' target='_top'><img src='http://www.makumba.org/makumba-logo-small.gif' border=0></a>
+		   <a href='http://www.makumba.org' target='_top'><img src='http://www.makumba.org/makumba-logo-small.gif' border='0'></a>
                 </TD><TR>
                 <TD VALIGN='top' CLASS='NavBarCell3'><FONT SIZE='-2'>
                 <script language='javascript'>
