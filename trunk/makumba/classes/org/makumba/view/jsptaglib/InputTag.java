@@ -195,6 +195,9 @@ public class InputTag extends MakumbaTag
 	  pageContext.getOut().print(formatted);
 	}catch(java.io.IOException e)	  {throw new JspException(e.toString());}
       }
+
+    name = valueExprOriginal = dataType = display = expr = nameVar= null;
+    
     return EVAL_PAGE;
   } 
 

@@ -66,7 +66,8 @@ public class ValueTag extends MakumbaTag
   public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
   {
     ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
-    
+
+    expr= printVar= var= null;
     return EVAL_BODY_INCLUDE;
   }
 
