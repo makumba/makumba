@@ -60,7 +60,6 @@ public class TagExceptionServlet extends HttpServlet
     PrintWriter wr=resp.getWriter();
     Throwable t= (Throwable)req.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION);
     Throwable t1=null;    
-    System.out.println(t);
 
     Throwable original=t;
     while(true)
