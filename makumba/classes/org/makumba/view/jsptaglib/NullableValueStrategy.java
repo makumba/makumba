@@ -42,11 +42,11 @@ public class NullableValueStrategy extends QueryStrategy
   {
     // if the parent did not move through its results, 
     // we keep returning whatever data we had before
-    if(getParentStrategy().index==parentIndex && getParentStrategy().run==parentRun)
+    if(tag.getEnclosingQuery().index==parentIndex && tag.getEnclosingQuery().run==parentRun)
 	return results;
 
-    parentRun=getParentStrategy().run;
-    parentIndex=getParentStrategy().index;
+    parentRun=tag.getEnclosingQuery().run;
+    parentIndex=tag.getEnclosingQuery().index;
     return super.obtainData1(v);
   }
 
@@ -58,7 +58,7 @@ public class NullableValueStrategy extends QueryStrategy
 
   public int doStart() throws JspException 
   {
-    bodyContent=getValueTag().getParentQueryStrategy().bodyContent;
+    bodyContent=getValueTag().getEnclosingQuery().bodyContent;
     done=super.doStart();
     if(done!=BodyTag.EVAL_BODY_TAG)
       return done;
