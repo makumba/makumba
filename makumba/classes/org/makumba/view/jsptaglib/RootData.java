@@ -39,7 +39,6 @@ public class RootData
   long stamp;
   int ntags=0;
   PageContext pageContext;
-  Object buffer;
 
   public RootData(MakumbaTag t, PageContext pageContext){
     this.rootTag=t; 
@@ -65,6 +64,9 @@ public class RootData
 	tag.strategy.init(rootTag, tag, key);
 	((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
       }
+    else
+      if(tag.strategy instanceof TagStrategySupport)
+	((TagStrategySupport)tag.strategy).tag=tag;
     tag.strategy.loop();
   }
 
