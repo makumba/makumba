@@ -28,16 +28,21 @@ import org.makumba.util.MultipleKey;
 
 public class AddTag extends FormTagBase 
 {
-  public void setField(String s) { responder.setAddField(field=s);}
-
   // for input tags:
-  String field;
+  String field = null;
+
+  public void setField(String s) { field=s; }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
   {
     Object[] keyComponents= {baseObject, field, handler, getParentListKey(), getClass()};
     tagKey=new MultipleKey(keyComponents);
+  }
+
+  public void initialiseState() {
+      super.initialiseState();
+      if (field != null) responder.setAddField(field);
   }
 
   public DataDefinition getDataType()

@@ -30,9 +30,9 @@ import org.makumba.util.MultipleKey;
 public class NewTag extends FormTagBase
 {
   // for input tags:
-  DataDefinition type;
+  DataDefinition type = null;
 
-  public void setType(String s){ responder.setNewType(type=MakumbaSystem.getDataDefinition(s));}
+  public void setType(String s) { type=MakumbaSystem.getDataDefinition(s); }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
@@ -40,6 +40,12 @@ public class NewTag extends FormTagBase
     Object keyComponents[]= {type.getName(), handler,  getParentListKey(), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
+  
+  public void initialiseState() {
+      super.initialiseState();
+      if (type != null) responder.setNewType(type);
+  }
+
 
   public DataDefinition getDataType() 
   {

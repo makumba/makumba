@@ -44,12 +44,6 @@ public class ValueTag extends MakumbaTag
   public void setVar(String var){ this.var=var; }
   public void setPrintVar(String var){ this.printVar=var; }
   
-  /** cleanup the state to make this reusable */
-  public void release()
-  {
-    super.release();
-    expr=var=printVar=null;
-  }
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()

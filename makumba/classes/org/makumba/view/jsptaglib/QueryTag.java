@@ -160,14 +160,5 @@ public class QueryTag extends MakumbaTag implements IterationTag
     return EVAL_PAGE;
   }
 
-  /** Cleanup the data, in preparation for reuse in the tag pool */
-  public void release()
-  {
-    super.release();
-    execution=null;
-    queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
-    countVar=maxCountVar=null;
-    separator="";
-  }
 }
 

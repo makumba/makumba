@@ -37,7 +37,7 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.LogicException;
 
-import java.util.Hashtable;
+import java.util.*;
 
 
 /** this class provides utility methods for all makumba tags 
@@ -61,10 +61,11 @@ public abstract class MakumbaTag extends TagSupport
   MakumbaJspAnalyzer.PageCache pageCache;
 
   /** Tag parameters */
-  Hashtable params= new Hashtable(7);
+  Hashtable params = new Hashtable(7);        // holds certain 'normal' tag attributes
+  Map extraFormattingParams = new HashMap(7); // container for html formatting params
 
   /** Extra html formatting, copied verbatim to the output */
-  StringBuffer extraFormatting= new StringBuffer();
+  StringBuffer extraFormatting;
 
   static final String DB_ATTR="org.makumba.database";
 
@@ -81,16 +82,14 @@ public abstract class MakumbaTag extends TagSupport
     return sb.toString();
   }
 
-  /** Cleanup the data, in preparation for reuse in the tag pool */
+  /** Cleanup the long-term resources held by the tag, just before garbage collection */
   public void release()
   { 
+    // FIXME (fred): what's this? does it do what's expected of it, knowing that release() does not run after every usage of the tag.
     if(findAncestorWithClass(this, MakumbaTag.class)==null)
       pageContext.removeAttribute(DB_ATTR);
-    tagData=null;
-    tagKey=null;
-    pageCache=null;
-    params.clear(); 
-    extraFormatting= new StringBuffer();
+
+    /* It is not necessary to set all class fields to null... They will be garbage collected anyway. */
   } 
 
   PageContext getPageContext(){ return pageContext; }
@@ -157,7 +156,7 @@ public abstract class MakumbaTag extends TagSupport
     return SKIP_BODY;
   }
 
-  /** Handle exceptions and call doMakumbaStartTag() */
+  /** Handle exceptions, initialise state and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
     // need to check if this is still needed, it was here only if the tag was root...
@@ -168,10 +167,24 @@ public abstract class MakumbaTag extends TagSupport
     try{
       pageCache=getPageCache(pageContext);
       setTagKey();
+      initialiseState();
       return doMakumbaStartTag();
     }
     catch(Throwable t){ treatException(t); return SKIP_PAGE; }
   }
+
+  /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
+   *  If method is overriden in child class, the child's method must call super.resetState(). 
+   */
+  public void initialiseState() {
+      extraFormatting= new StringBuffer();
+
+      for (Iterator it = extraFormattingParams.entrySet().iterator(); it.hasNext();  ) {
+          Map.Entry me = (Map.Entry)it.next();
+          extraFormatting.append(" ").append(me.getKey()).append("=\"").append(me.getValue()).append("\" ");
+      }
+  }
+   
 
   /** makumba-specific endTag. 
    * @see doEndTag 
@@ -241,20 +254,20 @@ public abstract class MakumbaTag extends TagSupport
   }
 
   //--------- html formatting, copied verbatim to the output
-  public void setStyleId(String s) { extraFormatting.append(" id=\"").append(s).append("\" "); }
-  public void setStyleClass(String s) { extraFormatting.append(" class=\"").append(s).append("\" "); }
-  public void setStyle(String s) { extraFormatting.append(" style=\"").append(s).append("\" "); }
-  public void setTitle(String s) { extraFormatting.append(" title=\"").append(s).append("\" "); }
-  public void setOnClick(String s) { extraFormatting.append(" onClick=\"").append(s).append("\" "); }
-  public void setOnDblClick(String s) { extraFormatting.append(" onDblClick=\"").append(s).append("\" "); }
-  public void setOnKeyDown(String s) { extraFormatting.append(" onKeyDown=\"").append(s).append("\" "); }
-  public void setOnKeyUp(String s) { extraFormatting.append(" onKeyUp=\"").append(s).append("\" "); }
-  public void setOnKeyPress(String s) { extraFormatting.append(" onKeyPress=\"").append(s).append("\" "); }
-  public void setOnMouseDown(String s) { extraFormatting.append(" onMouseDown=\"").append(s).append("\" "); }
-  public void setOnMouseUp(String s) { extraFormatting.append(" onMouseUp=\"").append(s).append("\" "); }
-  public void setOnMouseMove(String s) { extraFormatting.append(" onMouseMove=\"").append(s).append("\" "); }
-  public void setOnMouseOut(String s) { extraFormatting.append(" onMouseOut=\"").append(s).append("\" "); }
-  public void setOnMouseOver(String s) { extraFormatting.append(" onMouseOver=\"").append(s).append("\" "); }
+  public void setStyleId(String s)    { extraFormattingParams.put("id", s); }
+  public void setStyleClass(String s) { extraFormattingParams.put("class", s); }
+  public void setStyle(String s)      { extraFormattingParams.put("style", s); }
+  public void setTitle(String s)      { extraFormattingParams.put("title", s); } 
+  public void setOnClick(String s)    { extraFormattingParams.put("onClick", s); } 
+  public void setOnDblClick(String s) { extraFormattingParams.put("onDblClick", s); }
+  public void setOnKeyDown(String s)  { extraFormattingParams.put("onKeyDown", s); }
+  public void setOnKeyUp(String s)    { extraFormattingParams.put("onKeyUp", s); } 
+  public void setOnKeyPress(String s) { extraFormattingParams.put("onKeyPress", s); } 
+  public void setOnMouseDown(String s) { extraFormattingParams.put("onMouseDown", s); }
+  public void setOnMouseUp(String s)   { extraFormattingParams.put("onMouseUp", s); } 
+  public void setOnMouseMove(String s) { extraFormattingParams.put("onMouseMove", s); }
+  public void setOnMouseOut(String s)  { extraFormattingParams.put("onMouseOut", s); } 
+  public void setOnMouseOver(String s) { extraFormattingParams.put("onMouseOver", s); } 
 
   //--------- formatting properties, determine formatter behavior
   public void setUrlEncode(String s) { params.put("urlEncode", s); }
