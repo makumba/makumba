@@ -14,7 +14,9 @@ BODY {	font-family: arial;
   H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left:10; margin-left:-10;}
   H5 { background: #E0D9CF; color: #666666 ; margin-top: 40; padding-left: 10}
   
-  H1 a, H2 a, H3 a, H4 a {color:black;}
+  H2 a, H3 a, H4 a {color:black;}
+  H1 a {color:white;}
+
 
 /*
   H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
@@ -44,7 +46,7 @@ div.navbar {
 /* trick IE with child selector */
 body>div.navbar { position: fixed }
 
-.pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20;}
+.pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20; margin-left:-140;}
 
 /* Tables in specification */
 table.tagParamDef {
@@ -73,4 +75,19 @@ pre.example {
 	background: white url("note.gif") no-repeat;
 	padding-left:25px;
 	padding-bottom:5px;
+}
+
+div.plainStyle {
+	background:#DDDDDD;
+	margin-left:20;
+	font-family:serif;
+	padding:5;
+	width:50%;
+}
+
+div.plainStyle H1, div.plainStyle H2, div.plainStyle H3 {
+	color:black;
+	padding:0;
+	background:transparent;
+	margin:0;
 }
