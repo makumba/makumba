@@ -70,6 +70,7 @@
           <li><a href="#makobject">&lt;mak:object></a></li>
           <li><a href="#usageOFAttributes">Attributes and OQL in &lt;mak:list > and &lt;mak:object ></a></li>
           <li><a href="#makvalue">&lt;mak:value/></a></li>
+          <li><a href="#makcount">mak:count(), mak:maxCount(), mak:lastCount()</a></li>
           <li><a href="#makif">&lt;mak:if></a></li>
           <li><a href="#mak_attrib">&lt;mak:attribute></a></li>
         </ul>
@@ -1505,6 +1506,24 @@ Therefore, this is also used for case <code>expr=NULL</code> and <code>default="
 </tr>
 </table>
 
+<h4><a NAME="makcount">mak:count(), mak:maxCount(), mak:lastCount()</a></h4>
+These are JSP EL (expression language) functions that give information about the iterations in a list.
+<ul>
+<li> mak:count() gives the number of the current iteration inside a mak:list. it has no value outside the list
+<li> mak:maxCount() gives the total number of iterations inside a mak:list. it has no value outside the list
+<li> mak:maxCount() gives the total number of iterations of the previous mak:list. it has no value inside the list
+</ul>
+
+Example using the Java Standard Tag Library (JSTL, prefix "c"): <br>
+
+<code>
+&lt;mak:list ...><br>
+&lt;c:if test="${mak:count()==1}">These are the list elements: &lt;/c:if><br>
+&lt;c:if test="${mak:count()==mak:maxCount()}">This is the last: &lt;/c:if><br>
+...<br>
+&lt;/mak:list><br>
+&lt;c:if test="${mak:lastCount()==0}">These are no elements </c:if><br>
+</code>
 
 <h4><a NAME="makif">&lt;mak:if&nbsp; ...> ... &lt;/mak:if></a></h4>
 <p>
