@@ -321,20 +321,13 @@ implements Observer, QueryTagStrategy
     formatter=new RecordViewer(query);
   }
 
-  protected Vector obtainData1(Vector v)
-  {
-    return bigResults.getData(v);
-  }
-
-  int run=0;
   /** try to obtain the data, return false if there isn't any */
   public boolean obtainData(Vector v)
   {
     index=-1;
-    run++;
     if(v==null || bigResults==null)
       return false;
-    results= obtainData1(v);
+    results= bigResults.getData(v);
 
     if(getQueryTag().maxCountVar!=null)
       {
