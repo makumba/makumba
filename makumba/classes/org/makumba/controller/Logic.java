@@ -209,6 +209,7 @@ public class Logic
     }catch(IllegalAccessException e) { throw new NoSuchMethodException(e.getMessage()); }
     catch(InvocationTargetException f)
       { 
+	d.rollback();
 	Throwable g= f.getTargetException();
 	if(g instanceof LogicException)
 	  throw (LogicException)g;
@@ -264,6 +265,7 @@ public class Logic
 	      catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
 	      catch(InvocationTargetException f)
 		{ 
+		  db.rollback();
 		  Throwable g= f.getTargetException();
 		  if(g instanceof LogicException)
 		    throw (LogicException)g;
@@ -280,6 +282,7 @@ public class Logic
 	      catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
 	      catch(InvocationTargetException f)
 		{ 
+		  db.rollback();
 		  Throwable g= f.getTargetException();
 		  if(g instanceof LogicException)
 		    throw (LogicException)g;
@@ -333,6 +336,7 @@ public class Logic
       catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
       catch(InvocationTargetException f)
 	{ 
+	  db.rollback();
 	  Throwable g= f.getTargetException();
 	  if(g instanceof LogicException)
 	    throw (LogicException)g;
@@ -372,6 +376,7 @@ public class Logic
       catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
       catch(InvocationTargetException f)
 	{ 
+	  db.rollback();
 	  Throwable g= f.getTargetException();
 	  if(g instanceof LogicException)
 	    throw (LogicException)g;
@@ -415,6 +420,7 @@ public class Logic
     catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
     catch(InvocationTargetException f)
       { 
+	db.rollback();
 	Throwable g= f.getTargetException();
 	if(g instanceof LogicException)
 	  throw (LogicException)g;
@@ -466,6 +472,7 @@ public class Logic
       catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
       catch(InvocationTargetException f)
 	{ 
+	  db.rollback();
 	  Throwable g= f.getTargetException();
 	  if(g instanceof LogicException)
 	    throw (LogicException)g;
@@ -513,6 +520,7 @@ public class Logic
       catch(IllegalAccessException g){ throw new LogicInvocationError(g);}
       catch(InvocationTargetException f)
 	{ 
+	  db.rollback();
 	  Throwable g= f.getTargetException();
 	  if(g instanceof LogicException)
 	    throw (LogicException)g;
