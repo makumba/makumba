@@ -272,7 +272,7 @@ class SetValueComputer extends QueryValueComputer
 
   /** Go through the iterationGroupData and print the set values, comma-separated; also set var (Vector with the set values) and printVar */
   // FIXME (fred) shouldn't the formatting be in view.html package, instead of here?
-  public void print(ValueTag running) throws JspException, LogicException
+  public void print(ValueTag running, MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException
   {
     QueryExecution ex= runQuery(running);
     int n=ex.dataSize();
