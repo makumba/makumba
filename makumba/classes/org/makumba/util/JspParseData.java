@@ -213,7 +213,15 @@ public class JspParseData
     holder= analyzer.makeStatusHolder(initStatus);
 
     // remove JSP comments from the text
-    content= syntaxPoints.unComment(content, JspCommentPattern, "JSPComment");
+    // content= syntaxPoints.unComment(content, JspCommentPattern, "JSPComment");
+
+    // remove JSP comments from the text
+    StringBuffer uncommentedContent= new StringBuffer(content);
+    String[] commentEndNotPrecededBy = { "-" };
+    syntaxPoints.takeOut(uncommentedContent, "<%--", null, "--%>", commentEndNotPrecededBy , "jspComment");
+    String[] scriptletStartNotFollowedBy = { "@" };
+    syntaxPoints.takeOut(uncommentedContent, "<%", scriptletStartNotFollowedBy, "%>", null, "jspScriplet");
+    content = uncommentedContent.toString();
 
     // the page analysis as such:
     treatTags(content, analyzer);
