@@ -99,7 +99,6 @@ implements javax.servlet.jsp.tagext.BodyTag
       return k;
     /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
     getForm().cacheDummyQueryAtAnalysis(pageCache);
-    System.out.println("******** "+getForm().tagKey);
     return getForm().tagKey;
   }
 
