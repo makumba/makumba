@@ -105,8 +105,8 @@
          <!-- Copy the manifest in order to replace the version token filter -->
          <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
          <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
-
        </target>
+
 
        <target name="jar" description="make a jar in ./lib"  depends="compile">
        <mkdir dir="${jar.place}/lib" />
@@ -214,25 +214,34 @@
 
 	</target>
 
-	<target name="tagJar" depends="compile" if="tag" 
-	description="tags a version from the current checked out branch but doesn't publish it, just puts it in ./lib">
 
-	<cvs command="tag -d ${tag}" dest="." />
-	<cvs command="tag ${tag}" dest="." />
-	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	<target name="tagJar" depends="compile" if="tag" 
+	        description="tags a version from the current checked out branch, and jar-s it locally to ./lib">
+	  <antcall target="tagThis" />
+	  <antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 	</target>
+
+
+	<target name="tagThis" depends="compile" if="tag" 
+ 	        description="tags a version from the current checked out branch, no jar making">
+	  <cvs command="tag -d ${tag}" dest="." />
+	  <cvs command="tag ${tag}" dest="." />
+	</target>
+
 
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="${bundle_base}/makumba.distrib" />
 	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
 	<cvs command="export -r ${tag} makumba" dest="${bundle_base}/makumba.distrib/"/>
-        <mkdir dir="${jar.place}/lib" />
+	<mkdir dir="${jar.place}/lib" />
+
 	<!-- make the source tarball: -->
 	<zip zipfile="lib/${tag}-src.zip">
 		<fileset dir="${bundle_base}/makumba.distrib/">
 		  <include name="makumba/**" />
 		</fileset>
 	</zip>
+
 	<!-- make the jar: -->
 	<java classname="org.apache.tools.ant.Main" fork="true" dir="${bundle_base}/makumba.distrib/makumba/" >
         	<classpath>
@@ -248,10 +257,10 @@
 
 
 	<target name="publishJar" depends="compile" if="tag" 
-	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
+	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web" >
 	<mkdir dir="${bundle_base}/makumba.distrib" />
 	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
-	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagJar</echo>
+	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagThis</echo>
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
 	<ftp server="download.makumba.org"
