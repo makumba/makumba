@@ -24,6 +24,8 @@
 package org.makumba.view.jsptaglib;
 
 import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
+
 import org.makumba.util.MultipleKey;
 
 import org.makumba.view.ComposedQuery;
@@ -89,10 +91,10 @@ public class QueryTag extends MakumbaTag implements IterationTag
     pageCache.cacheQuery(tagKey, queryProps, getParentListKey());
 
     if(countVar!=null)
-      pageCache.types.setType(countVar, "int");
+      pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"));
 
     if(maxCountVar!=null)
-      pageCache.types.setType(maxCountVar, "int");
+      pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"));
   }
 
   /** End the analysis of the tag, after all tags in the page were visited. 
