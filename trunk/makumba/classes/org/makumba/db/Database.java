@@ -51,6 +51,8 @@ public abstract class Database
   NamedResources updates;
 
   int nconn=0;  
+  int initConnections=1;
+
   protected ResourcePool connections= new ResourcePool(){
       public Object create()
 	{
@@ -72,9 +74,8 @@ public abstract class Database
   public void initConnections()
   {
     try{
-      // this should use pool dimensions from the db connection file
       // resourcePool should have limits...
-      connections.init(10);
+      connections.init(initConnections);
     }catch(Exception e){ throw new DBError(e); }
   }
   
@@ -270,6 +271,10 @@ public abstract class Database
   {
     this.config=config;
     this.configName=config.getProperty("db.name");
+    String s=config.getProperty("sql.connections");
+    if(s!=null)
+      initConnections= Integer.parseInt(s.trim());
+
     config.put("jdbc_connections", "0");
     try{
       dbsv=new Integer((String)config.get("dbsv")).intValue();
