@@ -180,9 +180,6 @@ public abstract class MakumbaTag extends TagSupport
   /** Handle exceptions, initialise state and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
-    if(findAncestorWithClass(this, MakumbaTag.class)==null)
-      initializeThread();
-
     MakumbaJspAnalyzer.PageCache pageCache=null;
     // need to check if this is still needed, it was here only if the tag was root...
     if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
