@@ -1,17 +1,17 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
    <meta name="Author" content="makumba-dev group">
    <title>Makumba Specification</title>
-   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+   <link rel="stylesheet" type="text/css" media="all" href="main.css" />
+   <script language="JavasCript" src="main.js"></script>
 </head>
-<STYLE TYPE="text/css">
-  .exampleBlock { background: #e7e7e7; padding-left: 10; padding-right:10; padding-top:10; padding-bottom:2 ; }
-</style>
 <body>
-
+<script language="JavaScript">
+   makeNavBar("");
+</script>
 <h1>Makumba Specification</h1>
 <tt>$Revision$</tt>
 <p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
@@ -31,7 +31,7 @@
       <li> <a href="#FieldAttributes">Field attributes</a></li>
       <li> <a href="#ObjectTitle">Object title</a></li>
       <li> <a href="#Include">Include mechanism</a></li>
-  </ul>    
+  </ul>
   <li><b><a href="#OQL">OQL language</a></b> <i>... getting data from the database </i> </li>
 
   <li><b><a href="#Business">Business Logic</a></b> <i>... adding logic to basic operations </i></li>
@@ -49,7 +49,7 @@
           <li><a href="#usageOFAttributes">Attributes and OQL in &lt;mak:list > and &lt;mak:object ></a></li>
           <li><a href="#makvalue">&lt;mak:value/></a></li>
           <li><a href="#makif">&lt;mak:if></a></li>
-      </ul>          
+      </ul>
       <li><a href="#mak_attrib">&lt;mak:attribute></a></li>
       <li><a href="#makobject">&lt;mak:object></a></li>
       <li><a href="#forms">Forms</a></li>
@@ -753,24 +753,24 @@ be applied in any other HTML-centric presentation language such as PHP.
 <h3>
 <a NAME="JspIntro"></a>Makumba in Java Server Pages</h3>
 
-Makumba offers a JSP custom tag library, that allows easy interaction (viewing, 
-editing) with the data in your database, right from your HTML (actually, JSP) document. 
-Since Makumba pages, are essentially JSP pages, a basic understanding of JSP will 
-be helpful to make more advanced use of makumba. Same goes for knowing a bit of Java itself. 
+Makumba offers a JSP custom tag library, that allows easy interaction (viewing,
+editing) with the data in your database, right from your HTML (actually, JSP) document.
+Since Makumba pages, are essentially JSP pages, a basic understanding of JSP will
+be helpful to make more advanced use of makumba. Same goes for knowing a bit of Java itself.
 But you can get a long way with just a few notions! Really.
 
-<p>Makumba tags are written according to 
-<a href="http://java.sun.com/products/servlet/">Servlet 2.3 specification</a> 
-and <a href="http://java.sun.com/products/jsp/">JSP 1.1 specification</a>. 
+<p>Makumba tags are written according to
+<a href="http://java.sun.com/products/servlet/">Servlet 2.3 specification</a>
+and <a href="http://java.sun.com/products/jsp/">JSP 1.1 specification</a>.
 You will need a so-called "servlet container" that supports them both, such as
  <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a>.
 
-The corresponding <b>WEB-INF/makumba.tld</b> is already included in the distribution 
+The corresponding <b>WEB-INF/makumba.tld</b> is already included in the distribution
 <code>makumba-<i>version</i>.jar</code>.
- The example <b>WEB-INF/web.xml</b> can be found in Makumba cvs repository 
+ The example <b>WEB-INF/web.xml</b> can be found in Makumba cvs repository
 (<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">http://cvs.makumba.org/servlet_context/WEB-INF/</a>).
 
-<p>Before using Makumba tags in your JSP pages you also need to declare the taglib with: 
+<p>Before using Makumba tags in your JSP pages you also need to declare the taglib with:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;</code>
 
 <p>A few resources on JSPs (don't be afraid to try first, read later) :
@@ -792,8 +792,8 @@ Queries are generated on the spot and can be nested.
 Example:
 <b><pre>&lt;mak:list from="best.Student s" where="s.gender=\"male\"" orderBy="s.name" countVar="counter" maxCountVar="number">
 
-    &lt;% if(counter.intValue()==1) { %> 
-        There are &lt;%= number %> students: &lt;p> 
+    &lt;% if(counter.intValue()==1) { %>
+        There are &lt;%= number %> students: &lt;p>
     &lt;% } %>
 
     &lt;%= counter %>.
@@ -808,9 +808,9 @@ Example:
 </pre></b></td></tr></table>
 
 <p>
-Tag parameter values are either <b>FIXED</b> or <b>RTEXPR</b> (runtime expression). 
+Tag parameter values are either <b>FIXED</b> or <b>RTEXPR</b> (runtime expression).
 A <b>FIXED</b> tag parameter must have a constant, literal value, while an <b>RTEXPR</b>
-can also be of the form &lt;%= java_variable %&gt;. On the other hand, some 
+can also be of the form &lt;%= java_variable %&gt;. On the other hand, some
 FIXED parameters can contain jsp attributes like $attr.
 
 <p>
@@ -887,8 +887,8 @@ the WHERE section from the parent's query, is added to this in the resulting que
 iteration.
 </td>
 
-<td>Fixed. A new Java variable is created, so no other variable by the same name can exist 
-in the Java scope at that point in the JSP. 
+<td>Fixed. A new Java variable is created, so no other variable by the same name can exist
+in the Java scope at that point in the JSP.
 Note that counting iterations using simple Java counting might not
 lead to the correct result.</td>
 </tr>
@@ -898,14 +898,14 @@ lead to the correct result.</td>
 
 <td>The <code>java.lang.Integer</code> variable that will contain the total number of iterations.</td>
 
-<td>Fixed. A new Java variable is created, so no other variable by the same name can exist 
+<td>Fixed. A new Java variable is created, so no other variable by the same name can exist
 in the Java scope at that point in the JSP.</td>
 </tr>
 
 <tr>
 <td><tt>separator</tt></td>
 
-<td>Character string as separator between two list elements. 
+<td>Character string as separator between two list elements.
 It is not included before the first or after the last
 </td>
 
@@ -931,7 +931,7 @@ for maxCountVar and countVar indicate that the object does not exist.
 <br>Example: See &lt;mak:list>
 
 
-<!-- FIXME; fred: "this needs to be rewritten, assuming no knowledge of the concept of jsp attributes, 
+<!-- FIXME; fred: "this needs to be rewritten, assuming no knowledge of the concept of jsp attributes,
                    thus with an intro on the subject. Explaining the diff between Java scope and Attribute scope." -->
 <h4>
 <a NAME="usageOFAttributes"></a>Attributes and OQL in &lt;mak:list > and
@@ -964,7 +964,7 @@ For view-level attributes such as lbg_order
 above, the value range can be defined by : <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name,
 id" default="name"/></code>
 <p>Later: Maybe the page might want to set attributes.
-Something like : 
+Something like :
 <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:setAttr name="lbg" from="best.internal.Lbg lbg" where ... scope="session" /></code>
 <br>Then the attribute could be used as <code>$lbg</code>
 in the rest of the page/session/application... Con: such stuff is normally
@@ -979,7 +979,7 @@ Displays the value of an expression from within the query.
 <blockquote>
 
 <table><tr><td class=exampleBlock>
-Example : 
+Example :
 <b><pre>
 &lt;mak:list from="best.Student s" where="s.gender=\"male\"" orderBy="s.name">
     &lt;mak:value expr="s.person.name"/>
@@ -1019,7 +1019,7 @@ present (exception: if <code>default</code> and/or <code>empty</code> are set)</
 
 <td>The value of the expression is set to a new <code>java.lang.Object</code> variable by this name, as
 well as to a page-scope attribute, also by the same name (accessible as $attributename).
- 
+
 <!-- =================================================================
      ================ THIS IS FIXED IN makumba-0.5.7+ ================
 
@@ -1030,8 +1030,8 @@ the page might work at later runs).</b>
 -->
 </td>
 
-<td>Fixed. A new Java variable is created, so no other variable by the same name can 
-exist in the Java scope at that point in the JSP. 
+<td>Fixed. A new Java variable is created, so no other variable by the same name can
+exist in the Java scope at that point in the JSP.
 <br>Note: the Java variable must be cast to its specific type (Integer, String,
 Date, Text, Pointer, Vector) before using it as such.
 </td>
@@ -1040,7 +1040,7 @@ Date, Text, Pointer, Vector) before using it as such.
 <tr>
 <td><tt>printVar</tt></td>
 
-<td>The formatted output as it would have been printed, is instead stored in a new <code>java.lang.String</code> 
+<td>The formatted output as it would have been printed, is instead stored in a new <code>java.lang.String</code>
 variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).
 
 
@@ -1053,7 +1053,7 @@ in a NullPointerException (though the page might work at later runs).</b>
 -->
 </td>
 
-<td>Fixed.  A new Java variable is created, so no other variable by the same name can 
+<td>Fixed.  A new Java variable is created, so no other variable by the same name can
 exist in the Java scope at that point in the JSP. </td>
 </tr>
 
@@ -1063,15 +1063,15 @@ exist in the Java scope at that point in the JSP. </td>
 <td>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false". </td>
 
 <td>
-Rtexpr. 
+Rtexpr.
 <!-- FIXME: fred: i think it's for all types! --> Only for char[] for now</td>
 </tr>
 
 <tr>
 <td><tt>html</tt></td>
 
-<td>Normal behaviour is to transform character output to its HTML escaped form. 
-If this is "true", content is assumed to be HTML, and is not escaped. 
+<td>Normal behaviour is to transform character output to its HTML escaped form.
+If this is "true", content is assumed to be HTML, and is not escaped.
 If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any.
 Default is "false".</td>
 
@@ -1081,7 +1081,7 @@ Default is "false".</td>
 <tr>
 <td><tt>format</tt></td>
 
-<td>Format string to specify the formatting of a date value, according to 
+<td>Format string to specify the formatting of a date value, according to
 <code><a title="external link, servlet API" href=http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html>java.text.SimpleDateFormat</a></code>
 </td>
 
@@ -1091,7 +1091,7 @@ Default is "false".</td>
 <tr>
 <td><tt>lineSeparator</tt></td>
 
-<td>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre>...&lt;/pre>. 
+<td>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre>...&lt;/pre>.
 Default is "&lt;p>". Note <a href=http://bugzilla.makumba.org/show_bug.cgi?id=38>bug 38</a></td>
 
 <td>Rtexpr. Only for text.</td>
@@ -1108,7 +1108,7 @@ Default is "&lt;p>". Note <a href=http://bugzilla.makumba.org/show_bug.cgi?id=38
 <tr>
 <td><tt>maxLength</tt></td>
 
-<td>The maximum length (number of characters) to print. Longer output is cut off, and an <code>ellipsis</code> 
+<td>The maximum length (number of characters) to print. Longer output is cut off, and an <code>ellipsis</code>
 is added to indicate the cut. If not set (default), there is no maximum.</td>
 
 <td>Rtexpr. Only applies for char[] AND if it is not already HTML formatted (cfr. <code>html</code>).</td>
@@ -1117,7 +1117,7 @@ is added to indicate the cut. If not set (default), there is no maximum.</td>
 <tr>
 <td><tt>ellipsis</tt></td>
 
-<td>The character string to print to indicate that the text extended the <code>maxLength</code>. Default is "...". 
+<td>The character string to print to indicate that the text extended the <code>maxLength</code>. Default is "...".
 The final printed string, including the <code>ellipsis</code>, will not exceed <code>maxLength</code>.</td>
 
 <td>Rtexpr</td>
@@ -1126,10 +1126,10 @@ The final printed string, including the <code>ellipsis</code>, will not exceed <
 <tr>
 <td><tt>ellipsisLength</tt></td>
 
-<td>The equivalent character length of <code>ellipsis</code>. 
-By default, this is calculated as <code><i>ellipsis</i>.length()</code>. 
-But if <code>ellipsis</code> is e.g. HTML code, then that is not appropriate. 
-<br><u>Example</u>, the ellipsis is an image, +- equivalent to (the width of) 5 characters. 
+<td>The equivalent character length of <code>ellipsis</code>.
+By default, this is calculated as <code><i>ellipsis</i>.length()</code>.
+But if <code>ellipsis</code> is e.g. HTML code, then that is not appropriate.
+<br><u>Example</u>, the ellipsis is an image, +- equivalent to (the width of) 5 characters.
 <br>&nbsp;&nbsp;<code>ellipsis="&lt;img src=icon.gif width=10 height=10>" ellipsisLength="5"
 
 </td>
@@ -1141,12 +1141,12 @@ But if <code>ellipsis</code> is e.g. HTML code, then that is not appropriate.
 <td><tt>addTitle</tt></td>
 
 <td>
-If "true", add an HTML tooltip with the value, to the printed output. 
-If "auto", add tooltip only if the printed output 
+If "true", add an HTML tooltip with the value, to the printed output.
+If "auto", add tooltip only if the printed output
 is cut (cfr <code>maxLength</code>). Default is "false". <br>
 </td>
 
-<td>Rtexpr. 
+<td>Rtexpr.
 Note: implementated by producing as output : <code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span> <code>
 </td>
 </tr>
@@ -1162,7 +1162,7 @@ Note: implementated by producing as output : <code>&lt;span title="<i>printVar</
 <tr>
 <td><tt>empty</tt></td>
 
-<td>The character string to print if the normal printed output would be empty (i.e. zero-length string). 
+<td>The character string to print if the normal printed output would be empty (i.e. zero-length string).
 Therefore, this is also used for case <code>expr=NULL</code> and <code>default</code> is not specified.</td>
 
 <td>Rtexpr<br>  </td>
@@ -1179,7 +1179,7 @@ Displays the body of the tag only if the OQL expression evaluates to true.
 <blockquote>
 
 <table><tr><td class=exampleBlock>
-Example : 
+Example :
 <b><pre>
 &lt;mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
    &lt;mak:value expr="s.person.name"/>
@@ -1202,11 +1202,11 @@ Example :
 <tr>
 <td><tt>test</tt></td>
 
-<td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression. 
+<td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression.
 It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
 
-<td>Fixed, Mandatory. 
-    <br><i>(in first implementation, this was called <code>expr</code>, 
+<td>Fixed, Mandatory.
+    <br><i>(in first implementation, this was called <code>expr</code>,
     but changed to reflect practice in XSL and JSLT</i>
 </td>
 </tr>
@@ -1221,7 +1221,7 @@ Displays the value of an attribute, or sets it to a Java variable.
 <blockquote>
 
 <table><tr><td class=exampleBlock>
-Example : 
+Example :
 <b><pre>
 &lt;mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
 
@@ -1293,7 +1293,7 @@ attribute. The default database is normally used.</td>
 <a NAME="forms"></a>Forms</h3>
 Makumba can produce four types of forms: new, add, edit and generic forms.
 All forms have a number of common features.
-<br>They can include &lt;mak:input >&nbsp; tags. 
+<br>They can include &lt;mak:input >&nbsp; tags.
 They all can have "action", "method", "handler", "name" and "message"
 arguments.
 <p>Handler methods (if they exist) are executed at the point of the first
@@ -1864,7 +1864,7 @@ separators. Ex:
 <td><tt>default</tt></td>
 
 <td>
-<!-- 
+<!--
 The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)
 --> FIXME
 </td>
@@ -1876,8 +1876,8 @@ The character string  to print if the <code>expr</code> results in a NULL value.
 <td><tt>empty</tt></td>
 
 <td>
-<!-- 
-The character string to print if the normal printed output would be empty (i.e. zero-length string). 
+<!--
+The character string to print if the normal printed output would be empty (i.e. zero-length string).
 Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.
 --> FIXME
 </td>
@@ -2000,6 +2000,9 @@ to get hold of the actual exception object.
 </font>
 
 </blockquote>
+
+<hr>
+$Id$
 
 </body>
 </html>

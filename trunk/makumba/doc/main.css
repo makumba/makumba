@@ -1,11 +1,25 @@
 /* $Id$ */
-  BODY { font-family: arial; }
-  H1 { background: #044a2c; color:white; margin-top: 30; padding-left: 10 }
+BODY {	font-family: arial;
+	color:black; 
+	background-color:white; 
+	margin-left:120; }
+  H1 {	background: #044a2c; 
+	color:white;
+	margin-top: 30;
+	padding-left: 10 }
   H2 { background: #74C27A; margin-top: 50 ; padding-left: 10}
   H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10}
-  H4 { background: #DAD3B8; margin-top: 40 ; padding-left: 10}
-  H5 { background: #E0D9CF; color: #666666 ; margin-top: 40 ; padding-left: 10}
+  H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left: 10}
+  H5 { background: #E0D9CF; color: #666666 ; margin-top: 40; padding-left: 10}
   /* old and future feature */
   .oldfeat { color: #000099 }
   .futfeat { color: #990000 }
-  .unusedcolor (#74C27A #CBBE1D)
+  /*  .unusedcolor (#74C27A #CBBE1D) */
+
+  .exampleBlock { background: #e7e7e7; padding-left: 10; padding-right:10; padding-top:10; padding-bottom:2 ; }
+
+ul {margin-top:0}
+a {color:#044a2c;}
+
+body>div.navbar { background: #e7e7e7; padding:5; margin:0; position:fixed; top:0; left:0; width:100; }
+body>div.navbar>a { font-size:0.8em; }
