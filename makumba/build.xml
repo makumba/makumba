@@ -217,7 +217,7 @@
 			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
 			{
 				clasUrl=clasUrl.concat('',clas,'.java');
-				cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?content-type=text/plain>SOURCE</a> in ');
+				cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
 			} else {
 				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
 			}
