@@ -271,7 +271,7 @@ public abstract class Database
   {
     this.config=config;
     this.configName=config.getProperty("db.name");
-    String s=config.getProperty("sql.connections");
+    String s=config.getProperty("initConnections");
     if(s!=null)
       initConnections= Integer.parseInt(s.trim());
 
