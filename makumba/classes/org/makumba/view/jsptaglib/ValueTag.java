@@ -34,57 +34,46 @@ public class ValueTag extends MakumbaTag
   String var;
   String printVar;
 
+  //--------- page analysis: 
   FieldDefinition set;
+  String nullableExpr;
 
   public void cleanState()
   {
     super.cleanState();
     expr=var=printVar=null;
     set=null;
+    nullableExpr=null;
   }
 
-  static final String EVAL_BUFFER="makumba.eval.buffer";
-
-  public static Object evaluate(String s, MakumbaTag t) throws JspException
-  {
-    ValueTag vt= new ValueTag();
-    vt.setPageContext(t.getPageContext());
-    vt.setParent(findAncestorWithClass(t, QueryTag.class));
-    vt.setExpr(s);
-    vt.setVar(EVAL_BUFFER);
-    vt.doStartTag();
-    return t.getPageContext().getAttribute(EVAL_BUFFER);
-  }
-
-  public Object getRegistrationKey() throws LogicException
+  public Object getRegistrationKey() 
   {
     String expr=this.expr.trim();
     QueryStrategy p=getParentQueryStrategy();
-    Object check= p.query.checkExprSetOrNullable(expr, PageAttributes.getAttributes(pageContext));
-    if(check==null)
-      // an usual, non-nullable, non-set expression
-      return null;
-    MultipleKey mk= new MultipleKey((Vector)p.key, 10);
+
+    MultipleKey mk= new MultipleKey((Vector)p.key, 7);
     mk.setAt(expr, 6);
-    if(check instanceof String)
-      mk.setAt((String)check, 7);
-    else 
-      {
-	set=(FieldDefinition)check;
-	mk.setAt(set.getName(), 7);
-      }
-    mk.setAt(var, 8);
-    mk.setAt(printVar, 9);
+
     return mk;
   }
   
   public TagStrategy makeNonRootStrategy(Object key)
   {
-    if(key==null)
+    String expr=this.expr.trim();
+    QueryStrategy p=getParentQueryStrategy();
+    Object check= p.query.checkExprSetOrNullable(expr, PageAttributes.getAttributes(pageContext));
+
+    if(check instanceof String)
+      nullableExpr=(String)check;
+
+    else 
+      set=(FieldDefinition)check;
+
+    if(nullableExpr==null && set==null)
       return this;
-    Object o=((MultipleKey)key).elementAt(7);
+
     if(set==null)
-      return getParentQueryStrategy().getNullableStrategy(o);
+      return getParentQueryStrategy().getNullableStrategy(nullableExpr);
     return new SetValueStrategy();
   }
   
@@ -122,6 +111,11 @@ public class ValueTag extends MakumbaTag
     this.printVar=var;
   }
   
+  public void doAnalyze() 
+  {
+    getParentQueryStrategy().getQuery().checkProjectionInteger(expr);
+  }
+
   /** ask the enclosing query to present the expression */
   public int doStart() throws JspException 
   {
