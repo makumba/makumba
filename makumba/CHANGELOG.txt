@@ -1,3 +1,6 @@
+0.5.5.20; 18 feb 2003 cristi
+fix for bug 301: connections seem to be closed by a non-makumba entity with mysql 4
+
 0.5.5.19; 12 feb 2003 stefan
 fixed bug 299 (content type was prefixed by ' ' on file upload)
 
