@@ -8,8 +8,9 @@
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="${bundle_base}/util-java/tomcat-4.1/common/lib">
-	  <include name="**/servlet.jar" />
+	 <fileset dir="${bundle_base}/util-java/tomcat-5/common/lib">
+	  <include name="**/servlet-api.jar" />
+	  <include name="**/jsp-api.jar" />
 	 </fileset>	
        </path>
 
