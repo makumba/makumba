@@ -1,5 +1,9 @@
 /* $Id$ */
 
+
+//"global" variables, for the page
+var queryStr="";
+
 function makeNavBar(pathToBase) 
 {
 	var bDir=pathToBase;
@@ -22,12 +26,18 @@ function makeNavBar(pathToBase)
 	document.write('<br>');
 	document.write('<a href="'+bDir+'download.html"><b>Download</b></a><br>');
 
-	//document.write('<img src="'+bDir+'gears.gif" align="right">');
 	document.write('<br>');
 	document.write('<a href="http://bugzilla.makumba.org/query.cgi?product=Makumba">Bugzilla</a><br>');
-	document.write('<br>');
 	document.write('<a href="http://cvs.makumba.org/">CVS repository</a><br>');
 
+	document.write('<FORM method=GET action=http://www.google.com/custom class="search" id="searchForm">');
+	 document.write('<INPUT TYPE=text name=q size=10 maxlength=255 value="Search" onFocus="if(this.value==\'Search\') this.value=queryStr;" onBlur="queryStr=this.value; this.value=\'Search\';" title="Google Search makumba.org" class="search" id="searchBox" accesskey="s" onDblClick="location.href=\''+bDir+'search.html\'">');
+	 document.write('<INPUT type=hidden name=sa VALUE="Google Search">');
+	 document.write('<INPUT type=hidden name=cof VALUE="S:http://www.makumba.org;VLC:#044a2c;AH:center;BGC:white;LH:100;LC:#044a2c;GFNT:#999999;L:http://www.makumba.org/makumba-logo.gif;ALC:red;LW:329;T:black;GIMP:red;AWFID:ae27560a86a9a04e;">');
+	 document.write('<input type=hidden name=domains value="makumba.org">');
+	 document.write('<input type=hidden name=sitesearch value="makumba.org">');
+	document.write('</FORM>');
+        
 	document.write('</div>');
 }
 
