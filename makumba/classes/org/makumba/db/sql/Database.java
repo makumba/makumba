@@ -253,7 +253,12 @@ public class Database extends org.makumba.db.Database
     */
   protected String getTableName(String s)
   {
-    return (addUnderscore?s:("."+s.toLowerCase())).replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_')+(addUnderscore?"_":"");
+    //return (addUnderscore?s:("."+s.toLowerCase())).replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_')+(addUnderscore?"_":"");
+    String name=s;
+    if (!addUnderscore)
+       name=("."+name.toLowerCase()); //OLDSUPPORT "/general/Person"->"_general_person"
+    name=name.replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_');  //why '(' and ')'?
+    return name+(addUnderscore?"_":"");
   }
 
   /** get the database-level name of a field with the given abstract name. This simply returns the same name, but it can be otherwise for certain more restrictive SQL engines
@@ -261,7 +266,12 @@ public class Database extends org.makumba.db.Database
    */
   protected String getFieldName(String s)
   {
-     return (addUnderscore?s:(s.startsWith("TS_")?s:s.substring(0,1).toLowerCase()+s.substring(1))).replace('.','_')+(addUnderscore?"_":"");
+     //return (addUnderscore?s:(s.startsWith("TS_")?s:s.substring(0,1).toLowerCase()+s.substring(1))).replace('.','_')+(addUnderscore?"_":"");
+     String name=s;
+     if(!addUnderscore && !s.startsWith("TS_"))   //make it start with lowercase
+	name=name.substring(0,1).toLowerCase()+name.substring(1);
+     name=name.replace('.','_');   //should be tirrelevant for field names, OLDSUPPORT?
+     return name+(addUnderscore?"_":"");
   }
 
   /** check the sql state of a SQL exception and throw a DBError if it is not equal with the given state */
