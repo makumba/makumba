@@ -49,8 +49,8 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 
   public PageContext getPageContext() {return pageContext; }
 
-  protected RootData created;
-  protected RootData pushed;
+  //protected RootData created;
+  //protected RootData pushed;
 
   /** identifies the closest parent of the class desired by getParentClass() */
   public void setParent(Tag t)
@@ -58,11 +58,9 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
     super.setParent(t);
     if(getMakumbaParent()==null)
       {
-	// there can be more than one root tag in a tag structure. only the 
-	// "rootest" should create root data
-	pushed=getRootData();
-	
-	pageContext.setAttribute(getRootDataName(), created= new RootData(this, pageContext), PageContext.PAGE_SCOPE);
+	if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
+	  setWasException();
+
 	canBeRoot();
       }
   }
@@ -115,12 +113,6 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
     if(qt==null)
       return null;
     return ((QueryTagStrategy)qt.strategy).getQueryStrategy();
-  }
-
-  /** only works for tags that have query parents */
-  public QueryStrategy getParentQueryStrategy() 
-  {
-    return ((QueryTagStrategy)getMakumbaParent().strategy).getQueryStrategy();
   }
 
   public PageAttributes getAttributes()
@@ -177,21 +169,9 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
   /** delegate the strategy to end */
   public int doEndTag() throws JspException
   {
-    try{
-      if(wasException())
-	return SKIP_PAGE;
-      return strategy.doEnd();
-    }    finally
-      {
-	if(created!=null)
-	  {
-	    getRootData().close();
-	    if(pushed!=null)
-	      pageContext.setAttribute(getRootDataName(), pushed, PageContext.PAGE_SCOPE);
-	    else
-	      pageContext.removeAttribute(getRootDataName(), PageContext.PAGE_SCOPE);
-	  }
-      }
+    if(wasException())
+      return SKIP_PAGE;
+    return strategy.doEnd();
   }
 
   public void release(){ cleanState(); if(strategy!=null)strategy.doRelease(); }
