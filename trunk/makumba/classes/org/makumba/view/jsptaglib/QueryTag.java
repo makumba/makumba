@@ -114,12 +114,27 @@ public class QueryTag extends MakumbaTag implements IterationTag
       pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"), this);
   }
 
+
+  /** Say if this mak:list/object is inside a mak:input. If so, special processing is needed. This method is used both at analysis and at runtime. */
+  InputTag inInputTag(){
+    // maybe there are better tests 
+    return (InputTag)findAncestorWithClass(this, InputTag.class);
+  }
+
   /** End the analysis of the tag, after all tags in the page were visited. 
     Now that we know all query projections, cache a RecordViewer as formatter for the mak:values nested in this tag */
   public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     ComposedQuery cq= pageCache.getQuery(tagKey);
+    InputTag it= inInputTag();
+    if(it!=null)
+      it.supplementListQueryAtAnalysis(this, pageCache);
+
     cq.analyze();
+
+    if(it!=null)
+      it.doListEndAnalyze(this, pageCache);
+
     pageCache.formatters.put(tagKey, new RecordViewer(cq));
   }
 
@@ -129,10 +144,16 @@ public class QueryTag extends MakumbaTag implements IterationTag
   Object upperCount=null;
   Object upperMaxCount=null;
 
+  ValueComputer choiceComputer;
+
   /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
   public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
        throws LogicException, JspException
   {
+    InputTag it= inInputTag();
+    if(it!=null)
+      it.listBegin(this, pageCache);
+
     if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
     else {
@@ -172,6 +193,12 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Decide if we do further iterations. Checks if we got to the end of the iterationGroup. */
   public int doAfterBody() throws JspException
   {
+    InputTag it= inInputTag();
+    if(it!=null)
+      try{
+      it.afterListIteration();
+    }catch(LogicException le){ throw new JspException(le); }
+    
     int n= execution.nextGroupIteration();
 
     if(n!=-1)
@@ -189,7 +216,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
       }
     return SKIP_BODY;
   }
-  
 
   /** Cleanup operations, especially for the rootList */
   public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 

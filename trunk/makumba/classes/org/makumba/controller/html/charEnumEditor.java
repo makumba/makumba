@@ -25,7 +25,7 @@ package org.makumba.controller.html;
 
 public class charEnumEditor extends choiceEditor{
 
-  public Object getOptions(){return null; }
+  public Object getOptions(java.util.Dictionary fP){return null; }
 
   public int getOptionsLength(Object opts){ return getEnumeratorSize(); }
 

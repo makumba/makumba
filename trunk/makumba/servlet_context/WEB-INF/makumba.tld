@@ -994,7 +994,7 @@
 		<name>input</name>
 		<tag-class>org.makumba.view.jsptaglib.InputTag</tag-class>
 		<tei-class>org.makumba.view.jsptaglib.InputTEI</tei-class>
-		<body-content>empty</body-content>
+		<body-content>JSP</body-content>
 		<description>Input control for a field</description>
 
 		<attribute>

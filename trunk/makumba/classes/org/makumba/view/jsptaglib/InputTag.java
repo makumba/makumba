@@ -31,8 +31,11 @@ import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
+import org.makumba.Pointer;
+import javax.servlet.jsp.tagext.BodyContent;
 
-public class InputTag extends MakumbaTag
+public class InputTag extends MakumbaTag 
+implements javax.servlet.jsp.tagext.BodyTag
 {
   String name = null;
   String valueExprOriginal = null;
@@ -41,7 +44,14 @@ public class InputTag extends MakumbaTag
   String expr = null;
   String nameVar= null;
 
-  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
+  // input whith body, used only for chosers as yet
+  BodyContent bodyContent=null;
+  int bodyContentMark=0;
+  ValueComputer currentChoiceComputer=null;
+  org.makumba.util.ChoiceSet choiceSet;
+
+
+  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType+"\n"+getPageTextInfo(); }
   
 
   public void setField(String field)  { setName(field);}
@@ -89,6 +99,7 @@ public class InputTag extends MakumbaTag
       return k;
     /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
     getForm().cacheDummyQueryAtAnalysis(pageCache);
+    System.out.println("******** "+getForm().tagKey);
     return getForm().tagKey;
   }
 
@@ -164,15 +175,77 @@ public class InputTag extends MakumbaTag
       }
   }
 
+  public void setBodyContent(BodyContent bc){ 
+    bodyContent=bc; 
+    bodyContentMark=0;
+    
+    // for now, only chosers can have body
+    currentChoiceComputer=null;
+    choiceSet= new org.makumba.util.ChoiceSet();
+  }
+
+  public void doInitBody() {}
+
+  /** We have a list inside us. Decide if we want to supplement its query */
+  void supplementListQueryAtAnalysis(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    // we check if the list has a choice label
+    // this check is too weak. a better way to check is using qt.cq
+    if(qt.queryProps[org.makumba.view.ComposedQuery.FROM].indexOf("choice")==-1)
+      throw new ProgrammerError("A choice label should be defined\n"+qt);
+
+    String type= ((org.makumba.FieldDefinition)pageCache.inputTypes.get(tagKey)).getType();
+    
+    if(!(type.startsWith("set") || type.startsWith("ptr")))
+      throw new ProgrammerError("Only set and pointer <mak:input > can have queries inside\n"+this);
+
+    // we basically simulate a <mak:value expr="choice" />, 
+    // see ValueTag.doStartAnalyze()
+    pageCache.valueComputers.put(new MultipleKey(qt.tagKey, "choice"), 
+				 new ValueComputer(qt.tagKey, "choice", pageCache));
+  }
+
+  /** Decide what to do if we have a list inside us, after its analysis ended */
+  void doListEndAnalyze(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache){
+    ((ValueComputer)pageCache.valueComputers.get(new MultipleKey(qt.tagKey, "choice"))).doEndAnalyze(null, pageCache);
+  }
+
+  /** Decide what to do if we have a list inside us, when it starts running*/
+  void listBegin(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache){
+    checkNilChoice(pageCache);
+    currentChoiceComputer= (ValueComputer)pageCache.valueComputers.get(new MultipleKey(qt.tagKey, "choice"));
+    bodyContentMark=bodyContent.getString().length();
+  }
+
+  /** Decide what to do if we have a list inside us, after each iteration*/
+  void afterListIteration() throws LogicException {
+    int n= bodyContent.getString().length();
+    if(n>bodyContentMark){
+      String choice= bodyContent.getString().substring(bodyContentMark).trim();
+      choiceSet.add((Pointer)currentChoiceComputer.getValue(getPageContext()), choice, false, false);
+    }
+    bodyContentMark=n;
+  }
+
+  void checkNilChoice(MakumbaJspAnalyzer.PageCache pageCache){
+    if(bodyContent==null || bodyContent.getString().length()==bodyContentMark)
+      return;
+    String nilChoice= bodyContent.getString().substring(bodyContentMark).trim();
+    if(nilChoice.length()==0)
+      return;
+    choiceSet.add(Pointer.Null, nilChoice, false, false);
+  }
+
   public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
   {
     // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
-    return EVAL_BODY_INCLUDE;
+    return EVAL_BODY_BUFFERED;
   }
 
   public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache)
        throws JspException, LogicException
   {
+    checkNilChoice(pageCache);
     FieldDefinition type= (FieldDefinition)pageCache.inputTypes.get(tagKey);
     Object val=null;
 
@@ -184,6 +257,9 @@ public class InputTag extends MakumbaTag
 
     if(val!=null)
       val=type.checkValue(val);
+
+    if(choiceSet!=null)
+      params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
 
     String formatted=getForm().responder.format(name, type, val, params, extraFormatting.toString());
 

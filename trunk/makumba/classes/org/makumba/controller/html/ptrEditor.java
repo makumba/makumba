@@ -24,6 +24,7 @@
 package org.makumba.controller.html;
 import org.makumba.*;
 import java.util.*;
+import org.makumba.util.ChoiceSet;
 
 public class ptrEditor extends choiceEditor
 {
@@ -36,27 +37,53 @@ public class ptrEditor extends choiceEditor
     query= "SELECT choice as choice, choice."+getTitleField()+ " as title FROM "+getPointedType().getName()+" choice ORDER BY title";
   }
 
-  public Object getOptions()
+  public Object getOptions(Dictionary formatParams)
   {
+    ChoiceSet c= (ChoiceSet)formatParams.get(ChoiceSet.PARAMNAME);
+    if(c!=null)
+      return c;
+    
+    Vector v= null;
+
     Database dbc= MakumbaSystem.getConnectionTo(db);
     try{
-      return dbc.executeQuery(query, null); 
+      v= dbc.executeQuery(query, null); 
     }finally{dbc.close(); }
+    c= new ChoiceSet();
+    for(Iterator i= v.iterator(); i.hasNext(); ){
+      Dictionary d= (Dictionary)i.next();
+      c.add(d.get("choice"), (String)d.get("title"), false, false);
+    }
+    return c;
   }
 
-  public int getOptionsLength(Object opts){ return ((Vector)opts).size(); }
+  public int getOptionsLength(Object opts){ return ((ChoiceSet)opts).size(); }
 
   public Object getOptionValue(Object options, int i)
-  { return ((Dictionary)((Vector)options).elementAt(i)).get("choice"); }
+  { return ((ChoiceSet.Choice)((ChoiceSet)options).get(i)).getValue(); }
 
   public String formatOptionValue(Object val)
-  { return ((Pointer)val).toExternalForm(); }
+  {
+    if(val==Pointer.Null)
+      return "";
+    return ((Pointer)val).toExternalForm(); 
+  }
   
   public String formatOptionValue(Object opts, int i, Object val)
-  { return ((Pointer)val).toExternalForm(); }
+  { 
+    return formatOptionValue(val);
+  }
   
   public String formatOptionTitle(Object options, int i)
-  { return ""+((Dictionary)((Vector)options).elementAt(i)).get("title"); }
+  { return ""+((ChoiceSet.Choice)((ChoiceSet)options).get(i)).getTitle(); }
+
+  public Object readFrom(org.makumba.controller.http.HttpParameters p, String suffix) 
+  {
+    Object o= super.readFrom(p, suffix);
+    if("".equals(o))
+      return null;
+    return o;
+  }
 
   public String getMultiple() { return ""; }
   public boolean isMultiple() { return false; }
