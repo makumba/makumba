@@ -54,15 +54,18 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       
       Object key;
       if(!parents.isEmpty())
+	t.setParent((MakumbaTag)parents.get(parents.size()-1));
+      else
+	t.setParent(null);
+      
+      if(t.getMakumbaParent()!=null)
 	{
-	  t.setParent((MakumbaTag)parents.get(parents.size()-1));
 	  key=t.getRegistrationKey();
 	  if(key!=null)
 	    tags.put(key, t);
 	}
       else
 	{
-	  t.setParent(null);
 	  key=t.getRootRegistrationKey();
 	  if(key!=null)
 	    tags.put(key, t);
