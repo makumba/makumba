@@ -186,22 +186,16 @@ public class RecordParser extends RecordHandler
     java.net.URL u= null;
     if(s.endsWith(".") || s.endsWith("//"))
       return null;
-    // OLDSUPPORT >>
-    u= getResource("metadata.files/"+s.replace('.','/'));
-    if(u==null)
-      {
-	//<<
-	u= getResource(s.replace('.', '/')+"."+ext);
+    u= getResource(s.replace('.', '/')+"."+ext);
+    if(u== null){
+	u= getResource("dataDefinitions/"+s.replace('.','/')+"."+ext);
 	if(u== null){
-	  u= getResource("dataDefinitions/"+s.replace('.','/')+"."+ext);
-	  if(u== null){
 	    u= getResource(s1="dataDefinitions/"+s.replace('.','/'));
 	    if(u==null){
 	      u= getResource(s1=s.replace('.','/'));
 	    }
-	  }
 	}
-      }
+    }
     return u;
   }
 
