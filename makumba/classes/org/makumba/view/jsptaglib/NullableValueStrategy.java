@@ -35,20 +35,6 @@ public class NullableValueStrategy extends QueryStrategy
   public ValueTag getValueTag(){ return (ValueTag)tag; }
 
   int done;
-  int parentRun=-2;
-  int parentIndex=-2;
-
-  protected Vector obtainData1(Vector v)
-  {
-    // if the parent did not move through its results, 
-    // we keep returning whatever data we had before
-    if(tag.getEnclosingQuery().index==parentIndex && tag.getEnclosingQuery().run==parentRun)
-	return results;
-
-    parentRun=tag.getEnclosingQuery().run;
-    parentIndex=tag.getEnclosingQuery().index;
-    return super.obtainData1(v);
-  }
 
   public void doAnalyze() 
   {
