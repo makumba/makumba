@@ -2,10 +2,10 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
-stefan; 25 sep 2003: bug 101 (more JSP author control over the HTML produced by mak: tagsmore JSP author control over the HTML produced by mak: tags)
+? fred: new features in choosers
 
 NOT TO BE RELEASED YET:
-cristi;21 sep 2003: [fred: "cristi, please document transaction changes"]
+cristi;21 sep 2003: bug 48: added transactions: commit() and rollback() in org.makumba.Database. Database.close() commits the transaction. Business logic rolls back the transaction in case of errors in the BL code, and committs it otherwise by calling . default transaction isolation is REPEATABLE READ. Autocommit is always OFF.
 stefan; 11 sep 2003: bug 565 (isolated SQL syntax for index creation)
 stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
 stefan; 16 jul 2003: bug 3 fixed (ptrIndex and ptrOne are declared as unique)
@@ -17,6 +17,15 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
 
+0.5.9.14; 26 sep 2003 cristi
+cristi; 21 sep 2003: provided enumeration of MDDs in MakumbaSystem (bug 341)
+cristi; 23 sep 2003: odbc support restored (bug 569, bug 564)
+cristi; 24 sep 2003: informix support 
+cristi; 23 sep 2003: fixed copying from other DBs (bug 93)
+cristi; 24 sep 2003: open, delete and copy will go through all known types if no type is indicated
+cristi; 25 sep 2003: fixed lack of recursion in org.makumba.db.open, now all types are checked
+cristi; 25 sep 2003: partial fix for bug 596: enum keyword removed from OQL translator
+stefan; 25 sep 2003: bug 101 (more JSP author control over the HTML produced by mak: tags)
 
 0.5.9.13; 21 sep 2003 fred
 fred; 21 sep 2003: improved bug 62, mak:if test=... instead of expr=..., check the expression type
