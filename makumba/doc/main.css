@@ -12,6 +12,13 @@ BODY {	font-family: arial;
   H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10}
   H4 { background: #DAD3B8; margin-top: 40 ; margin-bottom:5; padding-left: 10}
   H5 { background: #E0D9CF; color: #666666 ; margin-top: 40; padding-left: 10}
+  
+  H1 a, H2 a, H3 a, H4 a {color:black;}
+
+/*
+  H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
+*/
+
   /* old and future feature */
   .oldfeat { color: #000099 }
   .futfeat { color: #990000 }
@@ -37,3 +44,21 @@ div.navbar {
 body>div.navbar { position: fixed }
 
 .pageFooter {color: #666666; background: #eeeeee; font-size:0.6em; text-align:right; margin-top:20;}
+
+/* Tables in specification */
+table.tagParamDef {
+	margin-left:20;
+	border:solid #E0D9CF 1px ;
+	border-spacing:0;
+}
+
+table.tagParamDef th {background:#E0D9CF;}
+table.tagParamDef td {border: solid #E0D9CF 1px;}
+
+pre.example { 
+	border-left: solid green 1px ; 
+	margin-left: 20px;
+	padding-left: 5px;
+	background: #F5F5FF;
+	margin-top:0.5em;
+}
