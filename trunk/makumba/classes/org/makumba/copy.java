@@ -22,8 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba;
-import java.util.*;
-import java.io.*;
+import java.util.Vector;
 
 /** Copies one database to the other. Usage: 
  *  <code>java org.makumba.copy source dest type1 [type2 ...]</code>

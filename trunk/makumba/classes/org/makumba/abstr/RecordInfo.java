@@ -22,10 +22,21 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
-import java.io.File;
-import org.makumba.util.*;
-import org.makumba.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.DataDefinitionParseError;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.RuntimeWrappedException;
 
 /** This is the internal representation of the org.makumba. One can make
  * RecordHandlers based on an instance of this class and do useful things

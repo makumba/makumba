@@ -22,11 +22,17 @@
 /////////////////////////////////////
 
 package test;
-import junit.framework.*;
-import junit.extensions.*;
-import java.util.*;
-import org.makumba.*;
-import java.io.*;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.DataDefinitionParseError;
+import org.makumba.MakumbaSystem;
 
 /**
 * Testing mdd handling & parsing

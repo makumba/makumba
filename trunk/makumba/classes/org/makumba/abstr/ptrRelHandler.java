@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
 
 public class ptrRelHandler extends ptrIndexHandler
 {

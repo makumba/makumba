@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
 
 public class dateCreateHandler extends dateHandler
 {

@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.abstr.translator;
-import org.makumba.abstr.*;
 
 /** printer handler family's field handler */
 public class nothingPrinter extends FieldPrinter

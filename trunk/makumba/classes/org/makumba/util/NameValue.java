@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
 
 interface NameValueReturner 
 {

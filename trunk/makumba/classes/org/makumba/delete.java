@@ -22,8 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba;
-import java.util.*;
-import java.io.*;
+import java.util.Vector;
 
 /** Deletes records from a database. The database configuration must have admin# confirmations that match each of the indicated types. 
  * <code>  java org.makumba.delete destinationDb type1 [type2 ...]</code>

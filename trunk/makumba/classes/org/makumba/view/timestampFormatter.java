@@ -22,9 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.abstr.*;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Dictionary;
 
 public class timestampFormatter extends dateFormatter
 {

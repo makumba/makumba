@@ -22,9 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.abstr.*;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Dictionary;
+import java.util.GregorianCalendar;
 
 public class dateFormatter extends FieldFormatter
 {
