@@ -15,6 +15,11 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.12.7; 01 jan 2005 cristi
+fixed some bugs of 0.5.12.6: some methods became useless due to signature or name change
+renamed some more methods to indicate "atAnalysis"
+fixed an OQL parser problem for <mak:input ... value="nil" /> (queries without labels should not generate a FROM)
+
 0.5.12.6; 22 dec 2004 cristi
 refactoring: pageCache is not stored in the MakumbaTag anymore, but is passed to its methods
 made more clear which methods are executed at analysis and which at runtime
