@@ -100,7 +100,7 @@ public class SourceSyntaxPoints
 	for(int i=m.start(); i<m.end(); i++)
 	  uncommentedContent.append(' ');
 	endOfLast=m.end();
-	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine(m.group());
+	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine("UNCOMMENT " +commentPointType+ " : " +m.group());
 	addSyntaxPoints(m.start(), m.end(), commentPointType, null);
       }
     uncommentedContent.append(content.substring(endOfLast));
