@@ -32,7 +32,10 @@ public class NamedResources implements java.io.Serializable
   static boolean soft_static_caches;
   static
   {
-    String soft= System.getProperty("makumba.soft-static-caches");
+    String soft=null;
+    try{ 
+      soft= System.getProperty("makumba.soft-static-caches");      
+    }catch(SecurityException se) {} // for applets
     if(soft!=null)
       soft=soft.trim();
     soft_static_caches="true".equals(soft);
