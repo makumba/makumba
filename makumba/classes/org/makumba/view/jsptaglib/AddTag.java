@@ -43,12 +43,25 @@ public class AddTag extends FormTagBase
   public void initialiseState() {
       super.initialiseState();
       if (field != null) responder.setAddField(field);
+      if (!"add".equals(getOperation())) 
+	responder.setNewType(((NewTag)findParentForm()).type);
   }
 
   public DataDefinition getDataType()
   {
-    return pageCache.getQuery(getParentListKey()).getLabelType(baseObject).getFieldDefinition(field).getSubtype();
+    DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey()).getLabelType(baseObject):
+      ((NewTag)findParentForm()).type;
+    return base.getFieldDefinition(field).getSubtype();
   }
+  
+  String getOperation(){
+    FormTagBase parent=findParentForm();
+    if((parent instanceof NewTag) && baseObject.equals(parent.formName))
+       return "addToNew";
+    return "add";
+  }
+  
+  boolean shouldComputeBasePointer(){ return getOperation().equals("add"); }
 }
 
 
