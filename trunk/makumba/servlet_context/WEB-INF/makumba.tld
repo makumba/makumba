@@ -976,6 +976,7 @@
 	<tag>
 		<name>input</name>
 		<tagclass>org.makumba.view.jsptaglib.InputTag</tagclass>
+		<teiclass>org.makumba.view.jsptaglib.InputTEI</teiclass>
 		<bodycontent>empty</bodycontent>
 		<info>Input control for a field</info>
 
@@ -1055,6 +1056,12 @@
 			<name>cols</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>nameVar</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 		<attribute>

@@ -42,6 +42,7 @@ public class InputTag extends MakumbaTag
   String dataType = null;
   String display = null;
   String expr = null;
+  String nameVar= null;
 
   public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
   
@@ -51,6 +52,7 @@ public class InputTag extends MakumbaTag
   public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
   public void setDisplay(String d) {   this.display=d; }
+  public void setNameVar(String var){ this.nameVar=var; }
 
   //Extra html formatting parameters
   public void setAccessKey(String s){ extraFormattingParams.put("accessKey", s); }
@@ -106,6 +108,9 @@ public class InputTag extends MakumbaTag
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
   public void doEndAnalyze()
   {
+    if(nameVar!=null)
+      pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
+
     FieldDefinition formType= getForm().getInputType(name);
     FieldDefinition dataTypeInfo=null;  
     FieldDefinition type=null;
@@ -183,6 +188,9 @@ public class InputTag extends MakumbaTag
       val=type.checkValue(val);
 
     String formatted=getForm().responder.format(name, type, val, params, extraFormatting.toString());
+
+    if(nameVar!=null)
+      getPageContext().setAttribute(nameVar, name+getForm().responder.getSuffix());
 
     if(display==null ||! display.equals("false"))
       {
