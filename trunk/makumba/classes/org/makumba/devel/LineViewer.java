@@ -42,6 +42,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.MakumbaSystem;
+
 /**
  * a viewer that shows everything per line
  * 
@@ -151,7 +153,7 @@ public class LineViewer implements SourceViewer {
         printPageEnd(writer);
         reader.close();
         double timeTaken = new Date(new GregorianCalendar().getTimeInMillis() - begin.getTimeInMillis()).getTime();
-        System.out.println("Code viewer took :" + (timeTaken / 1000.0) + " seconds");
+        MakumbaSystem.getLogger("devel.sourceViewer").fine("Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
     /**
@@ -387,7 +389,7 @@ public class LineViewer implements SourceViewer {
                     return null;
                 }
             }
-        } else { //relative reference
+        } else if (realPath != null){ //relative reference
             File file = new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar)) + File.separatorChar
                     + s.replace('/', File.separatorChar));
             if (file.exists()) {
@@ -395,6 +397,8 @@ public class LineViewer implements SourceViewer {
             } else {
                 return null;
             }
+        } else {
+            return null;
         }
     }
 

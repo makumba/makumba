@@ -189,7 +189,6 @@ public class jspViewer extends LineViewer {
 
     /** parse the text and write the output */
     public void parseText(PrintWriter writer) throws IOException {
-        initProperties();
         Date begin = new Date();
         Object[] syntaxElements = syntaxKeys.toArray();
         Iterator iterator = sourceSyntaxPoints.iterator();
@@ -243,7 +242,7 @@ public class jspViewer extends LineViewer {
                         if (hideJava) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span style=\"background:yellow;color:green; border:red thin; font-weight: bold; \">");
+                            currentText.append("<span style=\"background:gold;color:green; border:red thin; font-weight: bold; \">");
                         }
                     } else if (type.equals("JspComment")) { // we have a JSP comment (<%-- ... --%>)
                         if (hideComments) { // check whether show or hide
@@ -288,7 +287,7 @@ public class jspViewer extends LineViewer {
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        System.out.println("Code viewer took :" + (time / 1000) + " seconds");
+        MakumbaSystem.getLogger("devel.sourceViewer").fine("Sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 
     /**
