@@ -41,6 +41,10 @@ public class QueryTag extends MakumbaTag implements IterationTag
   String separator="";
   String countVar;
   String maxCountVar;
+  
+  static String standardCountVar="org_makumba_view_jsptaglib_countVar";
+  static String standardMaxCountVar="org_makumba_view_jsptaglib_maxCountVar";
+  static String standardLastCountVar="org_makumba_view_jsptaglib_lastCountVar";
 
   public void setFrom(String s) { queryProps[ComposedQuery.FROM]=s; }
   public void setWhere(String s){ queryProps[ComposedQuery.WHERE]=s; }
@@ -94,11 +98,18 @@ public class QueryTag extends MakumbaTag implements IterationTag
   static final Integer zero= new Integer(0);
   static final Integer one= new Integer(1);
 
+  Object upperCount=null;
+  Object upperMaxCount=null;
+
   /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
   public int doMakumbaStartTag() throws LogicException, JspException
   {
     if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
+    else {
+      upperCount= pageContext.getRequest().getAttribute(standardCountVar);
+      upperMaxCount= pageContext.getRequest().getAttribute(standardMaxCountVar);
+    }
 
     execution= QueryExecution.getFor(tagKey, pageContext);
 
@@ -110,18 +121,22 @@ public class QueryTag extends MakumbaTag implements IterationTag
       {
 	if(countVar!=null)
 	  pageContext.setAttribute(countVar, one);
+	pageContext.getRequest().setAttribute(standardCountVar, one);
 	return EVAL_BODY_INCLUDE;
       }
     if(countVar!=null)
       pageContext.setAttribute(countVar, zero);
+    pageContext.getRequest().setAttribute(standardCountVar, zero);
     return SKIP_BODY;
   }
 
   /** Set the number of iterations in this iterationGroup. ObjectTag will redefine this and throw an exception if n>1 */
   protected void setNumberOfIterations(int n) throws JspException
   {
+    Integer cnt= new Integer(n);
     if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, new Integer(n));
+      pageContext.setAttribute(maxCountVar, cnt);
+    pageContext.getRequest().setAttribute(standardMaxCountVar, cnt);
   }
 
 
@@ -137,8 +152,10 @@ public class QueryTag extends MakumbaTag implements IterationTag
 	  pageContext.getOut().print(separator);
 	}catch(Exception e){ throw new MakumbaJspException(e); }
 
+	Integer cnt= new Integer(n+1);
 	if(countVar!=null)
-	  pageContext.setAttribute(countVar, new Integer(n+1));
+	  pageContext.setAttribute(countVar, cnt);
+	pageContext.getRequest().setAttribute(standardCountVar, cnt);
 	return EVAL_BODY_AGAIN;
       }
     return SKIP_BODY;
@@ -148,7 +165,12 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Cleanup operations, especially for the rootList */
   public int doMakumbaEndTag() throws JspException
   {
-
+    pageContext.getRequest().setAttribute
+      (standardLastCountVar, 
+       pageContext.getRequest().getAttribute(standardMaxCountVar));
+					  
+    pageContext.getRequest().setAttribute(standardCountVar, upperCount);
+    pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
     execution.endIterationGroup();
 
     if(getParentList()==null)
@@ -161,5 +183,19 @@ public class QueryTag extends MakumbaTag implements IterationTag
     return EVAL_PAGE;
   }
 
+  public static int count()
+  {
+    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardCountVar)).intValue();
+  }
+
+  public static int maxCount()
+  {
+    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardMaxCountVar)).intValue();
+  }
+
+  public static int lastCount()
+  {
+    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardLastCountVar)).intValue();
+  }
 }
 

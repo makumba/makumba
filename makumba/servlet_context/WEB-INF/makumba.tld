@@ -1250,4 +1250,26 @@
 		<body-content>empty</body-content>
 		<description>prints Makumba version (a CVS tag)</description>
 	</tag>
+
+	<function>
+		<name>count</name>
+		<description>the count of the enclosing mak:list</description>
+		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-signature>int count()</function-signature>
+	</function>
+
+	<function>
+		<name>maxCount</name>
+		<description>the maximum count of the enclosing mak:list</description>
+		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-signature>int maxCount()</function-signature>
+	</function>
+
+	<function>
+		<name>lastCount</name>
+		<description>the maximum count of the previous mak:list</description>
+		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-signature>int lastCount()</function-signature>
+	</function>
+
 </taglib>
