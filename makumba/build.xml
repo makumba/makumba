@@ -159,6 +159,7 @@
             <arg value="jar"/>
 	</java>
 	<delete dir="../../makumba.distrib" />
+	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
 
 
@@ -181,8 +182,24 @@
 	>
     	<fileset dir="lib/">
       		<include name="makumba.jar" />
+                <include name="${tag}.jar"/>
     	</fileset>
 	</ftp>
+
+	<ftp server="upload.sourceforge.net"
+		userid="anonymous"
+		password="makumba.developer@makumba.org"
+		remotedir="incoming"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+                <include name="${tag}.jar"/>
+	</fileset>
+	</ftp>
+	<echo>${tag}.jar uploaded to sourceforge.net. To make it a release visit:
+		http://sourceforge.net/project/admin/qrs.php?group_id=25704
+		within the next 24 hours.
+	</echo>
         </target>
 
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
@@ -210,6 +227,8 @@
 	<fileset dir="${temp.dir}" includes="makumbadoc.zip"/>
 	</ftp>
 	</target>
+
+
 
 	<target name="zipdoc"  >
 	<delete file="${temp.dir}/makumbadoc.zip" />

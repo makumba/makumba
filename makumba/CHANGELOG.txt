@@ -1,3 +1,13 @@
+0.5.5.18; 13 jan 2003 stefan
+publish jar uses download.makumba.org and it publishes also to sourceforge.net
+makumba.jar is always the latest one
+makumba-a_b_c_d.jar files are kept for historical reasons.
+
+----------------------------------------------
+| 2003-01-08 - CVS repository lost due to HDD failure.    
+| reconstructed all sources, but lost history, hence lover revision numbers
+----------------------------------------------
+
 0.5.5.17; 6 jan 2003 cristi
 better ways of buiding jars, without interfering with ../../util-java/lib
 
