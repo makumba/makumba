@@ -27,9 +27,9 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.abstr.FieldInfo;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.MakumbaSystem;
 import org.makumba.controller.http.Responder;
 
 public class FormResponder extends Responder
@@ -46,7 +46,7 @@ public class FormResponder extends Responder
   }
 
   Hashtable indexes=new Hashtable();
-  RecordInfo dd= new RecordInfo();
+  DataDefinition dd= MakumbaSystem.getTemporaryDataDefinition("Form responder"); // TODO: more precise name
   int max=0;
 
   Hashtable fieldParameters= new Hashtable();
@@ -68,7 +68,7 @@ public class FormResponder extends Responder
     String colName=("col"+max);
     fieldNames.put(colName, fname);
     fieldParameters.put(colName, formatParams);
-    dd.addField(FieldInfo.getFieldInfo(colName, ftype, true));
+    dd.addField(MakumbaSystem.makeFieldWithName(colName, ftype));
     editor= new RecordEditor(dd, fieldNames, database);
     editor.config();
     max++;

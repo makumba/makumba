@@ -35,7 +35,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
-import org.makumba.abstr.RecordInfo;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.ResourcePool;
@@ -353,7 +352,7 @@ public abstract class Database
     
     int n= name.indexOf("->");
     if (n==-1)
-      return getTable(org.makumba.abstr.RecordInfo.getRecordInfo(name));
+      return getTable(MakumbaSystem.getDataDefinition(name));
     // the abstract level doesn't return recordInfo for subtables (->) since it is supposed they are managed via their parent tables. the current DB api doesn't provide that.
     
     Table t= getTable(name.substring(0, n));
@@ -371,7 +370,7 @@ public abstract class Database
   
   
   /** get the table from this database associated with the given RecordInfo */
-  public Table getTable(RecordInfo ri)
+  public Table getTable(DataDefinition ri)
   {
     return (Table)tables.getResource(ri);
   }
@@ -526,7 +525,7 @@ public abstract class Database
     }finally{ c.close(); }
   }
   
-  public Table makePseudoTable(RecordInfo ri)
+  public Table makePseudoTable(DataDefinition ri)
   {
     Table ret= null;
     try{
@@ -536,7 +535,7 @@ public abstract class Database
     return ret;
   }
 
-  void configureTable(Table tbl, RecordInfo ri){
+  void configureTable(Table tbl, DataDefinition ri){
     tbl.db= Database.this;
     tbl.setRecordInfo(ri);
     tbl.open(config);
@@ -546,7 +545,7 @@ public abstract class Database
     {
 	public Object getHashObject(Object name)
 	{
-	    return ((RecordInfo)name).getName();
+	    return ((DataDefinition)name).getName();
 	}
 	
 	public Object makeResource(Object name, Object hashName)
@@ -557,8 +556,8 @@ public abstract class Database
 	
 	public void configureResource(Object name, Object hashName, Object resource)
 	{
-	  configureTable((Table)resource, (RecordInfo)name);
-	  addTable(((Table)resource).getRecordInfo().getName());
+	  configureTable((Table)resource, (DataDefinition)name);
+	  addTable(((Table)resource).getDataDefinition().getName());
 	}
     };
 

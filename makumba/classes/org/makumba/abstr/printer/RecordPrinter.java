@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.abstr.printer;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.DataDefinition;
+import org.makumba.MakumbaSystem;
 
 /** This class just prepares a more complex toString. The toString is still
   (like in the generic RecordHandler) a concatenation of the FieldHandlers toString, but those FieldHandlers are different in this handler family. The FieldHandlers are built according to rules in org.makumba/abstr/printer/redirectPrinter.properties :
@@ -69,17 +70,17 @@ public class RecordPrinter extends org.makumba.abstr.RecordHandler
     
   public RecordPrinter(String path)  
   {
-    this(RecordInfo.getRecordInfo(path));
+    this(MakumbaSystem.getDataDefinition(path));
   }
 
-  public RecordPrinter(RecordInfo ri)
+  public RecordPrinter(DataDefinition ri)
   {
     super(ri);
-    separator= System.getProperty("line.separator")+ri.fieldPrefix();
+    separator= System.getProperty("line.separator") +((org.makumba.abstr.RecordInfo)ri).fieldPrefix();
   }
 
   protected String toStringBefore() 
-  { return getRecordInfo().getName()+" title: "+getRecordInfo().getTitleField()+separator; }
+  { return getDataDefinition().getName()+" title: "+getDataDefinition().getTitleFieldName()+separator; }
   
   protected String toStringSeparator() { return separator; }
   

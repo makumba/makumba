@@ -28,14 +28,14 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.abstr.RecordInfo;
+import org.makumba.DataDefinition;
 import org.makumba.view.RecordFormatter;
 
 public class RecordEditor extends RecordFormatter
 {
   String database;
 
-  public RecordEditor(RecordInfo ri, Hashtable h, String database)   
+  public RecordEditor(DataDefinition ri, Hashtable h, String database)   
   { 
     super(ri, h); 
     this.database= database;
@@ -51,11 +51,11 @@ public class RecordEditor extends RecordFormatter
 	  continue;
 	Object o= fe.readFrom(org.makumba.controller.http.RequestAttributes.getParameters(req), suffix);
 	if(o!=null)
-	  o=fe.getFieldInfo().checkValue(o);
+	  o=fe.getFieldDefinition().checkValue(o);
 	else
 	  o=fe.getNull();
 
-	org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(suffix)+"_type", fe.getFieldInfo());
+	org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(suffix)+"_type", fe.getFieldDefinition());
 
 	if(o!=null)
 	  // the data is written in the dictionary without the suffix
