@@ -364,7 +364,9 @@ public class RecordManager extends Table
     String s="ALTER TABLE "+getDBName()+" "+op+" "+fm.inCreate(getSQLDatabase());
     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
     try{
-      st.executeUpdate("DROP INDEX "+ getDBName()+"_"+fm.getDBName()+" ON " +getDBName());
+      String command="DROP INDEX "+ fm.getDBIndexName()+" ON " +getDBName();
+      st.executeUpdate(command);
+      MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("SUCCESS: "+command);
     }catch(SQLException e) {}
     st.executeUpdate(s);
     handlerExist.put(fm.getName(), "");
@@ -428,6 +430,7 @@ public class RecordManager extends Table
 	}
       MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(command);
       st.executeUpdate(command);
+      dbc.commit();
     }catch(InvocationTargetException e)
       { throw new org.makumba.DBError(e.getTargetException()); }
     st.close();
