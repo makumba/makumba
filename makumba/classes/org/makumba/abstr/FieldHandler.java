@@ -153,6 +153,12 @@ public abstract class FieldHandler
    public   Enumeration getValues()
     {return ((Enumerator)defa).getValues(); }
 
+  /** works only for intEnum type
+   * @exception ClassCastException for other types
+  */
+   public  Vector getDeprecatedValues()
+    {return ((Enumerator)defa).getDeprecatedValues(); }
+
   /** works only for intEnum, charEnum, setintEnum, setcharEnum types
    * @exception ClassCastException for other types
   */
