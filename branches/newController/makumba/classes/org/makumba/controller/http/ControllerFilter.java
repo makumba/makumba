@@ -105,30 +105,32 @@ public class ControllerFilter implements Filter
     java.util.StringTokenizer st= new java.util.StringTokenizer(servletPath, "/");
     while(st.hasMoreElements())
       {
-	try{ 
-	  new java.io.FileReader(root+"login.jsp"); 
-	  login=virtualRoot+"login.jsp";
-	}catch(java.io.IOException e) {}
+        if(new java.io.File(root+"login.jsp").exists())
+	    login=virtualRoot+"login.jsp"; 
 	String s=st.nextToken()+"/";
 	root+=s;
 	virtualRoot+=s;
       }
+    if(new java.io.File(root+"login.jsp").exists())
+	login=virtualRoot+"login.jsp"; 
     return login;
   }
 
   /** find the closest login.jsp and forward to it */
   protected static boolean login(HttpServletRequest req, HttpServletResponse resp)
   {
-    // find the original request... the inverse of the VHostWrapper
-    while(req instanceof HttpServletRequestWrapper)
-      req=(HttpServletRequest)((HttpServletRequestWrapper) req).getRequest();
-
-    req.setAttribute(ORIGINAL_REQUEST, req);
-    
+    // the request path may be modified by the filter, we take it as is
     String login= getLoginPage(req.getServletPath());
 
     if(login==null)
       return false;
+
+    // we will forward to the login page using the original request
+    while(req instanceof HttpServletRequestWrapper)
+      req=(HttpServletRequest)((HttpServletRequestWrapper) req).getRequest();
+
+    req.setAttribute(ORIGINAL_REQUEST, req);
+
     try{
       req.getRequestDispatcher(login).forward(req, resp);
     }catch(Throwable q){ q.printStackTrace(); return false; }
