@@ -88,6 +88,7 @@ public class InputTag extends MakumbaTag
     MultipleKey k= super.getParentListKey();
     if(k!=null)
       return k;
+    /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
     getForm().cacheDummyQuery();
     return getForm().tagKey;
   }
