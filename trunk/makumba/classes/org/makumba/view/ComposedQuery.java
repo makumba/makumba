@@ -333,7 +333,6 @@ public class ComposedQuery
        throws LogicException
   {
     prepare(a);
-    System.out.println(limit);
     return new Grouper(getPreviousKeyset(), attrParam.execute(db, a, offset, limit).elements());
   }
   
