@@ -2,6 +2,9 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
+fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
+stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
+stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
 
 NOT TO BE RELEASED YET:
 cristi;21 sep 2003: bug 48: added transactions: commit() and rollback() in org.makumba.Database. Database.close() commits the transaction. Business logic rolls back the transaction in case of errors in the BL code, and committs it otherwise by calling . default transaction isolation is REPEATABLE READ. Autocommit is always OFF.
@@ -19,10 +22,8 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 
 0.5.9.15; 11 oct 2003 fred
 stefan; * : updates in build.xml (v2.9 to v2.16)
-stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
 stefan; 7 oct 2003: followup bug 101 : updated TLD for deletelink, typo fixed in FormTagBase, usage in textareas
 stefan; 7 oct 2003: removed unnecessary / out-dated makumba.tld.1.2
-stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
 stefan; 26 sep 2003: new getVersionDewey in version.java
 fred; 21 sep 2003: bug 585 new HTML representation for choosers [risky]
 
