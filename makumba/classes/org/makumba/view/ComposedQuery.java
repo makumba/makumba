@@ -227,8 +227,8 @@ public class ComposedQuery
   /** a change has come up, recompute the query */
   protected synchronized void recomputeQuery() 
   {
-    oqlQuery=computeQuery();
     typeAnalyzer= MakumbaSystem.getOQLAnalyzer(computeQuery(true));
+    oqlQuery=computeQuery();
     attrParam=null;
   }
 
@@ -271,8 +271,13 @@ public class ComposedQuery
   /** compute the query from its sections */
   protected String computeQuery(boolean typeAnalysisOnly)
   {
-    String groups= checkExpr((String)derivedSections[GROUPBY]);
-    String orders= checkExpr((String)derivedSections[ORDERBY]);
+    String groups= null;
+    String orders= null;
+    if(!typeAnalysisOnly)
+      {
+	groups=checkExpr((String)derivedSections[GROUPBY]);
+	orders=checkExpr((String)derivedSections[ORDERBY]);
+      }
 
     StringBuffer sb= new StringBuffer();
     sb.append("SELECT ");
@@ -289,21 +294,23 @@ public class ComposedQuery
     sb.append(" FROM ");
     sb.append(derivedSections[FROM]);
     Object o;
-    if(!typeAnalysisOnly && 
-       (o=derivedSections[WHERE]) !=null && derivedSections[WHERE].trim().length()>0)
+    if(!typeAnalysisOnly)
       {
-	sb.append(" WHERE ");
-	sb.append(o);
-      }
-    if(groups !=null)
-      {
-	sb.append(" GROUP BY ");
-	sb.append(groups);
-      }
-    if(!typeAnalysisOnly && orders !=null)
-      {
-	sb.append(" ORDER BY ");
-	sb.append(orders);
+	if((o=derivedSections[WHERE]) !=null && derivedSections[WHERE].trim().length()>0)
+	  {
+	    sb.append(" WHERE ");
+	    sb.append(o);
+	  }
+	if(groups !=null)
+	  {
+	    sb.append(" GROUP BY ");
+	    sb.append(groups);
+	  }
+	if(orders !=null)
+	  {
+	    sb.append(" ORDER BY ");
+	    sb.append(orders);
+	  }
       }
     return sb.toString();
   }
