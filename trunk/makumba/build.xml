@@ -54,7 +54,7 @@
 		</tstamp> 
 		<echo message="buildDate=${CURDATE}" file="classes/org/makumba/versionBuildDate.properties"/> 
 
-		<javac srcdir="classes">
+		<javac srcdir="classes" source="1.4" target="1.4">
 		     <classpath refid="project.class.path" />
 		</javac>
 	</target>
