@@ -69,6 +69,12 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
 
   long l;
   String basePointer;
+  
+  public void doAnalyze()
+  {
+    if(baseObject!=null)
+      getEnclosingQuery().getQuery().checkProjectionInteger(baseObject);
+  }
 
   public int doStart() throws JspException 
   {
@@ -80,14 +86,14 @@ public class FormTagBase extends MakumbaBodyTag  implements RootTagStrategy
     String basePointerType=null;
     if(baseObject!=null)
       {
-	Object o= ValueTag.evaluate(baseObject, this);
-	if(o instanceof Pointer)
-	  {
-	    responder.setBasePointerType
-	      (((FieldInfo)pageContext.getAttribute(ValueTag.EVAL_BUFFER+"_type"))
-	       .getPointedType().getName());
-	    basePointer=((Pointer)o).toExternalForm();
-	  }
+	int n= getEnclosingQuery().getQuery().checkProjectionInteger(baseObject).intValue();
+	Object o= getEnclosingQuery().getProjectionValue(n);
+	if(!(o instanceof Pointer))
+	  throw new RuntimeException("Pointer expected");
+	responder.setBasePointerType
+	  (((FieldInfo)getEnclosingQuery().getQuery().getResultType().getFieldDefinition(n))
+	   .getPointedType().getName());
+	basePointer=((Pointer)o).toExternalForm();
       }
 
     try{

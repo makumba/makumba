@@ -73,6 +73,15 @@ public class InputTag extends MakumbaTag
   FormTagBase getForm() { return (FormTagBase)getMakumbaParent(); }
 
 
+  public void doAnalyze()
+  {
+    String valueExpr=valueExprOriginal;
+    if(valueExpr==null)
+      valueExpr=getForm().getDefaultExpr(name);
+    if(valueExpr!=null && !valueExpr.startsWith("$"))
+      getEnclosingQuery().getQuery().checkProjectionInteger(valueExpr);
+  }
+  
   /** ask the enclosing query to present the expression */
   public int doStart() throws JspException, org.makumba.LogicException
   {
@@ -90,18 +99,22 @@ public class InputTag extends MakumbaTag
 	{
 	  String attrName;
 	  if(valueExpr.startsWith("$"))
-	    attrName=valueExpr.substring(1);
+	    {
+	      attrName=valueExpr.substring(1);
+	      val=getAttributes().getAttribute(attrName);
+	      try{
+		type=getAttributes().getAttribute(attrName+"_type");
+	      }catch(AttributeNotFoundException anfe){ }
+	    }
 	  else
 	    {
-	      ValueTag.evaluate(valueExpr, this);
-	      attrName=ValueTag.EVAL_BUFFER;
+	      int n= getEnclosingQuery().getQuery().checkProjectionInteger(valueExpr).intValue();
+	      val= getEnclosingQuery().getProjectionValue(n);
+	      type= getEnclosingQuery().getQuery().getResultType().getFieldDefinition(n);
 	    }
-	  val=getAttributes().getAttribute(attrName);
-	  try{
-	      type=getAttributes().getAttribute(attrName+"_type");
-	  }catch(AttributeNotFoundException anfe){ }
+
 	  if(type!=null && type.equals("unknown yet"))
-	    return EVAL_BODY_INCLUDE;
+	    throw new RuntimeException("type should be known");
 	}
       if(type==null)
 	{
