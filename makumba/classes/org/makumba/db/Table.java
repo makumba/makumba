@@ -101,7 +101,7 @@ public abstract class Table extends RecordHandler
 	    list.append(comma);
 	    comma=", ";
 	    String name=((FieldHandler)e.nextElement()).getName(); 
-	    list.append("t.").append(name).append(" AS ").append(name);
+	    list.append("t.").append(name);
 	  }
 	String indexName= getRecordInfo().getIndexName();
 	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t."+indexName+ ">=$1 AND t."+indexName+" <=$2";
@@ -125,7 +125,15 @@ public abstract class Table extends RecordHandler
     while (e.hasMoreElements())
       {
 	n++;
-	dest.insert(getRecordInfo().getName(), (Dictionary)e.nextElement());
+	Dictionary d= (Dictionary)e.nextElement();
+	Hashtable data= new Hashtable(23);
+	for(int i=0; i<handlerOrder.size(); i++)
+	  {
+	    String name= "col"+(i+1);
+	    if(d.get(name)!=null)
+	      data.put(((FieldHandler)handlerOrder.elementAt(i)).getName(), d.get(name));
+	  }
+	dest.insert(getRecordInfo().getName(), data);
 	//copyRecord((Dictionary)e.nextElement());
       }
     MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": copied "+n+" objects");
