@@ -181,7 +181,7 @@ implements RootTagStrategy, QueryTagStrategy
       }
     if(file!=null)*/
     //  {
-    decorated.bodyContent.print(decorated.separator);
+    decorated.bodyContent.print(decorated.getQueryTag().separator);
     decorated.writeBody(file);
     decorated.bodyContent.clearBuffer();
 	//   }

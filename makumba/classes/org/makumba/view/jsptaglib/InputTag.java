@@ -80,7 +80,6 @@ public class InputTag extends MakumbaTag
       dataTypeInfo=FieldInfo.getFieldInfo(name, dataType, true);
     if(name==null)
       throw new JspException("name attribute is required");
-    try{
       Object val=null;
       Object type=null;
       
@@ -129,7 +128,7 @@ public class InputTag extends MakumbaTag
       if(val!=null)
 	  val=((FieldInfo)type).checkValue(val);
 
-      String formatted=getForm().responder.format(name, type, val, getRootQueryBuffer().bufferParams);
+      String formatted=getForm().responder.format(name, type, val, params);
       if(display==null ||! display.equals("false"))
 	{
 	  try{
@@ -137,9 +136,5 @@ public class InputTag extends MakumbaTag
 	  }catch(java.io.IOException e)	  {throw new JspException(e.toString());}
 	}
       return EVAL_BODY_INCLUDE;
-    }finally
-      {
-	getRootQueryBuffer().bufferParams.clear();
-      }
   }
 }
