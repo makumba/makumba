@@ -75,6 +75,19 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
+
+		<attribute>
+			<name>offset</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limit</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
 	</tag>
 	<tag>
 		<name>object</name>

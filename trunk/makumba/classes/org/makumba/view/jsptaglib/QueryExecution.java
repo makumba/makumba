@@ -58,14 +58,24 @@ public class QueryExecution
 
   static final private String EXECUTIONS= "org.makumba.taglibQueryExecutions";
   static final private String CURRENT_DATA_SET="org.makumba.currentDataSet";  
+  static final private String OFFSET="org.makumba.offset";  
+  static final private String LIMIT="org.makumba.limit";  
   static final private Dictionary NOTHING= new ArrayMap();
+
+  static void startListGroup(PageContext pageContext){
+    startListGroup(pageContext, null, null);
+  }
 
   /** Allocate a currentDataSet and a container for the QueryExecutions of the listGroup.
    * Executed by the rootList
    */
-  static void startListGroup(PageContext pageContext)
+  static void startListGroup(PageContext pageContext, 
+			     String offset, String limit)
   {
     pageContext.setAttribute(EXECUTIONS, new HashMap());
+    pageContext.setAttribute(OFFSET, offset);
+    pageContext.setAttribute(LIMIT, limit);
+
     Stack currentDataSet= new Stack();
     // org.makumba.view.Grouper requires the stack not be empty
     currentDataSet.push(NOTHING);
@@ -101,6 +111,7 @@ public class QueryExecution
        throws LogicException
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
+   
     Database dbc= 
       //      org.makumba.controller.http.RequestAttributes.getConnectionProvider
       //((javax.servlet.http.HttpServletRequest)pageContext.getRequest()).
@@ -109,10 +120,32 @@ public class QueryExecution
 
       try{
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
-	.execute(dbc, PageAttributes.getAttributes(pageContext));
+	.execute(dbc, PageAttributes.getAttributes(pageContext), computeLimit(pageContext, OFFSET, 0), computeLimit(pageContext, LIMIT, -1));
       }finally{dbc.close(); }
   }
 
+  int computeLimit(PageContext pc, String key, int defa)
+       throws LogicException
+  {
+    String s= (String)pc.getAttribute(key);
+    pc.removeAttribute(key);
+    if(s==null)
+      return defa;
+    s=s.trim();
+    Object o=s;
+    if(s.startsWith("$"))
+      o= PageAttributes.getAttributes(pc).getAttribute(s.substring(1));
+
+    if(o instanceof String){
+      try{
+	return Integer.parseInt((String)o);
+      }catch(NumberFormatException nfe){ throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: "+ s);}
+    }
+    if(! (o instanceof Integer))
+      throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: "+ s); 
+    return ((Integer)o).intValue();
+  }
+  
   public int getIterationGroupData()
   {
     iteration=0;
