@@ -15,6 +15,11 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.13.1; 03 jan 2005 cristi
+better fix for bug 60 (mak:option)
+currently running/analyzed tag is now displayed for all errors/exceptions (bug 780)
+changed signature of setTagKey()
+
 0.5.13; 02 jan 2005 cristi
 fixed bug 59 and 60: the option lists of set and ptr chosers can be freely formatted, ordered, etc, and nil can be an option
 
