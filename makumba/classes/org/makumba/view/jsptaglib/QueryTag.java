@@ -154,6 +154,10 @@ public class QueryTag extends MakumbaTag implements IterationTag
     if(getParentList()==null)
       execution.endListGroup(pageContext);
 
+    execution=null;
+    queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
+    countVar= maxCountVar= null;
+    separator="";
     return EVAL_PAGE;
   }
 

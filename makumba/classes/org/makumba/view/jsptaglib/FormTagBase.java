@@ -229,7 +229,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       if(findParentForm()!=null)
 	MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-starttime)));
     }catch(IOException e){ throw new JspException(e.toString()); }
-    
+    finally{
+      baseObject = handler = formMethod = formAction = formName =  formMessage = basePointer= null;
+      responder = null;
+      bodyContent = null;
+    }
     return EVAL_PAGE;
   }
 
