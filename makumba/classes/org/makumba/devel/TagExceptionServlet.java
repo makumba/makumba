@@ -117,7 +117,7 @@ public class TagExceptionServlet extends HttpServlet
 
   String shortTrace(String s)
   {
-    int i=s.indexOf("at org.makumba.abstr.Logic");
+    int i=s.indexOf("at org.makumba.controller.Logic");
     if(i!=-1)
       {
 	s=s.substring(0, i);
@@ -131,7 +131,14 @@ public class TagExceptionServlet extends HttpServlet
 	if(i!=-1)
 	  s=s.substring(0,i);
 	else
-	  MakumbaSystem.getMakumbaLogger("devel").severe ("servlet call not found in stacktrace");
+	    {
+		i=s.indexOf("at org.makumba.controller.http.ControllerFilter.doFilter(ControllerFilter.java");
+		if(i!=-1)
+		    s=s.substring(0,i);
+		else
+		    MakumbaSystem.getMakumbaLogger("devel").severe ("servlet or filter call not found in stacktrace");
+	    }
+
       }
     return s;
   }
