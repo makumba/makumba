@@ -67,7 +67,8 @@ public class LoginTag extends BodyTagSupport
   {
     try{
       // get the original request, as written in the request attributes by MakumbaTag            
-      HttpServletRequest req=(HttpServletRequest)pageContext.getRequest().getAttribute(pageAttr);
+
+      HttpServletRequest req=(HttpServletRequest)pageContext.getRequest().getAttribute(org.makumba.controller.http.ControllerFilter.ORIGINAL_REQUEST);
 
       // retrieve the path info on original request
       String pathInfo=req.getPathInfo();
