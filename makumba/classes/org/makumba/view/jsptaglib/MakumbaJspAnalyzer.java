@@ -7,8 +7,11 @@ import org.makumba.util.MultipleKey;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.ComposedSubquery;
 
+import org.makumba.FieldDefinition;
+
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
+import org.makumba.ProgrammerError;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -44,12 +47,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   class Types extends HashMap
   {
-    public void setType(Object key, Object value)
+    public void setType(String key, FieldDefinition value)
     {
-      Object o= get(key);
-      // FIXME: this should do type compatibility check
-      if(o!=null)
-	System.out.println("changing type for "+key+" from "+o+" to "+value);
+      FieldDefinition fd= (FieldDefinition)get(key);
+      
+      if(fd!=null && !value.compatible(fd))
+	throw new ProgrammerError("Attribute "+key+" was determined to have type "+fd+" and, further on in the page, the incompatible type "+ value);
       put(key, value);
     }
   }
