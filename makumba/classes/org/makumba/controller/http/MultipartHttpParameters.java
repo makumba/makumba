@@ -32,16 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.PushbackInputStream;
 import org.makumba.Text;
 import org.makumba.util.BoundaryInputStream;
-
-/* to delete after testing */
-/* 
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.util.Date;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-*/
-/* - end to delete - */
+import org.makumba.MakumbaSystem;
 
 /** Parse the input stream of a http request as a multipart/form-data. 
  *  Store uploaded files as org.makumba.Text.
@@ -62,16 +53,15 @@ public class MultipartHttpParameters extends HttpParameters
   {
     super(req);
     
-    System.out.println("\n\n---- testing new code with Boundary ------\n");
-    try{  // testing the BIS
+    MakumbaSystem.getMakumbaLogger("fileUpload").fine("\n\n---- testing new code with Boundary ------\n");
 
-	//System.out.println("DEBUG-mul: contentType: ["+request.getContentType()+"]");
-	int index_b = request.getContentType().indexOf("boundary=");
-	String boundaryWithoutMark = request.getContentType().substring(index_b+"boundary=".length());
-	//System.out.println("DEBUG-mul: boundary without -- ["+boundaryWithoutMark+"]");
-	//as specified in the RFCs the boundary in the parts has '--' in the beginning
-	String boundary = "--".concat(boundaryWithoutMark);
-	
+    int index_b = request.getContentType().indexOf("boundary=");
+    String boundaryWithoutMark = request.getContentType().substring(index_b+"boundary=".length());
+
+    //as specified in the RFCs the boundary in the parts has '--' in the beginning
+    String boundary = "--".concat(boundaryWithoutMark);
+
+    try {	
 	PushbackInputStream pis = new PushbackInputStream(request.getInputStream(), org.makumba.Text.FILE_LIMIT);
 
 	//read the first line that countains just the boundary
@@ -79,153 +69,128 @@ public class MultipartHttpParameters extends HttpParameters
 	int var1 = pis.read();
 	int var2 = pis.read();
 	if (var1 != 13 || var2 != 10)
-	    System.out.println("*DEBUG-mul: ERROR reading CRLF after the 1st boundary ->["+var1+"]["+var2+"]");
+	    MakumbaSystem.getMakumbaLogger("fileUpload").severe("Mul: ERROR reading CRLF after the 1st boundary ["+var1+"]["+var2+"]");
 
 	//go through all the request
+	//TODO: Cristi: "if there is a net congestion, available() returns 0, while read()
+	// blocks until more bytes come. so with available() there is the risk that,
+	// on net congestion, you finish too early. i'm not sure. didn't use available()
+	// so much, but i think it's made to provide a non-blocking alternative to read()"
 	while(pis.available()>0) {
-    
-	    StringBuffer header = new StringBuffer();
+	    
+	    StringBuffer headers = new StringBuffer();
 	    int NrBytesRead = 0;
-	    boolean emptyLineFound = false;
 	    int byteRead; int x;
 	    boolean endOfRequest = false;
-
+	    
 	    while ( (byteRead = pis.read()) != -1) {
-		//---- reading the header -------
-		header.append((char)byteRead);
+		//---- reading the headers -------
+		headers.append((char)byteRead);
 		NrBytesRead++;
 		
 		//empty line: when we find 13 10 13 10 (CR LF CR LF)
 		if (NrBytesRead > 2) {
-
-		    if (byteRead == 13 && (header.charAt(NrBytesRead-2)) == 10 && (header.charAt(NrBytesRead-3)) == 13 ) {
+		    
+		    if (byteRead == 13 && (headers.charAt(NrBytesRead-2)) == 10 && (headers.charAt(NrBytesRead-3)) == 13 ) {
 			if ( (x = pis.read()) != 10)
 			    throw new org.makumba.MakumbaError("Multipart Not recognized"); //read the ³LF' that comes after the 'CR' (13)
-			//System.out.println("DEBUG-mul: ending of the header+empty Char["+
-			//(int)header.charAt(NrBytesRead-3)+"]["+(int)header.charAt(NrBytesRead-2)+"] and ["+(int)header.charAt(NrBytesRead-1)+"]["+x+"]");
 			
-			header.deleteCharAt(NrBytesRead-1); //remove last CR
-			header.deleteCharAt(NrBytesRead-2); //remove LF
-			header.deleteCharAt(NrBytesRead-3); //remove first CR
-			//System.out.println("DEBUG-mul: removed CRLF from the ending of the header");
-			System.out.println("DEBUG-mul: header ["+header+"]");
-			emptyLineFound = true;
+			headers.deleteCharAt(NrBytesRead-1); //remove last CR
+			headers.deleteCharAt(NrBytesRead-2); //remove LF
+			headers.deleteCharAt(NrBytesRead-3); //remove first CR
+			
+			MakumbaSystem.getMakumbaLogger("fileUpload").fine("MUL-headers ["+headers+"]");
+			break; // we found the end of the headers
 		    }
 		}
-		if (emptyLineFound) break;
 		
 		//test if it's the end of the request
 		if (NrBytesRead == 2)
-		    if (byteRead == '-' && (header.charAt(NrBytesRead-1)) == '-' ) {
+		    if (byteRead == '-' && (headers.charAt(NrBytesRead-1)) == '-' ) {
 			//read the last CR LF after the ending '--'
 			pis.read(); pis.read();
 			endOfRequest = true;
 		    }
-	    }//---- end of reading the header
-
+	    }//---- end of reading the headers
+	    
 	    if (!endOfRequest) {
-		//---- processing the header -----
+		//---- processing the headers -----
 		String name="";
-		int index_h = header.indexOf(" name=\"");
+		int index_h = headers.indexOf(" name=\"");
 		if (index_h!=-1) {
 		    int beginIndex = index_h + " name=\"".length();
-		    name = header.substring(beginIndex, header.indexOf("\"", beginIndex));
-		} else System.out.println("DEBUG-mul: ------ no \"name\" in the header was found \n\n");
+		    name = headers.substring(beginIndex, headers.indexOf("\"", beginIndex));
+		} else MakumbaSystem.getMakumbaLogger("fileUpload").warning("DEBUG-mul: ------ no \"name\" in the headers was found \n\n");
 		
 		//----------- check headers and save ---------------
 		// if it's  a file, we store it as Text
-
-		index_h = header.indexOf("filename=\"");
+		
+		index_h = headers.indexOf("filename=\"");
 		if (index_h != -1) {//fileName
 		    int beginIndex = index_h + "filename=\"".length();
-		    String fileName = header.substring(beginIndex, header.indexOf("\"", beginIndex));
-
+		    String fileName = headers.substring(beginIndex, headers.indexOf("\"", beginIndex));
+		    
 		    // -- remove / and \ that appear in some Operative Systems
 		    if (fileName.indexOf("\\") != -1) {
 			fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 		    }
 		    else if(fileName.indexOf("/") != -1)
 			fileName=fileName.substring(fileName.lastIndexOf("/") + 1);
-
-		    parameters.put(name+"_filename", fileName);		    
 		    
-		    index_h = header.indexOf("Content-Type:");
-		    // some browsers Safari (Mac), Netscape in SUNs don't set Content-Type
-		    // for some files e.g.: .cab (in both) and .class (in the SUN)
-		    if(index_h != -1) {
-			beginIndex = index_h + "Content-Type:".length();
-			String type= header.substring(beginIndex).trim();
-			//System.out.println("DEBUG-mul: Content-Type ["+type+"]");
+		    if (fileName.length() > 0) {
+			String type;
+			Text contentToSave;
+			int contentSize;
 
-			parameters.put(name+"_contentType", type);
+			// --- check Content-Type ---
+			index_h = headers.indexOf("Content-Type:");
+			// some browsers Safari (Mac), Netscape in SUNs don't set Content-Type
+			// for some files e.g.: .cab (in both) and .class (in the SUN)
+			if(index_h != -1) {
+			    beginIndex = index_h + "Content-Type:".length();
+			    type = headers.substring(beginIndex).trim();
+			    
+			    if(type.indexOf("application/x-macbinary") != -1) {
+				MakumbaSystem.getMakumbaLogger("fileUpload").fine("Mac upload: application/x-macbinary");
+				// adler: this code was copied from the previous version
+				// it seems to work in the tests I did
+				byte[] temp_buff = new byte[128];
+				pis.read(temp_buff, 0, 128);
+			    }
+
+			} else {
+			    type = "application/octet-stream";
+			    MakumbaSystem.getMakumbaLogger("fileUpload").warning("no Content-Type found but there might be some content");
+			}
+
+			// ---- read the content and set parameters
+			contentToSave = new Text(new BoundaryInputStream(pis, boundary));
+			contentSize = contentToSave.length();
 			
-			if(type.indexOf("application/x-macbinary") != -1) {
-			    //throw new org.makumba.MakumbaError("upload is not supported for Apple Mac");
-			    System.out.println("\n\nDEBUG-mul: -#######- Mac upload -######- \n");
-			    // adler: this code was copied from the previous version
-			    // it seems to work in the tests I did
-			    byte[] temp_buff = new byte[128];
-			    pis.read(temp_buff, 0, 128);
-			}
-			Text contentToSave = new Text(new BoundaryInputStream(pis, boundary));
-			int contentSize = contentToSave.length();
-// ----------
-/*
-  Format formatter = new SimpleDateFormat("mm.ss");
-  String check_time = formatter.format(new Date());
-  System.out.println("DEBUG-mulX: contentSize = "+contentSize);
-  OutputStream fileout = new FileOutputStream("public_html/testfiles/n1-"+check_time+"-"+fileName);
-  contentToSave.writeTo(fileout);
-*/
-// ----------
-
-                        parameters.put(name+"_contentLength", new Integer(contentSize));
+			parameters.put(name+"_contentType", type);
+			parameters.put(name+"_filename", fileName);
+			parameters.put(name+"_contentLength", new Integer(contentSize));
 			parameters.put(name, contentToSave);
-		    } else // there is no Content-Type 
-			if ( fileName.length() > 0 ) {
-			    System.out.println("DEBUG-mul: no Content-Type found but there might be some content");
-			    parameters.put(name+"_contentType", "text/plain"); //not sure which type should I put
-			    Text contentToSave = new Text(new BoundaryInputStream(pis, boundary));
-			    int contentSize = contentToSave.length();
 
-// ----------
-/*
-  Format formatter = new SimpleDateFormat("mm.ss");
-  String check_time = formatter.format(new Date());
-  System.out.println("DEBUG-mulX: contentSize = "+contentSize);
-  OutputStream fileout = new FileOutputStream("public_html/testfiles/n2-"+check_time+"-"+fileName);
-  contentToSave.writeTo(fileout);
-*/
-// ----------
-
-			    parameters.put(name+"_contentLength", new Integer(contentSize));
-			    System.out.println("DEBUG-mul: no content type found but file with size = "+contentSize);
-			    parameters.put(name, contentToSave);
-			}
-			else {
-			    // no content type & no filename in the header
-			    // not sure when this happens...
-			    System.out.println("* * DEBUG-mul: no Content-Type found and no filename * *");
-			    parameters.put(name+"_contentType", "");
-			    parameters.put(name+"_contentLength", new Integer(0));
-			    parameters.put(name, org.makumba.Pointer.NullText);
-			}
-		    
-		} // end if "filename"
-		// if it's a string parameter we store it as String
-		else addParameter(name, new Text(new BoundaryInputStream(pis, boundary)).toString());
-		
-	    } // end if (!endOfRequest)
+			MakumbaSystem.getMakumbaLogger("fileUpload").fine("Parameters set: contentType="+type
+									  +", fileName="+fileName+", contentSize="+contentSize);
+		    } else { //no file -> nothing to upload
+			Text checkContent = new Text(new BoundaryInputStream(pis, boundary)); //to read the boundary
+			if (checkContent.length() > 0)
+			    MakumbaSystem.getMakumbaLogger("fileUpload").warning("no filename in the headers but there was some content (size="+checkContent.length()+", that was not put in the parameters");
+			parameters.put(name+"_contentType", "");
+			parameters.put(name+"_filename", "");
+			parameters.put(name+"_contentLength", new Integer(0));
+			parameters.put(name, org.makumba.Pointer.NullText);
+		    }
+		} else // no filename so it is a string parameter. We store it as String
+		    addParameter(name, new Text(new BoundaryInputStream(pis, boundary)).toString());
 	    
-	}//end of while(pis.available())
+	    } // end if (!endOfRequest)
 	
-    }
-    catch (IllegalArgumentException e) { System.out.println("DEBUG-mul: -- end: nothing to push back");}
-    catch(Throwable t){t.printStackTrace();}
-
-    //System.out.println("\n\n\n---- END new code with Boundary ------\n");
-
-  }
+	}//end of while(pis.available())
+    } catch(Exception e){throw new org.makumba.MakumbaError(e); }
+  }//end of the method MultipartHttpParameters
 
 
   void addParameter(String name, String value)
@@ -292,13 +257,13 @@ public class MultipartHttpParameters extends HttpParameters
 }
 
 /* data inside the request
- * - 1st line: boundary CR+LF
- * - header & values CR+LF (e.g. Content-Type: application/octec-stream)
+ * - 1st line: boundary + CR+LF
+ * - headers & values + CR+LF (e.g. filename="file.doc" Content-Type: application/octec-stream)
  * - CR+LF
- * - content (related to the header just read)
+ * - content (related to the headers just read)
  * - CR+LF
  * - boundary CR+LF
- * - header... and so forth
+ * - headers... and so forth
  * ...
  * 
  * and after the last boundary you will have '--' with CR+LF
