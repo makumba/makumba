@@ -15,6 +15,8 @@
 
 <p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
 <br><span class=futfeat>INTENDED features are presented in red</span>
+<div class="note">This is a note for users</div>
+<div class="internals note">This is a note about makumba internals for makumba developers</div>
 
 <h2><a name="content">Content</a></h2>
 
@@ -87,26 +89,26 @@ Current Java implementation finds the data definition
 files as follows:
 <ul>
 <li>
-the designated file extension is mdd (Makumba Data Definition)</li>
+the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
 
 <li>
-relative to CLASSPATH (e.g. classes/best/Student.mdd)</li>
+relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
 
 <li>
-in a directory called "<b>dataDefinitions</b>" in the CLASSPATH (e.g. classes/dataDefinitions/best/Student.mdd)</li>
+in a directory called "<b>dataDefinitions/</b>" in the CLASSPATH (e.g. <code>classes/dataDefinitions/best/Student.mdd</code>)</li>
 
-<li>
-<font color="#000099">OLDSTYLE: if no mdd file is present, the no-extension
-file (i.e. best/Student) is looked up</font></li>
+<li class="oldfeat">
+OLDSTYLE: if no mdd file is present, the no-extension
+file (i.e. best/Student) is looked up</li>
 </ul>
 </div>
 
 <b>Data objects (records)</b> are stored in <b>databases</b>.
 <p>The actual implementation of the database is not part of this specification
-but implementation suggestions will be made. <b>Data can be copied or replicated
-between different databases</b>.
+but implementation suggestions will be made. <b>Data can be copied and/or replicated
+between different databases</b>, even between different DB engine types.
 <div class="futfeat note">Replication is not yet implemented,
-but the design is prepared for it.
+but the design is prepared for it. Copying works.
 </div>
 
 <h3><a NAME="Fields">Fields</a></h3>
@@ -124,13 +126,13 @@ A field definition looks like:
 
 <div class="note futfeat">
 default values are supported
-internally, but not by the parser
+internally, but not by the mdd parser
 </div>
 <div class="note futfeat">
 In the future "=" might be replaced with ":".
 </div>
 
-<div class="note">
+<div class="internals note">
 As an implementation guideline, field names use to stay approximately
 the same in:
 <ul>
@@ -198,7 +200,7 @@ gender= int{ "male"=0, "female"=1 }; Sex
 This will help the presentation layer to present a suitable input control
 (e.g. <select><option value="0">male</option><option value="1">female</option></select>)
 
-<div class="note">In the present implementation, this type is called
+<div class="internals note">In the present implementation, this type is called
 "intEnum" internally</div>
 
 <h4>char</h4>
@@ -220,7 +222,7 @@ gender= char{ "male", "female" }; Sex
 This will help the presentation layer to present a suitable input control
 (e.g. a HTML SELECT)
 
-<div class="note">in the present implementation, this type is called
+<div class="internals note">in the present implementation, this type is called
 "charEnum" internally</div>
 
 <h4>text</h4>
@@ -229,9 +231,9 @@ designed to accomodate large text or binary content. It is implemented
 with LONGVARBINARY or its counterparts, depending on the underlying DB engine.
 
 <pre class="example">
-application= text; Application letter
+application= text;   Application letter
 description=text	;Description of object
-image= text	;Picture attachement</pre>
+image= text	  ; 	Picture attachment</pre>
 
 <h4>date</h4>
 A date and/or time.
@@ -266,7 +268,7 @@ address= ptr{
 </pre>
 </div>
 
-<div class="note">this type is known internally as ptrOne</div>
+<div class="note internals">this type is known internally as ptrOne</div>
 
 <h4>Sets (set, bag, list)</h4>
 Sets define a number of references to multiple objects of a certain type.
@@ -283,7 +285,7 @@ represent, just having an integer field, for the order.
 place= set int {"home"=1, "away"=0} ; Home or away
 </pre>
 
-<div class="note">this is currently known
+<div class="internals note">this is currently known
 internally as setintEnum</div>
 
 <b>DEPRECATED:</b>
@@ -292,8 +294,9 @@ place= set char {"home", "away"} ; Home or away
 </pre>
 
 <div class="note">It means that place is a
-set that can take only the "home" and "away" values. This is currently
-known internally as setcharEnum</div>
+set that can take only the "home" and "away" values.
+</div>
+<div class="note internals">This is currently known internally as setcharEnum</div>
 
 The type which the set is made of can be defined on the spot:
 <pre class="example">
@@ -310,7 +313,7 @@ addresses: set{
     number: int; Number }; Addresses
 </pre>
 </div>
-<div class="note">this type is known internally as setComplex</div>
+<div class="internals note">this type is known internally as setComplex</div>
 
 <h3><a NAME="MacroTypes">Macro types</a></h3>
 A name can be defined for a more complex type and it can be reused in the
@@ -1443,7 +1446,7 @@ db)</td>
 
 <td>the name of the created object in the response page</td>
 
-<td>Fixed. Defaults to __mak__edited__.</td>
+<td>Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<code>&lt;form name="..." ...></code>)</td>
 </tr>
 
 <tr>
@@ -1454,45 +1457,79 @@ db)</td>
 <td>Fixed. Defaults to "changes done".</td>
 </tr>
 
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan=3>Form-specific html tag attributes</td>
+<td rowspan="3">
+The content is copied to the resulting <code>&lt;form...></code> tag.
+Do not use double quotes (") in the content, use single ones (') instead.
+</td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
 <tr>
 <td><tt>styleId</tt></td>
+<td rowspan="14">Generic HTML tag attributes.
+</td>
 
-<td>FIXME</td>
-
-<td>FIXME</td>
+<td>results in <code>id="..."</code></td>
 </tr>
 
 <tr>
 <td><tt>styleClass</tt></td>
-
-<td>FIXME</td>
-
-<td>FIXME</td>
+<td>results in <code>class="..."</code></td>
 </tr>
 
 <tr>
 <td><tt>style</tt></td>
-
-<td>FIXME</td>
-
-<td>FIXME</td>
+<td rowspan="12">
+The content is copied to the resulting html tags.
+Do not use double quotes (") in the content, use single ones (') instead.
+</td>
 </tr>
-
-
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
 </table>
 
 
 At form response, makumba invokes the following methods:
-<blockquote><tt>// by defining on_new, the handler class gets the opportunity</tt>
-<br><tt>// to validate/adjust the data</tt>
-<br><tt>// if the data is not correct, the handler can throw an exception</tt>
-<br><tt>handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;</tt>
-<p><tt>// the standard Database call</tt>
-<br><tt>Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type,
-attr)</a>;</tt>
-<p><tt>// by defining after_new, the handler class gets the opportunity</tt>
-<br><tt>// to do supplementary operations with the inserted record</tt>
-<br><tt>handler.<b>after_new<i>TypeName</i>(created, data, attr, db)</b>;</tt></blockquote>
+<ol>
+<li>
+By defining <tt>on_new*</tt>, the handler class gets the opportunity
+to validate/adjust the data.
+If the data is not correct, the handler can throw an exception to prevent insertion.
+<pre class="example">
+handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;
+</pre>
+</li>
+<li>The standard Database call for insertion:
+<pre class="example">
+Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, attr)</a>;
+</pre>
+</li>
+<li>
+By defining <tt>after_new*</tt>, the handler class gets the opportunity
+to do supplementary operations with the inserted record.
+<pre class="example">
+handler.<b>after_new<i>TypeName</i>(created, data, attr, db)</b>;
+</pre>
+</li>
+</ol>
+
 
 <table class="tagParamDef">
 <tr>
@@ -1546,12 +1583,13 @@ and after_new), the action is not allowed.
         &lt;input type="submit"/>
 &lt;/mak:newForm>
 </pre>
-At response:
-<p><tt>PersonLogic handler; // see <a href="#javahand">handler
-discovery</a></tt>
-<br><tt>handler.<b>on_newGeneralPerson(data, attr, db)</b>;</tt>
-<br><tt>Pointer created= db.insert("general.Person", attr);</tt>
-<br><tt>handler.<b>after_newGeneralPerson(created, data, attr, db)</b>;</tt>
+At response the following calls are executed (in this order):
+<pre class="example">
+PersonLogic handler; // see <a href="#javahand">handler discovery</a>
+handler.<b>on_newGeneralPerson(data, attr, db)</b>;
+Pointer created= db.insert("general.Person", attr);
+handler.<b>after_newGeneralPerson(created, data, attr, db)</b>;
+</pre>
 
 
 <h4><a NAME="makadd">&lt;mak:addForm&nbsp; ...>.... &lt;/mak:addForm></a></h4>
@@ -1582,9 +1620,9 @@ Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object
 </tr>
 
 <tr>
-<td><tt><font color="#990000">handler</font></tt></td>
+<td class="futfeat"><tt>handler</tt></td>
 
-<td><font color="#990000">the Java class.method that handles the response</font></td>
+<td class="futfeat">the Java class.method that handles the response</td>
 
 <td>defaults to on_add+MakumbaType+fieldname. Arguments:
 <br>(Pointer baseObject, Dictionary newData,&nbsp; Attributes a, Database
@@ -1594,7 +1632,7 @@ db)</td>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="7">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
@@ -1609,17 +1647,35 @@ db)</td>
 <td><tt>message</tt></td>
 </tr>
 
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew">newForm</a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
 <tr>
 <td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew">newForm</a>
+</td>
 </tr>
-
-<tr>
-<td><tt>styleClass</tt></td>
-</tr>
-
-<tr>
-<td><tt>style</tt></td>
-</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
 
 </table>
 
@@ -1656,26 +1712,26 @@ mandatory enclosing &lt;mak:object> or &lt;mak:list>
 <tr>
 <td><tt>object</tt></td>
 
-<td>The label of the OQL object to edit&nbsp;</td>
+<td>The label of the OQL object to edit</td>
 
 <td>Fixed, mandatory.</td>
 </tr>
 
 <tr>
-<td><tt><font color="#990000">handler</font></tt></td>
+<td class="futfeat"><tt>handler</tt></td>
 
-<td><font color="#990000">the Java class.method that handles the response</font></td>
+<td class="futfeat">the Java class.method that handles the response</td>
 
-<td><font color="#000000">defaults to on_edit+MakumbaTypeOfEditedObject.
-Arguments:</font>
-<br><font color="#000000">(Pointer object, Dictionary changedFields, Attributes
-a, Database db)</font></td>
+<td>defaults to on_edit+MakumbaTypeOfEditedObject.
+Arguments:
+<br>(Pointer object, Dictionary changedFields, Attributes
+a, Database db)</td>
 </tr>
 
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="7">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
@@ -1690,17 +1746,35 @@ a, Database db)</font></td>
 <td><tt>message</tt></td>
 </tr>
 
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew">newForm</a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
 <tr>
 <td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew">newForm</a>
+</td>
 </tr>
-
-<tr>
-<td><tt>styleClass</tt></td>
-</tr>
-
-<tr>
-<td><tt>style</tt></td>
-</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
 
 </table>
 
@@ -1732,62 +1806,61 @@ are suitable for more complex operations then new, add, edit.
 </tr>
 
 <tr>
-<td><tt><font color="#000000">handler</font></tt></td>
-
-<td><font color="#000000">the Java method that handles the response</font></td>
-
-<td><font color="#000000">Arguments:</font>
-<br><font color="#000000">(Dictionary formFields, Attributes restOfArguments, Database db)</font>
-<br><font color="#000000">Not mandatory. A form without handler will simply
-set attributes (as makumba objects) for the next page</font></td>
+<td><tt>handler</tt></td>
+<td>the Java method that handles the response</td>
+<td>Arguments:
+<br>(Dictionary formFields, Attributes restOfArguments, Database db)
+<br>Not mandatory. A form without handler will simply
+set attributes (as makumba objects) for the next page</td>
 </tr>
 
 <tr>
-<td><tt><font color="#000000">action</font></tt></td>
+<td><tt>action</tt></td>
 
-<td><font color="#000000">the response page of the form</font></td>
-
-<td><font color="#000000">Mandatory</font></td>
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
-<td><tt><font color="#000000">method</font></tt></td>
-
-<td><font color="#000000">the HTTP method (get or post)</font></td>
-
-<td><font color="#000000">Defaults to GET</font></td>
+<td><tt>method</tt></td>
 </tr>
 
 <tr>
 <td><tt>name</tt></td>
-
-<td>name of the attribute that will store&nbsp; (within the response page)
-the result of the handler method</td>
-
-<td> </td>
 </tr>
 
 <tr>
 <td><tt>message</tt></td>
-
-<td>message displayed by <tt>&lt;mak:response > </tt>in the response page
-on succesfull completion</td>
-
-<td> </td>
 </tr>
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew">newForm</a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
 
 <tr>
 <td><tt>styleId</tt></td>
-<td COLSPAN="2" ROWSPAN="3">see <a href="#maknew">newForm</a></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew">newForm</a>
+</td>
 </tr>
-
-<tr>
-<td><tt>styleClass</tt></td>
-</tr>
-
-<tr>
-<td><tt>style</tt></td>
-</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
 
 </table>
 
@@ -1958,24 +2031,30 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 <td>RTEXPR<br>  </td>
 </tr>
 
+<!-- generic: -->
+
 <tr>
 <td><tt>styleId</tt></td>
-<td COLSPAN="2" ROWSPAN="3">see <a href="#maknew">newForm</a></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew">newForm</a>
+</td>
 </tr>
-
-<tr>
-<td><tt>styleClass</tt></td>
-</tr>
-
-<tr>
-<td><tt>style</tt></td>
-</tr>
-
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
 
 </table>
 
-
-<!-- FIXME document other HTML params from bug 101 -->
 
 <br>Fields of related records can be included as
 well, via pointers.
@@ -2026,9 +2105,9 @@ of the labels of the mandatory enclosing &lt;mak:object> or &lt;mak:list>
 </tr>
 
 <tr>
-<td><tt><font color="#990000">handler</font></tt></td>
+<td class="futfeat"><tt>handler</tt></td>
 
-<td><font color="#990000">the Java class.method that handles the response</font></td>
+<td class="futfeat">the Java class.method that handles the response</td>
 
 <td>defaults to on_delete+MakumbaTypeOfEditedObject. Arguments:
 <br>(Pointer object, Attributes a, Database db)</td>
@@ -2037,12 +2116,41 @@ of the labels of the mandatory enclosing &lt;mak:object> or &lt;mak:list>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="2">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
 <td><tt>message</tt></td>
 </tr>
+<tr>
+<td><tt>target</tt></td>
+</tr>
+<tr>
+<td><tt>name</tt></td>
+</tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew">newForm</a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
 </table>
 
 Example:
