@@ -83,6 +83,7 @@ public abstract class Table extends RecordHandler
   String selectAllWithDbsv; 
   Object[] selectLimits= new Object[2];
 
+  static final int BAR= 75;
   /** copies all records from the table1 to table2 */
   void copyFrom(DBConnection dest, Table source, DBConnection sourceDB) 
   {
@@ -117,26 +118,49 @@ public abstract class Table extends RecordHandler
 	};
       }    
       
-    Enumeration e=sourceDB.executeQuery(selectAllWithDbsv, selectLimits).elements();
+    Vector v=sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
     
-    int n=0;
-    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying");
+    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying "+v.size()+" records");
+    
+    System.out.print("|");
+    for(int b=0; b<BAR; b++)
+      System.out.print("-");
+    System.out.print("|\n "); System.out.flush();
+    float step=((float)v.size()/BAR);
 
-    while (e.hasMoreElements())
+    int stars=0;
+    Hashtable data= new Hashtable(23);
+    Hashtable nameKey= new Hashtable(23);
+
+    for(int f=0; f<handlerOrder.size(); f++)
+      nameKey.put("col"+(f+1), ((FieldHandler)handlerOrder.elementAt(f)).getName());
+
+    for(int j=0; j<v.size(); j++)
       {
-	n++;
-	Dictionary d= (Dictionary)e.nextElement();
-	Hashtable data= new Hashtable(23);
-	for(int i=0; i<handlerOrder.size(); i++)
+	Dictionary d= (Dictionary)v.elementAt(j);
+	for(Enumeration e= d.keys(); e.hasMoreElements();)
 	  {
-	    String name= "col"+(i+1);
-	    if(d.get(name)!=null)
-	      data.put(((FieldHandler)handlerOrder.elementAt(i)).getName(), d.get(name));
+	    Object k= e.nextElement();
+	    data.put(nameKey.get(k), d.get(k));
 	  }
+
 	dest.insert(getRecordInfo().getName(), data);
-	//copyRecord((Dictionary)e.nextElement());
+	
+	// free up some memory
+	data.clear();
+	v.setElementAt(null, j);
+
+	// display progress bar
+	int nstars= (int)(((float)j+1)/step);
+	while(nstars>stars)
+	  {
+	    System.out.print("*"); 
+	    System.out.flush();
+	    stars++;
+	  }
       }
-    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": copied "+n+" objects");
+    System.out.println();
+    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": copied "+v.size()+" objects");
   }
   
   /**
