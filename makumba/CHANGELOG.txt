@@ -7,10 +7,16 @@ stefan; 15 jul 2003: bug 4 fixed (unique indexes created and dropped in the DB a
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
 
 
+0.5.9.11; 16 sep 2003 fred
+fred; 15 sep 2003; bug 62 : mak:if
+fred; 15 sep 2003; bug 572 & 501: default=... and empty=...  (still NEEDS TESTING!)
+
+
 0.5.9.10; 11 sep 2003 fred
 # this release retrofits all summer work _except_ bug 3, bug 4
 # skipped a number (.9) on purpose, to mark the major change
-stefan; 10 sept 2003: fixed bug 557 (drop support for mak:list/object header= and footer=)
+stefan; ?? sep 2003 ; bug 530 (org.makumba.util.HtmlUtils @deprecated, all makumba uses org.makumba.HtmlUtils)
+stefan; 10 sep 2003: fixed bug 557 (drop support for mak:list/object header= and footer=)
 stefan; 20 aug 2003: extended test suite, now ready for additional tests
 stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
 stefan; 2 jul 2003:improved solution for bug 449 (mak:value  maxLength, ellipsis...)
