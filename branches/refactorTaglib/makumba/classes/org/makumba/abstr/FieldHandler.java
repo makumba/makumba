@@ -50,7 +50,7 @@ public abstract class FieldHandler
 
   void init(){}
 
-  public boolean compatible(FieldInfo fi){ return getType().equals(fi.getType()); }
+  public boolean isAssignableFrom(FieldInfo fi){ return fi.getType().equals("nil") || getType().equals(fi.getType()); }
 
   public String toString(){ return getType(); }
 
