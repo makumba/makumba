@@ -1,3 +1,6 @@
+0.5.5.26; 25 mar 2003 fred
+fixed bug 35 c7 (login form doesn't include POST parameters)
+
 0.5.5.25; 25 mar 2003 stefan
 source viewers generate valid html 4.01 + other visual improvements there
 removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
