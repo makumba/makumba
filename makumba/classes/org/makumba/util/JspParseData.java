@@ -58,7 +58,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   String uri;
 
   /** The patterns used to parse the page. */
-  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern, JspTagAttributePattern, Word, TagName;
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, Word, TagName;
 
   static private String[] JspCommentPatternNames={"JspComment", "JspScriptlet"};
   static private Pattern[] JspCommentPatterns;
@@ -120,7 +120,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
       JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
       //JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
       JspCommentPattern=  Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
-      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL); 
+      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
+      JspExpressionLanguagePattern = Pattern.compile("\\$\\{[^\\}]*\\}");      														  
       Pattern[] cp= { JspCommentPattern, JspScriptletPattern };
       JspCommentPatterns= cp;
       Word= Pattern.compile("\\w+");
@@ -185,6 +186,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
     syntaxPoints= new SourceSyntaxPoints(file, this);
 
     holder= analyzer.makeStatusHolder(initStatus);
+    
+    // treat JSP Expression Language
+    treatEL(syntaxPoints.getContent(), analyzer);
 
     // the page analysis as such:
     treatTags(syntaxPoints.getContent(), analyzer);
@@ -259,6 +263,15 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   public String getIncludePatternName(){
     return "JspInclude";
   }
+  
+  /** Go thru the expression language in the page. */
+    void treatEL(String content, JspAnalyzer an) {
+        Matcher m = JspExpressionLanguagePattern.matcher(content);
+        while (m.find()) {
+            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+        }
+    }
 
   /** Go thru the tags in the page. */
   void treatTags(String content, JspAnalyzer an)

@@ -183,8 +183,8 @@ public class SourceSyntaxPoints
     // we move the position of all SyntaxPoints that occur after the include
     for(Iterator i= syntaxPoints.iterator(); i.hasNext(); ){
       SyntaxPoint sp= (SyntaxPoint)i.next();
-      if(sp.position>position)
-	sp.moveByInclude(delta);
+      if(sp.position>position) 
+	    sp.moveByInclude(delta);
     }
     
     // we add a fileBeginning
@@ -285,8 +285,10 @@ public class SourceSyntaxPoints
       };
 
     syntaxPoints.add(point);
+
     SyntaxPoint.End theEnd= (SyntaxPoint.End)SyntaxPoint.makeEnd(point, end);
     syntaxPoints.add(theEnd);
+    
     return theEnd;
   }
 
@@ -339,7 +341,23 @@ public class SourceSyntaxPoints
     /**
      * @return Returns the syntaxPoints.
      */
-    public TreeSet getSyntaxPoints() {
-        return syntaxPoints;
+    public SyntaxPoint[] getSyntaxPoints() {
+        ArrayList list = new ArrayList(syntaxPoints);
+        Collections.sort(list);
+        SyntaxPoint[] result = (SyntaxPoint[]) list.toArray(new SyntaxPoint[syntaxPoints.size()]);
+        // the following is needed to pass by a bug occuring to sorting (TextLine begin&end on the same line&column are switched)
+        // preferably, this would be done on creation of the Treeset, but i failed to fix the problem there
+        for (int i = 0; i + 1 < result.length; i++) {
+            if (result[i].getType().equals("TextLine") && result[i + 1].getType().equals("TextLine")
+                    && result[i].getLine() == result[i + 1].getLine()
+                    && result[i].getColumn() == result[i + 1].getColumn() && !result[i].isBegin()
+                    && result[i + 1].isBegin()) {
+                SyntaxPoint temp = result[i];
+                result[i] = result[i + 1];
+                result[i + 1] = temp;
+            }
+        }
+        return result;
     }
+    
 }// end class
