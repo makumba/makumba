@@ -22,11 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.*;
+import org.makumba.FieldDefinition;
+import org.makumba.DataDefinition;
+import org.makumba.util.MultipleKey;
 
 public class AddTag extends FormTagBase 
 {
@@ -35,17 +33,17 @@ public class AddTag extends FormTagBase
   // for input tags:
   String field;
 
-  public boolean canComputeTypeFromEnclosingQuery() 
-  { return true; }
-
-  public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
   {
-    if(qs.foundMoreProjections())
-      return null;
-    DataDefinition dd= ((FieldInfo)qs.query.getLabelType(baseObject).getFieldDefinition(field)).getPointedType();
-    return deriveType(dd, fieldName);
+    Object[] keyComponents= {baseObject, field, handler, getParentListKey(), getClass()};
+    tagKey=new MultipleKey(keyComponents);
   }
 
+  public DataDefinition getDataType()
+  {
+    return pageCache.getQuery(getParentListKey()).getLabelType(baseObject).getFieldDefinition(field).getSubtype();
+  }
 }
 
 

@@ -31,7 +31,8 @@ public class charEnumEditor extends FieldEditor
   public String formatShow(Object o, Dictionary formatParams)
   {
     StringBuffer sb=new StringBuffer();
-    sb.append("<select name=\"").append(getInputName(formatParams)).append("\">");
+    sb.append("<select name=\"").append(getInputName(formatParams))
+      .append("\"").append(getExtraFormatting(formatParams)).append(">");
     Enumeration n=getNames();
     while(n.hasMoreElements())
       {

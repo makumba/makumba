@@ -22,122 +22,70 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.*;
-import java.util.*;
-import org.makumba.*;
-import org.makumba.util.*;
+import org.makumba.MakumbaSystem;
+import org.makumba.LogicException;
+
+import org.makumba.util.MultipleKey;
 import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.view.html.RecordViewer;
+import org.makumba.view.ComposedQuery;
+
+import javax.servlet.jsp.JspException;
+
+import java.util.Vector;
 
 public class ValueTag extends MakumbaTag
 {
-  // need to check the type of the first label in the enclosing query
-  // if there is a possibly null pointer, there will be different strategy, that has its own query
+  String expr;
+  String var;
+  String printVar;
 
-  static final String EVAL_BUFFER="makumba.eval.buffer";
-
-  public static Object evaluate(String s, MakumbaTag t) throws JspException
+  public void setExpr(String expr){ this.expr=expr; }
+  public void setVar(String var){ this.var=var; }
+  public void setPrintVar(String var){ this.printVar=var; }
+  
+  /** cleanup the state to make this reusable */
+  public void cleanState()
   {
-    Hashtable h=t.getRootQueryBuffer().bufferParams;
-    t.getRootQueryBuffer().bufferParams=new Hashtable();
-    ValueTag vt= new ValueTag();
-    vt.setPageContext(t.getPageContext());
-    vt.setParent(findAncestorWithClass(t, QueryTag.class));
-    vt.setExpr(s);
-    vt.setVar(EVAL_BUFFER);
-    vt.doStartTag();
-    t.getRootQueryBuffer().bufferParams=h;
-    return t.getPageContext().getAttribute(EVAL_BUFFER);
-  }
-
-  public Object getRegistrationKey() throws LogicException
-  {
-    String expr=getRootQueryBuffer().bufferExpr.trim();
-    QueryStrategy p=getParentQueryStrategy();
-    Object check= p.query.checkExpr(expr, PageAttributes.getAttributes(pageContext));
-    if(check==null)
-      return null;
-    MultipleKey mk= new MultipleKey((Vector)p.key, 10);
-    mk.setAt(expr, 6);
-    if(check instanceof String)
-      mk.setAt((String)check, 7);
-    else 
-      {
-	getRootQueryBuffer().bufferSet=(FieldDefinition)check;
-	mk.setAt(getRootQueryBuffer().bufferSet.getName(), 7);
-      }
-    mk.setAt(getRootQueryBuffer().bufferVar, 8);
-    mk.setAt(getRootQueryBuffer().bufferPrintVar, 9);
-    return mk;
+    super.cleanState();
+    expr=var=printVar=null;
   }
   
-  public TagStrategy makeNonRootStrategy(Object key)
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
   {
-    if(key==null)
-      return this;
-    Object o=((MultipleKey)key).elementAt(7);
-    if(getRootQueryBuffer().bufferSet==null)
-      return getParentQueryStrategy().getNullableStrategy(o);
-    return new SetValueStrategy();
+    addToParentListKey(expr.trim());
+  }
+
+  /** determine the ValueComputer and associate it with the tagKey */
+  public void doStartAnalyze()
+  {
+    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
   }
   
+  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
+  public void doEndAnalyze()
+  {
+    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
+    vc.doEndAnalyze(this);
 
-  /** demand a QueryTag enclosing query */
-  protected Class getParentClass(){ return QueryTag.class; }
+    if(var!=null)
+      pageCache.types.setType(var, vc.type, this);
 
-  public String toString() { 
-    if(getRootQueryBuffer()==null)
-      return "uninitialized value tag";
+    if(printVar!=null)
+      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"), this);
+  }
+  
+  /** ask the ValueComputer to present the expression */
+  public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
+  {
+    ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
     
-    return "VALUE expr="+getRootQueryBuffer().bufferExpr+ 
-      " parameters: "+ getRootQueryBuffer().bufferParams; 
-  }
-
-  /** return false, register an exception */ 
-  protected boolean canBeRoot()
-  {
-    treatException(new MakumbaJspException(this, "VALUE tag should always be enclosed in a LIST or OBJECT tag"));
-    return false;
-  }
-
-  /** set the expression */
-  public void setExpr(String expr)
-  { 
-    getRootQueryBuffer().bufferExpr=expr;
-  }
-
-  /** set the expression */
-  public void setVar(String var)
-  { 
-    getRootQueryBuffer().bufferVar=var;
-  }
-
-  /** set the expression */
-  public void setPrintVar(String var)
-  { 
-    getRootQueryBuffer().bufferPrintVar=var;
-  }
-  
-  /** ask the enclosing query to present the expression */
-  public int doStart() throws JspException 
-  {
-    displayIn(getParentQueryStrategy());
     return EVAL_BODY_INCLUDE;
   }
 
-  public static void displayIn(QueryStrategy qs) throws JspException
-  {
-    try{
-      qs.insertEvaluation(qs.getBuffer().bufferExpr, 
-			  qs.getBuffer().bufferParams,
-			  qs.getBuffer().bufferVar,
-			  qs.getBuffer().bufferPrintVar
-			  );
-    }finally{
-      qs.getBuffer().bufferVar=null;
-      qs.getBuffer().bufferPrintVar=null;
-      qs.getBuffer().bufferParams.clear();
-      qs.getBuffer().bufferSet=null;
-    }
+  public String toString() { 
+    return "VALUE expr="+expr+ 
+      " parameters: "+ params; 
   }
-
 }

@@ -120,6 +120,25 @@ public class MakumbaSystem
   public static DataDefinition getDataDefinition(String typeName) 
   { return org.makumba.abstr.RecordInfo.getRecordInfo(typeName); }
 
+
+  /** Make a field definition from the indicated string */
+  public static FieldDefinition makeFieldDefinition(String name, String definition)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, definition, true);
+  }
+
+  /** Make a field definition with the elementary type*/
+  public static FieldDefinition makeFieldOfType(String name, String type)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+  }
+
+  /** Make a field definition identical with the given one, except for the name*/
+  public static FieldDefinition makeFieldWithName(String name, FieldDefinition type)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+  }
+
   /** Get the DataDefinition of the records returned by the given OQL query 
    *@deprecated use {@link #getOQLAnalyzer} for better OQL functionality
    */
@@ -324,7 +343,9 @@ The programmer could just as well decide that all makumba logging at or over the
 	}
 	*/
     }
-    catch(antlr.TokenStreamException f){ throw new org.makumba.MakumbaError(f); }
+    catch(antlr.TokenStreamException f){ 
+	MakumbaSystem.getMakumbaLogger("db.query.compilation").warning(f+": "+oqlQuery);
+	throw new org.makumba.MakumbaError(f, oqlQuery); }
     long diff = new java.util.Date().getTime()-d.getTime();
     MakumbaSystem.getMakumbaLogger("db.query.compilation").fine("OQL to SQL: "+ diff +" ms: "+oqlQuery);
     return t;

@@ -22,28 +22,37 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.makumba.ProgrammerError;
+
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.JspException;
 
-public class ActionTag extends BodyTagSupport
+public class ActionTag extends MakumbaTag implements BodyTag
 {
-  FormTagBase form;
+  BodyContent bodyContent;
+  public void setBodyContent(BodyContent bc){ bodyContent=bc; }
 
   /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
-  public int doStartTag()
+  public int doMakumbaStartTag()
   {
-    return EVAL_BODY_TAG;
+    return EVAL_BODY_BUFFERED;
   }
 
-  public void doInitBody() throws JspException
+  public void doStartAnalyze()
   {
-    form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
+    FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
     if(form==null)
-      throw new JspException("\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag");
+      throw new ProgrammerError("\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag:\n"+getTagText());
+    form.setAction("dummy");
   }
+
+  public void doInitBody(){}
   
-  public int doEndTag() throws JspException
+  public int doMakumbaEndTag() throws JspException
   {
+    FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
     form.responder.setAction(bodyContent.getString());
     return EVAL_PAGE;
   }

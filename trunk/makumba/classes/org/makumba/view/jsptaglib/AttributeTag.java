@@ -22,12 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
-import java.util.*;
-import org.makumba.*;
-import org.makumba.util.*;
+import org.makumba.AttributeNotFoundException;
 import org.makumba.controller.jsp.PageAttributes;
+
+import javax.servlet.jsp.JspException;
+
 
 public class AttributeTag extends MakumbaTag
 {
@@ -35,17 +34,12 @@ public class AttributeTag extends MakumbaTag
   String var;
   String exceptionVar;
 
-  protected boolean canBeRoot()  { return true; }
-
-  protected Class getParentClass()  { return MakumbaTag.class; }
-  public TagStrategy makeStrategy(Object key){ return this; }
-
   public void setName(String s){ this.name=s; }
   public void setVar(String s){ this.var=s; }
   public void setExceptionVar(String s){ this.exceptionVar=s; }
   
   /** ask the enclosing query to present the expression */
-  public int doStart() throws JspException 
+  public int doMakumbaStartTag() throws JspException 
   {
     Object o= null;
     Throwable t=null;
@@ -54,7 +48,7 @@ public class AttributeTag extends MakumbaTag
     }catch(Throwable t1) {t=t1; }
     if(t!=null)
       if(exceptionVar==null)
-	{ treatException(t); return BodyTag.SKIP_PAGE; }
+	{ treatException(t); return SKIP_PAGE; }
       else
 	{
 	  pageContext.setAttribute(exceptionVar, t);	
@@ -75,6 +69,8 @@ public class AttributeTag extends MakumbaTag
 
     return EVAL_BODY_INCLUDE;
   }
+
+  public String toString(){ return "attribute name="+name+" var="+var+" exceptionVar="+exceptionVar; }
 }
 
 

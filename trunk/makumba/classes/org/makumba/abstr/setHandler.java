@@ -33,7 +33,12 @@ public class setHandler extends ptrHandler implements subtableHandler
 
   public RecordInfo getSubtable() { return (RecordInfo)fi.extra1; }
 
-  public boolean compatible(FieldInfo fi){ return fi.getType().equals(getType()) && getForeignTable().getName().equals(fi.getForeignTable().getName()); }
+  public boolean isAssignableFrom(FieldInfo fi)
+  { 
+    return "nil".equals(fi.getType())||  
+      getType().equals(fi.getType()) && 
+      getForeignTable().getName().equals(fi.getForeignTable().getName()); 
+  }
   
   FieldInfo pointerToForeign()
   {

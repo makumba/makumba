@@ -22,48 +22,36 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import java.util.*;
-import org.makumba.util.*;
-import org.makumba.*;
+import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.Dictionary;
+
+import org.makumba.util.NamedResources;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.MultipleKey;
+
+import org.makumba.MakumbaSystem;
+import org.makumba.OQLAnalyzer;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.Attributes;
+
+import org.makumba.LogicException;
+import org.makumba.MakumbaError;
+import org.makumba.InvalidFieldTypeException;
+
 
 /** An OQL query composed from various elements found in script pages. 
  * It can be enriched when a new element is found. 
  * It has a prepared Qyuery correspondent in a makumba database 
  * It may be based on a super query.
  */
-public class ComposedQuery extends Observable
+public class ComposedQuery
 {
-  /** a cache for composed queries */
-  static int queries = NamedResources.makeStaticCache
-      ("JSP composed queries",
-   new NamedResourceFactory(){
-    protected Object getHashObject(Object nm) 
-      {
-	return ""+((Object[])nm)[0]; 
-      }
-  
-    protected Object makeResource(Object name, Object hashName) 
-      {
-	ComposedQuery parent=(ComposedQuery)((Object[])name)[2];
-	String[] sections=(String[])((Object[])name)[1];
-	ComposedQuery ret=(parent==null?new ComposedQuery(sections)
-			   :new ComposedSubquery(sections, parent));
-	ret.init();
-	return ret;
-      }
-  });
-  
-  /** return a composed query that will associated to the given key. 
-   */
-  public static ComposedQuery getQuery(Object key, String[] sections, ComposedQuery parent)
-  {
-    Object arg[]= {key, sections, parent};
-    return (ComposedQuery)NamedResources.getStaticCache(queries).
-      getResource(arg);
-  }
-  
   /** constructor */
-  ComposedQuery(String[] sections)
+  public ComposedQuery(String[] sections)
   {
     this.sections=sections;
     this.derivedSections= sections;
@@ -94,6 +82,9 @@ public class ComposedQuery extends Observable
   /** the OQL query as computed from the derived sections */
   String oqlQuery;
 
+  OQLAnalyzer typeAnalyzer;
+  OQLAnalyzer fromAnalyzer;
+
   /** the keyset defining the primary key for this query. Normally the primary key is made of the keys declared in FROM, in this query and all the parent queries. Keys are kept as integers (indexes) */
   Vector keyset;
   
@@ -115,18 +106,22 @@ public class ComposedQuery extends Observable
   }
 
   public DataDefinition getResultType()
-  { return attrParam==null?null:attrParam.getResultType(); }
+  { return typeAnalyzer==null?null:typeAnalyzer.getProjectionType(); }
 
   public DataDefinition getLabelType(String s)
-  { return attrParam==null?null:attrParam.getLabelType(s); }
+  { return typeAnalyzer==null?null:typeAnalyzer.getLabelType(s); }
 
   /** return the version, one version is added for each change */
   public int getVersion(){ return projections.size(); }
 
   /** initialize the object, template method */
-  protected void init()
+  public void init()
   {
     initKeysets();
+    String query= "SELECT nil ";
+    if(derivedSections[FROM]!=null)
+      query+="FROM "+derivedSections[FROM];
+    fromAnalyzer= MakumbaSystem.getOQLAnalyzer(query);
   }
 
   /** initialize the keysets. previousKeyset is "empty" */
@@ -147,10 +142,7 @@ public class ComposedQuery extends Observable
   protected void addSubquery(ComposedSubquery q)
   {
     if(subqueries.size()==0)
-      {
-	prependFromToKeyset();
-	recomputeQuery();
-      }
+      prependFromToKeyset();
     subqueries.addElement(q);
   }
 
@@ -164,9 +156,10 @@ public class ComposedQuery extends Observable
 
     // add the previous keyset
     for(int i=0; i<keyset.size(); i++)
-      checkProjectionInteger((String)e.nextElement(), false);
+      checkProjectionInteger((String)e.nextElement());
 
-    for(StringTokenizer st= new StringTokenizer((String)sections[FROM],","); st.hasMoreTokens();)
+    for(StringTokenizer st= new StringTokenizer(sections[FROM]==null?"":sections[FROM],","); 
+	st.hasMoreTokens();)
       {
 	String label= st.nextToken().trim();
 	int j= label.lastIndexOf(" ");
@@ -178,7 +171,7 @@ public class ComposedQuery extends Observable
       }
 
     while(e.hasMoreElements())
-      checkProjectionInteger((String)e.nextElement(), false);
+      checkProjectionInteger((String)e.nextElement());
   }
 
   /** return a clone of all the projections */
@@ -210,18 +203,10 @@ public class ComposedQuery extends Observable
   /** check if a projection exists, if not, add it. return its index */
   public Integer checkProjectionInteger(String expr)
   {
-    return checkProjectionInteger(expr, true);
-  }
-
-  /** check if a projection exists, if not, add it. return its index */
-  public synchronized Integer checkProjectionInteger(String expr, boolean recompute)
-  {
     Integer index= getProjectionIndex(expr);
     if(index==null)
       {
 	addProjection(expr);
-	if(recompute)
-	  recomputeQuery();
 	// if UNIQUE is true, need to recompute the keyset and notify the subqueries to recompute their previous keyset 
 	return null;
       }
@@ -246,6 +231,7 @@ public class ComposedQuery extends Observable
   /** a change has come up, recompute the query */
   protected synchronized void recomputeQuery() 
   {
+    typeAnalyzer= MakumbaSystem.getOQLAnalyzer(computeQuery(true));
     oqlQuery=computeQuery();
     attrParam=null;
   }
@@ -283,8 +269,19 @@ public class ComposedQuery extends Observable
   /** compute the query from its sections */
   protected String computeQuery()
   {
-    String groups= checkExpr((String)derivedSections[GROUPBY]);
-    String orders= checkExpr((String)derivedSections[ORDERBY]);
+    return computeQuery(false);
+  }
+
+  /** compute the query from its sections */
+  protected String computeQuery(boolean typeAnalysisOnly)
+  {
+    String groups= null;
+    String orders= null;
+    if(!typeAnalysisOnly)
+      {
+	groups=checkExpr((String)derivedSections[GROUPBY]);
+	orders=checkExpr((String)derivedSections[ORDERBY]);
+      }
 
     StringBuffer sb= new StringBuffer();
     sb.append("SELECT ");
@@ -298,23 +295,30 @@ public class ComposedQuery extends Observable
 	sep=",";
 	sb.append(e.nextElement()).append(" AS ").append(columnName(new Integer(i++)));
       }
-    sb.append(" FROM ");
-    sb.append(derivedSections[FROM]);
     Object o;
-    if((o=derivedSections[WHERE]) !=null && derivedSections[WHERE].trim().length()>0)
+
+    if((o=derivedSections[FROM])!=null)
       {
-	sb.append(" WHERE ");
+	sb.append(" FROM ");
 	sb.append(o);
       }
-    if(groups !=null)
+    if(!typeAnalysisOnly)
       {
-	sb.append(" GROUP BY ");
-	sb.append(groups);
-      }
-    if(orders !=null)
-      {
-	sb.append(" ORDER BY ");
-	sb.append(orders);
+	if((o=derivedSections[WHERE]) !=null && derivedSections[WHERE].trim().length()>0)
+	  {
+	    sb.append(" WHERE ");
+	    sb.append(o);
+	  }
+	if(groups !=null)
+	  {
+	    sb.append(" GROUP BY ");
+	    sb.append(groups);
+	  }
+	if(orders !=null)
+	  {
+	    sb.append(" ORDER BY ");
+	    sb.append(orders);
+	  }
       }
     return sb.toString();
   }
@@ -328,21 +332,21 @@ public class ComposedQuery extends Observable
     return new Grouper(getPreviousKeyset(), attrParam.execute(db, a).elements());
   }
   
+  public synchronized void analyze()
+  {
+    if(projections.isEmpty())
+      prependFromToKeyset();
+    if(oqlQuery==null)
+      recomputeQuery();
+  }
+
   /** prepare the query */
   public synchronized void prepare(Attributes a)
        throws LogicException
   {
-    if(oqlQuery==null)
-      {
-	prependFromToKeyset();
-	recomputeQuery();
-      }
+    analyze();
     if(attrParam==null)
-      {
-	attrParam=new MultipleAttributeParametrizer(getOQLQuery(), a);
-	setChanged();
-	notifyObservers(null);
-      }
+      attrParam=new MultipleAttributeParametrizer(getOQLQuery(), a);
   }
 
   /** return the OQL Query for debugging purposes*/
@@ -351,10 +355,8 @@ public class ComposedQuery extends Observable
     return oqlQuery;
   }
 
-  MultipleAttributeParametrizer fromTypes=null;
-
   /** check if an expression is valid, nullable or set  */
-  public Object checkExpr(String s, Attributes a) 
+  public Object checkExprSetOrNullable(String s) 
   {
     int n=0;
     int m=0;
@@ -367,7 +369,7 @@ public class ComposedQuery extends Observable
       m=n;
       while(n<s.length()&& isMakId(s.charAt(n)))
 	n++;
-      Object nl= checkId(s.substring(m, n), a);
+      Object nl= checkId(s.substring(m, n));
       if(nl!=null)
 	return nl;
       if(n==s.length())
@@ -380,30 +382,13 @@ public class ComposedQuery extends Observable
     return Character.isJavaIdentifierPart(c) || c=='.';
   }
 
-  MultipleAttributeParametrizer getFromTypes(Attributes a)
-  {
-    if(fromTypes==null)
-      {
-	try{
-	  fromTypes= new MultipleAttributeParametrizer("SELECT \" \" FROM "+derivedSections[FROM], a);
-	}catch(LogicException e) 
-	  { 
-	    return null; // this will be an error later on 
-	  }
-      }
-    return fromTypes;
-  }
   /** check if an id is nullable, and if so, return the path to the null pointer */
-  public Object checkId(String s, Attributes a) 
+  public Object checkId(String s) 
   {
     int dot=s.indexOf(".");
     if(dot==-1)
       return null;
-    
-    if(getFromTypes(a)==null)
-	return null; // this will be an error later on 
-    
-    DataDefinition dd= fromTypes.getLabelType(s.substring(0, dot));
+    DataDefinition dd= fromAnalyzer.getLabelType(s.substring(0, dot));
     if(dd==null)
       throw new org.makumba.InvalidValueException("no such label "+s.substring(0, dot));
     while(true)
