@@ -49,6 +49,8 @@ public class SourceSyntaxPoints
   /** The path of the analyzed file */
   File file;
 
+  public String toString(){ return file.toString()+" "+offset; }
+
   PreprocessorClient client;
 
   /** The timestamp of the analyzed file. If the it is found newer on disk, the cached object is discarded. */
@@ -73,6 +75,9 @@ public class SourceSyntaxPoints
   /** offset in the including file */
   int offset;
 
+  /** the parent, in which we are included */
+  SourceSyntaxPoints parent;
+
   /** 
    * The constructor inserts syntax points (begin and end) for every line in a text, and does preprocessing (uncomments text, includes other text). 
    * Most syntax colourers need to do specific operations at every line 
@@ -84,6 +89,7 @@ public class SourceSyntaxPoints
   public SourceSyntaxPoints(File f, PreprocessorClient cl, SourceSyntaxPoints parent, int offset) 
   {
     this.offset=offset;
+    this.parent=parent;
     file= f;
     client=cl;
 
@@ -138,11 +144,11 @@ public class SourceSyntaxPoints
   {
       SyntaxPoint line=(SyntaxPoint)lineBeginnings.get(n-1);
       if(n==lineBeginnings.size())
-	  return originalText.substring(line.position);
+	  return originalText.substring(line.getOriginalPosition());
 	
       SyntaxPoint nextline=(SyntaxPoint)lineBeginnings.get(n);
       
-      return originalText.substring(line.position, nextline.position-1);
+      return originalText.substring(line.getOriginalPosition(), nextline.getOriginalPosition()-1);
   }
 
   void include()
@@ -166,24 +172,32 @@ public class SourceSyntaxPoints
 
     StringBuffer sb= new StringBuffer();
     sb.append(content.substring(0, position)).
+      // add the content of the file
       append(sf.getContent()).
+      // but remove the include directive
       append(content.substring(position+includeDirective.length()));
     
     content=sb.toString();
     
+    // we move the position of all SyntaxPoints that occur after the include
     for(Iterator i= syntaxPoints.iterator(); i.hasNext(); ){
       SyntaxPoint sp= (SyntaxPoint)i.next();
       if(sp.position>position)
-	sp.position+=delta;
+	sp.moveByInclude(delta);
     }
     
+    // we add a fileBeginning
     int n = fileBeginningIndexes.size()-1;
+    // replace the one at the end, for some reason
     if(((Integer)fileBeginningIndexes.get(n)).intValue()==position)
       fileBeginnings.set(n, sf);
     else{
+      // add one at the end
       fileBeginningIndexes.add(new Integer(position));
       fileBeginnings.add(sf);
     }
+    fileBeginningIndexes.add(new Integer(position+delta));
+    fileBeginnings.add(this);
   }
 
   /** Replaces comments from a text by blanks, and stores syntax points. Comment is defined by a Pattern. 
