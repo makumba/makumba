@@ -1,15 +1,33 @@
 <!-- ============================================================================= -->
-<!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
+<!-- ============ THESE CHANGES ARE NOT YET PART OF A STABLE RELEASE ============= -->
 
-TO RELEASE IMMEDIATELY:
+--------------------------------------
+--------------------------------------
+
+TO BE RELEASED IMMEDIATELY (No need for more testing)
+-----------------------------------------------
  - add your changes -
+cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
+cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
+cristi; 1 apr 2004: db= can be a <%= jsp runtime expression %>
 stefan; 27 feb 2004: bug 677 (".jspx" conflicting with XML & XHTML) - added support for ".jsps" alternative 
 stefan; 6 feb 2004: bug 430 fixed (floating point type needed) 
 stefan; 6 feb 2004: bug 673 fixed (delete API call generates broken SQL) 
 stefan; 4 feb 2004: bug 639 semi fixed (MDD names in Catalog are longer, but still limited in length) 
 stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
 
-NOT TO BE RELEASED YET:
+NOT TO BE RELEASED YET (need more testing)
+------------------------------------------
+cristi; 25 apr 2004: fixed bug: NotUniqueError was not detected in updates
+cristi; 21 apr 2004: fixed bug 37 (multiple forms). 
+- addForms can add to the subsets of object produced by the enclosing newForm.
+- any number of levels of form inclusion is possible but only the outermost form can have an action, onSubmit, and method and other attributes specific to HTML forms. 
+- all form actions take place in a single transaction, which is rolled back by the controller filter if there is an error. 
+- after_ methods are not executed in correct order (bug 689)
+cristi; 21 apr 2004: fixed bug 56. data inconsistencies between queries in groups of mak:lists are not possible anymore because all queries in a page are executed in a single (repeatable-read) transaction
+cristi; 7 apr 2004: fixed bug 4: unique keyword in MDDs. values that break unique constraints are detected and reported.
+cristi; 7 apr 2004: fixed bug 643: oldstyle indexes are dropped automatically 
+cristi; 6 apr 2004: BL may not be available in .java format, just .class
 cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
 stefan; 16 jan 2004: bug 512 fixed (Makumba fails to create new tables with Connector/J 3.0.8 and later). Ready, but halted by unfinished work done on bug 4. cristi: this is blocked mainly by work related to the fix of bug 48, that can only be relesed afer thorough tests. 
 stefan; 24 dec 2003: bug 661 fixed (whitespace in field definitions), fixed file also contains unique keyword support, so it needs to wait for that to be released
@@ -26,6 +44,14 @@ stefan; 15 jul 2003: bug 4 fixed (unique indexes created and dropped in the DB a
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
 
 
+
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.10.1; 23 apr 2004: cristi 
+untested release, contains mostly new features so it may not affect production so much
+
+0.5.10pl1; 28 jan 2004: cristi
+tested in Parade since second half of march
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
