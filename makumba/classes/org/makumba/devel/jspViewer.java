@@ -52,14 +52,14 @@ public class jspViewer extends LineViewer
   String findPage(String s)
   {
     if(s.startsWith("/"))
-    { //absolute url?
-      //return (new File(sv.getServletConfig().getServletContext().getRealPath(s)).exists())?s:null;
-      if(new File(sv.getServletContext().getRealPath(s)).exists())
+    { //absolute reference to file
+      File f=new File(sv.getServletContext().getRealPath(s));
+      if(f.exists())
         return contextPath+s;
       else return null;
-    } else { //relative url?
-      //return (new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar)).exists())?s:null;
-      if(new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar)).exists())
+    } else { //relative reference
+      File f=new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar))+File.separatorChar+s.replace('/', File.separatorChar));
+      if(f.exists())
         return s;
       else return null;
     }
