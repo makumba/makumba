@@ -60,12 +60,12 @@ body>div.navbar { position: fixed }
 /* Tables in specification */
 table.tagParamDef {
 	margin-left:20px;
-	border:solid #E0D9CF 1px ;
+	border:solid #ddd 1px ;
 	border-spacing:0;
 }
 
-table.tagParamDef th {background:#E0D9CF;}
-table.tagParamDef td {border: solid #E0D9CF 1px;}
+table.tagParamDef th {background:#ddd;}
+table.tagParamDef td {border: solid #ddd 1px;}
 
 pre.example { 
 	border-left: solid green 1px ; 
