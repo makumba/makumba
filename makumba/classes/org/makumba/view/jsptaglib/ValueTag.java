@@ -22,11 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.*;
-import java.util.*;
-import org.makumba.*;
-import org.makumba.util.*;
+import org.makumba.LogicException;
+import org.makumba.util.MultipleKey;
 import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.view.html.RecordViewer;
+import org.makumba.view.ComposedQuery;
+
+import javax.servlet.jsp.JspException;
+
+import java.util.Vector;
 
 public class ValueTag extends MakumbaTag
 {
@@ -34,92 +38,59 @@ public class ValueTag extends MakumbaTag
   String var;
   String printVar;
 
-  //--------- page analysis: 
-  FieldDefinition set;
-  String nullableExpr;
-
+  public void setExpr(String expr){ this.expr=expr; }
+  public void setVar(String var){ this.var=var; }
+  public void setPrintVar(String var){ this.printVar=var; }
+  
+  /** cleanup the state to make this reusable */
   public void cleanState()
   {
     super.cleanState();
     expr=var=printVar=null;
-    set=null;
-    nullableExpr=null;
   }
 
-  public Object getRegistrationKey() 
+  /** set the tagKey, based on the expression and the key of the parentList */
+  public void setTagKey() 
   {
-    String expr=this.expr.trim();
-    QueryStrategy p=getEnclosingQuery();
-
-    MultipleKey mk= new MultipleKey((Vector)p.key, 7);
-    mk.setAt(expr, 6);
-
-    return mk;
+    parentList=(QueryTag)findAncestorWithClass(this, QueryTag.class);
+    if(parentList== null)
+      throw new org.makumba.ProgrammerError("VALUE tag should always be enclosed in a LIST or OBJECT tag");
+    tagKey= new MultipleKey((Vector)parentList.tagKey, 6);
+    tagKey.setAt(expr.trim(), 5);
   }
   
-  public TagStrategy makeNonRootStrategy(Object key)
+  /** determine the ValueComputer and associate it with the tagKey */
+  public void doStartAnalyze()
   {
-    String expr=this.expr.trim();
-    QueryStrategy p=getEnclosingQuery();
-    Object check= p.query.checkExprSetOrNullable(expr, PageAttributes.getAttributes(pageContext));
-
-    if(check instanceof String)
-      nullableExpr=(String)check;
-
-    else 
-      set=(FieldDefinition)check;
-
-    if(nullableExpr==null && set==null)
-      return this;
-
-    if(set==null)
-      return getEnclosingQuery().getNullableStrategy(nullableExpr);
-    return new SetValueStrategy();
+    setTagKey();
+    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
   }
   
+  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
+  public void doEndAnalyze()
+  {
+    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
+    vc.doEndAnalyze(this);
 
-  /** demand a QueryTag enclosing query */
-  protected Class getParentClass(){ return QueryTag.class; }
+    if(var!=null)
+      pageCache.types.setType(var, vc.type);
+
+    if(printVar!=null)
+      pageCache.types.setType(printVar, "char");
+  }
+  
+  /** ask the ValueComputer to present the expression */
+  public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
+  {
+    setTagKey();
+
+    ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
+    
+    return EVAL_BODY_INCLUDE;
+  }
 
   public String toString() { 
     return "VALUE expr="+expr+ 
       " parameters: "+ params; 
-  }
-
-  /** return false, register an exception */ 
-  protected boolean canBeRoot()
-  {
-    treatException(new MakumbaJspException(this, "VALUE tag should always be enclosed in a LIST or OBJECT tag"));
-    return false;
-  }
-
-  /** set the expression */
-  public void setExpr(String expr)
-  { 
-    this.expr=expr;
-  }
-
-  /** set the expression */
-  public void setVar(String var)
-  { 
-    this.var=var;
-  }
-
-  /** set the expression */
-  public void setPrintVar(String var)
-  { 
-    this.printVar=var;
-  }
-  
-  public void doAnalyze() 
-  {
-    getEnclosingQuery().getQuery().checkProjectionInteger(expr);
-  }
-
-  /** ask the enclosing query to present the expression */
-  public int doStart() throws JspException , org.makumba.LogicException
-  {
-    getEnclosingQuery().insertEvaluation(this);
-    return EVAL_BODY_INCLUDE;
   }
 }
