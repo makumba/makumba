@@ -174,8 +174,10 @@ public class RecordManager extends Table
       ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,getDBName(),false,false);
       while(rs.next()){
 	String iname= rs.getString("INDEX_NAME");
+	boolean non_unique= rs.getBoolean("NON_UNIQUE");
 	if(iname!=null)
-	  indexes.put(iname.toLowerCase(), new Boolean(rs.getBoolean("NON_UNIQUE")));
+	  indexes.put(iname.toLowerCase(), new Boolean(non_unique));
+	
       }
       rs.close();
 
@@ -506,7 +508,8 @@ public class RecordManager extends Table
 					    
 	    }
 	  }
-	getSQLDatabase().exec(ps);
+	if(getSQLDatabase().exec(ps)==-1)
+	  throw findDuplicates((SQLDBConnection)dbc, d);
 	Pointer ret= (Pointer)d.get(indexField);
 	if(!wasIndex)
 	  d.remove(indexField);
@@ -521,7 +524,22 @@ public class RecordManager extends Table
 	  continue;
 	}*/
       //      catch(SQLException e) { throw new org.makumba.DBError (e); }
-      catch(Throwable t) { throw new org.makumba.DBError (t); }
+      catch(Throwable t) { 
+	if(!(t instanceof DBError))
+	  t= new org.makumba.DBError (t); 
+	throw (DBError)t;
+      }
+  }
+
+  protected NotUniqueError findDuplicates(SQLDBConnection dbc, Dictionary d){
+    Dictionary duplicates= new Hashtable();
+    for(Enumeration e= handlerOrder.elements(); e.hasMoreElements(); )
+      {
+	FieldManager fm= (FieldManager)e.nextElement();
+	if(fm.checkDuplicate(dbc, d))
+	  duplicates.put(fm.getName(), d.get(fm.getName()));
+      }
+    return new NotUniqueError(getRecordInfo().getName(), duplicates);
   }
 
   protected String prepareDelete()
