@@ -19,7 +19,6 @@ public class Database extends org.makumba.db.Database
   Hashtable catalog= null;
   
   static Properties sqlDrivers;
-  Connection c;
 
   public String getEngine(){ return eng; }
   public static String getEngineProperty(String s){ return sqlDrivers.getProperty(s); }
@@ -28,7 +27,7 @@ public class Database extends org.makumba.db.Database
   protected DBConnection makeDBConnection() 
   {
     try{
-      return new SQLDBConnection(this, DriverManager.getConnection(url, connectionConfig));
+      return new SQLDBConnection(this);
     }catch(SQLException e){ 
       logException(e);
       throw new DBError(e); 
