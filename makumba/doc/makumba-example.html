@@ -13,14 +13,27 @@
    makeNavBar("");
 </script>
 
-<h1><a NAME="Example">Makumba application example</a></h1>
+<h1><a NAME="Example">&nbsp;</a>Makumba application example</h1>
 
 This is an example for a very simple web application to illustrate the
 basic princpiles of building web applications with Makumba JSP tag library.
 <p>
-In thi example we will build a web application for managing data about our business partners.
+In this example we will build a web application for managing data about our business partners in following steps:
+<ol>
+<li><a href="#mdd">Defining data structure - MDD</a></li>
+<li><a href="#jsp">Wrinting JSP pages</a>
+	<ul>
+	<li><a href="#list">Listing objects</a></li>
+	<li><a href="#object">Showing single object</a></li>
+	<li><a href="#new">Creating new object</a></li>
+	<li><a href="#edit">Editing existing object</a></li>
+	<li><a href="#layout">Fine tuning page layout</a></li>
+	</ul>
+</li>
+<li><a href="#BL">Business Logic</a></li>
+</ol>
 
-<h2><a name="mdd">MDD - Makumba Data Definition</a></h2>
+<h2><a name="mdd">&nbsp;</a>MDD - Makumba Data Definition</h2>
 
 For explanation please refer to <a href="makumba-spec.html#Data_Description">Data
 Definition</a> section of the specification.
@@ -46,12 +59,12 @@ name=char[60]             ;Country
 iso2letterCode=fixed char[2];2-letter ISO code
 </pre>
 
-<h2><a name="jsp">JSP - Java Server Pages</a></h2>
+<h2><a name="jsp">&nbsp;</a>JSP - Java Server Pages</h2>
 For explanation please refer to <a href="makumba-spec.html#Presentation">Makumba
 JSP tags</a> section of the specification.
 
 
-<h3><a name="list">Listing objects</a></h3>
+<h3><a name="list">&nbsp;</a>Listing objects</h3>
 Page <code><b>partnerList.jsp</b></code> will be showing the list of all partners, each entry with:
 <ul>
  <li>brief summary (name and city)
@@ -98,7 +111,7 @@ For additional options see the specification of <a href="makumba-spec.html#makli
 <a href="makumba-spec.html#makvalue">mak:value</a>.
 
 
-<h3><a name="object">Object details</a></h3>
+<h3><a name="object">&nbsp;</a>Object details</h3>
 Page <code><b>partner.jsp</b></code> will be showing all fields of <code>organisation.Partner</code> objects.
 
 <pre class="example">
@@ -137,7 +150,7 @@ Note that OQL expression <code>p.country.name</code> was evaluated to "Banglades
 For additional options see the specification of <a href="makumba-spec.html#makobject">mak:object</a> and
 <a href="makumba-spec.html#makvalue">mak:value</a>.
 
-<h3><a name="new">New object creation</a></h3>
+<h3><a name="new">&nbsp;</a>New object creation</h3>
 Page <code><b>partnerNew.jsp</b></code> will require only the basic info when creating a new object:
 
 <pre class="example">
@@ -180,7 +193,7 @@ User can decide to omit city and country information as well, but due to <code>n
 For additional options see the specification of <a href="makumba-spec.html#maknew">mak:newForm</a> and
 <a href="makumba-spec.html#input">mak:input</a>.
 
-<h3>Editing existing objects</h3>
+<h3><a name="edit">&nbsp;</a>Editing existing objects</h3>
 In <code><b>partnerEdit.jsp</b></code> we could edit all (non-fixed) fields, but here we decided to not support editing of some fields (Field <code>name</code> in this case)
 
 <pre class="example">
@@ -234,7 +247,7 @@ For additional options see the specification of <a href="makumba-spec.html#maked
 <a href="makumba-spec.html#input">mak:input</a>.
 
 
-<h3>Fine-tuning layout</h3>
+<h3><a name="layout">&nbsp;</a>Fine-tuning layout</h3>
 Always make things work first, then bother with details.
 
 <p>In order to keep your code as clean as possible, we advise you to break it
@@ -245,7 +258,7 @@ down into small, human-managable files and include them in your pages with
 </pre>
 You can also take some size of the .jsp files and improve their readability by seperating the layout specification into  seperate <a href="http://www.w3.org/Style/CSS/">Cascading Style Sheets</a>.
 
-<h2><a name="BL">BL - Business Logic</a></h2>
+<h2><a name="BL">&nbsp;</a>BL - Business Logic</h2>
 ...coming soon...
 
 <script type="text/javascript">
