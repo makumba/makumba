@@ -22,11 +22,24 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import java.util.*;
-import java.lang.reflect.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.Database;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.abstr.RecordHandler;
+import org.makumba.abstr.RecordInfo;
 
 /** this class imports makumba records from text files based on markers placed in special configuration files with the "mark" extension from the CLASSPATH */
 public class RecordImporter extends RecordHandler

@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /** This class offers a way for web applications (like Parade) 
  * to communicate to the makumba webapp.

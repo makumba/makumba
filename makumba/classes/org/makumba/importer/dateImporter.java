@@ -22,9 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import java.util.*;
-import org.makumba.*;
-import java.text.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.MakumbaSystem;
 
 public class dateImporter extends FieldImporter
 {

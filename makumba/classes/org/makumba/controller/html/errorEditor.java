@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import java.util.*;
+import java.util.Dictionary;
 
 public class errorEditor extends FieldEditor
 {

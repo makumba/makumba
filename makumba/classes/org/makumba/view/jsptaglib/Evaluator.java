@@ -23,8 +23,9 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.view.ComposedQuery;
 import javax.servlet.jsp.PageContext;
+
+import org.makumba.view.ComposedQuery;
 
 /** An evaluator using the EL engine to evaluate all occurences of #{...} in a string */
 public class Evaluator implements ComposedQuery.Evaluator{

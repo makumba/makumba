@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /** a subquery of a composed query */
 public class ComposedSubquery extends ComposedQuery

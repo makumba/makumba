@@ -23,12 +23,13 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.ProgrammerError;
-import org.makumba.FieldDefinition;
-import org.makumba.util.MultipleKey;
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import org.makumba.FieldDefinition;
+import org.makumba.ProgrammerError;
+import org.makumba.util.MultipleKey;
 
 public class OptionTag extends BasicValueTag implements BodyTag
 {

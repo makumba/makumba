@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import org.makumba.*;
+import org.makumba.Pointer;
 
 /** a wrapper for dbconnections, used to provide a temporary that holds a reference to a permanent DBConnection */
 public class DBConnectionWrapper extends DBConnection

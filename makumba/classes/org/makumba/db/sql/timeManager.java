@@ -22,9 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
-import java.util.Dictionary;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.util.Calendar;
+import java.util.Dictionary;
 
 /** standard SQL drivers have to break the org.makumba date in two. This represents a strictly SQL time (i.e. only the time part)
   *@see org.makumba.db.sql.dateSQLManager

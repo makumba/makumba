@@ -22,7 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.pgsql.old;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 
 public class charManager extends org.makumba.db.sql.pgsql.charManager
 {

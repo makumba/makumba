@@ -22,9 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
-import org.makumba.*;
-import org.makumba.view.FieldFormatter;
 import java.util.Dictionary;
+
+import org.makumba.HtmlUtils;
+import org.makumba.view.FieldFormatter;
 
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter

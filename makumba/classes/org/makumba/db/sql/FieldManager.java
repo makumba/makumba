@@ -22,9 +22,16 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.abstr.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Dictionary;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.abstr.FieldHandler;
 
 /** the general SQL field handler */
 public abstract class FieldManager extends FieldHandler

@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Dictionary;
 
 /** this sets a creation date in inserts, changes it in updates. it creates timestamps at the java level. SQL drivers might provide better implementations*/

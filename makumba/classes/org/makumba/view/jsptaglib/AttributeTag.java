@@ -22,10 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+import javax.servlet.jsp.JspException;
+
 import org.makumba.AttributeNotFoundException;
 import org.makumba.controller.jsp.PageAttributes;
-
-import javax.servlet.jsp.JspException;
 
 
 public class AttributeTag extends MakumbaTag

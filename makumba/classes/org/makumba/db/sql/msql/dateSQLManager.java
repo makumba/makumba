@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.msql;
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /** msql writes date constants quite differrently */
 public  class dateSQLManager extends org.makumba.db.sql.dateSQLManager

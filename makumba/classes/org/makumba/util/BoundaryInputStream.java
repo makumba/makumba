@@ -21,11 +21,10 @@
 //	 $Name$
 /////////////////////////////////////
 package org.makumba.util;
-import java.io.PushbackInputStream;
 import java.io.IOException;
-import java.io.EOFException;
 import java.io.InputStream;
-import org.makumba.MakumbaSystem;
+import java.io.PushbackInputStream;
+
 import org.makumba.MakumbaSystem;
 
 /**

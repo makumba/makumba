@@ -23,15 +23,16 @@
 
 package org.makumba.util;
 
-import java.util.Collections;
-import java.util.TreeSet;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-
-import java.util.regex.Pattern;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
-
-import java.io.*;
+import java.util.regex.Pattern;
 
 /** 
  * The collection of syntax points in a source file gathered from a source analysis.

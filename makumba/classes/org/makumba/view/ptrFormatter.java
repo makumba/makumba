@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.*;
 import java.util.Dictionary;
+
+import org.makumba.Pointer;
 
 public class ptrFormatter extends FieldFormatter
 {

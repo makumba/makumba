@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Vector;
 
 /** the values for a group of fields */
 public class MultipleKey extends Vector

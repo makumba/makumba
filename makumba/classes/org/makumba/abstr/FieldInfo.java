@@ -22,8 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
-import org.makumba.*;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
+
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.InvalidValueException;
 
 /** This is a structure containing the elementary data about a field: name, 
  * type, attributes, description, and other type-specific extra info. 

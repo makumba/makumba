@@ -22,8 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.*;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.makumba.Database;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
 import org.makumba.util.ChoiceSet;
 
 public class ptrEditor extends choiceEditor

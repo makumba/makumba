@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
+import org.makumba.Pointer;
 
 public class ptrHandler extends ptrRelHandler 
 {

@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /** Represents a org.makumba date for the drivers that support the DATETIME type (notably ODBC). Normally this class is not used, a handler family that would use it, has to redirect the date type to a dateTime type */
 public class dateTimeManager extends FieldManager

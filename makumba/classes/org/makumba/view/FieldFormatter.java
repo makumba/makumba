@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.abstr.*;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import org.makumba.abstr.FieldHandler;
 
 public class FieldFormatter extends FieldHandler
 {

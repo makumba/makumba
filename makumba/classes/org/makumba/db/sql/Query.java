@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import org.makumba.DBError;
-import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;

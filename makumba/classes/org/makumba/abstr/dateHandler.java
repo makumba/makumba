@@ -22,8 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
-import org.makumba.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import org.makumba.Pointer;
 
 public class dateHandler extends FieldHandler
 {

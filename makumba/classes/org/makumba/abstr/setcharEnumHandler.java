@@ -22,8 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import org.makumba.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.makumba.Pointer;
 
 public class setcharEnumHandler extends ptrOneHandler implements stringTypeFixed, Enumerator
 {

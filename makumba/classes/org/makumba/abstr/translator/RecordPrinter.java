@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.abstr.translator;
-import org.makumba.abstr.*;
+import org.makumba.abstr.RecordInfo;
 
 /** This class translates a Data Definition to a new language (such as a new version of the Data Definition)
  */

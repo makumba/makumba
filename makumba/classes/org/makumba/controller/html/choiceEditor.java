@@ -22,8 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.makumba.HtmlChoiceWriter;
+import org.makumba.Pointer;
 
 public abstract class choiceEditor extends FieldEditor
 {

@@ -22,7 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /** deals with SQL ints */
 public class intManager extends FieldManager

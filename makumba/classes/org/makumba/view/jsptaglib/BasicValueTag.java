@@ -31,8 +31,6 @@ import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
-import org.makumba.Pointer;
-import org.makumba.FieldDefinition;
 
 /** This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in similar manner (value="$attribute" or value="OQL expr" */
 public abstract class BasicValueTag extends MakumbaTag 

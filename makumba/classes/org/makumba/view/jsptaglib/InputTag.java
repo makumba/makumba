@@ -23,17 +23,13 @@
 
 package org.makumba.view.jsptaglib;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyContent;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
-import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
-import org.makumba.Pointer;
-import org.makumba.FieldDefinition;
-import javax.servlet.jsp.tagext.BodyContent;
 
 public class InputTag extends BasicValueTag
 implements javax.servlet.jsp.tagext.BodyTag

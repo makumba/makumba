@@ -22,10 +22,26 @@
 /////////////////////////////////////
 
 package org.makumba.controller;
-import java.util.*;
-import org.makumba.util.*;
-import java.lang.reflect.*;
-import org.makumba.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import org.makumba.Attributes;
+import org.makumba.Database;
+import org.makumba.LogicException;
+import org.makumba.LogicInvocationError;
+import org.makumba.LogicNotFoundException;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
+import org.makumba.util.DbConnectionProvider;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
 
 /** busines logic administration */
 public class Logic

@@ -23,8 +23,12 @@
 
 package org.makumba.devel;
 
-import java.io.*;
-import javax.servlet.http.*;
+import java.io.PrintWriter;
+import java.io.StringReader;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.controller.Logic;
 
 /** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used. */

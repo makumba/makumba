@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /** Error occured during data definition parsing. It can contain a number of errors occured at different lines during parsing */
 public class DataDefinitionParseError extends MakumbaError

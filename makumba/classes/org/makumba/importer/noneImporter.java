@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import java.util.*;
-import org.makumba.*;
+import java.util.Properties;
+
+import org.makumba.MakumbaError;
 
 public class noneImporter extends FieldImporter
 {

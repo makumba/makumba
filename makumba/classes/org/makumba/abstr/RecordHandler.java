@@ -22,9 +22,17 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.*;
-import java.lang.reflect.*;
-import org.makumba.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.RuntimeWrappedException;
 
 /**
  * This class is the root of all handler classes for records.

@@ -22,9 +22,16 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.abstr.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Dictionary;
+import java.util.Properties;
+
+import org.makumba.abstr.FieldHandler;
+import org.makumba.abstr.FieldInfo;
+import org.makumba.abstr.RecordHandler;
 
 /** this field manager wraps around another field manager and constructs wrappers of whatever it wants to replace itself with */
 public class wrapperManager extends FieldManager

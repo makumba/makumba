@@ -22,9 +22,19 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import org.makumba.*;
-import org.makumba.abstr.*;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.DBError;
+import org.makumba.DataTransformer;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.abstr.FieldHandler;
+import org.makumba.abstr.RecordHandler;
+import org.makumba.abstr.RecordInfo;
 
 /** This is a generic database table RecordHandler. Upon building, it uses the rules in org.makumba/db/redirectHandler.properties :
 <pre>

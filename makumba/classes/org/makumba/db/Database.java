@@ -22,11 +22,25 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import java.util.*;
-import java.lang.reflect.*;
-import org.makumba.util.*;
-import org.makumba.abstr.*;
-import org.makumba.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.makumba.DBError;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.abstr.RecordInfo;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.ResourcePool;
+import org.makumba.util.RuntimeWrappedException;
+import org.makumba.util.SoftNamedResources;
 
 
 /** 

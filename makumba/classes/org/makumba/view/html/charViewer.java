@@ -22,9 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
-import org.makumba.*;
-
 import java.util.Dictionary;
+
+import org.makumba.HtmlUtils;
 
 public class charViewer extends FieldViewer
 {

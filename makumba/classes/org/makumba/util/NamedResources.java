@@ -22,7 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /** An instance of this class holds a cache of resources. If a resource is requested but is not present, it is produced using the associated NamedResourceFactory, in a thread-safe way 
  *@see org.makumba.util.NamedResourceFactory

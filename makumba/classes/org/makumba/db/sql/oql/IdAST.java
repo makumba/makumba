@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.abstr.*;
+import org.makumba.abstr.FieldInfo;
 import org.makumba.db.Database;
 
 public class IdAST extends OQLAST
