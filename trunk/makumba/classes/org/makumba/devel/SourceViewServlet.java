@@ -30,10 +30,17 @@ import java.io.*;
 /** 
  * invoke the necessary SourceViewer, depending on the type of the source
  * the architecture should change, and be organized in filters. example:
- * jspx: JSP syntax colouring | Java linking | MDD linking | line numbering | header
+ * <ul>
+ * <li>
+ * jspx and jsps: JSP syntax colouring | Java linking | MDD linking | line numbering | header
+ * </li><li>
  * java: Java syntax colouring | Java linking | MDD linking | line numbering | header
+ * </li><li>
  * mdd: syntax_colouring | MDD linking | line numbering | header
+ * </li><li>
  * jspxp: JSP syntax colouring | line numbering | makumba reduction | java linking | mdd linking | header 
+ * </li>
+ * </ul>
  * It's not difficult to get the current architecture to work like that
  * This will be slower but the big advantage is that the Java and JSP syntax colouring (and maybe Java linking) can be outsourced.
  */
@@ -49,7 +56,7 @@ public class SourceViewServlet extends HttpServlet
     try{
       if(servletPath.equals("/dataDefinitions"))
 	sw= new mddViewer(req);
-      else if(servletPath.endsWith(".jspx"))
+      else if(servletPath.endsWith(".jspx") || servletPath.endsWith(".jsps"))
 	sw= new jspViewer(req, this);
       else if(servletPath.endsWith(".jspxp"))
 	sw= new jspProgViewer(req, this);

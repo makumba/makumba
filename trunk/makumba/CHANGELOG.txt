@@ -3,6 +3,7 @@
 
 TO RELEASE IMMEDIATELY:
  - add your changes -
+stefan; 27 feb 2004: bug 677 (".jspx" conflicting with XML & XHTML) - added support for ".jsps" alternative 
 stefan; 6 feb 2004: bug 430 fixed (floating point type needed) 
 stefan; 6 feb 2004: bug 673 fixed (delete API call generates broken SQL) 
 stefan; 4 feb 2004: bug 639 semi fixed (MDD names in Catalog are longer, but still limited in length) 
