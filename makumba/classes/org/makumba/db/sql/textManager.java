@@ -22,9 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import java.sql.*;
-import java.io.*;
-import org.makumba.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.makumba.Text;
 
 /** this deals with SQL uncontrolled-length fields */
 public class textManager extends FieldManager

@@ -22,11 +22,13 @@
 /////////////////////////////////////
 
 package test;
-import junit.framework.*;
-import junit.extensions.*;
-import java.util.*;
-import org.makumba.*;
-import java.io.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.makumba.ConfigFileError;
+import org.makumba.Database;
+import org.makumba.MakumbaSystem;
 
 /**
 * Testing configuration related operations

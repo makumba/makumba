@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.dbcp;
-import java.sql.*;
 
 /** Represents a timestamp. Used by dateCreate and dateModify for their DB representation */
 public class timeManager extends org.makumba.db.sql.timeManager

@@ -22,8 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
-import org.makumba.abstr.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /** 
  * shows a file JSP or MDD file that refers to MDDs, and shows the 

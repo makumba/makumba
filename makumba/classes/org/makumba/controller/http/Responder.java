@@ -22,17 +22,26 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
-import org.makumba.*;
-import org.makumba.util.*;
-import org.makumba.abstr.RecordInfo;
-import org.makumba.abstr.FieldInfo;
-import org.makumba.LogicException;
-import org.makumba.controller.Logic;
-
-import java.util.*;
-import java.io.*;
-import javax.servlet.http.*;
+import java.util.Comparator;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
 import java.util.logging.Level;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.makumba.AttributeNotFoundException;
+import org.makumba.DataDefinition;
+import org.makumba.LogicException;
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.controller.Logic;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
  
 /** A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory space, identical respodners are stored only once */
 public abstract class Responder implements java.io.Serializable

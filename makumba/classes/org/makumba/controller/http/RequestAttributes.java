@@ -22,11 +22,16 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.makumba.AttributeNotFoundException;
+import org.makumba.Attributes;
+import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
+import org.makumba.UnauthenticatedException;
+import org.makumba.UnauthorizedException;
 import org.makumba.controller.Logic;
-import org.makumba.*;
-import javax.servlet.http.*;
-import java.util.*;
-import org.makumba.*;
 
 public class RequestAttributes implements Attributes
 {

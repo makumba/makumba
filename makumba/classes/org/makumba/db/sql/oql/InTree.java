@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import antlr.collections.AST;
 
 /** a tree checker for the IN operator. it makes sure that the type of the left operand is the same with the types of all operands in the compared set */
 public class InTree extends AnalysisTree

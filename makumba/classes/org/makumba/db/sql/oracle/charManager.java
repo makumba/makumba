@@ -22,8 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oracle;
-import org.makumba.db.sql.*;
-import java.sql.*;
 
 /** this deals with SQL chars */
 public class charManager extends org.makumba.db.sql.charManager

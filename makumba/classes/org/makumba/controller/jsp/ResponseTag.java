@@ -22,10 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.controller.jsp;
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import javax.servlet.http.*;
-import java.io.*;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
 public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport
 {

@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.cloudscape;
-import java.sql.*;
 
 /** this deals with SQL uncontrolled-length fields */
 public class textManager extends org.makumba.db.sql.textManager

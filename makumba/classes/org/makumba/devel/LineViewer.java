@@ -22,9 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
-import org.makumba.abstr.*;
-import java.io.*;
-import javax.servlet.http.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.PrintWriter;
+import java.io.Reader;
 
 /** a viewer that shows everything per line */
 public class LineViewer implements SourceViewer

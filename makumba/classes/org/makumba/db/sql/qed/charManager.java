@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.qed;
-import java.sql.*;
 
 /** this deals with SQL chars */
 public class charManager extends org.makumba.db.sql.charManager

@@ -22,16 +22,19 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 
-import java.util.*;
-import java.sql.*;
-import org.makumba.util.*;
-
-// wrong dependencies
+import org.makumba.DBError;
+import org.makumba.DataDefinition;
+import org.makumba.InvalidValueException;
+import org.makumba.MakumbaSystem;
+import org.makumba.OQLAnalyzer;
+import org.makumba.abstr.RecordInfo;
 import org.makumba.db.DBConnection;
 import org.makumba.db.sql.oql.QueryAST;
-import org.makumba.abstr.*;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.Query

@@ -22,11 +22,27 @@
 /////////////////////////////////////
 
 package test;
-import junit.framework.*;
-import junit.extensions.*;
-import java.util.*;
-import org.makumba.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.makumba.Database;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
+import org.makumba.Text;
 
 /**
 * Testing table operations

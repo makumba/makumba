@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.dbcp;
-import java.sql.*;
 
 /** should be corrected to accept dates like 2-11-30 */
 

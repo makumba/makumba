@@ -22,9 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-import org.makumba.abstr.*;
-import java.util.*;
-import org.makumba.*;
 
 public class InvalidValueException extends org.makumba.InvalidValueException
 {
