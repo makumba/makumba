@@ -22,262 +22,29 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
+import org.makumba.LogicException;
+import org.makumba.util.MultipleKey;
+
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.html.RecordViewer;
+import org.makumba.controller.jsp.PageAttributes;
+
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.IterationTag
+import javax.servlet.jsp.tagext.IterationTag;
+
 
 /** Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the environment can be passed as $attrName to the query 
  * 
  */
 public class QueryTag extends MakumbaTag implements IterationTag
 {
-  // formatters? keep in root strategy, copy to groupdata? mb also queries...
-  // keep attribute type data in page analysis
-  // ListGroupData, IterationGroupComputer, ValueComputer
-  /*
-    doAnalyze{
-    cache.getCache("tagStrategies").put(key, IterationGroupComputer.make(this));
-    }
-   */
-
-  /** A strategy computed at page analysis. The strategy is common for all runnings of a mak:list from a certain page, line and column, even for those that run in parallel (although a different QueryTag is used for each, extracted by the servlet engine- e.g. Tomcat- from a tag pool).
-   */
-  class QueryTagStrategy {
-    public static String LIST_GROUP_DATA= "org.makumba.LisGroupData";
-
-    /** the index of the query whose results are iterated by this mak:list
-     * @see RootQueryStrategy#queries */
-    int queryIndex; 
-    
-    /** The indexes of the other queries, iterated by special mak:value's (nullable, sets).
-     * A mak:list may have more than one query, because some mak:value's and mak:input's inside it may introduce separate queries:<ul>
-     <li> if the expression of a mak:value goes through nullable pointers
-     <li> if the expression of a mak:value is a set
-     </ul>
-     * When a mak:list will prepare the results for its current execution (@see ListGroupData.results), it will do so also for its special mak:value's.
-     */
-    List subqueryIndexes;
-
-    void getSubqueryResults(ListGroupData groupData)
-    {
-      for(Iterator i= subqueryIndexes.iterator(); i.hasNext(); )
-	groupData.prepareIteration(((Integer)i.next()).intValue());
-    }
-
-    static ListGroupData getListGroupData(QueryTag t)
-    {
-      return (ListGroupData)t.getPageContext().getAttribute(LIST_GROUP_DATA);
-    }
-    
-    int start(QueryTag t) throws LogicException
-    {
-      t.index=0;
-      ListGroupData groupData= getListGroupData(t);
-      Vector results= groupData.prepareIteration(queryIndex);
-      if(results==null || 0== results.size())
-	return 0;
-      groupData.push(queryIndex, t.index);
-      getSubqueryResults(groupData);
-      return results.size;
-    }
-
-    boolean hasMore(QueryTag t)
-    {
-      ListGroupData groupData= getListGroupData(t);
-      groupData.pop();
-      t.index++;
-      Vector v= groupData.results[queryIndex];
-      if(t.index == v.size())
-	return false;
-      groupData.push(queryIndex, t.index);
-      getSubqueryResults(groupData);
-      return true;
-    }
-  }
-
-  /** A strategy computed by root mak:list tags at page analysis. 
-   * In addition to the data kept by normal list strategies, it contains the queries that are to be executed by all nested mak:list's and mak:value's */
-  class RootQueryTagStrategy extends QueryTagStrategy {
-    ArrayList queries;
-    
-    int start(QueryTag t) throws LogicException
-    {
-      MakumbaSystem.getMakumbaLogger("taglib.performance").fine("---- tag start ---");
-      t.stamp= new Date().getTime();
-
-      ListGroupData groupData= new ListGroupData(queries.size());
-      t.getPageContext().setAttribute(LIST_GROUP_DATA, groupData);
-
-      Database dbc= MakumbaSystem.getConnectionTo(t.getDatabaseName());
-      long l= new java.util.Date().getTime();
-      try{
-	Attribues a= PageAttributes.getAttributes(t.getPageContext());
-	for(int i=0; i<queries.size(); i++)
-	  groupData.bigResults[i]=((ComposedQuery)queries.get(i)).execute(dbc, a);
-
-      }finally{ dbc.close(); }
-      MakumbaSystem.getMakumbaLogger("taglib.performance")
-	.fine("queries: "+(new java.util.Date().getTime()-l)+" ms");
-
-      return super.start(t);
-    }
-    
-    boolean hasMore(QueryTag t)
-    {
-      boolean ret= super.hasMore();
-      if(!ret)
-	{
-	  t.getPageContext().removeAttribute(LIST_GROUP_DATA);
-	  MakumbaSystem.getMakumbaLogger("taglib.performance").fine("tag time: "+(new Date().getTime()-t.stamp)+" ms ");
-	}
-      return ret;
-    }
-  }
-  
-  /** Data allocated at runtime by the root tag, to keep data for all queries executed, corresponding to all mak:list's and mak:value's inside it (which we call a "list group").
-   * The structure is made of arrays, so the number of allocations made at runtime is independent of the actual number of nested mak:list's in the list group. To find its particular data, in an array, the QueryTag will use its QueryTagStrategy.queryIndex
-   */
-  class ListGroupData{
-    static final Dictionary nothing= new ArrayMap();
-
-    ListGroupData(int n)
-    {
-      bigResults= new Grouper[n];
-      results= new Vector[n];
-      currentData=new Stack();
-      currentData.push(nothing);
-    }
-    /** The overall results of the queries. 
-     * After its query is ran (only once, by the root tag, @see RootQueryStrategy), a mak:list (or special mak:value) will go through parts of bigResults several times, once for each iteration of its parent mak:list. Since it has no parents, the root mak:list will therefore iterate only once. At each iteration, the mak:list (actually its QueryStrategy) will compute the "results" field out of parts of "bigResults"
-     * @see results
-     */
-    Grouper[] bigResults; 
-
-    /** The part of bigResults that is used at the current execution of the mak:list. 
-     * At every execution, the mak:list will loop once for each of the results. Note that the mak:list may be executed more than once by its parent mak:list, once for each iteration of the parent. 
-     * @see bigResults*/
-    Vector[] results; 
-
-    /** A stack made by the current data of the nested lists that are parent of the currently executing list. This data is used by the prepareIteration() to find the current "results" among its "bigResults" 
-     */
-    Stack currentData;
-
-    /** The parent of the mak:list has iterated, so a new set of results needs be prepared */
-    Vector prepareIteration(int queryIndex)
-    {
-      return results[queryIndex]= bigResults[queryIndex].get(groupData.currentData);
-    }
-
-    /** push in "currentData" the result indicated by resultIndex of the query indicated by queryIndex */
-    void push(int queryIndex, int resultIndex)
-    {
-      currentData.push(results[queryIndex].elementAt(resultIndex));
-    }
-
-    /** pop from currentData */
-    Object pop()
-    {
-      return currentData.pop();
-    }
-  }
-
-
-  /** The index for the iteration through ListGroupData.results */
-  int index;
-
-  /*---------------- count var management ----------------*/
-  public static final Integer zero= new Integer(0);
-
-  protected void initCounts()
-  {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
-    if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, zero);
-  }
-
-  protected void setCount()
-  {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, new Integer(index+1));
-  }
-
-  /** redefined by ObjectTag */
-  protected void setMaxCount(int max) throws JspException
-  {
-    if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, new Integer(max));
-  }
-
-
-  /* ------------ usual tag data:  -----------------------*/
-
   String[] queryProps=new String[4];
   String separator="";
-
   String countVar;
   String maxCountVar;
-  MultipleKey key;
-  long stamp; // only used for root
-
-  QueryTagStrategy getStrategy() 
-  {
-    return (QueryTagStrategy)getPageCache(pageContext).getCache("queryStrategies").get(key);
-  }
-
-  public int doMakumbaStart() throws LogicException, JspException
-  {
-    setKey();
-
-    initCounts();
-    int n= getStrategy().start(this);
-    setMaxCount(n);
-    if(params.get("header")!=null)
-      pageContext.include((String)params.get("header"));
-    if(n>0)
-      {
-	setCount();
-	return EVAL_BODY_INCLUDE;
-      }
-    return SKIP_BODY;
-  }
-
-  public int doAfterBody() throws JspException
-  {
-    if(getStrategy().hasMore(this))
-      {
-	pageContext.getOut().print(separator);
-	setCount();
-	return EVAL_BODY_AGAIN;
-      }
-    if(params.get("footer")!=null)
-      pageContext.include((String)params.get("footer"));
-    return SKIP_BODY;
-  }
-
-
-  public void cleanState()
-  {
-    super.cleanState();
-    queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
-    countVar=maxCountVar=null;
-    separator="";
-    key=null;
-  }
-
-  void setKey()
-  {
-    key= new MultipleKey(queryProps.length+1);
-    for(int i=0; i<queryProps.length; i++)
-      mk.setAt(queryProps[i], i);
-
-    QueryTag parent= (QueryTag)findAncestorWithClass(this, QueryTag.class);
-
-    mk.setAt(parent==null?new Integer(System.identityHashCode
-				      (pageContext.getPage().getClass()))
-	     :parent.key
-	     , queryProps.length);
-
-  }
+  String header;
+  String footer;
 
   public void setFrom(String s) { queryProps[ComposedQuery.FROM]=s; }
   public void setWhere(String s){ queryProps[ComposedQuery.WHERE]=s; }
@@ -286,6 +53,144 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void setSeparator(String s){ separator=s; }
   public void setCountVar(String s){ countVar=s; }
   public void setMaxCountVar(String s){ maxCountVar=s; }
+  public void setHeader(String s) throws JspException  
+  { 
+    onlyRootArgument("header"); 
+    header=s;
+  }
 
+  public void setFooter(String s) throws JspException  
+  {
+    onlyRootArgument("footer"); 
+    footer=s;
+  }
+
+  // runtime stuff
+  ListQueryExecution execution;
+
+  /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the ListQueryExecution is discovered by the tag based on the tagKey */
+  void setTagKey()
+  {
+    tagKey= new MultipleKey(queryProps.length+1);
+    for(int i=0; i<queryProps.length; i++)
+      tagKey.setAt(queryProps[i], i);
+
+    parentList= (QueryTag)findAncestorWithClass(this, QueryTag.class);
+
+    // if we have a parent, we append the key of the parent
+    tagKey.setAt(parentList!=null?(Object)parentList.tagKey: null, 
+		 queryProps.length);
+  }
+
+  /** Start the analysis of the tag, without knowing what tags follow it in the page. 
+    Define a query, set the types of variables to "int" */
+  public void doStartAnalyze()
+  {
+    setTagKey();
+    // we make ComposedQuery cache our query
+    pageCache.cacheQuery(tagKey, queryProps, 
+			 parentList==null?null:parentList.tagKey);
+
+    if(countVar!=null)
+      pageCache.types.setType(countVar, "int");
+
+    if(maxCountVar!=null)
+      pageCache.types.setType(maxCountVar, "int");
+  }
+
+  /** End the analysis of the tag, after all tags in the page were visited. 
+    Now that we know all query projections, cache a RecordViewer as formatter for the mak:values nested in this tag */
+  public void doEndAnalyze()
+  {
+    ComposedQuery cq= pageCache.getQuery(tagKey);
+    cq.analyze();
+    pageCache.formatters.put(tagKey, new RecordViewer(cq));
+  }
+
+  static final Integer zero= new Integer(0);
+  static final Integer one= new Integer(1);
+
+  /** Decide if there will be any tag iteration. The ListQueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
+  public int doMakumbaStartTag() throws LogicException, JspException
+  {
+    // support for the obsolete header
+    try{
+      if(header!=null)
+	pageContext.include(header);
+    }catch(Exception e){ throw new MakumbaJspException(e); }
+    
+    setTagKey();
+    
+    if(parentList==null)
+      ListQueryExecution.startListGroup(pageContext);
+
+    execution= ListQueryExecution.getFor(tagKey, pageContext);
+
+    int n= execution.onParentIteration();
+
+    setNumberOfIterations(n);
+
+    if(n>0)
+      {
+	if(countVar!=null)
+	  pageContext.setAttribute(countVar, one);
+	return EVAL_BODY_INCLUDE;
+      }
+    if(countVar!=null)
+      pageContext.setAttribute(countVar, zero);
+    return SKIP_BODY;
+  }
+
+  /** Set the number of iterations in this iterationGroup. ObjectTag will redefine this and throw an exception if n>1 */
+  protected void setNumberOfIterations(int n) throws JspException
+  {
+    if(maxCountVar!=null)
+      pageContext.setAttribute(maxCountVar, new Integer(n));
+  }
+
+
+  /** Decide if we do further iterations. Checks if we got to the end of the iterationGroup. */
+  public int doAfterBody() throws JspException
+  {
+    int n= execution.nextGroupIteration();
+
+    if(n!=-1)
+      {
+	// print the separator
+	try{
+	  pageContext.getOut().print(separator);
+	}catch(Exception e){ throw new MakumbaJspException(e); }
+
+	if(countVar!=null)
+	  pageContext.setAttribute(countVar, new Integer(n+1));
+	return EVAL_BODY_AGAIN;
+      }
+    return SKIP_BODY;
+  }
+  
+  /** Cleanup operations, especially for the rootList */
+  public int doMakumbaEndTag() throws JspException
+  {
+    if(parentList==null)
+      execution.endListGroup(pageContext);
+
+    // support for the obsolete footer
+    try{
+      if(footer!=null)
+	pageContext.include(footer);
+    }catch(Exception e){ throw new MakumbaJspException(e); }
+    return EVAL_PAGE;
+  }
+
+  /** Cleanup the data, in preparation for reuse in the tag pool */
+  public void cleanState()
+  {
+    super.cleanState();
+    execution=null;
+    queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
+    countVar=maxCountVar=null;
+    separator="";
+    header=footer=null;
+  }
 }
 
