@@ -31,8 +31,8 @@ public class charEditor extends FieldEditor
 {
   static String[] _params= { "default", "empty", "type", "size", "maxlength" };
   static String[][] _paramValues= { null,  null, {"text", "password"}, null, null };
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+  public String[] getAcceptedParams(){ return _params; }
+  public String[][] getAcceptedValue(){ return _paramValues; }
 
   public String getParams(Dictionary formatParams){ 
     String ret=getIntParamString(formatParams, "size");

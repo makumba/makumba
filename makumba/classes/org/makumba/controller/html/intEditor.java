@@ -29,8 +29,8 @@ public class intEditor extends charEditor
 {
   static String[] __params= { "default", "empty", "size", "maxlength" };
   static String[][] __paramValues= { null, null, null, null };
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+  public String[] getAcceptedParams(){ return __params; }
+  public String[][] getAcceptedValue(){ return __paramValues; }
 
   public int getWidth() { return 10; }
 
