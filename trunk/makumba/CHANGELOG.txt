@@ -21,6 +21,7 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================== RELEASES ===================================== -->
 0.5.11.1; 30 jul 2004 cristi
 support for Attributes.setAttribute()
+fixed a problem with tomcat 5 and tomcat > 4.1.20; the jar now includes META-INF/taglib.tld
 
 0.5.11; 21 jul 2004 cristi
 - refactoring to ensure efficient use of memory (fix for bug 709). soft caches were tested quite sucesfully in production
