@@ -6,7 +6,7 @@ import org.makumba.util.*;
 
 public abstract class DBConnection implements org.makumba.Database
 {
-  org.makumba.db.Database db;
+  protected org.makumba.db.Database db;
   NamedResources queries;
   NamedResources updates;
     

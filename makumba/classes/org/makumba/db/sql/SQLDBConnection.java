@@ -11,22 +11,44 @@ public class SQLDBConnection extends DBConnection
 
   private Connection conn;
 
-  SQLDBConnection(org.makumba.db.Database db, java.sql.Connection c){ super(db); conn=c; n=nconn++;}
+  SQLDBConnection(org.makumba.db.Database db) throws SQLException
+  { 
+    super(db); 
+    makeConnection();
+    n=nconn++;
+  }
+  
+  private void makeConnection() throws SQLException
+  {
+    conn=DriverManager.getConnection(((org.makumba.db.sql.Database)db).url, ((org.makumba.db.sql.Database)db).connectionConfig);
+  }
 
+  private Connection getConnection() throws SQLException
+  {
+    if(conn.isClosed())
+      {
+	MakumbaSystem.getMakumbaLogger("db.exception").warning("reconnecting connection "+n);
+	makeConnection();
+      }
+    return conn;
+  }
   public String toString(){ return "connection "+n; }
-  public DatabaseMetaData getMetaData()throws SQLException{return conn.getMetaData(); }
-  public Statement createStatement()throws SQLException { return conn.createStatement(); }
+
+  public DatabaseMetaData getMetaData()throws SQLException
+  {return getConnection().getMetaData(); }
+
+  public Statement createStatement()throws SQLException 
+  { return getConnection().createStatement(); }
 
   PreparedStatement getPreparedStatement(String s)
   {
     try{
-       return conn.prepareStatement(s);      
+       return getConnection().prepareStatement(s);      
     }catch(SQLException e) 
       {
 	org.makumba.db.sql.Database.logException(e);
 	throw new DBError(e); 
       }
-
   }
 
     /*
