@@ -22,16 +22,28 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.JspParseData;
-import java.util.HashMap;
+import org.makumba.util.MultipleKey;
+
+import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.LogicException;
+
+import java.util.Hashtable;
 
 
 /** this class provides utility methods for all makumba tags 
  * exception handling
- * parameter storage
+ * page cache retrieval
+ * storage of formatting parameters
  * database name setting/getting
  * cleanup
  * links to the JspParseData$TagData, representing the tag as parsed
@@ -42,31 +54,39 @@ public abstract class MakumbaTag extends TagSupport
   // this is not yet guaranteed to be set at runtime!
   JspParseData.TagData tagData;
 
-  HashMap params= new HashMap(7);
+  /** A tag key, used to find cached resources. Computed by some tags, both at analysis and at runtime */
+  MultipleKey tagKey;
+  
+  /** mak:list or mak:object parent to this makumba tag. used by ValueTag, InputTag, FormTagBase, etc */
+  QueryTag parentList;
+
+  /** the cache containing page analysis data */
+  MakumbaJspAnalyzer.PageCache pageCache;
+
+  /** Tag parameters */
+  Hashtable params= new Hashtable(7);
+
   static final String DB_ATTR="org.makumba.database";
 
+
+  /** Cleanup the data, in preparation for reuse in the tag pool */
   public void cleanState()
   { 
     if(findAncestorWithClass(this, MakumbaTag.class)==null)
       pageContext.removeAttribute(DB_ATTR);
     tagData=null;
+    tagKey=null;
+    parentList=null;
+    pageCache=null;
     params.clear(); 
   } 
 
-  public PageContext getPageContext() {return pageContext; }
-
-  // this looks reductible to PageContext.getAttributes(getPageContext())
-  public PageAttributes getAttributes()
-  {
-    try{
-      return PageAttributes.getAttributes(pageContext);
-    }catch(Throwable e){ throw new MakumbaError("should not have error here "+e); } 
-  }
+  PageContext getPageContext(){ return pageContext; }
 
   // we put this as static, as we may have to export it to packages like org.makumba.controller.jsp
-  public static MakumbaJspAnalyzer.PageCache getPageCache(PageContext pc)
+  public static MakumbaJspAnalyzer.PageCache getPageCache(PageContext pageContext)
   {
-    MakumbaJspAnalyzer.PageCache pageCache= (Map)pc.getAttribute("makumba.parse.cache");
+    MakumbaJspAnalyzer.PageCache pageCache= (MakumbaJspAnalyzer.PageCache)pageContext.getAttribute("makumba.parse.cache");
     if(pageCache==null)
       {
 	JspParseData jpd= JspParseData.getParseData
@@ -75,22 +95,32 @@ public abstract class MakumbaTag extends TagSupport
 	   TomcatJsp.getJspURI((HttpServletRequest)pageContext.getRequest()),
 	   MakumbaJspAnalyzer.singleton
 	    ); 
-	Object result=jpd.getAnalysisResult(pageContext);
+	Object result=jpd.getAnalysisResult(null);
 	if(result instanceof MakumbaError)
 	  throw (MakumbaError)result;
 	
-	pc.setAttribute("makumba.parse.cache", 
-			pageCache=(MakumbaJspAnalyzer.PageCache)result);
+	pageContext.setAttribute("makumba.parse.cache", 
+				 pageCache=(MakumbaJspAnalyzer.PageCache)result);
       }
     return pageCache;
   }
 
-  publi int doMakumbaStartTag() throws LogicException
+
+  /** Start the analysis of the tag, without knowing what tags follow it in the page. Typically this method will allocate initial data structures, that are then completed at doEndAnalyze() */
+  public void doStartAnalyze(){}
+
+  /** End the analysis of the tag, after all tags in the page were visited. */
+  public void doEndAnalyze(){}
+
+  /** makumba-specific start tag. 
+   * @see doStartTag 
+    */
+  public int doMakumbaStartTag() throws LogicException, JspException
   {
     return SKIP_BODY;
   }
 
-  /** exception handling */
+  /** Handle exceptions and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
     // need to check if this is still needed, it was here only if the tag was root...
@@ -99,30 +129,35 @@ public abstract class MakumbaTag extends TagSupport
     if(wasException())
       return SKIP_PAGE;
     try{
+      pageCache=getPageCache(pageContext);
       return doMakumbaStartTag();
     }
-    catch(Throwable t){ treatException(t); return SKIP_BODY; }
+    catch(Throwable t){ treatException(t); return SKIP_PAGE; }
   }
 
-  publi int doMakumbaEndTag() throws LogicException
+  /** makumba-specific endTag. 
+   * @see doEndTag 
+    */
+  public int doMakumbaEndTag() throws LogicException, JspException
   {
     return EVAL_PAGE;
   }
 
-  /** delegate the strategy to end */
+  /** HandleExceptions and call doMakumbaEndTag() */
   public int doEndTag() throws JspException
   {
     if(wasException())
       return SKIP_PAGE;
-    return doMakumbaEndTag();
+    try{
+      return doMakumbaEndTag();
+    } catch(Throwable t){ treatException(t); return SKIP_PAGE; }
   }
 
-  //------------------------------------------------
   //-------------- database name 
   /** obtain the makumba database; this can be more complex (accept arguments, etc) */
   public String getDatabaseName() {return getDatabaseName(pageContext); }
 
-  public String getDatabaseName(PageContext pc) 
+  public static String getDatabaseName(PageContext pc) 
   {
     String db= (String)pc.getAttribute(DB_ATTR);
     if(db==null)
@@ -145,18 +180,6 @@ public abstract class MakumbaTag extends TagSupport
     pageContext.setAttribute(DB_ATTR, db);
   }
 
-  public void setHeader(String s) throws JspException  
-  { 
-    onlyRootArgument("header"); 
-    params.put("header", s);
-  }
-
-  public void setFooter(String s) throws JspException  
-  {
-    onlyRootArgument("footer"); 
-    params.put("footer", s);
-  }
-  
   // --------------------------------
   // -------------- exceptions
   public boolean wasException()
