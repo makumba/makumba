@@ -90,10 +90,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     Object[] keyComponents= {baseObject, handler, getParentListKey(), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
-
+  final static String[] dummyQuerySections= {null, null, null, null};
+ 
   public void cacheDummyQuery()
   {
-    pageCache.cacheQuery(tagKey, pageCache.dummyQuerySections, null);
+    pageCache.cacheQuery(tagKey, dummyQuerySections, null);
   }
   public void doStartAnalyze()
   {
