@@ -50,9 +50,9 @@ public class IfTag extends MakumbaTag implements BodyTag
   public void doInitBody() { }                          
   
   /** cleanup the state to make this reusable */
-  public void cleanState()
+  public void release()
   {
-    super.cleanState();
+    super.release();
     expr = null;
   }
   

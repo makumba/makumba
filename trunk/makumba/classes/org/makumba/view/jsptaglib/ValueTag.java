@@ -45,9 +45,9 @@ public class ValueTag extends MakumbaTag
   public void setPrintVar(String var){ this.printVar=var; }
   
   /** cleanup the state to make this reusable */
-  public void cleanState()
+  public void release()
   {
-    super.cleanState();
+    super.release();
     expr=var=printVar=null;
   }
   

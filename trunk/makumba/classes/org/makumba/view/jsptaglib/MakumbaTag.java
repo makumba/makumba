@@ -82,7 +82,7 @@ public abstract class MakumbaTag extends TagSupport
   }
 
   /** Cleanup the data, in preparation for reuse in the tag pool */
-  public void cleanState()
+  public void release()
   { 
     if(findAncestorWithClass(this, MakumbaTag.class)==null)
       pageContext.removeAttribute(DB_ATTR);
