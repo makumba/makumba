@@ -131,7 +131,13 @@ public abstract class DBConnection implements org.makumba.Database
       return null;
     if(v.size()>1)
       throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: "+p);
-    return (Dictionary)v.elementAt(0); 
+    Dictionary d= (Dictionary)v.elementAt(0); 
+    Hashtable h= new Hashtable(13);
+    for(Enumeration en= d.keys(); en.hasMoreElements(); ){
+      Object o= en.nextElement();
+      h.put(o, d.get(o));
+    }
+    return h;
   }
 
   /** insert a record*/
