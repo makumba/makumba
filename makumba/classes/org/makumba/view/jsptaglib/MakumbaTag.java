@@ -228,7 +228,8 @@ public abstract class MakumbaTag extends TagSupport
   public void setDb(String db) throws JspException
   {
     onlyRootArgument("db");
-    pageContext.setAttribute(DB_ATTR, db);
+    if(pageContext!=null)
+      pageContext.setAttribute(DB_ATTR, db);
   }
 
   // --------------------------------
