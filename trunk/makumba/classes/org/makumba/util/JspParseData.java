@@ -36,7 +36,7 @@ import org.makumba.MakumbaSystem;
 /** This class performs a rudimentary detection of JSP-relevant tags in a JSP page.
  * @author cristi
  */
-public class JspParseData
+public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
 {
   /** The JSP file path */
   File file;
@@ -54,8 +54,10 @@ public class JspParseData
   String uri;
 
   /** The patterns used to parse the page. */
-  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern,
-    JspTagAttributePattern, Word, TagName;
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern, JspTagAttributePattern, Word, TagName;
+
+  static private String[] JspCommentPatternNames={"JspComment", "JspScriptlet"};
+  static private Pattern[] JspCommentPatterns;
 
   /** Cache of all analyzed pages. */
   static int analyzedPages=  NamedResources.makeStaticCache
@@ -100,7 +102,6 @@ public class JspParseData
       q;
   }
 
-
   /** Initialiser for the class variables. */ 
   static{
     String attribute= attribute("\\w+");
@@ -111,9 +112,10 @@ public class JspParseData
       JspIncludePattern= Pattern.compile("<%@\\s*include"+attribute("file")+"\\s*%>");
       JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
       //JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
-      JspCommentPattern  = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL); 
-      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);     
-
+      JspCommentPattern=  Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
+      JspScriptletPattern= Pattern.compile("<%[^@].*?%>", Pattern.DOTALL); 
+      Pattern[] cp= { JspCommentPattern, JspScriptletPattern };
+      JspCommentPatterns= cp;
       Word= Pattern.compile("\\w+");
       TagName= Pattern.compile("\\w+:\\w+");
     }catch(Throwable t){ t.printStackTrace(); }
@@ -173,10 +175,7 @@ public class JspParseData
   void parse(Object initStatus)
   {
     long start= new java.util.Date().getTime();
-    Pattern commentPatterns[]={JspCommentPattern, JspScriptletPattern};
-    String commentPatternNames[]= {"JspComment", "JspScriptlet"};
-
-    syntaxPoints= new SourceSyntaxPoints(file, commentPatterns, commentPatternNames, JspIncludePattern, "JspInclude");
+    syntaxPoints= new SourceSyntaxPoints(file, this);
 
     holder= analyzer.makeStatusHolder(initStatus);
 
@@ -206,41 +205,27 @@ public class JspParseData
 	String attValQuoted = attr.substring(n+1 ).trim(); // the part after the equal sign.
 	char chQuote=attValQuoted.charAt(0);
 	
-/* 
- * fred: I don't fully understand this code. It's meant to change \" to " (and other replacements?)
- *       but it causes bug 479, because the token is broken at linebreak.
-
-	// we use a streamtokenizer to do the complicated parsing of "...\"\t ...\n...."
-	StreamTokenizer st= new StreamTokenizer(new StringReader(attValQuoted));
-         st.eolIsSignificant(false);
-	st.quoteChar(chQuote);
-	try{
-	  if(st.nextToken()!=chQuote)
-	    throw new RuntimeException("quoted string expected, found "+val);
-	}catch(java.io.IOException ioe) { throw new RuntimeWrappedException(ioe);}
-         String attValue = st.sval;
- */
-
-         // the following assertion must be ensured by the attributePattern matching
-         if (attValQuoted.charAt(0) != attValQuoted.charAt(attValQuoted.length()-1))
-	    throw new RuntimeException("Properly quoted string expected, found "+attValQuoted);
-
-         // unescape the "escaped quotes" in the attributeValue
-         if (chQuote == '\"'){
-            attValQuoted = attValQuoted.replaceAll("\\\\\"", "\""); // replace \" by "
-         } else if (chQuote == '\''){
-            attValQuoted = attValQuoted.replaceAll("\\\\\'", "\'"); // replace \' by '
-         }
-         attValQuoted = attValQuoted.replaceAll("(\\\\){2}", "\\\\"); // replace \\ by \
-
-         String attValue = attValQuoted.substring(1, attValQuoted.length()-1); 
+	// the following assertion must be ensured by the attributePattern matching
+	if (attValQuoted.charAt(0) != attValQuoted.charAt(attValQuoted.length()-1))
+	  throw new RuntimeException("Properly quoted string expected, found "+attValQuoted);
+	
+	// unescape the "escaped quotes" in the attributeValue
+	if (chQuote == '\"'){
+	  attValQuoted = attValQuoted.replaceAll("\\\\\"", "\""); // replace \" by "
+	} else if (chQuote == '\''){
+	  attValQuoted = attValQuoted.replaceAll("\\\\\'", "\'"); // replace \' by '
+	}
+	attValQuoted = attValQuoted.replaceAll("(\\\\){2}", "\\\\"); // replace \\ by \
+	  
+	String attValue = attValQuoted.substring(1, attValQuoted.length()-1); 
 	attributes.put(attName, attValue);
 
-	// syntax points
-	syntaxPoints.addSyntaxPoints(origin  , origin+n  , "JSPTagAttributeName"  , null);
-	syntaxPoints.addSyntaxPoints(origin+n, origin+n+1, "JSPTagAttributeEquals", null);
-	syntaxPoints.addSyntaxPoints(origin+n+1, origin+s.length(), "JSPTagAttributeValue", null);
-
+	if(origin!=-1){ 
+	// syntax points, only set if the origin is given
+	  syntaxPoints.addSyntaxPoints(origin  , origin+n  , "JSPTagAttributeName"  , null);
+	  syntaxPoints.addSyntaxPoints(origin+n, origin+n+1, "JSPTagAttributeEquals", null);
+	  syntaxPoints.addSyntaxPoints(origin+n+1, origin+s.length(), "JSPTagAttributeValue", null);
+	}
          //debug
          Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags.attribute");
          log.finest("< Attribute : " +attr);
@@ -249,6 +234,24 @@ public class JspParseData
     return attributes;
   }
 
+  public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host){
+    Map m= parseAttributes(includeDirective, -1);
+    String fileName= (String)m.get("file");
+    host.include(new File(host.file.getParent(), fileName), position, includeDirective);
+  }
+
+  public Pattern[] getCommentPatterns(){
+    return JspCommentPatterns;
+  }
+  public String[] getCommentPatternNames(){
+    return JspCommentPatternNames;
+  }
+  public Pattern getIncludePattern(){
+    return JspIncludePattern;
+  }
+  public String getIncludePatternName(){
+    return "JspInclude";
+  }
 
   /** Go thru the tags in the page. */
   void treatTags(String content, JspAnalyzer an)
