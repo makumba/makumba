@@ -198,9 +198,11 @@ that begin with "some_org.some_application"</td>
   <td>Was adapted to makumba very easily. Needs more testing.</td>
  </tr>
   <tr>
- <td><b>Informix<sup>TM</sup></b></td>
+ <td><a href="http://www-3.ibm.com/software/data/informix/"><b>Informix<sup>TM</sup></b></a> Dynamic Server, version 9.20.UC2,
+ using <a href="http://www6.software.ibm.com/devcon/devcon/docs/jdbcv221.htm">IBM Informix JDBC Driver/Embedded SQL V2.21</a></td>
   <td><b>hostname_port_informix-sqli_databasename</b></td>
-  <td>Easy to adapt, will work soon.</td>
+  <td>Works, was easy to adapt. Tricky part was creating an informix db with transactions enabled and setting up a
+connection to it. See <a href="http://cvs.makumba.org/classes/test/somehost_1560_informix-sqli_dbname.properties.example">sample config file</a>.</td>
  </tr>
   <tr valign="top">
  <td><b>Cloudscape<sup>TM</sup></b> <br>
@@ -277,7 +279,7 @@ database in the db server and try to execute "ant test"</li>
  After following section 3 above, after your JDBC driver loads correctly,
 and your database is found, you might still see errors while running the test
 cases (java test.table) unless your SQL engine is SQL-92 compatible (and
-few of them are...). To treat particularities of your engine, you will need
+few of them are...). To treat <a href="http://downloads.hemtech.co.za/jdo/manual/database_specific_information.html">particularities of your engine</a>, you will need
 to define a new handler family. To do that
 <ul>
  <li> look in the <a href="api/API_users_guide.html#developer">developer
