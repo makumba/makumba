@@ -182,7 +182,7 @@ public abstract class MakumbaTag extends TagSupport
   {
     MakumbaJspAnalyzer.PageCache pageCache=null;
     // need to check if this is still needed, it was here only if the tag was root...
-    if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
+    if(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE)!=null)
       setWasException();
     if(wasException())
       return SKIP_PAGE;

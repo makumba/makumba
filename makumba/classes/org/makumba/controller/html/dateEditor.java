@@ -28,8 +28,8 @@ import java.text.*;
 
 public class dateEditor extends FieldEditor
 {
-  static String[] params= { "format" };
-  static String[][] paramValues= { null };
+  static String[] _params= { "format" };
+  static String[][] _paramValues= { null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 

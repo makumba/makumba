@@ -132,17 +132,17 @@ public abstract class SyntaxPoint implements Comparable
   /** a simple implementation: ends of strings marked by other syntax points */
   public static class End extends SyntaxPoint
   {
-    SyntaxPoint begin;
+    SyntaxPoint _begin;
     /** constructor */
     public End(SyntaxPoint begin, int position)
     {
       super(position, false);
-      this.begin=begin;
+      this._begin=begin;
     }
     /** returns the begining */
-    public Object getOtherInfo(){ return begin; }
+    public Object getOtherInfo(){ return _begin; }
     /** returns same type as the begining */
-    public String getType(){ return begin.getType(); }
+    public String getType(){ return _begin.getType(); }
   }
 
 

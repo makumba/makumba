@@ -143,14 +143,14 @@ public class jspViewer extends LineViewer {
         sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
 
         contextPath = req.getContextPath();
-        String servletPath = req.getServletPath();
-        virtualPath = servletPath.substring(0, servletPath.length() - extraLength());
-        jspSourceViewExtension = servletPath.substring(servletPath.length() - extraLength());
+        String _servletPath = req.getServletPath();
+        virtualPath = _servletPath.substring(0, _servletPath.length() - extraLength());
+        jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
         realPath = sv.getServletConfig().getServletContext().getRealPath(virtualPath);
         reader = new FileReader(realPath);
-        servletPath = servletPath.substring(0, servletPath.indexOf(".")) + ".jsp";
-        logicPath = contextPath + "/logic" + servletPath;
-        hasLogic = !(org.makumba.controller.Logic.getLogic(servletPath) instanceof org.makumba.LogicNotFoundException);
+        _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
+        logicPath = contextPath + "/logic" + _servletPath;
+        hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
     }
 
     public void intro(PrintWriter w) throws IOException {

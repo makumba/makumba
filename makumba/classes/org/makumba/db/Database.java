@@ -396,8 +396,8 @@ public abstract class Database
 
   public void deleteFrom(String sourceDB, String table)
   {
-    String[]tables = {table};
-    deleteFrom(sourceDB, tables);
+    String[]_tables = {table};
+    deleteFrom(sourceDB, _tables);
   }
 
   public void deleteFrom(String source, String[] tables)
@@ -418,8 +418,8 @@ public abstract class Database
 
   public void copyFrom(String sourceDB, String table)
   {
-    String[]tables = {table};
-    copyFrom(sourceDB, tables);
+    String[]_tables = {table};
+    copyFrom(sourceDB, _tables);
   }
 
   public void copyFrom(String source, String[] tables)
@@ -457,23 +457,23 @@ public abstract class Database
     DBConnection sourceDB=findDatabase(source).getDBConnection();
     try{
       Vector v=sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
-      String[] tables= new String[v.size()];
+      String[] _tables= new String[v.size()];
       
-      for (int i=0; i<tables.length; i++)
+      for (int i=0; i<_tables.length; i++)
 	{
 	  String nm=(String)((Dictionary)v.elementAt(i)).get("name");
 	  MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm);
-	  tables[i]=nm;
+	  _tables[i]=nm;
 	}
-      copyFrom(c, tables, sourceDB);
+      copyFrom(c, _tables, sourceDB);
     }
     finally{c.close(); sourceDB.close(); }
   }
   
-  public void openTables(String [] tables) 
+  public void openTables(String [] _tables) 
   {
-    for (int i=0;i<tables.length;i++) {
-      openTable(tables[i]);
+    for (int i=0;i<_tables.length;i++) {
+      openTable(_tables[i]);
     }
   }
   

@@ -442,7 +442,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
 
 
   /** A composite object passed to the analyzers. */
-  public class TagData
+  public static class TagData
   {
     /** the parse data where this TagData was produced */
     JspParseData parseData;

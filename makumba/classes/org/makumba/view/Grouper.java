@@ -43,11 +43,11 @@ public class Grouper extends Hashtable
 	Hashtable h= this;
 	Hashtable h1;
 	int i=0;
-	int max=keyNameSets.size()-1;
+	int _max=keyNameSets.size()-1;
 	MultipleKey mk;
 
 	// find the subresult where this record has to be inserted
-	for(; i<max; i++)
+	for(; i<_max; i++)
 	  {
 	    // make a keyset value
 	    mk= getKey(i, data.data);

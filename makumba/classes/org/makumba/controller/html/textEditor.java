@@ -28,8 +28,8 @@ import org.makumba.HtmlUtils;
 
 public class textEditor extends FieldEditor
 {
-  static String[] params= { "default", "empty", "type", "rows", "cols" };
-  static String[][] paramValues= { null, null, {"textarea", "file" }, null, null };
+  static String[] _params= { "default", "empty", "type", "rows", "cols" };
+  static String[][] _paramValues= { null, null, {"textarea", "file" }, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 

@@ -191,7 +191,7 @@ public abstract class FieldManager extends FieldHandler
   protected String getEngineProperty(String s)
   {
     Database d=rm.getSQLDatabase();
-    return d.getEngineProperty(d.getEngine()+"."+s);
+    return Database.getEngineProperty(d.getEngine()+"."+s);
   }
 
 
