@@ -7,6 +7,8 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
  - add your changes -
+cristi; 10 jun 2004: fixed bug 697, dots in <mak:input > names produced error
+cristi; 1 jun 2004: fixed bug 695, too often occurence of "servlet call not found in stacktrace"
 cristi; 24 may 2004: fixed bug 430, real type
 cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
 cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
@@ -19,6 +21,7 @@ stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
+cristi; 10 jun 2004: fixed bug 699, pages executed without controller (e.g. from 404 handler) lead to infinite recursion
 cristi; 24 may 2004: fixed bug 686, problem with spaces in OQL queries
 cristi; 23 may 2004: fixed bug 48, transactions and locking
 cristi; 17 may 2004: fixed bug 544, support for @include
@@ -51,8 +54,12 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.10.3; 23 may 2004: cristi 
+fixes for bugs 695, 697 and 699
+
 0.5.10.2; 23 may 2004: cristi 
 feature improvements on 0.5.10.1: locking (new feature using transactions), and @include (new feature, but changed the JSP preprocessor, so it can benefit from testing)
+karamba partially tested, led to problems leading to 0.5.10.3
 
 0.5.10.1; 23 apr 2004: cristi 
 untested release, contains mostly new features so it may not affect production so much
