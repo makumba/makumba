@@ -44,7 +44,7 @@ JSP standard offers limited capabilities in regard to:<br>
 tag been declared in. It is possible to find out which page has been
 requested, but if that page includes other pages, there is no way to
 find out if the tag is in an included file or not. The tomcat-dependent
-class {@link org.makumba.view.jsptaglibq.TocmatJsp} solves the problem</li>
+class {@link org.makumba.view.jsptaglib.TomcatJsp} solves the problem</li>
   <li>page analysis: JSP provides a way to get access to an XML image
 of the JSP file, but whatever analysis is done there is not accessible
 to the tags at page runtime<br>
@@ -57,7 +57,7 @@ attributes are as follows: from=... where=....,&nbsp; I contain the
 following mak:list tags.... and the following mak:value tags:...., my
 mak:list parent is ...., therefore my query will be: .... ". This
 problem is solved by parsing the JSP page in classes like {@link
-org.makumba.util.JspPageData} and&nbsp; {@link
+org.makumba.util.JspParseData} and&nbsp; {@link
 org.makumba.view.jsptaglib.MakumbaJspAnalyzer }</li>
   <li>communication between instances of the same tag: if two <span
  style="text-decoration: underline;">javax.server.jsp.tagext.Tag</span>

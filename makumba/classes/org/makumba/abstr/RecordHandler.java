@@ -103,9 +103,8 @@ public abstract class RecordHandler
    * 
    * @param ri the RecordInfo to be handled by this handler
    * @see org.makumba.abstr.FieldHandler
-   * @see makeHandler()
+   * @see #makeHandler(String)
    * @see org.makumba.abstr.RecordInfo#getRecordInfo(String)
-   * @see org.makumba.abstr.RecordInfo#getRecordInfo(String, String)
    */
   protected void setRecordInfo(RecordInfo ri)
   {
@@ -131,9 +130,8 @@ public abstract class RecordHandler
    * 
    * @param ri the RecordInfo to be handled by this handler
    * @see org.makumba.abstr.FieldHandler
-   * @see makeHandler()
+   * @see #makeHandler(String)
    * @see org.makumba.abstr.RecordInfo#getRecordInfo(String)
-   * @see org.makumba.abstr.RecordInfo#getRecordInfo(String, String)
    */
   public RecordHandler(RecordInfo ri)
   { 
@@ -341,11 +339,11 @@ public abstract class RecordHandler
    * 
    * @param m the name of the method. Only one method with a name is supported 
    * (i.e. no name overloading). This is simple and powerful enough
-   * @see getHandlerAncestor()
-   * @see callAll(Method, Object[])
-   * @see writeAll(Method, Object[], String)
-   * @see streamAll(Method, Object[], byte[])
-   * @see concatAll(Method, Object[], String)
+   * @see #getHandlerAncestor()
+   * @see #callAll(Method, Object[])
+   * @see #writeAll(Method, Object[], String)
+   * @see #streamAll(Method, Object[], byte[])
+   * @see #concatAll(Method, Object[], String)
    */
   protected Method getHandlerMethod(String m)
   {

@@ -55,7 +55,7 @@ public abstract class Responder implements java.io.Serializable
   /** the default response message, "changes done" */
   static public final String defaultMessage="changes done";
 
-  /** the name of the CGI parameter that passes the base pointer, see {@link basePointerType}, "__makumba__base__" */
+  /** the name of the CGI parameter that passes the base pointer, see {@link #basePointerType}, "__makumba__base__" */
   public final static String basePointerName="__makumba__base__";
 
   /** the responder key, as computed from the other fields*/

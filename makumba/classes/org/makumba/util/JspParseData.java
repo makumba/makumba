@@ -422,7 +422,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
     Object makeStatusHolder(Object initStatus);
 
     /** start a body tag 
-     * @see endTag(TagData, Object)
+     * @see #endTag(JspParseData.TagData, Object)
      */
     void startTag(TagData td, Object status);
     
@@ -436,7 +436,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
     void systemTag(TagData td, Object status);
 
     /** the end of the page
-      @returns the result of the analysis */
+      @return the result of the analysis */
     Object endPage(Object status);
   }
 

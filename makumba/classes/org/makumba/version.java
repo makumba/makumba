@@ -30,7 +30,7 @@ import java.util.Properties;
 class version {
 
 
-   /** @see MakumbaSystem.getVersion() */
+   /** @see MakumbaSystem#getVersion() */
    static String getVersion()
    {
         String vs="$Name$";
