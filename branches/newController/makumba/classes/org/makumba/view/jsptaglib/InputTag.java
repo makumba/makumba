@@ -98,7 +98,9 @@ public class InputTag extends MakumbaTag
 	      attrName=ValueTag.EVAL_BUFFER;
 	    }
 	  val=getAttributes().getAttribute(attrName);
-	  type=getAttributes().getAttribute(attrName+"_type");
+	  try{
+	      type=getAttributes().getAttribute(attrName+"_type");
+	  }catch(AttributeNotFoundException anfe){ }
 	  if(type!=null && type.equals("unknown yet"))
 	    return EVAL_BODY_INCLUDE;
 	}
