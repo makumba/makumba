@@ -1,3 +1,6 @@
+0.5.5.19; 12 feb 2003 stefan
+fixed bug 299 (content type was prefixed by ' ' on file upload)
+
 0.5.5.18; 13 jan 2003 stefan
 publish jar uses download.makumba.org and it publishes also to sourceforge.net
 makumba.jar is always the latest one
