@@ -184,7 +184,12 @@ public interface Database
 
   /** Rollback the transaction associated with this connection. Typically rollback should be doneif an error occurs in a business logic operation. The business logic manager will rollback a transaction that it provided for usage if it catches any exception during the business logic execution.*/
   public void rollback();
-  
+
+  /** Acquire a lock associated to the given application-specific symbol. This method will block as long as the lock is already taken on another Database object. The commit() and rollback() methods unlcok all locks acquired on this connection */
+  public void lock(String symbol);
+
+  /** Free the lock on the given symbol, if any exists. This will allow the continuation of  a thread that needs a lock on the same symbol and uses another Database object*/
+  public void unlock(String symbol);
 }
 
 

@@ -62,10 +62,16 @@ public class DBConnectionWrapper extends DBConnection
     { return getWrapped().delete(from, where, parameters); }
     
     public void commit()
-    { getWrapped().commit(); }
+    { getWrapped().unlockAll(); getWrapped().commit(); }
 
     public void rollback()
-    { getWrapped().rollback(); }
+    { getWrapped().unlockAll(); getWrapped().rollback(); }
+
+    public void lock(String symbol)
+    { getWrapped().lock(symbol); }
+
+    public void unlock(String symbol)
+    { getWrapped().lock(symbol); }
 
     public synchronized void close(){ 
       commit();
@@ -76,6 +82,7 @@ public class DBConnectionWrapper extends DBConnection
 	if(wrapped!=ClosedDBConnection.singleton)
 	    close();
     }
+  
 }
 
 class ClosedDBConnection extends DBConnectionWrapper

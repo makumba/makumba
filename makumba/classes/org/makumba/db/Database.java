@@ -267,6 +267,7 @@ public abstract class Database
       tableclass= getTableClassConfigured();
       
       config.put("alter#org.makumba.db.Catalog", "true");
+      config.put("alter#org.makumba.db.Lock", "true");
     }catch(Exception e){ throw new org.makumba.MakumbaError(e); }
   }
 
