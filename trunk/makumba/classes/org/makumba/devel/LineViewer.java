@@ -70,8 +70,10 @@ public class LineViewer implements SourceViewer
     if(lineNumbers)
 	w.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
     w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr>");
-    if(realPath!=null && virtualPath!=null)
-	w.print("<td><font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font><br>"+new File(realPath).getCanonicalPath()+"</td>");
+    if(realPath!=null && virtualPath!=null) {
+	w.print("<td><font size=\"+2\"><a href=\""+virtualPath+"\"><font color=\"darkblue\">"+virtualPath+"</font></a></font>");
+	w.print("<font size=\"-1\"><br>"+new File(realPath).getCanonicalPath()+"</font></td>");
+    }
     intro(w);
     w.print("</tr></table>\n<pre style=\"margin-top:0\">");	
 
