@@ -22,10 +22,10 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import javax.servlet.jsp.tagext.Tag;
 import java.util.logging.Level;
@@ -38,12 +38,8 @@ import org.makumba.MakumbaSystem;
  */
 public class JspParseData
 {
-
-  /** The path of the JSP page. */
+  /** The JSP file path */
   File file;
-  
-  /** The timestamp of the JSP page. If the page is found newer on disk, the cached object is discarded. */
-  long lastChanged; 
 
   /** The analyzer plugged in. */
   JspAnalyzer analyzer;
@@ -58,7 +54,7 @@ public class JspParseData
   String uri;
 
   /** The patterns used to parse the page. */
-  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, 
+  static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern,
     JspTagAttributePattern, Word, TagName;
 
   /** Cache of all analyzed pages. */
@@ -81,8 +77,13 @@ public class JspParseData
               });
 
 
+  static String attribute(String attName){
+    return 
+      "(" +attribute(attName, "\"")+ "|" +attribute(attName,"\'")+ ")";
+  }
+
   /** This helps to create regex for the 'attribute' pattern easily. @param quote is either " or ' . */
-  static String attribute(String quote){
+  static String attribute(String attName, String quote){
     String bs="\\";         // backslash in a java String (escaped)
     String q=bs+quote;
     String backslash=bs+bs; // backslash in a regex in a java String (escaped)
@@ -91,7 +92,7 @@ public class JspParseData
     // the pattern is \s*\w+\s*=\s*"(\\.|[^"\\])*?" or idem with single quote ' 
     return 
       bs+ "s*" +
-      bs+ "w+" +
+      attName+
       bs+ "s*=" +
       bs+ "s*" +
       q+
@@ -102,11 +103,12 @@ public class JspParseData
 
   /** Initialiser for the class variables. */ 
   static{
-    String attribute="(" +attribute("\"")+ "|" +attribute("\'")+ ")";
+    String attribute= attribute("\\w+");
 
     try{
       JspTagAttributePattern= Pattern.compile(attribute);
       JspSystemTagPattern= Pattern.compile("<%@\\s*\\w+("+attribute+")*\\s*%>");
+      JspIncludePattern= Pattern.compile("<%@\\s*include"+attribute("file")+"\\s*%>");
       JspTagPattern= Pattern.compile("<((\\s*\\w+:\\w+("+attribute+")*\\s*)/?|(/\\w+:\\w+\\s*))>");
       //JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
       JspCommentPattern  = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL); 
@@ -125,7 +127,7 @@ public class JspParseData
    */
   public synchronized Object getAnalysisResult(Object initStatus)
   {
-    if(!unchanged())
+    if(getSyntaxPoints()==null || !getSyntaxPoints().unchanged())
 	try
 	{
 	    parse(initStatus);
@@ -164,45 +166,22 @@ public class JspParseData
   {
     this.file= new File(path);
     this.uri=uri;
-    this.lastChanged= 0l;
     this.analyzer=an;
-  }
-
-  /** Is file changed on disk since it was last analysed. */
-  boolean unchanged()
-  {
-    return file.lastModified()==lastChanged;
   }
 
   /** Parses the file. */
   void parse(Object initStatus)
   {
     long start= new java.util.Date().getTime();
-    lastChanged=file.lastModified();
-    String content=readFile();    
-   
-    syntaxPoints= new SourceSyntaxPoints(content);
+    Pattern commentPatterns[]={JspCommentPattern, JspScriptletPattern};
+    String commentPatternNames[]= {"JspComment", "JspScriptlet"};
+
+    syntaxPoints= new SourceSyntaxPoints(file, commentPatterns, commentPatternNames, JspIncludePattern, "JspInclude");
 
     holder= analyzer.makeStatusHolder(initStatus);
 
-    // remove JSP comments from the text
-    content= syntaxPoints.unComment(content, JspCommentPattern, "JspComment");
-    content= syntaxPoints.unComment(content, JspScriptletPattern, "JspScriptlet");
-
- /* // This is an alternate way for removing JSP comments. See bug 465 for details.
-    // Can be removed from the code in future.
-
-    // remove JSP comments from the text
-    StringBuffer uncommentedContent= new StringBuffer(content);
-    String[] commentEndNotPrecededBy = { "-" };
-    syntaxPoints.takeOut(uncommentedContent, "<%--", null, "--%>", commentEndNotPrecededBy , "jspComment");
-    String[] scriptletStartNotFollowedBy = { "@" };
-    syntaxPoints.takeOut(uncommentedContent, "<%", scriptletStartNotFollowedBy, "%>", null, "jspScriplet");
-    content = uncommentedContent.toString();
- */
-
     // the page analysis as such:
-    treatTags(content, analyzer);
+    treatTags(syntaxPoints.getContent(), analyzer);
     
     holder= analyzer.endPage(holder);
 
@@ -381,21 +360,6 @@ public class JspParseData
   }
 
   
-  /** Return the content of the JSP file in a string. */
-  String readFile()
-  {
-    StringBuffer sb=new StringBuffer();
-    try{
-      BufferedReader rd= new BufferedReader(new FileReader(file));
-      char[] buffer= new char[2048];
-      int n;
-      while((n=rd.read(buffer))!=-1)
-	sb.append(buffer, 0, n);
-    }catch(IOException e) { e.printStackTrace(); }
-    return sb.toString();
-  }
-
-
   /** FIXME: This seems to build some nice illustration for a parse-error message */
   public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
   {
