@@ -45,12 +45,19 @@ public class ControllerFilter implements Filter
 
   static FilterConfig conf;
   public void init(FilterConfig c) { conf=c; }
-  
+
+  private static ThreadLocal requestThreadLocal = new ThreadLocal();
+ 
+  public static HttpServletRequest getRequest(){
+    return (HttpServletRequest)requestThreadLocal.get();
+  }
+
   public void doFilter(ServletRequest req, ServletResponse resp,
 		       FilterChain chain)
         throws ServletException, java.io.IOException
   {
     boolean filter= shouldFilter((HttpServletRequest)req);
+    requestThreadLocal.set(req);
 
     DbConnectionProvider prov= RequestAttributes.getConnectionProvider((HttpServletRequest)req);
 
