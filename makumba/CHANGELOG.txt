@@ -2,15 +2,7 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
-cristi; 29 oct 2003: made makumba work from java applets, needed to catch security exceptions in org.makumba.MakumbaSystem, org.makumba.util.NamedResources, org.makumba.abstr.DateHandler
-fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
-fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
-stefan; 22 oct 2003: SQL errors show state & code in the error page (see bug 612)
-stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
-stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer) and bug 601
-fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
-stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
-stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
+ - add your stuff -
 
 NOT TO BE RELEASED YET:
 stefan; 18 nov 2003: bug 638 fixed (Makumba altered InnoDB tables to InnoDB on MySQL 4.1)
@@ -28,6 +20,19 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
 
+0.5.9.16; 30 nov 2003 fred
+stefan; *: bug 511 (dos2unix cr/lf)
+fred; 30 nov 2003: undid 1 change makumba.tld of 26 oct 2003 (mak:input#display is rtexpr)
+fred; 30 nov 2003: bug 563 fixed (STILL NEEDS TESTING) hidden input for char[] generates bad html
+cristi; 29 oct 2003: made makumba work from java applets, needed to catch security exceptions in org.makumba.MakumbaSystem, org.makumba.util.NamedResources, org.makumba.Text
+fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
+fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
+stefan; 22 oct 2003: SQL errors show state & code in the error page (see bug 612)
+stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
+stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer) and bug 601
+stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
+fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
+stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
 
 0.5.9.15; 11 oct 2003 fred
 stefan; * : updates in build.xml (v2.9 to v2.16)
