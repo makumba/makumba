@@ -1,3 +1,4 @@
+stefan; 15 jul 2003: bug 4 fixeed (unique indexes created and dropped in the DB as needed during table checking)
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
 stefan; 2 jul 2003:improved solution for bug 449 (mak:value  maxLength, ellipsis...)
 stefan; 2 jul 2003: fix for bug 366 (printVar for empty texts should be empty)
