@@ -30,9 +30,11 @@ public  class timeManager extends org.makumba.db.sql.timeManager
 {
   /** ODBC seems to represent TIME as TIMESTAMP...
    */
-  protected boolean unmodified(ResultSetMetaData rsm, int index)
-       throws SQLException
+  protected boolean unmodified(int type, int size, java.util.Vector columns, 
+			       int index)
+       throws java.sql.SQLException
   {
-    return super.unmodified(rsm, index) || rsm.getColumnType(index)==java.sql.Types.TIMESTAMP;
+    return super.unmodified(type, size, columns, index) || 
+      type==java.sql.Types.TIMESTAMP;
   }
 }
