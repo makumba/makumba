@@ -17,16 +17,16 @@
 <center>
 <a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0" style="border: 0px solid ; width: 329px; height: 100px;"></a></center>
 <p>
-<b>Makumba</b> is a technology designed by <a href="http://www.BEST.eu.org">BEST</a>
+<b>Makumba</b> is a technology designed by <a href="http://www.BEST.eu.org" title="Board of European Students of Technology">BEST</a>
 that helps you to rapidly develop web applications that keep their data in a database   (i.e. data driven web
-applications). It is implemented in Java and offers a Java API and a JSP
+	applications). It is implemented in Java and offers a Java <abbr title="Application Programmer's Interface">API</abbr> and a <abbr title="Java Server Pages">JSP</abbr>
 tag library to the web app developer. The technology   has been in use since
 late 2001, and is being further developed, based on users'
 experience and requests.
 </p>
 <p>
-<b>Makumba</b> is open source and the product of the volunteer work 
-of individuals who have a background in the IT Committee of BEST. Everyone is 
+<b>Makumba</b> is open source and the product of the volunteer work
+of individuals who have a background in the IT Committee of BEST. Everyone is
 welcome to use and contribute to Makumba.
 </p>
 
@@ -35,7 +35,7 @@ welcome to use and contribute to Makumba.
 <td>
 <div align=left><big><b>Description of Makumba around a short example</b></big></div>
 <p>
-First you <b>describe the data</b> in a text file, called 
+First you <b>describe the data</b> in a text file, called
 <a href="makumba-spec.html#Data_Description">data
 definition</a>. It contains lines like:
 </p>
@@ -47,14 +47,14 @@ dob= date      ;Date of birth
 
 <p>
 Say you call the above record a "Person". Makumba
-can use this information to perform the right action when 
+can use this information to perform the right action when
 manipulating the database or generating HTML output.
 Of course, complex applications have more types of data, with pointers from one to the other.
 </p>
 <p>Makumba can <b>generate SQL</b> statements that create the needed tables and
 do read/write operations in a <a href="SQL-drivers.html">database</a>
 of your choice. It currently supports MySQL, Informix, DB2, PostgreSQL and ODBC but many
-other database engines can be easily supported if needed. 
+other database engines can be easily supported if needed.
 What's more, you can copy data from one
 database to another (this is very important in BEST, we port data a lot,
 we develop on Windows with ODBC or MySQL and run on Linux with Postgres,
@@ -64,7 +64,7 @@ etc).
 <p>At the interface level, Makumba can <b>generate html</b>
 for inserting, editing, viewing and deleting data from the
 database. You don't have to care about details of HTML forms, parsing
-the CGI arguments, composing SQL statements etc. 
+the CGI arguments, composing SQL statements etc.
 All this routine work is done for you, but you can freely build upon it.<br>
 </p>
 <p>For instance, following code will show a selected person. You mix HTML
