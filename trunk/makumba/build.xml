@@ -204,7 +204,7 @@
 
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
- <echo>updating individual files via ftp</echo>
+ <!--echo>updating individual files via ftp</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
@@ -219,7 +219,7 @@
       		<include name="api/**/package-list" />
       		<exclude name="api/API_users_guide.html" />
     	</fileset>
-	</ftp>
+	</ftp-->
  <echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -240,11 +240,11 @@
 		<include name="makumba/CHANGELOG.txt" />
 		<include name="makumba/COPYING.txt" />
 		<include name="makumba/README.txt" />
-     		<include name="makumba/doc/*.html" />
-     		<include name="makumba/doc/*.txt" />
-     		<include name="makumba/doc/*.doc" />
-     		<include name="makumba/doc/*.pdf" />
-     		<include name="makumba/doc/*.gif" />
+     		<include name="makumba/doc/**/*.html" />
+     		<include name="makumba/doc/**/*.txt" />
+     		<include name="makumba/doc/**/*.doc" />
+     		<include name="makumba/doc/**/*.pdf" />
+     		<include name="makumba/doc/**/*.gif" />
      		<include name="makumba/doc/api/**/*.html" />
       		<include name="makumba/doc/api/**/*.txt" />
       		<include name="makumba/doc/api/**/*.css" />
