@@ -71,8 +71,6 @@ public class RecordManager extends Table
 
   protected boolean usesHidden(){ return true; }
 
-  protected String getTmpName() { return "tmp"+tbname; }
-
   /** the SQL table opening. might call create() or alter() */
   protected void open(Properties config) 
   {
@@ -193,7 +191,7 @@ public class RecordManager extends Table
     indexDBField=((FieldManager)handlers.get(indexField)).getDBName();
   }
   
-  interface CheckingStrategy
+  protected interface CheckingStrategy
   {
     void close()throws SQLException;
     boolean hasMoreColumns()throws SQLException;
@@ -388,71 +386,7 @@ public class RecordManager extends Table
       create(st, tbname, alter);
   }
 
-  /*  the automatic alteration is really risky, so we skip it 
- int n= present.size();
-
-    String fields=null;
-
-    if(n>0)
-      {
-	StringBuffer sb= new StringBuffer();
-	fieldList(sb, present.elements());
-
-	fields= sb.toString();
-	if(alter)
-	  create(st, getTmpName(), true);
-
-	if(alter)
-	  cp(st, tbname, getTmpName(), fields, present);
-      }
-
-    create(st, tbname, alter);
-
-    if(n>0)
-      if(alter)
-	cp(st, "tmp"+tbname, tbname, fields, present);
-  }
-  */
-
-  /** a table copy function. tables should have this table's RecordInfo */
-  protected void cp(Statement st, String tb1, String tb2, String fields,
-		    Vector fms)
-       throws SQLException
-  {
-	  DBConnectionWrapper dbcw=(DBConnectionWrapper)getSQLDatabase().getDBConnection();
-	  SQLDBConnection dbc=(SQLDBConnection)dbcw.getWrapped();
-    try{
-      ResultSet rs= st.executeQuery("SELECT "+fields+" FROM "+tb1);
-      Statement st1= dbc.createStatement();
-      int cols=rs.getMetaData().getColumnCount()+1;
-      
-      while(rs.next())
-	{
-	  StringBuffer cmd= new StringBuffer().append("INSERT INTO ")
-	    .append(tb2)
-	    .append("(").append(fields).append(") VALUES (");
-	  
-	  String sep= null;
-	  for(int i=1; i<cols; i++)
-	    {
-	      try{cmd.append(sep.toString());}
-	      catch(NullPointerException npe){ sep=", "; }
-	      
-	      try{
-		FieldManager fm= ((FieldManager)fms.elementAt(i-1));
-		cmd.append(fm.writeConstant(fm.getValue(rs, i)));
-	      }
-	      catch(NullPointerException npe){ cmd.append("null"); }
-	      catch(ClassCastException cce){ cmd.append("null"); }
-	    }
-	  cmd.append(")");
-	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(cmd.toString());
-	  st1.executeUpdate(cmd.toString());
-	}
-      st1.close();
-      rs.close();
-    }finally{ dbcw.close(); }
-  }
+  protected String createDbSpecific(String command){return command; }
 
   /** a table creation, from this table's RecordInfo */
   protected void create(Statement st, String tblname, boolean really)
@@ -469,6 +403,8 @@ public class RecordManager extends Table
       String command="CREATE TABLE "+tblname+"("+
 	concatAll(getHandlerMethod("inCreate"), dbArg, ",")+
 	")";
+
+      command= createDbSpecific(command);
       if(!really)
 	{
 	  MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("would be:\n"+command);
