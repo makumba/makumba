@@ -117,7 +117,7 @@ public class BoundaryInputStream extends InputStream {
 		MakumbaSystem.getMakumbaLogger("fileUpload").warning("BIS: ending before boundary with only CR");
 		index-=1;
 	    } else {
-		throw new IOException("*DEBUG-bis: problem with ending of the file. Please, report to ITC");
+		throw new IOException("*DEBUG-bis: problem with ending of the file. Please, report to the developers.");
 	    }
 
 	    System.arraycopy((Object) myBuffer, 0, //from, position
