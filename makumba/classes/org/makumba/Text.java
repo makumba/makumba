@@ -40,7 +40,10 @@ public class Text
 
   public static int FILE_LIMIT;
   static{
-    String s= System.getProperty("makumba.long-content");
+    String s=null;
+    try{
+      s=System.getProperty("makumba.long-content");
+    }catch(SecurityException se){ } // for applets
     if(s!=null)
       FILE_LIMIT=Integer.parseInt(s.trim());
     else

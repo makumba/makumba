@@ -282,7 +282,9 @@ The programmer could just as well decide that all makumba logging at or over the
     /** Returns the timezone in which makumba should read/display dates from/to users, configurable by the system variable makumba.displayTimeZone */
   public static java.util.TimeZone getTimeZone() 
     { 
-	String s= System.getProperty("makumba.displayTimeZone");
+        String s=null; 
+	try{s= System.getProperty("makumba.displayTimeZone");}
+	catch(SecurityException e){} // for applets
 	if(s!=null)
 	    return java.util.TimeZone.getTimeZone(s);
 	return java.util.TimeZone.getDefault();
