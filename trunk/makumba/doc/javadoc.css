@@ -7,6 +7,7 @@
 BODY {  //font-family: arial;
         color:black;
         background-color:white;
+	margin-right:10;
         margin-left:120; }
 
 a {color:#044a2c;}
