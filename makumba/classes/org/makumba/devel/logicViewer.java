@@ -26,7 +26,7 @@ import java.io.*;
 import javax.servlet.http.*;
 import org.makumba.abstr.Logic;
 
-/** the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the filter architecture */
+/** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used.*/
 public class logicViewer extends LineViewer
 {
   public logicViewer(HttpServletRequest req, HttpServlet sv) throws Exception
