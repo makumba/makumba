@@ -118,15 +118,6 @@ public class MultipartHttpParameters extends HttpParameters
 	  break;
 	index+=2;
       }
-    
-    // now we take http parameters from the query string and put them together with the others
-    for(Enumeration e= request.getParameterNames(); e.hasMoreElements(); )
-      {
-	String nm=(String)e.nextElement();
-	String [] val=request.getParameterValues(nm);
-	for(int i=0; i<val.length; i++)
-	  addParameter(nm, val[i]);
-      }
   }
 
   void addParameter(String name, String value)
@@ -145,15 +136,46 @@ public class MultipartHttpParameters extends HttpParameters
       parameters.put(name, value);
   }
   
+  /** we compose what we read from the multipart with what we have in the query string.
+   * the assumption is that the multipart cannot change during execution, while the query string may change due to e.g. forwards
+   */
   public Object getParameter(String s)
   {
-    Object value= parameters.get(s);
-    
-    if(value==null)
-      return null;
-
-    //    request.setAttribute(s, value);
-    return value;
+    return compose(parameters.get(s), super.getParameter(s));
   }
+  
+  /** compose two objects, if both are vectors, unite them */
+  static Object compose(Object a1, Object a2)
+  {
+    if(a1==null)
+      return a2;
+    if(a2==null)
+      return a1;
 
+    if(a1 instanceof Vector)
+      if(a2 instanceof Vector)
+	{
+  	  for(Enumeration e= ((Vector)a2).elements(); e.hasMoreElements(); )
+	    ((Vector)a1).addElement(e.nextElement());
+	  return a1;
+	}
+      else
+	{
+	  ((Vector)a1).addElement(a2);
+	  return a1; 
+	}
+    else
+      if(a2 instanceof Vector)
+	{
+	  ((Vector)a2).addElement(a1);
+	  return a2; 
+	}
+      else
+	{
+	  Vector v= new Vector();
+	  v.addElement(a1);
+	  v.addElement(a2);
+	  return v;
+	}
+  }
 }
