@@ -27,7 +27,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
   };
   
   static final Map tagClasses= new HashMap();
-    //   checkInclude(td.name);
 
   static
   {
@@ -93,8 +92,9 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       parents.add(t);
     }
 
-    public void end(String tagName)
+    public void end(JspParseData.TagData td)
     {
+      String tagName= td.name;
       if(!tagName.startsWith(makumbaPrefix))
 	return;
       tagName= tagName.substring(makumbaPrefix.length()+1);
@@ -102,8 +102,20 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       if(!(t instanceof MakumbaBodyTag))
 	throw new RuntimeException("body tag expected");
       if(!t.getClass().equals(tagClasses.get(tagName)))
-	throw new RuntimeException("tag closed incorrectly: "+tagName+" should have got "+
-				   tagClasses.get(tagName)+" and it was "+t.getClass());
+	  {
+	      StringBuffer sb= new StringBuffer();
+	      sb.append("Body tag nesting error:\ntag \"").
+		  append(t.tagData.name).
+		  append("\" at line ");
+	      JspParseData.tagDataLine(t.tagData, sb);
+
+	      sb.append("\n\ngot incorrect closing \"").append(td.name).
+		  append("\" at line ");
+	      JspParseData.tagDataLine(td, sb);
+	      
+	      throw new org.makumba.ProgrammerError(sb.toString());
+	  }
+
       parents.remove(parents.size()-1);
     }
   }
@@ -133,6 +145,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     MakumbaTag t=null;
     try{ t= (MakumbaTag)c.newInstance();}catch(Throwable thr){ thr.printStackTrace(); }
     td.tagObject=t;
+    t.tagData=td;
     t.template=true;
     ((ParseStatus)status).addTag(t, td);
   }
@@ -143,9 +156,9 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     ((ParseStatus)status).start((MakumbaTag)td.tagObject);
   }
 
-  public void endTag(String tagName, Object status)
+  public void endTag(JspParseData.TagData td, Object status)
   {
-    ((ParseStatus)status).end(tagName);
+    ((ParseStatus)status).end(td);
   }
 
   public Object makeStatusHolder(Object pageContext)
