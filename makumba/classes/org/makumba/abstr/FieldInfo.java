@@ -36,10 +36,9 @@ import org.makumba.InvalidValueException;
  */
 public class FieldInfo implements java.io.Serializable, FieldDefinition
 {
-  RecordInfo ri;
+  DataDefinition ri;
 
-  public RecordInfo getRecordInfo() { return ri; }
-  public DataDefinition getDataDefinition() { return getRecordInfo(); }
+  public DataDefinition getDataDefinition() { return ri; }
 
   public static FieldInfo getFieldInfo(String name, Object type, 
 				       boolean typeSearch)
@@ -53,10 +52,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     
     t= name+"="+t;
 
-    return new RecordParser().parse(t).getField(name);
+    return (FieldInfo)new RecordParser().parse(t).getFieldDefinition(name);
   }
   
-  public FieldInfo(RecordInfo ri, String name) { this.ri=ri; this.name= name; }
+  public FieldInfo(DataDefinition ri, String name) { this.ri=ri; this.name= name; }
 
   public FieldInfo(FieldInfo fi) 
   { 
@@ -85,7 +84,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     if(type.equals("ptrIndex"))
       {
 	type="ptr";
-	extra1=fi.getRecordInfo();
+	extra1=fi.getDataDefinition();
       }
   }
   
@@ -269,22 +268,15 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     * @return the foreign table indicated in set or ptr definition
     * @exception ClassCastException for other types
   */
-  public RecordInfo getForeignTable() { return ((ptrIndexHandler)defa()).getForeignTable(); } 
-
-  public DataDefinition getRelationType(){return getForeignTable(); }
+   public DataDefinition getRelationType(){return ((ptrIndexHandler)defa()).getForeignTable(); }
 
   /** works only for ptrOne, set, setComplex,  setcharEnum and setintEnum types
     * @return the subtable indicated in set or ptr definition
     * @exception ClassCastException for other types
   */
-  public RecordInfo getSubtable() { return ((subtableHandler)defa()).getSubtable(); } 
+  public DataDefinition getSubtype() { return ((subtableHandler)defa()).getSubtable();}
 
-  public DataDefinition getSubtype() { return getSubtable();}
-
-  public DataDefinition getReferredType(){ return getPointedType(); }
-
-  public DataDefinition getPointedType()
-  { return ((ptrIndexHandler)defa()).getPointedType(); }
+  public DataDefinition getReferredType(){ return ((ptrIndexHandler)defa()).getPointedType(); }
 
   /** works only for ptr and set types
     * @return title field of the record in the foreign table, as indicated in this field definition or in the respective foreign table record definition

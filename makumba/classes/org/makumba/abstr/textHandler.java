@@ -41,7 +41,7 @@ public class textHandler extends FieldHandler implements stringType
   { 
     try{
       return Text.getText(value);
-    }catch(InvalidValueException e) {throw new InvalidValueException(getFieldInfo(), e.getMessage()); }
+    }catch(InvalidValueException e) {throw new InvalidValueException(getFieldDefinition(), e.getMessage()); }
     
   }
 }

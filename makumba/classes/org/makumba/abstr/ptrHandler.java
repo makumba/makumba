@@ -30,7 +30,7 @@ public class ptrHandler extends ptrRelHandler
     { 
         if(hasTitleFieldIndicated())
             return (String)fi.extra2; 
-        return getForeignTable().getTitleField();
+        return getForeignTable().getTitleFieldName();
     }
 
     public boolean hasTitleFieldIndicated()

@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
+import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 
@@ -36,16 +37,16 @@ public class ptrIndexHandler extends FieldHandler
     if(value instanceof Pointer)
       {
 	if(!((Pointer)value).getType().equals(getPointedType().getName()))
-	  throw new InvalidValueException(getFieldInfo(), getPointedType().getName(), (Pointer)value);
+	  throw new InvalidValueException(getFieldDefinition(), getPointedType().getName(), (Pointer)value);
 	return value;
       }
     if(value instanceof String)
       return new Pointer(getPointedType().getName(), (String)value);
-    throw new InvalidValueException(getFieldInfo(), "Only java.lang.String and org.makumba.Pointer are assignable to makumba pointers, given value <"+value+"> is of type "+value.getClass().getName());
+    throw new InvalidValueException(getFieldDefinition(), "Only java.lang.String and org.makumba.Pointer are assignable to makumba pointers, given value <"+value+"> is of type "+value.getClass().getName());
   }
 
-  public RecordInfo getPointedType() 
+  public DataDefinition getPointedType() 
   {
-    return getFieldInfo().getRecordInfo(); 
+    return getFieldDefinition().getDataDefinition(); 
   }
 }

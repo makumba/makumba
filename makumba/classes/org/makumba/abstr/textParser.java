@@ -27,8 +27,8 @@ public class textParser extends FieldParser
 {
   public FieldParser parse(FieldCursor fc) throws org.makumba.DataDefinitionParseError
   {
-    if(fi.unique)
-	throw fc.fail("text fields can't be declared unique");
+    if(fi.isUnique())
+        throw fc.fail("text fields can't be declared unique");
     return this;
   }
   

@@ -33,10 +33,10 @@ public abstract class setEnumParser extends subtableParser
     subtable.mainPtr=addPtrHere();
     subtable.addField1(_enum);
     subtable.title=_enum.name;
-    subtable.foreignPtr=_enum.name;
+    subtable.setField=_enum.name;
     parseEnum(fc);
     fi.description= fc.lookupDescription(); 
-    _enum.description=fi.description==null?_enum.name:fi.description;
+    _enum.description=fi.getDescription()==null?_enum.name:fi.getDescription();
     return this;
   }
   

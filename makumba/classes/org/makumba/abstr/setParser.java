@@ -23,16 +23,18 @@
 
 package org.makumba.abstr;
 
+import org.makumba.DataDefinition;
+
 public class setParser extends subtableParser
 {
-  RecordInfo settbl;
+  DataDefinition settbl;
 
   public FieldParser parse(FieldCursor fc) 
   {
-    if(fi.unique)
+    if(fi.isUnique())
         throw fc.fail("sets can't be declared unique");
 
-    RecordInfo ori= fc.lookupTableSpecifier();
+    DataDefinition ori= fc.lookupTableSpecifier();
     if(ori==null)
     {
       String word= fc.lookupTypeLiteral();
@@ -67,7 +69,7 @@ public class setParser extends subtableParser
 
     settbl= ori;
 
-    subtable.foreignPtr=addPtr(settbl.getBaseName(), ori);
+    subtable.setField=addPtr(((RecordInfo)settbl).getBaseName(), ori);
 
     return this;
   }
@@ -98,7 +100,7 @@ public class setParser extends subtableParser
   {
     if(fi.extra2==null)
     {
-        fi.extra2=subtable.title= settbl.getTitleField();
+        fi.extra2=subtable.title= settbl.getTitleFieldName();
     }
   }
 
