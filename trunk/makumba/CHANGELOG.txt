@@ -1,3 +1,6 @@
+0.5.5.23; 28 feb 2003 stefan
+fix for bug 291 in LineViewer
+
 0.5.5.22; 27 feb 2003 cristi
 fixes for bugs 
 - 300: bad treatment of root data in the case of multiple roots)
