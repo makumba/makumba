@@ -27,16 +27,18 @@ import javax.servlet.jsp.tagext.*;
 
 public class LogoutTag extends TagSupport
 {
-  String attr;
+  String attr=null;
 
   public void setActor(String a){ attr=a; }
   
   public int doStartTag() throws JspException 
   {
-    if(pageContext.getAttribute(attr, PageContext.SESSION_SCOPE)!=null)
-      {
-	pageContext.removeAttribute(attr, PageContext.SESSION_SCOPE);
-      }
+    if(attr == null) {
+        pageContext.getSession().invalidate();
+
+    } else if(pageContext.getAttribute(attr, PageContext.SESSION_SCOPE)!=null) {
+        pageContext.removeAttribute(attr, PageContext.SESSION_SCOPE);
+    }
     return EVAL_BODY_INCLUDE;
   }
 }
