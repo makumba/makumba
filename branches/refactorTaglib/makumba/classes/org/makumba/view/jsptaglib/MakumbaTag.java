@@ -63,6 +63,9 @@ public abstract class MakumbaTag extends TagSupport
   /** Tag parameters */
   Hashtable params= new Hashtable(7);
 
+  /** Extra html formatting, copied verbatim to the output */
+  StringBuffer extraFormatting= new StringBuffer();
+
   static final String DB_ATTR="org.makumba.database";
 
 
@@ -75,6 +78,7 @@ public abstract class MakumbaTag extends TagSupport
     tagKey=null;
     pageCache=null;
     params.clear(); 
+    extraFormatting= new StringBuffer();
   } 
 
   PageContext getPageContext(){ return pageContext; }
@@ -218,56 +222,21 @@ public abstract class MakumbaTag extends TagSupport
        (HttpServletResponse)pageContext.getResponse());
   }
 
-  //--------- various properties
-  public void setUrlEncode(String s) 
-  { 
-    params.put("urlEncode", s); 
-  }
+  //--------- html formatting, copied verbatim to the output
+  public void setId(String s) { extraFormatting.append(" id=\"").append(s).append("\" "); }
+  public void setStyle(String s) { extraFormatting.append(" style=\"").append(s).append("\" "); }
 
-  public void setHtml(String s) 
-  { 
-    params.put("html", s); 
-  }
-  
-  public void setFormat(String s) 
-  { 
-    params.put("format", s); 
-  }
-
-  public void setType(String s) 
-  { 
-    params.put("type", s); 
-  }
-
-  public void setSize(String s) 
-  { 
-    params.put("size", s); 
-  }
-
-  public void setMaxlength(String s) 
-  { 
-    params.put("maxlength", s); 
-  }
-
-  public void setRows(String s) 
-  { 
-    params.put("rows", s); 
-  }
-
-  public void setCols(String s) 
-  { 
-    params.put("cols", s); 
-  }
-
-  public void setLineSeparator(String s) 
-  { 
-    params.put("lineSeparator", s); 
-  }
-
-  public void setLongLineLength(String s) 
-  { 
-    params.put("longLineLength", s); 
-  }
+  //--------- formatting properties, determine formatter behavior
+  public void setUrlEncode(String s) { params.put("urlEncode", s); }
+  public void setHtml(String s) { params.put("html", s); }
+  public void setFormat(String s){ params.put("format", s); }
+  public void setType(String s) { params.put("type", s); }
+  public void setSize(String s) { params.put("size", s); }
+  public void setMaxlength(String s) { params.put("maxlength", s); }
+  public void setRows(String s) { params.put("rows", s); }
+  public void setCols(String s) { params.put("cols", s); }
+  public void setLineSeparator(String s) { params.put("lineSeparator", s); }
+  public void setLongLineLength(String s) {  params.put("longLineLength", s); }
   
   public String toString(){ return getClass().getName()+" "+params; }
 }
