@@ -78,7 +78,7 @@ public class charManager extends FieldManager
         else
             s="";
         //should width be computed by getDBType() instead?
-        return getDBName()+" "+getDBType(d)+"("+getWidth()+")"+s+(isUnique()?" UNIQUE":"");
+        return getDBName()+" "+getDBType(d)+"("+getWidth()+")"+s;
         //return super.inCreate(d)+"("+getWidth()+")"+s;
     }
 
