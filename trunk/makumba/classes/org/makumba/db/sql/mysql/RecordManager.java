@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.makumba.MakumbaSystem;
+import org.makumba.db.sql.SQLDBConnection;
 
 public class RecordManager extends org.makumba.db.sql.RecordManager
 {
@@ -47,5 +48,36 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
     st.close();
     super.alter(dbc, cs);
   }
+
+  /** mysql needs to have it adjustable, depending on version (see bug 512) */
+  protected String getTableMissingStateName(SQLDBConnection dbc)
+  {
+   try{
+     //version:"3.0.5-gamma" has major:3, minor:0
+     String version=dbc.getMetaData().getDriverVersion();
+     int major=dbc.getMetaData().getDriverMajorVersion();
+     int minor=dbc.getMetaData().getDriverMinorVersion();
+     String mark=""+major+"."+minor+".";
+     String minorStr=version.substring(version.indexOf(mark)+mark.length());
+     minorStr=minorStr.substring(0,minorStr.indexOf('-'));
+     int minor2=Integer.parseInt(minorStr);
+
+     if(major>3 || major==3 && minor>0 || major==3 && minor==0 && minor2>=8)
+       return "tableMissing";
+     else
+       return "tableMissing-before308";
+   }catch(Exception e) {
+	e.printStackTrace();
+	return "tableMissing";
+   }
+  }
+
+  /** a table creation, from this table's RecordInfo */
+  protected void create(SQLDBConnection dbc, String tblname, boolean really)
+       throws SQLException
+  {
+    super.create( dbc, tblname, really);
+  }
+
 
 }
