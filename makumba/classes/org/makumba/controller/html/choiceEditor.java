@@ -109,13 +109,14 @@ public abstract class choiceEditor extends FieldEditor
 	try{ // set deprecated values if data type supports it
 	   Vector dv=getDeprecatedValues();
 //	   System.out.println("setting deprecated:"+dv);
-	   String[] dvs=new String[dv.size()];
-	   for(int i=0; i< dv.size(); i++)
-	   {
-	     dvs[i]=(String)dv.elementAt(i).toString();
-	   }
-           hcw.setDeprecatedValues(dvs);
-	}catch(ClassCastException cce) {}
+           if (dv != null && !dv.isEmpty() ) {
+  	       String[] dvs=new String[dv.size()];
+	       for(int i=0; i< dv.size(); i++) {
+	          dvs[i]=(String)dv.elementAt(i).toString();
+	       }
+               hcw.setDeprecatedValues(dvs);
+           }
+	} catch(ClassCastException cce) { }
 
         for(int i=0; i < value.size(); i++ ) {
 	    valueFormattedList[i] = formatOptionValue( value.get(i) );
