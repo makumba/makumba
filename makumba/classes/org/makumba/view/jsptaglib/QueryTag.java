@@ -93,7 +93,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
       tagKey.setAt(queryProps[i], i);
 
     // if we have a parent, we append the key of the parent
-    tagKey.setAt(getParentListKey(), queryProps.length);
+    tagKey.setAt(getParentListKey(null), queryProps.length);
     tagKey.setAt(id, queryProps.length+1);
   }
 
@@ -105,7 +105,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     // we make ComposedQuery cache our query
-    pageCache.cacheQuery(tagKey, queryProps, getParentListKey());
+    pageCache.cacheQuery(tagKey, queryProps, getParentListKey(pageCache));
 
     if(countVar!=null)
       pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"), this);

@@ -36,7 +36,7 @@ public class NewTag extends FormTagBase
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
   {
-    Object keyComponents[]= {type.getName(), handler,  getParentListKey(), getClass()};
+    Object keyComponents[]= {type.getName(), handler,  getParentListKey(null), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
   

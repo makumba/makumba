@@ -35,7 +35,7 @@ public class AddTag extends FormTagBase
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
   {
-    Object[] keyComponents= {baseObject, field, handler, getParentListKey(), getClass()};
+    Object[] keyComponents= {baseObject, field, handler, getParentListKey(null), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
 
@@ -48,7 +48,7 @@ public class AddTag extends FormTagBase
 
   public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey()).getLabelType(baseObject):
+    DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject):
       ((NewTag)findParentForm()).type;
     return base.getFieldDefinition(field).getSubtype();
   }

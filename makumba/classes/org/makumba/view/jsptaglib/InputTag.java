@@ -84,7 +84,7 @@ public class InputTag extends MakumbaTag
 
   public MultipleKey getParentListKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    MultipleKey k= super.getParentListKey();
+    MultipleKey k= super.getParentListKey(pageCache);
     if(k!=null)
       return k;
     /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
