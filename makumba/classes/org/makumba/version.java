@@ -25,8 +25,11 @@ package org.makumba;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class version {
-   public static String getVersion()
+/** Computes the version from cvs Name tag. */
+class version {
+
+   /** @see MakumbaSystem.getVersion() */
+   static String getVersion()
    {
 	String version=("$Name$".substring(7,"$Name$".length()-2));
 	if(version.indexOf('-')>0) version=version.substring(version.indexOf('-')+1);

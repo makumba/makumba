@@ -30,7 +30,7 @@ public class MakumbaVersionTag extends TagSupport
   public int doStartTag() throws JspException 
   {
     try{
-	  pageContext.getOut().print(org.makumba.version.getVersion());
+	  pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
     }catch(java.io.IOException e) { throw new JspException(e.getMessage()); }
     return EVAL_BODY_INCLUDE;
   }
