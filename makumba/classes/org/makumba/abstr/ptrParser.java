@@ -38,8 +38,6 @@ public class ptrParser extends FieldParser
 
     if(o!=null)
       return this;
-
-    fi.unique=true;
     return setType("ptrOne", fc);
   }
   

@@ -44,33 +44,6 @@ public class SQLDBConnection extends DBConnection
   private void makeConnection() throws SQLException
   {
     conn=DriverManager.getConnection(((org.makumba.db.sql.Database)db).url, ((org.makumba.db.sql.Database)db).connectionConfig);
-    if(conn.getMetaData().supportsTransactions())
-      conn.setAutoCommit(false);
-    if(conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
-      conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
-  }
-
-  public void commit()
-  {
-    try{
-      conn.commit();
-    }catch(SQLException e) 
-      {
-	Database.logException(e, this);
-	throw new DBError(e);
-      } 
-  }
-
-
-  public void rollback()
-  {
-    try{
-      conn.rollback();
-    }catch(SQLException e) 
-      {
-	Database.logException(e, this);
-	throw new DBError(e);
-      } 
   }
 
   private Connection getConnection() throws SQLException

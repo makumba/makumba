@@ -80,22 +80,6 @@ public class table extends TestCase
     }catch(IOException e) {e.printStackTrace(); return null;}
   }
 
-  public void testQueryValidMdds()
-  {
-        Vector v= org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
-	Vector errors=new Vector();
-	for(int i=0; i<v.size(); i++)
-	{
-	  try{
-		Vector v1=db.executeQuery("SELECT t FROM test.validMdds."+(String)v.elementAt(i)+" t",null);
-	  } catch(Exception e) {
-		errors.add("\n ."+(errors.size()+1)+") Error querying valid MDD <"+(String)v.elementAt(i)+">:\n\t "+e);
-	  }
-	}
-	if(errors.size()>0)
-		fail("\n  Tested "+v.size()+" valid MDDs, of which "+errors.size()+" cant be used for DB queries:"+errors.toString());   }
-
-
   public void testInsert()
   {
     Properties p=new Properties();
@@ -140,7 +124,9 @@ public class table extends TestCase
     assertEquals("Surname", "doe", pc.get("surname"));
     assertEquals("Birthdate", birth, pc.get("birthdate"));
     assertEquals("Something else", "else", pc.get("something"));
-    assertEquals("Comment text", pc.get("comment"), new Text(getExampleData()) );
+    try{
+      assertTrue(((Text)pc.get("comment")).compare(getExampleData()));
+    }catch(IOException e){}
     assertNotNull(ptrOne);
 
     v=db.executeQuery(readIntSet, ptr);

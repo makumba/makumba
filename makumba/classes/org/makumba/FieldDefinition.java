@@ -75,9 +75,6 @@ public interface FieldDefinition
   /** tells wether this field is not null */
   public boolean isNotNull();
 
-  /** tells wether this field is unique */
-  public boolean isUnique();
-
   /** returns the default value of this field */
   public Object getDefaultValue();
 
@@ -128,12 +125,6 @@ public interface FieldDefinition
    * @exception ClassCastException for other types
   */
   public String getNameAt(int i);
-
-  /** Get the name for a certain value of the enumerated field
-   * Works only for intEnum 
-   * @exception ClassCastException for other types
-  */
-  public String getNameFor(int i);
   
   /** Get the integer at a certain position in an enumerated type. 
    * Works only for intEnum types 
