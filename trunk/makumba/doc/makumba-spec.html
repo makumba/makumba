@@ -13,8 +13,9 @@
 </script>
 <h1>Makumba Specification</h1>
 
-<p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
-<br><span class=futfeat>INTENDED features are presented in red</span>
+<p><span class=oldfeat>OLDSTYLE features that are still accepted are presented 
+  in darkblue</span> <br>
+  <span class=futfeat>(INTENDED features are presented in red with parentheses)</span>
 <div class="note">This is a note for users</div>
 <div class="internals note">This is a note about makumba internals for makumba developers</div>
 
@@ -164,13 +165,11 @@ the same in:
 </ul>
 </div>
 
-<p class="futfeat">Automatic labeling:
-The field description is used at interface levels to present that field.
-It is typically shown at the left of, or somewhere near to, the input control
-(text box, radio button, chooser, etc) that allows for data input in that
-field. If a field description is not present, its field name stands for
-its description by default.
-</p>
+<p class="futfeat">(Automatic labeling: The field description might be used at 
+  interface levels to present that field. It is typically shown at the left of, 
+  or somewhere near to, the input control (text box, radio button, chooser, etc) 
+  that allows for data input in that field. If a field description is not present, 
+  its field name stands for its description by default.) </p>
 <p>
 <b>Comment lines</b> can be inserted in the data definition files as
 follows:
@@ -210,8 +209,9 @@ name. If another field by that name is defined by the makumba user, this field w
  -->
 </li>
 
-<li>Last modification time. Updates whenever the object is changed
-<div class="note">Can be accessed as TS_modify.</div>
+  <li>Last modification time. Updates whenever the object is changed. The initicial 
+    value is TS_create. 
+    <div class="note">Can be accessed as TS_modify.</div>
 <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
       "This might change, but there are specific methods to retrieve it"
  -->
@@ -246,12 +246,10 @@ This will help the presentation layer to present a suitable input control
 "intEnum" internally</div>
 
 <h4><a name="char">char</a></h4>
-<p>
-A char field contains a number of characters. Maximal width must be specified and is limited
-to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max)
-can be indicated.</span> Both must be positive integers.
-
-For example:
+<p> A char field contains a number of characters. Maximal width must be specified 
+  and is limited to 255. <span class="futfeat">(Optionally a minimal number of 
+  characters (lesser than max) can be indicated).</span> Both must be positive 
+  integers. For example: 
 <pre class="example">
 #<i>fieldName</i>= char[<i>maxWidth</i>]
 name= unique char[80]; Username
@@ -442,9 +440,8 @@ insert/update without them being initialized</li>
 <b>unique</b> fields have a unique value in the respective object, for
 the respective type</li>
 
-<li class="futfeat">
-<b>encrypted</b> fields are encrypted when written to the database and
-decrypted when read</li>
+  <li class="futfeat"> <b>(encrypted</b> fields are encrypted when written to 
+    the database and decrypted when read)</li>
 
 </ul>
 <div class="note futfeat">
@@ -510,13 +507,12 @@ table)
 
 
 <h2><a NAME="OQL">OQL language</a></h2>
-<p>
-The database can be interrogated using the following language ( [] means
-optional, {} means any number of repetitions). OQL is similar to SQL, a
-specification can be found at <a href="http://www.odmg.org">http://www.odmg.org</a>
-. Makumba recognizes a subset of OQL at the moment, which it translates
-to the <a href="SQL-drivers.html">host SQL</a> when necessary.
-</p>
+<p> The database can be interrogated using the following language ( [] means optional, 
+  {} means any number of repetitions). OQL is similar to SQL, a specification 
+  can be found at <a href="http://www.odmg.org">http://www.odmg.org</a> (or check 
+  this <a href="www.cis.upenn.edu/%7Ecis550/oql.pdf">PDF</a>). Makumba recognizes 
+  a subset of OQL at the moment, which it translates to the <a href="SQL-drivers.html">host 
+  SQL</a> when necessary. </p>
 
 <pre class="example">
 <b>SELECT</b> expression [[<b>AS</b>] label] {, expression [[<b>AS</b>] label] }
@@ -571,11 +567,10 @@ object.
 </p>
 
 <h3><a NAME="javahand">Java handler classes</a></h3>
-<p>
-Java handler classes are classes that implement the
-"business logic" of the organisation. Every makumba page will look for
-a handler, and will call its methods when needed.
-</p>
+<p> Java handler classes are classes that implement the "business logic" of the 
+  organisation. Every makumba page will look for a handler, and will call its 
+  methods when needed. Check also the &lt;mak:newForm> to know <a href="#handler_methods">which 
+  methods are called</a>.</p>
 
 
 <h4>Handler Discovery</h4>
@@ -732,18 +727,13 @@ and the engine will act accordingly (i.e. ask for authentication).
 forms. See <a href="#forms">makumba forms and actions</a> below. <p>
 </li>
 
-<li class="futfeat">
-later: return query parts, as methods.
-e.g. <code>&lt;mak:value expr="lbg.$title()" /></code>
-will generate a call to method <code>BestInternalLbgTitle(lbg)</code>
-which can return an OQL expression "<code>concat(lbg.id, \"-\" lbg.name)</code>"
-(such methods can be put directly in the Makumba data definitions)
-
-For now, OQL only accepts count() and sum(),
-but that can be easily fixed, till then, the method can be replaced by
-hand:
-<code>&lt;mak:value expr="lbg.id"/>-&lt;mak:value expr="lbg.name"/></code>
-</li>
+  <li class="futfeat">( later: return query parts, as methods. e.g. <code>&lt;mak:value 
+    expr="lbg.$title()" /></code> will generate a call to method <code>BestInternalLbgTitle(lbg)</code> 
+    which can return an OQL expression "<code>concat(lbg.id, \"-\" lbg.name)</code>" 
+    (such methods can be put directly in the Makumba data definitions) For now, 
+    OQL only accepts count() and sum(), but that can be easily fixed, till then, 
+    the method can be replaced by hand: <code>&lt;mak:value expr="lbg.id"/>-&lt;mak:value 
+    expr="lbg.name"/></code> )</li>
 </ol>
 
 <h4>Handler Initialization</h4>
@@ -772,20 +762,15 @@ called. The missing attribute is the principal that needs to log in.
 <a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>
 is usually thrown.
 
-<p>
-The principal can have more members (e.g. group,
-Lbg, Company representatives). E.g. the findCompany() method will check
-to see if the authentication (email_address and password) corresponds to
-any company representative of that company. If yes, it will return that
-company.
-</p>
+<p> The principal (the person who logs in) can have more members (e.g. group, 
+  Lbg, Company representatives). E.g. the findCompany() method will check to see 
+  if the authentication (email_address and password) corresponds to any company 
+  representative of that company. If yes, it will return that company. </p>
 
 <p class="futfeat">Login can be done in 2 ways:</p>
 <ol>
-<li class="futfeat">
-Http basic authentication login: will set the attributes $username,
-$password
-</li>
+  <li class="futfeat"> (Http basic authentication login: will set the attributes 
+    $username, $password )</li>
 
 <li>
 cookie login: done in a page called <code>login.jsp</code>,
@@ -830,30 +815,24 @@ You can remove (cancel-out, logout) multiple attributes from the session by usin
 
 <p>
 
-<div class="futfeat">
-Later on, logout request might be done in the business logic,
-with a method <code>deleteAttributes(param)</code> that can accept
-either a String (with optional '*') or a String[].
-
-<p>Later: to accomodate servers that don't do
-session tracking, login can be done by a query condition rather than by
-doing a query (once per session) to find an attribute. This way, it won't
-need to do a query (to check the authentication) at every access, but that
-condition will make sure that authentication is done.
-
-<p><tt>&lt;mak:object from="best.Student stud" where
-="stud.$login()"> ...&lt;/mak:object></tt>
-<br>then methodBestSudentLogin("stud") will return
+<div class="futfeat"> (Later on, logout request might be done in the business 
+  logic, with a method <code>deleteAttributes(param)</code> that can accept either 
+  a String (with optional '*') or a String[]. ) 
+  <p>(Later: to accomodate servers that don't do session tracking, login can be 
+    done by a query condition rather than by doing a query (once per session) 
+    to find an attribute. This way, it won't need to do a query (to check the 
+    authentication) at every access, but that condition will make sure that authentication 
+    is done. )
+  <p><tt>(&lt;mak:object from="best.Student stud" where ="stud.$login()"> ...&lt;/mak:object></tt> 
+    <br>
+    then methodBestSudentLogin("stud") will return
 "stud.auth.email=$username AND stud.auth.password=$password"
-<br>This can be used for http authentication
-with no session tracking.
-
-<p>Later: if an attribute has multiple values,
-a <code>choose{AttributeName}.jsp</code> page is shown. For example, a super user (for
-that area) can choose to act as any student, Lbg, or company... A student
-member of more local Vivaldi teams can choose to act for any of the viv
-teams, etc.
-</div>
+<br>
+    This can be used for http authentication with no session tracking. ) 
+  <p>(Later: if an attribute has multiple values, a <code>choose{AttributeName}.jsp</code> 
+    page is shown. For example, a super user (for that area) can choose to act 
+    as any student, Lbg, or company... A student member of more local Vivaldi 
+    teams can choose to act for any of the viv teams, etc. )</div>
 
 
 <h2><a NAME="PresentationSummary">Presentation and internal representation summary</a></h2>
@@ -875,7 +854,8 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>type (table)</td>
 
-<td><span class="futfeat">list of records, with add, delete, edit controls; titles emphasized</span></td>
+    <td><span class="futfeat">(list of records, with add, delete, edit controls; 
+      titles emphasized)</span></td>
 
 <td>table</td>
 
@@ -885,7 +865,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>record</td>
 
-<td><span class="futfeat">all fields, as shown below</span></td>
+    <td><span class="futfeat">(all fields, as shown below)</span></td>
 
 <td>record</td>
 
@@ -895,7 +875,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <tr>
 <td>int&nbsp;</td>
 
-<td>text field <span class="futfeat">or slider</span></td>
+    <td>text field <span class="futfeat">(or slider)</span></td>
 
 <td ROWSPAN="2">integer</td>
 
@@ -959,7 +939,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <td>xx=ptr
 <br>xx->...</td>
 
-<td><span class="futfeat">the record, if any</span></td>
+    <td><span class="futfeat">(the record, if any)</span></td>
 
 <td>preferably a long (foreign index)
 <br>+ table</td>
@@ -999,7 +979,7 @@ language</a> described below. Orientative SQL and Java types are presented.
 <td>xx=set
 <br>xx-> ...</td>
 
-<td><span class="futfeat">like a table, under current record</span></td>
+    <td><span class="futfeat">(like a table, under current record)</span></td>
 
 <td>table with ptrRel to the parent table, and the rest of the fields</td>
 
@@ -1246,7 +1226,7 @@ the WHERE section from the parent's query, is added to this in the resulting que
 </tr>
 
 <tr>
-<td><tt><span class=futfeat>having</span></tt></td>
+    <td><tt><span class=futfeat>(having)</span></tt></td>
 
 <td><span class=futfeat><a href="#OQL">OQL HAVING</a>&nbsp; section</span></td>
 
@@ -1268,9 +1248,10 @@ the WHERE section from the parent's query, is added to this in the resulting que
 iteration.
 </td>
 
-<td>Fixed. A new Java variable is created, so no other variable by the same name can exist
-in the Java scope at that point in the JSP.
-<span class="oldfeat">Prior to version 0.5.6, counting iterations using simple Java counting might lead correct result.</span></td>
+    <td>Fixed. A new Java variable is created, so no other variable by the same 
+      name can exist in the Java scope at that point in the JSP. <span class="oldfeat">Prior 
+      to version 0.5.6, counting iterations using simple Java counting might not 
+      lead to a correct result.</span></td>
 </tr>
 
 <tr>
@@ -1362,17 +1343,15 @@ into multiple OQL parameters. For example:
 </pre>
 
 <p>
-<div class=futfeat>
-For view-level attributes such as lbg_order
-above, the value range can be defined by : <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name,
-id" default="name"/></code>
-<p>Later: Maybe the page might want to set attributes.
-Something like :
-<br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:setAttr name="lbg" from="best.internal.Lbg lbg" where ... scope="session" /></code>
-<br>Then the attribute could be used as <code>$lbg</code>
-in the rest of the page/session/application... Con: such stuff is normally
-done by the Java code.
-</p>
+<div class=futfeat> (For view-level attributes such as lbg_order above, the value 
+  range can be defined by : <br>
+  &nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name, 
+  id" default="name"/></code> )
+  <p>(Later: Maybe the page might want to set attributes. Something like : <br>
+    &nbsp;&nbsp;&nbsp;<code>&lt;mak:setAttr name="lbg" from="best.internal.Lbg lbg" where ... scope="session" /></code>
+<br>
+    Then the attribute could be used as <code>$lbg</code> in the rest of the page/session/application... 
+    Con: such stuff is normally done by the Java code. )</p>
 </div>
 
 
@@ -1606,8 +1585,9 @@ Example :
 <tr>
 <td><tt>test</tt></td>
 
-<td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression.
-It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
+<td><p><a href="#OQL">OQL SELECT</a>&nbsp; projection expression. It must be a 
+        test, resulting in a 'boolean' in SQL : 0 or 1. </p>
+      <p>for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=</p></td>
 
 <td>Fixed, Mandatory.
     <br><i>(in first implementation, this was called <code>expr</code>,
@@ -1739,8 +1719,8 @@ e.g. StudentHandler will never have a on_newLibraryBook() method).
 If the handler class wishes to allow the action, it can define an empty
 handler method.
 
-<p class="futfeat">Later, new and edit forms that have no body, will build default forms.
-</p>
+<p class="futfeat">(Later, new and edit forms that have no body, will build default 
+  forms. )</p>
 
 
 
@@ -1789,7 +1769,7 @@ Example (personNew.jsp):
 </tr>
 
 <tr>
-<td><tt><span class="futfeat">handler</span></tt></td>
+    <td><tt><span class="futfeat">(handler)</span></tt></td>
 
 <td><span class="futfeat">the Java class.method that handles the response</span></td>
 
@@ -1879,9 +1859,8 @@ Careful with (escaping) <a href="#tagparameters">quotes</a>.
 </table>
 
 
-<p>
-At form response, makumba (controller) invokes the following methods:
-
+<p> <a name="handler_methods"></a>At form response, makumba (controller) invokes 
+  the following methods: 
 <ol>
 <li>
 <p>By defining <code>on_new*</code>, the handler class gets the opportunity
@@ -2017,7 +1996,7 @@ Example:
 </tr>
 
 <tr>
-<td class="futfeat"><tt>handler</tt></td>
+    <td class="futfeat"><tt>(handler)</tt></td>
 
 <td class="futfeat">the Java class.method that handles the response</td>
 
@@ -2129,7 +2108,7 @@ Example:
 </tr>
 
 <tr>
-<td class="futfeat"><tt>handler</tt></td>
+    <td class="futfeat"><tt>(handler)</tt></td>
 
 <td class="futfeat">the Java class.method that handles the response</td>
 
@@ -2468,7 +2447,7 @@ Defaults to makumba width of the <code>char[]</code></td>
 
 
 <tr class="futfeat">
-<td><tt>elementSeparatorList</tt></td>
+    <td><tt>(elementSeparatorList)</tt></td>
 
 <td>The list of strings that separates the different options. Not active by default.
 The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any character
@@ -2631,7 +2610,7 @@ Example:
 </tr>
 
 <tr>
-<td class="futfeat"><tt>handler</tt></td>
+    <td class="futfeat"><tt>(handler)</tt></td>
 
 <td class="futfeat">the Java class.method that handles the response</td>
 
@@ -2722,11 +2701,10 @@ Similarly, request-scope attribute <code>makumba.successfulResponse</code> is se
 </pre>
 
 
-<p class="futfeat">
-A body-tag style (<code>&lt;mak:response>...&lt;/mak:response></code>) will be added later,
-to display different messages for different circumstances (errors). It will also be possible
-to get hold of the actual exception object.
-</p>
+<p class="futfeat"> (A body-tag style (<code>&lt;mak:response>...&lt;/mak:response></code>) 
+  will be added later, to display different messages for different circumstances 
+  (errors). It will also be possible to get hold of the actual exception object. 
+  ) </p>
 
 
 
