@@ -177,11 +177,14 @@
                    clasUrl="";
                    if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) )
 		   {
-			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
-                   		clasUrl=clasUrl.concat("",clas,".java");
-			else
-				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
                         cvsLink="";
+			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
+			{
+				clasUrl=clasUrl.concat("",clas,".java");
+				cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/",clasUrl,"?content-type=text/plain'>SOURCE</a> in ");
+			} else {
+				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
+			}
                         cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba/classes/",clasUrl,"'>CVS</a>");
 		   	document.write(cvsLink);
 		   } //else document.write('(no cvs)');
