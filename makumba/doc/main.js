@@ -6,26 +6,27 @@ function makeNavBar(pathToBase)
 
 	document.write('<div class="navbar">');
 	//document.write(bDir);
-
+	
 	document.write('<a href="'+bDir+'index.html"><img src="'+bDir+'makumba-logo-small.gif" border="0"></a><br>');
-	document.write('<a href="'+bDir+'whitepaper.html">Whitepaper</a><br>');
-	document.write('<a href="'+bDir+'makumba-spec.html">Specification</a><br>');
-	document.write('<a href="'+bDir+'makumba-example.html">Example</a><br>');
-	document.write('<a href="'+bDir+'Makumba-reference.pdf">Reference PDF</a><br>');
-	document.write('<a href="'+bDir+'api/org/makumba/package-summary.html">API docs</a><a href="api/org/makumba/package-summary.html"></a><br>');
-	document.write('<a href="'+bDir+'download.html">Download</a><br>');
-	document.write('<a href="'+bDir+'faq.html">FAQ</a><br>');
-	document.write('<a href="'+bDir+'SQL-drivers.html">DB config</a><br>');
 
-	document.write('<br>&nbsp;<br>');
+        document.write('<br>');
+	document.write('<a href="'+bDir+'index.html"><b>Home</b></a><br>');	
+
+	document.write('<br>');
+	document.write('<a href="'+bDir+'documentation.html"><b>Documentation</b></a><br>');
+	document.write('- <a href="'+bDir+'makumba-spec.html">Specification</a><br>');
+	document.write('- <a href="'+bDir+'makumba-example.html">Example</a><br>');
+	document.write('- <a href="'+bDir+'api/">API docs</a><br>');
+	document.write('- <a href="'+bDir+'faq.html">FAQ</a><br>');
+	
+	document.write('<br>');
+	document.write('<a href="'+bDir+'download.html"><b>Download</b></a><br>');
 
 	//document.write('<img src="'+bDir+'gears.gif" align="right">');
+	document.write('<br>');
 	document.write('<a href="http://bugzilla.makumba.org/query.cgi?product=Makumba">Bugzilla</a><br>');
-	document.write('<a href="'+bDir+'tasks.html">Tasks</a><br>');
-	document.write('<a href="'+bDir+'makumba.html">Design Issues</a><br>');
-	document.write('<a href="'+bDir+'hacking/index.html">Developer doc</a><br>');
+	document.write('<br>');
 	document.write('<a href="http://cvs.makumba.org/">CVS repository</a><br>');
-
 
 	document.write('</div>');
 }

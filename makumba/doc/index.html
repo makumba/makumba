@@ -20,37 +20,54 @@
 that helps you to rapidly develop web applications that keep their data in a database   (i.e. data driven web
 applications). It is implemented in Java and offers a Java API and a JSP
 tag library to the web app developer. The technology   has been in use since
-late 2001, and is being further developed continuously,   based on users'
+late 2001, and is being further developed, based on users'
 experience and requests.
-<br>&nbsp;
-<center><table BORDER="0" CELLSPACING="0" CELLPADDING="5" WIDTH="90%" BGCOLOR="#e0ffe0" >
+</p>
+<p>
+<b>Makumba</b> is open source and the product of the volunteer work 
+of individuals who have a background in the IT Committee of BEST. Everyone is 
+welcome to use and contribute to Makumba.
+</p>
+
+<table BORDER="0" CELLSPACING="0" CELLPADDING="5" WIDTH="90%" BGCOLOR="#e0ffe0" align=center>
 <tr>
-<td>First you <b>describe the data</b> in a text file (complex applications
-have of course more types of data, with pointers from one to the other).
-The text file (called <a href="makumba-spec.html#Data_Description">data
-definition</a>) contains lines like:
+<td>
+<div align=left><big><b>Description of Makumba around a short example</b></big></div>
+<p>
+First you <b>describe the data</b> in a text file, called 
+<a href="makumba-spec.html#Data_Description">data
+definition</a>. It contains lines like:
+</p>
 
 <pre class="example">
 name= char[30] ;Name
 dob= date      ;Date of birth
 </pre>
 
-<p>Say you call the above record a "Person". Makumba
-can use this information in many ways. It can
-<b>generate SQL</b> statements that create the needed tables,
-do read/write/search operations in a <a href="SQL-drivers.html">database</a>
+<p>
+Say you call the above record a "Person". Makumba
+can use this information to perform the right action when 
+manipulating the database or generating HTML output.
+Of course, complex applications have more types of data, with pointers from one to the other.
+</p>
+<p>Makumba can <b>generate SQL</b> statements that create the needed tables and
+do read/write operations in a <a href="SQL-drivers.html">database</a>
 of your choice. It currently supports MySQL, Informix, DB2, PostgreSQL and ODBC but many
-other database engines can be easily suported if needed. What's more, you can copy data from one
+other database engines can be easily supported if needed. 
+What's more, you can copy data from one
 database to another (this is very important in BEST, we port data a lot,
 we develop on Windows with ODBC or MySQL and run on Linux with Postgres,
 etc).
-<p>At the interface level, Makumba can <b>generate html
-              </b>for inserting, editing, viewing and deleting data from the
-  database. You don't have to care about details of HTML forms, parsing
-  the CGI arguments, composing SQL statements etc. A lot is done for you.<br>
 </p>
-<p>For instance, this will show a selected person. You mix HTML
-  and Makumba jsp tags to get the desired view</p>
+
+<p>At the interface level, Makumba can <b>generate html</b>
+for inserting, editing, viewing and deleting data from the
+database. You don't have to care about details of HTML forms, parsing
+the CGI arguments, composing SQL statements etc. 
+All this routine work is done for you, but you can freely build upon it.<br>
+</p>
+<p>For instance, following code will show a selected person. You mix HTML
+  and Makumba jsp tags to get the desired view.</p>
 
 <pre class="example">
 &lt;mak:object from="general.Person p" where="<i>uniqueCondition</i>"&gt;
@@ -83,14 +100,15 @@ API</a> for e.g. database handling, is available.</p>
 You can see more in a slightly more detailed <a href="makumba-example.html">example</a>.
 </td>
 </tr>
-</table></center>
+</table>
 
  <p>So more or less this is it. Lotus Notes does the same but we found
   it impossible to use it because of visual programming (rather than plain
  text files) and other problems. Other tools (say MS Access) have similar
 problems, plus we don't want to be dependent on one technology. We want to
 work with plain text files because it's easy to cooperate at a distance using
-them. We want everything to be simple for the web app developer.&nbsp;</p>
+them. We want everything to be simple for the web app developer.
+That's why all routine actions are handled by Makumba.</p>
 
 <div class="note">These webpages might be a bit out-of-date,
 as most our efforts are going to using, developing and designing future enhancements
