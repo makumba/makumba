@@ -56,9 +56,10 @@ public class ControllerFilter implements Filter
 		       FilterChain chain)
         throws ServletException, java.io.IOException
   {
+    org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
     boolean filter= shouldFilter((HttpServletRequest)req);
     requestThreadLocal.set(req);
-
+    
     DbConnectionProvider prov= RequestAttributes.getConnectionProvider((HttpServletRequest)req);
 
     if(filter){
@@ -140,6 +141,9 @@ public class ControllerFilter implements Filter
 	// tomcat will deal with it
 	catch(ServletException se){ se.printStackTrace(); throw new MakumbaError(se); }
 	catch(java.io.IOException ioe){ ioe.printStackTrace(); throw new MakumbaError(ioe); }
+	finally {
+	  org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
+	}
       }
     setWasException(req);
     req.setAttribute("org.makumba.exceptionTreated", "yes");
