@@ -22,100 +22,40 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import javax.servlet.jsp.tagext.*;
-import javax.servlet.jsp.*;
-import javax.servlet.http.*;
-import org.makumba.*;
+import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.JspException;
 import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.util.JspParseData;
+import java.util.HashMap;
 
-/** this class provides utility methods for all makumba tags */
-public abstract class MakumbaTag extends TagSupport implements TagStrategy
+
+/** this class provides utility methods for all makumba tags 
+ * exception handling
+ * parameter storage
+ * database name setting/getting
+ * cleanup
+ * links to the JspParseData$TagData, representing the tag as parsed
+ */
+public abstract class MakumbaTag extends TagSupport 
 {
-  static final String ROOT_DATA_NAME="makumba.root.data";
+  // set by the tag parser at analysis time. 
+  // this is not yet guaranteed to be set at runtime!
+  JspParseData.TagData tagData;
 
-  TagStrategy strategy;
+  HashMap params= new HashMap(7);
+  static final String DB_ATTR="org.makumba.database";
+
+  public void cleanState()
+  { 
+    if(findAncestorWithClass(this, MakumbaTag.class)==null)
+      pageContext.removeAttribute(DB_ATTR);
+    tagData=null;
+    params.clear(); 
+  } 
 
   public PageContext getPageContext() {return pageContext; }
 
-  protected RootData created;
-  protected RootData pushed;
-
-  /** identifies the closest parent of the class desired by getParentClass() */
-  public void setParent(Tag t)
-  { 
-    super.setParent(t); 
-    if(getMakumbaParent()==null)
-      {
-	// there can be more than one root tag in a tag structure. only the 
-	// "rootest" should create root data
-	pushed=getRootData();
-	
-	pageContext.setAttribute(ROOT_DATA_NAME, created= new RootData(this, pageContext), PageContext.PAGE_SCOPE);
-	canBeRoot();
-	getRootData().buffer=makeBuffer();
-      }
-  }
-
-  /** make common data for all queries to be stored in the root data */
-  public Object makeBuffer() { return null; }
-
-  /** return true if this tag can be root tag, else throw an exception */
-  protected abstract boolean canBeRoot();
-
-  /** what kind of makumba tag should the parent tag be? */
-  protected abstract Class getParentClass();
-
-  /** get the makumba parent, of the desired class */
-  protected MakumbaTag getMakumbaParent() 
-  { return (MakumbaTag)findAncestorWithClass(this, getParentClass()); }
-
-  static public RootData getRootData(PageContext pc)
-  {
-    return (RootData)pc.getAttribute(ROOT_DATA_NAME, PageContext.PAGE_SCOPE);
-  }
-
-  /** get the root data */
-  protected RootData getRootData() 
-  { 
-    return getRootData(pageContext);
-  }
-
-  /** make a strategy, returns this object by default */
-  public TagStrategy makeNonRootStrategy(Object key) { return this; }
-
-  /** factory method, make a root strategy if this tag is root */
-  protected RootTagStrategy makeRootStrategy(Object key) { throw new MakumbaError("must be redefined"); }
-
-  public TagStrategy makeStrategy(Object key)
-  {
-    if(getMakumbaParent()==null)
-      return makeRootStrategy(key);
-    else
-      return makeNonRootStrategy(key);
-  }
-
-  /** return a key for registration in root. If null is returned, registration in root is not made */
-  public Object getRootRegistrationKey() throws LogicException { return null; }
-
-  /** return a key for registration in root. If null is returned, registration in root is not made */
-  public Object getRegistrationKey() throws LogicException { return null; }
-
-  /** get the closest enclosing query, or null if nothing */
-  public QueryStrategy getEnclosingQuery()
-  {
-    QueryTag qt= (QueryTag)findAncestorWithClass(this, QueryTag.class);
-    if(qt==null)
-      return null;
-    return ((QueryTagStrategy)qt.strategy).getQueryStrategy();
-  }
-
-  /** only works for tags that have query parents */
-  public QueryStrategy getParentQueryStrategy() 
-  {
-    return ((QueryTagStrategy)getMakumbaParent().strategy).getQueryStrategy();
-  }
-
+  // this looks reductible to PageContext.getAttributes(getPageContext())
   public PageAttributes getAttributes()
   {
     try{
@@ -123,80 +63,77 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
     }catch(Throwable e){ throw new MakumbaError("should not have error here "+e); } 
   }
 
-  /** find the strategy, then delegate it to execute the preamble */
+  // we put this as static, as we may have to export it to packages like org.makumba.controller.jsp
+  public static MakumbaJspAnalyzer.PageCache getPageCache(PageContext pc)
+  {
+    MakumbaJspAnalyzer.PageCache pageCache= (Map)pc.getAttribute("makumba.parse.cache");
+    if(pageCache==null)
+      {
+	JspParseData jpd= JspParseData.getParseData
+	  (
+	   pageContext.getServletConfig().getServletContext().getRealPath("/"),
+	   TomcatJsp.getJspURI((HttpServletRequest)pageContext.getRequest()),
+	   MakumbaJspAnalyzer.singleton
+	    ); 
+	Object result=jpd.getAnalysisResult(pageContext);
+	if(result instanceof MakumbaError)
+	  throw (MakumbaError)result;
+	
+	pc.setAttribute("makumba.parse.cache", 
+			pageCache=(MakumbaJspAnalyzer.PageCache)result);
+      }
+    return pageCache;
+  }
+
+  publi int doMakumbaStartTag() throws LogicException
+  {
+    return SKIP_BODY;
+  }
+
+  /** exception handling */
   public int doStartTag() throws JspException
   {
+    // need to check if this is still needed, it was here only if the tag was root...
+    if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
+      setWasException();
+    if(wasException())
+      return SKIP_PAGE;
     try{
-      Object key=null;
-      if(getMakumbaParent()==null)
-	key= getRootRegistrationKey();
-      else
-	key= getRegistrationKey();
-    
-      if(key==null)
-	strategy=makeStrategy(null);
-      else
-	getRootData().setStrategy(key, this);
-      strategy.setPage(pageContext);
-      return strategy.doStart();
+      return doMakumbaStartTag();
     }
-    catch(NewProjectionException e){ throw e; }
     catch(Throwable t){ treatException(t); return SKIP_BODY; }
+  }
+
+  publi int doMakumbaEndTag() throws LogicException
+  {
+    return EVAL_PAGE;
   }
 
   /** delegate the strategy to end */
   public int doEndTag() throws JspException
   {
-    try{
-      if(wasException())
-	return SKIP_PAGE;
-      return strategy.doEnd();
-    }    finally
-      {
-	if(created!=null)
-	  {
-	    getRootData().close();
-	    if(pushed!=null)
-	      pageContext.setAttribute(ROOT_DATA_NAME, pushed, PageContext.PAGE_SCOPE);
-	    else
-	      pageContext.removeAttribute(ROOT_DATA_NAME, PageContext.PAGE_SCOPE);
-	  }
-      }
+    if(wasException())
+      return SKIP_PAGE;
+    return doMakumbaEndTag();
   }
 
-  public void release(){ if(strategy!=null)strategy.doRelease(); }
-
+  //------------------------------------------------
+  //-------------- database name 
   /** obtain the makumba database; this can be more complex (accept arguments, etc) */
   public String getDatabaseName() {return getDatabaseName(pageContext); }
 
-  public static String getDatabaseName(PageContext pc) 
+  public String getDatabaseName(PageContext pc) 
   {
-    if(getRootData(pc).db==null)
+    String db= (String)pc.getAttribute(DB_ATTR);
+    if(db==null)
       return MakumbaSystem.getDefaultDatabaseName();
-    return getRootData(pc).db;
+    return db;
   }
 
-
-  //--- dummy implementation of TagStrategy
-  public void init(MakumbaTag root, MakumbaTag tag, Object key){}
-  public void setBody(BodyContent bc){}
-  public void setPage(PageContext pc){}
-  public BodyContent getBody(){ return null; }
-  public void loop(){}
-  public int doStart() throws JspException, LogicException { return Tag.SKIP_BODY; }
-  public int doAfter() throws JspException { return Tag.SKIP_BODY; }
-  public int doEnd() throws JspException{ return Tag.EVAL_PAGE; } 
-  public void doRelease() {}
-  public void rootClose() {}
-
-  
-  // ------------------------   
-  // ------------  only root arguments
-  // ----------------------
   /** throw an exception if this is not the root tag */
   protected void onlyRootArgument(String s) 
   {
-    if(getMakumbaParent()!=null)
+    if(findAncestorWithClass(this, MakumbaTag.class)!=null)
       treatException(new MakumbaJspException
 		     (this, "the "+s+" argument cannot be set for non-root makumba tags"));   
   }
@@ -205,40 +142,23 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
   public void setDb(String db) throws JspException
   {
     onlyRootArgument("db");
-    getRootData().db=db;
+    pageContext.setAttribute(DB_ATTR, db);
   }
 
   public void setHeader(String s) throws JspException  
   { 
     onlyRootArgument("header"); 
-    getRootData().header=s;
+    params.put("header", s);
   }
 
   public void setFooter(String s) throws JspException  
   {
     onlyRootArgument("footer"); 
-    getRootData().footer=s;
+    params.put("footer", s);
   }
   
-  /** root tag properties */
-  static final String ROOT_PREFIX="makumba.root.prefix.";
-
-  public Object getRootProperty(String s)
-  {
-    return pageContext.getAttribute(ROOT_PREFIX+s, pageContext.REQUEST_SCOPE);
-  }
-
-
-  public void setRootProperty(String s, Object o)
-  {
-    pageContext.setAttribute(ROOT_PREFIX+s, o, pageContext.REQUEST_SCOPE);
-  }
-
-  public void removeRootProperty(String s)
-  {
-    pageContext.removeAttribute(ROOT_PREFIX+s, pageContext.REQUEST_SCOPE);
-  }
-
+  // --------------------------------
+  // -------------- exceptions
   public boolean wasException()
   {
     return org.makumba.controller.http.ControllerFilter.wasException
@@ -259,61 +179,56 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
        (HttpServletResponse)pageContext.getResponse());
   }
 
-  ///---------------- arguments for simple tags 
-  /** get the strategy of the root */
-  protected RootQueryBuffer getRootQueryBuffer() 
-  { 
-    return (RootQueryBuffer)getRootData().buffer;
-  }
-
-
+  //--------- various properties
   public void setUrlEncode(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("urlEncode", s); 
+    params.put("urlEncode", s); 
   }
 
   public void setHtml(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("html", s); 
+    params.put("html", s); 
   }
   
   public void setFormat(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("format", s); 
+    params.put("format", s); 
   }
 
   public void setType(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("type", s); 
+    params.put("type", s); 
   }
 
   public void setSize(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("size", s); 
+    params.put("size", s); 
   }
 
   public void setMaxlength(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("maxlength", s); 
+    params.put("maxlength", s); 
   }
 
   public void setRows(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("rows", s); 
+    params.put("rows", s); 
   }
 
   public void setCols(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("cols", s); 
+    params.put("cols", s); 
   }
 
   public void setLineSeparator(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("lineSeparator", s); 
+    params.put("lineSeparator", s); 
   }
 
   public void setLongLineLength(String s) 
   { 
-    getRootQueryBuffer().bufferParams.put("longLineLength", s); 
+    params.put("longLineLength", s); 
   }
+  
+  public String toString(){ return getClass().getName()+" "+params; }
 }

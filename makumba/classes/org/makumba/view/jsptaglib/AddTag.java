@@ -40,8 +40,6 @@ public class AddTag extends FormTagBase
 
   public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
   {
-    if(qs.foundMoreProjections())
-      return null;
     DataDefinition dd= ((FieldInfo)qs.query.getLabelType(baseObject).getFieldDefinition(field)).getPointedType();
     return deriveType(dd, fieldName);
   }

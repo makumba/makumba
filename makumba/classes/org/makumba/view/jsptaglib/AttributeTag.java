@@ -75,6 +75,8 @@ public class AttributeTag extends MakumbaTag
 
     return EVAL_BODY_INCLUDE;
   }
+
+  public String toString(){ return "attribute name="+name+" var="+var+" exceptionVar="+exceptionVar; }
 }
 
 
