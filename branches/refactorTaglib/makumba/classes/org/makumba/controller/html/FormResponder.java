@@ -80,6 +80,7 @@ public class FormResponder extends Responder
   StringBuffer extraFormatting;
 
   public void setAction(String action){ this.action=action; }
+  public String getAction(){ return action; }
   public void setMultipart(boolean multipart){ this.multipart=multipart; }
   public void setMethod(String method) {this.method=method; }
   public void setExtraFormatting(StringBuffer extraFormatting)
