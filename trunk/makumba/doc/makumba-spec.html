@@ -1,14 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="Author" content="makumba-dev group">
    <title>Makumba Specification</title>
-   <link rel="stylesheet" type="text/css" media="all" href="main.css" />
-   <script language="JavaScript" src="main.js"></script>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
 </head>
 <body>
-<script language="JavaScript">
+<script type="text/javascript">
    makeNavBar("");
 </script>
 <h1>Makumba Specification</h1>
@@ -19,7 +19,7 @@
 <h2><a name="content">Content</a></h2>
 
 <ul>
-  <li><b><a href="#Data_Description">Data Definition Language</a></b><i>... writing MDDs </i></li>
+  <li><b><a href="#Data_Description">Data Definition Language</a></b><i>... writing MDDs </i>
   <ul>
       <li> <a href="#Types, objects,databases">Types, objects, databases</a></li>
       <li> <a href="#Fields">Fields</a></li>
@@ -31,27 +31,30 @@
       <li> <a href="#ObjectTitle">Object title</a></li>
       <li> <a href="#Include">Include mechanism</a></li>
   </ul>
+  </li>
   <li><b><a href="#OQL">OQL language</a></b> <i>... getting data from the database </i> </li>
 
-  <li><b><a href="#Business">Business Logic</a></b> <i>... adding logic to basic operations </i></li>
+  <li><b><a href="#Business">Business Logic</a></b> <i>... adding logic to basic operations </i>
   <ul>
       <li><a href="#Attributes">Attributes</a></li>
       <li><a href="#javahand">Java Handler classes</a></li>
       <li><a href="#Login">Login , &lt;mak:login>, &lt;mak:logout/></a></li>
   </ul>
+  </li>
   <li><b><a href="#PresentationSummary">Presentation and internal representation principles</a></b></li>
 
-  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... adding data into your HTML </i> </li>
+  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... adding data into your HTML </i>
   <ul>
-      <li><a href="#maklist">&lt;mak:list></a></li>
+      <li><a href="#maklist">&lt;mak:list></a>
       <ul>
           <li><a href="#usageOFAttributes">Attributes and OQL in &lt;mak:list > and &lt;mak:object ></a></li>
           <li><a href="#makvalue">&lt;mak:value/></a></li>
           <li><a href="#makif">&lt;mak:if></a></li>
       </ul>
+      </li>
       <li><a href="#mak_attrib">&lt;mak:attribute></a></li>
       <li><a href="#makobject">&lt;mak:object></a></li>
-      <li><a href="#forms">Forms</a></li>
+      <li><a href="#forms">Forms</a>
       <ul>
           <li><a href="#maknew">&lt;mak:newForm></a></li>
           <li><a href="#makadd">&lt;mak:addForm></a></li>
@@ -59,9 +62,11 @@
           <li><a href="#makform">&lt;mak:form></a></li>
           <li><a href="#input">&lt;mak:input/></a></li>
       </ul>
+      </li>
       <li><a href="#delete">&lt;mak:deleteLink/></a></li>
       <li><a href="#response">&lt;mak:response/></a></li>
    </ul>
+   </li>
 </ul>
 
 
@@ -150,7 +155,7 @@ follows:
 <h3><a NAME="DefaultFields">Default fields</a></h3>
 Every type has some default fields, as follows:
 <ul>
-<li>Index field, consisting of two parts:</li>
+<li>Index field, consisting of two parts:
 
 <ul>
 <li>Database identifier. It is unique per database and all objects created
@@ -163,6 +168,7 @@ Index field.
 
 <br>The name of the index field is the same with the last part of the type
 name,&nbsp; therefore no other field with exactly such name can be defined.
+</li>
 
 <li>Object creation time
 <div class="note">Can be accessed as TS_create. This might change, but there
@@ -861,9 +867,9 @@ The corresponding <b>WEB-INF/makumba.tld</b> is already included in the distribu
 
 <p>A few resources on JSPs (don't be afraid to try first, read later) :
 <ul>
-<li><a href=http://java.sun.com/products/jsp/docs.html>JSP documentation by Sun</a>
-<li><a href=http://java.sun.com/webservices/tutorial.html>J2EE web services documentation by Sun</a>. This is an introduction on the various technologies that you might use when building webapplications using Java2 (J2EE).
-<li><a href=http://www.apl.jhu.edu/~hall/java/Servlet-Tutorial/Servlet-Tutorial-JSP.html>Gentle introduction to JSPs</a>
+<li><a href="http://java.sun.com/products/jsp/docs.html">JSP documentation by Sun</a>
+<li><a href="http://java.sun.com/webservices/tutorial.html">J2EE web services documentation by Sun</a>. This is an introduction on the various technologies that you might use when building webapplications using Java2 (J2EE).
+<li><a href="http://www.apl.jhu.edu/~hall/java/Servlet-Tutorial/Servlet-Tutorial-JSP.html">Gentle introduction to JSPs</a>
 </ul>
 
 
@@ -1003,7 +1009,6 @@ It is not included before the first or after the last
 </tr>
 
 </table>
-</blockquote>
 
 
 <h3>
@@ -1036,7 +1041,7 @@ the attribute name can be written as&nbsp; text1$attrName$text2, that is,
 with $ at both ends.
 <p><font color="#000000">The http parameters are automatically set as page
 attributes. Other atributes can be set by the Java code as session attributes
-(visible in all pages accessed in the session) using <code><a title="external link, servlet API" href=http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/jsp/PageContext.html>pageContext.setAttribute(name,
+(visible in all pages accessed in the session) using <code><a title="external link, servlet API" href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/jsp/PageContext.html">pageContext.setAttribute(name,
 value, scope)</a></code>.</font>
 <p><font color="#000000">The query generator is setting all the attributes
 that are logically possible as prepared query parameters. For example,
@@ -1046,8 +1051,8 @@ will not be accepted as query parameter, since it's a field name.</font>
 into multiple OQL parameters. For example:</font>
 <br><font color="#000000">&nbsp;&lt;mak:list from="best.internal.Lbg" where="lbg.status
 in set($status)" ></font>
-<span class=futfeat>
 <p>
+<div class=futfeat>
 For view-level attributes such as lbg_order
 above, the value range can be defined by : <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name,
 id" default="name"/></code>
@@ -1058,7 +1063,7 @@ Something like :
 in the rest of the page/session/application... Con: such stuff is normally
 done by the Java code.
 </p>
-</span>
+</div>
 
 <h4><a NAME="makvalue">&lt;mak:value&nbsp; .../></a></h4>
 Displays the value of an expression from within the query.
@@ -1070,7 +1075,7 @@ Example:
     &lt;mak:value expr="s.person.name"/>
     &lt;mak:value expr="s.person.surname"/>
     &lt;mak:value expr="s.person.birthdate" var="birth" printVar="printBirth"/>
-    &lt;% // we only print the birthdate if it's after some date</tt>
+    &lt;% // we only print the birthdate if it's after some date
          if (((java.util.Date)birth).after(new java.util.Date(1980, 0,1)) )
              out.print(printBirth);
     %>
@@ -1163,7 +1168,7 @@ Default is "false".</td>
 <td><tt>format</tt></td>
 
 <td>Format string to specify the formatting of a date value, according to
-<code><a title="external link, servlet API" href=http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html>java.text.SimpleDateFormat</a></code>
+<code><a title="external link, servlet API" href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a></code>
 </td>
 
 <td>Rtexpr. Only for date. Defaults to "dd MMMM yyyy"</td>
@@ -1173,7 +1178,7 @@ Default is "false".</td>
 <td><tt>lineSeparator</tt></td>
 
 <td>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre>...&lt;/pre>.
-Default is "&lt;p>". Note <a href=http://bugzilla.makumba.org/show_bug.cgi?id=38>bug 38</a></td>
+Default is "&lt;p>". Note <a href="http://bugzilla.makumba.org/show_bug.cgi?id=38">bug 38</a></td>
 
 <td>Rtexpr. Only for text.</td>
 </tr>
@@ -1211,7 +1216,7 @@ The final printed string, including the <code>ellipsis</code>, will not exceed <
 By default, this is calculated as <code><i>ellipsis</i>.length()</code>.
 But if <code>ellipsis</code> is e.g. HTML code, then that is not appropriate.
 <br><u>Example</u>, the ellipsis is an image, +- equivalent to (the width of) 5 characters.
-<br>&nbsp;&nbsp;<code>ellipsis="&lt;img src=icon.gif width=10 height=10>" ellipsisLength="5"
+<br>&nbsp;&nbsp;<code>ellipsis="&lt;img src=icon.gif width=10 height=10>" ellipsisLength="5"</code>
 
 </td>
 
@@ -1228,7 +1233,7 @@ is cut (cfr <code>maxLength</code>). Default is "false". <br>
 </td>
 
 <td>Rtexpr.
-Note: implementated by producing as output : <code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span> <code>
+Note: implementated by producing as output: <code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span> </code>
 </td>
 </tr>
 
@@ -1258,7 +1263,7 @@ Displays the body of the tag only if the OQL expression evaluates to true.
 Example :
 <pre class="example">
 &lt;mak:list from="best.Student s"
-	  where="s.person.birthdate <> nil" orderBy="s.name">
+	  where="s.person.birthdate &lt;> nil" orderBy="s.name">
    &lt;mak:value expr="s.person.name"/>
    &lt;mak:if test="s.person.hideAge = 0">
       was born on &lt;mak:value expr="s.person.birthdate" />
@@ -1286,7 +1291,7 @@ It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
 </tr>
 
 </table>
-</blockquote>
+
 
 <h4><a NAME="mak_attrib">&lt;mak:attribute&nbsp; .../></a></h4>
 <!-- when bug 64 is fixed uncomment this:
@@ -2084,7 +2089,7 @@ to get hold of the actual exception object.
 
 
 
-<script language="JavaScript">
+<script type="text/javascript">
    makeFooter("$Id$");
 </script>
 </body>
