@@ -54,9 +54,9 @@ public class RecordEditor extends RecordFormatter
 
 	org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(suffix)+"_type", fe.getFieldInfo());
 
-	// FIXME: semantics of EDIT might be wrong here
 	if(o!=null)
-	  data.put(fe.getInputName(suffix), o);
+	  // the data is written in the dictionary without the suffix
+	  data.put(fe.getInputName(""), o);
 	org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(suffix), o);
       }
     return data;

@@ -106,8 +106,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   }
 
   static final String[] dummyQuerySections= {null, null, null, null};
-  static final Object dummy=new Object();
  
+  /** cache a dummy query when there is no mak:list around us */
   public void cacheDummyQuery()
   {
     pageCache.cacheQuery(tagKey, dummyQuerySections, null);
@@ -122,13 +122,16 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     pageCache.valueComputers.put(tagKey, vc);
   }
 
-
+  FormTagBase findParentForm(){
+    return (FormTagBase)findAncestorWithClass(this, FormTagBase.class);
+  }
+  
   public void doEndAnalyze()
   {
     ComposedQuery dummy= (ComposedQuery)pageCache.queries.get(tagKey);
     if(dummy!=null)
       dummy.analyze();
-    if(formAction==null)
+    if(formAction==null && findParentForm()==null)
       throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
     if(baseObject==null)
       return;
@@ -149,6 +152,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       if (formAction  != null) responder.setAction(formAction); 
       if (formMethod  != null) responder.setMethod(formMethod); 
       if (formMessage != null) responder.setMessage(formMessage); 
+
+      if(findParentForm()!=null) 
+	responder.setParentResponder(findParentForm().responder);
   }
 
   public int doMakumbaStartTag() throws JspException, LogicException

@@ -108,7 +108,8 @@ public class FormResponder extends Responder
 	  .append(extraFormatting)
 	  .append(">");
       }
-    else
+    else 
+      if(storedSuffix.length()==0)
       {
 	sb.append("<form action=");
 	sb.append("\""+action+"\"");
@@ -129,15 +130,17 @@ public class FormResponder extends Responder
 	return;
       }
     if(basePointer!=null)
-      writeInput(sb, basePointerName, basePointer);
-    writeInput(sb, responderName, ""+getPrototype());
-    sb.append("</form>");
+      writeInput(sb, basePointerName, basePointer, storedSuffix);
+    writeInput(sb, responderName, ""+getPrototype()+storedSuffix, "");
+    if(storedSuffix.length()==0)
+      sb.append("</form>");
   }
   
-  void writeInput(StringBuffer sb, String name, String value)
+  void writeInput(StringBuffer sb, String name, String value, String suffix)
   {
     sb.append("<input type=\"hidden\" name=\"")
       .append(name)
+      .append(suffix)
       .append("\" value=\"")
       .append(value)
       .append("\">");
