@@ -1,3 +1,6 @@
+0.5.8.7; 18 jun 2003 fred
+fixed bug 465 (JSP parser should recognize and ignore JSP comments and Java scriplets)
+
 0.5.8.6; 8 jun 2003 cristi
 added page parsing, and page analysis (not yet static)
 removed training loops and lots of code that dealt with them. tr-loop structures are still in place, more refactoring is needed
