@@ -101,9 +101,22 @@ public abstract class choiceEditor extends FieldEditor
             Object val=getOptionValue(opt, i);
             values.add(formatOptionValue(opt, i, val));
             labels.add(formatOptionTitle(opt, i));
+//          System.out.println(formatOptionTitle(opt, i)+"="+formatOptionValue(opt, i, val));
         }
         hcw.setValues(values);
         hcw.setLabels(labels);
+
+	try{ // set deprecated values if data type supports it
+	   Vector dv=getDeprecatedValues();
+//	   System.out.println("setting deprecated:"+dv);
+	   String[] dvs=new String[dv.size()];
+	   for(int i=0; i< dv.size(); i++)
+	   {
+	     dvs[i]=(String)dv.elementAt(i).toString();
+	   }
+           hcw.setDeprecatedValues(dvs);
+	}catch(ClassCastException cce) {}
+
         for(int i=0; i < value.size(); i++ ) {
 	    valueFormattedList[i] = formatOptionValue( value.get(i) );
 	}
