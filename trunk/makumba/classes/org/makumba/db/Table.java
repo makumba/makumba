@@ -47,7 +47,6 @@ public abstract class Table extends RecordHandler
   public Table(){}
 
   org.makumba.db.Database db;
-  String fieldList; 
 
   /** What database does this table belong to */
   public org.makumba.db.Database getDatabase() { return db; }
@@ -81,15 +80,18 @@ public abstract class Table extends RecordHandler
   /** does the field exist in the database ? */
   public abstract boolean exists(String fieldName);
 
+  String selectAllWithDbsv; 
+  Object[] selectLimits= new Object[2];
+
   /** copies all records from the table1 to table2 */
   void copyFrom(DBConnection dest, Table source, DBConnection sourceDB) 
   {
-    String nm= getRecordInfo().getName();
+    final String nm= getRecordInfo().getName();
     if(!source.exists()|| nm.equals("org.makumba.db.Catalog"))
       // catalog is never copied
       return;
 
-    if(fieldList==null)
+    if(selectAllWithDbsv==null)
       {
         StringBuffer list=new StringBuffer();
 	String comma="";
@@ -98,11 +100,23 @@ public abstract class Table extends RecordHandler
 	  {
 	    list.append(comma);
 	    comma=", ";
-	    list.append(((FieldHandler)e.nextElement()).getName());
+	    String name=((FieldHandler)e.nextElement()).getName(); 
+	    list.append("t.").append(name).append(" AS ").append(name);
 	  }
+	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t>=$1 AND t<=$2";
+
+	final int dbsv=sourceDB.getHostDatabase().getDbsv();
+	selectLimits[0]=new Pointer(){
+	  public String getType(){ return nm; }
+	  public long longValue(){ return dbsv<<MASK_ORDER; }
+	};
+	selectLimits[1]=new Pointer(){
+	  public String getType(){ return nm; }
+	  public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
+	};
       }    
       
-    Enumeration e=sourceDB.executeQuery("SELECT "+fieldList+" FROM "+nm, null).elements();
+    Enumeration e=sourceDB.executeQuery(selectAllWithDbsv, selectLimits).elements();
     
     int n=0;
     MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying");
