@@ -35,7 +35,6 @@ import org.makumba.controller.jsp.PageAttributes;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.IterationTag;
 
-
 /** Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the environment can be passed as $attrName to the query 
  * 
  */
@@ -59,12 +58,16 @@ public class QueryTag extends MakumbaTag implements IterationTag
   { 
     onlyRootArgument("header"); 
     header=s;
+    org.makumba.MakumbaSystem.getMakumbaLogger("taglib").warning(
+	"Using DEPRECATED header=\""+header+"\". Use <jsp:include page=\""+header+"\" flush=\"false\"> just before object/list tag instead!");
   }
 
   public void setFooter(String s) throws JspException  
   {
     onlyRootArgument("footer"); 
     footer=s;
+    org.makumba.MakumbaSystem.getMakumbaLogger("taglib").warning(
+	"Using DEPRECATED footer=\""+footer+"\". Use <jsp:include page=\""+footer+"\" flush=\"false\"> just after object/list tag instead!");
   }
 
   // runtime stuff
