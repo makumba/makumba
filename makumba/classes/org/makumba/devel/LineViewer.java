@@ -178,7 +178,7 @@ public class LineViewer implements SourceViewer
 
   boolean isMakumbaTypeChar(char c)
   {
-    return c=='.' || Character.isJavaIdentifierPart(c) || c=='/';
+    return c=='.' || Character.isJavaIdentifierPart(c) || c=='/' || c=='-';
   }
 
   int position;
