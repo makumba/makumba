@@ -19,6 +19,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12; 27 aug 2004 cristi
+first version that only works with JSP 2.0
+implemented some makumba functions: mak:count(), mak:maxCount(), mak:lastCount()
+
 0.5.11.2; 15 aug 2004 cristi
 support for the standar servlet authentication mechanism (bug 663)
 the support is as follows: 
