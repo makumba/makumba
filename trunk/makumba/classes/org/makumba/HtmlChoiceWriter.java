@@ -3,6 +3,18 @@ import java.util.*;
 import org.makumba.HtmlUtils;
 
 
+/**
+ * HtmlChoiceWriter creates HTML statements for printing 
+ * choice inputs. It's capable of creating 
+ * dropdown and list selects, and radio buttons and checkboxes.
+ *
+ * <p>Note: this class is still work in progress, and its API is not 
+ *   to be considered 100% stable yet. 
+ * <p>FIXME : documentation needs improvement.
+ *
+ * @since  makumba-0.5.9.15
+ * @author Frederik Habils 
+ */
 public class HtmlChoiceWriter extends HtmlUtils {
 
   public static int NO_CONV   = 0;
@@ -66,6 +78,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
   public void setMultiple(boolean yn) { _ismultiple = yn; }
   /** Setter method, any string that contains 'multiple' will be regarded as 'true'. */
   public void setMultiple(String mult) { _ismultiple = (mult != null && mult.indexOf("multiple") >= 0) ; }
+
   public void setSize(int n) { if (n > 0) _size = n;  }
   public void setConvert2Html(int n) { _convert2Html = n; }
   
@@ -219,7 +232,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
   
   /**
    * Returns a select statement in HTML.
-   * @see #makeHtmlSelectStatement(String, List, List, String, String, String) 
+   * @see #makeHtmlSelectOne(String, List, List, String, String, int) 
    */
   public static String makeHtmlSelectOne(String name, 
                            String[] values, 
@@ -264,7 +277,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
    * @param size           Number of lines in the input box.
    * @param literalHtml    Extra HTML to be added literally to the SELECT tag. 
    * @param convert2Html  Configuration whether <code>values</code> and <code>labels</code> must be converted ('escaped') to HTML during the writing out. Default is "NO_CONV". Any input other than {TXT2HTML, NO_CONV} has unpredictable result.
-   * @see #makeHtmlSelectOne(String, List, List, String, String, String) 
+   * @see #makeHtmlSelectOne(String, List, List, String, String, int) 
    */
   public static String makeHtmlSelectMultiple(String name, 
                            String[] values, 
@@ -313,8 +326,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
    * @param elementSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
    * @param literalHtml    Extra HTML to be added literally to the SELECT tag.
    * @param convert2Html  Configuration whether <code>values</code> and <code>labels</code> must be converted ('escaped') to HTML during the writing out. Default is "NO_CONV". Any input other than {TXT2HTML, NO_CONV} has unpredictable result.
-   * @see #makeHtmlSelectStatement(String, String[], String[], String, String, String) 
-   * @see #makeHtmlRadioStatement(String, String[], String[], String, String, String, String, String)
+   * @see #makeHtmlSelectOne(String, String[], String[], String, String, int) 
+   * @see #makeHtmlRadioSelect(String, String[], String[], String, String, String, String, int)
    */
   public static String makeHtmlRadioSelect(String name, 
                            String[] values, 
@@ -342,8 +355,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
    * @param elementSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
    * @param literalHtml    Extra HTML to be added literally to the SELECT tag.
    * @param convert2Html   Configuration whether <code>values</code> and <code>labels</code> must be converted ('escaped') to HTML during the writing out. Default is "false". Any input other than {"true", "false", null} has unpredictable result.
-   * @see #makeHtmlSelectMultiple(String, String[], String[], String[], int, String, String) 
-   * @see #makeHtmlCheckboxSelect(String, String[], String[], String[], String, String, String, String)
+   * @see #makeHtmlSelectMultiple(String, String[], String[], String[], int, String, int) 
+   * @see #makeHtmlCheckboxSelect(String, String[], String[], String[], String, String, String, int)
    */
   public static String makeHtmlCheckboxSelect(String name, 
                            String[] values, 
@@ -407,7 +420,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
   
   /**
    * Returns a radio-input statement in HTML; shorthand for only one elementSeparator.
-   * @see #makeHtmlRadioStatement(String name, String[] values, String[] labels, String selectedValue, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, String convert2Html) 
+   * @see #makeHtmlRadioSelect(String name, String[] values, String[] labels, String selectedValue, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, int convert2Html) 
    */
   public static String makeHtmlRadioSelect(String name, 
                            String[] values, 
@@ -426,7 +439,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
   /**
    * Returns a checkbox-input statement in HTML; shorthand for only one elementSeparator.
-   * @see #makeHtmlCheckboxStatement(String name, String[] values, String[] labels, String[] selectedValues, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, String convert2Html)
+   * @see #makeHtmlCheckboxSelect(String name, String[] values, String[] labels, String[] selectedValues, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, int convert2Html)
    */
   public static String makeHtmlCheckboxSelect(String name, 
                            String[] values, 
