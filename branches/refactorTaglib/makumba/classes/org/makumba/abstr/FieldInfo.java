@@ -106,7 +106,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
 
   }
 
-  public boolean compatible(FieldInfo fi) { return defa().compatible(fi); }
+  public boolean compatible(FieldDefinition fi) { return defa().compatible((FieldInfo)fi); }
   public String toString(){ return defa().toString(); }
 
   String name;
@@ -268,6 +268,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   public RecordInfo getSubtable() { return ((subtableHandler)defa()).getSubtable(); } 
 
   public DataDefinition getSubtype() { return getSubtable();}
+
+  public DataDefinition getReferredType(){ return getPointedType(); }
 
   public DataDefinition getPointedType()
   { return ((ptrIndexHandler)defa()).getPointedType(); }
