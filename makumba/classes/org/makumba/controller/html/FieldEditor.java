@@ -40,6 +40,8 @@ public class FieldEditor extends FieldFormatter
 
   public void checkParam(String name, String val)
   {
+    if(name.equals(extraFormattingParam))
+      return;
     if(name.equals("type") && val.equals("hidden"))
       return;
     super.checkParam(name, val);
@@ -77,6 +79,13 @@ public class FieldEditor extends FieldFormatter
   public String getInputName(Dictionary formatParams){ return getInputName(getSuffix(formatParams)); }
 
   public String getInputName(String suffix){ return getExpr()+suffix; }
+
+  public static final String extraFormattingParam="makumba.extraFormatting";
+
+  public String getExtraFormatting(Dictionary formatParams)
+  {
+    return (String)formatParams.get(extraFormattingParam);
+  }
 
   public Object readFrom(org.makumba.controller.http.HttpParameters p, String suffix) 
   {
