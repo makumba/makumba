@@ -36,7 +36,9 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
 import org.makumba.util.ArgumentReplacer;
-
+import org.makumba.util.MultipleKey;
+import org.makumba.util.NamedResources;
+import org.makumba.util.NamedResourceFactory;
 
 /** An OQL query composed from various elements found in script pages. 
  * It can be enriched when a new element is found. 
@@ -45,6 +47,10 @@ import org.makumba.util.ArgumentReplacer;
  */
 public class ComposedQuery
 {
+  public static interface Evaluator{
+    String evaluate(String s);
+  }
+
   /** constructor */
   public ComposedQuery(String[] sections)
   {
@@ -66,6 +72,7 @@ public class ComposedQuery
   public static final int WHERE=1;
   public static final int GROUPBY=2;
   public static final int ORDERBY=3;
+  public static final int VARFROM=4;
 
   /** section texts, encoded with the standard indexes */
   String[] sections;
@@ -73,9 +80,6 @@ public class ComposedQuery
   /** derived section texts, made from the sections of this query and the sections of its
    * superqueries */
   String[] derivedSections;
-
-  /** the OQL query as computed from the derived sections */
-  String oqlQuery;
 
   String typeAnalyzerOQL;
   String fromAnalyzerOQL;
@@ -89,9 +93,6 @@ public class ComposedQuery
   /** the labels of the keyset */
   Vector keysetLabels;
   
-  /** the parametrizer of arguments */
-  MultipleAttributeParametrizer attrParam= null;
-
   /** a Vector containing and empty vector. Used for empty keysets */
   static Vector empty;
   static
@@ -105,9 +106,6 @@ public class ComposedQuery
 
   public DataDefinition getLabelType(String s)
   { return typeAnalyzerOQL==null?null:MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s); }
-
-  /** return the version, one version is added for each change */
-  public int getVersion(){ return projections.size(); }
 
   /** initialize the object, template method */
   public void init()
@@ -125,12 +123,6 @@ public class ComposedQuery
     keyset= new Vector();
     keysetLabels= new Vector();
   }
-
-  /** export the parent's keyset to the class clients. It is used to group the results of this query */
-  public Vector getPreviousKeyset() { return previousKeyset; }
-
-  /** returns a primary key for the result */
-  public Vector getKeyset() { return keyset; }
 
   /** add a subquery to this query. make it aware that it has subqueries at all. make it be able to announce its subqueries about changes (this will be needed when unique=true will be possible */
   protected void addSubquery(ComposedSubquery q)
@@ -168,25 +160,13 @@ public class ComposedQuery
       checkProjectionInteger((String)e.nextElement());
   }
 
-  /** return a clone of all the projections */
-  public Dictionary getProjections()
-  {
-    return (Dictionary)projectionExpr.clone();
-  }
-
-  /** get the index of the indicated projection */
-  public Integer getProjectionIndex(String expr)
-  {
-    return (Integer)projectionExpr.get(expr);
-  }
-
   public String getProjectionAt(int n)
   {
     return (String)projections.elementAt(n);
   }
   
   /** add a projection with the given expression */
-  protected Integer addProjection(String expr)
+  Integer addProjection(String expr)
   {
     Integer index=new Integer(projections.size());
     projections.addElement(expr);
@@ -197,18 +177,18 @@ public class ComposedQuery
   /** check if a projection exists, if not, add it. return its index */
   public Integer checkProjectionInteger(String expr)
   {
-    Integer index= getProjectionIndex(expr);
+    Integer index= (Integer)projectionExpr.get(expr);
     if(index==null)
       {
 	addProjection(expr);
-	// if UNIQUE is true, need to recompute the keyset and notify the subqueries to recompute their previous keyset 
+	// FIXME: if DISTINCT is true, need to recompute the keyset and notify the subqueries to recompute their previous keyset 
 	return null;
       }
     return index;
   }
 
   /** check if a projection exists, if not, add it. return its column name */
-  public String checkProjection(String expr)
+  String checkProjection(String expr)
   {
     Integer i= checkProjectionInteger(expr);
     if(i==null)
@@ -222,18 +202,12 @@ public class ComposedQuery
     return "col"+(n.intValue()+1);
   }
 
-  /** a change has come up, recompute the query */
-  protected synchronized void recomputeQuery() 
-  {
-    typeAnalyzerOQL= computeQuery(true);
-    oqlQuery=computeQuery();
-    attrParam=null;
-  }
-
-  /** check the orderBy or groupBy expressions to see if they are already selected, if not add a projections. Only group by and order by labels */
+  /** check the orderBy or groupBy expressions to see if they are already selected, if not add a projection. Only group by and order by labels */
   String checkExpr(String str)
   {
     if(str==null)
+      return null;
+    if(str.trim().length()==0)
       return null;
     //    if(projections.size()==1)
     // new Throwable().printStackTrace();
@@ -261,13 +235,7 @@ public class ComposedQuery
   }
   
   /** compute the query from its sections */
-  protected String computeQuery()
-  {
-    return computeQuery(false);
-  }
-
-  /** compute the query from its sections */
-  protected String computeQuery(boolean typeAnalysisOnly)
+  protected String computeQuery(String derivedSections[], boolean typeAnalysisOnly)
   {
     String groups= null;
     String orders= null;
@@ -295,6 +263,12 @@ public class ComposedQuery
       {
 	sb.append(" FROM ");
 	sb.append(o);
+
+	// there can be no VARFROM without FROM
+	// VARFROM is not part of type analysis 
+	// (i.e. projections don't know about it)
+	if(!typeAnalysisOnly && derivedSections.length==5 && derivedSections[VARFROM]!=null && derivedSections[VARFROM].trim().length()>0)
+	  sb.append(",").append(derivedSections[VARFROM]);
       }
     if(!typeAnalysisOnly)
       {
@@ -329,34 +303,41 @@ public class ComposedQuery
 
   // ------------
   /** execute the contained query in the given database */ 
-  public Grouper execute(org.makumba.Database db, Attributes a, int offset, int limit) 
+  public Grouper execute(org.makumba.Database db, Attributes a, Evaluator v, int offset, int limit) 
        throws LogicException
   {
-    prepare(a);
-    return new Grouper(getPreviousKeyset(), attrParam.execute(db, a, offset, limit).elements());
+    analyze();
+    String []vars= new String[5];
+    vars[0]=derivedSections[FROM];
+    for(int i=1; i<5; i++)
+      vars[i]=derivedSections[i]==null?null:v.evaluate(derivedSections[i]);
+    
+    return new Grouper
+      (previousKeyset, 
+       ((MultipleAttributeParametrizer)queries.getResource(new MultipleKey(vars)))
+	.execute(db, a, offset, limit).elements());
   }
   
+  NamedResources queries=new NamedResources("Composed queries", 
+					    new NamedResourceFactory(){
+    protected Object makeResource(Object nm, Object hashName) 
+      {
+	MultipleKey mk=(MultipleKey)nm;
+	String[] sections= new String[5];
+	for(int i=0; i<5; i++){
+	  if(mk.elementAt(i) instanceof String) // not "null key memeber"
+	    sections[i]= (String)mk.elementAt(i);
+	}
+	return new MultipleAttributeParametrizer(computeQuery(sections, false));
+     }
+  });
+
   public synchronized void analyze()
   {
     if(projections.isEmpty())
       prependFromToKeyset();
-    if(oqlQuery==null)
-      recomputeQuery();
-  }
-
-  /** prepare the query */
-  public synchronized void prepare(Attributes a)
-       throws LogicException
-  {
-    analyze();
-    if(attrParam==null)
-      attrParam=new MultipleAttributeParametrizer(getOQLQuery(), a);
-  }
-
-  /** return the OQL Query for debugging purposes*/
-  protected String getOQLQuery()
-  {
-    return oqlQuery;
+    if(typeAnalyzerOQL==null)
+      typeAnalyzerOQL= computeQuery(derivedSections, true);
   }
 
   /** check if an expression is valid, nullable or set  */
