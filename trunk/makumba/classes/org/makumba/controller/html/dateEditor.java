@@ -30,8 +30,8 @@ public class dateEditor extends FieldEditor
 {
   static String[] _params= { "format" };
   static String[][] _paramValues= { null };
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+  public String[] getAcceptedParams(){ return _params; }
+  public String[][] getAcceptedValue(){ return _paramValues; }
 
   static final String recognized="dMyHms";
   static int[] lowLimits= {1, 0, -1, 0, 0, 0}; 

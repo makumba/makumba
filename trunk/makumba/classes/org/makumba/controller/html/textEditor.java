@@ -30,8 +30,8 @@ public class textEditor extends FieldEditor
 {
   static String[] _params= { "default", "empty", "type", "rows", "cols" };
   static String[][] _paramValues= { null, null, {"textarea", "file" }, null, null };
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+  public String[] getAcceptedParams(){ return _params; }
+  public String[][] getAcceptedValue(){ return _paramValues; }
 
   public String getParams(Dictionary formatParams){ 
     return getIntParamString(formatParams, "rows") + getIntParamString(formatParams, "cols");
