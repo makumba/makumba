@@ -50,6 +50,12 @@ public class NullableValueStrategy extends QueryStrategy
     return super.obtainData1(v);
   }
 
+  public void doAnalyze() 
+  {
+    super.doAnalyze();
+    getQuery().checkProjectionInteger(getValueTag().expr);
+  }
+
   public int doStart() throws JspException 
   {
     bodyContent=getValueTag().getParentQueryStrategy().bodyContent;

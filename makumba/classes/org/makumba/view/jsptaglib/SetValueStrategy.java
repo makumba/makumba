@@ -49,6 +49,13 @@ public class SetValueStrategy extends QueryStrategy
   }
   int done;
 
+  public void doAnalyze() 
+  { 
+    super.doAnalyze();
+    getQuery().checkProjectionInteger(label);
+    getQuery().checkProjectionInteger(label+"."+name);
+  }
+
   public int doStart() throws JspException 
   {
     String     var= getValueTag().var;
