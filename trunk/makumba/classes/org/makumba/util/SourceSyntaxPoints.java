@@ -288,7 +288,14 @@ public class SourceSyntaxPoints
   /** Is file changed on disk since it was last analysed. */
   boolean unchanged()
   {
-    return file.lastModified()==lastChanged;
+    if(file.lastModified()!=lastChanged)
+      return false;
+    for(Iterator i=fileBeginnings.iterator(); i.hasNext(); ){
+      SourceSyntaxPoints ss= (SourceSyntaxPoints)i.next();
+      if(ss!=this && !ss.unchanged())
+	return false;
+    }
+    return true;
   }
 
   /** Return the content of the JSP file in a string. */
