@@ -39,10 +39,10 @@ import java.util.Vector;
 public class ValueComputer
 {
   /** Determine if 'analyzed' is a queryMak:value or a nonQueryMak:value */
-  public static ValueComputer getValueComputer(MakumbaTag analyzed, String expr)
+  public static ValueComputer getValueComputerAtAnalysis(MakumbaTag analyzed, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
     expr=expr.trim();
-    Object check= analyzed.pageCache.getQuery(analyzed.getParentListKey())
+    Object check= pageCache.getQuery(analyzed.getParentListKey())
       .checkExprSetOrNullable(expr);
 
     FieldDefinition set=null;
@@ -55,11 +55,11 @@ public class ValueComputer
       set=(FieldDefinition)check;
 
     if(nullableExpr==null && set==null)
-      return new ValueComputer(analyzed, expr);
+      return new ValueComputer(analyzed, expr, pageCache);
 
     if(set==null)
-      return new NullableValueComputer(analyzed, nullableExpr, expr);
-    return new SetValueComputer(analyzed, set, expr);
+      return new NullableValueComputer(analyzed, nullableExpr, expr, pageCache);
+    return new SetValueComputer(analyzed, set, expr, pageCache);
   }
 
   /** the key of the parentList */
@@ -77,11 +77,11 @@ public class ValueComputer
   ValueComputer(){}
 
   /** a nonQueryMak:value value computer */
-  ValueComputer(MakumbaTag analyzed, String expr)
+  ValueComputer(MakumbaTag analyzed, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
     parentKey= analyzed.getParentListKey();
     this.expr=expr;
-    analyzed.pageCache.getQuery(parentKey).checkProjectionInteger(expr);
+    pageCache.getQuery(parentKey).checkProjectionInteger(expr);
   }
 
   /** The key of the query in which this value is a projection. Return parentKey */
@@ -89,9 +89,9 @@ public class ValueComputer
 
   /** Compute the queryProjection index in the currentListData, and the 
     queryProjection type*/
-  public void doEndAnalyze(MakumbaTag analyzed)
+  public void doEndAnalyze(MakumbaTag analyzed, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    ComposedQuery q= analyzed.pageCache.getQuery(getQueryKey());
+    ComposedQuery q= pageCache.getQuery(getQueryKey());
     projectionIndex= q.checkProjectionInteger(expr).intValue();
 
     if(type==null) // if type is not set in the constructor
@@ -106,12 +106,12 @@ public class ValueComputer
   }
 
   /** Format the value of the queryProjection from the currentListData of the enclosing query. Set the var and the printVar values*/  
-  public void print(ValueTag running) throws JspException, LogicException
+  public void print(ValueTag running, MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException
   {
     Object o= getValue(running);
     String s=null;
     if(running.printVar!=null || running.var==null){
-      s=((RecordViewer)running.pageCache.formatters.get(getQueryKey()))
+      s=((RecordViewer)pageCache.formatters.get(getQueryKey()))
 	.format(projectionIndex, o, running.params);
     }
 
@@ -134,18 +134,18 @@ abstract class QueryValueComputer extends ValueComputer
   MultipleKey queryKey;
   
   /** make a key that adds the given keyDifference to the tagKey of the parentList, and associate with it a subquery of the parentQuery made from the given queryProps */
-  public void makeQuery(MakumbaTag analyzed,
+  public void makeQueryAtAnalysis(MakumbaTag analyzed,
 			String keyDifference, 
 			String[] queryProps, 
-			String expr)
-			
+			String expr,
+			MakumbaJspAnalyzer.PageCache pageCache)
   {
     this.expr=expr;
     parentKey=analyzed.getParentListKey();
 
     queryKey= new MultipleKey(parentKey, keyDifference);
 
-    analyzed.pageCache.cacheQuery(queryKey, queryProps, parentKey)
+    pageCache.cacheQuery(queryKey, queryProps, parentKey)
       .checkProjectionInteger(expr);
   }
   
@@ -153,15 +153,15 @@ abstract class QueryValueComputer extends ValueComputer
   MultipleKey getQueryKey(){ return queryKey; }
 
   /** if other ValueComputers sharing the same valueQuery did not analyze it yet, we analyze it here */
-  public void doEndAnalyze(MakumbaTag analyzed)
+  public void doEndAnalyze(MakumbaTag analyzed, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    if(analyzed.pageCache.formatters.get(queryKey)==null) 
+    if(pageCache.formatters.get(queryKey)==null) 
       {
-	ComposedQuery myQuery= analyzed.pageCache.getQuery(queryKey);
+	ComposedQuery myQuery= pageCache.getQuery(queryKey);
 	myQuery.analyze();
-	analyzed.pageCache.formatters.put(queryKey, new RecordViewer(myQuery));
+	pageCache.formatters.put(queryKey, new RecordViewer(myQuery));
       }
-    super.doEndAnalyze(analyzed);
+    super.doEndAnalyze(analyzed, pageCache);
   }
 
   static final Object dummy= new Object();
@@ -193,9 +193,9 @@ class NullableValueComputer extends QueryValueComputer
   static final String emptyQueryProps[]= new String[4];
   
   /** Make a query that is identical to the parentQuery, but has expr as projection */
-  NullableValueComputer(MakumbaTag analyzed, String nullableExpr, String expr)
+  NullableValueComputer(MakumbaTag analyzed, String nullableExpr, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    makeQuery(analyzed, nullableExpr.trim(), emptyQueryProps, expr);
+    makeQueryAtAnalysis(analyzed, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
   }
   
   /** Check if the iterationGroupData is longer than 1, and throw an exception if so. Take the first result (if any) otherwise */
@@ -221,7 +221,7 @@ class SetValueComputer extends QueryValueComputer
   int nameIndex;
 
   /** Make a query that has an extra FROM: the set requested. As projections, add the key of the set type and, if we are in a value tag, the title field */
-  SetValueComputer(MakumbaTag analyzed, FieldDefinition set, String setExpr)
+  SetValueComputer(MakumbaTag analyzed, FieldDefinition set, String setExpr, MakumbaJspAnalyzer.PageCache pageCache)
   {
     type=set;
     String label= setExpr.replace('.', '_');
@@ -234,18 +234,18 @@ class SetValueComputer extends QueryValueComputer
 	queryProps[ComposedQuery.ORDERBY]= name;
       }
 
-    makeQuery(analyzed, set.getName(), queryProps, label);
+    makeQueryAtAnalysis(analyzed, set.getName(), queryProps, label, pageCache);
     
     if(analyzed instanceof ValueTag)
-      analyzed.pageCache.getQuery(queryKey).checkProjectionInteger(name);   
+      pageCache.getQuery(queryKey).checkProjectionInteger(name);   
   }
 
   /** Compute nameIndex */
-  public void doEndAnalyze(MakumbaTag analyzed)
+  public void doEndAnalyze(MakumbaTag analyzed, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    super.doEndAnalyze(analyzed);
+    super.doEndAnalyze(analyzed, pageCache);
     if(name!=null)
-      nameIndex= analyzed.pageCache.getQuery(queryKey)
+      nameIndex= pageCache.getQuery(queryKey)
 	.checkProjectionInteger(name).intValue();
   }
   

@@ -44,16 +44,16 @@ public class ValueTag extends MakumbaTag
   }
 
   /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
+    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
   }
   
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
-  public void doEndAnalyze()
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-    vc.doEndAnalyze(this);
+    vc.doEndAnalyze(this, pageCache);
 
     if(var!=null)
       pageCache.types.setType(var, vc.type, this);
@@ -63,9 +63,10 @@ public class ValueTag extends MakumbaTag
   }
   
   /** ask the ValueComputer to present the expression */
-  public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException, org.makumba.LogicException
   {
-    ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
+    ((ValueComputer)pageCache.valueComputers.get(tagKey)).print(this, pageCache);
 
     expr= printVar= var= null;
     return EVAL_BODY_INCLUDE;

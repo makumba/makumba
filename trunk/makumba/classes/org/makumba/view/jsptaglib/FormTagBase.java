@@ -115,17 +115,17 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   static final String[] dummyQuerySections= {null, null, null, null};
  
   /** cache a dummy query when there is no mak:list around us */
-  public void cacheDummyQuery()
+  public void cacheDummyQueryAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
   {
     pageCache.cacheQuery(tagKey, dummyQuerySections, null);
   }
 
 
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     if(!shouldComputeBasePointer())
       return;
-    ValueComputer vc= ValueComputer.getValueComputer(this, baseObject);
+    ValueComputer vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);
     pageCache.valueComputers.put(tagKey, vc);
   }
 
@@ -145,7 +145,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       throw new ProgrammerError("Forms included in other forms cannot have a '"+attrName+"' attribute:\n"+getTagText());
   }
 
-  public void doEndAnalyze()
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     ComposedQuery dummy= (ComposedQuery)pageCache.queries.get(tagKey);
     if(dummy!=null)
@@ -159,7 +159,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     if(!shouldComputeBasePointer())
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-    vc.doEndAnalyze(this);
+    vc.doEndAnalyze(this, pageCache);
     pageCache.basePointerTypes.put(tagKey, vc.type.getReferredType().getName());
   }
 
@@ -180,7 +180,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 	responder.setParentResponder(findParentForm().responder, findRootForm().responder);
   }
 
-  public int doMakumbaStartTag() throws JspException, LogicException
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException, LogicException
   {
     // if we have a dummy query, we simulate an iteration
     if(pageCache.queries.get(tagKey)!=null)
@@ -211,7 +212,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     return EVAL_BODY_BUFFERED; 
   }
 
-  public int doMakumbaEndTag() throws JspException 
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException 
   {
     // if we have a dummy query, we simulate end iteration
     if(pageCache.queries.get(tagKey)!=null)
