@@ -102,12 +102,15 @@ public class QueryExecution
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
     Database dbc= 
-      org.makumba.controller.http.RequestAttributes.getConnectionProvider
-      ((javax.servlet.http.HttpServletRequest)pageContext.getRequest())
-      .getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
+      //      org.makumba.controller.http.RequestAttributes.getConnectionProvider
+      //((javax.servlet.http.HttpServletRequest)pageContext.getRequest()).
+      org.makumba.MakumbaSystem.
+      getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
 
+      try{
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
 	.execute(dbc, PageAttributes.getAttributes(pageContext));
+      }finally{dbc.close(); }
   }
 
   public int getIterationGroupData()
