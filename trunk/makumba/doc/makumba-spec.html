@@ -45,7 +45,7 @@
   </li>
   <li><b><a href="#PresentationSummary">Presentation and internal representation principles</a></b></li>
 
-  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... adding data into your HTML </i>
+  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... viewing/editing data thru HTML pages</i>
   <ul>
       <li><a href="#maklist">&lt;mak:list></a>
       <ul>
@@ -73,10 +73,12 @@
 
 
 <h2>
-<a NAME="Data_Description"></a>Data Definition Language</h2>
+<a NAME="Data_Description">Data Definition Language</a></h2>
 (the Makumba abstract level)
+
 <h3>
-<a NAME="Types, objects,databases"></a>Types, objects, databases</h3>
+<a NAME="Types, objects,databases">Types, objects, databases</a></h3>
+<p>
 Data definitions describe <b>data types (or classes)</b>. They are placed
 in files contained in directory hierarchies, and the directory name is
 part of the type name (similar to Java packages). For example <b>the file
@@ -84,56 +86,69 @@ best/Student.mdd </b>describes<b> the type best.Student</b>. Type names
 can contain letters, digits, underscores and dashes and cannot contain
 slashes and dots. Usually, the directories are used to separate organisations
 and projects.
+</p>
 <div class="note">
 Current Java implementation finds the data definition
 files as follows:
+
+<!-- FIXME: is this still correct? Bug 602 -->
 <ul>
-<li>
-the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
-
-<li>
-relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
-
-<li>
-in a directory called "<b>dataDefinitions/</b>" in the CLASSPATH (e.g. <code>classes/dataDefinitions/best/Student.mdd</code>)</li>
-
-<li class="oldfeat">
-OLDSTYLE: if no mdd file is present, the no-extension
-file (i.e. best/Student) is looked up</li>
+<li>the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
+<li>relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
+<li>in a directory called "<b>dataDefinitions/</b>" in the CLASSPATH (e.g. <code>classes/dataDefinitions/best/Student.mdd</code>)</li>
+<li class="oldfeat">OLDSTYLE: if no mdd file is present, the no-extension file (i.e. best/Student) is looked up</li>
 </ul>
+
 </div>
 
+<p>
 <b>Data objects (records)</b> are stored in <b>databases</b>.
-<p>The actual implementation of the database is not part of this specification
+</p>
+
+<p>
+The actual implementation of the database is not part of this specification
 but implementation suggestions will be made. <b>Data can be copied and/or replicated
 between different databases</b>, even between different DB engine types.
+</p>
+
 <div class="futfeat note">Replication is not yet implemented,
 but the design is prepared for it. Copying works.
 </div>
 
 <h3><a NAME="Fields">Fields</a></h3>
+<p>
 Every data definition file contains <b>field definitions</b>, separated
 by newline.
+</p>
 
+<!-- FIXME: is this still correct? Bug 603 -->
 <div class="note futfeat">
 There will be another separator,
 to accomodate for more fields defined per line
 </div>
+
+<p>
 A field definition looks like:
+</p>
+
 <pre class="example">
 <b>fieldname= [attributes] fieldtype [parameters] [; description]</b>
 </pre>
+
+<p>&nbsp;</p>
 
 <div class="note futfeat">
 default values are supported
 internally, but not by the mdd parser
 </div>
+
+<!-- FIXME: is this relevant? Bug 604 -->
 <div class="note futfeat">
 In the future "=" might be replaced with ":".
 </div>
 
 <div class="internals note">
-As an implementation guideline, field names use to stay approximately
+As an implementation guideline, field names tend to stay approximately
 the same in:
 <ul>
 <li>http requests</li>
@@ -143,43 +158,57 @@ the same in:
 </ul>
 </div>
 
+<p class="futfeat">
 The field description is used at interface levels to present that field.
 It is typically shown at the left of, or somewhere near to, the input control
 (text box, radio button, chooser, etc) that allows for data input in that
 field. If a field description is not present, its field name stands for
 its description by default.
-<p><b>Comment lines</b> can be inserted in the data definition files as
+</p>
+<p>
+<b>Comment lines</b> can be inserted in the data definition files as
 follows:
+</p>
 <pre class="example">
 <b>#</b> <i>your comment...</i>
 </pre>
 
+
 <h3><a NAME="DefaultFields">Default fields</a></h3>
-Every type has some default fields, as follows:
+<p>
+Every datatype has some additional fields by default, as follows:
+</p>
+
 <ul>
 <li>Index field, consisting of two parts:
 
-<ul>
-<li>Database identifier. It is unique per database and all objects created
-in that database get the same value</li>
-
-<li>Object identifier: unique id for the object in the given database.</li>
-</ul>
+    <ul>
+    <li>Database identifier. It is unique (within the webapp) per database. 
+            All objects created thru that webapp and in that database get the  
+            same value. It is set by property dbsv in the database config  
+            file.</li>
+    
+    <li>Object identifier: unique id for the object in the given database.</li>
+    </ul>
 This combination ensures that no two objects of one type have the same
 Index field.
 
 <br>The name of the index field is the same with the last part of the type
-name,&nbsp; therefore no other field with exactly such name can be defined.
+name. If another field by that name is defined by the makumba user, this field will be renamed in the database.
 </li>
 
 <li>Object creation time
-<div class="note">Can be accessed as TS_create. This might change, but there
-are specific methods to retrieve it</div>
+<div class="note">Can be accessed as TS_create.</div>
+ <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13) 
+      "This might change, but there are specific methods to retrieve it"
+ -->
 </li>
 
 <li>Last modification time. Updates whenever the object is changed
-<div class="note"> Can be accessed as TS_modify. This might change, but there
-are specific methods to retrieve it</div>
+<div class="note">Can be accessed as TS_modify.</div>
+<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13) 
+      "This might change, but there are specific methods to retrieve it"
+ -->
 </li>
 
 </ul>
@@ -187,65 +216,107 @@ are specific methods to retrieve it</div>
 <h3><a NAME="Simple field Types">Simple field types</a></h3>
 
 <h4>int</h4>
+<p>
 A 32-bit integer. For example
+</p>
 <pre class="example">
 shoeSize= int; Shoe size
 </pre>
 
-If the int can have a limited number of values, it can be described as
-follows
+<p>
+If the int can have a limited number of values, it can be described as follows
+</p>
+
 <pre class="example">
 gender= int{ "male"=0, "female"=1 }; Sex
 </pre>
+
+<p>
 This will help the presentation layer to present a suitable input control
 (e.g. <select><option value="0">male</option><option value="1">female</option></select>)
+</p>
 
 <div class="internals note">In the present implementation, this type is called
 "intEnum" internally</div>
 
 <h4>char</h4>
-A char field contains a number of Unicode characters. It has a limited
-width. Maximum, and optionally minimum number of characters can be indicated.
-For example
+<p>
+A char field contains a number of characters. It has a limited
+width. Maximum, <span class="futfeat">and optionally minimum number</span> of characters can be indicated.
+For example:
+</p>
+
 <pre class="example">
 name= unique char[80]; Username
 password= encrypted char[6..10]; Secret password
 </pre>
-"unique" and "encrypted" are <a href="#FieldAttributes">field attributes</a>, explained below.
+
+<p>
+"<code>unique</code>" and "<code>encrypted</code>" are <a href="#FieldAttributes">field attributes</a>, explained below.
+</p>
+
+<div class="note">
+Pay close attention to the character set (charset) for encoding the characters. 
+In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings, 
+as well as the database, etc.
+</div>
 
 
 <p><b>DEPRECATED (use int{...} instead):</b> If the char can have a limited number of value, it can be described
 as follows
+</p>
+
 <pre class="example">
 gender= char{ "male", "female" }; Sex
 </pre>
+
+<p>
 This will help the presentation layer to present a suitable input control
 (e.g. a HTML SELECT)
+</p>
 
 <div class="internals note">in the present implementation, this type is called
 "charEnum" internally</div>
 
+
 <h4>text</h4>
-An unlimited-length string of bytes or Unicode characters. This type was
+<p>
+An unlimited-length string of bytes or characters. This type was
 designed to accomodate large text or binary content. It is implemented
 with LONGVARBINARY or its counterparts, depending on the underlying DB engine.
+</p>
 
 <pre class="example">
-application= text;   Application letter
-description=text	;Description of object
-image= text	  ; 	Picture attachment</pre>
+application= text ; Application letter
+description=text  ; Description of object
+image= text	  ; Picture attachment</pre>
 
 <h4>date</h4>
+<p>
 A date and/or time.
+</p>
+
 <pre class="example">
 birthdate= date; Date of birth
 arrivalTime= date; Arrival time
 </pre>
 
+<!-- FIXME. (fred, 2003-10-13) bug 606
+     Should there be a warning about "time". 
+     Because it really isn't a "time", it would be a "date" where d/m/y fields
+     are not set explicitly... but they are filled in with 'random'/'current' 
+     values. So comparison as "time" < 9am or so is not possible?
+ -->
+
+
+
 <h3><a NAME="Structural (relational) types">Structural (relational) types</a></h3>
 
 <h4>Pointers (ptr)</h4>
+<p>
 Pointers define a reference to an object of a certain type. For example
+</p>
+
 <pre class="example">
 citizenship= ptr general.Country; Citizenship
 </pre>
@@ -253,14 +324,19 @@ citizenship= ptr general.Country; Citizenship
 <div class="note futfeat">the <code>ptr</code> keyword might be
 ommitted in future parsers</div>
 
+<p>
 The type can be defined on-the-spot for a single usage. For example
+</p>
+
 <pre class="example">
 addres= ptr ; Address
 address->street= char[80]; Street
 address->number= int; Number
 </pre>
 
-<div class="note futfeat"> future parsers might read this:
+<!-- FIXME. Is there any relevance to this? bug 607 -->
+
+<div class="note futfeat">future parsers might read this:
 <pre class="example">
 address= ptr{
     street= char[80]; Street
@@ -270,68 +346,90 @@ address= ptr{
 
 <div class="note internals">this type is known internally as ptrOne</div>
 
+
 <h4>Sets (set, bag, list)</h4>
+<p>
 Sets define a number of references to multiple objects of a certain type.
 For example:
+</p>
+
 <pre class="example">
 language= set general.Language; Spoken languages
 </pre>
 
+<p>
 This type accomodates sets, bags and lists. The set and list constraints
 (sets have to contain only one element of a certain value and lists have
 to be ordered) have to be cared for by the programmer. Lists are easy to
 represent, just having an integer field, for the order.
-<pre class="example">
-place= set int {"home"=1, "away"=0} ; Home or away
-</pre>
+</p>
 
-<div class="internals note">this is currently known
-internally as setintEnum</div>
-
-<b>DEPRECATED:</b>
-<pre class="example">
-place= set char {"home", "away"} ; Home or away
-</pre>
-
-<div class="note">It means that place is a
-set that can take only the "home" and "away" values.
-</div>
-<div class="note internals">This is currently known internally as setcharEnum</div>
-
+<p>
 The type which the set is made of can be defined on the spot:
+</p>
 <pre class="example">
 addresses= set; Addresses
   addresses->street= char[80]; Street
   addresses-> number= int; Number
 </pre>
 
-<div class="note futfeat">the future parser might recognize
-this form:
+<div class="note futfeat">the future parser might recognize this form:
+
 <pre class="example">
 addresses: set{
     street: char[80]; Street
     number: int; Number }; Addresses
 </pre>
 </div>
+
 <div class="internals note">this type is known internally as setComplex</div>
 
+<p>The set can contain enumerated int values : 
+<pre class="example">
+place= set int {"home"=1, "away"=0} ; Home or away
+</pre>
+</p>
+
+<div class="internals note">this is currently known
+internally as setintEnum</div>
+
+<p>
+<b>DEPRECATED:</b> The set can contain enumerated char values :
+<pre class="example">
+place= set char {"home", "away"} ; Home or away
+</pre>
+</p>
+
+<div class="note">It means that place is a 
+set that can take only the "home" and "away" values.
+</div>
+
+<div class="note internals">This is currently known internally as setcharEnum</div>
+
+
+
 <h3><a NAME="MacroTypes">Macro types</a></h3>
+<p>
 A name can be defined for a more complex type and it can be reused in the
 file. This can be done with a !type directive
+</p>
+
 <pre class="example">
 !type.yesno= int{"yes"=1, "no"=0}
 !type.rank= int{"neutral"=0, "good"=5, "bad"=-5}
+married=yesno
+happilyMarried=rank
 </pre>
 
 <h3><a NAME="FieldAttributes">Field attributes</a></h3>
 
 <ul>
 <li>
-<b>fixed </b>fields can only be modified before the record's insertion
+<b>fixed</b> fields can only set during the record's insertion
 in the database. The subsequent updates will not update the field</li>
 
 <li>
-<b>not null </b>fields will produce a exception if an attempt is made to
+<b>not null</b> fields will produce a exception if an attempt is made to
 insert/update without them being initialized</li>
 
 <li>
@@ -350,39 +448,53 @@ while support for <b>unique</b> is in progress.
 
 
 <h3><a NAME="ObjectTitle">Object title</a></h3>
+<p>
 One of the fields is always the object title, and is normally presented
-differently from other fields in user interface . This is the "name" field
-if it exists, otherwise it is the first non-pointer field in the record
+differently from other fields in user interface. This is the field called "name" 
+if that exists, otherwise it is the first non-pointer field in the record
 description. If another field needs to be title, it can be specified like
+</p>
 <pre class="example">
 !title=gender
 </pre>
 
 <div class="note">
 for the on-the spot types in the current implementation,
-the following notation works:
+the following notation works: 
+<p>
 <pre class="example">
 address->!title= street
 </pre>
+</p>
 </div>
 
 <h3><a NAME="Include">Include mechanism</a></h3>
-A record description includes text from one or more files. This is declared
-as
+<p>
+A record description can include text from one or more files. This is declared as
+</p>
+
 <pre class="example">
 !include=name_of_included_type
 </pre>
-The included file has the idd extension and is found in a similar way with
+
+<p>
+The included file has the idd extension and is found in a similar way like the
 data definitions.
+</p>
+
 <p>The included file is inserted instead of the !include line. There can
-be more include lines in a record description file.&nbsp; If a field is
+be more include lines in a record description file. If a field is
 defined that exists also in the included metadata, the defined field takes
 precedence. If
+</p>
 <pre class="example">
 fieldname=
 </pre>
+
+<p>
 it means that it does not actually exist. this can be used to cancel an
 included field.
+</p>
 
 <div class="note futfeat">
 include might be replaced by more advanced concepts
@@ -390,12 +502,16 @@ such as inheritance and type inclusion (rather than reference in foreign
 table)
 </div>
 
+
+
 <h2><a NAME="OQL">OQL language</a></h2>
+<p>
 The database can be interrogated using the following language ( [] means
 optional, {} means any number of repetitions). OQL is similar to SQL, a
-specification can be found at&nbsp; <a href="http://www.odmg.org">http://www.odmg.org</a>
-. Makumba recongizes a subset of OQL at the moment, which it translates
+specification can be found at <a href="http://www.odmg.org">http://www.odmg.org</a>
+. Makumba recognizes a subset of OQL at the moment, which it translates
 to the <a href="SQL-drivers.html">host SQL</a> when necessary.
+</p>
 
 <pre class="example">
 <b>SELECT</b> expression [[<b>AS</b>] label] {, expression [[<b>AS</b>] label] }
@@ -408,10 +524,11 @@ to the <a href="SQL-drivers.html">host SQL</a> when necessary.
 [<b>ORDER BY</b> expression {,expression} [(<b>ASC</b>|<b>DESC</b>)] ]
 </pre>
 
+<p>
 Notations like <code>label.field{.field}</code> only allow "field" to be of pointer
-type in <b><i>expression
-</i></b>and set type in <b>FROM.</b>
-<br>If a label appears alone in an expression, a default field will be
+type in <b><i>expression</i></b> and set type in <b>FROM</b>.
+</p>
+<p>If a label appears alone in an expression, a default field will be
 added. The default field depends on the type of the label:
 <ul>
 <li>
@@ -425,6 +542,8 @@ for set int { } and set char { } types, the label denotes the set member
 <li>
 for all other types, the label denotes the pointer to that object</li>
 </ul>
+</p>
+
 
 <h2><a NAME="Business">Business logic</a></h2>
 
