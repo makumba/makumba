@@ -153,6 +153,10 @@
                 <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
                 </td></tr></TABLE>
             ]]></bottom>
+            <header><![CDATA[
+		<script language="JavaScript" src="../../../main.js"></script>
+		</em><script language="JavaScript">makeNavBar("../../../");</script><em>
+            ]]></header>
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
 
