@@ -94,10 +94,13 @@ public class jspViewer extends LineViewer
       {
 	advance();
 	inMak=true;
-	highlighted.append("<span style=\"background:#eecccc\"><font color=green><b>&lt;"+pattern.substring(1));
+	inQuotes=false; //reinitialize for this mak tag
+	highlighted.append("<span style=\"background:#eecccc;color:green; border:red thin\">&lt;"+pattern.substring(1));
 	return;
       }
-    if(inMak && inQuotes && lookup("\\\""))
+
+    //ignore > and \" in makumba quotes
+    if( inMak && inQuotes && (lookup("\\\"") || lookup(">")) )
       {
 	advance();
 	highlighted.append(pattern);
@@ -106,20 +109,16 @@ public class jspViewer extends LineViewer
 
     switch(current)
       {
-      case '\"': 
-	if(inQuotes)
-	  {
-	    highlighted.append("\"</font>");
-	    inQuotes=false;
-	  }    
-	else
-	  super.treat();
+      case '\"':
+	if(inMak) //switch quote status inside mak tags
+	    inQuotes=!inQuotes;
+	super.treat();
 	break;
       case '>': 
-	if(inMak && !inQuotes)
+	if(inMak && !inQuotes) //end of mak tag
 	  {
 	    inMak=false;
-	    highlighted.append("&gt;</b></font></span>");
+	    highlighted.append("&gt;</span>");
 	  }	
 	else
 	  super.treat();
