@@ -77,8 +77,8 @@ public class ComposedQuery
   /** the OQL query as computed from the derived sections */
   String oqlQuery;
 
-  OQLAnalyzer typeAnalyzer;
-  OQLAnalyzer fromAnalyzer;
+  String typeAnalyzerOQL;
+  String fromAnalyzerOQL;
 
   /** the keyset defining the primary key for this query. Normally the primary key is made of the keys declared in FROM, in this query and all the parent queries. Keys are kept as integers (indexes) */
   Vector keyset;
@@ -101,10 +101,10 @@ public class ComposedQuery
   }
 
   public DataDefinition getResultType()
-  { return typeAnalyzer==null?null:typeAnalyzer.getProjectionType(); }
+  { return typeAnalyzerOQL==null?null:MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getProjectionType(); }
 
   public DataDefinition getLabelType(String s)
-  { return typeAnalyzer==null?null:typeAnalyzer.getLabelType(s); }
+  { return typeAnalyzerOQL==null?null:MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s); }
 
   /** return the version, one version is added for each change */
   public int getVersion(){ return projections.size(); }
@@ -113,10 +113,9 @@ public class ComposedQuery
   public void init()
   {
     initKeysets();
-    String query= "SELECT nil ";
+    fromAnalyzerOQL= "SELECT nil ";
     if(derivedSections[FROM]!=null)
-      query+="FROM "+derivedSections[FROM];
-    fromAnalyzer= MakumbaSystem.getOQLAnalyzer(query);
+      fromAnalyzerOQL+="FROM "+derivedSections[FROM];
   }
 
   /** initialize the keysets. previousKeyset is "empty" */
@@ -226,7 +225,7 @@ public class ComposedQuery
   /** a change has come up, recompute the query */
   protected synchronized void recomputeQuery() 
   {
-    typeAnalyzer= MakumbaSystem.getOQLAnalyzer(computeQuery(true));
+    typeAnalyzerOQL= computeQuery(true);
     oqlQuery=computeQuery();
     attrParam=null;
   }
@@ -393,7 +392,7 @@ public class ComposedQuery
     int dot=s.indexOf(".");
     if(dot==-1)
       return null;
-    DataDefinition dd= fromAnalyzer.getLabelType(s.substring(0, dot));
+    DataDefinition dd= MakumbaSystem.getOQLAnalyzer(fromAnalyzerOQL).getLabelType(s.substring(0, dot));
     if(dd==null)
       throw new org.makumba.InvalidValueException("no such label "+s.substring(0, dot));
     while(true)
