@@ -1,3 +1,4 @@
+cristi; 1 sept 2003: changed the semantics of publishJar to only publish the version, not to tag anything. tag needs be done manually before. a warning is displayed about that.
 fred; 24 aug 2003: bug 530 (added HtmlUtils to org.makumba package, the old class in org.makumba.util extends the new)
 stefan; 20 aug 2003: extended test suite, now ready for additional tests
 stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
