@@ -1,7 +1,7 @@
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
 
-indiv= fixed not null ptr test.Individual
+indiv= unique fixed not null ptr test.Individual
 
 birthdate=date		 ;Birthdate
 gender=genTyp		 ;Gender
@@ -21,6 +21,13 @@ brother= ptr test.Person
 extraData=ptr
 extraData->something=char[20]
 extraData->what=int
+
+#for uniqness tests:
+uniqInt=unique int		;test int uniqness
+uniqChar=unique char[33]	;test char uniqness
+uniqDate=unique date		;test date uniqness
+uniqPtr=unique ptr test.Language	;test ptr uniqness
+
 
 speaks=set test.Language
 intSet= set int {"a"=0, "b"=1, "c"=2 }
