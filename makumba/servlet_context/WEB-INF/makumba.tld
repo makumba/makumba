@@ -74,7 +74,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 	</tag>
@@ -142,7 +142,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -249,7 +249,7 @@
 
 		<attribute>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
@@ -287,7 +287,7 @@
 
 		<attribute>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
@@ -313,7 +313,7 @@
 		<attribute>
 			<name>db</name>
 			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
+			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
 	</tag>
@@ -331,7 +331,7 @@
 
 		<attribute>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
@@ -374,7 +374,7 @@
 
 		<attribute>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
@@ -410,7 +410,7 @@
 
 		<attribute>
 			<name>action</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
@@ -494,10 +494,16 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>action</name>
+		<tagclass>org.makumba.view.jsptaglib.ActionTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>set an "action" for a form or deleteLink</info>
+	</tag>
 
 	<tag>
 		<name>response</name>
-		<tagclass>org.makumba.view.jsptaglib.ResponseTag</tagclass>
+		<tagclass>org.makumba.controller.jsp.ResponseTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info> display response and status from forms or delete</info>
 	</tag>
@@ -506,7 +512,7 @@
 
 	<tag>
 		<name>login</name>
-		<tagclass>org.makumba.view.jsptaglib.LoginTag</tagclass>
+		<tagclass>org.makumba.controller.jsp.LoginTag</tagclass>
 		<bodycontent>JSP</bodycontent>
 		<info>a login form that takes care of passing the existing arguments</info>
 	</tag>
@@ -514,7 +520,7 @@
 
 	<tag>
 		<name>logout</name>
-		<tagclass>org.makumba.view.jsptaglib.LogoutTag</tagclass>
+		<tagclass>org.makumba.controller.jsp.LogoutTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>remove the reference to the actor logged in</info>
 		<attribute>
@@ -530,20 +536,4 @@
 		<bodycontent>empty</bodycontent>
 		<info>prints Makumba version (a CVS tag)</info>
 	</tag>
-
-	<!--
-	<tag>
-		<name>username</name>
-		<tagclass>org.makumba.view.jsptaglib.UsernameTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info>username in a login form</info>
-	</tag>
-
-	<tag>
-		<name>password</name>
-		<tagclass>org.makumba.view.jsptaglib.PasswordTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info>password in a login form</info>
-	</tag>
-	-->
 </taglib>
