@@ -41,6 +41,7 @@ public class ControllerFilter implements Filter
   /** decide if we filter or not */
   public boolean shouldFilter(HttpServletRequest req)
   {
+      req.getSession(true);  
     String file=null;
     try{
       file= new URL(req.getRequestURL().toString()).getFile();
