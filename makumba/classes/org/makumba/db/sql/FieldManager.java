@@ -184,14 +184,6 @@ public abstract class FieldManager extends FieldHandler
     return getDBName()+cond+writeConstant(d.get(getDataName()));
   }
 
-  /** what is the property of the current engine? */
-  protected String getEngineProperty(String s)
-  {
-    Database d=rm.getSQLDatabase();
-    return d.getEngineProperty(d.getEngine()+"."+s);
-  }
-
-
   /** ask this field to perform actions when the table is open 
    */
   public void onStartup(RecordManager rm, Properties config, SQLDBConnection dbc) 
@@ -199,114 +191,14 @@ public abstract class FieldManager extends FieldHandler
   {
     this.rm=rm;
     if(rm.alter && shouldIndex())
-	manageIndexes(dbc);
+      {
+	try{
+	  Statement st= dbc.createStatement();
+	  st.executeUpdate("CREATE INDEX "+ rm.getDBName()+"_"+getDBName()+ " ON "+ rm.getDBName()+"("+getDBName()+")");
+	}catch(SQLException e) { }
+      }
   }
 
-
-  /** Ask this field how to name the index on this field. Normally called from manageIndexes().  */
-  public String getDBIndexName() 
-  {
-     //return rm.getDBName()+"_"+getDBName();  
-     return getDBName();  
-  }
-
-
-  /** Examine DB indexes. */
-  public boolean isIndexOk(SQLDBConnection dbc)
-  {
-    Boolean b= (Boolean)rm.indexes.get(getDBIndexName().toLowerCase());
-    if(b!=null)
-      return (isUnique()==!b.booleanValue()); 
-    return false;
-  } //end isIndexOk()
-
-
-
-  /** Ask this field to add/remove indexes as needed, normally called from onStartup().
-   */
-  public void manageIndexes(SQLDBConnection dbc) 
-       throws SQLException
-  {
-     String keyName=getDBIndexName();
-     String brief=rm.getRecordInfo().getName()+"#"+getName()+" ("+getDescription()+")";
-
-     if(!isIndexOk(dbc)) 
-     {
-       //org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-       //	"ALTERING INDEX on field "+getName()+" of "+rm.getRecordInfo().getName() );
-
-       try{	//drop the old, wrong index if it exists
-		Statement st= dbc.createStatement();
-		st.executeUpdate(indexDropSyntax());
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX DROPPED on "+brief );
-		st.close();
-
-       }catch(SQLException e) {}
-
-       boolean createNormalEvenIfUnique=false;
-
-       if(isUnique())
-	{
-	   try{
-		//try creating unique index
-		Statement st= dbc.createStatement();
-		st.executeUpdate(indexCreateUniqueSyntax());
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"UNIQUE INDEX ADDED on "+brief );
-		st.close();
-		rm.indexCreated(dbc);
-	   }catch(SQLException e) 
-	   { 
-		//log all errors 
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
-			//rm.getDatabase().getConfiguration()+": "+ //DB name
-			"Problem adding UNIQUE INDEX on "+brief
-			+": "+e.getMessage() + " [ErrorCode: "+e.getErrorCode()+", SQLstate:"+e.getSQLState()+"]");
-		createNormalEvenIfUnique=true;
-	   }
-	}
-
-       if(createNormalEvenIfUnique || !isUnique()) 
-        {
-	   try{
-		//create normal index
-		Statement st= dbc.createStatement();
-		st.executeUpdate(indexCreateSyntax());
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX ADDED on "+brief );
-		st.close();
-		rm.indexCreated(dbc);
-	   }catch(SQLException e) 
-	   { 
-		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
-			//rm.getDatabase().getConfiguration()+": "+ //DB name
-			"Problem adding INDEX on "+brief
-			+": "+e.getMessage() + " [ErrorCode: "+e.getErrorCode()+", SQLstate:"+e.getSQLState()+"]");
-	   }
-	} 
-
-     }//isIndexOk
-
-  }//method
-
-  /** Syntax for index creation. */
-  public String indexCreateSyntax() {
-	return "CREATE INDEX "+getDBIndexName()+" ON "+rm.getDBName()+" ("+getDBName()+")";
-  }
-
-  /** Syntax for unique index creation. */
-  public String indexCreateUniqueSyntax() {
-	return "CREATE UNIQUE INDEX "+getDBIndexName()+" ON "+rm.getDBName()+" ("+getDBName()+")";
-  }
-
-  /** Syntax for dropping index. */
-  public String indexDropSyntax() {
-	return "DROP INDEX "+getDBIndexName()+" ON "+rm.getDBName();
-  }
-
-
-  /** Tell whether this type of field should be indexed. */
   public boolean shouldIndex() {return true; }
 
   /* sets the database-level name of this field, normally identical with its abstract-level name, unless the database has some restrictions, or the configuration indicates that the field exists in the table with another name */

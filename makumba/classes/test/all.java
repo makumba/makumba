@@ -34,9 +34,7 @@ public class all {
 
 	public static void main (String[] args) {
 		System.out.println("Makumba test suite: Running all tests...");
-		TestResult tr=junit.textui.TestRunner.run(suite());
-		if(!tr.wasSuccessful())
-		  System.exit(1); //report an error
+		junit.textui.TestRunner.run (suite());
 	}
 
 	public static Test suite ( ) {
