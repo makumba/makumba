@@ -77,7 +77,8 @@ best/Student.mdd </b>describes<b> the type best.Student</b>. Type names
 can contain letters, digits, underscores and dashes and cannot contain
 slashes and dots. Usually, the directories are used to separate organisations
 and projects.
-<blockquote><u>Note:</u> current Java implementation finds the data definition
+<div class="note">
+Current Java implementation finds the data definition
 files as follows:
 <ul>
 <li>
@@ -92,47 +93,49 @@ in a directory called "<b>dataDefinitions</b>" in the CLASSPATH (e.g. classes/da
 <li>
 <font color="#000099">OLDSTYLE: if no mdd file is present, the no-extension
 file (i.e. best/Student) is looked up</font></li>
-
 </ul>
-</blockquote>
+</div>
+
 <b>Data objects (records)</b> are stored in <b>databases</b>.
 <p>The actual implementation of the database is not part of this specification
 but implementation suggestions will be made. <b>Data can be copied or replicated
 between different databases</b>.
-<blockquote><font color="#990000"><u>Note</u>: replication is not yet implemented,
-but the design is prepared for it</font></blockquote>
+<div class="futfeat note">Replication is not yet implemented,
+but the design is prepared for it.
+</div>
 
-<h3>
-<a NAME="Fields"></a>Fields</h3>
+<h3><a NAME="Fields">Fields</a></h3>
 Every data definition file contains <b>field definitions</b>, separated
 by newline.
-<blockquote><font color="#990000"><u>Note</u>: there will be another separator,
-to accomodate for more fields defined per line</font></blockquote>
+
+<div class="note futfeat">
+There will be another separator,
+to accomodate for more fields defined per line
+</div>
 A field definition looks like:
-<blockquote><b>fieldname= [attributes] fieldtype [parameters] [; description]</b></blockquote>
+<pre class="example">
+<b>fieldname= [attributes] fieldtype [parameters] [; description]</b>
+</pre>
 
-<blockquote><font color="#990000"><u>Note</u>: default values are supported
-internally, but not by the parser</font>
-<p><font color="#990000"><u>Note</u>: this might change like this in the
-future</font>
-<blockquote><font color="#990000">fieldname: [attributes] fieldtype [parameters]
-[; description]</font></blockquote>
-<u>Note:</u> as an implementation guideline, field names use to stay approximately
+<div class="note futfeat">
+default values are supported
+internally, but not by the parser
+</div>
+<div class="note futfeat">
+In the future "=" might be replaced with ":".
+</div>
+
+<div class="note">
+As an implementation guideline, field names use to stay approximately
 the same in:
-<blockquote>
-<li>
-http requests</li>
+<ul>
+<li>http requests</li>
+<li>Record instances (java.util.Dictionary in the current Java API)</li>
+<li>database columns</li>
+<li>etc</li>
+</ul>
+</div>
 
-<li>
-Record instances (java.util.Dictionary in the current Java API)</li>
-
-<li>
-database columns</li>
-
-<li>
-etc</li>
-</blockquote>
-</blockquote>
 The field description is used at interface levels to present that field.
 It is typically shown at the left of, or somewhere near to, the input control
 (text box, radio button, chooser, etc) that allows for data input in that
@@ -140,38 +143,37 @@ field. If a field description is not present, its field name stands for
 its description by default.
 <p><b>Comment lines</b> can be inserted in the data definition files as
 follows:
-<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b># </b><i>comment</i></blockquote>
+<pre class="example">
+<b>#</b> <i>your comment...</i>
+</pre>
 
-<h3>
-<a NAME="DefaultFields"></a>Default fields</h3>
+<h3><a NAME="DefaultFields">Default fields</a></h3>
 Every type has some default fields, as follows:
 <ul>
-<li>
-Index field, consisting of two parts:</li>
+<li>Index field, consisting of two parts:</li>
 
 <ul>
-<li>
-Database identifier. It is unique per database and all objects created
+<li>Database identifier. It is unique per database and all objects created
 in that database get the same value</li>
 
-<li>
-Object identifier: unique id for the object in the given database.</li>
+<li>Object identifier: unique id for the object in the given database.</li>
 </ul>
 This combination ensures that no two objects of one type have the same
 Index field.
+
 <br>The name of the index field is the same with the last part of the type
-name,&nbsp; therefore no field with that name can be defined.
-<li>
-object creation time.</li>
+name,&nbsp; therefore no other field with exactly such name can be defined.
 
-<ul><u>Note:</u> Can be accessed as TS_create. This might change, but there
-are specific methods to retrieve it</ul>
+<li>Object creation time
+<div class="note">Can be accessed as TS_create. This might change, but there
+are specific methods to retrieve it</div>
+</li>
 
-<li>
-last modification time. Updates whenever the object is changed</li>
+<li>Last modification time. Updates whenever the object is changed
+<div class="note"> Can be accessed as TS_modify. This might change, but there
+are specific methods to retrieve it</div>
+</li>
 
-<ul><u>Note:</u> Can be accessed as TS_modify. This might change, but there
-are specific methods to retrieve it</ul>
 </ul>
 
 <h3><a NAME="Simple field Types">Simple field types</a></h3>
@@ -188,31 +190,32 @@ follows
 gender= int{ "male"=0, "female"=1 }; Sex
 </pre>
 This will help the presentation layer to present a suitable input control
-(e.g. a HTML SELECT)
+(e.g. <select><option value="0">male</option><option value="1">female</option></select>)
 
-<blockquote><u>Note:</u> in the present implementation, this type is called
-"intEnum" internally</blockquote>
+<div class="note">In the present implementation, this type is called
+"intEnum" internally</div>
 
 <h4>char</h4>
 A char field contains a number of Unicode characters. It has a limited
 width. Maximum, and optionally minimum number of characters can be indicated.
 For example
 <pre class="example">
-name= char[80]; Username
+name= unique char[80]; Username
 password= encrypted char[6..10]; Secret password
 </pre>
-"encrypted" is a field attribute, it will be explained below.
+"unique" and "encrypted" are <a href="#FieldAttributes">field attributes</a>, explained below.
 
 
-<p><b>DEPRECATED:</b> If the char can have a limited number of value, it can be described
+<p><b>DEPRECATED (use int{...} instead):</b> If the char can have a limited number of value, it can be described
 as follows
 <pre class="example">
 gender= char{ "male", "female" }; Sex
 </pre>
 This will help the presentation layer to present a suitable input control
 (e.g. a HTML SELECT)
-<blockquote><u>Note:</u> in the present implementation, this type is called
-"charEnum" internally</blockquote>
+
+<div class="note">in the present implementation, this type is called
+"charEnum" internally</div>
 
 <h4>text</h4>
 An unlimited-length string of bytes or Unicode characters. This type was
@@ -239,8 +242,9 @@ Pointers define a reference to an object of a certain type. For example
 citizenship= ptr general.Country; Citizenship
 </pre>
 
-<blockquote><font color="#990000"><u>Note:</u> the ptr keyword might be
-ommitted in future parsers</font></blockquote>
+<div class="note futfeat">the <code>ptr</code> keyword might be
+ommitted in future parsers</div>
+
 The type can be defined on-the-spot for a single usage. For example
 <pre class="example">
 addres= ptr ; Address
@@ -248,13 +252,15 @@ address->street= char[80]; Street
 address->number= int; Number
 </pre>
 
-<p><font color="#990000"><u>Note:</u> future parsers might read this:</font>
-<pre class="example futfeat">
+<div class="note futfeat"> future parsers might read this:
+<pre class="example">
 address= ptr{
     street= char[80]; Street
     number= int; Number}; address
 </pre>
-<br><u>Note:</u> this type is known internally as ptrOne</blockquote>
+</div>
+
+<div class="note">this type is known internally as ptrOne</div>
 
 <h4>Sets (set, bag, list)</h4>
 Sets define a number of references to multiple objects of a certain type.
@@ -271,16 +277,17 @@ represent, just having an integer field, for the order.
 place= set int {"home"=1, "away"=0} ; Home or away
 </pre>
 
-<blockquote><u>Note:</u> this is currently known
-internally as setintEnum</font></blockquote>
+<div class="note">this is currently known
+internally as setintEnum</div>
 
+<b>DEPRECATED:</b>
 <pre class="example">
 place= set char {"home", "away"} ; Home or away
 </pre>
 
-<blockquote><u>Note:</u> It means that place is a
+<div class="note">It means that place is a
 set that can take only the "home" and "away" values. This is currently
-known internally as setcharEnum</blockquote>
+known internally as setcharEnum</div>
 
 The type which the set is made of can be defined on the spot:
 <pre class="example">
@@ -289,20 +296,22 @@ addresses= set; Addresses
   addresses-> number= int; Number
 </pre>
 
-<p><font color="#990000"><u>Note:</u>&nbsp; the future parser might recognize
-this form:</font>
-<pre class="example futfeat">
+<div class="note futfeat">the future parser might recognize
+this form:
+<pre class="example">
 addresses: set{
     street: char[80]; Street
     number: int; Number }; Addresses
 </pre>
-<br><u>Note:</u> this type is known internally as setComplex</blockquote>
+</div>
+<div class="note">this type is known internally as setComplex</div>
 
 <h3><a NAME="MacroTypes">Macro types</a></h3>
 A name can be defined for a more complex type and it can be reused in the
 file. This can be done with a !type directive
 <pre class="example">
 !type.yesno= int{"yes"=1, "no"=0}
+!type.rank= int{"neutral"=0, "good"=5, "bad"=-5}
 </pre>
 
 <h3><a NAME="FieldAttributes">Field attributes</a></h3>
@@ -316,17 +325,19 @@ in the database. The subsequent updates will not update the field</li>
 <b>not null </b>fields will produce a exception if an attempt is made to
 insert/update without them being initialized</li>
 
+<li>
+<b>unique</b> fields have a unique value in the respective object, for
+the respective type</li>
+
 <li class="futfeat">
 <b>encrypted</b> fields are encrypted when written to the database and
 decrypted when read</li>
 
-<li>
-<b>unique</b> fields have a unique value in the respective object, for
-the respective type</li>
 </ul>
-<font color="#990000"><u>Note:&nbsp;</u> currently only field attributes
-<b>fixed</b> and <b>not null</b> are working (and the current parser only
-recognizes fixed and notnull). Support for <b>unique</b> is in progress.</font>
+<div class="note futfeat">
+Currently only <b>fixed</b> and <b>not null</b> field attributes are working,
+while support for <b>unique</b> is in progress.
+</div>
 
 
 <h3><a NAME="ObjectTitle">Object title</a></h3>
@@ -337,11 +348,14 @@ description. If another field needs to be title, it can be specified like
 <pre class="example">
 !title=gender
 </pre>
-<p><u>Note:</u> for the on-the spot types in the current implementation,
+
+<div class="note">
+for the on-the spot types in the current implementation,
 the following notation works:
 <pre class="example">
 address->!title= street
 </pre>
+</div>
 
 <h3><a NAME="Include">Include mechanism</a></h3>
 A record description includes text from one or more files. This is declared
@@ -360,9 +374,12 @@ fieldname=
 </pre>
 it means that it does not actually exist. this can be used to cancel an
 included field.
-<blockquote><u>Note:</u> include might be replaced by more advanced concepts
+
+<div class="note futfeat">
+include might be replaced by more advanced concepts
 such as inheritance and type inclusion (rather than reference in foreign
-table)</blockquote>
+table)
+</div>
 
 <h2><a NAME="OQL">OQL language</a></h2>
 The database can be interrogated using the following language ( [] means
@@ -417,9 +434,9 @@ Java handler classes are classes that implement the
 a handler, and will call its methods when needed.
 
 <h4>Handler Discovery</h4>
-<br><font color="#000000">is done at first access after a page is recompiled.
+<br>is done at first access after a page is recompiled.
 For example, with the page path <b><tt>/student/mycv/indexPersonal.jsp</tt></b>,
-the following criteria are applied, in orer:</font>
+the following criteria are applied, in orer:
 <table class="tagParamDef" >
 <tr>
 <th>criterium</th>
@@ -491,67 +508,73 @@ called <b>MakumbaController.properties</b> which can be found in the CLASSPATH
 </tr>
 </table>
 
-<p><font color="#990000">There are good reasons to take into account the
+<p class="futfeat">There are good reasons to take into account the
 name of the response page of a form when looking for the business logic.
 Still, it is the name of the page that contains the form which matters.
-It is good practice for both pages to actually have the same handler class</font><font color="#000000">.</font>
-<p><font color="#000000">All methods of the handlers are http-independent.
+It is good practice for both pages to actually have the same handler class.
+</p>
+
+<p>All methods of the handlers are http-independent.
 Methods are non-static, so inheritance can be taken advantage of. Still,
 handlers are singletons (only one of a certain class in a JVM, if the class
 changes on disk, the handler object might be rebuilt). For example, the
 validation of a form can be in a class that is closer to the actual JSP
 application (view level) while the more view-independent methods can be
-in the parent of that class. For example:</font>
-<p><tt><font color="#000000">org.eu.best.minerva.StudentHandler extends
-org.eu.best.StudentHandler</font></tt>
-<p><font color="#000000">Role of Java handlers:</font>
-<br><font color="#000000">1) find attributes unknown by pages. e.g.</font>
-<br><font color="#000000">&lt;mak:object from="best.Student stud" where="stud=$student">
-...&lt;/mak:object></font>
-<br><font color="#000000">If the $student attribute is not known in the
+in the parent of that class. For example:
+<pre class="example">
+org.eu.best.minerva.StudentHandler extends org.eu.best.StudentHandler
+</pre>
+<p>Role of Java handlers:
+<ol>
+<li> find attributes unknown by pages. e.g.
+<br>&lt;mak:object from="best.Student stud" where="stud=$student">
+...&lt;/mak:object>
+<br>If the $student attribute is not known in the
 page (from a http argument) or in the session, the find{AttributeName}(Dictionary
 existingAttributes, Database d, String expression) method is called for
 the Handler object. In this case findStudent(). The handler has to compute
-the attribute, based on existing attributes, making DB accesses.</font>
-<p><font color="#000000">for example "lbg.$lbg_order" above, will generate
-a call</font>
-<br><font color="#000000">findLbgOrder(otherAttributes, db)</font>
-<br><font color="#000000">and the Java handler will return the default
-odering for LBGs (say "name").</font>
-<p><font color="#000000">If the attribute is computed susccesfully, it
-is associated with the session</font>
-<p><font color="#000000">If not, an exception will be thrown (typically
+the attribute, based on existing attributes, making DB accesses.
+<p>for example "lbg.$lbg_order" above, will generate
+a call
+<br>findLbgOrder(otherAttributes, db)
+<br>and the Java handler will return the default
+odering for LBGs (say "name").
+<p>If the attribute is computed susccesfully, it
+is associated with the session
+<p>If not, an exception will be thrown (typically
 UnauthenticatedException), and the engine will act accordingly (i.e. ask
-for authentication).</font>
-<p><font color="#000000">2) execute action methods in response to makumba
+for authentication).
+</li>
+<li>execute action methods in response to makumba
 forms. See <a href="#forms">makumba
-forms and actions</a> below.</font>
-<p><tt><font color="#990000">3) later: return query parts, as methods.
-e.g.</font></tt>
-<br><tt><font color="#990000">&lt;mak:value expr="lbg.$title()" /></font></tt>
-<br><tt><font color="#990000">will generate a call to</font></tt>
-<br><tt><font color="#990000">methodBestInternalLbgTile(lbg)</font></tt>
-<br><tt><font color="#990000">which can return an OQL expression "concat(lbg.id,
-\"-\" lbg.name)"</font></tt>
-<br><tt><font color="#990000">(such methods can be put directly in the
-Mak data definitions)</font></tt>
-<br><tt><font color="#990000">(for now, OQL only accepts count() and sum(),
+forms and actions</a> below.
+</li>
+<li class="futfeat">
+later: return query parts, as methods.
+e.g.
+<br><tt>&lt;mak:value expr="lbg.$title()" /></tt>
+will generate a call to method <tt>BestInternalLbgTile(lbg)</tt>
+<br>which can return an OQL expression "concat(lbg.id, \"-\" lbg.name)"
+(such methods can be put directly in the Makumba data definitions)
+
+For now, OQL only accepts count() and sum(),
 but that can be easily fixed, till then, the method can be replaced by
-hand:</font></tt>
-<br><tt><font color="#990000">&lt;mak:value expr="lbg.id"/>-&lt;mak:value
-expr="lbg.name"/></font></tt>
-<br><tt><font color="#990000">)</font></tt>
+hand:
+<tt>&lt;mak:value expr="lbg.id"/>-&lt;mak:value expr="lbg.name"/></tt>
+</li>
+</ol>
 
 <h4>Handler Initialization</h4>
-<br><font color="#000000">Whenever a handler is used in a new context (i.e.
+Whenever a handler is used in a new context (i.e.
 with a different set of attributes, e.g. a new page access), a method called
 checkAttributes(Attributes a, Database db) is looked for and executed,
-if it is defined.</font>
-<br><font color="#000000"><b>checkAttributes</b> can perform sanity checks
+if it is defined.
+<p><b>checkAttributes</b> can perform sanity checks
 for attributes used in the respective logic (in case of mismatches, <a href="api/org/makumba/UnauthorizedException.html">org.makumba.UnauthorizedException</a>
 is usually thorwn), can load attributes that are absolutely needed for
-page execution (</font><font color="#000099">formerly given by the requiredAttributes()&nbsp;
-method</font><font color="#000000">), etc.</font>
+page execution
+(<span class="oldfeat">formerly given by the requiredAttributes()
+method</span>), etc.
 
 
 <h3><a NAME="Login">Login</a></h3>
@@ -567,11 +590,17 @@ Lbg, Company representatives). E.g. the findCompany() method will check
 to see if the authentication (email_address and password) corresponds to
 any company representative of that company. If yes, it will return that
 company.
-<p><tt><font color="#990000">Login can be done in 2 ways:</font></tt>
-<br><tt><font color="#990000">1)Http login: will set the attributes $username,
-$password</font></tt>
-<br>2)cookie login: done in a page called login.jsp,
-in that dir or in any of the parents. It should conain at least:
+
+<p class="futfeat">Login can be done in 2 ways:</p>
+<ol>
+<li class="futfeat">
+Http basic authentication login: will set the attributes $username,
+$password
+</li>
+
+<li>
+cookie login: done in a page called <code>login.jsp</code>,
+in that dir or in any of the parents. It should contain at least:
 <pre class="example">
 &lt;mak:login>
   &lt;input type=text name=username>
@@ -585,29 +614,48 @@ all the http parameters it got. Note that &lt;mak:login> is only needed
 upon automatic login (a page displayed when the user requested another
 page, that needs authentication). If you wish to ask for login manually
 in a startup page, a normal HTML form is enough.
+</li>
+</ol>
 
 <p>To cancel out a certain attribute, in order to produce a new login,
 the logout tag is available
-<p><tt>&lt;mak:logout actor="student"/></tt>
-<p>(later on, automatic logout request might be done by the business logic,
-such as with a method deleteAttributes() that can return "*", a String
-or a String[])
-<p><tt><font color="#990000">Later: to accomodate servers that don't do
+
+<pre class="example">
+&lt;mak:logout actor="student"/>
+</pre>
+
+You can remove (cancel-out, logout) multiple attributes from the session by using
+<code>&lt;mak:logout></code> several times and/or by using a "*" wildcard, eg:
+<pre class="example">
+&lt;mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
+&lt;mak:logout actor="*app"/> (attributes whose names end with "app")
+&lt;mak:logout actor="*"/> (all attributes)
+</pre>
+
+<div class="futfeat">
+
+Later on, Logout request might be done in the business logic,
+with a method deleteAttributes(param) that can accept either a String
+(with optional '*') or a String[].
+
+<p>Later: to accomodate servers that don't do
 session tracking, login can be done by a query condition rather than by
 doing a query (once per session) to find an attribute. This way, it won't
 need to do a query (to check the authentication) at every access, but that
-condition will make sure that authentication is done.</font></tt>
-<p><tt><font color="#990000">&lt;mak:object from="best.Student stud" where
-="stud.$login()"> ...&lt;/mak:object></font></tt>
-<br><tt><font color="#990000">then methodBestSudentLogin("stud") will return</font></tt>
-<br><tt><font color="#990000">"stud.auth.email=$username AND stud.auth.password=$password"</font></tt>
-<br><tt><font color="#990000">This can be used for http authentication
-with no session tracking.</font></tt>
-<p><tt><font color="#990000">Later: if an attribute has multiple values,
+condition will make sure that authentication is done.
+<p><tt>&lt;mak:object from="best.Student stud" where
+="stud.$login()"> ...&lt;/mak:object></tt>
+<br>then methodBestSudentLogin("stud") will return
+"stud.auth.email=$username AND stud.auth.password=$password"
+<br>This can be used for http authentication
+with no session tracking.
+<p>Later: if an attribute has multiple values,
 a choose{AttributeName}.jsp page is shown. For example, a super user (for
 that area) can choose to act as any student, Lbg, or company... A student
 member of more local Vivaldi teams can choose to act for any of the viv
-teams, etc.</font></tt>
+teams, etc.
+</div>
+
 <h2>
 <a NAME="PresentationSummary"></a>Presentation and internal representation
 summary</h2>
