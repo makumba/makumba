@@ -38,6 +38,6 @@ public class FieldPrinter extends FieldHandler
             +(isNotNull()?"notnull ":"")
             +(isUnique()?"unique ":"")
             +valueToString()
-            +(hasDescription()?" ; "+getDescription():"");
+            +(hasDescription()?"\t;"+getDescription():"");
     }
 }
