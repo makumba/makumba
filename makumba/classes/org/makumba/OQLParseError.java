@@ -27,5 +27,7 @@ package org.makumba;
 public class OQLParseError extends MakumbaError
 {
   /** Construct an OQL parse error with the given explanation */
-  public OQLParseError(String explanation){super(explanation); }
+  public OQLParseError(String explanation ){super(explanation); }
+  
+  public OQLParseError(String explanation, Throwable cause){ super(cause, explanation); }
 }
