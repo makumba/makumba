@@ -25,6 +25,8 @@ import java.io.PushbackInputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.InputStream;
+import org.makumba.MakumbaSystem;
+import org.makumba.MakumbaSystem;
 
 /**
  * Class <code>BoundaryInputStream</code> extends <code>InputStream</code>
@@ -84,6 +86,7 @@ public class BoundaryInputStream extends InputStream {
 		// if it was not the end of the multipart then it can be a
 		// network congestion: some more bytes just have to come
 		// TODO: need to sleep and read later instead of throwning an Exception
+		MakumbaSystem.getMakumbaLogger("fileUpload").severe("network congestion: BoundaryInputStream doesn't implement a treatment for this");
 		throw new IOException("Not enough bytes to look for the boundary");
 
 	    } else {
@@ -111,9 +114,11 @@ public class BoundaryInputStream extends InputStream {
 		//System.out.println("DEBUG-bis: ----- ending before boundary CR LF");
 		index-=2;
 	    } else if (myBuffer[index-1]==13) {
-		System.out.println("\t - * - DEBUG-bis: -*-*-*-- ending before boundary CR");
+		MakumbaSystem.getMakumbaLogger("fileUpload").warning("BIS: ending before boundary with only CR");
 		index-=1;
-	    } else throw new IOException("*DEBUG-bis: prob with endings");
+	    } else {
+		throw new IOException("*DEBUG-bis: problem with ending of the file. Please, report to ITC");
+	    }
 
 	    System.arraycopy((Object) myBuffer, 0, //from, position
 			     (Object) buffer, 0, //to, position
