@@ -13,6 +13,8 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 
+import javax.servlet.jsp.tagext.BodyTag;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +49,17 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   class Types extends HashMap
   {
-    public void setType(String key, FieldDefinition value)
+    public void setType(String key, FieldDefinition value, MakumbaTag t)
     {
-      FieldDefinition fd= (FieldDefinition)get(key);
-      
-      if(fd!=null && !value.compatible(fd))
-	throw new ProgrammerError("Attribute "+key+" was determined to have type "+fd+" and, further on in the page, the incompatible type "+ value);
-      put(key, value);
+      Object []val1= (Object[])get(key);
+      FieldDefinition fd= (FieldDefinition)val1[0];
+      // if we get nil here, we keep the previous, richer type information
+      if(fd!=null && value.getType().equals("nil"))
+	return;
+      if(fd!=null && !value.isAssignableFrom(fd))
+	throw new ProgrammerError("Attribute type changing within the page: in tag\n"+((MakumbaTag)val1[1]).getTagText()+ " attribute "+key+" was determined to have type "+fd+" and in tag\n"+t.getTagText()+"\n the incompatible type "+ value);
+      Object[] val2={value, t};
+      put(key, val2);
     }
   }
 
@@ -65,8 +71,9 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     HashMap queries= new HashMap();
     HashMap inputTypes= new HashMap();
     HashMap basePointerTypes= new HashMap();
+    HashMap tags= new HashMap();
 
-    public ComposedQuery getQuery(Object key)
+    public ComposedQuery getQuery(MultipleKey key)
     {
       ComposedQuery ret= (ComposedQuery)queries.get(key);
       if(ret==null)
@@ -76,7 +83,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
     /** return a composed query that will associated to the given key. 
      */
-    public ComposedQuery cacheQuery(Object key, String[] sections, MultipleKey parentKey)
+    public ComposedQuery cacheQuery(MultipleKey key, String[] sections, MultipleKey parentKey)
     {
       ComposedQuery ret= (ComposedQuery)queries.get(key);
       if(ret!=null)
@@ -88,6 +95,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       queries.put(key,ret);
       return ret;
     }
+
+    final static String[] dummyQuerySections= {null, null, null, null};
   }
 
   class ParseStatus
@@ -108,6 +117,23 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
       JspParseData.fill(t, td.attributes);
       t.setTagKey();
+      if(t.tagKey!=null && !t.allowsIdenticalKey())
+	{
+	  MakumbaTag sameKey= (MakumbaTag)pageCache.tags.get(t.tagKey);
+	  if(sameKey!=null)
+	    {
+	      StringBuffer sb= new StringBuffer();
+	      sb.append("Due to limitations of the JSP standard, Makumba cannot make\n").
+		append("a difference between the following two tags: \n");
+	      sameKey.addTagText(sb);
+	      sb.append("\n");
+	      t.addTagText(sb);
+	      sb.append("\nTo address this, add an id= attribute to one of the tags, and make sure that id is unique within the page.");
+	      throw new ProgrammerError(sb.toString());
+	    }
+	  pageCache.tags.put(t.tagKey, t);
+	}
+      
       t.doStartAnalyze();
       tags.add(t);
     }
@@ -116,6 +142,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     {
       if(t==null)
 	return;
+      if(!(t instanceof BodyTag ) && !(t instanceof QueryTag))
+	 throw new ProgrammerError("This type of tag cannot have a body:\n "+t.getTagText());
       parents.add(t);
     }
 
