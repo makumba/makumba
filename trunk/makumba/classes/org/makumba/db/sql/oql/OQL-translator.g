@@ -487,7 +487,7 @@ projection :
         e:expr 
         (
             ( a:"as" {#a.setText(" AS");})?
-            lb:	labelIdentifier { label=#lb.getText(); #lb.setText(" "+label+"_"); }
+            lb:	labelIdentifier { label=#lb.getText(); #lb.setText(" "+label); }
         )?
 	{
 	  
