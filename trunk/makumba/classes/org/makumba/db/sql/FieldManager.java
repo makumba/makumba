@@ -262,7 +262,7 @@ public abstract class FieldManager extends FieldHandler
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
 			//rm.getDatabase().getConfiguration()+": "+ //DB name
 			"Problem adding UNIQUE INDEX on "+brief
-			+": "+e.getMessage() );
+			+": "+e.getMessage() + " [ErrorCode: "+e.getErrorCode()+", SQLstate:"+e.getSQLState()+"]");
 		createNormalEvenIfUnique=true;
 	   }
 	}
@@ -282,7 +282,7 @@ public abstract class FieldManager extends FieldHandler
 		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
 			//rm.getDatabase().getConfiguration()+": "+ //DB name
 			"Problem adding INDEX on "+brief
-			+": "+e.getMessage() );
+			+": "+e.getMessage() + " [ErrorCode: "+e.getErrorCode()+", SQLstate:"+e.getSQLState()+"]");
 	   }
 	} 
 
