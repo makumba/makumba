@@ -19,6 +19,10 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.11; 21 jul 2004 cristi
+- refactoring to ensure efficient use of memory (fix for bug 709). soft caches were tested quite sucesfully in production
+- initial number of db connections is configurable in the db connection file
+
 0.5.10.5; 9 jul 2004, cristi
 Made sure that some resources are immediately freed at context reload, without waiting for garbage collection. Connections are freed and closed that way.
 
