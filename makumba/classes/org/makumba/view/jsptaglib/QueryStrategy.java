@@ -1,26 +1,3 @@
-///////////////////////////////
-//  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
-
 package org.makumba.view.jsptaglib;
 import org.makumba.view.*;
 import org.makumba.util.*;
@@ -269,13 +246,16 @@ implements Observer, QueryTagStrategy
   public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException, NewProjectionException
   {
     int n= knewProjectionAtStart(expr);
-    if(n!=-1 && startedWithData)
-      {
-	String s=formatProjection(n, formatParams, var, printVar);
-	try{	
-	  if(printVar==null && var==null)
-	    pageContext.getOut().print(s);
-	}catch(IOException e){ throw new JspException(e.toString()); }
+    if(n!=-1)
+      { 
+	  if(startedWithData)
+	    {
+		String s=formatProjection(n, formatParams, var, printVar);
+		try{	
+		    if(printVar==null && var==null)
+			pageContext.getOut().print(s);
+		}catch(IOException e){ throw new JspException(e.toString()); }
+	    }
       }
     else
       {
@@ -329,7 +309,9 @@ implements Observer, QueryTagStrategy
     return s;
   }
 
-  public boolean executed(){ return bigResults!=null; }
+  public boolean executed(){ 
+      return bigResults!=null && queryVersion==query.getVersion(); 
+  }
 
   Hashtable nullables= new Hashtable();
 
