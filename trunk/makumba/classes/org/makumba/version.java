@@ -39,10 +39,10 @@ class version {
 	if(version.length()>2) version=version.replace('_','.');
 	else 
 	{
-		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
- 		version="devel-"+df.format(getBuildDate());
+		//SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+ 		//version="devel-"+df.format(getBuildDate());
  		//version="devel-"+getBuildDate();
-		//version="development";
+		version="development";
 	}
 	return version;
    }
