@@ -88,7 +88,9 @@ public class SourceSyntaxPoints
   }
 
 
-  /** Goes thru the comments in a text, defined according to a pattern, return the text uncommented (for further processing) but of the same length by replacing every comment with whitespace, put the comments limits in the syntax point set */
+  /** Replaces comments from a text by blanks, and stores syntax points. Comment is defined by a Pattern. 
+   * @return The text with comments replaced by blanks, of equal length as the input.
+   */
   String unComment(String content, Pattern commentPattern, String commentPointType)
   {
     Matcher m= commentPattern.matcher(content);
@@ -123,6 +125,7 @@ public class SourceSyntaxPoints
     return e;
   }
 
+
   /** Fills in the Line and Column for the given SyntaxPoint, based on the collection of lineBeginnings syntaxPoints. */
   void setLineAndColumn(SyntaxPoint point)
   {
@@ -130,6 +133,7 @@ public class SourceSyntaxPoints
     point.line=lineBegin.line;
     point.column=point.position-lineBegin.position+1;
   }
+
 
   /** 
    * Creates begin- and end- syntaxpoints (but without setting the line and column fields) 
@@ -174,6 +178,7 @@ public class SourceSyntaxPoints
 
   /**
    * Takes out pieces of text according to specified start and stop symbols, and sets SyntaxPoints around the removed substrings.
+   * (2003-06-18) Function added for fix bug 465, but is not used now, as 465 was fixed with regex. Leaving it as it may be used in future.
    * @param start  String that indicates the start of a substring to remove, if it's not followed by any String in startNotFollowedBy array
    * @param end    String that indicates the end of a substring to remove, if it's not preceded by any String in the endNotPrecededBy array
    * @param syntaxPointType  the type of the syntaxPoints that are created to mark the removed substrings
