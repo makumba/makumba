@@ -135,8 +135,11 @@ public abstract class MakumbaTag extends TagSupport implements TagStrategy
 	   TomcatJsp.getJspURI((HttpServletRequest)pageContext.getRequest()),
 	   MakumbaJspAnalyzer.singleton
 	    ); 
-	pageContext.setAttribute("makumba.parse.cache", pageCache=(Map)jpd.getAnalysisResult
-				 (pageContext));
+	Object result=jpd.getAnalysisResult(pageContext);
+	if(result instanceof MakumbaError)
+	    throw (MakumbaError)result;
+
+	pageContext.setAttribute("makumba.parse.cache", pageCache=(Map)result);
       }
     return (MakumbaTag)pageCache.get(key);
   }
