@@ -1,24 +1,25 @@
 <!-- $Header$ -->
 
 <project name="Makumba" default="compile" basedir=".">
+      	<property name="bundle_base" value="../.." />
 
        <path id="project.class.path">
-	 <fileset dir="../../util-java/lib">
+	 <fileset dir="${bundle_base}/util-java/lib">
 	  <include name="**/*.jar" />
 	  <exclude name="**/makumba.jar" />
 	 </fileset>	
-	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
+	 <fileset dir="${bundle_base}/util-java/tomcat-4.1/common/lib">
 	  <include name="**/servlet.jar" />
 	 </fileset>	
        </path>
 
 	<!-- jikes as default compiler -->
        	<property name="build.compiler" value="jikes" />
-
+ 
 	<!-- jikes options for ant -emacs  -->
        	<property name="build.compiler.emacs" value="true" />
 
-	<property name="temp.dir" value="../../temp" />
+	<property name="temp.dir" value="${bundle_base}/temp" />
 
 	<property environment="env"/>
 
@@ -222,18 +223,18 @@
 	</target>
 
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
-	<mkdir dir="../../makumba.distrib" />
-	<delete dir="../../makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
+	<mkdir dir="${bundle_base}/makumba.distrib" />
+	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
+	<cvs command="export -r ${tag} makumba" dest="${bundle_base}/makumba.distrib/"/>
         <mkdir dir="${jar.place}/lib" />
 	<!-- make the source tarball: -->
 	<zip zipfile="lib/${tag}-src.zip">
-		<fileset dir="../../makumba.distrib/">
+		<fileset dir="${bundle_base}/makumba.distrib/">
 		  <include name="makumba/**" />
 		</fileset>
 	</zip>
 	<!-- make the jar: -->
-	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
+	<java classname="org.apache.tools.ant.Main" fork="true" dir="${bundle_base}/makumba.distrib/makumba/" >
         	<classpath>
 		<pathelement path="${project.class.path}"/>
 		<pathelement path="${java.class.path}"/>
@@ -241,18 +242,18 @@
             <sysproperty key="jar.place" path="${jar.place}" />
             <arg value="jar"/>
 	</java>
-	<delete dir="../../makumba.distrib" />
+	<delete dir="${bundle_base}/makumba.distrib" />
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
 
 
 	<target name="publishJar" depends="compile" if="tag" 
 	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
-	<mkdir dir="../../makumba.distrib" />
-	<delete dir="../../makumba.distrib/makumba/" />
-	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
-	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
-	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
+	<mkdir dir="${bundle_base}/makumba.distrib" />
+	<delete dir="${bundle_base}/makumba.distrib/makumba/" />
+	<cvs command="checkout makumba" dest="${bundle_base}/makumba.distrib/"/>
+	<cvs command="tag -d ${tag}" dest="${bundle_base}/makumba.distrib/makumba/" />
+	<cvs command="tag ${tag}" dest="${bundle_base}/makumba.distrib/makumba/" />
 
 	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
