@@ -316,6 +316,7 @@ public class Database extends org.makumba.db.Database
     throw new org.makumba.DBError(e, command);
   }
 
+  /** execute a prepared statement and log it, and its exceptions. return the number of records affected, or -1 if a duplicate error appeared */
   protected int exec(PreparedStatement ps)
   {
     try{
@@ -325,9 +326,17 @@ public class Database extends org.makumba.db.Database
       return n;
     }catch(SQLException e) 
       {
+	if(isDuplicateException(e))
+	  return -1;
 	logException(e);
 	throw new DBError(e);
       } 
+  }
+  
+  /** return whether the exception indicates a duplicate. 
+    may need to be specified differently for certain database engines */
+  static boolean isDuplicateException(SQLException e){
+    return e.getMessage().toLowerCase().indexOf("duplicate")!=-1;
   }
 
   static void logException(SQLException e){logException(e, null); }

@@ -31,6 +31,9 @@ public abstract class FieldManager extends FieldHandler
 {
   String dbname;
   RecordManager rm;
+  
+  /** The query that searches for duplicates on this field */
+  String checkDuplicate;
 
   /** what is the database level type of this field? */
   protected String getDBType(Database d)
@@ -200,6 +203,7 @@ public abstract class FieldManager extends FieldHandler
     this.rm=rm;
     if(rm.alter && shouldIndex())
 	manageIndexes(dbc);
+    checkDuplicate="SELECT 1 FROM "+rm.getDBName()+" WHERE "+getDBName()+"=?";
   }
 
 
@@ -360,4 +364,22 @@ public abstract class FieldManager extends FieldHandler
       throw new org.makumba.InvalidValueException(getFieldInfo(), "you cannot insert an "+s+" field unless the type "+rm.getRecordInfo().getName()+" has administration approval in the database connection file");
   }
 
+  /** return whether there was a duplicate for this field when inserting the given data */
+  public boolean checkDuplicate(SQLDBConnection dbc, Dictionary data){
+    if(!isUnique())
+      return false;
+    Object val= data.get(getName());
+    if(val==null) // FIXME: not sure about null duplicates
+      return false;
+    PreparedStatement ps= dbc.getPreparedStatement(checkDuplicate);
+    try{
+      setUpdateArgument(ps, 1, val); 
+      return ps.executeQuery().next();
+    }catch(SQLException se)
+      { 
+	Database.logException(se, dbc);
+	throw new org.makumba.DBError(se, checkDuplicate);
+      }
+
+  }
 }

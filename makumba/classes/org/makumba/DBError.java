@@ -31,4 +31,5 @@ public class DBError extends MakumbaError
   {
     super(reason, command!=null?"\nin db command "+command:""); 
   }
+  public DBError(String explanation){ super(explanation); }
 }
