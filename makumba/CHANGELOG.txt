@@ -2,6 +2,7 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
+stefan; 18 nov 2003: bug 638 fixed (Makumba altered InnoDB tables to InnoDB on MySQL 4.1)
 cristi; 29 oct 2003: made makumba work from java applets, needed to catch security exceptions in org.makumba.MakumbaSystem, org.makumba.util.NamedResources, org.makumba.abstr.DateHandler
 fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
 fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
