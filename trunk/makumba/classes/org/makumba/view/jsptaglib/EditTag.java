@@ -33,6 +33,6 @@ public class EditTag extends FormTagBase
 
   public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    return pageCache.getQuery(getParentListKey()).getLabelType(baseObject);
+    return pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject);
   }
 }

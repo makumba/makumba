@@ -42,7 +42,7 @@ public class ValueComputer
   public static ValueComputer getValueComputerAtAnalysis(MakumbaTag analyzed, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
     expr=expr.trim();
-    Object check= pageCache.getQuery(analyzed.getParentListKey())
+    Object check= pageCache.getQuery(analyzed.getParentListKey(pageCache))
       .checkExprSetOrNullable(expr);
 
     FieldDefinition set=null;
@@ -79,7 +79,7 @@ public class ValueComputer
   /** a nonQueryMak:value value computer */
   ValueComputer(MakumbaTag analyzed, String expr, MakumbaJspAnalyzer.PageCache pageCache)
   {
-    parentKey= analyzed.getParentListKey();
+    parentKey= analyzed.getParentListKey(pageCache);
     this.expr=expr;
     pageCache.getQuery(parentKey).checkProjectionInteger(expr);
   }
@@ -141,7 +141,7 @@ abstract class QueryValueComputer extends ValueComputer
 			MakumbaJspAnalyzer.PageCache pageCache)
   {
     this.expr=expr;
-    parentKey=analyzed.getParentListKey();
+    parentKey=analyzed.getParentListKey(pageCache);
 
     queryKey= new MultipleKey(parentKey, keyDifference);
 

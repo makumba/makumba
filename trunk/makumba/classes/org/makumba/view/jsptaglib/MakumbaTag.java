@@ -113,7 +113,7 @@ public abstract class MakumbaTag extends TagSupport
   public QueryTag getParentList(){return (QueryTag)findAncestorWithClass(this, QueryTag.class); }
 
   
-  public MultipleKey getParentListKey()
+  public MultipleKey getParentListKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     QueryTag parentList= getParentList();
     return parentList==null?null:parentList.getTagKey();

@@ -108,7 +108,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
   {
-    Object[] keyComponents= {baseObject, handler, getParentListKey(), getClass()};
+    Object[] keyComponents= {baseObject, handler, getParentListKey(null), getClass()};
     tagKey=new MultipleKey(keyComponents);
   }
 
