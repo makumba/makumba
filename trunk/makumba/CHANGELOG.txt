@@ -1,3 +1,4 @@
+stefan; 8 sept 2003: fixed bug 539 (deprecate mak:list/object header= and footer=) Logs warning and gives a tip how to solve
 stefan; 20 aug 2003: extended test suite, now ready for additional tests
 stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
 stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
