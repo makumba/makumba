@@ -80,11 +80,20 @@ public class InputTag extends MakumbaTag
     tagKey= new MultipleKey(keyComponents);
   }
 
+  public MultipleKey getParentListKey()
+  {
+    MultipleKey k= super.getParentListKey();
+    if(k!=null)
+      return k;
+    getForm().cacheDummyQuery();
+    return getForm().tagKey;
+  }
+
   /** determine the ValueComputer and associate it with the tagKey */
   public void doStartAnalyze()
   {
     if(name==null)
-      throw new ProgrammerError("name attribute is required");
+      throw new ProgrammerError("name attribute is required in\n"+getTagText());
 
     if(isValue())
       pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
@@ -100,8 +109,8 @@ public class InputTag extends MakumbaTag
     if(dataType!=null)
       {
 	dataTypeInfo= MakumbaSystem.makeFieldDefinition(name, dataType);
-	if(formType!=null && ! formType.compatible(dataTypeInfo))
-	  throw new ProgrammerError("declared data type "+dataType+" not compatible with the type computed from form "+formType);
+	if(formType!=null && ! formType.isAssignableFrom(dataTypeInfo))
+	  throw new ProgrammerError("declared data type '"+dataType+"' not compatible with the type computed from form '"+formType+"' in \n"+getTagText());
       }
 
     if(isValue())
@@ -113,15 +122,22 @@ public class InputTag extends MakumbaTag
     if(isAttribute())
       type=(FieldDefinition)pageCache.types.get(expr.substring(1));
 
-    if(type!=null && dataTypeInfo!=null && !dataTypeInfo.compatible(type))
-      throw new ProgrammerError("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type);
+    if(type!=null && dataTypeInfo!=null && !dataTypeInfo.isAssignableFrom(type))
+      throw new ProgrammerError
+	("computed type for INPUT is different from the indicated dataType: \n"+
+	 getTagText()+"\n has dataType indicated to '"+ 
+	 dataType+ "' type computed is '"+type+"'");
 
-    if(type!=null && formType!=null && !formType.compatible(type))
-      throw new ProgrammerError("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ formType+ " type computed is "+type);
+    if(type!=null && formType!=null && !formType.isAssignableFrom(type))
+      throw new ProgrammerError
+	("computed type for INPUT is different from the type resulting from form analysis:\n"+
+	 getTagText()+"\n has form type determined to '"+ 
+	 formType+ "' type computed is '"+type+"'");
     
     
     if(type==null && formType==null && dataTypeInfo==null)
-      throw new ProgrammerError("cannot determine input type: "+this+" . Please specify the type using dataType=...");
+      throw new ProgrammerError("cannot determine input type: "+this+
+				" .\nPlease specify the type using dataType=...");
 
     // we give priority to the type as computed from the form
     if(formType==null)
@@ -138,14 +154,14 @@ public class InputTag extends MakumbaTag
 
   public int doMakumbaEndTag()throws JspException, LogicException
   {
+    FieldDefinition type= (FieldDefinition)pageCache.inputTypes.get(tagKey);
     Object val=null;
 
     if(isValue())
       val=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+
     if(isAttribute())
       val=PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
-
-    FieldDefinition type= (FieldDefinition)pageCache.inputTypes.get(tagKey);
 
     if(val!=null)
       val=type.checkValue(val);

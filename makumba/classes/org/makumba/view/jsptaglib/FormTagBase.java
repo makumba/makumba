@@ -33,6 +33,7 @@ import org.makumba.LogicException;
 import org.makumba.NoSuchFieldException;
 import org.makumba.ProgrammerError;
 
+import org.makumba.view.ComposedQuery;
 import org.makumba.util.MultipleKey;
 
 import javax.servlet.jsp.tagext.BodyTag;
@@ -74,7 +75,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       return "simple";
     int n= classname.lastIndexOf("Tag");
     if(n!=classname.length()-3)
-      throw new RuntimeException("the tag class name was expected to end with \'Tag\': "+classname);
+      throw new RuntimeException("the tag class name was expected to end with \'Tag\': "+classname+" in\n"+getTagText());
     classname= classname.substring(0, n);
     int m=classname.lastIndexOf(".");
     return classname.substring(m+1).toLowerCase();
@@ -90,6 +91,10 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     tagKey=new MultipleKey(keyComponents);
   }
 
+  public void cacheDummyQuery()
+  {
+    pageCache.cacheQuery(tagKey, pageCache.dummyQuerySections, null);
+  }
   public void doStartAnalyze()
   {
     if(baseObject==null)
@@ -102,8 +107,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public void doEndAnalyze()
   {
+    ComposedQuery dummy= (ComposedQuery)pageCache.queries.get(tagKey);
+    if(dummy!=null)
+      dummy.analyze();
     if(responder.getAction()==null)
-      throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
+      throw new ProgrammerError("Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
     if(baseObject==null)
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
@@ -113,6 +121,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public int doMakumbaStartTag() throws JspException, LogicException
   {
+    // if we have a dummy query, we simulate an iteration
+    if(pageCache.queries.get(tagKey)!=null)
+      {
+	QueryExecution.startListGroup(pageContext);
+	QueryExecution.getFor(tagKey, pageContext).onParentIteration();
+      }
+
     responder.setOperation(getOperation());
     responder.setExtraFormatting(extraFormatting);
     responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
@@ -137,6 +152,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public int doMakumbaEndTag() throws JspException 
   {
+    // if we have a dummy query, we simulate end iteration
+    if(pageCache.queries.get(tagKey)!=null)
+      QueryExecution.endListGroup(pageContext);
     try{
       StringBuffer sb= new StringBuffer();
       responder.writeFormPreamble(sb, basePointer);
@@ -175,7 +193,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 	if(fd==null)
 	  throw new org.makumba.NoSuchFieldException(dd, fname);
 	if(!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
-	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not");  
+	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not; in\n"+getTagText());  
 	dd= fd.getReferredType();
 	dot=dot1;
       }
