@@ -30,16 +30,23 @@ dateModify=date
  * More specifically, dates are written out differently,  with the special dateManager provided in this package. The other handlers are the general SQL handlers. */
 public class RecordManager extends org.makumba.db.sql.RecordManager
 {
-  protected void create(java.sql.Statement st, String tblname, boolean really)
+  protected void create(org.makumba.db.sql.SQLDBConnection dbc, String tblname, boolean really)
        throws java.sql.SQLException
   {
-    super.create(st, tblname, really);
+    super.create(dbc, tblname, really);
     if(really)
       {
+	dbc.commit();
 	try{
 	  Thread.currentThread().sleep(500);
 	}catch(InterruptedException t){}
       }
   }
+
+  protected void indexCreated(org.makumba.db.sql.SQLDBConnection dbc)
+  {
+    dbc.commit();
+  }
+
 }
 
