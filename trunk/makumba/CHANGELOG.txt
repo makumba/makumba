@@ -1,3 +1,4 @@
+stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
 stefan; 16 jul 2003: bug 3 fixeed (ptrIndex and ptrOne are declared as unique)
 stefan; 15 jul 2003: bug 4 fixeed (unique indexes created and dropped in the DB as needed during table checking)
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)

@@ -203,66 +203,93 @@ public abstract class FieldManager extends FieldHandler
   }
 
 
+  /** Ask this field how to name the index on this field. Normally called from manageIndexes().  */
+  public String getDBIndexName() 
+  {
+     return rm.getDBName()+"_"+getDBName();  
+  }
+
+
+  /** Examine DB indexes. */
+  public boolean isIndexOk(SQLDBConnection dbc)
+  {
+       boolean ok=false;
+       try{
+	   ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,rm.getDBName(),true,false);
+	   while(rs.next()){
+		if( getDBIndexName().equals(rs.getString("INDEX_NAME")) ) // found index for this column
+		  ok=(isUnique()==!rs.getBoolean("NON_UNIQUE") ); //compare current MDD and DB declarations
+	   }
+       } catch(SQLException e) {System.out.println(e);}
+       return ok;
+  } //end isIndexOk()
+
+
+
   /** Ask this field to add/remove indexes as needed, normally called from onStartup().
    */
   public void manageIndexes(SQLDBConnection dbc) 
        throws SQLException
   {
-       String keyName=rm.getDBName()+"_"+getDBName();
-       if(isUnique())
-	{
-	   boolean uniqueExists=false;
-	   try{
-		Statement st= dbc.createStatement();
+     String keyName=getDBIndexName();
+     String brief=rm.getRecordInfo().getName()+"#"+getName()+" ("+getDescription()+")";
 
-		//try creating unique index
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD UNIQUE "+keyName+"_UNIQ ("+getDBName()+")");
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"UNIQUE INDEX added on field "+getName()+" of "+rm.getRecordInfo().getName() );
-		uniqueExists=true;
-	   }catch(SQLException e) 
-	   { 
-		//log important errors if any, ignore all others (eg if *_UNIQ index exists already)
-		if(e.getErrorCode()==(new Integer(getEngineProperty("duplicateEntry.error"))).intValue() )
-		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
-			//rm.getDatabase().getConfiguration()+": "+ //DB name
-			"NOT UNIQUE value of field "+getName()+" found in "+rm.getRecordInfo().getName()
-			+", unable to add UNIQUE constraint ("+e+")." );
-		if( e.getErrorCode()==(new Integer(getEngineProperty("duplicateKeyName.error"))).intValue() )
-			uniqueExists=true; //already exists, probably from previous run
-	   }
+     if(!isIndexOk(dbc)) 
+     {
+       //org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+       //	"ALTERING INDEX on field "+getName()+" of "+rm.getRecordInfo().getName() );
 
-	   if(uniqueExists) //was created above or in earlier runs
-	     try{
-		//drop the (old,) not unique index if it exists
+       try{	//drop the old, wrong index if it exists
 		Statement st= dbc.createStatement();
 		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" DROP INDEX "+keyName+" ");
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX dropped on field "+getName()+" of "+rm.getRecordInfo().getName()
-			+" because there is UNIQUE index" );
-	     }catch(SQLException e) { }
+			"INDEX DROPPED on "+brief );
+       }catch(SQLException e) {}
 
+       boolean createNormalEvenIfUnique=false;
+
+       if(isUnique())
+	{
+	   try{
+		//try creating unique index
+		Statement st= dbc.createStatement();
+		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD UNIQUE "+keyName+" ("+getDBName()+")");
+		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+			"UNIQUE INDEX ADDED on "+brief );
+	   }catch(SQLException e) 
+	   { 
+		//log all errors 
+		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+			//rm.getDatabase().getConfiguration()+": "+ //DB name
+			"Problem adding UNIQUE INDEX on "+brief
+			+": "+e.getMessage() );
+		createNormalEvenIfUnique=true;
+	   }
 	}
-       else //not unique
+
+       if(createNormalEvenIfUnique || !isUnique()) 
         {
 	   try{
 		//create normal index
 		Statement st= dbc.createStatement();
 		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" ADD INDEX "+keyName+" ("+getDBName()+")");
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"INDEX added on field "+getName()+" of "+rm.getRecordInfo().getName() );
-	   }catch(SQLException e) { }
+			"INDEX ADDED on "+brief );
+	   }catch(SQLException e) 
+	   { 
+		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+			//rm.getDatabase().getConfiguration()+": "+ //DB name
+			"Problem adding INDEX on "+brief
+			+": "+e.getMessage() );
+	   }
+	} 
 
-	   try{
-		//remove the unique index, if it exists
-		Statement st= dbc.createStatement();
-		st.executeUpdate("ALTER TABLE "+ rm.getDBName()+" DROP INDEX "+keyName+"_UNIQ ");
-		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-			"UNIQUE INDEX removed from field "+getName()+" of "+rm.getRecordInfo().getName() );
-	   }catch(SQLException e) { }
-	} //if unique
+     }//isIndexOk
+
   }//method
 
+
+  /** Tell whether this type of field should be indexed. */
   public boolean shouldIndex() {return true; }
 
   /* sets the database-level name of this field, normally identical with its abstract-level name, unless the database has some restrictions, or the configuration indicates that the field exists in the table with another name */
