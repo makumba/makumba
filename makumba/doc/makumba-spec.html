@@ -5,15 +5,26 @@
    <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
    <meta name="Author" content="Cristian Bogdan">
    <title>Makumba Specification</title>
+
+<STYLE TYPE="text/css">
+  BODY { font-family: arial; }
+  H1 { background: #CEDD17; margin-top: 30 }
+  H2 { background: #E4D943; margin-top: 50 }
+  H3 { background: #DAD3B8; margin-top: 40 }
+  H4 { background: #E0D9CF; margin-top: 40 ; color: #666666 }
+  
+  /* old and future feature */
+  .oldfeat { color: #000099 }
+  .futfeat { color: #990000 }
+</STYLE>
+
 </head>
 <body>
 
-<h1>
-Makumba Specification</h1>
+<h1>Makumba Specification</h1>
 $Revision$
-<p><font color="#000099">OLDSTYLE features that are still accepted for&nbsp;&nbsp;&nbsp;&nbsp;
-y are presented in darkblue</font>
-<br><font color="#990000">INTENDED features are presented in red</font>
+<p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
+<br><span class=futfeat>INTENDED features are presented in red</span>
 <p>Content:
 <blockquote><b><a href="#Data_Description">Data Definition Language</a></b>
 <br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Types, objects,databases">Types,
@@ -48,6 +59,8 @@ and OQL in &lt;mak:list > and &lt;mak:object ></a>
 <br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">&nbsp;
 -
 <a href="#makvalue">&lt;mak:value/></a></font>
+<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+<a href="#makif">&lt;mak:if></a></font>
 <br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
 <a href="#mak_attrib">&lt;mak:attribute></a></font>
 <br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">-
@@ -762,12 +775,13 @@ be found in the distribution.
 Displays query results. Queries are generated on the spot. Queries can
 be nested.
 <br>Example:
+<br>
 <br><b><tt>&lt;mak:list from="best.Student s" where="s.gender=\"male\""
 orderBy="s.name"</tt></b>
 <br><b><tt>&nbsp;&nbsp;&nbsp; countVar="counter" maxCountVar="number"></tt></b>
 <br><tt>&lt;% if(counter.intValue()==1) {</tt>
-<br><tt>%> <b>There are </b>&lt;%=number%> <b>students: &lt;p> </b>&lt;%}%></tt>
-<br><tt>&nbsp;&nbsp;&nbsp; &lt;%=counter %>.</tt>
+<br><tt>%> <b>There are </b>&lt;%= number %> <b>students: &lt;p> </b>&lt;% } %></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;%= counter %>.</tt>
 <br><tt>&nbsp;&nbsp;&nbsp; <b>&lt;mak:value expr="s.person.surname"/></b></tt>
 <br><b><tt>&nbsp;&nbsp;&nbsp; &lt;mak:value expr="s.person.name"/> &lt;br></tt></b>
 <br><b><tt>&nbsp;&nbsp;&nbsp; &lt;mak:list from="s.person.addresses a"></tt></b>
@@ -775,10 +789,10 @@ orderBy="s.name"</tt></b>
 <br><b><tt>&nbsp;&nbsp;&nbsp; &lt;/mak:list></tt></b>
 <br><b><tt>&lt;/mak:list></tt></b>
 <br><tt>&lt;% if(counter.intValue()==0) { %> <b>There are no students.
-</b>&lt;%}%></tt>
+</b>&lt;% } %></tt>
 <br>&nbsp;
-<blockquote><b>Fixed </b>tag parameters cannot be runtime expressions,
-but can contain makumba attributes like $attr
+<blockquote><b>FIXED</b> tag parameters can NOT be runtime expressions (RTEXPR),
+but can <!--FIXME: "always, sometimes" ? --> contain makumba attributes like $attr
 <br>&nbsp;
 <table BORDER CELLSPACING=0 >
 <tr>
@@ -792,15 +806,15 @@ but can contain makumba attributes like $attr
 <tr>
 <td><tt><font color="#000000">db</font></tt></td>
 
-<td><font color="#000000">The makumba database to connect to n Host_SQLEngineType_DatabaseName
+<td><font color="#000000">The makumba database to connect to in Host_SQLEngineType_DatabaseName
 format.</font>
 <br><font color="#000000">If not present, the default database is used.
 See <a href="SQL-drivers.html">database
 configuration and lookup</a></font><font color="#990000">.</font></td>
 
-<td>cannot contain arguments, for now
-<br>the default database is chosen if this argument is not set
-<br>can only be set for top-level (root) query tags</td>
+<td>Cannot contain arguments, for now.
+<br>The default database is chosen if this argument is not set.
+<br>Can only be set for top-level (root) query tags</td>
 </tr>
 
 <tr>
@@ -819,7 +833,7 @@ the FROM section is added to the parent query's FROM</td>
 the WHERE section is added to the parent query's WHERE</td>
 
 <td>Fixed
-<br>Note: string constants have to be quoted like \"xxx\" due to JSP conventions.</td>
+<br>Note: string constants have to be quoted like \"xxx\" or 'xxx' due to JSP conventions. </td>
 </tr>
 
 <tr>
@@ -849,7 +863,7 @@ the WHERE section is added to the parent query's WHERE</td>
 <tr>
 <td><tt>countVar</tt></td>
 
-<td>The Java Integer variable that will contain the number of the curent
+<td>The <code>java.lang.Integer</code> variable that will contain the number of the current
 iteration.&nbsp;
 <br>Note that counting iterations using simple Java counting might not
 lead to the correct result.</td>
@@ -860,7 +874,7 @@ lead to the correct result.</td>
 <tr>
 <td><tt>maxCountVar</tt></td>
 
-<td>The Java Integer variable that will contain the maximum number of iterations.</td>
+<td>The <code>java.lang.Integer</code> variable that will contain the total number of iterations.</td>
 
 <td>Fixed</td>
 </tr>
@@ -872,6 +886,14 @@ lead to the correct result.</td>
 first or after the last</td>
 
 <td></td>
+</tr>
+
+<tr>
+<td><tt>id</tt></td>
+
+<td>Tag's identifier</td>
+
+<td>Fixed. Optional, can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
 </tr>
 
 </table>
@@ -886,16 +908,16 @@ first or after the last</td>
 to any makumba tag. Typically they will be present in OQL sections instead
 of $number attributes (therefore the OQL sections of these tags is not
 "pure"). For example</font>
-<p><font color="#000000">&lt;mak:list from="best.internal.Lbg" where="lbg.country=$country"
-orderBy="lbg.$lbg_order"> ...&lt;/mak:list></font>
-<p>If a $ sign needs to be in the string, the escape is $$
+<p><font color="#000000"><code>&lt;mak:list from="best.internal.Lbg" where="lbg.country=$country"
+orderBy="lbg.$lbg_order"> ...&lt;/mak:list></code></font>
+<p>If a $ (dollar) sign needs to be in the string, the escape is $$ .
 <br>If at the end of an attribute there has to be a Java identifier letter,
 the attribute name can be written as&nbsp; text1$attrName$text2, that is,
 with $ at both ends.
 <p><font color="#000000">The http parameters are automatically set as page
 attributes. Other atributes can be set by the Java code as session attributes
-(visible in all pages accessed in the session) using pageContext.setAttribute(name,
-value, scope).</font>
+(visible in all pages accessed in the session) using <code><a title="external link, servlet API" href=http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/jsp/PageContext.html>pageContext.setAttribute(name,
+value, scope)</a></code>.</font>
 <p><font color="#000000">The query generator is setting all the attributes
 that are logically possible as prepared query parameters. For example,
 the $country above is a query parameter since it's a value, but the $lbg_order
@@ -904,17 +926,20 @@ will not be accepted as query parameter, since it's a field name.</font>
 into multiple OQL parameters. For example:</font>
 <br><font color="#000000">&nbsp;&lt;mak:list from="best.internal.Lbg" where="lbg.status
 in set($status)" ></font>
-<p><tt><font color="#990000">For view-level attributes such as lbg_order
-above, the value range can be defined</font></tt>
-<p><tt><font color="#990000">&lt;mak:defineAttribute name="lbg_order" values="name,
-id" default="name"/></font></tt>
-<p><tt><font color="#990000">Later: Maybe the page might want to set attributes.
-Something like</font></tt>
-<br><tt><font color="#990000">&lt;mak:setAttr name="lbg" from="best.internal.Lbg
-lbg" where ... scope="session" /></font></tt>
-<br><tt><font color="#990000">Then the attribute could be used as $lbg
+<span class=futfeat>
+<p>
+For view-level attributes such as lbg_order
+above, the value range can be defined by : <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name,
+id" default="name"/></code>
+<p>Later: Maybe the page might want to set attributes.
+Something like : 
+<br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:setAttr name="lbg" from="best.internal.Lbg lbg" where ... scope="session" /></code>
+<br>Then the attribute could be used as <code>$lbg</code>
 in the rest of the page/session/application... Con: such stuff is normally
-done by the Java code.</font></tt>
+done by the Java code.
+</p>
+</span>
+
 <h4>
 <a NAME="makvalue"></a>&lt;mak:value&nbsp; .../></h4>
 Displays the value of an expression from within the query.
@@ -927,11 +952,7 @@ orderBy="s.name"></tt></b>
 printVar="printBirth"/></tt></b>
 <br><tt>&nbsp;&nbsp;&nbsp; &lt;% // we only print the birthdate if it's
 after some date</tt>
-<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(birth instanceof java.util.Date
-&amp;&amp; birth!=null)</tt>
-<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(((java.util.Date)birth).after</tt>
-<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-(new java.util.Date(1980, 1,0))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (((java.util.Date)birth).after(new java.util.Date(1980, 0,1)) )</tt>
 <br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 out.print(printBirth);</tt>
 <br><tt>&nbsp;&nbsp;&nbsp; %></tt>
@@ -959,14 +980,20 @@ present.</td>
 <tr>
 <td><tt>var</tt></td>
 
-<td>The name of the Java Object variable where to store the attribute value.
-A $attribute with the same name will be set.
+<td>The name of the <code>java.lang.Object</code> variable where to store the attribute value.
+An attribute with the same name (accessible as $attributename) will also be set.
 <br>Note that you will have to cast it to its specific type (Integer, String,
 Date, Text, Pointer, Vector).
+ 
+<!-- =================================================================
+     ================ THIS IS FIXED IN makumba-0.5.7+ ================
+
 <br><b>Warning: such objects may not be of the expected type at the first
 iteration after re-compiling the page. Casting to another type without
 checking (instanceof) first will result in a ClassCastException (though
-the page might work at later runs).</b></td>
+the page might work at later runs).</b>
+-->
+</td>
 
 <td>Fixed</td>
 </tr>
@@ -974,12 +1001,18 @@ the page might work at later runs).</b></td>
 <tr>
 <td><tt>printVar</tt></td>
 
-<td>The name of the Java String varialble where to store the formatted
-object, as it would have been printed in the page. A $attribute with the
-same name will be set.
+<td>The name of the <code>java.lang.String</code> variable where to store the formatted
+object, as it would have been printed in the page. An $attribute with the
+same name will also be set.
+
+<!-- =================================================================
+     ================ THIS IS FIXED IN makumba-0.5.7+ ================
+
 <br><b>Warning: such objects may be null at the first iteration after re-compiling
 the page. Calling a String method withoug checking for null will result
-in a NullPointerException (though the page might work at later runs).</b></td>
+in a NullPointerException (though the page might work at later runs).</b>
+-->
+</td>
 
 <td>Fixed</td>
 </tr>
@@ -987,9 +1020,9 @@ in a NullPointerException (though the page might work at later runs).</b></td>
 <tr>
 <td><tt>urlEncode</tt></td>
 
-<td>Tell if the expression will be part of an URL or not</td>
+<td>Tells if the expression will be part of an URL or not. Default is false. (<code>"true"|"false"</code>)</td>
 
-<td>only for char[] for now</td>
+<td><!-- FIXME: fred: i think it's for all types! -->only for char[] for now</td>
 </tr>
 
 <tr>
@@ -1005,7 +1038,9 @@ Default is "false"</td>
 <tr>
 <td><tt>format</tt></td>
 
-<td>Format string, according to java.text.SimpleDateFormat</td>
+<td>Format string, according to 
+<code><a title="external link, servlet API" href=http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html>java.text.SimpleDateFormat</a></code>
+</td>
 
 <td>only for date. Defaults to "dd MMMM yyyy"</td>
 </tr>
@@ -1025,6 +1060,103 @@ Default is "false"</td>
 
 <td>only for text, default "30"</td>
 </tr>
+
+<tr>
+<td><tt>maxLength</tt></td>
+
+<td>The maximum length (characters) to print. Longer output is cut of, and an <code>ellipsis</code> 
+is added to indicate the cut. Default is <i>unlimited</i>.</td>
+
+<td>RTEXPR. ONLY applies for char[] and if it is not already HTML formatted (cfr. <code>html</code>).</td>
+</tr>
+
+<tr>
+<td><tt>ellipsis</tt></td>
+
+<td>The character string to print to indicate that the text extended the <code>maxLength</code>. Default is "...". 
+The final printed string, will not exceed <code>maxLength</code>, even including the <code>ellipsis</code></td>
+
+<td>RTEXPR</td>
+</tr>
+
+<tr>
+<td><tt>ellipsisLength</tt></td>
+
+<td>The equivalent character length of <code>ellipsis</code>. 
+By default, this is calculated as <code><i>ellipsis</i>.length()</code>. 
+But if <code>ellipsis</code> e.g. is HTML code, then that is not appropriate. 
+<br>in this example, the ellipsis is an image, which +- equivalent to (the width of) 5 characters. 
+<br>&nbsp;&nbsp;<code>ellipsis="&lt;img src=icon.gif width=10 height=10>" ellipsisLength="5"
+
+</td>
+
+<td>RTEXPR</td>
+</tr>
+
+<tr>
+<td><tt>addTitle</tt></td>
+
+<td>If "true", add a tooltip to the value. If "auto", then add tooltip only if the printed output 
+is cut (cfr <code>maxLength</code>). Default is "false". <br>
+Note: this works by writing as output : <code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span> <code>
+</td>
+
+<td>RTEXPR</td>
+</tr>
+
+<tr>
+<td><tt>default</tt></td>
+
+<td>The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)</td>
+
+<td>RTEXPR</td>
+</tr>
+
+<tr>
+<td><tt>empty</tt></td>
+
+<td>The character string to print if the normal printed output would be empty (i.e. zero-length string). 
+Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.</td>
+
+<td>RTEXPR<br>  </td>
+</tr>
+
+
+</table>
+</blockquote>
+
+<h4>
+<a NAME="makif"></a>&lt;mak:if&nbsp; ...> ... &lt;/mak:if></h4>
+Displays the body of the tag only if the OQL expression evaluates to true.
+<br>Example:
+<blockquote><b><pre>
+&lt;mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
+   &lt;mak:value expr="s.person.name"/>
+   &lt;mak:if expr="s.person.hideAge = 1">
+      was born on &lt;mak:value expr="s.person.birthdate" />
+   &lt;/mak:if>
+&lt;/mak:list>
+</pre></b>
+
+<p>
+<table BORDER CELLSPACING=0 >
+<tr>
+<td><b>tag parameter</b></td>
+
+<td><b>description</b></td>
+
+<td><b>comments</b></td>
+</tr>
+
+<tr>
+<td><tt>expr</tt></td>
+
+<td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression. 
+It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
+
+<td>Fixed, Mandatory.</td>
+</tr>
+
 </table>
 </blockquote>
 
@@ -1032,6 +1164,7 @@ Default is "false"</td>
 <a NAME="mak_attrib"></a><font size=+1>&lt;mak:attribute&nbsp; .../></font></h4>
 Displays the value of an attribute, or sets it to a Java variable.
 <br>Example:
+
 <br><b><tt>&lt;mak:attribute name="pattern" var="pattern" exceptionVar="exception"/></tt></b>
 <br><tt>&lt;% if(exception!==null)</tt>
 <br><tt>{</tt>
@@ -1064,7 +1197,7 @@ but <tt>exceptionVar</tt> is indicated, nothing will be printed.</td>
 <tr>
 <td><tt>var</tt></td>
 
-<td>The name of the Java Object variable where to store the attribute value.
+<td>The name of the <code>java.lang.Object</code> variable where to store the attribute value.
 Note that you will have to cast it to its specific type.</td>
 
 <td>Fixed</td>
@@ -1073,10 +1206,10 @@ Note that you will have to cast it to its specific type.</td>
 <tr>
 <td><tt>exceptionVar</tt></td>
 
-<td>The name of the Java Throwable variable that will store eventual exceptions
+<td>The name of the <code>java.lang.Throwable</code> variable that will store eventual exceptions
 raised when trying to compute the attribute. If exceptionVar is missing,
 any raised exception will stop page execution. If it is present, and AttibuteNotFoundException
-occurs, the attribute is set to null (so a next requst for the attribute
+occurs, the attribute is set to null (so a next request for the attribute
 will return null)</td>
 
 <td>Fixed</td>
@@ -1184,6 +1317,32 @@ db)</font></td>
 
 <td>Fixed. Defaults to "changes done".</td>
 </tr>
+
+<tr>
+<td><tt>styleId</tt></td>
+
+<td>FIXME</td>
+
+<td>FIXME</td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+
+<td>FIXME</td>
+
+<td>FIXME</td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+
+<td>FIXME</td>
+
+<td>FIXME</td>
+</tr>
+
+
 </table>
 </ul>
 At form response, makumba invokes the following methods:
@@ -1300,7 +1459,7 @@ db)</td>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="7">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
@@ -1314,6 +1473,19 @@ db)</td>
 <tr>
 <td><tt>message</tt></td>
 </tr>
+
+<tr>
+<td><tt>styleId</tt></td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+</tr>
+
 </table>
 </ul>
 Example:
@@ -1367,7 +1539,7 @@ a, Database db)</font></td>
 <tr>
 <td><tt>action</tt></td>
 
-<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew">newForm</a></td>
+<td COLSPAN="2" ROWSPAN="7">see <a href="#maknew">newForm</a></td>
 </tr>
 
 <tr>
@@ -1381,6 +1553,19 @@ a, Database db)</font></td>
 <tr>
 <td><tt>message</tt></td>
 </tr>
+
+<tr>
+<td><tt>styleId</tt></td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+</tr>
+
 </table>
 </ul>
 Example:
@@ -1396,8 +1581,8 @@ to the example)
 <br><b><tt>on_editBestStudent(Pointer student, Dictionary fieldsToChange,
 Attributes pageParams, Database db)</tt></b>
 <h4>
-<a NAME="makform"></a><font color="#000000">&lt;mak:form&nbsp; ...>....
-&lt;/mak:form></font></h4>
+<a NAME="makform"></a>&lt;mak:form&nbsp; ...>....
+&lt;/mak:form></h4>
 <font color="#000000">Creates a <b>generic form</b>, that may call a handler
 method in response. Allows the JSP author to make any kind of form. They
 are suitable for more complex operations then new, add, edit.</font>
@@ -1444,7 +1629,7 @@ set attributes (as makumba objects) for the next page</font></td>
 <td>name of the attribute that will store&nbsp; (within the response page)
 the result of the handler method</td>
 
-<td></td>
+<td> </td>
 </tr>
 
 <tr>
@@ -1453,8 +1638,22 @@ the result of the handler method</td>
 <td>message displayed by <tt>&lt;mak:response > </tt>in the response page
 on succesfull completion</td>
 
-<td></td>
+<td> </td>
 </tr>
+
+<tr>
+<td><tt>styleId</tt></td>
+<td COLSPAN="2" ROWSPAN="3">see <a href="#maknew">newForm</a></td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+</tr>
+
 </table>
 </ul>
 <font color="#000000">Example:</font>
@@ -1602,6 +1801,46 @@ separators. Ex:
 
 <td>only for text</td>
 </tr>
+
+<tr>
+<td><tt>default</tt></td>
+
+<td>
+<!-- 
+The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)
+--> FIXME
+</td>
+
+<td>RTEXPR</td>
+</tr>
+
+<tr>
+<td><tt>empty</tt></td>
+
+<td>
+<!-- 
+The character string to print if the normal printed output would be empty (i.e. zero-length string). 
+Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.
+--> FIXME
+</td>
+
+<td>RTEXPR<br>  </td>
+</tr>
+
+<tr>
+<td><tt>styleId</tt></td>
+<td COLSPAN="2" ROWSPAN="3">see <a href="#maknew">newForm</a></td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+</tr>
+
+
 </table>
 </ul>
 <font color="#000000">More HTML params will be added, as needed.</font>
