@@ -35,30 +35,28 @@ import org.makumba.Pointer;
 import org.makumba.FieldDefinition;
 import javax.servlet.jsp.tagext.BodyContent;
 
-public class InputTag extends MakumbaTag 
+public class InputTag extends BasicValueTag
 implements javax.servlet.jsp.tagext.BodyTag
 {
   String name = null;
-  String valueExprOriginal = null;
   String dataType = null;
-  String display = null;
-  String expr = null;
-  String nameVar= null;
+  String display=null;
+  String nameVar=null;
 
   // input whith body, used only for chosers as yet
   BodyContent bodyContent=null;
   int bodyContentMark=0;
-  ValueComputer currentChoiceComputer=null;
   org.makumba.util.ChoiceSet choiceSet;
 
+  // unused for now, set when we know at analysis that this input has 
+  // a body and will generate a choser (because it has <mak:option > inside)
+  boolean isChoser;
 
-  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType+"\n"+getPageTextInfo(); }
+  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType+"\n"; }
   
 
   public void setField(String field)  { setName(field);}
   public void setName(String field) {   this.name=field.trim(); }
-  public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
-  public void setDataType(String dt) {   this.dataType=dt.trim();  }
   public void setDisplay(String d) {   this.display=d; }
   public void setNameVar(String var){ this.nameVar=var; }
 
@@ -71,20 +69,8 @@ implements javax.servlet.jsp.tagext.BodyTag
   public void setOnSelect(String s) { extraFormattingParams.put("onSelect", s); }
   public void setTabIndex(String s) { extraFormattingParams.put("tabIndex", s); }
 
-  FormTagBase getForm() 
-  { return (FormTagBase)TagSupport.findAncestorWithClass(this, FormTagBase.class); }
-
-  boolean isValue()
-  {
-    return expr!=null && !expr.startsWith("$");
-  }
-
-  boolean isAttribute()
-  {
-    return expr!=null && expr.startsWith("$");
-  }
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey() 
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) 
   {
     expr=valueExprOriginal;
     if(expr==null)
@@ -93,24 +79,16 @@ implements javax.servlet.jsp.tagext.BodyTag
     tagKey= new MultipleKey(keyComponents);
   }
 
-  public MultipleKey getParentListKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    MultipleKey k= super.getParentListKey(pageCache);
-    if(k!=null)
-      return k;
-    /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
-    getForm().cacheDummyQueryAtAnalysis(pageCache);
-    return getForm().tagKey;
+  FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache){
+    return getForm().getInputTypeAtAnalysis(name, pageCache);
   }
-
+ 
   /** determine the ValueComputer and associate it with the tagKey */
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     if(name==null)
-      throw new ProgrammerError("name attribute is required in\n"+getTagText());
-
-    if(isValue())
-      pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
+      throw new ProgrammerError("name attribute is required");
+    super.doStartAnalyze(pageCache);
   }
 
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
@@ -119,48 +97,7 @@ implements javax.servlet.jsp.tagext.BodyTag
     if(nameVar!=null)
       pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
 
-    FieldDefinition formType= getForm().getInputTypeAtAnalysis(name, pageCache);
-    FieldDefinition dataTypeInfo=null;  
-    FieldDefinition type=null;
-
-    if(dataType!=null)
-      {
-	dataTypeInfo= MakumbaSystem.makeFieldDefinition(name.replace('.', '_'), dataType);
-	if(formType!=null && ! formType.isAssignableFrom(dataTypeInfo))
-	  throw new ProgrammerError("declared data type '"+dataType+"' not compatible with the type computed from form '"+formType+"' in \n"+getTagText());
-      }
-
-    if(isValue())
-      {
-	ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-	vc.doEndAnalyze(this, pageCache);
-	type= vc.type;
-      }
-    if(isAttribute())
-      type=(FieldDefinition)pageCache.types.get(expr.substring(1));
-
-    if(type!=null && dataTypeInfo!=null && !dataTypeInfo.isAssignableFrom(type))
-      throw new ProgrammerError
-	("computed type for INPUT is different from the indicated dataType: \n"+
-	 getTagText()+"\n has dataType indicated to '"+ 
-	 dataType+ "' type computed is '"+type+"'");
-
-    if(type!=null && formType!=null && !formType.isAssignableFrom(type))
-      throw new ProgrammerError
-	("computed type for INPUT is different from the type resulting from form analysis:\n"+
-	 getTagText()+"\n has form type determined to '"+ 
-	 formType+ "' type computed is '"+type+"'");
-    
-    
-    if(type==null && formType==null && dataTypeInfo==null)
-      throw new ProgrammerError("cannot determine input type: "+this+
-				" .\nPlease specify the type using dataType=...");
-
-    // we give priority to the type as computed from the form
-    if(formType==null)
-      formType=dataTypeInfo!=null? dataTypeInfo: type;
-    
-    pageCache.inputTypes.put(tagKey, formType);
+    super.doEndAnalyze(pageCache);
   }
 
   /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
@@ -180,65 +117,10 @@ implements javax.servlet.jsp.tagext.BodyTag
     bodyContentMark=0;
     
     // for now, only chosers can have body
-    currentChoiceComputer=null;
     choiceSet= new org.makumba.util.ChoiceSet();
   }
 
   public void doInitBody() {}
-
-  /** We have a list inside us. Decide if we want to supplement its query */
-  void supplementListQueryAtAnalysis(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    // we check if the list has a choice label
-    // this check is too weak. a better way to check is using qt.cq
-    if(qt.queryProps[org.makumba.view.ComposedQuery.FROM].indexOf("choice")==-1)
-      throw new ProgrammerError("A choice label should be defined\n"+qt);
-
-    String type= ((FieldDefinition)pageCache.inputTypes.get(tagKey)).getType();
-    
-    if(!(type.startsWith("set") || type.startsWith("ptr")))
-      throw new ProgrammerError("Only set and pointer <mak:input > can have queries inside\n"+this);
-
-    // we basically simulate a <mak:value expr="choice" />, 
-    // see ValueTag.doStartAnalyze()
-    pageCache.valueComputers.put(new MultipleKey(qt.tagKey, "choice"), 
-				 new ValueComputer(qt.tagKey, "choice", pageCache));
-  }
-
-  /** Decide what to do if we have a list inside us, after its analysis ended */
-  void doListEndAnalyze(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache){
-    FieldDefinition fd=(FieldDefinition)pageCache.inputTypes.get(tagKey);
-    if(!pageCache.getQuery(qt.tagKey).getLabelType("choice").equals(fd.getRelationType()))
-      throw new ProgrammerError("choice should be of type "+fd.getRelationType().getName()+"\n"+qt);
-
-    ((ValueComputer)pageCache.valueComputers.get(new MultipleKey(qt.tagKey, "choice"))).doEndAnalyze(null, pageCache);
-  }
-
-  /** Decide what to do if we have a list inside us, when it starts running*/
-  void listBegin(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache){
-    checkNilChoice(pageCache);
-    currentChoiceComputer= (ValueComputer)pageCache.valueComputers.get(new MultipleKey(qt.tagKey, "choice"));
-    bodyContentMark=bodyContent.getString().length();
-  }
-
-  /** Decide what to do if we have a list inside us, after each iteration*/
-  void afterListIteration() throws LogicException {
-    int n= bodyContent.getString().length();
-    if(n>bodyContentMark){
-      String choice= bodyContent.getString().substring(bodyContentMark).trim();
-      choiceSet.add((Pointer)currentChoiceComputer.getValue(getPageContext()), choice, false, false);
-    }
-    bodyContentMark=n;
-  }
-
-  void checkNilChoice(MakumbaJspAnalyzer.PageCache pageCache){
-    if(bodyContent==null || bodyContent.getString().length()==bodyContentMark)
-      return;
-    String nilChoice= bodyContent.getString().substring(bodyContentMark).trim();
-    if(nilChoice.length()==0)
-      return;
-    choiceSet.add(Pointer.Null, nilChoice, false, false);
-  }
 
   public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
   {
@@ -246,21 +128,12 @@ implements javax.servlet.jsp.tagext.BodyTag
     return EVAL_BODY_BUFFERED;
   }
 
-  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache)
+  /** a value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag() */
+  int computedValue(Object val, FieldDefinition type)
        throws JspException, LogicException
   {
-    checkNilChoice(pageCache);
-    FieldDefinition type= (FieldDefinition)pageCache.inputTypes.get(tagKey);
-    Object val=null;
-
-    if(isValue())
-      val=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
-
-    if(isAttribute())
-      val=PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
-
-    if(val!=null)
-      val=type.checkValue(val);
+    if(bodyContent!=null && bodyContent.getString().trim().length()>0)
+      throw new ProgrammerError("cannot have non-whitespace content in a choice mak:input");
 
     if(choiceSet!=null)
       params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
@@ -278,7 +151,6 @@ implements javax.servlet.jsp.tagext.BodyTag
       }
 
     name = valueExprOriginal = dataType = display = expr = nameVar= null;
-    
     return EVAL_PAGE;
   } 
 

@@ -86,7 +86,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   QueryExecution execution;
 
   /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey */
-  public void setTagKey()
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     tagKey= new MultipleKey(queryProps.length+2);
     for(int i=0; i<queryProps.length; i++)
@@ -114,27 +114,12 @@ public class QueryTag extends MakumbaTag implements IterationTag
       pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"), this);
   }
 
-
-  /** Say if this mak:list/object is inside a mak:input. If so, special processing is needed. This method is used both at analysis and at runtime. */
-  InputTag inInputTag(){
-    // maybe there are better tests 
-    return (InputTag)findAncestorWithClass(this, InputTag.class);
-  }
-
   /** End the analysis of the tag, after all tags in the page were visited. 
     Now that we know all query projections, cache a RecordViewer as formatter for the mak:values nested in this tag */
   public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     ComposedQuery cq= pageCache.getQuery(tagKey);
-    InputTag it= inInputTag();
-    if(it!=null)
-      it.supplementListQueryAtAnalysis(this, pageCache);
-
     cq.analyze();
-
-    if(it!=null)
-      it.doListEndAnalyze(this, pageCache);
-
     pageCache.formatters.put(tagKey, new RecordViewer(cq));
   }
 
@@ -150,10 +135,6 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
        throws LogicException, JspException
   {
-    InputTag it= inInputTag();
-    if(it!=null)
-      it.listBegin(this, pageCache);
-
     if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
     else {
@@ -193,12 +174,9 @@ public class QueryTag extends MakumbaTag implements IterationTag
   /** Decide if we do further iterations. Checks if we got to the end of the iterationGroup. */
   public int doAfterBody() throws JspException
   {
-    InputTag it= inInputTag();
-    if(it!=null)
-      try{
-      it.afterListIteration();
-    }catch(LogicException le){ throw new JspException(le); }
-    
+    runningTag.set(tagData);
+    try{
+
     int n= execution.nextGroupIteration();
 
     if(n!=-1)
@@ -215,6 +193,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
 	return EVAL_BODY_AGAIN;
       }
     return SKIP_BODY;
+    }finally{ runningTag.set(null); }
   }
 
   /** Cleanup operations, especially for the rootList */
