@@ -224,6 +224,7 @@ public abstract class FieldManager extends FieldHandler
 		  break;
 		}
 	   }
+	   rs.close();
        } catch(SQLException e) {System.out.println(e);}
        return ok;
   } //end isIndexOk()
@@ -248,6 +249,8 @@ public abstract class FieldManager extends FieldHandler
 		st.executeUpdate(indexDropSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"INDEX DROPPED on "+brief );
+		st.close();
+
        }catch(SQLException e) {}
 
        boolean createNormalEvenIfUnique=false;
@@ -260,6 +263,8 @@ public abstract class FieldManager extends FieldHandler
 		st.executeUpdate(indexCreateUniqueSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"UNIQUE INDEX ADDED on "+brief );
+		st.close();
+		rm.indexCreated(dbc);
 	   }catch(SQLException e) 
 	   { 
 		//log all errors 
@@ -279,6 +284,8 @@ public abstract class FieldManager extends FieldHandler
 		st.executeUpdate(indexCreateSyntax());
 		org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			"INDEX ADDED on "+brief );
+		st.close();
+		rm.indexCreated(dbc);
 	   }catch(SQLException e) 
 	   { 
 		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
@@ -291,7 +298,6 @@ public abstract class FieldManager extends FieldHandler
      }//isIndexOk
 
   }//method
-
 
   /** Syntax for index creation. */
   public String indexCreateSyntax() {
