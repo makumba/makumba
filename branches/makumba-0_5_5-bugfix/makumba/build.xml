@@ -245,14 +245,8 @@
 
 
 	<target name="publishJar" depends="compile" if="tag" 
-	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
-	<mkdir dir="../../makumba.distrib" />
-	<delete dir="../../makumba.distrib/makumba/" />
-	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
-	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
-	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
-
-	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	description="tags a version from the current branch, puts it in ./lib and publishes it on the web" >
+	<antcall target="tagJar"/>
 
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
