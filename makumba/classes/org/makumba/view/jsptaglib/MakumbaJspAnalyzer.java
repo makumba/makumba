@@ -113,8 +113,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     {
       if(t==null)
 	return;
-      if(!(t instanceof QueryTag) && ! (t instanceof FormTagBase))
-	throw new RuntimeException("body tag expected");
       parents.add(t);
     }
 
@@ -134,8 +132,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       }
       tagName= tagName.substring(makumbaPrefix.length()+1);
       MakumbaTag t= (MakumbaTag)parents.get(parents.size()-1);
-      if(!(t instanceof QueryTag) && ! (t instanceof FormTagBase))
-	throw new RuntimeException("body tag expected");
       if(!t.getClass().equals(tagClasses.get(tagName)))
 	  {
 	      StringBuffer sb= new StringBuffer();
