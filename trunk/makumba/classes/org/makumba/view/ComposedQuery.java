@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Dictionary;
 
+import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.NamedResources;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.MultipleKey;
@@ -320,7 +321,17 @@ public class ComposedQuery
 	    sb.append(orders);
 	  }
       }
-    return sb.toString();
+    String ret=sb.toString();
+    if(!typeAnalysisOnly)
+      return ret;
+
+    // replace names with numbers
+    ArgumentReplacer ar= new ArgumentReplacer(ret);
+    Dictionary d= new Hashtable();
+    int j=1;
+    for(Enumeration e= ar.getArgumentNames(); e.hasMoreElements(); )
+      d.put(e.nextElement(), "$"+(j++));
+    return ar.replaceValues(d);
   }
 
   // ------------
