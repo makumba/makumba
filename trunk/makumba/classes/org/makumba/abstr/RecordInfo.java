@@ -230,13 +230,14 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
     ri=ri.getField(name).getSubtable();
     return ri;
   }
-  
+
   
   public static synchronized RecordInfo getSimpleRecordInfo(String path)
   {
     // this is to avoid a stupid error if path is "..."
     boolean dot=false;
     for(int i=0; i<path.length(); i++)
+     {
       if(path.charAt(i)=='.')
 	{
 	  if(dot)
@@ -244,6 +245,12 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
 	  dot=true;
 	}
       else dot=false;
+
+      //check if type name looks valid (no weird characters or spaces)
+      if( path.charAt(i)!='/' && path.charAt(i)!='.' )
+	if(i==0 && !Character.isJavaIdentifierStart(path.charAt(i)) || i>0 && !Character.isJavaIdentifierPart(path.charAt(i)) )
+	  throw new DataDefinitionParseError("Invalid character \""+path.charAt(i)+"\" in type name \""+path+"\"");
+     }
 	
     if(path.indexOf('/')!=-1){
       path=path.replace('/', '.');
