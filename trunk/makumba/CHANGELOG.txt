@@ -1,3 +1,4 @@
+stefan; 4 jul 2003: unique MDD keyword supported on abstract level (part of bug 4)
 stefan; 2 jul 2003:improved solution for bug 449 (mak:value  maxLength, ellipsis...)
 stefan; 2 jul 2003: fix for bug 366 (printVar for empty texts should be empty)
 fred; 1 jul 2003: fixed bug 34 (logout design, with wildcard "*") 
