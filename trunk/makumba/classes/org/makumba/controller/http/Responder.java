@@ -303,7 +303,7 @@ public abstract class Responder implements java.io.Serializable
 					      resp.basePointerType, 
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
-					      new RequestAttributes(resp.controller, req),
+					      new RequestAttributes(resp.controller, req, resp.database),
 					      resp.database);
 			}
 		      public String verify(Responder resp){ return null; }
@@ -317,7 +317,7 @@ public abstract class Responder implements java.io.Serializable
 		           return Logic.doOp(resp.controller,
 					     resp.handler, 
 					     resp.getHttpData(req, suffix), 
-					     new RequestAttributes(resp.controller, req),
+					     new RequestAttributes(resp.controller, req, resp.database),
 					     resp.database);
 			 }
 		       public String verify(Responder resp){ return null; }
@@ -331,7 +331,7 @@ public abstract class Responder implements java.io.Serializable
 		           return Logic.doNew(resp.controller,
 					      resp.newType,
 					      resp.getHttpData(req, suffix), 
-					      new RequestAttributes(resp.controller, req),
+					      new RequestAttributes(resp.controller, req, resp.database),
 					      resp.database);
 			 }
 		       public String verify(Responder resp){ return null; }
@@ -347,7 +347,7 @@ public abstract class Responder implements java.io.Serializable
 					      resp.basePointerType+"->"+resp.addField,
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
-					      new RequestAttributes(resp.controller, req),
+					      new RequestAttributes(resp.controller, req, resp.database),
 					      resp.database);
 			 }
 		       public String verify(Responder resp){ return null; }
@@ -362,7 +362,7 @@ public abstract class Responder implements java.io.Serializable
 					      resp.newType+"->"+resp.addField,
 					      (Pointer)req.getAttribute(resultNamePrefix+parentSuffix), 
 					      resp.getHttpData(req, suffix), 
-					      new RequestAttributes(resp.controller, req),
+					      new RequestAttributes(resp.controller, req, resp.database),
 					      resp.database);
 			 }
 		       public String verify(Responder resp){ return null; }
@@ -376,7 +376,7 @@ public abstract class Responder implements java.io.Serializable
 		           return Logic.doDelete(resp.controller,
 						 resp.basePointerType,
 						 resp.getHttpBasePointer(req, suffix),
-						 new RequestAttributes(resp.controller, req),
+						 new RequestAttributes(resp.controller, req, resp.database),
 						 resp.database);
 			 }
 

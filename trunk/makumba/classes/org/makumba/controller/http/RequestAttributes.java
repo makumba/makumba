@@ -51,11 +51,13 @@ public class RequestAttributes implements Attributes
 
   RequestAttributes(HttpServletRequest req) throws LogicException
   {
-    this(Logic.getLogic(req.getServletPath()), req);
+    this(Logic.getLogic(req.getServletPath()), req, null);
   }
 
-  RequestAttributes(Object controller, HttpServletRequest req) throws LogicException
+  RequestAttributes(Object controller, HttpServletRequest req, String db) throws LogicException
   {
+    if(db==null)
+      db=getRequestDatabase();
     this.request=req;
     this.controller=controller;
 
@@ -63,7 +65,7 @@ public class RequestAttributes implements Attributes
       {
 	req.setAttribute(CONTROLLER_NAME+controller.getClass().getName(), controller);
 	try{
-	  Logic.doInit(controller, this, getRequestDatabase());
+	  Logic.doInit(controller, this, db);
 	}catch(UnauthorizedException e)
 	  {
 	    // if we are not in the login page
