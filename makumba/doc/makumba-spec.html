@@ -1516,14 +1516,19 @@ These are JSP EL (expression language) functions that give information about the
 
 Example using the Java Standard Tag Library (<a href="http://java.sun.com/products/jsp/jstl/">JSTL</a>, prefix "c"): <br>
 
-<code>
-&lt;mak:list ...><br>
-&lt;c:if test="${mak:count()==1}">These are the list elements: &lt;/c:if><br>
-&lt;c:if test="${mak:count()==mak:maxCount()}">This is the last: &lt;/c:if><br>
-...<br>
-&lt;/mak:list><br>
-&lt;c:if test="${mak:lastCount()==0}">These are no elements </c:if><br>
-</code>
+<pre class="example">
+&lt;mak:list ...>
+   &lt;c:if test="${mak:count()==1}">These are the list elements: &lt;/c:if>
+   &lt;tr bgcolor="${mak:count()%2==1?"white":"grey"}">
+       &lt;td>this shows in alternative colors&lt;/td>
+   ...
+   &lt;c:if test="${mak:count()!=mak:maxCount()}">
+       a separator where we can have any &lt;b>tag&lt;/b> 
+       we don't want separators to be shown after the last element 
+   &lt;/c:if>
+&lt;/mak:list>
+&lt;c:if test="${mak:lastCount()==0}">These are no elements &lt;/c:if>
+</pre>
 
 <h4><a NAME="makif">&lt;mak:if&nbsp; ...> ... &lt;/mak:if></a></h4>
 <p>
