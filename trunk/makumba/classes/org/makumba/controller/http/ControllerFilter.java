@@ -82,6 +82,11 @@ public class ControllerFilter implements Filter
 	  chain.doFilter(req, resp);
       }catch(AllowedException e)
 	  { }
+      catch(Throwable e)
+	{ 
+	  treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
+	  return; 
+	}
       finally{ prov.close(); }
   }
 
