@@ -1177,22 +1177,22 @@ Queries are generated on the spot and can be nested.
 <p>Example:</p>
 
 <pre class="example">
-&lt;mak:list from="best.Student s" where="s.gender=\"male\""
-          orderBy="s.name" countVar="counter" maxCountVar="number">
+&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""
+          orderBy="p.name" countVar="counter" maxCountVar="number">
 
     &lt;% if(counter.intValue()==1) { %>
-        There are &lt;%= number %> students: &lt;p>
+       &lt;p> There are &lt;%= number %> male students:
     &lt;% } %>
 
-    &lt;%= counter %>.
-    &lt;mak:value expr="s.person.surname"/>
-    &lt;mak:value expr="s.person.name"/> &lt;br>
-    &lt;mak:list from="s.person.addresses a">
+    &lt;br> &lt;%= counter %>.
+    &lt;mak:value expr="p.name"/>
+    &lt;mak:value expr="p.surname"/> &lt;br>
+    &lt;mak:list from="p.addresses a">
        &lt;mak:value expr="a.streetno"/> &lt;mak:value expr="a.city"/>
     &lt;/mak:list>
 &lt;/mak:list>
 
-&lt;% if (number.intValue()==0) { %> There are no students. &lt;% } %>
+&lt;% if (number.intValue()==0) { %> There are no male students. &lt;% } %>
 </pre>
 
 
@@ -1385,10 +1385,11 @@ Displays the value of an expression from within the query.
 Example:
 </p>
 <pre class="example">
-&lt;mak:list from="best.Student s" where="s.gender=\"male\"" orderBy="s.name">
-    &lt;mak:value expr="s.person.name"/>
-    &lt;mak:value expr="s.person.surname"/>
-    &lt;mak:value expr="s.person.birthdate" var="birth" printVar="printBirth"/>
+&lt;mak:list from="best.Student s, s.person p"
+	where="p.gender=\"male\"" orderBy="p.name">
+    &lt;mak:value expr="p.name"/>
+    &lt;mak:value expr="p.surname"/>
+    &lt;mak:value expr="p.birthdate" var="birth" printVar="printBirth"/>
     &lt;% // we only print the birthdate if it's after some date
          if ( ((java.util.Date)birth).after(new java.util.Date(1980, 0, 1)) )
              out.print(printBirth);
