@@ -198,13 +198,22 @@ public class Logic
   }
 
   static Class[] argDb= { Attributes.class, Database.class };
+  
+  static final public String PROVIDER_ATTRIBUTE="org.makumba.providerAttribute";
+
+  static public Database getDatabaseConnection(Attributes a, String db){
+    try{
+      return ((org.makumba.util.DbConnectionProvider)a.getAttribute(PROVIDER_ATTRIBUTE))
+	.getConnectionTo(db);
+    }catch(LogicException e){ throw new RuntimeWrappedException(e); }
+  }
 
   public static Object getAttribute(Object controller, String attname, Attributes a, String db) 
        throws NoSuchMethodException, LogicException
   {
     if(controller instanceof LogicNotFoundException)
       throw new NoSuchMethodException("no controller=> no attribute method");
-    Database d=MakumbaSystem.getConnectionTo(db);
+    Database d=getDatabaseConnection(a, db);
     Object [] args= {a, d};
     try{
       return (controller.getClass().getMethod("find"+firstUpper(attname), argDb)).invoke(controller, args);
@@ -217,7 +226,6 @@ public class Logic
 	  throw (LogicException)g;
 	throw new LogicInvocationError(g);
       }
-    finally{ d.close(); }
   }
 
   static Class[] editArgs= { Pointer.class, Dictionary.class, Attributes.class, Database.class };
@@ -256,9 +264,7 @@ public class Logic
   {
     if(controller instanceof LogicNotFoundException)
       return;
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try
-	{
+    Database db=getDatabaseConnection(a, dbName);
 	  Method init= getMethod("checkAttributes", argDb, controller);
 	  Method oldInit= getMethod("requiredAttributes", noClassArgs, controller);
 	  if(init==null && oldInit==null)
@@ -310,8 +316,6 @@ public class Logic
 		}
 	      return;
 	    }
-	}
-    finally{db.close(); }
   }
 
   public static Object doOp(Object controller, String opName, 
@@ -323,8 +327,7 @@ public class Logic
     if((controller instanceof LogicNotFoundException) )
       throw new ProgrammerError("there is no controller object to look for the Form handler method "+opName);
     
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
+    Database db=getDatabaseConnection(a, dbName);
       Object [] editArg= {data, a, db};
       Method op=null;
       op=getMethod(opName, opArgs, controller);
@@ -348,15 +351,13 @@ public class Logic
 	    throw (LogicException)g;
 	  throw new LogicInvocationError(g);
       }
-    }finally{db.close(); }
   }
 
   public static Pointer doEdit(Object controller, String typename, 
 			       Pointer p, Dictionary data, Attributes a, String dbName) 
        throws LogicException
   {
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
+    Database db=getDatabaseConnection(a, dbName);
       Object [] editArg= {p, data, a, db};
       Method edit=null;
       String upper= upperCase(typename);
@@ -388,7 +389,6 @@ public class Logic
 	    throw (LogicException)g;
 	  throw new LogicInvocationError(g);
 	}
-    }finally{db.close(); }
   }
 
   static Class[] deleteArgs= { Pointer.class, Attributes.class, Database.class };
@@ -397,8 +397,7 @@ public class Logic
 				 Pointer p, Attributes a, String dbName) 
        throws LogicException
   {
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
+    Database db=getDatabaseConnection(a, dbName);
       Object [] deleteArg= {p, a, db};
       Method delete=null;
       String upper= upperCase(typename);
@@ -432,15 +431,13 @@ public class Logic
 	  throw (LogicException)g;
 	throw new LogicInvocationError(g);
       }
-    }finally{db.close(); }
   }
 
   public static Pointer doAdd(Object controller, String typename, 
 			       Pointer p, Dictionary data, Attributes a, String dbName) 
        throws LogicException
   {
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
+    Database db=getDatabaseConnection(a, dbName);
       Object [] addArg= {p, data, a, db};
       Method on=null;
       Method after=null;
@@ -484,7 +481,6 @@ public class Logic
 	    throw (LogicException)g;
 	  throw new LogicInvocationError(g);
 	}
-    }finally{db.close(); }
   }
 
   static Class[] newArgs= { Dictionary.class, Attributes.class, Database.class };
@@ -492,8 +488,7 @@ public class Logic
   public static Pointer doNew(Object controller, String typename, Dictionary data, Attributes a, String dbName) 
        throws LogicException
   { 
-    Database db=MakumbaSystem.getConnectionTo(dbName);
-    try{
+    Database db=getDatabaseConnection(a, dbName);
       Object [] onArgs= {data, a, db};
       Object [] afterArgs= {null, data, a, db};
       Method on=null;
@@ -532,7 +527,6 @@ public class Logic
 	    throw (LogicException)g;
 	  throw new LogicInvocationError(g);
 	}
-    }finally{db.close(); }
   }
 }
 

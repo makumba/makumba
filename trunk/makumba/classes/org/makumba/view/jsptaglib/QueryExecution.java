@@ -106,11 +106,13 @@ public class QueryExecution
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
     Database dbc= 
-      MakumbaSystem.getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
-    try{
+      org.makumba.controller.Logic.getDatabaseConnection
+      (
+       PageAttributes.getAttributes(pageContext),
+       MakumbaTag.getDatabaseName(pageContext)
+      );
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
 	.execute(dbc, PageAttributes.getAttributes(pageContext));
-    }finally { dbc.close(); }
   }
 
   public int getIterationGroupData()
