@@ -18,6 +18,8 @@ stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
+cristi; 23 may 2004: fixed bug 48, transactions and locking
+cristi; 17 mai 2004: fixed bug 544, support for @include
 cristi; 25 apr 2004: fixed bug: NotUniqueError was not detected in updates
 cristi; 21 apr 2004: fixed bug 37 (multiple forms). 
 - addForms can add to the subsets of object produced by the enclosing newForm.
@@ -47,6 +49,9 @@ stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used i
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.5.10.2; 23 may 2004: cristi 
+feature improvements on 0.5.10.1: locking (new feature using transactions), and @include (new feature, but changed the JSP preprocessor, so it can benefit from testing)
+
 0.5.10.1; 23 apr 2004: cristi 
 untested release, contains mostly new features so it may not affect production so much
 
