@@ -1,0 +1,5 @@
+#$Id$
+includedName=char[44]
+other=int
+overrideIt=date
+removeIt=text
