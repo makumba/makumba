@@ -31,7 +31,8 @@ public class intEnumEditor extends intEditor
   public String formatShow(Object o, Dictionary formatParams)
   {
     StringBuffer sb=new StringBuffer();
-    sb.append("<select name=\"").append(getInputName(formatParams)).append("\">");
+    sb.append("<select name=\"").append(getInputName(formatParams))
+      .append("\"").append(getExtraFormatting(formatParams)).append(">");
     Enumeration v=getValues();
     Enumeration n=getNames();
     while(v.hasMoreElements())

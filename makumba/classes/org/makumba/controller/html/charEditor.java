@@ -45,10 +45,11 @@ public class charEditor extends FieldEditor
   }
 
   public String formatNull(Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\"\" "+getParams(formatParams)+" >"; }
+  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\"\" "+getParams(formatParams)+getExtraFormatting(formatParams)+">"; }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
-  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+getLiteral(o, formatParams)+"\" "+getParams(formatParams)+" >"; }
+  { return "<input name=\""+getInputName(formatParams)+"\" type=\""+getInputType(formatParams)+"\" value=\""+getLiteral(o, formatParams)+"\" "+getParams(formatParams)+
+      getExtraFormatting(formatParams)+">"; }
 
 
   public String getLiteral(Object o, Dictionary formatParams) 

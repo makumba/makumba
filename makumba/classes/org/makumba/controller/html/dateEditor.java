@@ -58,7 +58,7 @@ public class dateEditor extends FieldEditor
     if(d==null)
       {
 	d=(Date)getDefaultValue();
-	sb.append("<input type=hidden name=\"").append(getNullName(formatParams)).append("\">");
+	sb.append("<input type=\"hidden\" name=\"").append(getNullName(formatParams)).append("\">");
       }
     int n=0;
     while(true)
@@ -92,10 +92,12 @@ public class dateEditor extends FieldEditor
       if(lowLimits[component]==-1) // year
 	sb.append("<input type=\"text\" name=\"").append(name).append("\" value=\"").append(val)
 	  .append("\" maxlength=\"").append(fmt.length())
-	  .append("\" size=\"").append(fmt.length()).append("\">");
+	  .append("\" size=\"").append(fmt.length())
+	  .append("\"").append(getExtraFormatting(formatParams)).append(">");
       else
 	{
-	  sb.append("<select name=\"").append(name).append("\">");
+	  sb.append("<select name=\"").append(name)
+	    .append("\"").append(getExtraFormatting(formatParams)).append(">");
 	  Calendar c= new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
 	  c.clear();
 	  c.set(1900,0,1); //set 1900,Jan,1st as the date to start building interface from  	  
