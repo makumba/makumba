@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
+import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 
 public class realHandler extends FieldHandler 
@@ -41,6 +42,6 @@ public class realHandler extends FieldHandler
     return normalCheck(value); 
   }
 
-  public boolean isAssignableFrom(FieldInfo fi){ return super.isAssignableFrom(fi) || fi.getType().equals("intEnum") || fi.getType().equals("int"); }
+  public boolean isAssignableFrom(FieldDefinition fi){ return super.isAssignableFrom(fi) || fi.getType().equals("intEnum") || fi.getType().equals("int"); }
 
 }

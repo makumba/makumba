@@ -24,6 +24,8 @@
 package org.makumba.abstr;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 
 public class setHandler extends ptrHandler implements subtableHandler
@@ -32,25 +34,25 @@ public class setHandler extends ptrHandler implements subtableHandler
   public Class getJavaType() { return java.util.Vector.class; }
   public Object getNull() { return Pointer.NullSet; }
 
-  public RecordInfo getSubtable() { return (RecordInfo)fi.extra1; }
+  public DataDefinition getSubtable() { return (DataDefinition)fi.extra1; }
 
-  public boolean isAssignableFrom(FieldInfo fi)
+  public boolean isAssignableFrom(FieldDefinition fi)
   { 
     return "nil".equals(fi.getType())||  
       getType().equals(fi.getType()) && 
-      getForeignTable().getName().equals(fi.getForeignTable().getName()); 
+      getForeignTable().getName().equals(fi.getRelationType().getName()); 
   }
   
-  FieldInfo pointerToForeign()
+  FieldDefinition pointerToForeign()
   {
-    return (FieldInfo)getSubtable().fields.get(getSubtable().fieldOrder.elementAt(4));
+    return getSubtable().getFieldDefinition((String)getSubtable().getFieldNames().elementAt(4));
   }
 
-  public RecordInfo getForeignTable()
+  public DataDefinition getForeignTable()
   {
     if(fi.extra3==null)  // automatic set
-      return pointerToForeign().getForeignTable();
-    else return (RecordInfo)fi.extra3; // manually made
+      return pointerToForeign().getRelationType();
+    else return (DataDefinition)fi.extra3; // manually made
   }  
 
   public Object checkValueImpl(Object value)
@@ -68,17 +70,17 @@ public class setHandler extends ptrHandler implements subtableHandler
 
     Vector v=(Vector)value;
 
-    FieldInfo ptr= getForeignTable().getField(getForeignTable().getIndexName());
+    FieldDefinition ptr= getForeignTable().getFieldDefinition(getForeignTable().getIndexPointerFieldName());
     
     for(int i=0; i<v.size(); i++)
       {
 	if(v.elementAt(i)==null || v.elementAt(i).equals(org.makumba.Pointer.Null))
-	  throw new org.makumba.InvalidValueException(getFieldInfo(), "set members cannot be null");
+	  throw new org.makumba.InvalidValueException(getFieldDefinition(), "set members cannot be null");
 	try{
 	  v.setElementAt(ptr.checkValue(v.elementAt(i)), i);
 	}catch(org.makumba.InvalidValueException e)
 	  { 
-	    throw new org.makumba.InvalidValueException(getFieldInfo(), "the set member <"+v.elementAt(i)+"> is not assignable to pointers of type "+getForeignTable().getName());
+	    throw new org.makumba.InvalidValueException(getFieldDefinition(), "the set member <"+v.elementAt(i)+"> is not assignable to pointers of type "+getForeignTable().getName());
 	  }
       }
     return v;

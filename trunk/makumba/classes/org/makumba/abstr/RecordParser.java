@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.MakumbaError;
 
@@ -73,15 +74,15 @@ public class RecordParser extends RecordHandler
 	ri.addStandardFields(ri.name.substring(ri.name.lastIndexOf('.')+1));
 	parse();
       }catch(RuntimeException e) {throw new MakumbaError(e, "Internal error in parser while parsing "+ri.getName()); }
-      if(!mpe.isSingle() && !ri.isSubtable())
+      if(!mpe.isSingle() && !(ri.getParentField()!= null))
 	throw mpe;
   }
   
   
-  RecordInfo parse(java.net.URL u, String path) 
+  DataDefinition parse(java.net.URL u, String path) 
   {
     ri= new RecordInfo(u, path);
-    parse(ri);
+    parse((RecordInfo)ri);
     return ri;
   }
 
@@ -96,13 +97,13 @@ public class RecordParser extends RecordHandler
     }catch(IOException e){ throw fail(e); }
     try{      
       // make the default pointers resulted from the table name
-      ri.addStandardFields(ri.name.substring(ri.name.lastIndexOf('.')+1));
+      ((RecordInfo)ri).addStandardFields(ri.getName().substring(ri.getName().lastIndexOf('.')+1));
       parse();
     }catch(RuntimeException e) {throw new MakumbaError(e, "Internal error in parser while parsing "+ri.getName()); }
-    if(!mpe.isSingle() && !ri.isSubtable())
+    if(!mpe.isSingle() && ri.getParentField()==null)
       throw mpe;
     
-    return ri;
+    return (RecordInfo)ri;
   }
   
   void parse()
@@ -172,7 +173,7 @@ public class RecordParser extends RecordHandler
         // titles...
 	if(fields.size()>0)
 	  ttlt= fields.keyAt(0);
-    ri.title= ttlt;
+    ((RecordInfo)ri).title= ttlt;
   }
 
   static java.net.URL getResource(String s)
@@ -228,7 +229,7 @@ public class RecordParser extends RecordHandler
             line--;
             String s=incl.trim();
 	    java.net.URL u= findDataDefinition(s, "idd");
-	    String n="."+ri.name;
+	    String n="."+ri.getName();
 	    //if(u==null && s.indexOf('.')==-1)
 			//	u=findTable(n.substring(1, n.lastIndexOf('.')+1));
 	    
@@ -299,8 +300,8 @@ public class RecordParser extends RecordHandler
 	  if( i==0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i>0 && !Character.isJavaIdentifierPart(nm.charAt(i)) )
 	    mpe.add(fail("Invalid character \""+nm.charAt(i)+"\" in field name \""+nm+"\"", nm));
 	}
-	fi= new FieldInfo(ri, nm);
-	ri.addField1(fi);
+	fi= new FieldInfo((RecordInfo)ri, nm);
+	((RecordInfo)ri).addField1(fi);
 	FieldHandler fh;
 	try{
 	  handlers.put(nm, fh=new FieldParser(fi).parse

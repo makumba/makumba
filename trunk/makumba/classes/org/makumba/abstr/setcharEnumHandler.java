@@ -25,6 +25,7 @@ package org.makumba.abstr;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 
 public class setcharEnumHandler extends ptrOneHandler implements stringTypeFixed, Enumerator
@@ -34,7 +35,7 @@ public class setcharEnumHandler extends ptrOneHandler implements stringTypeFixed
   public Object getNull() { return Pointer.NullSet; }
 
   FieldInfo getEnum()
-    { return (FieldInfo)((RecordInfo)super.fi.extra1).fields.get("enum"); }
+    { return (FieldInfo)((DataDefinition)super.fi.extra1).getFieldDefinition("enum"); }
  
   public Enumeration getValues() { return ((Vector)getEnum().extra1).elements(); }
   
@@ -67,7 +68,7 @@ public class setcharEnumHandler extends ptrOneHandler implements stringTypeFixed
     for(int i=0; i<v.size(); i++)
       {
 	if(v.elementAt(i)==null || v.elementAt(i).equals(org.makumba.Pointer.NullString))
-	  throw new org.makumba.InvalidValueException(getFieldInfo(), "set members cannot be null");
+	  throw new org.makumba.InvalidValueException(getFieldDefinition(), "set members cannot be null");
 	v.setElementAt(getEnum().checkValue(v.elementAt(i)), i);
       }
     return v;

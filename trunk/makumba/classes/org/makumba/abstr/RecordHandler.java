@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -90,13 +92,12 @@ import org.makumba.util.RuntimeWrappedException;
  * <p> The generic field handler name can be changed by overriding getGenericHandler().
  * 
  * @author Cristian Bogdan
- * @see org.makumba.abstr.RecordInfo
  * @see org.makumba.abstr.FieldHandler
  */
 
 public abstract class RecordHandler implements java.io.Serializable
 {
-  RecordInfo ri;
+  DataDefinition ri;
   protected Hashtable handlers= new Hashtable();
   protected Vector handlerOrder;
 
@@ -112,9 +113,8 @@ public abstract class RecordHandler implements java.io.Serializable
    * @param ri the RecordInfo to be handled by this handler
    * @see org.makumba.abstr.FieldHandler
    * @see #makeHandler(String)
-   * @see org.makumba.abstr.RecordInfo#getRecordInfo(String)
    */
-  protected void setRecordInfo(RecordInfo ri)
+  protected void setRecordInfo(DataDefinition ri)
   {
     this.ri= ri; 
 
@@ -122,11 +122,11 @@ public abstract class RecordHandler implements java.io.Serializable
 
     for(int i= 0; i< ho.size();i++)
     {
-        FieldInfo fi= (FieldInfo)ri.fields.get(ho.elementAt(i));
+        FieldDefinition fi= ri.getFieldDefinition((String)ho.elementAt(i));
 	if(fi==null)
 	  throw new RuntimeException(ho.elementAt(i).toString());
-        FieldHandler fh= makeHandler(fi.type);
-        fh.setFieldInfo(fi);
+        FieldHandler fh= makeHandler(fi.getType());
+        fh.setFieldDefinition(fi);
         addFieldHandler(fh, fi);
     }    
   }
@@ -139,20 +139,19 @@ public abstract class RecordHandler implements java.io.Serializable
    * @param ri the RecordInfo to be handled by this handler
    * @see org.makumba.abstr.FieldHandler
    * @see #makeHandler(String)
-   * @see org.makumba.abstr.RecordInfo#getRecordInfo(String)
    */
-  public RecordHandler(RecordInfo ri)
+  public RecordHandler(DataDefinition ri)
   { 
     this();
     setRecordInfo(ri);
   }
   
   /** From which RecordInfo was this handler made ? */
-  public RecordInfo getRecordInfo(){ return ri; }
+  public DataDefinition getDataDefinition(){ return ri; }
 
-  void addFieldHandler(FieldHandler fh, FieldInfo fi) 
+  void addFieldHandler(FieldHandler fh, FieldDefinition fi) 
   {
-    String nm= fi.name;
+    String nm= fi.getName();
     
     Object o= fh.replaceIn(this);
     if(o== null)
@@ -163,7 +162,7 @@ public abstract class RecordHandler implements java.io.Serializable
 	handlers.put(nm, o);
 	if(o!=fh)
 	  {
-	    ((FieldHandler)o).setFieldInfo(fi);
+	    ((FieldHandler)o).setFieldDefinition(fi);
 	    addFieldHandler((FieldHandler)o, fi);
 	    return;
 	  }
@@ -198,7 +197,7 @@ public abstract class RecordHandler implements java.io.Serializable
     for(int j= 0; j<fha.length; j++)
       {
 	if(fha[j]!=fh)
-	  fha[j].setFieldInfo(fi);
+	  fha[j].setFieldDefinition(fi);
 	nm= fha[j].getName();
 	handlerOrder.addElement(fha[j]);
 	handlers.put(nm, fha[j]);
@@ -481,7 +480,7 @@ public abstract class RecordHandler implements java.io.Serializable
   
   public void checkInsert(Dictionary d, Dictionary except)
   {
-    getRecordInfo().checkFieldNames(d);
+    checkFieldNames(d);
     for(Enumeration e= handlerOrder.elements(); e.hasMoreElements(); )
       {
 	FieldHandler fh=(FieldHandler)e.nextElement();
@@ -492,13 +491,25 @@ public abstract class RecordHandler implements java.io.Serializable
 
   public void checkUpdate(Dictionary d, Dictionary except)
   {
-    getRecordInfo().checkFieldNames(d);
+    checkFieldNames(d);
     for(Enumeration e= handlerOrder.elements(); e.hasMoreElements(); )
       {
 	FieldHandler fh=(FieldHandler)e.nextElement();
 	if(except.get(fh.getName())==null)
 	  fh.checkUpdate(d);
       }
+  }
+
+  public void checkFieldNames(Dictionary d)
+  {
+    for(Enumeration e=d.keys(); e.hasMoreElements(); ) {
+        Object o = e.nextElement();
+        if(!(o instanceof String))
+          throw new org.makumba.NoSuchFieldException(getDataDefinition(), "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+getDataDefinition().getName());
+        if(getDataDefinition().getFieldDefinition((String)o)==null)
+          throw new org.makumba.NoSuchFieldException(getDataDefinition(), (String)o);
+        String checkFieldName = (String)o;
+    }
   }
 
 }

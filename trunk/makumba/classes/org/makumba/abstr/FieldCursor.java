@@ -24,7 +24,9 @@
 package org.makumba.abstr;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.MakumbaSystem;
 
 /** This is the field definition tokenizer.
   * The lookup metods return false or null if the
@@ -229,16 +231,16 @@ public class FieldCursor
   }
 
   /** looks for a table specifier in the form tablename */
-  RecordInfo lookupTableSpecifier() throws DataDefinitionParseError
+  DataDefinition lookupTableSpecifier() throws DataDefinitionParseError
   {
     int beg= index;
     String path= lookupTableName();
     if(path== null)
       return null;
 
-    RecordInfo ri= null;
+    DataDefinition ri= null;
     try{
-      ri= RecordInfo.getRecordInfo(path);
+      ri= MakumbaSystem.getDataDefinition(path);
     }
     catch(org.makumba.DataDefinitionNotFoundError e)
       {

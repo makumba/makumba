@@ -44,6 +44,6 @@ public class ptrOneParser extends subtableParser
   public void parseSubfields() 
   { 
     parser.parse();
-    fi.extra2= parser.ri.title;
+    fi.extra2= parser.ri.getTitleFieldName();
   }
 }

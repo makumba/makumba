@@ -46,6 +46,6 @@ public class charEnumHandler extends charHandler implements Enumerator
     for(int i=0; i<names.size(); i++)
       if(names.elementAt(i).equals(value))
 	return value;
-    throw new org.makumba.InvalidValueException(getFieldInfo(), "value set to char enumerator ("+value+") is not a member of "+names);
+    throw new org.makumba.InvalidValueException(getFieldDefinition(), "value set to char enumerator ("+value+") is not a member of "+names);
   }
 }

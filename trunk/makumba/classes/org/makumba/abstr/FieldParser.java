@@ -23,6 +23,8 @@
 
 package org.makumba.abstr;
 
+import org.makumba.DataDefinition;
+
 public class FieldParser extends FieldHandler
 {
   FieldParser(){}
@@ -106,8 +108,8 @@ public class FieldParser extends FieldHandler
     val= val.trim();
     if(nm.equals("!title"))
     {
-        RecordInfo ri=(RecordInfo)o;
-        if(ri.fields.get(val)==null)
+        DataDefinition ri=(DataDefinition)o;
+        if(ri.getFieldDefinition(val)==null)
 	  return ri.getName()+ " has no field called "+ val;
         fi.extra2=val;
         return null;

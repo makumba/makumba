@@ -30,6 +30,6 @@ public class setComplexHandler extends ptrOneHandler
 
   public Object checkValueImpl(Object value)
   {
-    throw new org.makumba.InvalidValueException(getFieldInfo(), "subsets cannot be assigned directly");
+    throw new org.makumba.InvalidValueException(getFieldDefinition(), "subsets cannot be assigned directly");
   }
 }

@@ -42,7 +42,7 @@ public class charHandler extends FieldHandler implements stringTypeFixed
     normalCheck(value); 
     String s= (String)value;
     if(s.length()> getWidth())
-      throw new InvalidValueException(getFieldInfo(), "String too long for char[] field. Maximum width: "+getWidth()+" given width "+s.length()+".\n\tGiven value <"+s+">");
+      throw new InvalidValueException(getFieldDefinition(), "String too long for char[] field. Maximum width: "+getWidth()+" given width "+s.length()+".\n\tGiven value <"+s+">");
     return value;
   }
 }

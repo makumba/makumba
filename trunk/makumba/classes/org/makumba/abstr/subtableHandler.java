@@ -23,7 +23,9 @@
 
 package org.makumba.abstr;
 
+import org.makumba.DataDefinition;
+
 interface subtableHandler
 {
-      RecordInfo getSubtable();
+      DataDefinition getSubtable();
 }

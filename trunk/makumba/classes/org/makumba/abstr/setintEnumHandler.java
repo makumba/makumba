@@ -25,6 +25,7 @@ package org.makumba.abstr;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 
 public class setintEnumHandler extends ptrOneHandler implements intType, intEnumerator
@@ -33,7 +34,7 @@ public class setintEnumHandler extends ptrOneHandler implements intType, intEnum
   public Class getJavaType() { return java.util.Vector.class; }
   public Object getNull() { return Pointer.NullSet; }
 
-  FieldInfo getEnum(){ return (FieldInfo)((RecordInfo)super.fi.extra1).fields.get("enum"); }
+  FieldInfo getEnum(){ return (FieldInfo)((DataDefinition)super.fi.extra1).getFieldDefinition("enum"); }
  
   public Enumeration getValues() { return ((Vector)getEnum().extra1).elements(); }
   
@@ -66,7 +67,7 @@ public class setintEnumHandler extends ptrOneHandler implements intType, intEnum
     for(int i=0; i<v.size(); i++)
       {
 	if(v.elementAt(i)==null || v.elementAt(i).equals(org.makumba.Pointer.NullInteger))
-	  throw new org.makumba.InvalidValueException(getFieldInfo(), "set members cannot be null");
+	  throw new org.makumba.InvalidValueException(getFieldDefinition(), "set members cannot be null");
 	v.setElementAt(getEnum().checkValue(v.elementAt(i)), i);
       }
     return v;

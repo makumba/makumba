@@ -23,19 +23,22 @@
 
 package org.makumba.abstr;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+
 public class ptrRelHandler extends ptrIndexHandler
 {
-  public RecordInfo getForeignTable(){ return (RecordInfo)fi.extra1; }
+  public DataDefinition getForeignTable(){ return (DataDefinition)fi.extra1; }
 
-  public boolean isAssignableFrom(FieldInfo fi)
+  public boolean isAssignableFrom(FieldDefinition fi)
   { 
     return "nil".equals(fi.getType()) ||
       getType().equals(fi.getType()) &&   
-      fi.extra1 instanceof RecordInfo && 
-      ((RecordInfo)fi.extra1).getName().equals(getForeignTable().getName()); 
+      ((FieldInfo)fi).extra1 instanceof DataDefinition && 
+      ((DataDefinition)((FieldInfo)fi).extra1).getName().equals(getForeignTable().getName()); 
   }
 
-  public RecordInfo getPointedType() 
+  public DataDefinition getPointedType() 
   {
     return getForeignTable();
   }

@@ -23,19 +23,21 @@
 
 package org.makumba.abstr;
 
+import org.makumba.DataDefinition;
+
 public abstract class subtableParser extends FieldParser
 {
   RecordInfo subtable, here;
 
   void makeSubtable(FieldCursor fc)
   {
-    here=fc.rp.ri;
-    subtable= here.makeSubtable(fi.name);
+    here=(RecordInfo)fc.rp.ri;
+    subtable= (RecordInfo)here.makeSubtable(fi.name);
     subtable.addStandardFields(subtable.subfield);
     fi.extra1= subtable;
   }
 
-  String addPtr(String name, RecordInfo o)
+  String addPtr(String name, DataDefinition o)
   {
     int n= name.lastIndexOf('.');
     if(n!=-1)
@@ -57,7 +59,7 @@ public abstract class subtableParser extends FieldParser
   {
     //    System.err.println(here.canonicalName()+" "+subtable.canonicalName());
     subtable.relations=1;
-    if(here.isSubtable())
+    if(here.getParentField()!= null)
       return addPtr(here.subfield, here);
     else
       return addPtr(here.name, here);

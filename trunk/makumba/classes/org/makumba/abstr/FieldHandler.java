@@ -27,6 +27,9 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+
 /** The general field handler. Knows how to read the data of its field info. Can replace itself with other FieldHandlers upon RecordHandler construction */
 public abstract class FieldHandler
 {
@@ -34,12 +37,12 @@ public abstract class FieldHandler
   FieldHandler defa;
   final static Vector EMPTY_DEPRECATED_VALUES = new Vector(0);
   
-  public FieldInfo getFieldInfo() { return fi; }
+  public FieldDefinition getFieldDefinition() { return fi; }
 
-  public void setFieldInfo(FieldInfo fi)
+  public void setFieldDefinition(FieldDefinition fi)
   {
    try{
-        this.fi= fi;
+        this.fi= (FieldInfo)fi;
         Class c= Class.forName("org.makumba.abstr."+getType()+"Handler");
         if(c.isInstance(this))
         {
@@ -47,14 +50,14 @@ public abstract class FieldHandler
             return;
         }
         defa= (FieldHandler)c.newInstance();
-        defa.fi= fi;
+        defa.fi= (FieldInfo)fi;
 	defa.init();
     }catch(Exception e){e.printStackTrace();}
   }
 
   void init(){}
 
-  public boolean isAssignableFrom(FieldInfo fi){ return fi.getType().equals("nil") || getType().equals(fi.getType()); }
+  public boolean isAssignableFrom(FieldDefinition fi){ return fi.getType().equals("nil") || getType().equals(fi.getType()); }
 
   public String toString(){ return getType(); }
 
@@ -75,7 +78,7 @@ public abstract class FieldHandler
   protected Object normalCheck(Object value)
   {
     if(!getJavaType().isInstance(value))
-      throw new org.makumba.InvalidValueException(getFieldInfo(), getJavaType(), value);
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), getJavaType(), value);
     return value;
   }
 
@@ -84,7 +87,7 @@ public abstract class FieldHandler
   {
     Object o=d.get(getName());
     if(isNotNull() && (o==null || o.equals(getNull())))
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "A non-null value is needed for notnull fields");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "A non-null value is needed for notnull fields");
     if(o!=null)
       d.put(getName(), checkValue(o));
   }
@@ -96,7 +99,7 @@ public abstract class FieldHandler
     if(o==null)
       return;
     if(isFixed())
-      throw new org.makumba.InvalidValueException(getFieldInfo(), "You cannot update a fixed field");
+      throw new org.makumba.InvalidValueException(getFieldDefinition(), "You cannot update a fixed field");
     d.put(getName(), checkValue(o));
   }
 
@@ -230,15 +233,15 @@ public abstract class FieldHandler
     * @return the foreign table indicated in set or ptr definition
     * @exception ClassCastException for other types
   */
-   public  RecordInfo getForeignTable() { return ((ptrRelHandler)defa).getForeignTable(); }
+   public  DataDefinition getForeignTable() { return ((ptrRelHandler)defa).getForeignTable(); }
 
   /** works only for ptrOne, set, setComplex,  setcharEnum and setintEnum types
     * @return the subtable indicated in set or ptr definition
     * @exception ClassCastException for other types
   */
-   public  RecordInfo getSubtable() { return ((subtableHandler)defa).getSubtable(); }
+   public  DataDefinition getSubtable() { return ((subtableHandler)defa).getSubtable(); }
 
-  public RecordInfo getPointedType()
+  public DataDefinition getPointedType()
   { return ((ptrIndexHandler)defa).getPointedType(); }
 
   /** works only for ptr and set types
