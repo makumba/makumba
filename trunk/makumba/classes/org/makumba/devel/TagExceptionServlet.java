@@ -26,6 +26,7 @@ import org.makumba.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.*;
+import org.makumba.util.RuntimeWrappedException;
 
 /** 
  * the servlet that receives errors in any makumba page and treats them 
@@ -59,6 +60,7 @@ public class TagExceptionServlet extends HttpServlet
     PrintWriter wr=resp.getWriter();
     Throwable t= (Throwable)req.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION);
     Throwable t1=null;    
+    System.out.println(t);
 
     Throwable original=t;
     while(true)
@@ -69,6 +71,8 @@ public class TagExceptionServlet extends HttpServlet
 	  t1=((MakumbaError)t).getReason();
 	else if(t instanceof LogicInvocationError)
 	  t1=((LogicInvocationError)t).getReason();
+	else if(t instanceof RuntimeWrappedException)
+	  t1=((RuntimeWrappedException)t).getReason();
 	else 
 	  break;
 	if(t1==null)
