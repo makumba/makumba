@@ -168,6 +168,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
+		access="package"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
 	>
             <bottom><![CDATA[
