@@ -29,7 +29,10 @@ import org.makumba.*;
 import java.io.*;
 
 /**
-* Testing configuration related operations
+* Testing locking related operations
+*
+* run "ant test.lock" from a number of consoles to test locks
+*
 * @author cristi
 */
 public class lock extends TestCase
