@@ -111,7 +111,9 @@ public class QueryExecution
 
       try{
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
-	.execute(dbc, PageAttributes.getAttributes(pageContext), computeLimit(pageContext, offset, 0), computeLimit(pageContext, limit, -1));
+	.execute(dbc, PageAttributes.getAttributes(pageContext), 
+		 computeLimit(pageContext, offset, 0), 
+		 computeLimit(pageContext, limit,-1));
       }finally{dbc.close(); }
   }
 

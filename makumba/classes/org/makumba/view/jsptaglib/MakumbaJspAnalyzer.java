@@ -85,7 +85,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     }
   }
 
-  class PageCache
+  public class PageCache
   {
     HashMap formatters= new HashMap();
     HashMap valueComputers= new HashMap();
@@ -135,13 +135,11 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       else
 	t.setParent(null);
 
-      t.pageCache=pageCache;
-
       JspParseData.fill(t, td.attributes);
       t.setTagKey();
-      if(t.tagKey!=null && !t.allowsIdenticalKey())
+      if(t.getTagKey()!=null && !t.allowsIdenticalKey())
 	{
-	  MakumbaTag sameKey= (MakumbaTag)pageCache.tags.get(t.tagKey);
+	  MakumbaTag sameKey= (MakumbaTag)pageCache.tags.get(t.getTagKey());
 	  if(sameKey!=null)
 	    {
 	      StringBuffer sb= new StringBuffer();
@@ -153,11 +151,11 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	      sb.append("\nTo address this, add an id= attribute to one of the tags, and make sure that id is unique within the page.");
 	      throw new ProgrammerError(sb.toString());
 	    }
-	  pageCache.tags.put(t.tagKey, t);
+	  pageCache.tags.put(t.getTagKey(), t);
 	}
       pageCache.tagData.put(t.getTagKey(), td);
 
-      t.doStartAnalyze();
+      t.doStartAnalyze(pageCache);
       tags.add(t);
     }
 
@@ -190,9 +188,9 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	  {
 	      StringBuffer sb= new StringBuffer();
 	      sb.append("Body tag nesting error:\ntag \"").
-		  append(t.tagData.name).
+		  append(td.name).
 		  append("\" at line ");
-	      JspParseData.tagDataLine(t.tagData, sb);
+	      JspParseData.tagDataLine(td, sb);
 
 	      sb.append("\n\ngot incorrect closing \"").append(td.name).
 		  append("\" at line ");
@@ -207,7 +205,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     public void endPage()
     {
       for(Iterator i= tags.iterator(); i.hasNext(); )
-	((MakumbaTag)i.next()).doEndAnalyze();
+	((MakumbaTag)i.next()).doEndAnalyze(pageCache);
     }
   }
 
@@ -217,7 +215,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   public void systemTag(JspParseData.TagData td, Object status)
   {
-    // FIXME: should treat @include here...
     if(!td.name.equals("taglib") ||
        !td.attributes.get("uri").equals("http://www.makumba.org/presentation"))
       return;
@@ -236,7 +233,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     MakumbaTag t=null;
     try{ t= (MakumbaTag)c.newInstance();}catch(Throwable thr){ thr.printStackTrace(); }
     td.tagObject=t;
-    t.tagData=td;
+    t.setTagDataAtAnalysis(td);
     ((ParseStatus)status).addTag(t, td);
   }
 

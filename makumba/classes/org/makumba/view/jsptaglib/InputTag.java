@@ -82,28 +82,28 @@ public class InputTag extends MakumbaTag
     tagKey= new MultipleKey(keyComponents);
   }
 
-  public MultipleKey getParentListKey()
+  public MultipleKey getParentListKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     MultipleKey k= super.getParentListKey();
     if(k!=null)
       return k;
     /** we don't have a query around us, so we must make a dummy query for computing the value via the database */
-    getForm().cacheDummyQuery();
+    getForm().cacheDummyQueryAtAnalysis(pageCache);
     return getForm().tagKey;
   }
 
   /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     if(name==null)
       throw new ProgrammerError("name attribute is required in\n"+getTagText());
 
     if(isValue())
-      pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
+      pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
   }
 
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
-  public void doEndAnalyze()
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     if(nameVar!=null)
       pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
@@ -122,7 +122,7 @@ public class InputTag extends MakumbaTag
     if(isValue())
       {
 	ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-	vc.doEndAnalyze(this);
+	vc.doEndAnalyze(this, pageCache);
 	type= vc.type;
       }
     if(isAttribute())
@@ -164,13 +164,14 @@ public class InputTag extends MakumbaTag
       }
   }
 
-  public int doMakumbaStartTag() 
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
   {
     // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
     return EVAL_BODY_INCLUDE;
   }
 
-  public int doMakumbaEndTag()throws JspException, LogicException
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache)
+       throws JspException, LogicException
   {
     FieldDefinition type= (FieldDefinition)pageCache.inputTypes.get(tagKey);
     Object val=null;

@@ -31,7 +31,7 @@ public class EditTag extends FormTagBase
   public String getDefaultExpr(String fieldName) 
   { return baseObject+"."+fieldName; }
 
-  public DataDefinition getDataType()
+  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
   {
     return pageCache.getQuery(getParentListKey()).getLabelType(baseObject);
   }

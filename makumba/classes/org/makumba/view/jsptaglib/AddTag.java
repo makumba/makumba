@@ -46,7 +46,7 @@ public class AddTag extends FormTagBase
 	responder.setNewType(((NewTag)findParentForm()).type);
   }
 
-  public DataDefinition getDataType()
+  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
   {
     DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey()).getLabelType(baseObject):
       ((NewTag)findParentForm()).type;

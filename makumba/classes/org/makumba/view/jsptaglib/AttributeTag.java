@@ -42,7 +42,8 @@ public class AttributeTag extends MakumbaTag
   protected boolean needPageCache(){ return false; }
 
   /** ask the enclosing query to present the expression */
-  public int doMakumbaStartTag() throws JspException 
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException 
   {
     Object o= null;
     Throwable t=null;

@@ -55,16 +55,16 @@ public class IfTag extends MakumbaTag implements BodyTag
   }
 
   /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, testExpr));
+    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
   }
   
   /** tell the ValueComputer to finish analysis, check for proper test result type */
-  public void doEndAnalyze() 
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) 
   {
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-    vc.doEndAnalyze(this);
+    vc.doEndAnalyze(this, pageCache);
     String type = vc.type.getDataType();
     if ( !"int".equals(type) ) {
         throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this + "], type is " + type);
@@ -72,7 +72,8 @@ public class IfTag extends MakumbaTag implements BodyTag
   }
   
   /** ask the ValueComputer to calculate the expression, and SKIP_BODY if false */
-  public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException, org.makumba.LogicException
   {
     Object exprvalue = ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
 

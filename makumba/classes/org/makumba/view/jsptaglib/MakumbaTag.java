@@ -60,9 +60,6 @@ public abstract class MakumbaTag extends TagSupport
   /** A tag key, used to find cached resources. Computed by some tags, both at analysis and at runtime */
   protected MultipleKey tagKey;
   
-  /** the cache containing page analysis data */
-  MakumbaJspAnalyzer.PageCache pageCache; 
-
   /** Tag parameters */
   protected Hashtable params = new Hashtable(7);        // holds certain 'normal' tag attributes
   protected Map extraFormattingParams = new HashMap(7); // container for html formatting params
@@ -119,7 +116,7 @@ public abstract class MakumbaTag extends TagSupport
   public MultipleKey getParentListKey()
   {
     QueryTag parentList= getParentList();
-    return parentList==null?null:parentList.tagKey;
+    return parentList==null?null:parentList.getTagKey();
   }
 
   public void addToParentListKey(Object o)
@@ -127,7 +124,7 @@ public abstract class MakumbaTag extends TagSupport
     QueryTag parentList= getParentList();
     if(parentList== null)
       throw new org.makumba.ProgrammerError("VALUE tags, INPUT or FORM tags that compute a value should always be enclosed in a LIST or OBJECT tag: \n"+getTagText());
-    tagKey= new MultipleKey(parentList.tagKey, o);
+    tagKey= new MultipleKey(parentList.getTagKey(), o);
   }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
@@ -139,25 +136,27 @@ public abstract class MakumbaTag extends TagSupport
   public boolean allowsIdenticalKey() { return true; }
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. Typically this method will allocate initial data structures, that are then completed at doEndAnalyze() */
-  public void doStartAnalyze(){}
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache){}
 
   /** End the analysis of the tag, after all tags in the page were visited. */
-  public void doEndAnalyze(){}
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache){}
 
   /** makumba-specific start tag. 
    * @see #doStartTag()
     */
-  public int doMakumbaStartTag() throws LogicException, JspException
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws LogicException, JspException
   {
     return SKIP_BODY;
   }
-
+  
   /** does this tag need the page cache? */
   protected boolean needPageCache(){ return true; }
 
   /** Handle exceptions, initialise state and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
+    MakumbaJspAnalyzer.PageCache pageCache=null;
     // need to check if this is still needed, it was here only if the tag was root...
     if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
       setWasException();
@@ -170,7 +169,7 @@ public abstract class MakumbaTag extends TagSupport
       if(pageCache!=null)
 	tagData=(JspParseData.TagData)pageCache.tagData.get(tagKey);
       initialiseState();
-      return doMakumbaStartTag();
+      return doMakumbaStartTag(pageCache);
     }
     catch(Throwable t){ treatException(t); return SKIP_PAGE; }
   }
@@ -191,7 +190,8 @@ public abstract class MakumbaTag extends TagSupport
   /** makumba-specific endTag. 
    * @see #doEndTag() 
     */
-  public int doMakumbaEndTag() throws LogicException, JspException
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws LogicException, JspException
   {
     return EVAL_PAGE;
   }
@@ -202,10 +202,12 @@ public abstract class MakumbaTag extends TagSupport
     try{
       if(wasException())
 	return SKIP_PAGE;
-      return doMakumbaEndTag();
+      MakumbaJspAnalyzer.PageCache pageCache=null;
+      if(needPageCache())
+	pageCache=getPageCache(pageContext);
+      return doMakumbaEndTag(pageCache);
     } catch(Throwable t){ treatException(t); return SKIP_PAGE; }
     finally{ 
-      pageCache=null; 
       tagKey=null;
       params.clear();
       extraFormattingParams.clear();

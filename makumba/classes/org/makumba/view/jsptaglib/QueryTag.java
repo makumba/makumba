@@ -54,12 +54,11 @@ public class QueryTag extends MakumbaTag implements IterationTag
   public void setSeparator(String s){ separator=s; }
   public void setCountVar(String s){ countVar=s; }
   public void setMaxCountVar(String s){ maxCountVar=s; }
-  public void setOffset(String s)throws JspException
+  public void setOffset(String s) throws JspException
   { onlyOuterListArgument("offset"); onlyInt("offset", s); offset=s.trim(); }
-  public void setLimit(String s)throws JspException
+  public void setLimit(String s) throws JspException
   { onlyOuterListArgument("limit"); onlyInt("limit", s); limit=s.trim(); }
 
-    /** throw an exception if this is not the root tag */
   protected void onlyOuterListArgument(String s) throws JspException
   {
     QueryTag t= (QueryTag)findAncestorWithClass(this, QueryTag.class);
@@ -103,7 +102,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. 
     Define a query, set the types of variables to "int" */
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     // we make ComposedQuery cache our query
     pageCache.cacheQuery(tagKey, queryProps, getParentListKey());
@@ -117,7 +116,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
 
   /** End the analysis of the tag, after all tags in the page were visited. 
     Now that we know all query projections, cache a RecordViewer as formatter for the mak:values nested in this tag */
-  public void doEndAnalyze()
+  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     ComposedQuery cq= pageCache.getQuery(tagKey);
     cq.analyze();
@@ -131,7 +130,8 @@ public class QueryTag extends MakumbaTag implements IterationTag
   Object upperMaxCount=null;
 
   /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
-  public int doMakumbaStartTag() throws LogicException, JspException
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws LogicException, JspException
   {
     if(getParentList()==null)
       QueryExecution.startListGroup(pageContext);
@@ -192,7 +192,8 @@ public class QueryTag extends MakumbaTag implements IterationTag
   
 
   /** Cleanup operations, especially for the rootList */
-  public int doMakumbaEndTag() throws JspException
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException
   {
     pageContext.getRequest().setAttribute
       (standardLastCountVar, 

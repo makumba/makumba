@@ -38,7 +38,7 @@ public class ActionTag extends MakumbaTag implements BodyTag
   protected boolean needPageCache(){ return false; }
 
   /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
-  public int doMakumbaStartTag()
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache)
   {
     return EVAL_BODY_BUFFERED;
   }
@@ -53,7 +53,8 @@ public class ActionTag extends MakumbaTag implements BodyTag
 
   public void doInitBody(){}
   
-  public int doMakumbaEndTag() throws JspException
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException
   {
     FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
     form.responder.setAction(bodyContent.getString());
