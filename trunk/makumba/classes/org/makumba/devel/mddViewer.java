@@ -106,7 +106,7 @@ public class mddViewer extends LineViewer
 		w.print("<span style=\"background:#cc0000\">");
 		super.printLine(w, s);
 		w.print("</span>\t<font color=red>"+
-			lr.readLine()+" "+before.substring(before.indexOf(':')+2)+"</font>\r\n");
+			lr.readLine()+" "+before.substring(before.indexOf(':')+1)+"</font>\r\n");
 		return;
 	      }
 	  }
