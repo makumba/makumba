@@ -162,6 +162,7 @@
 		Version="true"
 		Author="true"
 		access="package"
+		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
 	>
             <bottom><![CDATA[
