@@ -15,6 +15,12 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+<!-- ============================================================================= -->
+<!-- ============================== RELEASES ===================================== -->
+0.5.13.4; 13 jan 2005 cristi
+fixed bug 789. errors from other pages were shown
+
 0.5.13.3; 05 jan 2005 cristi
 fixed bug occuring at ptr mak:input if the title of the type is not string
 if mak:input has display false, the formatting of the input is not done any more (it was done, then ignored, resulting to resource waste)
@@ -40,8 +46,6 @@ fixed an OQL parser problem for <mak:input ... value="nil" /> (queries without l
 refactoring: pageCache is not stored in the MakumbaTag anymore, but is passed to its methods
 made more clear which methods are executed at analysis and which at runtime
 
-<!-- ============================================================================= -->
-<!-- ============================== RELEASES ===================================== -->
 0.5.12.5; 22 dec 2004 cristi
 fixed bug 722, problem with limit and offset when mak:list is included in mak:object
 printing file and line number information when a tag is mentioned in an error message
