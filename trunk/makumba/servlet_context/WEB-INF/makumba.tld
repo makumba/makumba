@@ -9,6 +9,11 @@
 	<short-name>mak</short-name>
 	<uri>http://www.makumba.org/presentation</uri>
 
+	<listener>
+	<listener-class>org.makumba.util.NamedResourcesContextListener</listener-class>
+
+	</listener>
+
 	<tag>
 		<name>list</name>
 		<tag-class>org.makumba.view.jsptaglib.QueryTag</tag-class>
