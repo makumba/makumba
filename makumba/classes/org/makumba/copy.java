@@ -34,7 +34,7 @@ public class copy
   public static void main(String[]argv) 
   {
     int exit=0;
-    if(argv.length<3)
+    if(argv.length<2)
       {
 	usage();
 	exit=1;
@@ -42,17 +42,28 @@ public class copy
     else
       {
 	try{
-	  String [] types= new String[argv.length-2];
-	  System.arraycopy(argv, 2, types, 0, types.length);
+	  String [] types;
+	  if(argv.length==2)
+	    {
+	      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+	      types= new String[v.size()];
+	      for(int i=0; i<v.size(); i++)
+		types[i]= (String)v.elementAt(i);
+	    }
+	  else
+	    {
+	      types= new String[argv.length-2];
+	      System.arraycopy(argv, 2, types, 0, types.length);
+	    }
 	  MakumbaSystem._copy(argv[0], argv[1], types);
-	}catch(Throwable tr){ usage(); tr.printStackTrace(); exit=1; }
+	}catch(Throwable tr){ tr.printStackTrace(); exit=1;usage(); }
       }
     System.exit(exit);
   }
   
   static void usage()
   {
-    System.err.println("org.makumba.copy copies data of several types and their subtypes from one database to another. All types must have an admin# confirmation in the destination database connection file.All information copied previously from the source database is deleted.\r\nUsage: \r\n java org.makumba.copy source destination type1 [type2 ...]\r\nIndicate the databases as hostname_jdbcsubprotocol_databasename");
+    System.err.println("org.makumba.copy copies data of several types and their subtypes from one database to another. All types must have an admin# confirmation in the destination database connection file.All information copied previously from the source database is deleted.\r\nUsage: \r\n java org.makumba.copy source destination [type1 type2 ...]\r\nIndicate the databases as hostname_jdbcsubprotocol_databasename. If no types are indicated, data of all known types is copied");
   }
   
 }
