@@ -279,24 +279,9 @@
 	</echo>
         </target>
 
+
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
- <!--echo>updating individual files via ftp</echo>
-	<ftp server="download.makumba.org"
-		userid="ftp-mak"
-		password="ftp-mak"
-		remotedir="makumba/doc"
-		binary="no"
-		newer="yes"
-	>
-    	<fileset dir="doc/">
-      		<include name="api/**/*.html" />
-      		<include name="api/**/*.txt" />
-      		<include name="api/**/*.css" />
-      		<include name="api/**/package-list" />
-      		<exclude name="api/API_users_guide.html" />
-    	</fileset>
-	</ftp-->
  <echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -312,22 +297,21 @@
 
 	<target name="zipdoc"  >
 	<delete file="${temp.dir}/makumbadoc.zip" />
-	<zip zipfile="${temp.dir}/makumbadoc.zip">
-		<fileset dir="..">
+	<antcall target="doc" />
+	<fileset id="wwwdocs" dir="..">
 		<include name="makumba/CHANGELOG.txt" />
 		<include name="makumba/COPYING.txt" />
 		<include name="makumba/README.txt" />
-     		<include name="makumba/doc/**/*.html" />
-     		<include name="makumba/doc/**/*.txt" />
-     		<include name="makumba/doc/**/*.doc" />
-     		<include name="makumba/doc/**/*.pdf" />
-     		<include name="makumba/doc/**/*.gif" />
-     		<include name="makumba/doc/api/**/*.html" />
-      		<include name="makumba/doc/api/**/*.txt" />
-      		<include name="makumba/doc/api/**/*.css" />
-      		<include name="makumba/doc/api/**/package-list" />
+     		<include name="makumba/doc/**" />
       		<exclude name="makumba/doc/api/API_users_guide.html" />
-		</fileset>
+	</fileset>
+
+	<!-- make sure the files to be published are radable to everyone (zip keeps permissions, bug 329) -->
+	<chmod perm="ugo+r" type="both">
+	  <fileset refid="wwwdocs"/>
+	</chmod>
+	<zip zipfile="${temp.dir}/makumbadoc.zip">
+	  <fileset refid="wwwdocs"/>
 	</zip>
         </target>	
 
@@ -341,6 +325,7 @@
 		      </classpath>
 	 	</java>
 	</target>
+
 
 	<target name="insertLicense">
 	  <replace dir="classes" includes="**/*.java" summary="true">
