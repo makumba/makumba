@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/makumba/lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="/makumba/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/makumba/lib/junit.jar"/>
+	<classpathentry kind="lib" path="/makumba/lib/mysql.jar"/>
 	<classpathentry kind="output" path="/makumba/classes"/>
 </classpath>
