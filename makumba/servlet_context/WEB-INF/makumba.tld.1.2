@@ -9,15 +9,15 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 
 <taglib>
 	<tlib-version>1.0</tlib-version>
-	<jsp-version>1.1</jsp-version>
+	<jsp-version>1.2</jsp-version>
 	<short-name>mak</short-name>
 	<uri>http://www.makumba.org/presentation</uri>
 	<description>Makumba @version@ http://www.makumba.org</description>
-<!--
+
 	<validator>
 		<validator-class>org.makumba.view.jsptaglib.PageValidator</validator-class>
 	</validator>
--->
+
 	<tag>
 		<name>list</name>
 		<tag-class>org.makumba.view.jsptaglib.QueryTag</tag-class>
@@ -216,7 +216,7 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 		<tag-class>org.makumba.view.jsptaglib.AttributeTag</tag-class>
 		<tei-class>org.makumba.view.jsptaglib.AttrTEI</tei-class>
 		<body-content>empty</body-content>
-		<description>Value of an expression</description>
+		<description>Value of an attribute</description>
 
 		<attribute>
 			<name>name</name>
@@ -280,7 +280,6 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-
 
 	<tag>
 		<name>newForm</name>
@@ -502,10 +501,16 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>action</name>
+		<tag-class>org.makumba.view.jsptaglib.ActionTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>set an "action" for a form or deleteLink</description>
+	</tag>
 
 	<tag>
 		<name>response</name>
-		<tag-class>org.makumba.view.jsptaglib.ResponseTag</tag-class>
+		<tag-class>org.makumba.controller.jsp.ResponseTag</tag-class>
 		<body-content>empty</body-content>
 		<description> display response and status from forms or delete</description>
 	</tag>
@@ -514,7 +519,7 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 
 	<tag>
 		<name>login</name>
-		<tag-class>org.makumba.view.jsptaglib.LoginTag</tag-class>
+		<tag-class>org.makumba.controller.jsp.LoginTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>a login form that takes care of passing the existing arguments</description>
 	</tag>
@@ -522,7 +527,7 @@ this file will start being used (as "makumba.tld") when jsptaglib2 will need jsp
 
 	<tag>
 		<name>logout</name>
-		<tag-class>org.makumba.view.jsptaglib.LogoutTag</tag-class>
+		<tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
 		<body-content>empty</body-content>
 		<description>remove the reference to the actor logged in</description>
 		<attribute>

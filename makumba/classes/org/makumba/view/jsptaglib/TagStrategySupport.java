@@ -49,6 +49,7 @@ public class TagStrategySupport implements TagStrategy
   public void setPage(PageContext pc){ pageContext=pc; }
   public BodyContent getBody(){ return bodyContent; }
   public int doStart() throws JspException { return Tag.SKIP_BODY; }
+  public void doAnalyze() { }
   public int doAfter()throws JspException { return Tag.SKIP_BODY; }
   public int doEnd() throws JspException 
   {
