@@ -263,7 +263,7 @@ public class JspParseData
 	syntaxPoints.addSyntaxPoints(origin+n+1, origin+s.length(), "JSPTagAttributeValue", null);
 
          //debug
-         Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags");
+         Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags.attribute");
          log.finest("< Attribute : " +attr);
          log.finest("> AttrParse : " +attName+ " = " +attValue);
       }
