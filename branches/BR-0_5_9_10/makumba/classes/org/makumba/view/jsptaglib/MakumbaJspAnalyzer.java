@@ -57,6 +57,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     ,"deleteLink", "org.makumba.view.jsptaglib.DeleteTag"
     ,"input", "org.makumba.view.jsptaglib.InputTag"
     ,"action", "org.makumba.view.jsptaglib.ActionTag"
+    ,"if", "org.makumba.view.jsptaglib.IfTag"    
   };
   
   static final Map tagClasses= new HashMap();
