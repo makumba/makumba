@@ -39,13 +39,11 @@ public class InputTag extends BasicValueTag
 implements javax.servlet.jsp.tagext.BodyTag
 {
   String name = null;
-  String dataType = null;
   String display=null;
   String nameVar=null;
 
   // input whith body, used only for chosers as yet
   BodyContent bodyContent=null;
-  int bodyContentMark=0;
   org.makumba.util.ChoiceSet choiceSet;
 
   // unused for now, set when we know at analysis that this input has 
@@ -115,8 +113,6 @@ implements javax.servlet.jsp.tagext.BodyTag
 
   public void setBodyContent(BodyContent bc){ 
     bodyContent=bc; 
-    bodyContentMark=0;
-    
     // for now, only chosers can have body
     choiceSet= new org.makumba.util.ChoiceSet();
   }
