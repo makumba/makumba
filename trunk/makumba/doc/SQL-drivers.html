@@ -1,12 +1,12 @@
-<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
   <title>Configuring your Makumba database</title>
-   <link rel="stylesheet" type="text/css" media="all" href="main.css" />
-   <script language="JavasCript" src="main.js"></script>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
 </head>
 <body>
-<script language="JavaScript">
+<script type="text/javascript">
    makeNavBar("");
 </script>
 
@@ -135,7 +135,7 @@ see what you need to include in the configuration for specific SQL engines.
 <br>
 &nbsp; <br>
 &nbsp;
-<table border="1" cols="3" width="100%">
+<table border="1" width="100%">
  <tbody>
     <tr>
  <td valign="top" width="20%"><b>SQL Engine and JDBC driver and versions</b></td>
@@ -158,12 +158,15 @@ If you work with large binary objects, increase <tt>max_allowed_packet</tt>
 so they can be transmitted in one shot...</td>
  </tr>
   <tr>
- <td valign="top"><b>ODBC <sup>TM</sup></b> <li> The jdbc-odbc bridge that
+ <td valign="top"><b>ODBC <sup>TM</sup></b>
+ <ul>
+ <li> The jdbc-odbc bridge that
 comes with the JDK is used.</li>
   <li> The Windows ODBC Jet driver (used with access, excell, etc) lower
 than 4</li>
   <li> Other, more serious ODBC drivers like MS SQL server and Oracle should
 work better</li>
+ </ul>
  </td>
   <td valign="top" width="20%"><b>hostname_odbc_data-source-name</b> <br>
 will connect to the repsective ODBC data source on the local host. The hostname
@@ -172,16 +175,22 @@ is not used.</td>
  </tr>
   <tr valign="top">
  <td><b>PostgreSQL&nbsp;</b> <br>
-      <a href="http://www.postgresql.org">www.postgresql.org</a> <li> the
+      <a href="http://www.postgresql.org">www.postgresql.org</a>
+	<ul>
+      <li> the
         <a href="http://www.retep.org.uk/postgres/">JDBC driver</a> distributed
 with PostgreSQL is use</li>
   <li> JDK 1.2 and higher need a specific driver</li>
+	</ul>
  </td>
-  <td valign="top" width="20%"><b>hostname_postgresql_databasename</b> <li>
+  <td valign="top" width="20%"><b>hostname_postgresql_databasename</b>
+  <ul>
+  <li>
 will connect to the local (!) postgresql daemon and the indicated databas</li>
   <li> If the PostgreSQL daemon runs on another machine than the Makumba
 application, any form of "repeating" to port 5432 of the local machine is
 known to work</li>
+  </ul>
  </td>
   <td>Limited JDBC functionality before version 7.1. Not tested with 7.1 yet.
       <br>
@@ -259,15 +268,15 @@ it unsuitable for makumba.&nbsp;</td>
 
   </tbody>
 </table>
-  </p>
+
 <h2> <b>3.&nbsp;<a name="Other"></a>Other SQL engines</b></h2>
  Lots of&nbsp; other SQL engines cab be supported, please contribute! You
 can test any database engine as follows (subprotocol is its JDBC subprotocol,
 such as odbc, mysql, etc)
 <ol>
- <li> In <tt>org\makumba\db\sql\sqlEngines.properties</tt></li>
-  <br>
-Add <tt>subprotocol=JDBC_driver_class</tt> <li> make a database configuration
+ <li> In <tt>org\makumba\db\sql\sqlEngines.properties</tt>
+	add <tt>subprotocol=JDBC_driver_class</tt></li>
+<li> make a database configuration
 file <b>hostname_subprotocol_databasename.properties</b></li>
   <li> create the database <b>databasename</b></li>
   <li> At this point you should be able to open a database. Create a "makumba"
@@ -289,13 +298,15 @@ handler families (org.makumba.db.sql.*)</li>
   <li> mae a new class <tt>subprotocol.Database extends org.makumba.db.sql.Database</tt></li>
   <li> make an empty class <tt>subprotocol.RecordManager extends org.makumba.db.sql.RecordManager</tt></li>
   <li> make an empty class <tt>subprotocol.FieldManager extends org.makumba.db.sql.FieldManager</tt></li>
-  <li> Add the following to org\makumba\db\sql\sqlEngines.properties</li>
+  <li> Add the following to org\makumba\db\sql\sqlEngines.properties
 
   <ul>
  <li> <tt>subprotocl.dbclass= subprotocol.Database</tt></li>
   <li> <tt>subprotocol.tableclass= subprotocol.RecordManager</tt></li>
 
   </ul>
+  </li>
+
   <li> overwriting certain methods in one of the three classes above should
 be able to express your SQL engine's specifics</li>
   <li> if these specifics are related to certain types of fields, you should
@@ -304,7 +315,7 @@ redirectManager.properties to indicate type similarities</li>
 
 </ul>
 
-<script language="JavaScript">
+<script type="text/javascript">
    makeFooter("$Id$");
 </script>
 </body>
