@@ -5,3 +5,5 @@
 
 /* override margin as we don't show navbar in internal javadoc */
 body {margin-left:10; }
+
+H1, H2, H3, H4 { margin-left:0;}
