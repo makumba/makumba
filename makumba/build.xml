@@ -146,6 +146,7 @@
 		Author="true"
 		additionalparam="-breakiterator"
 		doctitle="Makumba API Documentation"
+		stylesheetfile="doc/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -167,6 +168,7 @@
 		access="package"
 		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
+		stylesheetfile="doc/javadoc.css"
 	>
             <bottom><![CDATA[
                 <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
@@ -184,12 +186,8 @@
                    clas=url.substring(url.indexOf("/javadoc/"));
                    clas=clas.substring(9);
                    clas=clas.substring(0, clas.indexOf(".html") );
-                   //clas=clas.replace(new RegExp("/", "gi") ,".");
-                   //document.write(clas);
-                   //clasUrl=url.substring(0,url.indexOf("/javadoc/"));
-                   //clasUrl=clasUrl+"/classes/"+clas;
                    clasUrl="";
-                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) )
+                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) && clas.indexOf("package-use")<=0 && clas.indexOf("class-use")<=0)
 		   {
                         cvsLink="";
 			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
@@ -199,7 +197,7 @@
 			} else {
 				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
 			}
-                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba/classes/",clasUrl,"'>CVS</a>");
+                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/classes/",clasUrl,"'>CVS</a>");
 		   	document.write(cvsLink);
 		   } //else document.write('(no cvs)');
                 </script>
