@@ -2,11 +2,6 @@ cristi: some timestamps were read from DB as BigDecimal. they are normal Timesta
 cristi: improved HTML guess detection to include other tags
 cristi: if <mak:input > sees both a type and a value, they are checked for compatibility
 
-stefan removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
-
-stefan LineViewer works better with strict Mozilla
-stefan fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
-
 0.5.5.26; 25 mar 2003 fred
 fixed bug 35 c7 (login form doesn't include POST parameters)
 
