@@ -56,6 +56,9 @@ For example
 <blockquote><tt>sql.<i>setting</i>=<i>value</i></tt>
   <blockquote>sends a setting to the JDBC driver (for example user, password,
 create, etc). Such settings are JDBC driver specific</blockquote>
+  <tt>initConnections=<i>value</i></tt>
+  <blockquote>specifies the initial number of connections that makumba will open when connecting to the database. Default is 1, though some makumba versions will open 2-3 more connections pretty early in their activity. High server load will lead to more connections being open.</blockquote>
+
  <i><tt>dbclass=javaClass</tt></i>
   <blockquote>The main class of the makumba database driver. This is normally
 read from org/makumba/db/sql/sqlEngines.properties, but other, more powerful
