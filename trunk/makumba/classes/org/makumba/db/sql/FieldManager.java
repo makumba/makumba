@@ -206,7 +206,8 @@ public abstract class FieldManager extends FieldHandler
   /** Ask this field how to name the index on this field. Normally called from manageIndexes().  */
   public String getDBIndexName() 
   {
-     return rm.getDBName()+"_"+getDBName();  
+     //return rm.getDBName()+"_"+getDBName();  
+     return getDBName();  
   }
 
 

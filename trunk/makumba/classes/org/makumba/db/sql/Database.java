@@ -247,6 +247,9 @@ public class Database extends org.makumba.db.Database
      return sb.toString();
    }
 
+  protected int getMaxTableNameLength() {return 64; }
+  protected int getMaxFieldNameLength() {return 64; }
+
   /** get the database-level name of a table with a certain abstract name
     * This just replaces strange signs like ., -> ( ) with underscores _
     * old names are lowercased
@@ -258,7 +261,11 @@ public class Database extends org.makumba.db.Database
     if (!addUnderscore)
        name=("."+name.toLowerCase()); //OLDSUPPORT "/general/Person"->"_general_person"
     name=name.replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_');  //why '(' and ')'?
-    return name+(addUnderscore?"_":"");
+    name=name+(addUnderscore?"_":"");
+    if(name.length()<=getMaxTableNameLength())
+	return name;
+    else  //compose "HASH_startingpartoflongnam"
+	return (Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_')+"___"+name).substring(0,getMaxTableNameLength());
   }
 
   /** get the database-level name of a field with the given abstract name. This simply returns the same name, but it can be otherwise for certain more restrictive SQL engines
@@ -271,7 +278,11 @@ public class Database extends org.makumba.db.Database
      if(!addUnderscore && !s.startsWith("TS_"))   //make it start with lowercase
 	name=name.substring(0,1).toLowerCase()+name.substring(1);
      name=name.replace('.','_');   //should be tirrelevant for field names, OLDSUPPORT?
-     return name+(addUnderscore?"_":"");
+     name= name+(addUnderscore?"_":"");
+     if(name.length()<=getMaxFieldNameLength())
+	return name;
+     else  //compose "HASH_startingpartoflongnam"
+	return (Integer.toString(name.hashCode(),Character.MAX_RADIX).replace('-','_')+"___"+name).substring(0,getMaxFieldNameLength());
   }
 
   /** check the sql state of a SQL exception and throw a DBError if it is not equal with the given state */
