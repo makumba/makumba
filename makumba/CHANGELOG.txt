@@ -1,3 +1,10 @@
+0.5.9.4; 30 jun 2003 cristi
+bug 58: query tags now check for identical keys. the id attribute is suported and the programmer advised to use it to fix
+bug 17: accepted for "value": 1, 'Yes', nil, $xxx (see also bug 375, bug 59)
+support for dummy queries like "SELECT 5, nil, 'blabla'" for forms not included in a query
+special type handlers for nil OQL projectons
+bug 464: printing tag lines
+fred: fix for bug 275
 stefan; 27 jun 2003: bug 329 (chmod before ziping doc)  fixed
 stefan; 27 jun 2003: bug 488 (ant tagJar will not work if lib/ doesn't exist) fixed
 
