@@ -384,6 +384,26 @@ package org.makumba]]></replacevalue>
 	  <fixcrlf srcDir="." includes="**/*.jsp, **/*.mdd, **/*.idd, **/*.java, **/*.properties" />
 	</target>
 
+	<target name="make12tld" >
+	  <copy 	file  ="servlet_context/WEB-INF/makumba.tld" 
+			tofile="servlet_context/WEB-INF/makumba.tld-1_2" 
+			overwrite="true"/>
+	  <replace file="servlet_context/WEB-INF/makumba.tld-1_2" summary="true">
+	     <replacefilter
+	  	token="DTD JSP Tag Library 1.1"
+		value="DTD JSP Tag Library 1.2"/>
+	     <replacefilter
+	  	token="http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd"
+		value="http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd"/>
+	     <replacefilter token="jspversion>" value="jsp-version>"/>
+	     <replacefilter token="shortname>" value="short-name>"/>
+	     <replacefilter token="info>" value="description>"/>
+	     <replacefilter token="tagclass>" value="tag-class>"/>
+	     <replacefilter token="teiclass>" value="tei-class>"/>
+	     <replacefilter token="bodycontent>" value="body-content>"/>
+	  </replace>
+	</target>
+
 
 </project>
 
