@@ -33,10 +33,10 @@ public class intEditor extends charEditor
 
   public int getWidth() { return 10; }
 
-  public String getLiteral(Object o, java.util.Dictionary formatParams) 
-  {
-    return o.toString();
-  }
+  // public String getLiteral(Object o, java.util.Dictionary formatParams) 
+  // {
+  //   return o.toString();
+  // }
 
   public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
   { 

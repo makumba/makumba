@@ -113,9 +113,6 @@ public class ValueComputer
     if(running.printVar!=null || running.var==null){
       s=((RecordViewer)running.pageCache.formatters.get(getQueryKey()))
 	.format(projectionIndex, o, running.params);
-
-      if ( s.length()==0 && running.defaultValue != null)
-        s = running.defaultValue;
     }
 
     if(running.var!=null)
@@ -286,8 +283,8 @@ class SetValueComputer extends QueryValueComputer
       }
     String s= print.toString();
 
-    if (v.isEmpty() && running.defaultValue != null)
-      s = running.defaultValue;
+    if (v.isEmpty() && running.params.get("default") != null)
+        s = (String) running.params.get("default");
 
 
     if(running.var!=null)

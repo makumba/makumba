@@ -28,8 +28,8 @@ import java.text.*;
 
 public class dateFormatter extends FieldFormatter
 {
-  static String[] params= { "format" };
-  static String[][] paramValues= { null };
+  static String[] params= { "default", "empty", "format" };
+  static String[][] paramValues= { null, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
