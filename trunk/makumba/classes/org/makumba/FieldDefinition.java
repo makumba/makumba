@@ -75,6 +75,9 @@ public interface FieldDefinition
   /** tells wether this field is not null */
   public boolean isNotNull();
 
+  /** tells wether this field is unique */
+  public boolean isUnique();
+
   /** returns the default value of this field */
   public Object getDefaultValue();
 
