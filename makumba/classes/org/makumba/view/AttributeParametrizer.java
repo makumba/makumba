@@ -46,22 +46,20 @@ public class AttributeParametrizer
 
   static final String undefLabel="undefined label: \"";
 
-  OQLAnalyzer example;
-
-    NamedResources asts;
+  NamedResources asts;
 
   /** build a parametrizer from an OQL query, in the given database and with the given example arguments */
   public AttributeParametrizer(String oql, Dictionary a)
        throws LogicException
   {
-      asts=new NamedResources("JSP attribute parametrizer objects",
-			      astFactory);
+    asts=new NamedResources("JSP attribute parametrizer objects",
+			    astFactory);
     ar= new ArgumentReplacer(oql);
     
     for(Enumeration e=ar.getArgumentNames(); e.hasMoreElements(); )
       argumentNames.addElement(e.nextElement());
     BigInteger max= BigInteger.ONE.shiftLeft(argumentNames.size());
-    OQLAnalyzer q=null;
+    String q=null;
     
     String ignored="";
 
@@ -122,15 +120,9 @@ public class AttributeParametrizer
     if(q==null)
       throw new LogicException("cannot validate query arguments "+ oql
 			       +"\npossible sources:\n"+ignored);
-    example=q;
   }
 
-  public DataDefinition getResultType() { return example.getProjectionType(); }
-
-  public DataDefinition getLabelType(String label){ return example.getLabelType(label); }
-
-  
-    NamedResourceFactory astFactory=new NamedResourceFactory(){
+  NamedResourceFactory astFactory=new NamedResourceFactory(){
     protected Object getHashObject(Object nm) 
       {
 	return nm.toString();
@@ -139,15 +131,15 @@ public class AttributeParametrizer
     protected Object makeResource(Object nm, Object hashName) 
       throws Exception
       {
-	return  MakumbaSystem.getOQLAnalyzer(ar.replaceValues((Dictionary)nm));
+	return  MakumbaSystem.getOQLAnalyzer(ar.replaceValues((Dictionary)nm)).getOQL();
      }
   };
 
   /** find the query corresponding to the given database and arguments */
-  OQLAnalyzer findAST(Dictionary dic) throws LogicException
+  String findAST(Dictionary dic) throws LogicException
   {
     try{
-      return (OQLAnalyzer)asts.getResource(dic);
+      return (String)asts.getResource(dic);
     }catch(RuntimeWrappedException e)
       {
         Throwable t= e.getReason();
@@ -171,7 +163,7 @@ public class AttributeParametrizer
 	args[j++]=a.get((String)argumentNames.elementAt(i));
     Dictionary d= (Dictionary)parameters.clone();
     nonParametrized(a, d);
-    return db.executeQuery(findAST(d).getOQL(), args);
+    return db.executeQuery(findAST(d), args);
   }
 
   /** fill a dictionary with pairs like {argName= argValue } for nonparametrized arguments */
