@@ -27,7 +27,6 @@ import javax.servlet.jsp.tagext.*;
 import java.util.*;
 import org.makumba.*;
 import org.makumba.util.*;
-import org.makumba.controller.jsp.PageAttributes;
 
 public class AttributeTag extends MakumbaTag
 {
@@ -50,7 +49,7 @@ public class AttributeTag extends MakumbaTag
     Object o= null;
     Throwable t=null;
     try{
-      o=PageAttributes.getAttributes(pageContext).getAttribute(name);
+      o=(new HttpAttributes(pageContext, getDatabaseName())).getAttribute(name);
     }catch(Throwable t1) {t=t1; }
     if(t!=null)
       if(exceptionVar==null)
@@ -71,7 +70,7 @@ public class AttributeTag extends MakumbaTag
 	}
       else ;
     else
-      PageAttributes.setAttribute(pageContext, var, o);
+      HttpAttributes.setAttribute(pageContext, var, o);
 
     return EVAL_BODY_INCLUDE;
   }

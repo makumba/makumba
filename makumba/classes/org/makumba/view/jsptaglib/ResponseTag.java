@@ -22,40 +22,32 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
 import org.makumba.*;
 import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
+import javax.servlet.http.*;
 import java.io.*;
 
-public class DeleteTag extends EditTag
+public class ResponseTag extends MakumbaTag implements RootTagStrategy
 {
-  public FormResponder makeResponder() { return new DeleteResponder(); }
-
-  // no input tags allowed!!
-
-  public void writeFormPreamble(JspWriter pw) throws JspException, IOException
+  public TagStrategy makeNonRootStrategy(Object key)
   {
-    String sep="?";
-    if( ((String)action).indexOf('?')>=0) { sep="&"; }
-    pw.print("<a href=\""+action+sep+FormResponder.basePointerName+"="+getBasePointer()+"&"+FormResponder.responderName+"="+responder.getIdentity(getEditedType())+"\">");
+    return this;
   }
 
-  public void writeFormPostamble(JspWriter pw) throws JspException, IOException
-  {
-    pw.print("</a>");
-  }
+  public RootTagStrategy makeRootStrategy(Object key){ return this; }
 
-  //  public Object getKeyDifference(){ return ""+super.getKeyDifference()+"DELETE"; }
+  public void onInit(TagStrategy ts){ }
+
+  public Class getParentClass(){return MakumbaTag.class; }
+
+  public boolean canBeRoot() {return true; }
+
+  public int doStart() throws JspException
+  {
+    try{
+      pageContext.getOut().print(pageContext.getRequest().getAttribute(MakumbaTag.RESPONSE_STRING_NAME));
+    }catch(IOException e) { treatException(new MakumbaJspException(e));}
+
+    return EVAL_BODY_INCLUDE;
+  }
 }
-
-class DeleteResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
-  {
-    return Logic.doDelete(controller, type, getHttpBasePointer(pc), makeAttributes(pc), database);
-  }
-
-
-}
-

@@ -22,24 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.view.*;
-import org.makumba.*;
-import javax.servlet.jsp.*;
-import org.makumba.abstr.Logic;
+import java.util.*;
 
-public class EditTag extends FormTagBase 
+public class errorEditor extends FieldEditor
 {
-  public String getDefaultExpr(String fieldName) 
-  { return enclosingLabel+"."+fieldName; }
-
-  public FormResponder makeResponder() { return new EditResponder(); }
-}
-
-class EditResponder extends FormResponder
-{
-  public Object respondTo(PageContext pc) throws LogicException
+  public String formatShow(Object o, Dictionary formatParam)
   {
-    return Logic.doEdit(controller, type, getHttpBasePointer(pc), 
-			getHttpData(pc), makeAttributes(pc), database);
+    throw new org.makumba.view.InvalidValueException(this, "cannot edit fields of type "+getType());
   }
 }
