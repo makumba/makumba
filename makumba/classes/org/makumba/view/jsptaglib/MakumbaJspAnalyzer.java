@@ -94,6 +94,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     HashMap inputTypes= new HashMap();
     HashMap basePointerTypes= new HashMap();
     HashMap tags= new HashMap();
+    HashMap tagData= new HashMap();
 
     public ComposedQuery getQuery(MultipleKey key)
     {
@@ -154,7 +155,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	    }
 	  pageCache.tags.put(t.tagKey, t);
 	}
-      
+      pageCache.tagData.put(t.getTagKey(), td);
+
       t.doStartAnalyze();
       tags.add(t);
     }
