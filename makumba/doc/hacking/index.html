@@ -146,16 +146,31 @@ which
     <b>mak:</b> tag is implemented by which class, look in <b>servlet-context/makumba.tld</b>.
 Tag libraries are specified in the <a
  href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/index.html">JSP
-1.2 and Servlet 2.3</a> standard, see especially <b>javax.servlet.jsp.tagext</b><br>
-org.makumba.view.jsptaglib has a detailed <a href="javadoc/org/makumba/view/jsptaglib/package-summary.html#package_description">description</a>, please consult that. Each package described here should have such a documentation.
-   <li>the <b><a
-href="javadoc/org/makumba/view/html/package-summary.html">org.makumba.view.html.*Viewer</a></b>
+1.2 and Servlet 2.3</a> standard, see especially <b>javax.servlet.jsp.tagext</b>
+
+  <ul>
+     <li>FIXME: since the JSP specification does not take care of caching, every
+      <b><a href="javadoc/org/makumba/view/jsptaglib/MakumbaTag.html">MakumbaTag</a></b> has a
+<b><a href="javadoc/org/makumba/view/jsptaglib/TagStrategy.html">TagStrategy</a></b>.
+Whenever a new makumba tag
+is constructed by Tomcat, it looks if a strategy was already cached for it,
+then asks the strategy to perform each of the operations. In the future,
+this may not be needed as modern servlet contexts re-use tag objects that
+have completed their job instead of destroying them</li>
+     <li><b>mak:list </b>is of course hardest to implement. Root mak:list
+tags (not contained in any other mak:list or mak:object) have <b>RootQueryStrategy</b>
+as strategy. Other mak:list tags use <b>QueryStrategy</b><br>
+     </li>
+     <li>the <b><a
+href="javadoc/org/makumba/view/jsptaglib/package-summary.html">org.makumba.view.jsptaglib.*Viewer</a></b>
 handler family takes
 care of displaying different sorts of data in HTML</li>
      <li>makumba forms all inherit from <b><a
 href="javadoc/org/makumba/view/jsptaglib/FormTagBase.html">org.makumba.view.jsptaglib.FormTagBase</a></b>.
       <br>
      </li>
+
+  </ul>
   </li>
    <li><b><a href="javadoc/org/makumba/view/package-summary.html">org.makumba.view</a></b> implements some
 generic stuff needed for the
