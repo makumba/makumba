@@ -43,7 +43,7 @@ public class ActionTag extends MakumbaTag implements BodyTag
     return EVAL_BODY_BUFFERED;
   }
 
-  public void doStartAnalyze()
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
     FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
     if(form==null)
