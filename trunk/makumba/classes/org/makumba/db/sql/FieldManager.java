@@ -214,11 +214,15 @@ public abstract class FieldManager extends FieldHandler
   public boolean isIndexOk(SQLDBConnection dbc)
   {
        boolean ok=false;
+       String DBIndexName=getDBIndexName();
        try{
 	   ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,rm.getDBName(),true,false);
 	   while(rs.next()){
-		if( getDBIndexName().equals(rs.getString("INDEX_NAME")) ) // found index for this column
+		if( DBIndexName.equals(rs.getString("INDEX_NAME")) ) // found index for this column
+		{
 		  ok=(isUnique()==!rs.getBoolean("NON_UNIQUE") ); //compare current MDD and DB declarations
+		  break;
+		}
 	   }
        } catch(SQLException e) {System.out.println(e);}
        return ok;
