@@ -1,3 +1,5 @@
+stefan;23 apr 2003: source tarball is published whenever jar is published
+
 0.5.5.27; 27 mar 2003 stefan
 fixed bug 367 (Makumba Error messages are messy HTML)
 bug 327 (TagExceptions are linking wrongly)

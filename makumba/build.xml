@@ -219,7 +219,7 @@
 	<delete dir="../../makumba.distrib/makumba/" />
 	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
 	<!-- make the source tarball: -->
-	<zip zipfile="${jar.place}/${tag}-src.zip">
+	<zip zipfile="lib/${tag}-src.zip">
 		<fileset dir="../../makumba.distrib/">
 		  <include name="makumba/**" />
 		</fileset>
