@@ -452,7 +452,11 @@ public class table extends TestCase
     //should we allow this? FIXME!
     Object[] args2= {new Integer(-1), new Double(1.5)};
     v=db.executeQuery("SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args2);
-    assertEquals("Real comparisment with integer", new Integer(3), ((Dictionary)v.firstElement()).get("cnt") );
+    assertEquals("Real comparisment with integer parameter", new Integer(3), ((Dictionary)v.firstElement()).get("cnt") );
+
+    Object[] args3= {new Double(1.5)};
+    v=db.executeQuery("SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>-1 AND r.r<=$2", args3);
+    assertEquals("Real comparisment with hardcoded integer", new Integer(3), ((Dictionary)v.firstElement()).get("cnt") );
   }
 
   public void testIntAggregation()
