@@ -41,8 +41,7 @@ public class MultipleAttributeParametrizer
   }
 
 
-  public MultipleAttributeParametrizer(String oql, Attributes a)
-       throws LogicException
+  public MultipleAttributeParametrizer(String oql)
   {
     parametrizers= new NamedResources("JSP attribute parametrizer objects", parametrizerFactory);
     for(Enumeration e=new ArgumentReplacer(oql).getArgumentNames(); e.hasMoreElements(); )
@@ -91,7 +90,7 @@ public class MultipleAttributeParametrizer
       throws Exception
       {
 	return new AttributeParametrizer
-	  ( rewriteOQL((Attributes)nm), rewriteAttributes((Attributes)nm));
+	  ( rewriteOQL((Attributes)nm));
       }
   };
 
