@@ -106,6 +106,16 @@ public class InputTag extends ValueTag
       super.doAnalyze();
   }
 
+    public int doStartTag() throws JspException
+  {
+      super.doStartTag();
+      if(strategy!=this)
+	  try{
+	      doStart();
+	  }catch(Throwable t){ treatException(t); return SKIP_BODY; }
+      return EVAL_BODY_INCLUDE;
+  }
+
   /** ask the enclosing query to present the expression */
   public int doStart() throws JspException, org.makumba.LogicException
   {
@@ -122,13 +132,14 @@ public class InputTag extends ValueTag
 	    attrName=expr.substring(1);
 	  else
 	    {
-	      super.doStart();
+		if(strategy==this)
+		    super.doStart();
 	      attrName=var;
 	    }
 	  val=getAttributes().getAttribute(attrName);
 	  try{
 	      type=getAttributes().getAttribute(attrName+"_type");
-	  }catch(AttributeNotFoundException anfe){ }
+	  }catch(AttributeNotFoundException anfe){}
 	  if(type!=null && type.equals("unknown yet"))
 	    throw new RuntimeException("type should be known");
 	}
