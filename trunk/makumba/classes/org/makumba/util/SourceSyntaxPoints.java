@@ -213,7 +213,7 @@ public class SourceSyntaxPoints
    * @param end    the end position
    * @param type   String stating the type of syntax point
    * @param extra  any extra info (e.g. the object created at the syntax point 
-   * @see   addSyntaxPointsCommon(int start, int end, String type, Object extra)
+   * @see   #addSyntaxPointsCommon(int start, int end, String type, Object extra)
    */
   public SyntaxPoint.End addSyntaxPoints(int start, int end, String type, Object extra)
   {

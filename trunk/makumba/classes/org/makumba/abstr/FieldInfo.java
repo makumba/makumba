@@ -284,7 +284,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   /** works only for ptr and set types
     * @return title field of the record in the foreign table, as indicated in this field definition or in the respective foreign table record definition
     * @exception ClassCastException for other types
-    * @see hasTitleFieldIndicated
+    * @see #hasTitleFieldIndicated()
   */
   public String getTitleField() { return ((ptrHandler)defa()).getTitleField(); } 
   

@@ -141,7 +141,7 @@ public abstract class MakumbaTag extends TagSupport
   public void doEndAnalyze(){}
 
   /** makumba-specific start tag. 
-   * @see doStartTag 
+   * @see #doStartTag()
     */
   public int doMakumbaStartTag() throws LogicException, JspException
   {
@@ -183,7 +183,7 @@ public abstract class MakumbaTag extends TagSupport
    
 
   /** makumba-specific endTag. 
-   * @see doEndTag 
+   * @see #doEndTag() 
     */
   public int doMakumbaEndTag() throws LogicException, JspException
   {

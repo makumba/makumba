@@ -133,6 +133,8 @@
         <tstamp>
                 <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm"/>
         </tstamp>
+
+	<echo>- generating doc/api</echo>
 	<javadoc 
 		destdir="doc/api" 
 		sourcepath="classes" 	
@@ -159,6 +161,7 @@
 	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
 	</javadoc> 
 
+	<echo>- generating doc/hacking/javadoc</echo>
 	<javadoc 
 		destdir="doc/hacking/javadoc" 
 		sourcepath="classes" 	
@@ -297,7 +300,7 @@
 
 	<target name="publishDoc" depends="doc" description="publishes the documentation">
 	<antcall target="zipdoc" />
- <echo>updating zip for distribution</echo>
+	<echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
@@ -321,7 +324,7 @@
       		<exclude name="makumba/doc/api/API_users_guide.html" />
 	</fileset>
 
-	<!-- make sure the files to be published are radable to everyone (zip keeps permissions, bug 329) -->
+	<!-- make sure the files to be published are readable to everyone (zip keeps permissions, bug 329) -->
 	<chmod perm="ugo+r" type="both">
 	  <fileset refid="wwwdocs"/>
 	</chmod>
