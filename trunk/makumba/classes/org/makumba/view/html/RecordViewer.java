@@ -22,10 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
+import java.io.UnsupportedEncodingException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.makumba.abstr.RecordInfo;
+import org.makumba.DataDefinition;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
@@ -33,12 +34,17 @@ import org.makumba.view.RecordFormatter;
 public class RecordViewer extends RecordFormatter
 {
   public RecordViewer(ComposedQuery q) { super(q); }
-  public RecordViewer(RecordInfo ri, Hashtable h) { super(ri, h); }  
+  public RecordViewer(DataDefinition ri, Hashtable h) { super(ri, h); }  
 
   protected String applyParameters(FieldFormatter ff, Dictionary formatParams, String s)
   {
     if(formatParams.get("urlEncode")!=null)
-      return java.net.URLEncoder.encode(s);
+        try {
+            return java.net.URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     return s;
   }
 
