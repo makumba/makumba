@@ -160,7 +160,8 @@ public class MultipartHttpParameters extends HttpParameters
 	{
 	  Vector v= new Vector();
 	  v.addElement(o);
-	  ((Vector)o).addElement(value);
+          v.addElement(value);
+          parameters.put(name, v);
 	}
     else
       parameters.put(name, value);
