@@ -360,7 +360,7 @@ public class Logic
 			      "does not define the method\n"+
 			      "on_edit"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow EDIT operations on the type "+typename +
-			      "\nDefine that mehtod (even with an empty body) to allow such operations.");
+			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
       
       try{
@@ -403,7 +403,7 @@ public class Logic
 			      "does not define the method\n"+
 			      "on_delete"+upper+"(Pointer, Attributes, Database)\n"+
 			      "so it does not allow DELETE operations on the type "+typename +
-			      "\nDefine that mehtod (even with an empty body) to allow such operations.");
+			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
       
       try{
@@ -452,7 +452,7 @@ public class Logic
 			      "after_add"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow ADD operations on the type "+typename +
 			      ", field "+field+
-			      "\nDefine any of the mehtods (even with an empty body) to allow such operations.");
+			      "\nDefine any of the methods (even with an empty body) to allow such operations.");
 	}
       
       try{
@@ -500,7 +500,7 @@ public class Logic
 			      "on_new"+upper+"(Dictionary, Attributes, Database)\n"+
 			      "after_new"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow NEW operations on the type "+typename +
-			      ".\nDefine any of the mehtods (even with an empty body) to allow such operations.");
+			      ".\nDefine any of the methods (even with an empty body) to allow such operations.");
 	}
       try{
 	if(on!=null)
