@@ -1,3 +1,4 @@
+/* $Id$ */
 /* Javadoc style sheet */
 
 /* Define colors, fonts and other style attributes here to override the defaults */
@@ -36,6 +37,7 @@ hr {color:#044a2c;}
 .NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
 
 
+/* the makumba site navigation bar */
 div.navbar { 
 	background: #e7e7e7; 
 	padding:5;
@@ -45,6 +47,7 @@ div.navbar {
 	left:0;
 	width:100;
 	font-size:0.8em;
+	font-family: arial;
 }
 
 /* trick IE with child selector */
