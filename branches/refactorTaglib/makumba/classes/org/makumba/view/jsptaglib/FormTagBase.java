@@ -53,7 +53,9 @@ public class FormTagBase extends MakumbaTag
   public void setMethod(String s){ responder.setMethod(s); }
   public void setName(String s){ responder.setResultAttribute(s); }
   public void setMessage(String s){ responder.setMessage(s); }
-  public void setMultipart(){ responder.setMultipart(true);}
+    
+  boolean multipart;
+  public void setMultipart() { multipart=true; }
   
   FormResponder responder= new FormResponder();
   
@@ -89,10 +91,16 @@ public class FormTagBase extends MakumbaTag
     pageCache.valueComputers.put(tagKey, vc);
   }
 
+  static final Object dummy=new Object();
+
   public void doEndAnalyze()
   {
+    if(multipart)
+      pageCache.multipartForms.put(tagKey, dummy);
+
     if(baseObject==null)
       return;
+
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
     pageCache.basePointerTypes.put(tagKey, ((FieldInfo)vc.type).getPointedType().getName());
@@ -102,6 +110,8 @@ public class FormTagBase extends MakumbaTag
   {
     responder.setOperation(getOperation());
     responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
+    if(pageCache.multipartForms.get(tagKey)!=null)
+      responder.setMultipart(true);
 
     l= new java.util.Date().getTime();
 
