@@ -30,10 +30,10 @@ import test.*;
  * TestSuite that runs all the Makumba tests
  * @author Stefan Baebler
  */
-public class suite {
+public class all {
 
 	public static void main (String[] args) {
-		System.out.println("Makumba test suite: Testing everything...");
+		System.out.println("Makumba test suite: Running all tests...");
 		junit.textui.TestRunner.run (suite());
 	}
 
