@@ -1,6 +1,8 @@
 /* $Id$ */
 @import url("../main.css");
 
+body {margin-top:10px;}
+
 /* Javadoc style sheet */
 
 /* Define colors, fonts and other style attributes here to override the defaults */
