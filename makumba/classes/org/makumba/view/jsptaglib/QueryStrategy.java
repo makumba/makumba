@@ -73,8 +73,8 @@ implements Observer, QueryTagStrategy
     if(query==null)
       throw new RuntimeException("query should be known");
 
-    if(!knowsOfAnyProjection())
-      throw new RuntimeException("empty query?");
+    //if(!knowsOfAnyProjection())
+    //  throw new RuntimeException("empty query?");
  
     int start= startLooping();
     if(tag.wasException())
@@ -93,10 +93,10 @@ implements Observer, QueryTagStrategy
     initCountVars();
     if(query==null)
       throw new RuntimeException("query should be known");
-    if(!knowsOfAnyProjection())
-      throw new RuntimeException("Empty query?");
+    //if(!knowsOfAnyProjection())
+    //  throw new RuntimeException("Empty query?");
     
-    getRoot().doQueries(false);
+    getRoot().doQueries();
     
     int start= startLooping();
     if(tag.wasException())
@@ -349,20 +349,20 @@ implements Observer, QueryTagStrategy
   }
 
   /** execute the associated query */
-  public void doQuery(Database db, Attributes a, boolean noProj)
+  public void doQuery(Database db, Attributes a)
        throws LogicException
   {
-    boolean proj= noProj || query.getVersion()>0;
+    //    boolean proj= noProj || query.getVersion()>0;
     //    System.out.println(index+" "+(executed()?(""+bigResults.size()):""));
-    if(proj && !(executed() && 
+    /*if(proj && !(executed() && 
 		 // if the grouper has been emptied, we have to re-do the query
 		 !bigResults.isEmpty()))
-      {
+      {*/
 	long l= new java.util.Date().getTime();
 	//	System.out.println("executing "+query+"  "+query.getVersion()+">"+queryVersion);
 	bigResults=query.execute(db, a);
 	getRoot().queryTime+= (new java.util.Date().getTime())-l;
-      }
+	//}
     //    else
     //	System.out.println("not executing "+query+"  "+query.getVersion()+", "+queryVersion+ "  "+query.getProjections());
   }
