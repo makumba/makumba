@@ -68,12 +68,12 @@ public class ParameterAssigner
 	      // if there is no correct value for this argument, we'll throw an exception later
 	      if(correct.get(spara)==null)
 		errors.put(spara, e);
-	      if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString || value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
+	      //	      if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString || value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
 		fm.setNullArgument(ps, i+1);
-	      else
+		//else
 		// there is a bug here, manifests when the value is not serializable... 
 		// maybe one should insert just a dummy
-		ps.setObject(i+1, value);
+		//ps.setObject(i+1, value);
 	      continue;
 	    }
 	  correct.put(spara, para);
