@@ -34,9 +34,12 @@ public class charManager extends org.makumba.db.sql.charManager
    }
 
  /** Checks if the type is java.sql.Types.CHAR. Then, if the size of the SQL column is still large enough, this returns true. Some SQL drivers allocate more anyway. */
-  protected boolean unmodified(ResultSetMetaData rsm, int index)
-       throws SQLException
+  protected boolean unmodified(int type, int size, java.util.Vector columns, 
+			       int index)
+       throws java.sql.SQLException
   {
-    return rsm.getColumnType(index)==java.sql.Types.VARCHAR;
+    return super.unmodified(type, size, columns, index) || 
+      type==java.sql.Types.VARCHAR;
   }
+
 }
