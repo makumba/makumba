@@ -35,7 +35,6 @@ public class RootData
   String header, footer, db;
   MakumbaTag rootTag;
   Dictionary subtagData= new Hashtable();
-  Dictionary subtagDataNormalKeys= new Hashtable();
   long stamp;
   int ntags=0;
   PageContext pageContext;
@@ -60,11 +59,16 @@ public class RootData
     tag.strategy= (TagStrategy)subtagData.get(key);
     if(tag.strategy==null)
       {
-	subtagData.put(key, tag.strategy=tag.makeStrategy(key));
+	tag.strategy=tag.makeStrategy(key);
+	if(!(tag.strategy instanceof QueryTagStrategy))
+	  // a non-query
+	  return;
+	subtagData.put(key, tag.strategy);
 	tag.strategy.init(rootTag, tag, key);
 	((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
       }
     else
+      // mostly for QueryStrategy
       if(tag.strategy instanceof TagStrategySupport)
 	((TagStrategySupport)tag.strategy).tag=tag;
     tag.strategy.loop();
