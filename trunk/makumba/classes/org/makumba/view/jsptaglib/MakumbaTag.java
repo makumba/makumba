@@ -51,22 +51,24 @@ import org.makumba.util.MultipleKey;
  */
 public abstract class MakumbaTag extends TagSupport 
 {
-  // set by the tag parser at analysis time. 
-  // this is not yet guaranteed to be set at runtime!
-  JspParseData.TagData tagData;
+  /** Set by the tag parser at analysis time. It is set at runtime after the key is computed */
+  protected JspParseData.TagData tagData;
+
+  void setTagDataAtAnalysis(JspParseData.TagData tagData) 
+  {this.tagData=tagData; }
 
   /** A tag key, used to find cached resources. Computed by some tags, both at analysis and at runtime */
-  MultipleKey tagKey;
+  protected MultipleKey tagKey;
   
   /** the cache containing page analysis data */
   MakumbaJspAnalyzer.PageCache pageCache; 
 
   /** Tag parameters */
-  Hashtable params = new Hashtable(7);        // holds certain 'normal' tag attributes
-  Map extraFormattingParams = new HashMap(7); // container for html formatting params
+  protected Hashtable params = new Hashtable(7);        // holds certain 'normal' tag attributes
+  protected Map extraFormattingParams = new HashMap(7); // container for html formatting params
 
   /** Extra html formatting, copied verbatim to the output */
-  StringBuffer extraFormatting;
+  protected StringBuffer extraFormatting;
 
   static final String DB_ATTR="org.makumba.database";
 
@@ -131,6 +133,8 @@ public abstract class MakumbaTag extends TagSupport
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey() {}
 
+  public MultipleKey getTagKey(){ return tagKey; }
+
   /** can this tag have the same key as others in the page? */
   public boolean allowsIdenticalKey() { return true; }
 
@@ -163,6 +167,8 @@ public abstract class MakumbaTag extends TagSupport
       if(needPageCache())
 	pageCache=getPageCache(pageContext);
       setTagKey();
+      if(pageCache!=null)
+	tagData=(JspParseData.TagData)pageCache.tagData.get(tagKey);
       initialiseState();
       return doMakumbaStartTag();
     }
@@ -222,7 +228,7 @@ public abstract class MakumbaTag extends TagSupport
   }
 
   /** throw an exception if this is not the root tag */
-  protected void onlyRootArgument(String s) 
+  protected void onlyRootArgument(String s) throws JspException
   {
     if(findAncestorWithClass(this, MakumbaTag.class)!=null)
       treatException(new MakumbaJspException
@@ -251,8 +257,11 @@ public abstract class MakumbaTag extends TagSupport
       ((HttpServletRequest)pageContext.getRequest());
   }
 
-  protected void treatException(Throwable t) 
+  protected void treatException(Throwable t) throws JspException
   {
+    if(pageContext==null)
+      throw (JspException)t;
+
     org.makumba.controller.http.ControllerFilter.treatException
       (t,
        (HttpServletRequest)pageContext.getRequest(),
@@ -295,5 +304,12 @@ public abstract class MakumbaTag extends TagSupport
   public void setLabelSeparator(String s) {  params.put("labelSeparator", s); }
   public void setElementSeparator(String s) {  params.put("elementSeparator", s); }
   
-  public String toString(){ return getClass().getName()+" "+params; }
+  public String toString(){ return getClass().getName()+" "+params+"\n"+getPageTextInfo(); }
+
+  public String getPageTextInfo(){ 
+    if(tagData==null) return "";
+    return tagData.getStart().getFile().getPath()+":"+
+      tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
+      tagData.getEnd().getLine()+":"+tagData.getEnd().getColumn();
+  }
 }
