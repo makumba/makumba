@@ -8,14 +8,16 @@
 
 <STYLE TYPE="text/css">
   BODY { font-family: arial; }
-  H1 { background: #CEDD17; margin-top: 30 }
-  H2 { background: #E4D943; margin-top: 50 }
-  H3 { background: #DAD3B8; margin-top: 40 }
-  H4 { background: #E0D9CF; margin-top: 40 ; color: #666666 }
-  
+  H1 { background: #044a2c; color:white; margin-top: 30; padding-left: 10 }
+  H2 { background: #CBBE1D; margin-top: 50 ; padding-left: 10}
+  H2 { background: #74C27A; margin-top: 50 ; padding-left: 10}
+  H3 { background: #C2FE8D; margin-top: 40 ; padding-left: 10}
+  H4 { background: #DAD3B8; margin-top: 40 ; padding-left: 10}
+  H5 { background: #E0D9CF; color: #666666 ; margin-top: 40 ; padding-left: 10}
   /* old and future feature */
   .oldfeat { color: #000099 }
   .futfeat { color: #990000 }
+  .unusedcolor (#74C27A #CBBE1D)
 </STYLE>
 
 </head>
@@ -25,63 +27,55 @@
 $Revision$
 <p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
 <br><span class=futfeat>INTENDED features are presented in red</span>
-<p>Content:
-<blockquote><b><a href="#Data_Description">Data Definition Language</a></b>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Types, objects,databases">Types,
-objects, databases</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Fields">Fields</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#DefaultFields">Default fields</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Simple field Types">Simple field
-types</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Structural (relational) types">Structural
-(relational) types</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#MacroTypes">Macro types</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#FieldAttributes">Field attributes</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#ObjectTitle">Object title</a>
-<br>&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Include">Include mechanism</a>
-<br><b><a href="#OQL">OQL language</a></b>
-<br><b><font color="#990000"><a href="#Business">Business Logic</a></font></b>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000099">-
-<a href="#Attributes">Attributes</a></font>
-<br><font color="#000099">&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#javahand">Java
-Handler classes</a></font>
-<br><font color="#000099">&nbsp;&nbsp;&nbsp;&nbsp; - <a href="#Login">Login
-, &lt;mak:login>, &lt;mak:logout/></a></font>
-<br><b><a href="#PresentationSummary">Presentation and internal representation
-principles</a></b>
-<br><b><a href="#Presentation">Presentation with JSP taglib</a></b>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">
--
-<a href="#maklist">&lt;mak:list></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">-
-</font><a href="#usageOFAttributes">Attributes
-and OQL in &lt;mak:list > and &lt;mak:object ></a>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">&nbsp;
--
-<a href="#makvalue">&lt;mak:value/></a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#makif">&lt;mak:if></a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#mak_attrib">&lt;mak:attribute></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">-
-<a href="#makobject">&lt;mak:object></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">-
-<a href="#forms">Forms</a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#maknew">&lt;mak:newForm></a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#makadd">&lt;mak:addForm></a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#makedit">&lt;mak:editForm></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#makform">&lt;mak:form></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">&nbsp;&nbsp;&nbsp;
--
-<a href="#input">&lt;mak:input/></a></font>
-<br><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp; -
-<a href="#delete">&lt;mak:deleteLink/></a></font>
-<br><font color="#990000">&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">-
-<a href="#response">&lt;mak:response/></a></font></blockquote>
+
+<h2>Content</h2>
+
+<ul>
+  <li><b><a href="#Data_Description">Data Definition Language</a></b><i>... writing MDDs </i></li>
+  <ul>
+      <li> <a href="#Types, objects,databases">Types, objects, databases</a></li>
+      <li> <a href="#Fields">Fields</a></li>
+      <li> <a href="#DefaultFields">Default fields</a></li>
+      <li> <a href="#Simple field Types">Simple field types</a></li>
+      <li> <a href="#Structural (relational) types">Structural (relational) types</a></li>
+      <li> <a href="#MacroTypes">Macro types</a></li>
+      <li> <a href="#FieldAttributes">Field attributes</a></li>
+      <li> <a href="#ObjectTitle">Object title</a></li>
+      <li> <a href="#Include">Include mechanism</a></li>
+  </ul>    
+  <li><b><a href="#OQL">OQL language</a></b> <i>... getting data from the database </i> </li>
+
+  <li><b><a href="#Business">Business Logic</a></b> <i>... adding logic to basic operations </i></li>
+  <ul>
+      <li><a href="#Attributes">Attributes</a></li>
+      <li><a href="#javahand">Java Handler classes</a></li>
+      <li><a href="#Login">Login , &lt;mak:login>, &lt;mak:logout/></a></li>
+  </ul>
+  <li><b><a href="#PresentationSummary">Presentation and internal representation principles</a></b></li>
+
+  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... adding data into your HTML </i> </li>
+  <ul>
+      <li><a href="#maklist">&lt;mak:list></a></li>
+      <ul>
+          <li><a href="#usageOFAttributes">Attributes and OQL in &lt;mak:list > and &lt;mak:object ></a></li>
+          <li><a href="#makvalue">&lt;mak:value/></a></li>
+          <li><a href="#makif">&lt;mak:if></a></li>
+      </ul>          
+      <li><a href="#mak_attrib">&lt;mak:attribute></a></li>
+      <li><a href="#makobject">&lt;mak:object></a></li>
+      <li><a href="#forms">Forms</a></li>
+      <ul>
+          <li><a href="#maknew">&lt;mak:newForm></a></li>
+          <li><a href="#makadd">&lt;mak:addForm></a></li>
+          <li><a href="#makedit">&lt;mak:editForm></a></li>
+          <li><a href="#makform">&lt;mak:form></a></li>
+          <li><a href="#input">&lt;mak:input/></a></li>
+      </ul>
+      <li><a href="#delete">&lt;mak:deleteLink/></a></li>
+      <li><a href="#response">&lt;mak:response/></a></li>
+   </ul>
+</ul>
+
 
 <h2>
 <a NAME="Data_Description"></a>Data Definition Language</h2>
@@ -1132,7 +1126,7 @@ Displays the body of the tag only if the OQL expression evaluates to true.
 <blockquote><b><pre>
 &lt;mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
    &lt;mak:value expr="s.person.name"/>
-   &lt;mak:if expr="s.person.hideAge = 1">
+   &lt;mak:if test="s.person.hideAge = 1">
       was born on &lt;mak:value expr="s.person.birthdate" />
    &lt;/mak:if>
 &lt;/mak:list>
@@ -1149,12 +1143,15 @@ Displays the body of the tag only if the OQL expression evaluates to true.
 </tr>
 
 <tr>
-<td><tt>expr</tt></td>
+<td><tt>test</tt></td>
 
 <td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression. 
 It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
 
-<td>Fixed, Mandatory.</td>
+<td>Fixed, Mandatory. 
+    <br><i>(in first implementation, this was called <code>expr</code>, 
+    but changed to reflect practice in XSL and JSLT</i>
+</td>
 </tr>
 
 </table>
