@@ -3,10 +3,13 @@ BODY {	font-family: Arial, Helvetica, sans-serif;
 	color:black; 
 	background-color:white; 
 	margin-right:10px;
+	margin-top:0px;
 	margin-left:150px; }
+
+
   H1 {	background: #044a2c; 
 	color:white;
-	margin-top: 30px;
+	margin-top: 0px;
 	padding-left: 10px;
 	margin-left:-40px; }
   H2 { background: #74C27A; margin-top: 50px ; padding-left: 10px; margin-left:-30px;}
@@ -14,9 +17,15 @@ BODY {	font-family: Arial, Helvetica, sans-serif;
   H4 { background: #DAD3B8; margin-top: 40px ; margin-bottom:5px; padding-left:10px; margin-left:-10px;}
   H5 { background: #E0D9CF; color: #666666 ; margin-top: 40px; padding-left: 10px;}
   
-  H2 a, H3 a, H4 a {color:black;}
   H1 a {color:white;}
 
+/* for fixed page title (h1), might result in non-smooth scrolling: 
+HTML>BODY { margin-top:50px; }
+BODY>H1 {position:fixed; top:0; margin-top:0; right:10px; left:150px; white-space:nowrap;}
+H2 a[name], H3 a[name], H4 a[name] {color:black; position:relative; top:-60px}
+*/
+
+a:hover {color:red;}
 
 /*
   H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
@@ -29,7 +38,7 @@ BODY {	font-family: Arial, Helvetica, sans-serif;
 
   .exampleBlock { background: #e7e7e7; padding-left: 10px; padding-right:10px; padding-top:10px; padding-bottom:2px ; }
 
-ul {margin-top:0}
+ul, ol {margin-top:0}
 a {color:#044a2c;}
 
 div.navbar { 
