@@ -172,6 +172,16 @@ public class RecordParser extends RecordHandler
 
   static public java.net.URL findDataDefinition(String s, String ext)
   {
+    //must specify a filename, not a directory (or package), see bug 173
+    java.net.URL u=findDataDefinitionOrDirectory(s, ext);
+    if(u!=null) {
+	if( u.toString().endsWith("/") ) return null;
+    }
+    return u;
+  }
+
+  static public java.net.URL findDataDefinitionOrDirectory(String s, String ext)
+  {
     String s1=null;
     java.net.URL u= null;
     if(s.endsWith(".") || s.endsWith("//"))
@@ -192,10 +202,6 @@ public class RecordParser extends RecordHandler
 	  }
 	}
       }
-    //must specify a filename, not a directory (or package), see bug 173
-    if(u!=null) {
-	if( u.toString().endsWith("/") ) return null;
-    }
     return u;
   }
 
