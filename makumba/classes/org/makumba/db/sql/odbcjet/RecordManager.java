@@ -38,7 +38,7 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
       {
 	dbc.commit();
 	try{
-	  Thread.currentThread().sleep(500);
+	  Thread.currentThread().sleep(1000);
 	}catch(InterruptedException t){}
       }
   }
