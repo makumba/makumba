@@ -70,6 +70,7 @@ public class FormResponder extends Responder
 	  .append(basePointerName)
 	  .append("=")
 	  .append(basePointer)
+	  .append('&')
 	  .append(responderName)
 	  .append("=")
 	  .append(getPrototype())
