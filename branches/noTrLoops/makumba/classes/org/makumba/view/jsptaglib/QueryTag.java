@@ -40,6 +40,27 @@ public class QueryTag extends MakumbaBodyTag
   String maxCountVar;
 
 
+  public void setParent(Tag t)
+  {
+    super.setParent(t);
+    if(getMakumbaParent()==null)
+      pageContext.setAttribute(getRootDataName(), new RootData(this, pageContext), PageContext.PAGE_SCOPE);
+  }
+  
+  public int doEndTag() throws JspException
+  {
+    try{
+      return super.doEndTag();
+    }    finally
+      {
+	if(getMakumbaParent()==null)
+	  {
+	    getRootData().close();
+	    pageContext.removeAttribute(getRootDataName(), PageContext.PAGE_SCOPE);
+	  }
+      }
+  }
+
   protected Class getParentClass(){ return QueryTag.class; }
   
   public void cleanState()
@@ -72,7 +93,7 @@ public class QueryTag extends MakumbaBodyTag
   public Object getRegistrationKey()
   {
     MultipleKey mk= getBasicKey();
-    mk.setAt(getParentQueryStrategy().getKey(), queryProps.length+1);
+    mk.setAt(getEnclosingQuery().getKey(), queryProps.length+1);
     //    System.out.println(mk);
     return mk;
   }
