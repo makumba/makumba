@@ -52,7 +52,10 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     public void setType(String key, FieldDefinition value, MakumbaTag t)
     {
       Object []val1= (Object[])get(key);
-      FieldDefinition fd= (FieldDefinition)val1[0];
+      FieldDefinition fd= null; 
+
+      if(val1!=null)
+	fd= (FieldDefinition)val1[0];
       // if we get nil here, we keep the previous, richer type information
       if(fd!=null && value.getType().equals("nil"))
 	return;
