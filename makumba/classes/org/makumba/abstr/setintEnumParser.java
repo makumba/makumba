@@ -27,7 +27,7 @@ public class setintEnumParser extends setEnumParser
 {
   void parseEnum(FieldCursor fc) 
   {
-    enum.type= "intEnum";
-    fc.expectIntEnum(enum);
+    _enum.type= "intEnum";
+    fc.expectIntEnum(_enum);
   }
 }
