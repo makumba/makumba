@@ -31,10 +31,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.Database;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordInfo;
 import org.makumba.util.HtmlTagEnumerator;
 
 public class HtmlTableImporter 
@@ -68,7 +68,7 @@ public class HtmlTableImporter
 	      {MakumbaSystem.getMakumbaLogger("import").warning("record not inserted --> "+e.getMessage());}
   }
 
-  public HtmlTableImporter(Database db, RecordInfo type, Reader r, String tableStartTag, String[] fieldOrder)
+  public HtmlTableImporter(Database db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
        throws IOException
   {
     this.imp= new RecordImporter(type, true);
@@ -133,8 +133,8 @@ public class HtmlTableImporter
     System.arraycopy(argv, 4, args, 0, args.length);
 
     new HtmlTableImporter(
-			  MakumbaSystem.getDatabase(argv[0]),
-			  RecordInfo.getRecordInfo(argv[1]),
+			  MakumbaSystem.getConnectionTo(argv[0]),
+			  MakumbaSystem.getDataDefinition(argv[1]),
 			  new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))),
 			  argv[3],
 			  args);

@@ -56,7 +56,7 @@ public class FieldImporter extends FieldHandler
 
   public String canonicalName()
   {
-    return getFieldInfo().getRecordInfo().getName()+"#"+getName();
+    return getFieldDefinition().getDataDefinition().getName()+"#"+getName();
   }
 
   public void configure(Properties markers)
