@@ -55,6 +55,7 @@ implements javax.servlet.jsp.tagext.BodyTag
   public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType+"\n"; }
   
 
+  public void setDataType(String dt) {   this.dataType=dt.trim();  }
   public void setField(String field)  { setName(field);}
   public void setName(String field) {   this.name=field.trim(); }
   public void setDisplay(String d) {   this.display=d; }

@@ -43,7 +43,6 @@ public abstract class BasicValueTag extends MakumbaTag
   String expr = null;
 
   public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
-  public void setDataType(String dt) {   this.dataType=dt.trim();  }
 
   FormTagBase getForm() 
   { return (FormTagBase)TagSupport.findAncestorWithClass(this, FormTagBase.class); }
