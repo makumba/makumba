@@ -19,6 +19,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12.1; 19 oct 2004 cristi
+fixed a packaging error. org.makumba.db.Lock.mdd was missing from the 0.5.12 package
+
 0.5.12; 27 aug 2004 cristi
 first version that only works with JSP 2.0
 implemented some makumba functions: mak:count(), mak:maxCount(), mak:lastCount()
