@@ -339,7 +339,6 @@ public abstract class RecordHandler
    * 
    * @param m the name of the method. Only one method with a name is supported 
    * (i.e. no name overloading). This is simple and powerful enough
-   * @see #getHandlerAncestor()
    * @see #callAll(Method, Object[])
    * @see #writeAll(Method, Object[], String)
    * @see #streamAll(Method, Object[], byte[])
