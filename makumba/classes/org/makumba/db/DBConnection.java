@@ -30,39 +30,13 @@ import org.makumba.util.*;
 public abstract class DBConnection implements org.makumba.Database
 {
   protected org.makumba.db.Database db;
-  NamedResources queries;
-  NamedResources updates;
-    
+      
   protected DBConnection() {} // for the wrapper
 
   public DBConnection(Database database)
-    { 
-	this.db=database; 
-	queries= new NamedResources
-	    ("Database "+db.getName()+" per-connection query objects",
-	     new NamedResourceFactory(){
-		     public Object makeResource(Object name) 
-		     {
-			 return db.prepareQueryImpl(DBConnection.this, (String)name);
-		     }
-		 });
-	
-	    updates= new NamedResources
-		("Database "+db.getName()+" per-connection update objects",
-		 new NamedResourceFactory(){
-			public Object makeResource(Object o) 
-			{
-			    Object[] multi=(Object[])o;
-			    
-			    return db.prepareUpdateImpl(DBConnection.this, (String)multi[0], (String)multi[1], (String)multi[2]);
-			}
-			protected Object getHashObject(Object name)
-			{
-			    Object[] multi=(Object[])name;
-			    return ""+multi[0]+"####"+multi[1]+"######"+multi[2];
-			}
-		    });	    
-    }
+  { 
+    this.db=database; 
+  }
 
   public org.makumba.db.Database getHostDatabase(){ return db; }
   
@@ -208,7 +182,7 @@ public abstract class DBConnection implements org.makumba.Database
    * @return a Vector of Dictionaries */
   public java.util.Vector executeQuery(String OQL, Object args)
   {
-    return ((Query)queries.getResource(OQL)).execute(treatParam(args)); 
+    return ((Query)getHostDatabase().queries.getResource(OQL)).execute(treatParam(args), this); 
   }
 
   /** Execute a parametrized update or delete. A null set means "delete"
@@ -217,7 +191,7 @@ public abstract class DBConnection implements org.makumba.Database
   {
     Object []multi= { type, set, where };
 
-    return ((Update)updates.getResource(multi)).execute(treatParam(args)); 
+    return ((Update)getHostDatabase().updates.getResource(multi)).execute(this, treatParam(args)); 
   }
 
   /** Insert a record in a subset (1-N set) or subrecord (1-1 pointer) of the given record. For 1-1 pointers, if another subrecord existed, it is deleted.

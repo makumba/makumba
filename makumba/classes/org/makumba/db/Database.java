@@ -46,8 +46,11 @@ import org.makumba.*;
 public abstract class Database 
 {
   public String getName(){ return configName; }
-    
-    int nconn=0;  
+
+  NamedResources queries;
+  NamedResources updates;
+
+  int nconn=0;  
   protected ResourcePool connections= new ResourcePool(){
       public Object create()
 	{
@@ -273,6 +276,32 @@ public abstract class Database
       config.put("alter#org.makumba.db.Catalog", "true");
       config.put("alter#org.makumba.db.Lock", "true");
     }catch(Exception e){ throw new org.makumba.MakumbaError(e); }
+
+    
+    queries= new NamedResources
+      ("Database "+getName()+" query objects",
+       new NamedResourceFactory(){
+	public Object makeResource(Object name) 
+	  {
+	    return prepareQueryImpl((String)name);
+	  }
+      });
+
+    updates= new NamedResources
+      ("Database "+getName()+" update objects",
+       new NamedResourceFactory(){
+	public Object makeResource(Object o) 
+	  {
+	    Object[] multi=(Object[])o;
+	    
+	    return prepareUpdateImpl((String)multi[0], (String)multi[1], (String)multi[2]);
+	  }
+	protected Object getHashObject(Object name)
+	  {
+	    Object[] multi=(Object[])name;
+	    return ""+multi[0]+"####"+multi[1]+"######"+multi[2];
+	  }
+      });	    
   }
 
   /** this method should be redefined by database classes that have a default table class. this returns null */
@@ -338,8 +367,8 @@ public abstract class Database
     return ret;
   }
 
-  public abstract Query prepareQueryImpl(DBConnection c, String query);
-  public abstract Update prepareUpdateImpl(DBConnection c, String type, String set, String where);
+  public abstract Query prepareQueryImpl(String query);
+  public abstract Update prepareUpdateImpl(String type, String set, String where);
 
   public abstract int getMinPointerValue();
   public abstract int getMaxPointerValue();
@@ -462,6 +491,8 @@ public abstract class Database
 
   synchronized void addTable(String s) 
   {
+    if(s.equals("org.makumba.db.Catalog"))
+      return;
     DBConnection c= getDBConnection();
     try{
 	Enumeration e= c.executeQuery("SELECT c FROM org.makumba.db.Catalog c WHERE c.name=$1", s).elements();

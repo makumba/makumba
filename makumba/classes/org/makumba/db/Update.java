@@ -27,5 +27,5 @@ package org.makumba.db;
 public interface Update
 {
   /** Execute the query with the given arguments */
-  public int execute(Object [] args);
+  public int execute(DBConnection dbc, Object [] args);
 }

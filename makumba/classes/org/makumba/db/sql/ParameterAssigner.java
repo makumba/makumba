@@ -36,11 +36,11 @@ public class ParameterAssigner
   RecordManager paramHandler;
   OQLAnalyzer tree;
 
-  ParameterAssigner(DBConnection dbc, OQLAnalyzer tree)
+  ParameterAssigner(org.makumba.db.Database db, OQLAnalyzer tree)
   {
     this.tree=tree;
     if(tree.parameterNumber()>0)
-      paramHandler=(RecordManager)dbc.getHostDatabase().getTable((RecordInfo)tree.getParameterTypes());
+      paramHandler=(RecordManager)db.getTable((RecordInfo)tree.getParameterTypes());
   }
   static final Object[] empty=new Object[0];
 
