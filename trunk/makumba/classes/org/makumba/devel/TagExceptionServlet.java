@@ -131,7 +131,12 @@ public class TagExceptionServlet extends HttpServlet
     }
     if(tagData==null) return "";
     StringBuffer sb= new StringBuffer();
-    JspParseData.tagDataLine(tagData, sb);
+    try{
+      JspParseData.tagDataLine(tagData, sb);
+    }catch(Throwable t){ 
+      // ignore source code retrieving bugs
+      t.printStackTrace();
+    }
     try{
       return tagExpl+"\n"+tagData.getStart().getFile().getCanonicalPath()+":"+
 	tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
