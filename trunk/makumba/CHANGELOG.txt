@@ -19,7 +19,7 @@ fred; 15 sep 2003; bug 572 & 501: default=... and empty=...  (still NEEDS TESTIN
 0.5.9.10; 11 sep 2003 fred
 # this release retrofits all summer work _except_ bug 3, bug 4
 # skipped a number (.9) on purpose, to mark the major change
-stefan; ?? sep 2003 ; bug 530 (org.makumba.util.HtmlUtils @deprecated, all makumba uses org.makumba.HtmlUtils)
+stefan; 10 sep 2003: bug 530 (org.makumba.util.HtmlUtils @deprecated, all makumba uses org.makumba.HtmlUtils)
 stefan; 10 sep 2003: fixed bug 557 (drop support for mak:list/object header= and footer=)
 stefan; 20 aug 2003: extended test suite, now ready for additional tests
 stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
