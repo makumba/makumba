@@ -69,7 +69,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
   QueryExecution execution;
 
   /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey */
-  void setTagKey()
+  public void setTagKey()
   {
     tagKey= new MultipleKey(queryProps.length+1);
     for(int i=0; i<queryProps.length; i++)
