@@ -102,11 +102,10 @@ public class QueryExecution
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
     Database dbc= 
-      org.makumba.controller.Logic.getDatabaseConnection
-      (
-       PageAttributes.getAttributes(pageContext),
-       MakumbaTag.getDatabaseName(pageContext)
-      );
+      org.makumba.controller.http.RequestAttributes.getConnectionProvider
+      ((javax.servlet.http.HttpServletRequest)pageContext.getRequest())
+      .getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
+
       listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
 	.execute(dbc, PageAttributes.getAttributes(pageContext));
   }

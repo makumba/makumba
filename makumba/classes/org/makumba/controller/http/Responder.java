@@ -313,7 +313,8 @@ public abstract class Responder implements java.io.Serializable
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
-					      resp.database);
+					      resp.database, 
+					      RequestAttributes.getConnectionProvider(req));
 			}
 		      public String verify(Responder resp){ return null; }
 		    });
@@ -327,7 +328,8 @@ public abstract class Responder implements java.io.Serializable
 					     resp.handler, 
 					     resp.getHttpData(req, suffix), 
 					     new RequestAttributes(resp.controller, req, resp.database),
-					     resp.database);
+					     resp.database, 
+					     RequestAttributes.getConnectionProvider(req));
 			 }
 		       public String verify(Responder resp){ return null; }
 		     });
@@ -341,7 +343,8 @@ public abstract class Responder implements java.io.Serializable
 					      resp.newType,
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
-					      resp.database);
+					      resp.database, 
+					      RequestAttributes.getConnectionProvider(req));
 			 }
 		       public String verify(Responder resp){ return null; }
 		     });
@@ -357,7 +360,8 @@ public abstract class Responder implements java.io.Serializable
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
-					      resp.database);
+					      resp.database, 
+					      RequestAttributes.getConnectionProvider(req));
 			 }
 		       public String verify(Responder resp){ return null; }
 		     });
@@ -372,7 +376,8 @@ public abstract class Responder implements java.io.Serializable
 					      (Pointer)req.getAttribute(resultNamePrefix+parentSuffix), 
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
-					      resp.database);
+					      resp.database, 
+					      RequestAttributes.getConnectionProvider(req));
 			 }
 		       public String verify(Responder resp){ return null; }
 		     });
@@ -386,7 +391,8 @@ public abstract class Responder implements java.io.Serializable
 						 resp.basePointerType,
 						 resp.getHttpBasePointer(req, suffix),
 						 new RequestAttributes(resp.controller, req, resp.database),
-						 resp.database);
+						 resp.database,
+						 RequestAttributes.getConnectionProvider(req));
 			 }
 
 		       public String verify(Responder resp){ return null; }
