@@ -65,7 +65,7 @@ public class TagExceptionServlet extends HttpServlet
       {
 	if(t instanceof LogicException)
 	  t1=((LogicException)t).getReason();
-	else if(t instanceof MakumbaError)
+	else if(t instanceof MakumbaError && !(t instanceof OQLParseError))
 	  t1=((MakumbaError)t).getReason();
 	else if(t instanceof LogicInvocationError)
 	  t1=((LogicInvocationError)t).getReason();
@@ -75,7 +75,7 @@ public class TagExceptionServlet extends HttpServlet
 	  break;
 	t=t1;
       }
-    
+
     for(int i=0; i<errors.length; i++)
       if((((Class)errors[i][0])).isInstance(t) || t1!=null && 
 	 (((Class)errors[i][0])).isInstance(t=t1))
