@@ -130,8 +130,10 @@ public class Database extends org.makumba.db.Database
 	       +p.get("jdbc_driver.version")
 	       +"\n\tusing DBSV "+p.get("dbsv"));
 	if(!dbc.getMetaData().supportsTransactionIsolationLevel(DESIRED_TRANSACTION_LEVEL))
-	  MakumbaSystem.getMakumbaLogger("db.init").
-	    warning("transaction isolation level "+DESIRED_TRANSACTION_LEVEL+" not supported!");
+	  {
+	    MakumbaSystem.getMakumbaLogger("db.init").
+	      warning("transaction isolation level "+DESIRED_TRANSACTION_LEVEL+" not supported, using "+dbc.getMetaData().getDefaultTransactionIsolation());
+	  }
 
 	readCatalog(dbc);
 	
