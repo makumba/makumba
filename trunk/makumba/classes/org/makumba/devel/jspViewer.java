@@ -95,7 +95,7 @@ public class jspViewer extends LineViewer
 	advance();
 	inMak=true;
 	inQuotes=false; //reinitialize for this mak tag
-	highlighted.append("<span style=\"background:#eecccc;color:green; border:red thin\">&lt;"+pattern.substring(1));
+	highlighted.append("<span style=\"background:#eecccc;color:green; border:red thin\"><b>&lt;"+pattern.substring(1));
 	return;
       }
 
@@ -118,7 +118,7 @@ public class jspViewer extends LineViewer
 	if(inMak && !inQuotes) //end of mak tag
 	  {
 	    inMak=false;
-	    highlighted.append("&gt;</span>");
+	    highlighted.append("&gt;</b></span>");
 	  }	
 	else
 	  super.treat();
