@@ -52,7 +52,7 @@ public class ptrEditor extends choiceEditor
     c= new ChoiceSet();
     for(Iterator i= v.iterator(); i.hasNext(); ){
       Dictionary d= (Dictionary)i.next();
-      c.add(d.get("choice"), (String)d.get("title"), false, false);
+      c.add(d.get("choice"), d.get("title").toString(), false, false);
     }
     return c;
   }
