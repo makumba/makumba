@@ -146,7 +146,7 @@ public class JspParseData
     String backslash=bs+bs;
     
     return 
-      bs+"s+"+
+      bs+"s*"+
       bs+"w+"+
       bs+"s*="+
       bs+"s*"+
