@@ -22,17 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.controller.http.Responder;
-import org.makumba.controller.http.RequestAttributes;
-
-import org.makumba.FieldDefinition;
-
-import org.makumba.abstr.RecordInfo;
-import org.makumba.abstr.FieldInfo;
-
 import java.util.Dictionary;
 import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.makumba.FieldDefinition;
+import org.makumba.abstr.FieldInfo;
+import org.makumba.abstr.RecordInfo;
+import org.makumba.controller.http.Responder;
 
 public class FormResponder extends Responder
 {

@@ -22,9 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.view.*;
-import javax.servlet.*;
-import java.util.*;
+import org.makumba.view.InvalidValueException;
 
 
 public class intEnumEditor extends charEnumEditor
