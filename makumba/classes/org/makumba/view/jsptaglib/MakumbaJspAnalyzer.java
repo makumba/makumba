@@ -62,7 +62,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     HashMap queries= new HashMap();
     HashMap inputTypes= new HashMap();
     HashMap basePointerTypes= new HashMap();
-    HashMap multipartForms= new HashMap();
 
     public ComposedQuery getQuery(Object key)
     {
