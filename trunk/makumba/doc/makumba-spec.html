@@ -1142,7 +1142,29 @@ also present within the value, it must be escaped by a backslash.
   &lt;mak:list from="best.Student s" where='s.gender="male"' >
   &lt;mak:list from="best.Student s" where="s.gender='male'" >
   &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " >    <!-- FIXME (fred) I'm not 100% sure this is correct -->
+  &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' >
 </pre>
+
+<p>
+Quotes in <b>extra HTML formatting</b> parameters, such as
+<code>styleClass</code>, <code>title</code>, <code>styleId</code>, <code>onClick</code> ...
+need some special attention with quotes.
+The parameter values are copied verbatim (with no modifications by makumba)
+to the resulting HTML, always surrounded with double quotes (").
+This means that you have to use other quotes, like single one ('),<br>
+If you need to pass a literal <b>backslash</b> (\) you have to escape it with a preceeding backslash (\\).
+</p>
+<pre class="example">
+  &lt;mak:input ... onClick="alert(this.value);"/>
+  &lt;mak:input ... onClick="alert('Hello world!');"/>
+  &lt;mak:input ... onClick="alert('Hello\\nWorld');"/>
+</pre>
+<p>
+Unfortunately the idea to use a sequence of escapes,
+eg writing \\\' in the JSP page to set the tag attribute to \',
+which could be handy for javascript tag attributes,
+is confusing the Tomcat servlet container.
+</p>
 
 
 <h3><a NAME="maklist">&lt;mak:list...>...&lt;/mak:list></a></h3>
