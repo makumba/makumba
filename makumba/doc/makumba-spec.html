@@ -1894,7 +1894,7 @@ handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;
 </li>
 <li><p>The standard Database call for insertion:</p>
 <pre class="example">
-Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, attr)</a>;
+Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, data)</a>;
 </pre>
 </li>
 <li>
@@ -1964,7 +1964,7 @@ At response the following calls are executed (in this order):
 PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a>
 handler_obj.<b>checkAttributes(attr, db)</b>;
 handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;
-Pointer created= db.insert("general.Person", attr);
+Pointer created= db.insert("general.Person", data);
 handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;
 </pre>
 
