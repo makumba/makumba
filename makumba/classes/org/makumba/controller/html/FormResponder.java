@@ -94,8 +94,13 @@ public class FormResponder extends Responder
 
   public void writeFormPreamble(StringBuffer sb, String basePointer) 
   {
+    if(!storedSuffix.equals(""))
+      // no preamble for non-root forms (forms included in other forms)
+      return;
+
     if(operation.equals("delete"))
       {
+	// a root deleteLink
 	String sep=action.indexOf('?')>=0?"&":"?";
 	sb.append("<a href=\"")
 	  .append(action)
@@ -112,8 +117,8 @@ public class FormResponder extends Responder
 	  .append(">");
       }
     else 
-      if(storedSuffix.length()==0)
       {
+	// a root form, translates into an HTML form
 	sb.append("<form action=");
 	sb.append("\""+action+"\"");
 	sb.append(" method=");
@@ -127,16 +132,18 @@ public class FormResponder extends Responder
   
   public void writeFormPostamble(StringBuffer sb, String basePointer) 
   {
-    if(operation.equals("delete"))
+    if(storedSuffix.equals("") && operation.equals("delete"))
       {
+	// a root deleteLink
 	sb.append("</a>");
 	return;
       }
     if(basePointer!=null)
       writeInput(sb, basePointerName, basePointer, storedSuffix);
     writeInput(sb, responderName, ""+getPrototype()+storedSuffix, "");
-    if(storedSuffix.length()==0)
-      sb.append("</form>");
+    if(storedSuffix.equals(""))
+      // a root form
+      sb.append("\n</form>");
   }
   
   void writeInput(StringBuffer sb, String name, String value, String suffix)
