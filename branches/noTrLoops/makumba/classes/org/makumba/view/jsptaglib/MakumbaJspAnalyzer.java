@@ -80,9 +80,15 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	t.strategy.doAnalyze();
       }catch(Exception e)
 	{ throw new RuntimeWrappedException(e); }
+    }
 
-      if(t instanceof MakumbaBodyTag)
-	parents.add(t);
+    public void start(MakumbaTag t)
+    {
+      if(t==null)
+	return;
+      if(!(t instanceof MakumbaBodyTag))
+	throw new RuntimeException("body tag expected");
+      parents.add(t);
     }
 
     public void end(String tagName)
@@ -91,6 +97,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	return;
       tagName= tagName.substring(makumbaPrefix.length()+1);
       MakumbaTag t= (MakumbaTag)parents.get(parents.size()-1);
+      if(!(t instanceof MakumbaBodyTag))
+	throw new RuntimeException("body tag expected");
       if(!t.getClass().equals(tagClasses.get(tagName)))
 	throw new RuntimeException("tag closed incorrectly: "+tagName+" should have got "+
 				   tagClasses.get(tagName)+" and it was "+t.getClass());
@@ -131,6 +139,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
   public void startTag(JspParseData.TagData td, Object status)
   {
     simpleTag(td, status);
+    ((ParseStatus)status).start((MakumbaTag)td.tagObject);
   }
 
   public void endTag(String tagName, Object status)
