@@ -64,7 +64,7 @@ public class lock extends TestCase
     db.lock("something");
     System.out.println("waiting");
     try{
-      Thread.currentThread().sleep(10000);
+      Thread.sleep(10000);
     }catch(InterruptedException e){}
     System.out.println("closing");
   }

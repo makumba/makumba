@@ -174,13 +174,13 @@ public class NamedResources implements java.io.Serializable
 	if(o==null)
 	  continue;
 	try{
-  	  m=o.getClass().getMethod("close", null);
+  	  m=o.getClass().getMethod("close", ((java.lang.Class[])null));
 	}catch(NoSuchMethodException e){ 
 	  // we assume homogenous caches
 	  return; 
 	}
 	try{
-	  m.invoke(o, null);
+	  m.invoke(o, ((java.lang.Object[])null));
 	}catch(Throwable t){ t.printStackTrace(); }
       }
     values.clear();

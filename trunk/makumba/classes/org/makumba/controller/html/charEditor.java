@@ -29,8 +29,8 @@ import org.makumba.view.*;
 
 public class charEditor extends FieldEditor
 {
-  static String[] params= { "default", "empty", "type", "size", "maxlength" };
-  static String[][] paramValues= { null,  null, {"text", "password"}, null, null };
+  static String[] _params= { "default", "empty", "type", "size", "maxlength" };
+  static String[][] _paramValues= { null,  null, {"text", "password"}, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 

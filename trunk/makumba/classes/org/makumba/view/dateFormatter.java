@@ -30,10 +30,10 @@ import java.util.GregorianCalendar;
 
 public class dateFormatter extends FieldFormatter
 {
-  static String[] params= { "default", "empty", "format" };
-  static String[][] paramValues= { null, null, null };
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+  static String[] _params= { "default", "empty", "format" };
+  static String[][] _paramValues= { null, null, null };
+  public String[] getAcceptedParams(){ return _params; }
+  public String[][] getAcceptedValue(){ return _paramValues; }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
   {

@@ -209,7 +209,7 @@ public class QueryTag extends MakumbaTag implements IterationTag
     execution.endIterationGroup();
 
     if(getParentList()==null)
-      execution.endListGroup(pageContext);
+      QueryExecution.endListGroup(pageContext);
 
     execution=null;
     queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;

@@ -27,8 +27,8 @@ import java.util.*;
 
 public abstract class choiceEditor extends FieldEditor
 {
-  static String[]   params = {"default", "empty", "type", "size", "labelSeparator", "elementSeparator" };
-  static String[][] paramValues = {null, null, {"hidden", "radio", "checkbox", "tickbox" }, null, null, null};
+  static String[]   _params = {"default", "empty", "type", "size", "labelSeparator", "elementSeparator" };
+  static String[][] _paramValues = {null, null, {"hidden", "radio", "checkbox", "tickbox" }, null, null, null};
   public String[]   getAcceptedParams() { return params; }
   public String[][] getAcceptedValue()  { return paramValues; }
 	

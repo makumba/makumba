@@ -197,13 +197,13 @@ public class Database extends org.makumba.db.Database
 
   protected String getJdbcUrl(Properties p)
   {
-    String url="jdbc:";
+    String _url="jdbc:";
     eng=p.getProperty("#sqlEngine");
-    url+=eng+":";
+    _url+=eng+":";
     String local= getEngineProperty(eng+".localJDBC");
     if(local==null || !local.equals("true"))
-      url+="//"+p.getProperty("#host")+"/";
-    return url+p.getProperty("#database");
+      _url+="//"+p.getProperty("#host")+"/";
+    return _url+p.getProperty("#database");
   }
 
   public org.makumba.db.Query prepareQueryImpl(String oqlQuery)

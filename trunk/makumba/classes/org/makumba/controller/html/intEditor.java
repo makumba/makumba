@@ -27,8 +27,8 @@ import java.util.Dictionary;
 
 public class intEditor extends charEditor
 {
-  static String[] params= { "default", "empty", "size", "maxlength" };
-  static String[][] paramValues= { null, null, null, null };
+  static String[] __params= { "default", "empty", "size", "maxlength" };
+  static String[][] __paramValues= { null, null, null, null };
   public String[] getAcceptedParams(){ return params; }
   public String[][] getAcceptedValue(){ return paramValues; }
 
