@@ -35,11 +35,9 @@ public class RootData
   String header, footer, db;
   MakumbaTag rootTag;
   Dictionary subtagData= new Hashtable();
-  Dictionary subtagDataNormalKeys= new Hashtable();
   long stamp;
   int ntags=0;
   PageContext pageContext;
-  Object buffer;
 
   public RootData(MakumbaTag t, PageContext pageContext){
     this.rootTag=t; 
@@ -47,12 +45,6 @@ public class RootData
     MakumbaSystem.getMakumbaLogger("taglib.performance").fine("---- tag start ---");
     stamp= new Date().getTime();
     this.pageContext=pageContext;
-    if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
-      t.setWasException();
-
-    //    String attName[]=pageContext.getRequest().getParameterValues(attrNameAttr);
-    //if(pageContext.getAttribute(attrNameAttr, PageContext.SESSION_SCOPE) == null && attName!=null)
-    //      pageContext.setAttribute(attrNameAttr, attName[0], PageContext.SESSION_SCOPE);
   }
 
   public void setStrategy(Object key, MakumbaTag tag) throws LogicException
@@ -61,10 +53,19 @@ public class RootData
     tag.strategy= (TagStrategy)subtagData.get(key);
     if(tag.strategy==null)
       {
-	subtagData.put(key, tag.strategy=tag.makeStrategy(key));
+	tag.strategy=tag.makeStrategy(key);
+	if(!(tag.strategy instanceof QueryTagStrategy))
+	  // a non-query
+	  return;
+	subtagData.put(key, tag.strategy);
 	tag.strategy.init(rootTag, tag, key);
-	((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
+	if(!tag.template)
+	  ((RootTagStrategy)rootTag.strategy).onInit(tag.strategy);
       }
+    else
+      // mostly for QueryStrategy
+      if(tag.strategy instanceof TagStrategySupport)
+	((TagStrategySupport)tag.strategy).tag=tag;
     tag.strategy.loop();
   }
 

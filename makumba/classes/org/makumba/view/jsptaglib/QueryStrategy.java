@@ -38,15 +38,11 @@ public class QueryStrategy extends TagStrategySupport
 implements Observer, QueryTagStrategy
 {
   public static final Integer zero= new Integer(0);
-  String [] queryProps;
-  String separator;
-  String countVar;
-  String maxCountVar;
 
   public QueryStrategy getQueryStrategy(){return this; }
-  public RootQueryBuffer getBuffer(){ return (RootQueryBuffer)rootData.buffer; }
   public RootQueryStrategy getRoot() { return (RootQueryStrategy)root; }
-  public QueryStrategy getParentStrategy(){return ((QueryTagStrategy)tag.getMakumbaParent().strategy).getQueryStrategy(); }
+
+  public QueryTag getQueryTag(){ return (QueryTag)tag; }
 
   public Object getKey(){return key; }
 
@@ -57,49 +53,28 @@ implements Observer, QueryTagStrategy
     adjustQueryProps();
   }
 
-  protected void adjustQueryProps()
-  {
-    queryProps= getBuffer().bufferQueryProps;
-    getBuffer().bufferQueryProps=new String[4];
-
-    countVar= getBuffer().bufferCountVar;
-    maxCountVar= getBuffer().bufferMaxCountVar; 
-    getBuffer().bufferCountVar=getBuffer().bufferMaxCountVar=null;
-  }
-
-  public void loop()
-  {
-    separator= getBuffer().bufferSeparator;
-    getBuffer().bufferSeparator="";
-
-    for(int i=0; i<getBuffer().bufferQueryProps.length; i++)
-      getBuffer().bufferQueryProps[i]=null;
-  }
+  protected void adjustQueryProps(){  }
 
   boolean startedWithData=false;
   
   public ComposedQuery getQuery(){return query; }
   
-  // the query that serves as parent for enclosed queries
-  public ComposedQuery getParentingQuery(){return getQuery(); }
-
+  public void doAnalyze() 
+  { 
+    setQuery(ComposedQuery.getQuery(key, getQueryTag().queryProps, tag.getEnclosingQuery().getQuery()));
+    getRoot().addQuery(this);
+  }
 
   /** See whether we execute the body or not. If we have a query, it depends on it, if not, 
    * we simulate execution, to see what are the projections that we need */
   public int doStart() throws JspException 
   {
     initCountVars();
-    boolean unknown= query==null;
-    if(unknown)
-      setQuery(ComposedQuery.getQuery(key, queryProps, getParentStrategy().getParentingQuery()));
-    resetQueryVersion();
-    if(unknown)
-      {
-	getRoot().addQuery(this);
-	return BodyTag.EVAL_BODY_TAG;
-      }
-    if(!knowsOfAnyProjection())
-      return BodyTag.EVAL_BODY_TAG;
+    if(query==null)
+      throw new RuntimeException("query should be known");
+
+    //if(!knowsOfAnyProjection())
+    //  throw new RuntimeException("empty query?");
  
     int start= startLooping();
     if(tag.wasException())
@@ -107,22 +82,21 @@ implements Observer, QueryTagStrategy
     return start;
   }
 
+  public void doRootAnalyze() 
+  { 
+    setQuery(ComposedQuery.getQuery(getKey(), getQueryTag().queryProps, null));
+    getRoot().addQuery(this);
+  }
+
   public int doRootStart() throws JspException
   {
     initCountVars();
-    boolean unknown= query==null;
-    if(unknown)
-      setQuery(ComposedQuery.getQuery(getKey(), queryProps, null));
-    resetQueryVersion();
-    if(unknown)
-      {
-	getRoot().addQuery(this);
-	return BodyTag.EVAL_BODY_TAG;
-      }
-    if(!knowsOfAnyProjection())
-      return BodyTag.EVAL_BODY_TAG;
+    if(query==null)
+      throw new RuntimeException("query should be known");
+    //if(!knowsOfAnyProjection())
+    //  throw new RuntimeException("Empty query?");
     
-    getRoot().doQueries(false);
+    getRoot().doQueries();
     
     int start= startLooping();
     if(tag.wasException())
@@ -143,10 +117,7 @@ implements Observer, QueryTagStrategy
   /** the typical condition at the begining of looping */
   protected int startLooping() throws JspException
   {
-    //System.out.println(/*getRoot().currentData+" "+bigResults+" "+results+" "+ index +" "+*/System.identityHashCode(this));
-
-    startedWithData=obtainData(getRoot().currentData)&&nextDataRow();
-    if(startedWithData)
+    if(startedWithData= obtainData(getRoot().currentData)&&nextDataRow())
       {
 	setCountVar();
 	pushData();
@@ -161,18 +132,14 @@ implements Observer, QueryTagStrategy
    */
   public int doAfter() throws JspException 
   {
-    if(startedWithData)
-      popData();
+    popData();
 
-    if(getRoot().foundMoreProjectionsInAnyTag())
-      return BodyTag.SKIP_BODY;
-
-    if(startedWithData && nextDataRow())
+    if(nextDataRow())
       {
 	setCountVar();
 	pushData();
 	try{
-	  bodyContent.print(separator);
+	  bodyContent.print(getQueryTag().separator);
 	}catch(IOException e){ throw new JspException(e.toString()); }
 	return BodyTag.EVAL_BODY_TAG;
       }
@@ -181,48 +148,19 @@ implements Observer, QueryTagStrategy
   
   public int doRootAfter() throws JspException
   {
-    if(startedWithData)
-      popData();
+    popData();
 
-    if(getRoot().foundMoreProjectionsInAnyTag())
+    if( nextDataRow())
       {
-	//	System.out.println(bigResults+"doing queries");
-	getRoot().doQueries(false);
-	if(tag.wasException())
-	  {
-	    //    System.out.println("was exception");
-	    return BodyTag.SKIP_BODY;
-	  }
-	bodyContent.clearBody();
-	//System.out.println("trying to repeat");
-	return startLooping();
+	setCountVar();
+	pushData();
+	try{
+	  getRoot().nextLoop();
+	}catch(IOException e){ throw new JspException(e.toString()); }
+	return BodyTag.EVAL_BODY_TAG;
       }
-
-    if(startedWithData)
-      if( nextDataRow())
-	{
-	  setCountVar();
-	  pushData();
-	  try{
-	    getRoot().nextLoop();
-	  }catch(IOException e){ throw new JspException(e.toString()); }
-	  return BodyTag.EVAL_BODY_TAG;
-	}
-      else
-	return BodyTag.SKIP_BODY;
     else
-      {
-	// we have no projections, we loop them anyway
-	getRoot().doQueries(true);
-	if(tag.wasException())
-	  {
-	    //  System.out.println("was exception 1");
-	    return BodyTag.SKIP_BODY;
-	  }
-	bodyContent.clearBody();
-	//	System.out.println("trying to repeat 1");
-	return startLooping();
-      }
+      return BodyTag.SKIP_BODY;
   }
 
 
@@ -253,69 +191,36 @@ implements Observer, QueryTagStrategy
     if(tag.wasException())
       return BodyTag.SKIP_PAGE;
     try{
-      getRoot().include(rootData.header);
+      getRoot().include(tag.getRootData().header);
       if(startedWithData)
 	getRoot().writeLoop();
-      getRoot().include(rootData.footer);
+      getRoot().include(tag.getRootData().footer);
     }catch(IOException e){ throw new JspException(e.toString()); }
     return BodyTag.EVAL_PAGE;
   }
 
+  public void insertEvaluation(ValueTag t)throws JspException
+  {
+    insertEvaluation(t.expr, t.params, t.var, t.printVar);
+  }
 
   /** an enclosed VALUE tag requests the evaluation of a certain expression. 
    * We need to check if we have it in a query projection, if we do, we print the result, 
    * else the query has to be changed and the iteration will restart at the next doAfterBody()
    */
-  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException, NewProjectionException
+  public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException
   {
-    int n= knewProjectionAtStart(expr);
-    if(n!=-1 && startedWithData  && ! foundMoreProjections())
-      {
-	//	    System.out.print(expr+" ");
-	String s=formatProjection(n, formatParams, var, printVar);
-	try{	
-	    if(printVar==null && var==null)
-			pageContext.getOut().print(s);
-	}catch(IOException e){ throw new JspException(e.toString()); }
-      }
-    else
-      {
-	 if(var!=null && !var.equals(ValueTag.EVAL_BUFFER) || printVar!=null)
-	    reloadSelf(var, printVar);
-	 if(ValueTag.EVAL_BUFFER.equals(var))
-	 {
-	     pageContext.setAttribute(var+"_type", "unknown yet");
-	     PageAttributes.setAttribute(pageContext, var, null);
-	 }
-      }
+    if(query.checkProjectionInteger(expr, false)==null)
+      throw new RuntimeException("unknown projection "+expr);
+    int n= query.checkProjectionInteger(expr).intValue();
+
+    String s=formatProjection(n, formatParams, var, printVar);
+    try{	
+      if(printVar==null && var==null)
+	pageContext.getOut().print(s);
+    }catch(IOException e){ throw new JspException(e.toString()); }
   }
 
-    void reloadSelf(String var, String printVar)
-    {
-	String s=((HttpServletRequest)pageContext.getRequest()).getRequestURI();
-	if(pageContext.getResponse().isCommitted())
-	    {
-		System.out.println("BIGGER BUFFER needed for page "+s);
-		return;
-	    }
-	s=s.substring(((HttpServletRequest)pageContext.getRequest()).getContextPath().length());
-
-	String vname=( var==null || ValueTag.EVAL_BUFFER.equals(var) ?
-	    printVar:var);
-	
-	System.out.println("could not determine \'"+vname+"\' -> reloading "+s);	    
-	try{
-	    pageContext.forward(s);
-
-	    // the self-forward was succesful 
-	    // we now give up this request. this will be caught by the 
-	    // controller filter, and ignored
-	    throw new NewProjectionException(vname, s);
-	}
-	catch(javax.servlet.ServletException se){ se.printStackTrace(); }
-	catch(IOException ioe){ ioe.printStackTrace(); }
-    }
-  
   public String formatProjection(int n, Dictionary formatParams, String var, String printVar)
   {
     Object o= getProjectionValue(n);
@@ -326,21 +231,10 @@ implements Observer, QueryTagStrategy
     
     if(var!=null)
       {
-	if(query.getResultType()!=null)
-	  {
-	    pageContext.setAttribute(var+"_type", query.getResultType().getFieldDefinition(n));
-	    PageAttributes.setAttribute(pageContext, var, o);
-	  }
-	else
-	    {
-		if(!ValueTag.EVAL_BUFFER.equals(var))
-		    reloadSelf(var, printVar);
-
-		// this will only happen if response was committed
-		// or if var is the eval buffer
-		return "";
-	    }
+	pageContext.setAttribute(var+"_type", query.getResultType().getFieldDefinition(n));
+	PageAttributes.setAttribute(pageContext, var, o);
       }
+
     if(printVar!=null)
       {
 	pageContext.setAttribute(printVar+"_type", "char");
@@ -350,7 +244,8 @@ implements Observer, QueryTagStrategy
   }
 
   public boolean executed(){ 
-      return bigResults!=null && !foundMoreProjections();
+    return bigResults!=null //&& !foundMoreProjections()
+	;
   }
 
   Hashtable nullables= new Hashtable();
@@ -370,16 +265,16 @@ implements Observer, QueryTagStrategy
 
   protected void initCountVars()
   {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
-    if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, zero);
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, zero);
+    if(getQueryTag().maxCountVar!=null)
+      pageContext.setAttribute(getQueryTag().maxCountVar, zero);
   }
 
   protected void setCountVar()
   {
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, new Integer(index+1));
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, new Integer(index+1));
   }
 // ---- the result walker part 
 
@@ -394,12 +289,6 @@ implements Observer, QueryTagStrategy
   
   /** the iteration index */
   int index;
-
-  /** the projections that existed when this object was created. used as reference for query changes */
-  Dictionary startProjections;
-
-  /** the query version when this object was created */
-  int queryVersion;
 
   /** a composite that contains field formatters for each projection */
   RecordFormatter formatter;
@@ -423,7 +312,6 @@ implements Observer, QueryTagStrategy
       query.deleteObserver(this);
     bigResults=null;
     results=null;
-    startProjections=null;
     formatter=null;
   }
 
@@ -433,57 +321,41 @@ implements Observer, QueryTagStrategy
     formatter=new RecordViewer(query);
   }
 
-  /** initialize the reference values for query change detection */
-  public void resetQueryVersion()
-  {
-    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
-    queryVersion= query.getVersion();
-    startProjections=query.getProjections();
-  }
-
-  protected Vector obtainData1(Vector v)
-  {
-    return bigResults.getData(v);
-  }
-
-  int run=0;
   /** try to obtain the data, return false if there isn't any */
   public boolean obtainData(Vector v)
   {
     index=-1;
-    run++;
     if(v==null || bigResults==null)
       return false;
-    results= obtainData1(v);
+    results= bigResults.getData(v);
 
-    if(maxCountVar!=null)
+    if(getQueryTag().maxCountVar!=null)
       {
 	Integer i= zero;
 	if(results!=null)
 	  i= new Integer(results.size());
-	pageContext.setAttribute(maxCountVar, i);
+	pageContext.setAttribute(getQueryTag().maxCountVar, i);
       }
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
+    if(getQueryTag().countVar!=null)
+      pageContext.setAttribute(getQueryTag().countVar, zero);
     return results!=null;
   }
 
   /** execute the associated query */
-  public void doQuery(Database db, Attributes a, boolean noProj)
+  public void doQuery(Database db, Attributes a)
        throws LogicException
   {
-    boolean proj= noProj || query.getVersion()>0;
+    //    boolean proj= noProj || query.getVersion()>0;
     //    System.out.println(index+" "+(executed()?(""+bigResults.size()):""));
-    if(proj && !(executed() && 
+    /*if(proj && !(executed() && 
 		 // if the grouper has been emptied, we have to re-do the query
 		 !bigResults.isEmpty()))
-      {
+      {*/
 	long l= new java.util.Date().getTime();
 	//	System.out.println("executing "+query+"  "+query.getVersion()+">"+queryVersion);
 	bigResults=query.execute(db, a);
 	getRoot().queryTime+= (new java.util.Date().getTime())-l;
-	resetQueryVersion();
-      }
+	//}
     //    else
     //	System.out.println("not executing "+query+"  "+query.getVersion()+", "+queryVersion+ "  "+query.getProjections());
   }
@@ -497,32 +369,10 @@ implements Observer, QueryTagStrategy
     return ++index<results.size();
   }
   
-  /** checks if any new projections were found in this tag */
-  public boolean foundMoreProjections()
-  {
-    //    System.out.println(query.getVersion() + " "+queryVersion);
-    //    System.out.print(getClass().getName()+System.identityHashCode(this)+" ");
-    if(query.getVersion()!=queryVersion)
-      {
-	//	System.out.println(this+" "+query.getVersion()+" "+queryVersion);
-	return true;
-      }
-    return false;
-  }
-
   /** return whether the query projections are known or not */
   public boolean knowsOfAnyProjection()
   {
     return query.getVersion()>0;
-  }
-
-  /** Returns the index of the given projection, -1 if the projection was not known at the beginning of the iteration */
-  public int knewProjectionAtStart(String expr)
-  {
-    Integer n= query.checkProjectionInteger(expr);
-    if(startProjections.get(expr)==null)
-      return -1;
-    return n.intValue();
   }
 
   /** returns the current value of indicated projection. Should not be called if obtainData was not called and the index was not returned by knewProjectionAtStart */
@@ -548,11 +398,11 @@ implements Observer, QueryTagStrategy
 
   public String toString(){ 
     return getType()+" "+
-      printHeader("\nfrom",queryProps[ComposedQuery.FROM])+
-      printHeader("\nwhere",queryProps[ComposedQuery.WHERE])+
-      printHeader("\norderBy",queryProps[ComposedQuery.ORDERBY])+
-      printHeader("\ngroupBy",queryProps[ComposedQuery.GROUPBY])+
-      printHeader("\nseparator",separator);
+      printHeader("\nfrom",getQueryTag().queryProps[ComposedQuery.FROM])+
+      printHeader("\nwhere",getQueryTag().queryProps[ComposedQuery.WHERE])+
+      printHeader("\norderBy",getQueryTag().queryProps[ComposedQuery.ORDERBY])+
+      printHeader("\ngroupBy",getQueryTag().queryProps[ComposedQuery.GROUPBY])+
+      printHeader("\nseparator",getQueryTag().separator);
   }
   
   public String getType() {return "LIST"; }
