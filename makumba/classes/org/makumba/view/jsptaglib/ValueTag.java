@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+import org.makumba.MakumbaSystem;
 import org.makumba.LogicException;
+
 import org.makumba.util.MultipleKey;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.view.html.RecordViewer;
@@ -71,7 +73,7 @@ public class ValueTag extends MakumbaTag
       pageCache.types.setType(var, vc.type);
 
     if(printVar!=null)
-      pageCache.types.setType(printVar, "char");
+      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
   }
   
   /** ask the ValueComputer to present the expression */

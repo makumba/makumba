@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.util.MultipleKey;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
 
 import org.makumba.controller.html.FieldEditor;
 import org.makumba.controller.jsp.PageAttributes;
@@ -98,7 +99,7 @@ public class InputTag extends MakumbaTag
 
     if(dataType!=null)
       {
-	dataTypeInfo=org.makumba.abstr.FieldInfo.getFieldInfo(name, dataType, true);
+	dataTypeInfo= MakumbaSystem.makeFieldDefinition(name, dataType);
 	if(formType!=null && ! formType.compatible(dataTypeInfo))
 	  throw new ProgrammerError("declared data type "+dataType+" not compatible with the type computed from form "+formType);
       }
