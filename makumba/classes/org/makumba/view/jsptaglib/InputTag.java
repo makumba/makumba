@@ -32,6 +32,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
 import org.makumba.Pointer;
+import org.makumba.FieldDefinition;
 import javax.servlet.jsp.tagext.BodyContent;
 
 public class InputTag extends MakumbaTag 
@@ -193,7 +194,7 @@ implements javax.servlet.jsp.tagext.BodyTag
     if(qt.queryProps[org.makumba.view.ComposedQuery.FROM].indexOf("choice")==-1)
       throw new ProgrammerError("A choice label should be defined\n"+qt);
 
-    String type= ((org.makumba.FieldDefinition)pageCache.inputTypes.get(tagKey)).getType();
+    String type= ((FieldDefinition)pageCache.inputTypes.get(tagKey)).getType();
     
     if(!(type.startsWith("set") || type.startsWith("ptr")))
       throw new ProgrammerError("Only set and pointer <mak:input > can have queries inside\n"+this);
@@ -206,6 +207,10 @@ implements javax.servlet.jsp.tagext.BodyTag
 
   /** Decide what to do if we have a list inside us, after its analysis ended */
   void doListEndAnalyze(QueryTag qt, MakumbaJspAnalyzer.PageCache pageCache){
+    FieldDefinition fd=(FieldDefinition)pageCache.inputTypes.get(tagKey);
+    if(!pageCache.getQuery(qt.tagKey).getLabelType("choice").equals(fd.getRelationType()))
+      throw new ProgrammerError("choice should be of type "+fd.getRelationType().getName()+"\n"+qt);
+
     ((ValueComputer)pageCache.valueComputers.get(new MultipleKey(qt.tagKey, "choice"))).doEndAnalyze(null, pageCache);
   }
 
