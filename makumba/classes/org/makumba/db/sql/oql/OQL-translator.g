@@ -316,7 +316,6 @@ options {
 {
 	QueryAST currentQuery=null;
 	AST lastEQop=null;
-	int lastUnary;
 	String is=null;
 	int lastAdditive;
 	int lastMultiplicative;
@@ -679,18 +678,20 @@ unaryExpr :
 
         (
             (
-                TOK_PLUS  { lastUnary=0; }
-            |   TOK_MINUS { lastUnary=0; }
-            |   "abs" { lastUnary=0; }
-            |   "not" { lastUnary=1; }
+                TOK_PLUS  
+            |   TOK_MINUS 
+            |   "abs" 
+            |   "not" 
             )
         )*
         po: postfixExpr  
 	{
-	  if(lastUnary!=-1)
-	   ((OQLAST)#unaryExpr).makumbaType=
-		lastUnary==0?((OQLAST)#po).makumbaType:"int";  		
-	  lastUnary=-1;
+	  // the type of the unary expression is the same as the type of the postfix expression, so analysis is the same
+	  AnalysisTree at= ((OQLAST)#po).tree;
+	  if(at!=null)
+		((OQLAST)#unaryExpr).tree= at;
+	  else
+		((OQLAST)#unaryExpr).tree= new AnalysisTree((OQLAST)#po);
 	}
 
     ;
