@@ -46,15 +46,13 @@ public class ControllerFilter implements Filter
   static FilterConfig conf;
   public void init(FilterConfig c) { conf=c; }
   
-  /** the filtering method, basically puts some wrappers around the request and the response */
   public void doFilter(ServletRequest req, ServletResponse resp,
 		       FilterChain chain)
         throws ServletException, java.io.IOException
   {
     boolean filter= shouldFilter((HttpServletRequest)req);
-    DbConnectionProvider prov= new DbConnectionProvider();
 
-    req.setAttribute(org.makumba.controller.Logic.PROVIDER_ATTRIBUTE, prov);
+    DbConnectionProvider prov= RequestAttributes.getConnectionProvider((HttpServletRequest)req);
 
     if(filter){
 	try{

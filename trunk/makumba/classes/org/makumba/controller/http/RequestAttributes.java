@@ -32,6 +32,8 @@ import org.makumba.MakumbaSystem;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
 import org.makumba.controller.Logic;
+import org.makumba.util.DbConnectionProvider;
+
 
 public class RequestAttributes implements Attributes
 {
@@ -70,7 +72,7 @@ public class RequestAttributes implements Attributes
       {
 	req.setAttribute(CONTROLLER_NAME+controller.getClass().getName(), controller);
 	try{
-	  Logic.doInit(controller, this, db);
+	  Logic.doInit(controller, this, db, getConnectionProvider(req));
 	}catch(UnauthorizedException e)
 	  {
 	    // if we are not in the login page
@@ -80,6 +82,17 @@ public class RequestAttributes implements Attributes
       }
   }
 
+  static final public String PROVIDER_ATTRIBUTE="org.makumba.providerAttribute";
+
+  public static DbConnectionProvider getConnectionProvider(HttpServletRequest req){
+    DbConnectionProvider prov= (DbConnectionProvider)req.getAttribute(PROVIDER_ATTRIBUTE);
+    if(prov==null){
+      prov= new DbConnectionProvider();
+      req.setAttribute(PROVIDER_ATTRIBUTE, prov);
+    }
+    return prov;
+  }
+  
 
   public static HttpParameters getParameters(HttpServletRequest req)
   {
@@ -156,7 +169,7 @@ public class RequestAttributes implements Attributes
     boolean nullValue=false;
     Object value=null;
     try{
-      value=Logic.getAttribute(getRequestController(), s, this, getRequestDatabase());
+      value=Logic.getAttribute(getRequestController(), s, this, getRequestDatabase(), getConnectionProvider(request));
       if(value==null)
 	nullValue=true;
     }catch(NoSuchMethodException e) {}
