@@ -53,6 +53,12 @@ public class mdd extends TestCase
     MakumbaSystem.getDataDefinition("test.Person.address.sth");
   }
 
+  public void testMddPrinter()
+  {
+    System.out.println("\n"+new org.makumba.abstr.printer.RecordPrinter("test.Individual"));
+    String personMdd=new org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
+  }
+
   public void testNonexistingMdd() {
 	try {
 		MakumbaSystem.getDataDefinition("test.brokenMdds.NonexistingMdd");
@@ -81,7 +87,20 @@ public class mdd extends TestCase
 		MakumbaSystem.getDataDefinition("test.brokenMdds.BrokenType");
 		fail("Should raise DataDefinitionParseError");
 	} catch (DataDefinitionParseError e) { }
+  }
 
+  public void testRepeatedFieldName() {
+	try {
+		MakumbaSystem.getDataDefinition("test.brokenMdds.RepeatedField");
+		fail("Should raise DataDefinitionParseError");
+	} catch (DataDefinitionParseError e) { }
+  }
+
+  public void testbadTitle() {
+	try {
+		MakumbaSystem.getDataDefinition("test.brokenMdds.BadTitle");
+		fail("Should raise DataDefinitionParseError");
+	} catch (DataDefinitionParseError e) { }
   }
 
 }
