@@ -15,7 +15,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
-- add here releases that are not meant for production but for testing -
+0.5.12.6; 22 dec 2004 cristi
+refactoring: pageCache is not stored in the MakumbaTag anymore, but is passed to its methods
+made more clear which methods are executed at analysis and which at runtime
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
