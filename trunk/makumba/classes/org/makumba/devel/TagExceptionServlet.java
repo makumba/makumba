@@ -81,24 +81,28 @@ public class TagExceptionServlet extends HttpServlet
 	{
 	  String trcOrig=trace(t);
 	  String trc= shortTrace(trcOrig);
-	  wr.println("<h1>Makumba "+errors[i][1] +" error</h1><pre>"+highlight(t.getMessage()));
+	  String title="Makumba "+errors[i][1] +" error";
+	  String body=t.getMessage();
+	  String hiddenBody=null;
 	  if(original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic")!=-1)
 	    {
-	      wr.println("<br></pre><pre>");
-	      wr.print(highlight(trc));
-	      wr.print("</pre>");
+	      body=body+"\n\n"+trc;
 	    }
 	  else
 	    {
-	      wr.print("</pre><!--\n");wr.print(trc);wr.print("\n-->");
+	      hiddenBody=trc;
 	    }
-	  wr.flush();
+	  try{
+	     SourceViewer sw=new errorViewer(req,this,title,body,hiddenBody);
+	     sw.parseText(wr);
+	  } catch (IOException e) {e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
 	  return;
 	}
-    unknownError(original, t, wr);
+    unknownError(original, t, wr,req);
     wr.flush();
   }
   
+
   String trace(Throwable t) 
   {
     StringWriter sw= new StringWriter();
@@ -106,6 +110,7 @@ public class TagExceptionServlet extends HttpServlet
     return sw.toString();
   }
   
+
   String shortTrace(String s)
   {
     int i=s.indexOf("at org.makumba.abstr.Logic");
@@ -126,36 +131,36 @@ public class TagExceptionServlet extends HttpServlet
       }
     return s;
   }
-  void unknownError(Throwable original, Throwable t, PrintWriter wr)
+
+
+  void unknownError(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req)
        throws IOException, ServletException
   {
     Throwable traced=t;
+    String title="";
+    String body="";
     if(original instanceof LogicInvocationError)
       {
-	wr.print("<h1>Error in business logic code</h1>");
+	title="Error in business logic code";
       }
     else if(trace(traced).indexOf("org.makumba")!=-1)
       {
-	wr.print("<h1>Internal Makumba error</h1>Please report to the developers<p>");
+	title="Internal Makumba error";
+	body="Please report to the developers.\n\n";
 	if(t instanceof ServletException)
 	  traced=((ServletException)t).getRootCause();
       }
     else
       {
-	wr.print("<h1>Error in JSP Java scriplet or servlet container</h1>");
+	title="Error in JSP Java scriplet or servlet container";
       }
-    wr.print("<pre>");
-    wr.print(highlight(shortTrace(trace(traced))));
-    wr.print("</pre>");
+    body=body+shortTrace(trace(traced));
+    try{
+       SourceViewer sw=new errorViewer(req,this,title,body,null);
+       sw.parseText(wr);
+    } catch (IOException e) {e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
+
   }
   
-  String highlight(String s)
-  {
-    try{
-      StringWriter sw= new StringWriter();
-      new LineViewer(new StringReader(s)).parseText(new PrintWriter(sw));
-      return sw.toString();
-    }catch(IOException e){ e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
-  }
 
 }
