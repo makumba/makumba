@@ -47,7 +47,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     // should go away:
     PageContext pageContext;
 
-    void addTag(MakumbaTag t)
+    void addTag(MakumbaTag t, JspParseData.TagData td)
     {
       // should go away:
       t.setPageContext(pageContext);
@@ -57,6 +57,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 	t.setParent((MakumbaTag)parents.get(parents.size()-1));
       else
 	t.setParent(null);
+
+      JspParseData.fill(t, td.attributes);
       
       if(t.getMakumbaParent()!=null)
 	{
@@ -130,10 +132,9 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     
     MakumbaTag t=null;
     try{ t= (MakumbaTag)c.newInstance();}catch(Throwable thr){ thr.printStackTrace(); }
-    JspParseData.fill(t, td.attributes);
     td.tagObject=t;
     t.template=true;
-    ((ParseStatus)status).addTag(t);
+    ((ParseStatus)status).addTag(t, td);
   }
 
   public void startTag(JspParseData.TagData td, Object status)
