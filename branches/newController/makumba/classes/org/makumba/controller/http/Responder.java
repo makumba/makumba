@@ -207,7 +207,7 @@ public abstract class Responder implements java.io.Serializable
 	  message="<font color=green>"+fr.message+"</font>";
 	  if(result!=null)
 	    req.setAttribute(fr.resultAttribute, result);
-	  req.setAttribute("makuma.successfulResponse", "yes");
+	  req.setAttribute("makumba.successfulResponse", "yes");
 	}
 	catch(AttributeNotFoundException anfe)
 	  {
