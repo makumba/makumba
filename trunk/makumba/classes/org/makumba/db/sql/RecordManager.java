@@ -166,8 +166,22 @@ public class RecordManager extends Table
       { sq.printStackTrace(); throw new org.makumba.DBError(sq); }
   }
 
+  Hashtable indexes= new Hashtable();
+
   protected void initFields(SQLDBConnection dbc, Properties config) 
   {  
+    try{
+      ResultSet rs=dbc.getMetaData().getIndexInfo(null,null,getDBName(),true,false);
+      while(rs.next()){
+	indexes.put(rs.getString("INDEX_NAME").toLowerCase(), new Boolean(rs.getBoolean("NON_UNIQUE")));
+      }
+      rs.close();
+
+    }catch(SQLException e){
+      Database.logException(e, dbc);
+      throw new DBError(e);
+    }
+
     Object a[]= { this, config, dbc};
     try{
       callAll(getHandlerMethod("onStartup"), a);
