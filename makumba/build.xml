@@ -342,12 +342,10 @@
 	</target>
 
 	<target name="insertLicense">
-	  <replace dir="classes">
-		<fileset includes="**/*.java">
+	  <replace dir="classes" includes="**/*.java" summary="true">
 		    <not>
 		        <contains text="MERCHANTABILITY"/>
 		    </not>
-		</fileset>
 	    <replacetoken><![CDATA[package org.makumba]]></replacetoken>
 	    <replacevalue><![CDATA[///////////////////////////////
 //  Makumba, Makumba tag library
