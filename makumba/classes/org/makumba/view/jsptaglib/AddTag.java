@@ -33,7 +33,7 @@ public class AddTag extends FormTagBase
   public void setField(String s) { field=s; }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey()
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     Object[] keyComponents= {baseObject, field, handler, getParentListKey(null), getClass()};
     tagKey=new MultipleKey(keyComponents);

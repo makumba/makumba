@@ -49,7 +49,7 @@ public class IfTag extends MakumbaTag implements BodyTag
   
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey()
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
   {
     addToParentListKey(testExpr.trim());
   }
