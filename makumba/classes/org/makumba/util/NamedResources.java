@@ -51,6 +51,8 @@ public class NamedResources implements java.io.Serializable
 
     static void cleanup()
     {
+	for(int i=0;i<staticCaches.size(); i++)
+	    ((NamedResources)staticCaches.get(i)).close();
 	staticCaches.clear();
 	for(int i=0;i<allCaches.size(); i++)
 	    ((java.lang.ref.WeakReference)allCaches.elementAt(i)).clear();
@@ -133,6 +135,29 @@ public class NamedResources implements java.io.Serializable
     if(nv==null)
       values.put(hash, nv=new NameValue(name, hash, f));
     return nv;
+  }
+  
+  /** close each contained object by calling its close() method, if any */
+  protected void close(){
+    for(Iterator i= values.keySet().iterator(); i.hasNext(); )
+      {
+	NameValue nv= (NameValue)values.get(i.next());
+	Object o= nv.getResource();
+
+	java.lang.reflect.Method m= null;
+	if(o==null)
+	  continue;
+	try{
+  	  m=o.getClass().getMethod("close", null);
+	}catch(NoSuchMethodException e){ 
+	  // we assume homogenous caches
+	  return; 
+	}
+	try{
+	  m.invoke(o, null);
+	}catch(Throwable t){ t.printStackTrace(); }
+      }
+    values.clear();
   }
 }
 
