@@ -63,6 +63,11 @@ public abstract class MakumbaTag extends TagSupport
     return (JspParseData.TagData)getThreadTagStack().peek();
   }
 
+  static public void initializeThread(){
+    getThreadTagStack().clear();
+    runningTag.set(null);
+    analyzedTag.set(null);
+  }
   static Stack getThreadTagStack(){
     Stack s= (Stack)tagStack.get(); 
     if(s==null)
@@ -175,6 +180,9 @@ public abstract class MakumbaTag extends TagSupport
   /** Handle exceptions, initialise state and call doMakumbaStartTag() */
   public int doStartTag() throws JspException
   {
+    if(findAncestorWithClass(this, MakumbaTag.class)==null)
+      initializeThread();
+
     MakumbaJspAnalyzer.PageCache pageCache=null;
     // need to check if this is still needed, it was here only if the tag was root...
     if(pageContext.getAttribute(pageContext.EXCEPTION, pageContext.REQUEST_SCOPE)!=null)
