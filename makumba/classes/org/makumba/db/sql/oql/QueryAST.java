@@ -570,8 +570,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
     sb.append("SELECT ");
     writeDistinct(d, sb);
     writeProjection(d, sb);
-    sb.append(" FROM ");
-    writeFrom(d, sb);
+    if(labels.size()>0){
+      sb.append(" FROM ");
+      writeFrom(d, sb);
+    }
     boolean hasJoins= joins.size()>0;
 
     if(whereAST!=null || hasJoins)
