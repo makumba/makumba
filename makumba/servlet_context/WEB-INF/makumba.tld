@@ -9,10 +9,6 @@
 	<short-name>mak</short-name>
 	<uri>http://www.makumba.org/presentation</uri>
 
-	<validator>
-		<validator-class>org.makumba.view.jsptaglib.PageValidator</validator-class>
-	</validator>
-
 	<tag>
 		<name>list</name>
 		<tag-class>org.makumba.view.jsptaglib.QueryTag</tag-class>
