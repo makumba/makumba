@@ -31,36 +31,64 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import java.io.*;
 
 /** 
  * The collection of syntax points in a source file gathered from a source analysis.
  */
 public class SourceSyntaxPoints
 {
+  /** The path of the analyzed file */
+  File file;
+  
+  /** The timestamp of the analyzed file. If the it is found newer on disk, the cached object is discarded. */
+  long lastChanged; 
+
   TreeSet syntaxPoints= new TreeSet();
   ArrayList lineBeginnings= new ArrayList();
   String originalText;
+  String content;
 
   /** 
-   * The constructor inserts syntax points (begin and end) for every line in a text. 
+   * The constructor inserts syntax points (begin and end) for every line in a text, and does preprocessing (uncomments text, includes other text). 
    * Most syntax colourers need to do specific operations at every line 
    */
-  public SourceSyntaxPoints(String text)
+  public SourceSyntaxPoints(File f, Pattern commentPatterns[], String commentPatternNames[], Pattern includePattern, String includePatternName)
   {
-    this.originalText=text;
+    file= f;
+    lastChanged=file.lastModified();
+   
+    content=originalText=readFile();
+
+    findLineBreaks();
+
+    // remove comments from the text
+    for(int i=0; i<commentPatterns.length; i++)
+      unComment(commentPatterns[i], commentPatternNames[i]);
+
+    // for each include tag
+    // compute length
+    // diff= length - included file length
+    // include file text by creating a new sourceSyntaxPoints
+    // shift all following points with diff
+    // insert 1-2 syntax points?
+  }
+
+  void findLineBreaks()
+  {
     int start=0;
     int line=1;
     
-    int max= text.length();
+    int max= originalText.length();
     for(int i=0; i<max; i++)
       {
          // if found "\r\n" then treat together as one line break. 
-	if(text.charAt(i)=='\r')
+	if(originalText.charAt(i)=='\r')
 	  {
-	    if(i+1 <max && text.charAt(i+1)=='\n')
+	    if(i+1 <max && originalText.charAt(i+1)=='\n')
 	      i++;
 	  }
-	else if(text.charAt(i)!='\n')
+	else if(originalText.charAt(i)!='\n')
 	  continue;
 
          // found a linebreak
@@ -91,7 +119,7 @@ public class SourceSyntaxPoints
   /** Replaces comments from a text by blanks, and stores syntax points. Comment is defined by a Pattern. 
    * @return The text with comments replaced by blanks, of equal length as the input.
    */
-  String unComment(String content, Pattern commentPattern, String commentPointType)
+  void unComment(Pattern commentPattern, String commentPointType)
   {
     Matcher m= commentPattern.matcher(content);
     int endOfLast=0;
@@ -106,7 +134,7 @@ public class SourceSyntaxPoints
 	addSyntaxPoints(m.start(), m.end(), commentPointType, null);
       }
     uncommentedContent.append(content.substring(endOfLast));
-    return uncommentedContent.toString();
+    content= uncommentedContent.toString();
   }
 
 
@@ -175,6 +203,27 @@ public class SourceSyntaxPoints
     lineBeginnings.add(lineBegin);
   }
 
+  /** Is file changed on disk since it was last analysed. */
+  boolean unchanged()
+  {
+    return file.lastModified()==lastChanged;
+  }
+
+  /** Return the content of the JSP file in a string. */
+  String readFile()
+  {
+    StringBuffer sb=new StringBuffer();
+    try{
+      BufferedReader rd= new BufferedReader(new FileReader(file));
+      char[] buffer= new char[2048];
+      int n;
+      while((n=rd.read(buffer))!=-1)
+	sb.append(buffer, 0, n);
+    }catch(IOException e) { e.printStackTrace(); }
+    return sb.toString();
+  }
+
+  String getContent(){return content; }
 
   /**
    * Takes out pieces of text according to specified start and stop symbols, and sets SyntaxPoints around the removed substrings.
