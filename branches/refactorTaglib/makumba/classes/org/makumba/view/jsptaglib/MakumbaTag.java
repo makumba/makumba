@@ -96,9 +96,12 @@ public abstract class MakumbaTag extends TagSupport
 	   MakumbaJspAnalyzer.singleton
 	    ); 
 	Object result=jpd.getAnalysisResult(null);
-	if(result instanceof MakumbaError)
-	  throw (MakumbaError)result;
-	
+	if((result instanceof Throwable)&& result.getClass().getName().startsWith("org.makumba"))
+	  {
+	    if(result instanceof MakumbaError)
+	      throw (MakumbaError)result;
+	    throw (RuntimeException)result;
+	  }
 	pageContext.setAttribute("makumba.parse.cache", 
 				 pageCache=(MakumbaJspAnalyzer.PageCache)result);
       }
@@ -223,7 +226,8 @@ public abstract class MakumbaTag extends TagSupport
   }
 
   //--------- html formatting, copied verbatim to the output
-  public void setId(String s) { extraFormatting.append(" id=\"").append(s).append("\" "); }
+  public void setStyleId(String s) { extraFormatting.append(" id=\"").append(s).append("\" "); }
+  public void setStyleClass(String s) { extraFormatting.append(" class=\"").append(s).append("\" "); }
   public void setStyle(String s) { extraFormatting.append(" style=\"").append(s).append("\" "); }
 
   //--------- formatting properties, determine formatter behavior
