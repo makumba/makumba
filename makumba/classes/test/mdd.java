@@ -68,7 +68,7 @@ public class mdd extends TestCase
   }
 
 
-  /** @see http://bugs.best.eu.org/show_bug.cgi?id=526 */
+  /** See <a href="see http://bugs.best.eu.org/show_bug.cgi?id=526">bug 526</a>. */
   public void testBrokenMddBug526() {
 	try {
 		MakumbaSystem.getDataDefinition("test.brokenMdds.Bug526");
