@@ -38,7 +38,11 @@ public class ComparisonTree extends AnalysisTree
 
   public void negociateOperandTypes(Object t1, Object t2)
        throws antlr.RecognitionException
-  {
+  { 
+    if(t1.equals("timestamp") && t2.equals("datetime")
+       ||t2.equals("timestamp") && t1.equals("datetime") )
+      return;
+
     if(right.makumbaType!=null && right.makumbaType.equals("null"))
       return;
     if(checkAssign(left, right) || checkAssign(right, left))
@@ -46,6 +50,7 @@ public class ComparisonTree extends AnalysisTree
     super.negociateOperandTypes(t1, t2);
   }
 
+  /** assume that a2 is a constant and check if it's compatible with a1 */
   boolean checkAssign(AnalysisTree a1, AnalysisTree a2)
        throws antlr.RecognitionException
   {
@@ -54,6 +59,7 @@ public class ComparisonTree extends AnalysisTree
 
     if(a2.leaf==null )
       return false;
+
     String s= a2.leaf.getText();
 
     if(a2.leaf.makumbaType.equals("char") || a2.leaf.makumbaType.equals("date"))
