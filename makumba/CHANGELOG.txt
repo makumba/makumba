@@ -1,4 +1,6 @@
 0.5.7; in preparation, cristi
+first-load errors are fixed, no need for more workarounds to avoid them, no need for instanceof checks
+
 bug 6 is finally fixed, the controller/form responder code is now separated
 
 cristi: some timestamps were read from DB as BigDecimal. they are normal Timestamp now
