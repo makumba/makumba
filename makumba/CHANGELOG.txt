@@ -1,3 +1,10 @@
+<!-- ============================================================================= -->
+<!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
+
+TO RELEASE IMMEDIATELY:
+fred; 20 sep 2003: fixed bug 584: a NPE in ValueComputer (fixed in v2.4)
+
+NOT TO BE RELEASED YET:
 stefan; 11 sep 2003: bug 565 (isolated SQL syntax for index creation)
 stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
 stefan; 16 jul 2003: bug 3 fixed (ptrIndex and ptrOne are declared as unique)
@@ -5,6 +12,9 @@ stefan; 15 jul 2003: bug 4 fixed (unique indexes created and dropped in the DB a
 stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
 
 
+
+<!-- ============================================================================= -->
+<!-- ============================== RELEASES ===================================== -->
 
 0.5.9.12; 16 sep 2003 fred
 cristi; 15 sep 2003: fixed bug 571 & bug 575 in OQL-translator.g, yet NEEDS TO BE TESTED
