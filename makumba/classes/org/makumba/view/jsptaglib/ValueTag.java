@@ -70,10 +70,10 @@ public class ValueTag extends MakumbaTag
     vc.doEndAnalyze(this);
 
     if(var!=null)
-      pageCache.types.setType(var, vc.type);
+      pageCache.types.setType(var, vc.type, this);
 
     if(printVar!=null)
-      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
+      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"), this);
   }
   
   /** ask the ValueComputer to present the expression */
