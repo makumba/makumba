@@ -406,6 +406,9 @@ public class RecordManager extends Table
   /** for mysql */
   protected String createDbSpecific(String command){return command; }
 
+  /** mysql needs to have it adjustable */
+  protected String getTableMissingStateName(SQLDBConnection dbc) {return "tableMissing";}
+
   /** a table creation, from this table's RecordInfo */
   protected void create(SQLDBConnection dbc, String tblname, boolean really)
        throws SQLException
@@ -416,7 +419,7 @@ public class RecordManager extends Table
       try
       {
 	st.executeUpdate("DROP TABLE "+tblname);
-      }catch(SQLException e){ getSQLDatabase().checkState(e, "tableMissing"); }
+      }catch(SQLException e){ getSQLDatabase().checkState(e, getTableMissingStateName(dbc) ); }
       
     try{
       String command="CREATE TABLE "+tblname+"("+
