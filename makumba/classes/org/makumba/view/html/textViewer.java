@@ -23,8 +23,8 @@
 
 package org.makumba.view.html;
 import org.makumba.*;
+
 import java.util.Dictionary;
-import org.makumba.util.HtmlUtils;
 
 public class textViewer extends FieldViewer
 {

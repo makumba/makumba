@@ -23,7 +23,8 @@
 
 package org.makumba.controller.html;
 import java.util.*;
-import org.makumba.util.HtmlUtils;
+
+import org.makumba.HtmlUtils;
 
 public class textEditor extends FieldEditor
 {
