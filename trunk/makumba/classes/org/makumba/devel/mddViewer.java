@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.MakumbaSystem;
 import org.makumba.abstr.RecordParser;
 
 /**
@@ -61,7 +61,7 @@ public class mddViewer extends LineViewer {
 
     public void intro(PrintWriter w) {
         try {
-            RecordInfo.getRecordInfo(virtualPath);
+            MakumbaSystem.getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {

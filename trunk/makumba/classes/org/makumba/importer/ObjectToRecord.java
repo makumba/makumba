@@ -28,8 +28,8 @@ import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordInfo;
 import org.makumba.db.DBConnection;
 
 /** This class imports makumba objects from fields of Java objects. 
@@ -40,7 +40,7 @@ import org.makumba.db.DBConnection;
 public class ObjectToRecord
 {
   Method transform, clean;
-  RecordInfo type;
+  DataDefinition type;
   Hashtable fields= new Hashtable();
 
   public ObjectToRecord(Class c, String type)
@@ -55,7 +55,7 @@ public class ObjectToRecord
 	clean= c.getMethod("importClean", args);
       } catch(NoSuchMethodException nsme) {}
 
-      this.type= RecordInfo.getRecordInfo(type);
+      this.type= MakumbaSystem.getDataDefinition(type);
 
       Field no=null;
       try{
@@ -86,7 +86,10 @@ public class ObjectToRecord
       for(int i= 0; i<accountedImp.length; i++)
 	accountedImport.put(accountedImp[i], dummy);
 
-      for(Enumeration e= this.type.getDeclaredFields(); e.hasMoreElements(); )
+      Enumeration e= this.type.getFieldNames().elements();
+      for(int i=0; i<3; i++) // skipping default fields
+          e.nextElement();
+      for(; e.hasMoreElements(); )
 	{
 	  String s= (String)e.nextElement(); 
 	  Field f= null;
@@ -105,11 +108,11 @@ public class ObjectToRecord
 	{
 	  try{
 	    flds[i].get(null);
-	  }catch(NullPointerException e)
+	  }catch(NullPointerException npe)
 	    {
 	      String s= flds[i].getName();
     
-	      if(this.type.getField(s)==null && noImport.get(s)==null)
+	      if(this.type.getFieldDefinition(s)==null && noImport.get(s)==null)
 		MakumbaSystem.getMakumbaLogger("import").severe("No Makumba correspondent for "+c.getName()+"."+s+" in "+type);
 	    }
 	}
@@ -125,7 +128,7 @@ public class ObjectToRecord
       Hashtable h= new Hashtable();
       Object args[]={h, db};
 
-      h.put(type.getIndexName(), db.getPointer(type.getName(), o.hashCode()));
+      h.put(type.getIndexPointerFieldName(), db.getPointer(type.getName(), o.hashCode()));
 
       for(Enumeration e= fields.keys(); e.hasMoreElements(); )
 	{
@@ -135,7 +138,7 @@ public class ObjectToRecord
 	  if(value!=null)
 	    {
 	      if(!value.getClass().getName().startsWith("java"))
-		value= db.getPointer(type.getField(s).getForeignTable().getName(),
+		value= db.getPointer(type.getFieldDefinition(s).getRelationType().getName(),
 				     value.hashCode());
 	      h.put(s, value);
 	    }

@@ -24,24 +24,24 @@
 package org.makumba.view;
 import java.util.Dictionary;
 
+import org.makumba.DataDefinition;
 import org.makumba.abstr.RecordHandler;
-import org.makumba.abstr.RecordInfo;
 
 public class RecordFormatter extends RecordHandler
 {
-  public RecordFormatter(RecordInfo ri) 
+  public RecordFormatter(DataDefinition ri) 
   {
     super(ri); 
   }
   
   public RecordFormatter(ComposedQuery q) 
   {
-    super((RecordInfo)q.getResultType()); 
+    super((DataDefinition)q.getResultType()); 
     for(int i=0; i<handlerOrder.size(); i++)
       ((FieldFormatter)handlerOrder.elementAt(i)).initExpr(q.getProjectionAt(i));
   }
 
-  public RecordFormatter(RecordInfo ri, java.util.Hashtable names) 
+  public RecordFormatter(DataDefinition ri, java.util.Hashtable names) 
   {
     super(ri);
     for(int i=0; i<handlerOrder.size(); i++)

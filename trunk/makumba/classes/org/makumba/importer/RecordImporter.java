@@ -34,12 +34,12 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.Database;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.abstr.RecordHandler;
-import org.makumba.abstr.RecordInfo;
 
 /** this class imports makumba records from text files based on markers placed in special configuration files with the "mark" extension from the CLASSPATH */
 public class RecordImporter extends RecordHandler
@@ -49,9 +49,9 @@ public class RecordImporter extends RecordHandler
   public String getMarker(String s){ return markers.getProperty(s); }
 
   boolean noMarkers=false;
-  public RecordImporter(RecordInfo type){this(type, false); }
+  public RecordImporter(DataDefinition type){this(type, false); }
 
-  public RecordImporter(RecordInfo type, boolean noMarkers)
+  public RecordImporter(DataDefinition type, boolean noMarkers)
   {
     super(type);
     this.noMarkers=noMarkers;
@@ -147,7 +147,7 @@ public class RecordImporter extends RecordHandler
   /** imports all files from a directory */
   public static void main(String argv[]) throws Throwable
   {
-    RecordImporter ri= new RecordImporter(RecordInfo.getRecordInfo(argv[0]));
+    RecordImporter ri= new RecordImporter(MakumbaSystem.getDataDefinition(argv[0]));
     File dir= new File(argv[1]);
     String[] lst= dir.list();
     char buffer[]= new char[8196];
