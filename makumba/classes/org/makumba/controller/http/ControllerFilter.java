@@ -23,7 +23,8 @@ public class ControllerFilter implements Filter
       if(filter){
 	try{
 	  RequestAttributes.getAttributes((HttpServletRequest)req);
-	}catch(Throwable e)
+	}
+	catch(Throwable e)
 	  { 
 	    treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
 	    return; 
@@ -33,7 +34,10 @@ public class ControllerFilter implements Filter
 	if(wasException((HttpServletRequest)req))
 	  return;
       }
-      chain.doFilter(req, resp);
+      try{
+	  chain.doFilter(req, resp);
+      }catch(AllowedException e)
+	  { }
   }
 
   /** decide if we filter or not */
