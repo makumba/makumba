@@ -38,6 +38,9 @@ public class AttributeTag extends MakumbaTag
   public void setVar(String s){ this.var=s; }
   public void setExceptionVar(String s){ this.exceptionVar=s; }
   
+  /** does this tag need the page cache? */
+  protected boolean needPageCache(){ return false; }
+
   /** ask the enclosing query to present the expression */
   public int doMakumbaStartTag() throws JspException 
   {
