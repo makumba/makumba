@@ -380,6 +380,11 @@ package org.makumba]]></replacevalue>
 	  </replace>
 	</target>
 
+	<target name="fixcrlf" >
+	  <fixcrlf srcDir="." includes="**/*.jsp, **/*.mdd, **/*.idd, **/*.java, **/*.properties" />
+	</target>
+
+
 </project>
 
        
