@@ -4,7 +4,8 @@
 TO RELEASE IMMEDIATELY:
  - add your changes -
 stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
- 
+stefan; 4 feb 2004: bug 639 fixed (MDD names in Catalog are limited in length) 
+
 NOT TO BE RELEASED YET:
 cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
 stefan; 16 jan 2004: bug 512 fixed (Makumba fails to create new tables with Connector/J 3.0.8 and later). Ready, but halted by unfinished work done on bug 4. cristi: this is blocked mainly by work related to the fix of bug 48, that can only be relesed afer thorough tests. 
