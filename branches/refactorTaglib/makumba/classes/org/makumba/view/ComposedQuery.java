@@ -118,7 +118,10 @@ public class ComposedQuery
   public void init()
   {
     initKeysets();
-    fromAnalyzer= MakumbaSystem.getOQLAnalyzer("SELECT \" \" FROM "+derivedSections[FROM]);
+    String query= "SELECT nil ";
+    if(derivedSections[FROM]!=null)
+      query+="FROM "+derivedSections[FROM];
+    fromAnalyzer= MakumbaSystem.getOQLAnalyzer(query);
   }
 
   /** initialize the keysets. previousKeyset is "empty" */
@@ -155,7 +158,8 @@ public class ComposedQuery
     for(int i=0; i<keyset.size(); i++)
       checkProjectionInteger((String)e.nextElement());
 
-    for(StringTokenizer st= new StringTokenizer((String)sections[FROM],","); st.hasMoreTokens();)
+    for(StringTokenizer st= new StringTokenizer(sections[FROM]==null?"":sections[FROM],","); 
+	st.hasMoreTokens();)
       {
 	String label= st.nextToken().trim();
 	int j= label.lastIndexOf(" ");
@@ -291,9 +295,13 @@ public class ComposedQuery
 	sep=",";
 	sb.append(e.nextElement()).append(" AS ").append(columnName(new Integer(i++)));
       }
-    sb.append(" FROM ");
-    sb.append(derivedSections[FROM]);
     Object o;
+
+    if((o=derivedSections[FROM])!=null)
+      {
+	sb.append(" FROM ");
+	sb.append(o);
+      }
     if(!typeAnalysisOnly)
       {
 	if((o=derivedSections[WHERE]) !=null && derivedSections[WHERE].trim().length()>0)
