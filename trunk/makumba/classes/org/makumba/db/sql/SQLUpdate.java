@@ -83,7 +83,7 @@ public class SQLUpdate implements Update
     
     String fakeCommand;
     try{ fakeCommand= ((QueryAST)tree).writeInSQLQuery(db); }
-    catch(RuntimeException e){ throw new MakumbaError(debugString+"\n"+OQLQuery); }
+    catch(RuntimeException e){ throw new MakumbaError(e, debugString+"\n"+OQLQuery); }
 
     StringBuffer replaceLabel=new StringBuffer();
 
