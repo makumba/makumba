@@ -9,20 +9,28 @@ import org.makumba.HtmlUtils;
  * dropdown and list selects, and radio buttons and checkboxes.
  *
  * <p>Note: this class is still work in progress, and its API is not 
- *   to be considered 100% stable yet. 
- * <p>FIXME : documentation needs improvement.
+ *   to be considered 100% stable yet. Especially the static methods
+ *   may change or be removed.
+ *
+ * <p>FIXME : documentation needs improvement. 
  *
  * @since  makumba-0.5.9.15
  * @author Frederik Habils 
  */
 public class HtmlChoiceWriter extends HtmlUtils {
 
-  public static int NO_CONV   = 0;
-  public static int TXT2HTML  = 1;
-  // public int CONVERT_AUTO = 2; // not supported
+
+  /********************************************
+   * PRIVATE CONSTANTS
+   ********************************************/
+  
   private static String NEWL = "\n";
   private static String[] EMPTY_ARRAY = { };
 
+
+  /********************************************
+   * PRIVATE MEMBERS
+   ********************************************/
   
   private String   _name = null;        // input field's name ("NAME=" + name)
   private Iterator _values = null;      // iterator over the values (Strings)
@@ -34,23 +42,57 @@ public class HtmlChoiceWriter extends HtmlUtils {
   private int      _convert2Html = NO_CONV;     // configuration whether to convert to HTML
   private String   _literalHtml  = "";          // literal html
   private String   _tickLabelSeparator = " ";   // separator between the tick box and the label
-  private String[] _elementSeparator   = { " " };   // separator between different elements
+  private String[] _optionSeparator    = { " " };   // separator between different options
 
-  /** Constructor. */
+
+  /********************************************
+   * PUBLIC CONSTANTS
+   ********************************************/
+
+  /** No conversion. */
+  public static int NO_CONV   = 0;
+  
+  /** Convert text encoding to legal HTML encoding. */
+  public static int TXT2HTML  = 1;
+  
+  // public int CONVERT_AUTO = 2; // not supported
+
+
+  /********************************************
+   * PUBLIC METHODS
+   ********************************************/
+
+
+  /** Default constructor. */
   public HtmlChoiceWriter() {};  
+  
+  
+  /** Constructor, sets the name of the choice control. */
   public HtmlChoiceWriter(String name) { setName(name); };
 
+  /** Sets the name of the choice control. */
   public void setName(String name) {_name = name; }
   
-  public void setValues(List values) { _values = values.iterator(); }     
-  public void setValues(String[] values) { _values = Arrays.asList(values).iterator(); } 
-  public void setValues(Iterator values) { _values = values; }     
+  /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
+  public void setValues(List values) { _values = values.iterator(); }  
   
+  /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */   
+  public void setValues(String[] values) { _values = Arrays.asList(values).iterator(); } 
+  
+  /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
+  public void setValues(Iterator values) { _values = values; }
+
+  /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
   public void setLabels(List labels) { _labels = labels.iterator(); }     
+
+  /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
   public void setLabels(String[] labels) { _labels = Arrays.asList(labels).iterator(); } 
+  
+  /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
   public void setLabels(Iterator labels) { _labels = labels; }
+
     
-  /** Setter method. */
+  /** Sets the selected value, in case there is only one. Most suitable if this is a select-one choice control. */
   public void setSelectedValues(String selected) {
       if (selected != null) {
           String[] ss = { selected }; // [java] can't assign literal array directly to existing variable.
@@ -59,7 +101,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
       	  _selectedValues = EMPTY_ARRAY;
       }
   }
-  /** Setter method. The input array is changed by this method (sorted). */
+  
+  /** Sets the selected values (zero or more). The input can be in any order, not related to the 
+   *  setValues and setLabels methods. The input array is changed by this method (sorted). 
+   */
   public void setSelectedValues(String[] selected) { 
       if (selected != null) {
           Arrays.sort(_selectedValues = selected); 
@@ -67,7 +112,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
       	  _selectedValues = EMPTY_ARRAY;
       }
   }
-  /** Setter method. The input List is not changed by this method. */
+
+  /** Sets the selected values (zero or more). The input can be in any order, not related to the 
+   *  setValues and setLabels methods. The input List is not changed by this method. 
+   */
   public void setSelectedValues(List selected) { 
       if (selected != null) {
           Arrays.sort(_selectedValues = (String[])selected.toArray()); 
@@ -76,16 +124,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
       }
   }
 
-  /** Setter method. */
-  public void setDeprecatedValues(String deprecated) {
-      if (deprecated != null) {
-          String[] ss = { deprecated }; // [java] can't assign literal array directly to existing variable.
-          _deprecatedValues = ss; 
-      } else {
-      	  _deprecatedValues = EMPTY_ARRAY;
-      }
-  }
-  /** Setter method. The input array is changed by this method (sorted). */
+  /** Sets the deprecated values (zero or more). The input can be in any order, not related to the 
+   *  setValues and setLabels methods. The input array is changed by this method (sorted). 
+   */
   public void setDeprecatedValues(String[] deprecated) { 
       if (deprecated != null) {
           Arrays.sort(_deprecatedValues = deprecated); 
@@ -93,7 +134,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
       	  _deprecatedValues = EMPTY_ARRAY;
       }
   }
-  /** Setter method. The input List is not changed by this method. */
+
+  /** Sets the deprecated values (zero or more). The input can be in any order, not related to the 
+   *  setValues and setLabels methods. The input List is not changed by this method. 
+   */
   public void setDeprecatedValues(List deprecated) { 
       if (deprecated != null) {
           Arrays.sort(_deprecatedValues = (String[])deprecated.toArray()); 
@@ -101,30 +145,59 @@ public class HtmlChoiceWriter extends HtmlUtils {
       	  _deprecatedValues = EMPTY_ARRAY;
       }
   }
-  
+
+  /** Sets whether the choice control accepts 'multiple' selections or not. */  
   public void setMultiple(boolean yn) { _ismultiple = yn; }
-  /** Setter method, any string that contains 'multiple' will be regarded as 'true'. */
+  
+  /** Sets whether the choice control accepts 'multiple' selections or not. Any string that contains 'multiple' will be regarded as 'true'. */
   public void setMultiple(String mult) { _ismultiple = (mult != null && mult.indexOf("multiple") >= 0) ; }
 
+  /** Sets the size of the choice control. Relevant for 'select' controls only, not for tickbox controls. */
   public void setSize(int n) { if (n > 0) _size = n;  }
+
+  /** Configures the encoding transformation to be applied to labels and values of the choice control. Use the public constants of the class as inputs. */
   public void setConvert2Html(int n) { _convert2Html = n; }
   
+  /** Sets a literal html text to be included in the choice control. E.g. &lt;select LITERALHTML&gt; */
   public void setLiteralHtml(String html) {_literalHtml = html; }
       
+  /** Sets the separator between the 'tickbox' and the label. Default is a space. */
   public void setTickLabelSeparator(String s) {_tickLabelSeparator = s; }
 
-  public void setElementSeparator(String s) { String[] ss = {s}; _elementSeparator = ss; }
-  public void setElementSeparator(String[] s) { if (s!=null && s.length > 0) _elementSeparator = s ; }
-  public void setElementSeparator(List s) { if (s!=null && s.size() > 0) _elementSeparator = (String[])s.toArray(); }  
+  /** Sets the separator between different options. Only relevant for tickbox type of choice controls. Default is a space. */
+  public void setOptionSeparator(String s) { String[] ss = {s}; _optionSeparator = ss; }
+  
+  /** Sets the separator between different options. Only relevant for tickbox type of choice controls. 
+   *  Default is a space. When there is more than one separator, the writer will cycle through 
+   *  all separators, when writing each of the options. 
+   */  
+  public void setOptionSeparator(String[] s) { if (s!=null && s.length > 0) _optionSeparator = s ; }
 
+  /** Sets the separator between different options. Only relevant for tickbox type of choice controls. 
+   *  Default is a space. When there is more than one separator, the writer will cycle through 
+   *  all separators, when writing each of the options. 
+   */  
+  public void setOptionSeparator(List s) { if (s!=null && s.size() > 0) _optionSeparator = (String[])s.toArray(); }  
+
+
+
+
+
+  /**
+   * Creates HTML statement for a select control. 
+   * Will use the 'multiple' setting to choose a select-one or select-multiple output.
+   * If labels and values iterator has different sizes, the smaller applies. 
+   */
   public String getSelect() {
       if ( _ismultiple ) { return getSelectMultiple(); }
       else { return getSelectOne(); }
   }
 
-  /** Create a select statement. 
+
+  /** 
+   * Creates HTML statement for a select-one control. 
    * If labels and values iterator has different sizes, the smaller applies. 
-   * Even if selectedValues has more than 1 element, 
+   * If selectedValues has more than 1 element, then only the first is considered as selected value.
    */
   public String getSelectOne() {
       boolean yn_convert2Html = (_convert2Html == TXT2HTML);
@@ -138,13 +211,15 @@ public class HtmlChoiceWriter extends HtmlUtils {
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if( Arrays.binarySearch(_deprecatedValues, value) < 0 || value.equals(selectedValue) )
+          boolean yn_selected = value.equals(selectedValue);
+          // show option if selected or not-deprecated
+          if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0)
           {
                if (yn_convert2Html) {
                    value = HtmlUtils.string2html(value);
                    label = HtmlUtils.string2html(label);
                }
-               String selected = value.equals(selectedValue) ? " SELECTED" : "" ;
+               String selected = yn_selected ? " SELECTED" : "" ;
                selectStatement.append("\t<OPTION value=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
       }
@@ -153,7 +228,11 @@ public class HtmlChoiceWriter extends HtmlUtils {
       return selectStatement.toString();
   }
 
-  /** Makes a select multiple HTML statement, based on the set fields. */
+
+  /** 
+   * Creates HTML statement for a select-multiple HTML control.
+   * If labels and values iterator has different sizes, the smaller applies. 
+   */
   public String getSelectMultiple () {
       boolean yn_convert2Html = (_convert2Html == TXT2HTML);
       Iterator itv = _values;
@@ -165,13 +244,15 @@ public class HtmlChoiceWriter extends HtmlUtils {
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if( Arrays.binarySearch(_deprecatedValues, value) < 0 || Arrays.binarySearch(_selectedValues, value) >= 0 )
+          boolean yn_selected = Arrays.binarySearch(_selectedValues, value) >= 0; 
+          // show option if selected or not-deprecated
+          if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0 )
           {
               if (yn_convert2Html) {
                   value = HtmlUtils.string2html(value);
                   label = HtmlUtils.string2html(label);
               }
-              String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? "" : " SELECTED" ;
+              String selected = yn_selected ? " SELECTED" : "" ;
               selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n" );
           }
       }
@@ -180,8 +261,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
       return selectStatement.toString();
   }
 
+
+
   /**
-   * Common function for writing checkboxes or radio inputs. 
+   * Common private function for writing checkboxes or radio inputs. 
    * @param type is either "RADIO" or "CHECKBOX"
    */
   private String makeCheckboxOrRadio( String type ) {
@@ -190,37 +273,53 @@ public class HtmlChoiceWriter extends HtmlUtils {
       Iterator itl = _labels;
   
       StringBuffer inputStatement = new StringBuffer(512);
-      int j = -1; // j cycles through elementSeparator[]
+      int j = -1; // j cycles through optionSeparator[]
   
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if(Arrays.binarySearch(_deprecatedValues, value) < 0 || Arrays.binarySearch(_selectedValues, value) >= 0 )
+          boolean yn_selected = Arrays.binarySearch(_selectedValues, value) >= 0; 
+          // show option if selected or not-deprecated
+          if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0 )
           {
             if (yn_convert2Html) {
               value = HtmlUtils.string2html(value);
               label = HtmlUtils.string2html(label);
             }
-            String selected = (Arrays.binarySearch(_selectedValues, value) < 0) ? " " : " CHECKED " ;
-            j = (j+1) % _elementSeparator.length;
+            String selected = yn_selected ? " CHECKED " : " " ;
+            j = (j+1) % _optionSeparator.length;
                     
 	    String id="AutoLabel_"+java.lang.Long.toString(java.lang.Math.round(java.lang.Math.random()*100000000));
             inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
-            inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\""+id+"\">" + _tickLabelSeparator + "<LABEL for=\""+id+"\">" + label + "</LABEL>" + _elementSeparator[j]);
+            inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\""+id+"\">" + _tickLabelSeparator + "<LABEL for=\""+id+"\">" + label + "</LABEL>" + _optionSeparator[j]);
           }
       }
   
-      // cut of the last elementSeparator and return
-      return inputStatement.substring(0, inputStatement.length() - _elementSeparator[j].length());
+      // cut of the last optionSeparator and return
+      return inputStatement.substring(0, inputStatement.length() - _optionSeparator[j].length());
   }
+
   
+  /** 
+   * Creates HTML statement for a radio input control.
+   * If labels and values iterator has different sizes, the smaller applies. 
+   * If selectedValues has more than 1 element, then all these will be set as CHECKED (which is incorrect HTML).
+   */
   public String getRadioSelect() {
       return makeCheckboxOrRadio("RADIO");
   }
+
   
+  /** 
+   * Creates HTML statement for a select-one control. 
+   * If labels and values iterator has different sizes, the smaller applies. 
+   */
   public String getCheckboxSelect() {
       return makeCheckboxOrRadio("CHECKBOX");
   }
+
+
+
   
   
   /**
@@ -303,6 +402,17 @@ public class HtmlChoiceWriter extends HtmlUtils {
   
       return selectStatement.toString();
   }
+
+
+
+
+  //////////////////////////////////////////////////////////////////////////
+  // The following are static methods that do similar things. 
+  // -----------------------------------------------------------------------
+  // This class was first built as purely having static methods, but got too 
+  // complex, and got set and get methods instead.
+  // Remains to be determined what to do with these static methods.
+  //////////////////////////////////////////////////////////////////////////
   
   
   /**
@@ -360,7 +470,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
    * @param labels         Array of the labels (String) of the options, same order as 'values'
    * @param selectedValue  The selected value, if any (String, or null)
    * @param checkboxLabelSeparator  String to separate the clickable box and the label.
-   * @param elementSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
+   * @param optionSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
    * @param literalHtml    Extra HTML to be added literally to the SELECT tag.
    * @param convert2Html  Configuration whether <code>values</code> and <code>labels</code> must be converted ('escaped') to HTML during the writing out. Default is "NO_CONV". Any input other than {TXT2HTML, NO_CONV} has unpredictable result.
    * @see #makeHtmlSelectOne(String, String[], String[], String, String, int) 
@@ -371,13 +481,13 @@ public class HtmlChoiceWriter extends HtmlUtils {
                            String[] labels, 
                            String   selectedValue, 
                            String   checkboxLabelSeparator,
-                           String[] elementSeparator,
+                           String[] optionSeparator,
                            String   literalHtml,
                            int      convert2Html) {
   
       String[] selectedValues = { selectedValue };
       return makeHtmlCheckboxOrRadioStatement(name, values, labels, 
-              selectedValues, checkboxLabelSeparator, elementSeparator, 
+              selectedValues, checkboxLabelSeparator, optionSeparator, 
               literalHtml, convert2Html, "RADIO");
   }
   
@@ -389,7 +499,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
    * @param labels         Array of the labels (String) of the options, same order as 'values'
    * @param selectedValues Array of selected values (String), if any, or null.
    * @param checkboxLabelSeparator  String to separate the clickable box and the label.
-   * @param elementSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
+   * @param optionSeparator        String[] with separators between the different Option-Elements; repeatedly cycles thru this array.
    * @param literalHtml    Extra HTML to be added literally to the SELECT tag.
    * @param convert2Html   Configuration whether <code>values</code> and <code>labels</code> must be converted ('escaped') to HTML during the writing out. Default is "false". Any input other than {"true", "false", null} has unpredictable result.
    * @see #makeHtmlSelectMultiple(String, String[], String[], String[], int, String, int) 
@@ -400,12 +510,12 @@ public class HtmlChoiceWriter extends HtmlUtils {
                            String[] labels, 
                            String[] selectedValues, 
                            String   checkboxLabelSeparator,
-                           String[] elementSeparator,
+                           String[] optionSeparator,
                            String   literalHtml,
                            int      convert2Html) {
   
       return makeHtmlCheckboxOrRadioStatement(name, values, labels, 
-              selectedValues, checkboxLabelSeparator, elementSeparator, 
+              selectedValues, checkboxLabelSeparator, optionSeparator, 
               literalHtml, convert2Html, "CHECKBOX");
   }
   
@@ -417,7 +527,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                            String[] labels, 
                            String[] selectedValues, 
                            String   checkboxLabelSeparator,
-                           String[] elementSeparator,
+                           String[] optionSeparator,
                            String   literalHtml,
                            int      convert2Html,
                            String   type) {
@@ -435,10 +545,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
       boolean yn_convert2Html = (convert2Html == TXT2HTML);
           
       StringBuffer inputStatement = new StringBuffer(512);
-      int j = -1; // j cycles through elementSeparator[]
+      int j = -1; // j cycles through optionSeparator[]
   
       for(int i=0 ; i < values.length; i++) {
-          j = (j+1) % elementSeparator.length;
+          j = (j+1) % optionSeparator.length;
           inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + name + "\" " + literalHtml + " ");
           String value = values[i];
           String label = labels[i];
@@ -447,49 +557,49 @@ public class HtmlChoiceWriter extends HtmlUtils {
               label = HtmlUtils.string2html(label);
           }
           String selected = (Arrays.binarySearch(selectedValues, value) < 0) ? " " : " CHECKED " ;
-          inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + checkboxLabelSeparator + label + elementSeparator[j]);
+          inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + checkboxLabelSeparator + label + optionSeparator[j]);
       }
   
-      // cut of the last elementSeparator and return
-      return inputStatement.substring(0, inputStatement.length() - elementSeparator[j].length());
+      // cut of the last optionSeparator and return
+      return inputStatement.substring(0, inputStatement.length() - optionSeparator[j].length());
   }
   
   
   /**
-   * Returns a radio-input statement in HTML; shorthand for only one elementSeparator.
-   * @see #makeHtmlRadioSelect(String name, String[] values, String[] labels, String selectedValue, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, int convert2Html) 
+   * Returns a radio-input statement in HTML; shorthand for only one optionSeparator.
+   * @see #makeHtmlRadioSelect(String name, String[] values, String[] labels, String selectedValue, String checkboxLabelSeparator, String[] optionSeparator, String literalHtml, int convert2Html) 
    */
   public static String makeHtmlRadioSelect(String name, 
                            String[] values, 
                            String[] labels, 
                            String   selectedValue, 
                            String   checkboxLabelSeparator,
-                           String   elementSeparator,
+                           String   optionSeparator,
                            String   literalHtml,
                            int      convert2Html) {
   
-      String[] elementSeparatorArray = { elementSeparator };
+      String[] optionSeparatorArray = { optionSeparator };
       return makeHtmlRadioSelect(name, values, labels, selectedValue, checkboxLabelSeparator,
-          elementSeparatorArray, literalHtml, convert2Html);
+          optionSeparatorArray, literalHtml, convert2Html);
   }
 
 
   /**
-   * Returns a checkbox-input statement in HTML; shorthand for only one elementSeparator.
-   * @see #makeHtmlCheckboxSelect(String name, String[] values, String[] labels, String[] selectedValues, String checkboxLabelSeparator, String[] elementSeparator, String literalHtml, int convert2Html)
+   * Returns a checkbox-input statement in HTML; shorthand for only one optionSeparator.
+   * @see #makeHtmlCheckboxSelect(String name, String[] values, String[] labels, String[] selectedValues, String checkboxLabelSeparator, String[] optionSeparator, String literalHtml, int convert2Html)
    */
   public static String makeHtmlCheckboxSelect(String name, 
                            String[] values, 
                            String[] labels, 
                            String[] selectedValues, 
                            String   checkboxLabelSeparator,
-                           String   elementSeparator,
+                           String   optionSeparator,
                            String   literalHtml,
                            int      convert2Html) {
   
-      String[] elementSeparatorArray = { elementSeparator };
+      String[] optionSeparatorArray = { optionSeparator };
       return makeHtmlCheckboxSelect(name, values, labels, selectedValues, checkboxLabelSeparator,
-          elementSeparatorArray, literalHtml, convert2Html);
+          optionSeparatorArray, literalHtml, convert2Html);
   }
   
 
