@@ -62,8 +62,8 @@ public class Query implements org.makumba.db.Query
 								     );
     try{
       String s=assigner.assignParameters(ps, args);
-      ps.setInt(assigner.tree.parameterNumber()+1, limit);
-      ps.setInt(assigner.tree.parameterNumber()+2, offset);
+      ps.setInt(assigner.tree.parameterNumber()+1, offset);
+      ps.setInt(assigner.tree.parameterNumber()+2, limit==-1?Integer.MAX_VALUE:limit);
 
       if(s!=null)
 	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+command+"\n"+s);
