@@ -124,7 +124,7 @@ public abstract class choiceEditor extends FieldEditor
         
         if (yn_radio || yn_checkbox) {
             String sep = (String)formatParams.get("elementSeparator");
-            if (sep!=null) hcw.setElementSeparator(sep);
+            if (sep!=null) hcw.setOptionSeparator(sep);
             sep = (String)formatParams.get("labelSeparator");
             if (sep!=null) hcw.setTickLabelSeparator(sep);
 
