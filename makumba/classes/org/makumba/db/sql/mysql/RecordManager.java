@@ -32,8 +32,9 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
   protected String createDbSpecific(String command){return command+" type=InnoDB"; }
 
   /** checks if an alteration is needed, and calls doAlter if so */
-  protected void alter(Statement st, CheckingStrategy cs) throws SQLException
+  protected void alter(org.makumba.db.sql.SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
   {
+    Statement st= dbc.createStatement();
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
     rs.next();
     if(!rs.getString(2).trim().endsWith("TYPE=InnoDB")){
@@ -42,7 +43,8 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
       st.executeUpdate(s);
     }
     rs.close();
-    super.alter(st, cs);
+    st.close();
+    super.alter(dbc, cs);
   }
 
 }
