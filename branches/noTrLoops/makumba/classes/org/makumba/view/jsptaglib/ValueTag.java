@@ -49,7 +49,7 @@ public class ValueTag extends MakumbaTag
   public Object getRegistrationKey() 
   {
     String expr=this.expr.trim();
-    QueryStrategy p=getParentQueryStrategy();
+    QueryStrategy p=getEnclosingQuery();
 
     MultipleKey mk= new MultipleKey((Vector)p.key, 7);
     mk.setAt(expr, 6);
@@ -60,7 +60,7 @@ public class ValueTag extends MakumbaTag
   public TagStrategy makeNonRootStrategy(Object key)
   {
     String expr=this.expr.trim();
-    QueryStrategy p=getParentQueryStrategy();
+    QueryStrategy p=getEnclosingQuery();
     Object check= p.query.checkExprSetOrNullable(expr, PageAttributes.getAttributes(pageContext));
 
     if(check instanceof String)
@@ -73,7 +73,7 @@ public class ValueTag extends MakumbaTag
       return this;
 
     if(set==null)
-      return getParentQueryStrategy().getNullableStrategy(nullableExpr);
+      return getEnclosingQuery().getNullableStrategy(nullableExpr);
     return new SetValueStrategy();
   }
   
@@ -113,13 +113,13 @@ public class ValueTag extends MakumbaTag
   
   public void doAnalyze() 
   {
-    getParentQueryStrategy().getQuery().checkProjectionInteger(expr);
+    getEnclosingQuery().getQuery().checkProjectionInteger(expr);
   }
 
   /** ask the enclosing query to present the expression */
-  public int doStart() throws JspException 
+  public int doStart() throws JspException , org.makumba.LogicException
   {
-    getParentQueryStrategy().insertEvaluation(this);
+    getEnclosingQuery().insertEvaluation(this);
     return EVAL_BODY_INCLUDE;
   }
 }
