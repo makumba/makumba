@@ -13,9 +13,9 @@ public class SQLDBConnection extends DBConnection
 
   SQLDBConnection(org.makumba.db.Database db) throws SQLException
   { 
-    super(db); 
-    makeConnection();
+    super(db);
     n=nconn++;
+    makeConnection();
   }
   
   private void makeConnection() throws SQLException
@@ -25,11 +25,12 @@ public class SQLDBConnection extends DBConnection
 
   private Connection getConnection() throws SQLException
   {
-    if(conn.isClosed())
+      /* if(conn.isClosed())
       {
 	MakumbaSystem.getMakumbaLogger("db.exception").warning("reconnecting connection "+n);
 	makeConnection();
-      }
+	}*/
+
     return conn;
   }
   public String toString(){ return "connection "+n; }
