@@ -124,7 +124,20 @@ public class RequestAttributes implements Attributes
   }
 
   public static final Object notFound="not found";
-  
+
+  public Object setAttribute(String s, Object o){
+    String snull=s+"_null";    
+    HttpSession ss= request.getSession(true);
+
+    Object value= ss.getAttribute(s);
+    ss.setAttribute(s, o);
+    if(o==null)
+      ss.setAttribute(snull, "null");
+    else
+      ss.removeAttribute(snull);
+    return value;
+  }
+
   public Object getAttribute(String s) 
        throws LogicException
   {
