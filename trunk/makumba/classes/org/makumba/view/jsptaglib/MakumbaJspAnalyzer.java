@@ -122,8 +122,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       return ret;
     }
 
-    final static String[] dummyQuerySections= {null, null, null, null};
-  }
+ }
 
   class ParseStatus
   {
