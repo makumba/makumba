@@ -203,6 +203,7 @@ public class RecordParser extends RecordHandler
   {
      int line= 0;
      OrderedProperties inclText;
+     Vector overridenFields=new Vector();
 
      for(Enumeration e= text.keys(); e.hasMoreElements();line++)
      {
@@ -238,14 +239,17 @@ public class RecordParser extends RecordHandler
               {
                 String key= (String)k.nextElement();
                 String val= text.getProperty(key);
-                if(val==null)
+                if(val==null)	// new field, not overriden in main mdd
 		  text.putAt(++line, key, inclText.getOriginal(key), inclText.getProperty(key));
+		else  		// field is overriden in main mdd, ignore it
+		  overridenFields.add(key);
               }
           }
     }
 
-    // now we remove all empty fields
-    for(Enumeration k= text.keys(); k.hasMoreElements(); )
+    // now we remove all overriden empty fields
+    // keep the non-overriden ones with empty definiton to report a mdd error
+    for(Enumeration k= overridenFields.elements(); k.hasMoreElements(); )
     {
       String key= (String) k.nextElement();
       if(((String)text.get(key)).trim().length()==0)
@@ -283,8 +287,6 @@ public class RecordParser extends RecordHandler
 	  if( i==0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i>0 && !Character.isJavaIdentifierPart(nm.charAt(i)) )
 	    mpe.add(fail("Invalid character \""+nm.charAt(i)+"\" in field name \""+nm+"\"", nm));
 	}
-	if(fields.getProperty(nm).trim().length()==0)
-	   mpe.add(fail("Expecting definition of field \""+nm+"\"", nm));
 	fi= new FieldInfo(ri, nm);
 	ri.addField1(fi);
 	FieldHandler fh;
@@ -445,8 +447,6 @@ public class RecordParser extends RecordHandler
 	      kt= kt+"_";
 	  }
 	String val= s.substring(l+1);
-	if(val.length()==0)
-	  mpe.add(fail("missing value of "+kt, s));
 	if(op.putLast(kt, k, val)!=null)
 	  mpe.add(fail("ambiguous key "+kt, s));
       }
