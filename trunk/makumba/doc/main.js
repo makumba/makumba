@@ -20,6 +20,7 @@ function makeNavBar(pathToBase)
 
 	document.write('<br>');
 	document.write('<a href="'+bDir+'documentation.html"><b>Documentation</b></a><br>');
+	document.write('- <a href="'+bDir+'makumba-install.html">Installation</a><br/>');
 	document.write('- <a href="'+bDir+'makumba-spec.html">Specification</a><br>');
 	document.write('- <a href="'+bDir+'makumba-example.html">Example</a><br>');
 	document.write('- <a href="'+bDir+'SQL-drivers.html"> Config DB</a><br>');
