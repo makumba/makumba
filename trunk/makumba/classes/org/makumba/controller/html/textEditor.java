@@ -39,18 +39,14 @@ public class textEditor extends FieldEditor
 
   public String formatNull(Dictionary formatParams) 
   { 
-    if(isTextArea(formatParams)) {
-      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" >" 
-               + formatValue(null, formatParams) +"</TEXTAREA>";  
-    } else {
-      return fileInput(formatParams);
-    }
+    return formatNotNull(null, formatParams);
   }
 
   public String formatNotNull(Object o, Dictionary formatParams) 
   { 
     if(isTextArea(formatParams)) {
-      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "+getParams(formatParams)+" >"
+      return "<TEXTAREA name=\""+getInputName(formatParams)+"\" "
+		+getParams(formatParams)+ getExtraFormatting(formatParams)+" >"
               + formatValue(o, formatParams) +"</TEXTAREA>"; 
     } else {
       return fileInput(formatParams);
@@ -68,7 +64,7 @@ public class textEditor extends FieldEditor
   
   String fileInput(Dictionary formatParams)
   {
-    return "<INPUT name=\""+getInputName(formatParams)+"\" type=\"file\">"; 
+    return "<INPUT name=\""+getInputName(formatParams)+"\" type=\"file\" "+ getExtraFormatting(formatParams)+" >"; 
   }
 
   boolean isTextArea(Dictionary formatParams)
