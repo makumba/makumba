@@ -58,6 +58,8 @@ public abstract class MakumbaTag extends TagSupport
   static public JspParseData.TagData getRunningTag(){ return (JspParseData.TagData)runningTag.get();  }
   static public JspParseData.TagData getAnalyzedTag(){ return (JspParseData.TagData)analyzedTag.get();  }
   static public JspParseData.TagData getCurrentBodyTag(){
+    if(getThreadTagStack().isEmpty())
+      return null;
     return (JspParseData.TagData)getThreadTagStack().peek();
   }
 
