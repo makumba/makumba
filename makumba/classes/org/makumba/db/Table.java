@@ -38,7 +38,6 @@ setComplex=subtable
 </pre>
 ... where foreignHandler and subtableHandler use different techniques to add their foreign table to this table's foreign table list, and then let the unrelying packages define their own handlers of the respective type, by adding DB to the type name (e.g. ptr will lead to ptrDB).
 * @see org.makumba.db.Database#getTable(org.makumba.abstr.RecordInfo)
-* @see org.makumba.db.Table#getForeignTable(java.lang.String)
 * @see org.makumba.db.foreignHandler
 * @see org.makumba.db.subtableHandler
 */

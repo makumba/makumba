@@ -298,7 +298,7 @@
         </target>
 
 
-	<target name="publishDoc" depends="doc" description="publishes the documentation">
+	<target name="publishDoc" description="publishes the documentation">
 	<antcall target="zipdoc" />
 	<echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
