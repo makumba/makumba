@@ -34,16 +34,24 @@ import org.makumba.NoSuchFieldException;
 
 import org.makumba.util.MultipleKey;
 
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.BodyContent;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
-public class FormTagBase extends MakumbaTag  
+public class FormTagBase extends MakumbaTag implements BodyTag
 {
   // the tag attributes
   String baseObject;
   String handler;
+
+  BodyContent bodyContent;
+
+  public void setBodyContent(BodyContent bc){ bodyContent=bc; }
+  public void doInitBody() {}
 
   // for add, edit, delete
   public void setObject(String s) { baseObject=s;}
@@ -53,9 +61,7 @@ public class FormTagBase extends MakumbaTag
   public void setMethod(String s){ responder.setMethod(s); }
   public void setName(String s){ responder.setResultAttribute(s); }
   public void setMessage(String s){ responder.setMessage(s); }
-    
-  boolean multipart;
-  public void setMultipart() { multipart=true; }
+  public void setMultipart() { responder.setMultipart(true); }
   
   FormResponder responder= new FormResponder();
   
@@ -95,9 +101,6 @@ public class FormTagBase extends MakumbaTag
 
   public void doEndAnalyze()
   {
-    if(multipart)
-      pageCache.multipartForms.put(tagKey, dummy);
-
     if(baseObject==null)
       return;
 
@@ -109,14 +112,12 @@ public class FormTagBase extends MakumbaTag
   public int doMakumbaStartTag() throws JspException, LogicException
   {
     responder.setOperation(getOperation());
+    responder.setExtraFormatting(extraFormatting);
     responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
-    if(pageCache.multipartForms.get(tagKey)!=null)
-      responder.setMultipart(true);
 
     l= new java.util.Date().getTime();
 
     /** we compute the base pointer */
-    String basePointerType=null;
     if(baseObject!=null)
       {
 	Object o=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
@@ -125,23 +126,25 @@ public class FormTagBase extends MakumbaTag
 	  throw new RuntimeException("Pointer expected");
 	basePointer=((Pointer)o).toExternalForm();
       }
-
     try{
       responder.setHttpRequest((HttpServletRequest)pageContext.getRequest());
-      StringBuffer sb= new StringBuffer();
-      responder.writeFormPreamble(sb, basePointer);
-      pageContext.getOut().print(sb.toString());
     }catch(LogicException e){ treatException(e); }
-    catch(IOException ioe){throw new JspException(ioe.toString()); }
-    return EVAL_BODY_INCLUDE; 
+
+    return EVAL_BODY_BUFFERED; 
   }
 
   public int doMakumbaEndTag() throws JspException 
   {
     try{
       StringBuffer sb= new StringBuffer();
+      responder.writeFormPreamble(sb, basePointer);
+      bodyContent.getEnclosingWriter().print(sb.toString()); 
+
+      bodyContent.writeOut(bodyContent.getEnclosingWriter());
+
+      sb= new StringBuffer();
       responder.writeFormPostamble(sb, basePointer);
-      pageContext.getOut().print(sb.toString());
+      bodyContent.getEnclosingWriter().print(sb.toString()); 
       MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-l)));
     }catch(IOException e){ throw new JspException(e.toString()); }
     return EVAL_PAGE;
