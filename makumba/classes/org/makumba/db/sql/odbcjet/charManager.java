@@ -27,11 +27,10 @@ import java.sql.*;
 /** odbcjet might represent char fields as text fields */
 public class charManager extends org.makumba.db.sql.charManager
 {
-  protected boolean unmodified(int type, int size, java.util.Vector columns, 
-			       int index)
-       throws java.sql.SQLException
+  protected boolean unmodified(ResultSetMetaData rsm, int index)
+       throws SQLException
   {
-    return super.unmodified(type, size, columns, index) || 
-      type==java.sql.Types.VARCHAR;
+    return super.unmodified(rsm, index) || 
+      rsm.getColumnType(index)==java.sql.Types.VARCHAR;
   }
 }

@@ -29,9 +29,6 @@ public class setParser extends subtableParser
 
   public FieldParser parse(FieldCursor fc) 
   {
-    if(fi.unique)
-        throw fc.fail("sets can't be declared unique");
-
     RecordInfo ori= fc.lookupTableSpecifier();
     if(ori==null)
     {
