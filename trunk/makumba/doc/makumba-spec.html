@@ -974,7 +974,7 @@ it.
 Queries are generated on the spot and can be nested.
 </p>
 <p>Example:</p>
-<pre class="example">&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""<br>          orderBy="p.name"&gt;<br><br>    &lt;c:if test="${mak:count()}"&gt;<br>       &lt;p&gt; There are ${mak:maxCount()} male students:<br>    &lt;/c:if&gt;<br><br>    &lt;br&gt; &lt;%= counter %&gt;.<br>    &lt;mak:value expr="p.name"/&gt;<br>    &lt;mak:value expr="p.surname"/&gt; &lt;br&gt;<br>    &lt;mak:list from="p.addresses a"&gt;<br>       &lt;mak:value expr="a.streetno"/&gt; &lt;mak:value expr="a.city"/&gt;<br>    &lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br><br>&lt;c:if expr="${mak:lastCount()==0}"&gt; There are no male students. &lt;/c:if&gt;<br></pre>
+<pre class="example">&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""<br>          orderBy="p.name"&gt;<br><br>    &lt;c:if test="${mak:count()}"&gt;<br>       &lt;p&gt; There are ${mak:maxCount()} male students:<br>    &lt;/c:if&gt;<br><br>    &lt;br&gt; &lt;%= counter %&gt;.<br>    &lt;mak:value expr="p.name"/&gt;<br>    &lt;mak:value expr="p.surname"/&gt; &lt;br&gt;<br>    &lt;mak:list from="p.addresses a"&gt;<br>       &lt;mak:value expr="a.streetno"/&gt; &lt;mak:value expr="a.city"/&gt;<br>    &lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br><br>&lt;c:if test="${mak:lastCount()==0}"&gt; There are no male students. &lt;/c:if&gt;<br></pre>
 <p>
 </p>
 <table class="tagParamDef">
