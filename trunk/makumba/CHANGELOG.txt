@@ -2,9 +2,10 @@
 <!-- =============== THESE CHANGES ARE NOT YET PART OF A RELEASE ================= -->
 
 TO RELEASE IMMEDIATELY:
+fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
 stefan; 22 oct 2003: SQL errors show state & code in the error page (see bug 612)
 stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
-stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer)
+stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer) and bug 601
 fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
 stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
 stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
