@@ -23,8 +23,7 @@ to <a href="mailto:makumba AT best.eu.org">makumba AT best.eu.org</a>. Thank you
   <br>
 1.2 <a href="#ConfigProperties">Database configuration properties</a>
   <br>
-1.3 <a href="#auto-database">Database lookup files</a> <br>
-1.4 <a href="#query-cache">Caching queries in database lookup files</a> <br>
+  1.3 <a href="#auto-database">Database lookup files</a> <br>
 2 <a href="#intro">Supported SQL engines</a> <br>
 3. <a href="#Other">other SQL engines</a> <br>
 3.1 <a href="#new">adding support for new engines</a></blockquote>
@@ -56,6 +55,8 @@ For example
 <blockquote><tt>sql.<i>setting</i>=<i>value</i></tt>
   <blockquote>sends a setting to the JDBC driver (for example user, password,
 create, etc). Such settings are JDBC driver specific</blockquote>
+<blockquote><tt>dbsv=<i>value</i></tt>
+  <blockquote>the DBSV is usually the line of the user in the CVSROOT/passwd file + 11</blockquote>
   <tt>initConnections=<i>value</i></tt>
   <blockquote>specifies the initial number of connections that makumba will open when connecting to the database. Default is 1, though some makumba versions will open 2-3 more connections pretty early in their activity. High server load will lead to more connections being open.</blockquote>
 
@@ -116,15 +117,6 @@ the default database configuration is used. For example
 will look in <b>MakumbaDatabase.properties</b>. Instead of this default, a
 String argument (a database lookup file in the classpath), or a Properties
 object read from a database lookup file can be indicated.
-<h3> 1.4&nbsp;<a name="query-cache"></a>Caching queries in database lookup
-files</h3>
- In some applictations, some queries will always return the same values (ex.
-list of all countries). To make such queries not generate actual requests
-to the database, but return a cached result, one can write the query in OQL
-(thus SQL-engine independent) as a cache in the <b>database lookup file</b>
-(such as MakumbaDatabase.properties) as follows
-<blockquote><tt>cache.1= SELECT o FROM general.Country o</tt> <br>
-  <tt>cache.2= SELECT o FROM general.Language o</tt></blockquote>
 
 <h2> <a name="intro"></a><b>2. </b>Supported SQL engines</h2>
  Only SQL engines or bridges are supported, although there are possibilities
