@@ -46,8 +46,8 @@ public class SQLDBConnection extends DBConnection
     conn=DriverManager.getConnection(((org.makumba.db.sql.Database)db).url, ((org.makumba.db.sql.Database)db).connectionConfig);
     if(conn.getMetaData().supportsTransactions())
       conn.setAutoCommit(false);
-    if(conn.getMetaData().supportsTransactionIsolationLevel(Connection.TRANSACTION_SERIALIZABLE))
-      conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+    if(conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
+      conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
   }
 
   public void commit()
