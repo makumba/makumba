@@ -56,6 +56,7 @@ public class TomcatJsp
     return jspUri;
   }
 
+  public static String getJspCompilerPackage(){ return "org.apache.jasper"; }
 
   /* when uncommenting the line below, add jasper-compiler.jar to the compilation classpath
 
