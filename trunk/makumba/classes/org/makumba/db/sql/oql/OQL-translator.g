@@ -586,8 +586,8 @@ equalityExpr :
         rel:relationalExpr 
         (
             (
-                eq:TOK_EQ { lastEQop= #eq; is="is "; } 
-            |   neq:TOK_NE{ lastEQop= #neq;is="is not ";} 
+                eq:TOK_EQ { lastEQop= #eq; is=" is "; } 
+            |   neq:TOK_NE{ lastEQop= #neq;is=" is not ";} 
             )
 
             (
@@ -946,7 +946,7 @@ literal :
         |   stringLiteral { ((OQLAST)#literal).makumbaType="char";} 
         |   dateLiteral   { ((OQLAST)#literal).makumbaType="datetime";} 
         |   timeLiteral  { ((OQLAST)#literal).makumbaType="datetime";} 
-        |   timestampLiteral  { ((OQLAST)#literal).makumbaType="date";} 
+        |   timestampLiteral  { ((OQLAST)#literal).makumbaType="timestamp";} 
     ;
 
 objectLiteral :
