@@ -155,16 +155,17 @@ public abstract class Responder implements java.io.Serializable
 
   //------------------ multiple form section
   /** the form counter, 0 for the root form, one increment for each subform of this form */
+  // NOTE: transient data here is not used during response, only at form building time
   transient int groupCounter=0;
 
   /** the form suffix, "" for the root form, _+increment for subforms */
-  protected transient String suffix="";
+  protected transient String storedSuffix="";
 
   /** pass the parent responder */
   public void setParentResponder(Responder resp)
   {
-    if(resp.suffix.equals(""))
-      suffix="_"+(++resp.groupCounter);
+    if(resp.storedSuffix.equals(""))
+      storedSuffix="_"+(++resp.groupCounter);
     else
       throw new RuntimeException("responders that include other responders cannot be included in responders");
   }

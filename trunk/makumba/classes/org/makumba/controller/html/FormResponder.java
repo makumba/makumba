@@ -57,7 +57,7 @@ public class FormResponder extends Responder
   /** Format a field using the editor, and grow the editor as needed */
   public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams)
   {
-    FieldEditor.setSuffix(formatParams, suffix);
+    FieldEditor.setSuffix(formatParams, storedSuffix);
     Integer i=(Integer)indexes.get(fname);
     if(i!=null)
       return editor.format(i.intValue(), fval, formatParams);
