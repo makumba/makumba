@@ -944,8 +944,8 @@ literal :
         |   doubleLiteral
         |   charLiteral  { ((OQLAST)#literal).makumbaType="char";}  
         |   stringLiteral { ((OQLAST)#literal).makumbaType="char";} 
-        |   dateLiteral   { ((OQLAST)#literal).makumbaType="date";} 
-        |   timeLiteral  { ((OQLAST)#literal).makumbaType="date";} 
+        |   dateLiteral   { ((OQLAST)#literal).makumbaType="datetime";} 
+        |   timeLiteral  { ((OQLAST)#literal).makumbaType="datetime";} 
         |   timestampLiteral  { ((OQLAST)#literal).makumbaType="date";} 
     ;
 
