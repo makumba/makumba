@@ -136,6 +136,9 @@ public abstract class FieldHandler
   /** tells wether this field is not null */
    public  boolean isNotNull(){ return fi.notNull; }
 
+  /** tells wether this field is unique */
+   public  boolean isUnique(){ return fi.unique; }
+
   /** returns the default value of this field */
    public  Object getDefaultValue()
     {

@@ -59,6 +59,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     type= fi.type;
     fixed= fi.fixed;
     notNull= fi.notNull;
+    unique= fi.unique;
     defaultValue= fi.defaultValue;
     description= fi.description;
   }
@@ -70,6 +71,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     type= fi.type;
     fixed= fi.fixed;
     notNull= fi.notNull;
+    unique= fi.unique;
     defaultValue= fi.defaultValue;
     description= fi.description;
     extra1= fi.extra1;
@@ -89,6 +91,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
       this.type= t;
       fixed= false;
       notNull= false;
+      unique= false;
       if(type.equals("char"))
 	extra2= new Integer(255);
       else if (type.startsWith("char"))
@@ -113,6 +116,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   String type;
   boolean fixed;
   boolean notNull;
+  boolean unique;
   Object defaultValue;
   String description;
   
@@ -183,6 +187,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
 
   /** tells wether this field is not null */
   public boolean isNotNull(){ return notNull; }
+
+  /** tells wether this field is unique */
+  public boolean isUnique(){ return unique; }
 
   /** returns the defa()ult value of this field */
   public Object getDefaultValue()
