@@ -39,7 +39,7 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.JspParseData;
 import org.makumba.util.MultipleKey;
-
+import java.util.Stack;
 
 /** this class provides utility methods for all makumba tags 
  * exception handling
@@ -51,6 +51,23 @@ import org.makumba.util.MultipleKey;
  */
 public abstract class MakumbaTag extends TagSupport 
 {
+  static ThreadLocal analyzedTag= new ThreadLocal();
+  static ThreadLocal runningTag= new ThreadLocal();
+  static ThreadLocal tagStack= new ThreadLocal();
+
+  static public JspParseData.TagData getRunningTag(){ return (JspParseData.TagData)runningTag.get();  }
+  static public JspParseData.TagData getAnalyzedTag(){ return (JspParseData.TagData)analyzedTag.get();  }
+  static public JspParseData.TagData getCurrentBodyTag(){
+    return (JspParseData.TagData)getThreadTagStack().peek();
+  }
+
+  static Stack getThreadTagStack(){
+    Stack s= (Stack)tagStack.get(); 
+    if(s==null)
+      tagStack.set(s= new Stack());
+    return s;
+  }
+
   /** Set by the tag parser at analysis time. It is set at runtime after the key is computed */
   protected JspParseData.TagData tagData;
 
@@ -123,12 +140,12 @@ public abstract class MakumbaTag extends TagSupport
   {
     QueryTag parentList= getParentList();
     if(parentList== null)
-      throw new org.makumba.ProgrammerError("VALUE tags, INPUT or FORM tags that compute a value should always be enclosed in a LIST or OBJECT tag: \n"+getTagText());
+      throw new org.makumba.ProgrammerError("VALUE tags, INPUT, FORM or OPTION tags that compute a value should always be enclosed in a LIST or OBJECT tag");
     tagKey= new MultipleKey(parentList.getTagKey(), o);
   }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey() {}
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {}
 
   public MultipleKey getTagKey(){ return tagKey; }
 
@@ -165,11 +182,18 @@ public abstract class MakumbaTag extends TagSupport
     try{
       if(needPageCache())
 	pageCache=getPageCache(pageContext);
-      setTagKey();
-      if(pageCache!=null)
+      setTagKey(pageCache);
+      if(pageCache!=null){
 	tagData=(JspParseData.TagData)pageCache.tagData.get(tagKey);
+	runningTag.set(tagData);
+      }
       initialiseState();
-      return doMakumbaStartTag(pageCache);
+      int n= doMakumbaStartTag(pageCache);
+      if(tagData!=null){
+	runningTag.set(null);
+	getThreadTagStack().push(tagData);
+      }
+      return n;
     }
     catch(Throwable t){ treatException(t); return SKIP_PAGE; }
   }
@@ -205,9 +229,14 @@ public abstract class MakumbaTag extends TagSupport
       MakumbaJspAnalyzer.PageCache pageCache=null;
       if(needPageCache())
 	pageCache=getPageCache(pageContext);
+      if(tagData!=null){
+	runningTag.set(tagData);
+	getThreadTagStack().pop();
+      }
       return doMakumbaEndTag(pageCache);
     } catch(Throwable t){ treatException(t); return SKIP_PAGE; }
-    finally{ 
+    finally{
+      runningTag.set(null);
       tagKey=null;
       params.clear();
       extraFormattingParams.clear();
