@@ -31,15 +31,8 @@ public class MultipleAttributeParametrizer
 {
   // all argument names, multiple or not
   Vector mixedArgumentNames=new Vector();
-  AttributeParametrizer ex;
   String baseOQL;
-    NamedResources parametrizers;       
-
-  public DataDefinition getResultType()
-  { return ex.getResultType(); }
-
-  public DataDefinition getLabelType(String s)
-  { return ex.getLabelType(s); }
+  NamedResources parametrizers;       
 
   public Vector execute(Database db, Attributes a) 
        throws LogicException
@@ -51,12 +44,10 @@ public class MultipleAttributeParametrizer
   public MultipleAttributeParametrizer(String oql, Attributes a)
        throws LogicException
   {
-      parametrizers= new NamedResources("JSP attribute parametrizer objects", parametrizerFactory);
+    parametrizers= new NamedResources("JSP attribute parametrizer objects", parametrizerFactory);
     for(Enumeration e=new ArgumentReplacer(oql).getArgumentNames(); e.hasMoreElements(); )
       mixedArgumentNames.addElement(e.nextElement());
     baseOQL=oql;
-
-    ex= getAttributeParametrizer(a);
   }
 
   /** obtain the attribute parametrizer associuated to the length of the given attributes */
