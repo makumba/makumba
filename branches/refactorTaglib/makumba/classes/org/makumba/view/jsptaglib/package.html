@@ -44,7 +44,7 @@ JSP standard offers limited capabilities in regard to:<br>
 tag been declared in. It is possible to find out which page has been
 requested, but if that page includes other pages, there is no way to
 find out if the tag is in an included file or not. The tomcat-dependent
-class {@link org.makumba.view.jsptaglib.TocmatJsp} solves the problem</li>
+class {@link org.makumba.view.jsptaglibq.TocmatJsp} solves the problem</li>
   <li>page analysis: JSP provides a way to get access to an XML image
 of the JSP file, but whatever analysis is done there is not accessible
 to the tags at page runtime<br>
@@ -301,7 +301,41 @@ be of length 0 (a null pointer) or 1 (not-null pointers). For <span
  style="font-weight: bold;">setFieldValueQueries</span> it can be of any
 length. <br>
 </div>
-<pre><br>    <br><br><br></pre>
+<ul>
+  <li><span style="font-weight: bold;">tagKey</span>: a key that
+uniquely identifies a <span style="font-style: italic;">mak:list/object</span>
+or<span style="font-style: italic;"> mak:value/input/editForm </span>tag
+within the page. The key is made from the tag attributes that cannot
+cahnge at execution time (<span style="font-style: italic;">mak:list </span>from,
+where, orderBy<span style="font-style: italic;">, mak:value </span>expr)
+and the key of the <span style="font-weight: bold;">parentList</span>.
+They key is used for the <span style="font-style: italic;">mak:list/value</span>to
+find its <span style="font-weight: bold;">listData </span>at the
+begining of a <span style="font-weight: bold;">parentIteration</span>
+(from which it computes the <span style="font-weight: bold;">iterationGroupData</span>),
+by <span style="font-style: italic;">mak:value/input/editForm </span>to
+find their value in the <span style="font-weight: bold;">iterationGroupData</span>
+of the <span style="font-weight: bold;">parentList </span>(for <span
+ style="font-weight: bold;">nonQueryMak:values</span>) or of their own <span
+ style="font-weight: bold;">valueQuery</span><br>
+  </li>
+  <li><span style="font-weight: bold;">queryKey</span>: a key that
+uniquely identifies a <span style="font-weight: bold;">listQuery</span>
+or <span style="font-weight: bold;">valueQuery</span> within the page.
+The <span style="font-weight: bold;">querykey</span> of <span
+ style="font-weight: bold;">listQueries</span> is the same with their <span
+ style="font-style: italic;">mak:list</span> <span
+ style="font-weight: bold;">tagKey</span>. The <span
+ style="font-weight: bold;">queryKey</span> of&nbsp; a <span
+ style="font-weight: bold;">valueQuery </span>is the <span
+ style="font-weight: bold;">queryKey </span>of the <span
+ style="font-weight: bold;">parentList </span>plus the path to the
+nullable pointer that lead to the creation of the <span
+ style="font-weight: bold;">nullableValueQuery </span>(this ensures
+that values that are nullable due to the same pointer will share the
+same query) or the set field for <span style="font-weight: bold;">setValueQuery</span>.<br>
+  </li>
+</ul>
 @see org.makumba.view
 <ul>
   <br>
