@@ -128,7 +128,7 @@ public class mddViewer extends LineViewer {
                 closeLine = "</span>" + closeLine;
                 break;
             case ';':
-                result.append("<span style=\"color:green\">;");
+                result.append("<span style=\"color:green\">");
                 closeLine = "</span>" + closeLine;
                 break;
             default:
