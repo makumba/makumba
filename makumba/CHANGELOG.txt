@@ -19,6 +19,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.12.3; 27 nov 2004 cristi
+fixed minor bug: the return value of Database.read() was not a proper Dictionary
+
 0.5.12.2; 4 nov 2004 cristi
 fixed bugs 55 and 57 (query and mak:list start and limit, also documented)
 improved a bit documentation in regard to multiple forms and deprecated mak:list features
