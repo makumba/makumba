@@ -246,17 +246,14 @@ implements Observer, QueryTagStrategy
   public void insertEvaluation(String expr, Dictionary formatParams, String var, String printVar)throws JspException, NewProjectionException
   {
     int n= knewProjectionAtStart(expr);
-    if(n!=-1)
-      { 
-	  if(startedWithData)
-	    {
-		String s=formatProjection(n, formatParams, var, printVar);
-		try{	
-		    if(printVar==null && var==null)
-			pageContext.getOut().print(s);
-		}catch(IOException e){ throw new JspException(e.toString()); }
-	    }
-      }
+    if(n!=-1 && startedWithData  && ! foundMoreProjections())
+	{
+	    String s=formatProjection(n, formatParams, var, printVar);
+	    try{
+		if(printVar==null && var==null)
+		    pageContext.getOut().print(s);
+	    }catch(IOException e){ throw new JspException(e.toString()); }
+	}
     else
       {
 	if(var!=null || printVar!=null)
@@ -310,7 +307,7 @@ implements Observer, QueryTagStrategy
   }
 
   public boolean executed(){ 
-      return bigResults!=null && queryVersion==query.getVersion(); 
+      return bigResults!=null && !foundMoreProjections(); 
   }
 
   Hashtable nullables= new Hashtable();
