@@ -1,0 +1,248 @@
+<!-- $Header$ -->
+
+<project name="Makumba" default="compile" basedir=".">
+
+       <path id="project.class.path">
+	 <fileset dir="../../util-java/lib">
+	  <include name="**/*.jar" />
+	  <exclude name="**/makumba.jar" />
+	 </fileset>	
+	 <fileset dir="../../util-java/tomcat4/common/lib">
+	  <include name="**/servlet.jar" />
+	 </fileset>	
+       </path>
+
+	<!-- jikes as default compiler -->
+       	<property name="build.compiler" value="jikes" />
+
+	<!-- jikes options for ant -emacs  -->
+       	<property name="build.compiler.emacs" value="true" />
+
+	<property name="temp.dir" value="../../temp" />
+
+	<property environment="env"/>
+
+	<property name="jar.place" value="." />
+	<!-- check if the OQL grammar has changed since last OQL parser generation-->
+	<target name="checkAntlr">
+		<uptodate property="antlr.notRequired"
+		      targetfile="classes/org/makumba/db/sql/oql/OQLParser.java" >
+
+		      <srcfiles dir= "classes/org/makumba/db/sql/oql/" 
+				includes="**/OQL-translator.g"/>
+		</uptodate>
+	</target>
+
+	<!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
+	<target name= "OQLParserGeneration" depends="checkAntlr"
+                unless="antlr.notRequired">
+
+		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/sql/oql/"
+			failonerror="true"
+		>
+		     <classpath refid="project.class.path" />
+			<arg value="OQL-translator.g"/>
+	 	</java>
+	</target>
+
+	<target name="compile" depends="OQLParserGeneration"
+		description="compile all java files"
+	>
+		<javac srcdir="classes">
+		     <classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+       <target name="clean"
+	description="delete all generated files and backups"
+	>
+	<mkdir dir="doc/api/org" />
+       <delete includeEmptyDirs="true">
+       		<fileset dir="classes" 
+		includes="**/*.class,**/*.*~,org/makumba/db/sql/oql/OQLParser.java"
+		defaultExcludes="no"	
+		/>
+       		<fileset dir="doc/api" 
+		includes="**/*.html,**/*.css,**/package-list"
+		excludes="API_users_guide.html"
+		defaultExcludes="no"	
+		/>
+       		<fileset dir="doc/api/org" />
+       </delete>
+       </target>
+
+       <target name="checkManifest" >
+       <mkdir dir="META-INF"/>
+       <condition property="meta-inf.ok">
+       <and>
+       <uptodate srcfile="servlet_context/WEB-INF/makumba.tld" targetfile="META-INF/makumba.tld" />
+       <uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
+       </and>
+       </condition>
+       </target>
+
+       <target name="makeManifest" depends="checkManifest" unless="meta-inf.ok" >
+        <java classname="org.makumba.version" fork="true" output="manifest-replace.properties">   
+        	<classpath>
+		<pathelement path="classes/"/>
+		<pathelement path="${java.class.path}"/>
+	</classpath>
+	</java>
+
+        <!-- Filters -->
+        <filter token="user" value="${user.name}"/>
+        <filter filtersfile="manifest-replace.properties"/>
+
+         <!-- Copy the manifest in order to replace the version token filter -->
+         <copy file="manifest.template" tofile="manifest.mf" filtering="on"/>
+         <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on"/>
+
+       </target>
+
+       <target name="jar" description="make a jar in ./lib"  depends="compile">
+       <mkdir dir="${jar.place}/lib" />
+	<antcall target="makeManifest" />
+        <jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
+   	<fileset dir="classes" 
+		includes="org/makumba/db/Catalog.mdd,org/**/*.class,org/**/*.properties"
+		defaultExcludes="no"
+		/>	
+   	<fileset dir="." 
+		includes="COPYING.txt"
+		defaultExcludes="no"
+		/>	
+   	<metainf dir="META-INF" 
+		includes="**/*.tld"
+		defaultExcludes="no"
+		/>	
+	</jar>
+       </target>
+
+	<target name="doc" depends="compile" 
+	description="generates documentation">
+	<javadoc 
+		destdir="doc/api" 
+		sourcepath="classes" 	
+		packagenames="org.makumba"
+		notree="true"
+		noindex="true"
+		nohelp="true"
+		windowtitle="Makumba"
+		classpathref="project.class.path"
+		Version="true"
+		Author="true"
+		doctitle="Documentation of Makumba classes"
+	>
+	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+	</javadoc> 
+
+	</target>
+
+	<target name="tagJar" depends="compile" if="tag" 
+	description="tags a version from the current checked out branch but doesn't publish it, just puts it in ./lib">
+
+	<cvs command="tag -d ${tag}" dest="." />
+	<cvs command="tag ${tag}" dest="." />
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	</target>
+
+	<target name="makeJar" if="tag" description="makes the jar of the given version">
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
+	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
+        	<classpath>
+		<pathelement path="${project.class.path}"/>
+		<pathelement path="${java.class.path}"/>
+		</classpath>
+            <sysproperty key="jar.place" path="${jar.place}" />
+            <arg value="jar"/>
+	</java>
+	<delete dir="../../makumba.distrib" />
+	</target>
+
+
+
+	<target name="publishJar" depends="compile" if="tag" 
+	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
+	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
+	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
+
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc/download"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+      		<include name="makumba.jar" />
+    	</fileset>
+	</ftp>
+        </target>
+
+	<target name="publishDoc" depends="doc" description="publishes the documentation">
+	<antcall target="zipdoc" />
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc"
+		binary="no"
+	>
+    	<fileset dir="doc/">
+      		<include name="api/**/*.html" />
+      		<include name="api/**/*.txt" />
+      		<include name="api/**/*.css" />
+      		<include name="api/**/package-list" />
+      		<exclude name="api/API_users_guide.html" />
+    	</fileset>
+	</ftp>
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc/download"
+		binary="yes"
+	>
+	<fileset dir="${temp.dir}" includes="makumbadoc.zip"/>
+	</ftp>
+	</target>
+
+	<target name="zipdoc"  >
+	<delete file="${temp.dir}/makumbadoc.zip" />
+	<zip zipfile="${temp.dir}/makumbadoc.zip">
+		<fileset dir="..">
+		<include name="makumba/CHANGELOG.txt" />
+		<include name="makumba/COPYING.txt" />
+		<include name="makumba/README.txt" />
+     		<include name="makumba/doc/*.html" />
+     		<include name="makumba/doc/*.txt" />
+     		<include name="makumba/doc/*.doc" />
+     		<include name="makumba/doc/*.pdf" />
+     		<include name="makumba/doc/*.gif" />
+     		<include name="makumba/doc/api/**/*.html" />
+      		<include name="makumba/doc/api/**/*.txt" />
+      		<include name="makumba/doc/api/**/*.css" />
+      		<include name="makumba/doc/api/**/package-list" />
+      		<exclude name="makumba/doc/api/API_users_guide.html" />
+		</fileset>
+	</zip>
+        </target>	
+
+	<target name= "test" depends="compile" description="run the test cases" >	
+		<java	classname="test.table" fork="true"  
+			failonerror="true"
+		>
+		     <classpath>
+			<pathelement path="classes"/>			
+			<path refid="project.class.path" />
+		      </classpath>
+	 	</java>
+	</target>
+
+</project>
+
+       
