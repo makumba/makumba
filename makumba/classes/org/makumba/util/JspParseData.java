@@ -370,7 +370,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
   {
 	sb.append(td.start.getLine()).append(":\n").
-	    append(td.parseData.getSyntaxPoints().getLineText(td.start.getLine())).
+	    append(td.start.sourceFile.getLineText(td.start.getLine())).
 	    append('\n');
 	for(int i=1; i<td.start.getColumn(); i++)
 	    sb.append(' ');
