@@ -61,9 +61,16 @@ public class DBConnectionWrapper extends DBConnection
     public int delete(String from, String where, Object parameters)
     { return getWrapped().delete(from, where, parameters); }
     
+    public void commit()
+    { getWrapped().commit(); }
+
+    public void rollback()
+    { getWrapped().rollback(); }
+
     public synchronized void close(){ 
-	getHostDatabase().connections.put(getWrapped()); 
-	wrapped=ClosedDBConnection.singleton;
+      commit();
+      getHostDatabase().connections.put(getWrapped()); 
+      wrapped=ClosedDBConnection.singleton;
     }	
     protected synchronized void finalize(){ 
 	if(wrapped!=ClosedDBConnection.singleton)
