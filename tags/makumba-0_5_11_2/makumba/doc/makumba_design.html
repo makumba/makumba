@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Makumba Design</title>
+  <link rel="stylesheet" type="text/css" media="all" href="main.css">
+</head>
+<body>
+<h1>Makumba design</h1>
+<h2>Statement of purpose </h2>
+<h3>What do we design makumba for?</h3>
+<p>(should be put in sentences and posted on www.makumba.org)<br>
+</p>
+<ul>
+  <li>fast member involvement</li>
+  <li>rapid development<br>
+  </li>
+  <li>based on members' HTML and SQL knowledge</li>
+  <li>unlike popular scripting languages, it still enforces a clean
+model-view-controller (MVC)
+architecture, leading to a healthy structure of the applications even
+as members come and go</li>
+  <li>db-driven web applications (clear delimitation of the technology)</li>
+  <li>simple (few concepts)</li>
+  <li>source code should be clear and easy readable to ensure efficient
+learning by example for new members<br>
+  </li>
+  <li>easy to install (few commands/directories/files to work with)</li>
+  <li>independent of any commercial technology or data format (easy to
+migrate to other technologies that can access databases through SQL)<br>
+  </li>
+  <li>as much as possible "compiled" rather than interpreted (tell the
+developer at first page execution that somthing is rotten, rather than
+wait for it to blow in production)<br>
+  </li>
+  <li>personal member development towards java, MVC, http, JSP and
+other technologies involved<br>
+  </li>
+</ul>
+<h2>The issue of design</h2>
+the biggest issue with makumba today is design. <br>
+reasons:<br>
+<ul>
+  <li>design is originality: if makumba design weren't original, there
+would be no need for makumba, sth else could be used<br>
+  </li>
+  <li>there was a lot of pressure to stop design and start
+implementation, so some parts of makumba are still poorly designed
+(while others give its strength and originality)<br>
+  </li>
+  <li>a lot of stuff had to be implemented from scratch as the standard
+or 3rd party technologies at the time (1999-2001) were non-existent, in
+bad shape, or uncertain. Even the ubiquitous Tomcat did not exist at
+the time, and JSP was in its conceiving stages</li>
+</ul>
+<h2>Objectives of makumba design work</h2>
+we should adjust the makumba design so that:<br>
+<ul>
+  <li>keeps its strength and originality as expressed in the statement
+of purpose above</li>
+  <li>makes better use of 3rd party technology (especially
+java-endorsed standards), taking advantage of their healthy design,
+reliability and 'standardness'. <br>
+  </li>
+  <li>in components where makumba is still considered more original, or
+3rd party technologies are still unsatisfactory, publish the respective
+part of makumba as a separate, original product</li>
+  <li>this will lead to a smaller, easier to maintain, and more
+reliable makumba. <br>
+  </li>
+  <li>eliminating sluggish design will make us more proud and ready to
+better promote makumba in the open-source world</li>
+</ul>
+as such, what we need to do now, is search literature and read, not
+write code, except where design is straight-forward and experience from
+karamba and other applications clearly shows that a feature is needed,
+and can't wait much for redesign.<br>
+<span style="font-weight: bold;"></span>
+<h2>3rd party technologies</h2>
+<h3><span style="font-weight: bold;"></span>how to look at a technology:</h3>
+<ul>
+  <li>is it used by makumba already? if so, does makumba use it to its
+full potential (e.g. it may be that makumba adopted the technology
+early in its development)</li>
+  <li>if not, what would it do for makumba, in which area?</li>
+  <li>try out the technology. install it and do an example <br>
+  </li>
+  <li>is it a standard? would it be good for best members' personal
+development to learn it?<br>
+  </li>
+  <li>would the overhead (in installation/configuration, data
+conversion, etc) of using that technology be acceptable? would the
+development process (makumba usage) be easier? even if it would be a
+bit more difficult, are the other advantages important enough?<br>
+  </li>
+  <li>in general, how will makumba+that technology respect the
+statement of purpose?</li>
+</ul>
+<h3>technologies used by makumba today, and their versions</h3>
+<ul>
+  <li>Java of course. the latest 1.5 version brings a lot of useful
+stuff, e.g. for business logic code (e.g. using int and Integer
+interchangeably i.e. autoboxing)</li>
+  <li>Antlr: used to parse OQL. transparent for the makumba user. We
+went through antlr 2.7.1 and 2.7.2. only 2.7.2 works with jikes 1.18
+(see below)<br>
+  </li>
+  <li>Junit: used to test makumba. transparent for the makumba user</li>
+  <li>JSP: used to implement the taglib. mostly 1.1 is used (though 2.0
+brings lots of useful stuff for the makumba user)</li>
+  <li>servlet: used to filter requests (the mak controller), display
+errors, etc. servlet 2.2 was not supporting filters, we introduced that
+with servlet 2.3<br>
+  </li>
+  <li>both JSP and servlet need a servlet container, we use Tomcat for
+that. it's not always transparent for users. We went through tomcat 3,
+4 and 4.1. Tomcat 5 is now up, supporting JSP 2.0 and servlet 2.4</li>
+  <ul>
+    <li>jasper (the JSP compiler) is an important part of&nbsp; Tomcat.
+jasper2 was introduced with tomcat 4.1. generally transparent for the
+user as long as makumba is not producing errors <br>
+    </li>
+  </ul>
+  <ul>
+    <li>jikes is a fast java compiler, used to compile Java code
+generated by Jasper (and to compile makumba code itself). jikes is
+fully interchangeable with Java's normal javac compiler, but it's
+faster. only jikes 1.18 works with jasper 2 due to the UTF
+character coding. transparent for the user, only needs installation<br>
+    </li>
+  </ul>
+  <li>JDBC: to connect to databases. makumba hides a lot of its
+details. JDBC's original goal (version 1) was to be able to connect to
+a database at all (i.e. try to support as many as possible, not
+necessarily in an uniform manner). Database neutrality is more
+important for JDBC 2 and 3. These versions also provide features that
+may speed up makumba internals.</li>
+  <li>DB engines. in general transparent for the user, as part of DB
+neutrality<br>
+  </li>
+  <ul>
+    <li>mysql is the main DB engine supported by makumba. we went from
+version 3.23 to version 4.0, then we started using Innodb tables
+instead of MyIsam tables. MaxDB tables seem also to be interesting for
+some fatures. Mysql 4 (4.1?) brings interesting features like
+subqueries, multi-table updates. <br>
+    </li>
+    <li>other DB engines that makumba was tested with: Informix, DB2,
+Cloudscape (recently open-sourced by IBM), partly ODBCJet on windows<br>
+    </li>
+    <li>mysql-connectorJ, the JDBC driver used by makumba, presently
+used version is 3.0.7, which is compatible with JDBC 3.0, there are
+more advanced versions of it (3.0.14, 3.1), supporting pretty recent
+JDBC features.<br>
+    </li>
+  </ul>
+  <li>Ant: used to build and publish makumba. mostly transparent for
+the user as far as makumba is concerned (Ant is also used in karamba,
+but that's another story). We went from ant 1.3 to 1.6, increasingly
+using its new features</li>
+</ul>
+<h1>Makumba components and their design status</h1>
+<h2>mak:list engine</h2>
+<h3>design status:</h3>
+<p>this is clearly the most original and
+powerful part of makumba. <br>
+familiarity with SQL within HTML is well encouraged. groups of
+mak:lists are nicely combined in a high-performance original way<br>
+$attributes are transformed into $1 OQL attributes in an easy
+transparent manner</p>
+<h3>design still not finished for</h3>
+<p>parametrized query fragments
+(especially in orderBy, etc). what should be allowed? should such
+parameters (attributes) be expressed differently than nomral
+$attributes which become normal OQL query $1 parameters? should they be
+declared?<br>
+</p>
+<h3>implementation status:</h3>
+<p>the JSP taglib API is still not enough
+for makumba's needs. makumba-specific JSP page parsing needed to be
+introduced in the last taglib version<br>
+there are small features missing but the new architecture of
+org.makumba.view.jsptaglib allows for easy extensions <br>
+</p>
+<h3>3rd-party tools and standards:</h3>
+<p>of course many tag libraries (incl the
+standard JSTL) know how to do
+SQL queries or display tables (JSF) but none combine the two like
+mak:list does (for better or worse)<br>
+the taglib was designed for JSP 1.1, since then JSP 1.2 and especially
+2.0 added more features that, integrated in makumba, may simplify
+makumba pages<br>
+especially the Expression Language (EL) of JSP 2.0 makes it much easier
+to display values by using ${expression } notation<br>
+JSTL helps replace java scriptlets. makumba should be integrated more
+with it<br>
+</p>
+<h2>forms</h2>
+<h3>design status:</h3>
+<p>keep nice familiarity with HTML, while
+taking good advantage of the MDD information. this is a strength of
+makumba design<br>
+multiple forms are powerful and original<br>
+</p>
+<h3>design still not finished for</h3>
+<p>form annotations<br>
+expanding form interaction over more pages<br>
+chooser flexibility<br>
+</p>
+<div style="margin-left: 40px;"></div>
+<h3>implementation status</h3>
+<p>see unfinished design above<br>
+form responders are lost at webapp reload<br>
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>JSF (Java server faces) has excellent
+design towards transforming web interaction into component-based
+interaction. however, that goes too far into breaking the familiarity
+with HTML forms, while bringing in a much less spread familiarity (GUI
+component programming)<br>
+</p>
+<h2><span style="font-weight: bold;">MDD (data model)</span></h2>
+<h3>design status</h3>
+<p>a simple, easy to read,
+database-neutral data description. <br>
+a small number of types, that cover
+most needs. more types would bring better performance, but create more
+confusion<br>
+some concepts could have better names (more related to db theory): set,
+internal set/pointer, etc<br>
+</p>
+<h3>design still not finished for</h3>
+<p>the initial ambition was to be
+object-oriented: encapsulation is more or less done, but inheritance
+and polymorphism are still not addressed. is this really needed? <br>
+subtyping (a database theory concept) is supported but can be made more
+explicit<br>
+business rules. a data model should not only describe data, but also
+specify rules on how it can be created and changed<br>
+</p>
+<h3>implementation status</h3>
+<p>the parser is a bit messy but it works<br>
+multiple-field uniqueness still not done<br>
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>there is acute need for database theory
+reading (to decide whether to have it object-oriented or keep it
+relational, etc)<br>
+JDO supports (in Java&nbsp; standard, there are other tools like it) an
+object-oriented way to describe data and deal with it, and make objects
+persistent<br>
+</p>
+<h2><span style="font-weight: bold;">Database layer</span></h2>
+<h3>design status</h3>
+<p>a pretty straightforward API for
+accessing MDD-generated tables in a database-neutral manner<br>
+the Dictionary usage for data arguments is a bit heavy (needs casts, is
+not type-safe, etc)<br>
+maybe Database should be really called Transaction, or Connection.<br>
+maps MDDs to DB tables. when reading a non-makumba DB this is
+especially useful<br>
+maps makumba types on their best representation in the host DB engine<br>
+</p>
+<h3>design still not finished for</h3>
+<p>uncertainty about object-orientation
+(see MDD)<br>
+</p>
+<h3>implementation status</h3>
+<p>old, trusted code, using JDBC 1<br>
+there is a discussion on whether to use foreign keys or not<br>
+presently indexes are created for almost every field. this results in
+the SQL engine not knowing which to use<br>
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>database-neutrality made lots of
+progress in the past years. JDO, JDBC Connector, even JDBC itself&nbsp;
+do much better then they used to. dropping the db layer for one of
+these technologies could be very beneficial<br>
+the JDBC API (currently at version 3 and going towards version 4) made
+lots of progress since JDBC 1, most probably there are loads of
+features that makumba does not take advantage of, including e.g. Rowsets<span
+ style="font-weight: bold;"><br>
+</span></p>
+<h2><span style="font-weight: bold;">OQL </span><span
+ style="font-weight: bold;"> (object query language)</span></h2>
+<h3>design status</h3>
+<p>specify queries in a database-neutral
+manner. but this can increasingly be done in simple, standard SQL.<br>
+OQL is also used to translate from MDD names to DB table names in
+queries (by calling the DB layer)<br>
+we borrowed OQL
+from the now defunct ODMG. the initial version of their OQL grammar is
+still on the makumba CVS. <br>
+the ambition was to be object-oriented (see MDD)<br>
+an important feature of makumba OQL that distinguishes it from SQL is
+the ability to refer sets easily (FROM general.Person p, p.addresses a
+... instead of FROM general.Person p, general.Person-&gt;addresses a
+WHERE a.person=p, though the second form should also work)<br>
+another important feature is the ability to analyze queries, including
+type checking, useful during page analysis. even if we adopt a thrid
+party technology, some form of query parsing will still be needed.<br>
+</p>
+<h3>design still not finished for</h3>
+<p>functions. they should probably keep
+the object oriented manner (object.call(arguments) )<br>
+</p>
+<h3>implementation status</h3>
+<p>subqueries are badly missed<br>
+patchy, hard to add new features. one should start fresh from the
+original OQL grammar and reimplement it to add functions and subqueries<br>
+</p>
+<h3>3rd-party tools and standards</h3>
+<p>database-neutrality made lots of
+progress in the past years. JDO (which has its own form of OQL), JDBC
+Connector, even JDBC itself&nbsp; do
+much better then they used to. dropping or adapting OQL for one of
+these
+technologies could be very beneficial. JDO is explicitely recommended
+by ODMG as the natural place to go<br>
+</p>
+<h2>Login</h2>
+<h3>design status</h3>
+<p>based on "secret attributes". <br>
+the design was so poor that it had to be patched with "checkAttributes".<br>
+the design led to a number of problems, including secret attributes
+with identical names in different parts of the site<br>
+the design also hides the concept of session, which is important to
+learn (and use) for developers. sessions can be used for more than login<br>
+</p>
+<h3>3rd-party tools</h3>
+<p>the servlet speficication itself has a
+good login design, and that standard login (and the design of its
+integration in makumba) should be looked at first<br>
+there are other tools like jSai that seem to work in this department</p>
+<h2>"Business Logic"</h2>
+<h3>design status</h3>
+<p>bad design, mixture between logic and
+controller.<br>
+thus the "clean MVC" part of the statement of purpose is still not well
+addressed<br>
+it's clear that business rules should live with the data, maybe in MDD
+files, maybe near them. <br>
+parts that are more dependent on the interface (on the way the form was
+shown, etc) should be part of the controller<br>
+</p>
+<h3>design still not finished for</h3>
+<p>i think this part should be completely
+restructured. <br>
+stuff that does pure data processing should move to "data model"<br>
+stuff that does data adaptation from and to the dialogs (forms) should
+go to the controller<br>
+sessions should be visible to the model, the controller, or both <br>
+</p>
+<h3>3rd-party tools</h3>
+<p>Jakarta Struts, JSF, EJB (e.g. for
+session design)</p>
+<h2>Controller</h2>
+<h3>design status:</h3>
+<p>transparent for now. executes at every
+page access, via a servlet filter</p>
+<h3>design still not finished for:</h3>
+<p>see "business logic" above: stuff
+that's
+specific to the form should be specified in/near the JSP and executed
+by the controller<br>
+not able to show different pages after form submission ("view
+selection")<br>
+in general, not enough flexibility in treating the errors</p>
+<h3>3rd-party tools:</h3>
+<p><a href="http://struts.apache.org/" target="_blank">Jakarta Struts</a>, JSF<br>
+</p>
+<h2>Developer tools</h2>
+<h3>design status:</h3>
+<p>pretty original, building on the
+originality of MDD and JSP parts</p>
+<h3>design still not finished for:</h3>
+<p>interacting more with the
+programming during development<br>
+</p>
+<h3>implementation status:</h3>
+<p>"page summary" is still not
+implemented, although the recent page analysis code makes it much easier<br>
+"pages and BL classes affected by an MDD" still not implemented,
+although most of the tools are in place (page analysis, etc)<br>
+</p>
+<h3>3rd-party tools</h3>
+<p><a href="http://ant.apache.org/" target="_blank">Ant</a><br>
+<a href="http://www.eclipse.org/" target="_blank">Eclipse</a><br>
+</p>
+</body>
+</html>
