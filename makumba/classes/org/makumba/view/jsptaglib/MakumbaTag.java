@@ -57,9 +57,6 @@ public abstract class MakumbaTag extends TagSupport
   /** A tag key, used to find cached resources. Computed by some tags, both at analysis and at runtime */
   MultipleKey tagKey;
   
-  /** mak:list or mak:object parent to this makumba tag. used by ValueTag, InputTag, FormTagBase, etc */
-  QueryTag parentList;
-
   /** the cache containing page analysis data */
   MakumbaJspAnalyzer.PageCache pageCache;
 
@@ -76,7 +73,6 @@ public abstract class MakumbaTag extends TagSupport
       pageContext.removeAttribute(DB_ATTR);
     tagData=null;
     tagKey=null;
-    parentList=null;
     pageCache=null;
     params.clear(); 
   } 
@@ -105,6 +101,25 @@ public abstract class MakumbaTag extends TagSupport
     return pageCache;
   }
 
+  public QueryTag getParentList(){return (QueryTag)findAncestorWithClass(this, QueryTag.class); }
+
+  
+  public MultipleKey getParentListKey()
+  {
+    QueryTag parentList= getParentList();
+    return parentList==null?null:parentList.tagKey;
+  }
+
+  public void addToParentListKey(Object o)
+  {
+    QueryTag parentList= getParentList();
+    if(parentList== null)
+      throw new org.makumba.ProgrammerError("VALUE tags, INPUT or FORM tags that compute a value should always be enclosed in a LIST or OBJECT tag");
+    tagKey= new MultipleKey(parentList.tagKey, o);
+  }
+
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey() {}
 
   /** Start the analysis of the tag, without knowing what tags follow it in the page. Typically this method will allocate initial data structures, that are then completed at doEndAnalyze() */
   public void doStartAnalyze(){}
@@ -130,6 +145,7 @@ public abstract class MakumbaTag extends TagSupport
       return SKIP_PAGE;
     try{
       pageCache=getPageCache(pageContext);
+      setTagKey();
       return doMakumbaStartTag();
     }
     catch(Throwable t){ treatException(t); return SKIP_PAGE; }

@@ -60,6 +60,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     HashMap valueComputers= new HashMap();
     Types types= new Types();
     HashMap queries= new HashMap();
+    HashMap inputTypes= new HashMap();
+    HashMap basePointerTypes= new HashMap();
 
     public ComposedQuery getQuery(Object key)
     {
@@ -102,7 +104,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       t.pageCache=pageCache;
 
       JspParseData.fill(t, td.attributes);
-      
+      t.setTagKey();
       t.doStartAnalyze();
       tags.add(t);
     }

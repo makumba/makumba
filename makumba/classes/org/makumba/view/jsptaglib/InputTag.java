@@ -22,155 +22,131 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.*;
-import java.util.*;
-import org.makumba.*;
-import org.makumba.abstr.*;
+import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.JspException;
 
-public class InputTag extends ValueTag
+import org.makumba.util.MultipleKey;
+import org.makumba.FieldDefinition;
+import org.makumba.abstr.FieldInfo;
+
+import org.makumba.controller.jsp.PageAttributes;
+
+import org.makumba.LogicException;
+import org.makumba.ProgrammerError;
+
+public class InputTag extends MakumbaTag
 {
   String name;
   String valueExprOriginal;
   String dataType;
   String display;
-
-  // -------- page analysis
-  FieldInfo dataTypeInfo;
+  String expr;
 
   public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType; }
   
 
-  /** return false, register an exception 
-  protected boolean canBeRoot()
-  {
-    treatException(new MakumbaJspException(this, "INPUT tag should always be enclosed in a form, editForm, newForm or addForm tag"));
-    return false;
-  }*/ 
-
-  /** set the name */
   public void setField(String field)  { setName(field);}
-
-  /** set the name */
   public void setName(String field) {   this.name=field.trim(); }
-
-  /** set the expression */
   public void setValue(String value) {   this.valueExprOriginal=value.trim(); }
-
-  /** set the type */
   public void setDataType(String dt) {   this.dataType=dt.trim();  }
-
-  /** set display */
   public void setDisplay(String d) {   this.display=d; }
-
   public void setType(String s) 
   {
     super.setType(s);
-    //if(s.equals("file"))
-    //  getForm().setMultipart();
+    if(s.equals("file"))
+      getForm().setMultipart();
   }  
 
-  //  FormTagBase getForm() { return (FormTagBase)getMakumbaParent(); }
+  FormTagBase getForm() 
+  { return (FormTagBase)TagSupport.findAncestorWithClass(this, FormTagBase.class); }
 
   boolean isValue()
   {
     return expr!=null && !expr.startsWith("$");
   }
 
-  public void setKey() 
+  boolean isAttribute()
+  {
+    return expr!=null && expr.startsWith("$");
+  }
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey() 
   {
     expr=valueExprOriginal;
-    //if(expr==null)
-    //  expr=getForm().getDefaultExpr(name);
-    //if(!isValue())
-    //   return null;
-    var= expr.replace('.', '_');
-    super.setTagKey();
+    if(expr==null)
+      expr=getForm().getDefaultExpr(name);
+    Object[] keyComponents= {name, getForm().tagKey};
+    tagKey= new MultipleKey(keyComponents);
   }
 
-  /*public TagStrategy makeNonRootStrategy(Object key)
-  {
-    if(isValue())
-      return super.makeNonRootStrategy(key);
-    return this;
-  }
-
-  public void doAnalyze()
+  /** determine the ValueComputer and associate it with the tagKey */
+  public void doStartAnalyze()
   {
     if(name==null)
-      throw new RuntimeException("name attribute is required");
+      throw new ProgrammerError("name attribute is required");
 
     if(isValue())
-      super.doAnalyze();
+      pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
   }
 
-  public int doMakumbaStartTag() throws JspException
+  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
+  public void doEndAnalyze()
   {
-      super.doStartTag();
-      if(strategy!=this)
-	  try{
-	      doStart();
-	  }catch(Throwable t){ treatException(t); return SKIP_BODY; }
-      return EVAL_BODY_INCLUDE;
+    FieldInfo dataTypeInfo=null;  
+    FieldInfo type=null;
+
+    if(dataType!=null)
+      dataTypeInfo=FieldInfo.getFieldInfo(name, dataType, true);
+
+    if(isValue())
+      {
+	ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
+	vc.doEndAnalyze(this);
+	type= (FieldInfo)vc.type;
+      }
+    if(isAttribute())
+      type=(FieldInfo)pageCache.types.get(expr.substring(1));
+    if(type==null)
+      {
+	type= (FieldInfo)getForm().getDefaultType(name);
+	if(type==null && getForm().canComputeTypeFromEnclosingQuery())
+	  type=(FieldInfo)getForm().computeTypeFromEnclosingQuery(name);
+      }
+
+    if(type!=null && dataTypeInfo!=null && !dataTypeInfo.compatible(type))
+      throw new ProgrammerError("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type);
+    
+    
+    if(type==null)
+      type=dataTypeInfo;
+    
+    if(type==null)
+      throw new ProgrammerError("cannot determine input type: "+this+" . Please specify the type using dataType=...");
+    pageCache.inputTypes.put(tagKey, type);
   }
 
-  public int doStart() throws JspException, org.makumba.LogicException
+  public int doMakumbaStartTag() throws JspException, LogicException
   {
-      if(dataType!=null)
-        dataTypeInfo=FieldInfo.getFieldInfo(name, dataType, true);
+    Object val=null;
 
-      Object val=null;
-      Object type=null;
-      
-      if(expr!=null)	
-	{
-	  String attrName;
-	  if(expr.startsWith("$"))
-	    attrName=expr.substring(1);
-	  else
-	    {
-		if(strategy==this)
-		    super.doStart();
-	      attrName=var;
-	    }
-	  val=getAttributes().getAttribute(attrName);
-	  try{
-	      type=getAttributes().getAttribute(attrName+"_type");
-	  }catch(AttributeNotFoundException anfe){}
-	  if(type!=null && type.equals("unknown yet"))
-	    throw new RuntimeException("type should be known");
-	}
-      if(type==null)
-	{
-	  type= getForm().getDefaultType(name);
-	  if(type==null &&
-	     getForm().canComputeTypeFromEnclosingQuery() &&
-	     (type=getForm().computeTypeFromEnclosingQuery(getEnclosingQuery(), name))
-	     ==null)
-	    return EVAL_BODY_INCLUDE;
-	}
+    if(isValue())
+      val=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+    if(isAttribute())
+      val=PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
 
-      if(type!=null && !(type instanceof FieldInfo))
-	  type= FieldInfo.getFieldInfo(name, type, true);
+    FieldInfo type= (FieldInfo)pageCache.inputTypes.get(tagKey);
 
-      if(dataTypeInfo!=null)
-	  if(type!=null && !dataTypeInfo.compatible((FieldInfo)type))
-	     throw new InvalidValueException("computed type for INPUT is different from the indicated dataType: "+this+" has dataType indicated to "+ dataType+ " type computed is "+type+" , value known is "+val);
-	  else
-	     if(type==null)
-	       type=dataTypeInfo;
-      
-      if(type==null)
-	throw new InvalidValueException("cannot determine input type: "+this+" value known: "+val+" . Please specify the type using dataType=...");
-      if(val!=null)
-	  val=((FieldInfo)type).checkValue(val);
+    if(val!=null)
+      val=((FieldInfo)type).checkValue(val);
+    
+    String formatted=getForm().responder.format(name, type, val, params);
 
-      String formatted=getForm().responder.format(name, type, val, params);
-      if(display==null ||! display.equals("false"))
-	{
-	  try{
-	    getForm().bodyContent.print(formatted);
-	  }catch(java.io.IOException e)	  {throw new JspException(e.toString());}
-	}
-      return EVAL_BODY_INCLUDE;
-  } */
+    if(display==null ||! display.equals("false"))
+      {
+	try{
+	  pageContext.getOut().print(formatted);
+	}catch(java.io.IOException e)	  {throw new JspException(e.toString());}
+      }
+    return EVAL_BODY_INCLUDE;
+  } 
 }

@@ -48,21 +48,16 @@ public class ValueTag extends MakumbaTag
     super.cleanState();
     expr=var=printVar=null;
   }
-
-  /** set the tagKey, based on the expression and the key of the parentList */
-  public void setTagKey() 
-  {
-    parentList=(QueryTag)findAncestorWithClass(this, QueryTag.class);
-    if(parentList== null)
-      throw new org.makumba.ProgrammerError("VALUE tag should always be enclosed in a LIST or OBJECT tag");
-    tagKey= new MultipleKey((Vector)parentList.tagKey, 6);
-    tagKey.setAt(expr.trim(), 5);
-  }
   
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
+  {
+    addToParentListKey(expr.trim());
+  }
+
   /** determine the ValueComputer and associate it with the tagKey */
   public void doStartAnalyze()
   {
-    setTagKey();
     pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputer(this, expr));
   }
   
@@ -82,8 +77,6 @@ public class ValueTag extends MakumbaTag
   /** ask the ValueComputer to present the expression */
   public int doMakumbaStartTag() throws JspException, org.makumba.LogicException
   {
-    setTagKey();
-
     ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).print(this);
     
     return EVAL_BODY_INCLUDE;

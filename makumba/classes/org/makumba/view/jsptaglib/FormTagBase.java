@@ -27,9 +27,12 @@ import org.makumba.controller.html.FormResponder;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.FieldDefinition;
+import org.makumba.abstr.FieldInfo;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.NoSuchFieldException;
+
+import org.makumba.util.MultipleKey;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,12 +43,13 @@ public class FormTagBase extends MakumbaTag
 {
   // the tag attributes
   String baseObject;
+  String handler;
 
   // for add, edit, delete
   public void setObject(String s) { baseObject=s;}
 
   public void setAction(String s){ responder.setAction(s); }
-  public void setHandler(String s){ responder.setHandler(s); }
+  public void setHandler(String s){ handler=s; responder.setHandler(s); }
   public void setMethod(String s){ responder.setMethod(s); }
   public void setName(String s){ responder.setResultAttribute(s); }
   public void setMessage(String s){ responder.setMessage(s); }
@@ -70,33 +74,45 @@ public class FormTagBase extends MakumbaTag
   long l;
   String basePointer;
   
-  public void doAnalyze()
+  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
+  public void setTagKey()
   {
-    //if(baseObject!=null)
-    // we need a key, then a value computer
-    // old code:
-    //  getEnclosingQuery().getQuery().checkProjectionInteger(baseObject);
+    Object[] keyComponents= {baseObject, handler, getParentListKey(), getClass()};
+    tagKey=new MultipleKey(keyComponents);
   }
 
-  public int doMakumbaStartTag() throws JspException 
+  public void doStartAnalyze()
   {
-    l= new java.util.Date().getTime();
+    if(baseObject==null)
+      return;
+    ValueComputer vc= ValueComputer.getValueComputer(this, baseObject);
+    pageCache.valueComputers.put(tagKey, vc);
+  }
 
+  public void doEndAnalyze()
+  {
+    if(baseObject==null)
+      return;
+    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
+    vc.doEndAnalyze(this);
+    pageCache.basePointerTypes.put(tagKey, ((FieldInfo)vc.type).getPointedType().getName());
+  }
+
+  public int doMakumbaStartTag() throws JspException, LogicException
+  {
     responder.setOperation(getOperation());
+    responder.setBasePointerType((String)pageCache.basePointerTypes.get(tagKey));
+
+    l= new java.util.Date().getTime();
 
     /** we compute the base pointer */
     String basePointerType=null;
     if(baseObject!=null)
       {
-	// we need to invoke the value computer
-	//int n= getEnclosingQuery().getQuery().checkProjectionInteger(baseObject).intValue();
-	Object o= null; 
-	//        getEnclosingQuery().getProjectionValue(n);
+	Object o=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+	
 	if(!(o instanceof Pointer))
 	  throw new RuntimeException("Pointer expected");
-	//responder.setBasePointerType
-	//  (((FieldInfo)getEnclosingQuery().getQuery().getResultType().getFieldDefinition(n))
-	//   .getPointedType().getName());
 	basePointer=((Pointer)o).toExternalForm();
       }
 
@@ -104,9 +120,7 @@ public class FormTagBase extends MakumbaTag
       responder.setHttpRequest((HttpServletRequest)pageContext.getRequest());
       StringBuffer sb= new StringBuffer();
       responder.writeFormPreamble(sb, basePointer);
-      //bodyContent.getEnclosingWriter().print(sb.toString()); 
       pageContext.getOut().print(sb.toString());
-
     }catch(LogicException e){ treatException(e); }
     catch(IOException ioe){throw new JspException(ioe.toString()); }
     return EVAL_BODY_INCLUDE; 
@@ -132,10 +146,8 @@ public class FormTagBase extends MakumbaTag
   public boolean canComputeTypeFromEnclosingQuery() 
   { return false; }
 
-  /*public FieldDefinition computeTypeFromEnclosingQuery(QueryStrategy qs, String fieldName) 
-  {
-    return null;
-  }*/
+  public FieldDefinition computeTypeFromEnclosingQuery(String fieldName) 
+  { return null;  }
 
   public static FieldDefinition deriveType(DataDefinition dd, String s)
   {
