@@ -58,6 +58,15 @@ public class InputTag extends MakumbaTag
       getForm().setMultipart();
   }  
 
+  //Extra html formatting parameters
+  public void setAccessKey(String s) { extraFormatting.append(" accessKey=\"").append(s).append("\" "); }
+  public void setDisabled(String s) { extraFormatting.append(" disabled=\"").append(s).append("\" "); }
+  public void setOnChange(String s) { extraFormatting.append(" onChange=\"").append(s).append("\" "); }
+  public void setOnBlur(String s) { extraFormatting.append(" onBlur=\"").append(s).append("\" "); }
+  public void setOnFocus(String s) { extraFormatting.append(" onFocus=\"").append(s).append("\" "); }
+  public void setOnSelect(String s) { extraFormatting.append(" onSelect=\"").append(s).append("\" "); }
+  public void setTabIndex(String s) { extraFormatting.append(" tabIndex=\"").append(s).append("\" "); }
+
   FormTagBase getForm() 
   { return (FormTagBase)TagSupport.findAncestorWithClass(this, FormTagBase.class); }
 

@@ -61,9 +61,18 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   public void setAction(String s){ responder.setAction(s); }
   public void setHandler(String s){ handler=s; responder.setHandler(s); }
   public void setMethod(String s){ responder.setMethod(s); }
-  public void setName(String s){ responder.setResultAttribute(s); }
+  public void setName(String s){ 
+	responder.setResultAttribute(s);
+	extraFormatting.append(" name=\"").append(s).append("\" "); 
+  }
   public void setMessage(String s){ responder.setMessage(s); }
   public void setMultipart() { responder.setMultipart(true); }
+
+  //additional html attributes:
+  public void setTarget(String s) { extraFormatting.append(" target=\"").append(s).append("\" "); }
+  public void setOnReset(String s) { extraFormatting.append(" onReset=\"").append(s).append("\" "); }
+  public void setSubmit(String s) { extraFormatting.append(" onSubmit=\"").append(s).append("\" "); }
+  // setName is defined above (approx 10 lines higher)
   
   FormResponder responder= new FormResponder();
   

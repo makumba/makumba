@@ -244,6 +244,17 @@ public abstract class MakumbaTag extends TagSupport
   public void setStyleId(String s) { extraFormatting.append(" id=\"").append(s).append("\" "); }
   public void setStyleClass(String s) { extraFormatting.append(" class=\"").append(s).append("\" "); }
   public void setStyle(String s) { extraFormatting.append(" style=\"").append(s).append("\" "); }
+  public void setTitle(String s) { extraFormatting.append(" title=\"").append(s).append("\" "); }
+  public void setOnClick(String s) { extraFormatting.append(" onClick=\"").append(s).append("\" "); }
+  public void setOnDblClick(String s) { extraFormatting.append(" onDblClick=\"").append(s).append("\" "); }
+  public void setOnKeyDown(String s) { extraFormatting.append(" onKeyDown=\"").append(s).append("\" "); }
+  public void setOnKeyUp(String s) { extraFormatting.append(" onKeyUp=\"").append(s).append("\" "); }
+  public void setOnKeyPress(String s) { extraFormatting.append(" onKeyPress=\"").append(s).append("\" "); }
+  public void setOnMouseDown(String s) { extraFormatting.append(" onMouseDown=\"").append(s).append("\" "); }
+  public void setOnMouseUp(String s) { extraFormatting.append(" onMouseUp=\"").append(s).append("\" "); }
+  public void setOnMouseMove(String s) { extraFormatting.append(" onMouseMove=\"").append(s).append("\" "); }
+  public void setOnMouseOut(String s) { extraFormatting.append(" onMouseOut=\"").append(s).append("\" "); }
+  public void setOnMouseOver(String s) { extraFormatting.append(" onMouseOver=\"").append(s).append("\" "); }
 
   //--------- formatting properties, determine formatter behavior
   public void setUrlEncode(String s) { params.put("urlEncode", s); }
