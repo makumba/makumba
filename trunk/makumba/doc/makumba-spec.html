@@ -258,13 +258,15 @@ This will help the presentation layer to present a suitable input control
 
 <h4>char</h4>
 <p>
-A char field contains a number of characters. It has a limited
-width. Maximum, <span class="futfeat">and optionally minimum number</span> of characters can be indicated.
-For example:
-</p>
+A char field contains a number of characters. Maximal width must be specified and is limited 
+to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max) 
+can be indicated.</span> Both must be positive integers.
 
+For example:
 <pre class="example">
+#<i>fieldName</i>= char[<i>maxWidth</i>]
 name= unique char[80]; Username
+#<span class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span>
 <span class="futfeat">password= encrypted char[6..10]; Secret password</span>
 </pre>
 
