@@ -138,7 +138,7 @@ public class LoginTag extends BodyTagSupport
                  /* we print HIDDEN INPUT tags for all occurences of this value that are in    
                     parameters but are not in GET. */
                  for(int i=0;i<cntHiddenInput;i++){
-                     bodyContent.print("<input type=\"hidden\" name=\""+name+"\" value=\""+org.makumba.util.HtmlUtils.string2html(value)+"\">");
+                     bodyContent.print("<input type=\"hidden\" name=\""+name+"\" value=\""+org.makumba.HtmlUtils.string2html(value)+"\">");
                  }
              }
 
