@@ -24,8 +24,19 @@ HTML>BODY { margin-top:50px; }
 BODY>H1 {position:fixed; top:0; margin-top:0; right:10px; left:150px; white-space:nowrap;}
 H2 a[name], H3 a[name], H4 a[name] {color:black; position:relative; top:-60px}
 */
-
 a:hover {color:red;}
+
+
+.simplelink
+{
+	color:#044a2c;
+	text-decoration:none;
+}
+.simplelink:hover
+{
+	color:#74C27A;
+	text-decoration:none;
+}
 
 /*
   H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
