@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE taglib
-        PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
-	"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
 
-<taglib>
-	<tlibversion>@versionDewey@</tlibversion>
-	<jspversion>1.2</jspversion>
-	<shortname>mak</shortname>
+	<description>Makumba @version@ http://www.makumba.org</description>
+	<tlib-version>2.0</tlib-version>
+	<short-name>mak</short-name>
 	<uri>http://www.makumba.org/presentation</uri>
-	<info>Makumba @version@ http://www.makumba.org</info>
+
+	<validator>
+		<validator-class>org.makumba.view.jsptaglib.PageValidator</validator-class>
+	</validator>
 
 	<tag>
 		<name>list</name>
-		<tagclass>org.makumba.view.jsptaglib.QueryTag</tagclass>
-		<teiclass>org.makumba.view.jsptaglib.CountTEI</teiclass>
-		<bodycontent>JSP</bodycontent>
-		<info>manipulate lists</info>
+		<tag-class>org.makumba.view.jsptaglib.QueryTag</tag-class>
+		<tei-class>org.makumba.view.jsptaglib.CountTEI</tei-class>
+		<body-content>JSP</body-content>
+		<description>manipulate lists</description>
 
 		<attribute>
 			<name>id</name>
@@ -74,10 +77,10 @@
 	</tag>
 	<tag>
 		<name>object</name>
-		<tagclass>org.makumba.view.jsptaglib.ObjectTag</tagclass>
-		<teiclass>org.makumba.view.jsptaglib.CountTEI</teiclass>
-		<bodycontent>JSP</bodycontent>
-		<info>manipulate record</info>
+		<tag-class>org.makumba.view.jsptaglib.ObjectTag</tag-class>
+		<tei-class>org.makumba.view.jsptaglib.CountTEI</tei-class>
+		<body-content>JSP</body-content>
+		<description>manipulate record</description>
 
 		<attribute>
 			<name>id</name>
@@ -136,10 +139,10 @@
 
 	<tag>
 		<name>value</name>
-		<tagclass>org.makumba.view.jsptaglib.ValueTag</tagclass>
-		<teiclass>org.makumba.view.jsptaglib.VarTEI</teiclass>
-		<bodycontent>empty</bodycontent>
-		<info>Value of an expression</info>
+		<tag-class>org.makumba.view.jsptaglib.ValueTag</tag-class>
+		<tei-class>org.makumba.view.jsptaglib.VarTEI</tei-class>
+		<body-content>empty</body-content>
+		<description>Value of an expression</description>
 
 		<attribute>
 			<name>expr</name>
@@ -228,9 +231,9 @@
 	
         <tag>
 		<name>if</name>
-		<tagclass>org.makumba.view.jsptaglib.IfTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Evaluates a test-expression and shows body only if true</info>
+		<tag-class>org.makumba.view.jsptaglib.IfTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Evaluates a test-expression and shows body only if true</description>
 
 		<attribute>
 			<name>test</name>
@@ -243,10 +246,10 @@
 
 	<tag>
 		<name>attribute</name>
-		<tagclass>org.makumba.view.jsptaglib.AttributeTag</tagclass>
-		<teiclass>org.makumba.view.jsptaglib.AttrTEI</teiclass>
-		<bodycontent>empty</bodycontent>
-		<info>Value of an expression</info>
+		<tag-class>org.makumba.view.jsptaglib.AttributeTag</tag-class>
+		<tei-class>org.makumba.view.jsptaglib.AttrTEI</tei-class>
+		<body-content>empty</body-content>
+		<description>Value of an expression</description>
 
 		<attribute>
 			<name>name</name>
@@ -275,9 +278,9 @@
 
 	<tag>
 		<name>form</name>
-		<tagclass>org.makumba.view.jsptaglib.FormTagBase</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Forms to create new data</info>
+		<tag-class>org.makumba.view.jsptaglib.FormTagBase</tag-class>
+		<body-content>JSP</body-content>
+		<description>Forms to create new data</description>
 
 		<attribute>
 			<name>handler</name>
@@ -418,9 +421,9 @@
 
 	<tag>
 		<name>newForm</name>
-		<tagclass>org.makumba.view.jsptaglib.NewTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Forms to create new data</info>
+		<tag-class>org.makumba.view.jsptaglib.NewTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Forms to create new data</description>
 		<attribute>
 			<name>type</name>
 			<required>true</required>
@@ -566,9 +569,9 @@
 
 	<tag>
 		<name>editForm</name>
-		<tagclass>org.makumba.view.jsptaglib.EditTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Forms to create new data</info>
+		<tag-class>org.makumba.view.jsptaglib.EditTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Forms to create new data</description>
 		<attribute>
 			<name>object</name>
 			<required>true</required>
@@ -707,9 +710,9 @@
 
 	<tag>
 		<name>addForm</name>
-		<tagclass>org.makumba.view.jsptaglib.AddTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Forms to create new data</info>
+		<tag-class>org.makumba.view.jsptaglib.AddTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Forms to create new data</description>
 		<attribute>
 			<name>object</name>
 			<required>true</required>
@@ -853,9 +856,9 @@
 
 	<tag>
 		<name>deleteLink</name>
-		<tagclass>org.makumba.view.jsptaglib.DeleteTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>Links to delete data</info>
+		<tag-class>org.makumba.view.jsptaglib.DeleteTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Links to delete data</description>
 		<attribute>
 			<name>object</name>
 			<required>true</required>
@@ -975,10 +978,10 @@
 
 	<tag>
 		<name>input</name>
-		<tagclass>org.makumba.view.jsptaglib.InputTag</tagclass>
-		<teiclass>org.makumba.view.jsptaglib.InputTEI</teiclass>
-		<bodycontent>empty</bodycontent>
-		<info>Input control for a field</info>
+		<tag-class>org.makumba.view.jsptaglib.InputTag</tag-class>
+		<tei-class>org.makumba.view.jsptaglib.InputTEI</tei-class>
+		<body-content>empty</body-content>
+		<description>Input control for a field</description>
 
 		<attribute>
 			<name>field</name>
@@ -1206,33 +1209,33 @@
 
 	<tag>
 		<name>action</name>
-		<tagclass>org.makumba.view.jsptaglib.ActionTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>set an "action" for a form or deleteLink</info>
+		<tag-class>org.makumba.view.jsptaglib.ActionTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>set an "action" for a form or deleteLink</description>
 	</tag>
 
 	<tag>
 		<name>response</name>
-		<tagclass>org.makumba.controller.jsp.ResponseTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info> display response and status from forms or delete</info>
+		<tag-class>org.makumba.controller.jsp.ResponseTag</tag-class>
+		<body-content>empty</body-content>
+		<description> display response and status from forms or delete</description>
 	</tag>
 
 
 
 	<tag>
 		<name>login</name>
-		<tagclass>org.makumba.controller.jsp.LoginTag</tagclass>
-		<bodycontent>JSP</bodycontent>
-		<info>a login form that takes care of passing the existing arguments</info>
+		<tag-class>org.makumba.controller.jsp.LoginTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>a login form that takes care of passing the existing arguments</description>
 	</tag>
 
 
 	<tag>
 		<name>logout</name>
-		<tagclass>org.makumba.controller.jsp.LogoutTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info>remove the reference to the actor logged in</info>
+		<tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
+		<body-content>empty</body-content>
+		<description>remove the reference to the actor logged in</description>
 		<attribute>
 			<name>actor</name>
 			<required>true</required>
@@ -1242,8 +1245,8 @@
 
 	<tag>
 		<name>version</name>
-		<tagclass>org.makumba.view.jsptaglib.MakumbaVersionTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info>prints Makumba version (a CVS tag)</info>
+		<tag-class>org.makumba.view.jsptaglib.MakumbaVersionTag</tag-class>
+		<body-content>empty</body-content>
+		<description>prints Makumba version (a CVS tag)</description>
 	</tag>
 </taglib>
