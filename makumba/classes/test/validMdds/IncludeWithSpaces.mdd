@@ -5,6 +5,8 @@
 !include =test.validMdds.Included
 !include	 =test.validMdds.Included
 !include = test.validMdds.Included
+ !include = test.validMdds.Included
+	 !include =test.validMdds.Included
 
 bla=ptr
   bla->!include = test.validMdds.Included
