@@ -77,7 +77,7 @@ public class jspViewer extends LineViewer
 
   public void intro(PrintWriter w) throws IOException
   {
-    w.print("<td align=\"center\"><a href=\""+contextPath+virtualPath+"\"><font color=\"darkblue\">execute</fontmd></a></td>");
+    w.print("<td align=\"center\"><a href=\""+contextPath+virtualPath+"\"><font color=\"darkblue\">execute</font></a></td>");
     writeSourceLink(w);    
     w.print("<td align=\"center\"><a href=\""+logicPath+"\"><font color=\"darkblue\">business logic"+(hasLogic?"":" (none)")+"</font></a></td>");
     String lg= org.makumba.view.jsptaglib.MakumbaTag.getLoginPage(virtualPath, sv);
