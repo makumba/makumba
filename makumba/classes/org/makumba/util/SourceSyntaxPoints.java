@@ -239,6 +239,11 @@ public class SourceSyntaxPoints
     SyntaxPoint.End e= addSyntaxPointsCommon(start, end, type, extra);
     setLineAndColumn(e);
     setLineAndColumn((SyntaxPoint)e.getOtherInfo());
+    /* useful debug:
+      if(e.getType().indexOf("Attribute")==-1){
+      SyntaxPoint b= (SyntaxPoint)e.getOtherInfo();
+      System.out.println(file.getName()+":"+b.getLine()+":"+b.getColumn()+":"+e.getLine()+":"+e.getColumn()+" "+b+" "+e);
+    }*/
     return e;
   }
 
@@ -290,8 +295,10 @@ public class SourceSyntaxPoints
    */
   void addSyntaxPointsLine(int start, int end, String type, Object extra)
   {
-    SyntaxPoint.End e= addSyntaxPointsCommon(start+offset, end+offset, type, extra);
+    SyntaxPoint.End e= addSyntaxPointsCommon(start, end, type, extra);
+    e.moveByInclude(offset);
     SyntaxPoint lineBegin= (SyntaxPoint)e.getOtherInfo();
+    lineBegin.moveByInclude(offset);
     lineBegin.line= e.line= ((Integer)lineBegin.getOtherInfo()).intValue();
     lineBegin.column=1;
     e.column= end-start+1;
