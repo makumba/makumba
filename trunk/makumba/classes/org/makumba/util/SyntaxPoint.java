@@ -55,6 +55,19 @@ public abstract class SyntaxPoint implements Comparable
   /** the column number in the file  */
   public int getColumn(){return column; }
 
+    /**
+     * This is a temporary workaround for
+     * 
+     * @included files not having their syntaxpoints & offsets detected correctly.
+     */
+    public int getOriginalColumn(int lineLength) {
+        if (getColumn() > lineLength + 1) {
+            return getColumn() - getIncludeOffset();
+        } else {
+            return getColumn();
+        }
+    }
+
   /** is this point a begin or an end of something? ends are stored one position after the last character of the entity so substring() works right away */
   public boolean isBegin() {return begin; }
 
@@ -107,7 +120,7 @@ public abstract class SyntaxPoint implements Comparable
 
     if(begin == sp.begin)  /* two things begin at the same place? strange. but possible, e.g. lines can begin or end at the same place where tags begin or end. at some point there should be a special case here for lines begins and ends to be before, respectively after anything else. */
       {
-	if(sp.getType().equals("TextLine"))
+      if(sp.getType().equals("TextLine"))
 	  return sp.begin?1:-1;
 	if(getType().equals("TextLine"))
 	  return begin?-1:1;
@@ -144,7 +157,6 @@ public abstract class SyntaxPoint implements Comparable
     /** returns same type as the begining */
     public String getType(){ return _begin.getType(); }
   }
-
 
 }
 
