@@ -23,26 +23,21 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.util.JspParseData;
-import org.makumba.util.RuntimeWrappedException;
-import org.makumba.util.MultipleKey;
-
-import org.makumba.view.ComposedQuery;
-import org.makumba.view.ComposedSubquery;
-
-import org.makumba.FieldDefinition;
-
-import org.makumba.LogicException;
-import org.makumba.MakumbaError;
-import org.makumba.ProgrammerError;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.tagext.BodyTag;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
+import org.makumba.ProgrammerError;
+import org.makumba.util.JspParseData;
+import org.makumba.util.MultipleKey;
+import org.makumba.view.ComposedQuery;
+import org.makumba.view.ComposedSubquery;
 
 public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 {

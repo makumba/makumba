@@ -23,8 +23,8 @@
 
 package org.makumba;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.io.*;
+import java.util.Date;
+import java.util.Properties;
 
 /** Computes the version from cvs Name tag. */
 class version {

@@ -22,13 +22,13 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.tagext.TagLibraryValidator;
-import javax.servlet.jsp.tagext.PageData;
-import javax.servlet.jsp.tagext.ValidationMessage;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Stack;
+
+import javax.servlet.jsp.tagext.TagLibraryValidator;
+import javax.servlet.jsp.tagext.ValidationMessage;
 
 /** this class is not in use. to use it, copy servlet_context/WEB-INF/makumba.tld to servlet_context/WEB-INF/makumba.tld.1.1 and servlet_context/WEB-INF/makumba.tld.1.2 to servlet_context/WEB-INF/makumba.tld. make sure that makumba.tld declares within <taglib ...> :
 	<validator>

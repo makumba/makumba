@@ -22,8 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import java.util.*;
-import org.makumba.*;
+import java.util.Properties;
 
 public class intImporter extends FieldImporter
 {

@@ -22,14 +22,11 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.LogicException;
-import org.makumba.ProgrammerError;
-
-import org.makumba.util.MultipleKey;
-
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import org.makumba.ProgrammerError;
 
 
 /**

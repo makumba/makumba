@@ -22,12 +22,20 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
-import org.makumba.*;
-import org.makumba.abstr.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.makumba.Database;
+import org.makumba.InvalidValueException;
+import org.makumba.MakumbaSystem;
+import org.makumba.abstr.RecordInfo;
 import org.makumba.util.HtmlTagEnumerator;
-import java.io.*;
-import java.util.*;
-import java.net.URL;
 
 public class HtmlTableImporter 
 {

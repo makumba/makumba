@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.abstr;
-import java.util.Vector;
 
 public class charEnumParser extends FieldParser
 {

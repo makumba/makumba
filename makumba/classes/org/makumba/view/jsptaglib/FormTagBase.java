@@ -22,27 +22,22 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import org.makumba.controller.html.FormResponder;
+import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
-import org.makumba.FieldDefinition;
-import org.makumba.DataDefinition;
-
-import org.makumba.LogicException;
-import org.makumba.NoSuchFieldException;
 import org.makumba.ProgrammerError;
-
-import org.makumba.view.ComposedQuery;
+import org.makumba.controller.html.FormResponder;
 import org.makumba.util.MultipleKey;
-
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.BodyContent;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
+import org.makumba.view.ComposedQuery;
 
 public class FormTagBase extends MakumbaTag implements BodyTag
 {

@@ -22,10 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.*;
-import org.makumba.db.*;
-import java.sql.*;
-import org.makumba.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.makumba.DBError;
+import org.makumba.db.DBConnection;
 
 public class SQLDBConnection extends DBConnection
 {

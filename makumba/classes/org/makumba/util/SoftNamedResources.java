@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.util;
-import java.util.*;
 import java.lang.ref.SoftReference;
 
 /** A NamedResources that keeps its resources as soft references

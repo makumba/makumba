@@ -23,21 +23,22 @@
 
 package org.makumba.view.jsptaglib;
 
-import javax.servlet.jsp.tagext.TagSupport;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.TagSupport;
 
-import org.makumba.controller.jsp.PageAttributes;
-import org.makumba.util.JspParseData;
-import org.makumba.util.MultipleKey;
-
+import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
-import org.makumba.LogicException;
-
-import java.util.*;
+import org.makumba.util.JspParseData;
+import org.makumba.util.MultipleKey;
 
 
 /** this class provides utility methods for all makumba tags 

@@ -23,7 +23,6 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.MultipleKey;
 

@@ -22,18 +22,15 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
-import org.makumba.util.MultipleKey;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
-
-import org.makumba.controller.html.FieldEditor;
-import org.makumba.controller.jsp.PageAttributes;
-
 import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.util.MultipleKey;
 
 public class InputTag extends MakumbaTag
 {
