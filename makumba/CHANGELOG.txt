@@ -1,3 +1,4 @@
+fred; 1 jul 2003: fixed bug 34 (logout design, with wildcard "*") 
 stefan; 30 jun 2003: bug 449 (limiting output of mak:value with new tag parameter e.g. maxLength)  semi fixed
 
 0.5.9.4; 30 jun 2003 cristi
