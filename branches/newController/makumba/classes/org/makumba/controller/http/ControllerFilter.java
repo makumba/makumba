@@ -39,6 +39,9 @@ public class ControllerFilter implements Filter
   /** decide if we filter or not */
   public boolean shouldFilter(HttpServletRequest req)
   {
+    String uri= req.getRequestURI();   
+    if(uri.startsWith("/dataDefinitions")|| uri.startsWith("/logic") || uri.startsWith("/classes"))
+	return false;
     String file=null;
     try{
       file= new URL(req.getRequestURL().toString()).getFile();
