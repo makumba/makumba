@@ -172,6 +172,8 @@ public abstract class Responder implements java.io.Serializable
       throw new RuntimeException("responders that include other responders cannot be included in responders");
   }
 
+  public String getSuffix(){ return storedSuffix; }
+
   static Integer ZERO= new Integer(0);
   static Integer suffix(String s)
   {
@@ -206,6 +208,8 @@ public abstract class Responder implements java.io.Serializable
   //----------------- response section ------------------
   static public final String RESPONSE_STRING_NAME="makumba.response";
 
+  static final String resultNamePrefix= "org.makumba.controller.resultOf_";
+
   /** respond to a http request */
   static void response(HttpServletRequest req, HttpServletResponse resp)
   {
@@ -231,8 +235,10 @@ public abstract class Responder implements java.io.Serializable
 	try{
 	  Object result=fr.op.respondTo(req, fr, suffix);
 	  message="<font color=green>"+fr.message+"</font>";
-	  if(result!=null)
+	  if(result!=null){
 	    req.setAttribute(fr.resultAttribute, result);
+	    req.setAttribute(resultNamePrefix+suffix, result);
+	  }
 	  req.setAttribute("makumba.successfulResponse", "yes");
 	}
 	catch(AttributeNotFoundException anfe)
@@ -245,6 +251,7 @@ public abstract class Responder implements java.io.Serializable
 	  MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
 	  message=errorMessage(e);
 	  req.setAttribute(fr.resultAttribute, Pointer.Null);
+	  req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
 	}
 	catch(Throwable t){
 	  // all included error types should be considered here
@@ -328,6 +335,26 @@ public abstract class Responder implements java.io.Serializable
 		           return Logic.doAdd(resp.controller,
 					      resp.basePointerType+"->"+resp.addField,
 					      resp.getHttpBasePointer(req, suffix), 
+					      resp.getHttpData(req, suffix), 
+					      new RequestAttributes(resp.controller, req),
+					      resp.database);
+			 }
+		       public String verify(Responder resp){ return null; }
+		     });
+
+    responderOps.put("addToNew", new ResponderOp()
+		     {
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix) 
+			 throws LogicException
+			 {
+			   // we assume that the parent suffix is appended to the end of the suffix
+			   String parentSuffix="";
+			   int n= suffix.indexOf(suffixSeparator,1);
+			   if(n!=-1)
+			     parentSuffix=suffix.substring(n+1);
+		           return Logic.doAdd(resp.controller,
+					      resp.newType+"->"+resp.addField,
+					      (Pointer)req.getAttribute(resultNamePrefix+parentSuffix), 
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req),
 					      resp.database);

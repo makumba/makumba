@@ -106,6 +106,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     return classname.substring(m+1).toLowerCase();
   }
 
+  boolean shouldComputeBasePointer(){
+    return baseObject!=null;
+  }
   
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey()
@@ -125,7 +128,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 
   public void doStartAnalyze()
   {
-    if(baseObject==null)
+    if(!shouldComputeBasePointer())
       return;
     ValueComputer vc= ValueComputer.getValueComputer(this, baseObject);
     pageCache.valueComputers.put(tagKey, vc);
@@ -151,7 +154,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       if(formAction!=null)
 	throw new ProgrammerError("Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>:\n"+getTagText());
     }
-    if(baseObject==null)
+    if(!shouldComputeBasePointer())
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this);
@@ -191,7 +194,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
     starttime = new java.util.Date().getTime();
 
     /** we compute the base pointer */
-    if(baseObject!=null)
+    if(shouldComputeBasePointer())
       {
 	Object o=((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
 	
@@ -221,7 +224,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       sb= new StringBuffer();
       responder.writeFormPostamble(sb, basePointer);
       bodyContent.getEnclosingWriter().print(sb.toString()); 
-      MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-starttime)));
+      if(findParentForm()!=null)
+	MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-starttime)));
     }catch(IOException e){ throw new JspException(e.toString()); }
     
     return EVAL_PAGE;
