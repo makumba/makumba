@@ -1,0 +1,9 @@
+app:
+acceptedFinal()=finalPosition <= act.finalPlaces
+
+stud:
+acceptedFinal()->args=best.johnny.Season season
+acceptedFinal()->from=best.johnny.Application app
+acceptedFinal()->where=app.stud=this AND app.activ.season=season AND app.acceptedFinal()
+acceptedFinal()=count(app)>0
+
