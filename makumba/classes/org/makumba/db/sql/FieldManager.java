@@ -184,10 +184,13 @@ public abstract class FieldManager extends FieldHandler
     return getDBName()+cond+writeConstant(d.get(getDataName()));
   }
 
-  /**SQLException Error Codes. See http://www.mysql.com/doc/en/Error-returns.html  */
-  public int err_DuplicateEntry=1062;
-  public int err_DuplicateKeyName=1061;
-  //public int err_TooManyKeys=1069;
+  /** what is the property of the current engine? */
+  protected String getEngineProperty(String s)
+  {
+    Database d=rm.getSQLDatabase();
+    return d.getEngineProperty(d.getEngine()+"."+s);
+  }
+
 
   /** ask this field to perform actions when the table is open 
    */
@@ -220,13 +223,13 @@ public abstract class FieldManager extends FieldHandler
 	   }catch(SQLException e) 
 	   { 
 		//log important errors if any, ignore all others (eg if *_UNIQ index exists already)
-		if(e.getErrorCode()==err_DuplicateEntry)
+		if(e.getErrorCode()==(new Integer(getEngineProperty("duplicateEntry.error"))).intValue() )
 		   org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
 			//rm.getDatabase().getConfiguration()+": "+ //DB name
 			"NOT UNIQUE value of field "+getName()+" found in "+rm.getRecordInfo().getName()
 			+", unable to add UNIQUE constraint ("+e+")." );
-		if(e.getErrorCode()==err_DuplicateKeyName)
-			uniqueExists=true; //was probably created again by some earlier makumba version
+		if( e.getErrorCode()==(new Integer(getEngineProperty("duplicateKeyName.error"))).intValue() )
+			uniqueExists=true; //already exists, probably from previous run
 	   }
 
 	   if(uniqueExists) //was created above or in earlier runs
