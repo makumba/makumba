@@ -143,6 +143,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
+		additionalparam="-breakiterator"
 		doctitle="Makumba API Documentation"
 	>
             <bottom><![CDATA[
@@ -161,6 +162,7 @@
 		classpathref="project.class.path"
 		Version="true"
 		Author="true"
+		additionalparam="-breakiterator"
 		access="package"
 		use="true"
 		doctitle="Documentation of Makumba classes for Makumba develpers"
