@@ -23,6 +23,8 @@
 
 package org.makumba;
 
+import org.makumba.OODB.DatabaseImplementation;
+
 /** Specifies interface for data transformation. 
  Some of your application's class should implement this DataTransformer in order to be used by Makumba during DB operations. 
  <p>
@@ -73,5 +75,5 @@ public interface DataTransformer
 	@return true if specified database operation should be done (eg data transformed succesfully or data is valid), false 
 otherwise.
     */
-    public boolean transform(java.util.Dictionary d, Database db);
+    public boolean transform(java.util.Dictionary d, DatabaseImplementation db);
 }
