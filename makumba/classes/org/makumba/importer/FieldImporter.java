@@ -25,10 +25,10 @@ package org.makumba.importer;
 import java.util.Dictionary;
 import java.util.Properties;
 
-import org.makumba.Database;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.abstr.FieldHandler;
 
 public class FieldImporter extends FieldHandler
@@ -115,7 +115,7 @@ public class FieldImporter extends FieldHandler
     return new MakumbaError(t, canonicalName());
   }
 
-  public void importTo(Dictionary d, String s, Database db, Pointer[] indexes)
+  public void importTo(Dictionary d, String s, DatabaseImplementation db, Pointer[] indexes)
   {
     try{
       if(isIgnored() ||!isMarked())
@@ -260,7 +260,7 @@ public class FieldImporter extends FieldHandler
     return s1;
   }
 
-  public Object getValue(String s, Database db, Pointer[] indexes)
+  public Object getValue(String s, DatabaseImplementation db, Pointer[] indexes)
   {
     return getValue(s);
   }
