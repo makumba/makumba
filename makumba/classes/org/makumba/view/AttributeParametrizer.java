@@ -27,8 +27,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.makumba.Database;
 import org.makumba.LogicException;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.util.ArgumentReplacer;
 
 /** Map $name to $n */
@@ -56,7 +56,7 @@ public class AttributeParametrizer
   }
 
   /** execute the query */
-  public Vector execute(Database db, Dictionary a, int offset, int limit) 
+  public Vector execute(DatabaseImplementation db, Dictionary a, int offset, int limit) 
        throws LogicException
   {
     Object args[]= new Object[argumentNames.size()];
