@@ -24,11 +24,12 @@
 package org.makumba;
 import java.io.StringReader;
 
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
 
-/** The makumba runtime system. Provides starter methods to obtain {@link Database} and {@link DataDefinition} objects */
+/** The makumba runtime system. Provides starter methods to obtain {@link DatabaseImplementation} and {@link DataDefinition} objects */
 public class MakumbaSystem 
 {
   /** The date at which makumba is loaded */
@@ -65,7 +66,7 @@ public class MakumbaSystem
    * The operations carried out during database initialization are logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.init"</code></b> and <b><code>"db.init.tablechecking"</code></b> loggers, with {@link java.util.logging.Level#INFO} (connections, checkings), {@link java.util.logging.Level#SEVERE} (fatal errors) and with {@link java.util.logging.Level#WARNING} logging levels.
     @since makumba-0.5.4
    */
-  public static Database getConnectionTo(String name)
+  public static DatabaseImplementation getConnectionTo(String name)
   {
     return org.makumba.db.Database.getDatabase(name).getDBConnection(); 
   }
@@ -75,7 +76,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(getDefaultDatabaseName()) instead
    */
-  public static Database findDatabase()
+  public static DatabaseImplementation findDatabase()
   { return getConnectionTo(getDefaultDatabaseName()); }
   
   /** Find the Database according to the given lookup file from the CLASSPATH. The file name will include the .properties extension 
@@ -83,7 +84,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(getDefaultDatabaseName(dbLookupFile)) instead
    */
-  public static Database findDatabase(String dbLookupFile) 
+  public static DatabaseImplementation findDatabase(String dbLookupFile) 
   { return getConnectionTo(getDefaultDatabaseName(dbLookupFile)); }
   
   /** Get the Database defined by the given connection file from the CLASSPATH. The file name should not include the .properties extension 
@@ -91,7 +92,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(connectionFile) instead
    */
-  public static Database getDatabase(String connectionFile) 
+  public static DatabaseImplementation getDatabase(String connectionFile) 
   { return getConnectionTo(connectionFile); }
 
 
@@ -219,8 +220,8 @@ The programmer could just as well decide that all makumba logging at or over the
     <tr><td>database querying
     <td>loggingRoot + <code>db.query.compilation</code>,
     <code>db.query.execution</code>, <code>db.query.performance
-    <td>see {@link org.makumba.Database#executeQuery(java.lang.String, java.lang.Object)}, 
-    {@link org.makumba.Database#read(org.makumba.Pointer, java.lang.Object)}
+    <td>see {@link org.makumba.OODB.DatabaseImplementation#executeQuery(java.lang.String, java.lang.Object)}, 
+    {@link org.makumba.OODB.DatabaseImplementation#read(org.makumba.Pointer, java.lang.Object)}
     <td>{@link java.util.logging.Level#FINE}
 
     <tr><td>database query grouping
@@ -235,7 +236,7 @@ The programmer could just as well decide that all makumba logging at or over the
 
     <tr><td>database updating
     <td>loggingRoot + <code>db.update.execution</code>, <code>db.update.performance
-    <td>see {@link org.makumba.Database}, all insert, delete, and update operations
+    <td>see {@link org.makumba.OODB.DatabaseImplementation}, all insert, delete, and update operations
     <td>{@link java.util.logging.Level#FINE}
 
     <tr><td>business logic discovery

@@ -302,7 +302,7 @@ public class ComposedQuery
 
   // ------------
   /** execute the contained query in the given database */ 
-  public Grouper execute(org.makumba.Database db, Attributes a, Evaluator v, int offset, int limit) 
+  public Grouper execute(org.makumba.OODB.DatabaseImplementation db, Attributes a, Evaluator v, int offset, int limit) 
        throws LogicException
   {
     analyze();
