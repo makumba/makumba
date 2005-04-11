@@ -39,7 +39,7 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.abstr.FieldHandler;
 
-public abstract class DBConnection implements org.makumba.Database
+public abstract class DBConnection implements org.makumba.OODB.DatabaseImplementation
 {
   protected org.makumba.db.Database db;
       

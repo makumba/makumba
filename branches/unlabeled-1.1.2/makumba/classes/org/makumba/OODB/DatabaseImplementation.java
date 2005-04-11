@@ -21,7 +21,13 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba;
+package org.makumba.OODB;
+
+import org.makumba.DBError;
+import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.InvalidValueException;
+import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
 
 /** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>
   Stricly speaking this class represents a database connection (later on, transaction). Obtaining more such objects for the same database configurations will result in opening more connections. Connections must be given back to the system using the {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.<p>
@@ -32,7 +38,7 @@ package org.makumba;
  * @see org.makumba.MakumbaSystem#getConnectionTo(java.lang.String)
  * @since makumba-0.5
  */
-public interface Database
+public interface DatabaseImplementation
 {
   /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
   public String getName();
@@ -64,7 +70,7 @@ public interface Database
   public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
 
     /** Execute query without limiting the results. 
-     * @see org.makumba.Database#executeQuery(java.lang.String,java.lang.Object,int,int) */
+     * @see org.makumba.OODB.DatabaseImplementation#executeQuery(java.lang.String,java.lang.Object,int,int) */
   public java.util.Vector executeQuery(String OQL, Object parameterValues);
 
   /** Insert a record of the given type. <BR>

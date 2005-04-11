@@ -28,8 +28,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.makumba.Attributes;
-import org.makumba.Database;
 import org.makumba.LogicException;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
@@ -43,7 +43,7 @@ public class MultipleAttributeParametrizer
   String baseOQL;
   NamedResources parametrizers;       
 
-  public Vector execute(Database db, Attributes a, int offset, int limit) 
+  public Vector execute(DatabaseImplementation db, Attributes a, int offset, int limit) 
        throws LogicException
   {
     return getAttributeParametrizer(a).execute(db, rewriteAttributes(a), offset, limit);

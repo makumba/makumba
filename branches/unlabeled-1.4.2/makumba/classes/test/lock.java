@@ -26,8 +26,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.makumba.Database;
 import org.makumba.MakumbaSystem;
+import org.makumba.OODB.DatabaseImplementation;
 
 /**
 * Testing locking related operations
@@ -50,7 +50,7 @@ public class lock extends TestCase
     return new TestSuite(lock.class);
   }
 
-  Database db;
+  DatabaseImplementation db;
 
   public void setUp()
   {

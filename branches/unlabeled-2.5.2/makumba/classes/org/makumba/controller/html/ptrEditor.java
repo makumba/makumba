@@ -26,9 +26,9 @@ import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.util.ChoiceSet;
 
 public class ptrEditor extends choiceEditor
@@ -50,7 +50,7 @@ public class ptrEditor extends choiceEditor
     
     Vector v= null;
 
-    Database dbc= MakumbaSystem.getConnectionTo(db);
+    DatabaseImplementation dbc= MakumbaSystem.getConnectionTo(db);
     try{
       v= dbc.executeQuery(query, null); 
     }finally{dbc.close(); }

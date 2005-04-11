@@ -35,10 +35,10 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.Database;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.abstr.RecordHandler;
 
 /** this class imports makumba records from text files based on markers placed in special configuration files with the "mark" extension from the CLASSPATH */
@@ -104,7 +104,7 @@ public class RecordImporter extends RecordHandler
       }
   }
 
-  Object getValue(String name, String s, Database db, Pointer[] indexes)
+  Object getValue(String name, String s, DatabaseImplementation db, Pointer[] indexes)
   {
     FieldImporter fi=((FieldImporter)handlers.get(name));
     if(fi.isIgnored())
@@ -131,7 +131,7 @@ public class RecordImporter extends RecordHandler
   protected boolean usesHidden(){ return true; }
 
   /** import data from a text. indexes contains the pointers to other records imported from the same text, at the same time */
-  public Dictionary importFrom(String s, Database db, Pointer[] indexes)
+  public Dictionary importFrom(String s, DatabaseImplementation db, Pointer[] indexes)
   {
     Object[] arg= {  new Hashtable(), s, db, indexes};
     Method m= getHandlerMethod("importTo");

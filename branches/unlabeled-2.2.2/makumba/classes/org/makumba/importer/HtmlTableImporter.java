@@ -32,9 +32,9 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.Database;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.util.HtmlTagEnumerator;
 
 public class HtmlTableImporter 
@@ -46,7 +46,7 @@ public class HtmlTableImporter
   Vector data;
   String fieldOrder[];
   String type;
-  Database db;
+  DatabaseImplementation db;
 
   void endOfCell()
   {
@@ -68,7 +68,7 @@ public class HtmlTableImporter
 	      {MakumbaSystem.getMakumbaLogger("import").warning("record not inserted --> "+e.getMessage());}
   }
 
-  public HtmlTableImporter(Database db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
+  public HtmlTableImporter(DatabaseImplementation db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
        throws IOException
   {
     this.imp= new RecordImporter(type, true);
