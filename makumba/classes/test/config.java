@@ -27,8 +27,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.makumba.ConfigFileError;
-import org.makumba.Database;
 import org.makumba.MakumbaSystem;
+import org.makumba.OODB.DatabaseImplementation;
 
 /**
 * Testing configuration related operations
@@ -67,7 +67,7 @@ public class config extends TestCase
   public void testDBDiscovery()
   {
     String preferredDB=MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties");
-    Database db=MakumbaSystem.getConnectionTo(preferredDB);
+    DatabaseImplementation db=MakumbaSystem.getConnectionTo(preferredDB);
     assertEquals(preferredDB, db.getName());
     db.close();
   }
