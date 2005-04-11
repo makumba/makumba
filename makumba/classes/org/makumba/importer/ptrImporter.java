@@ -26,8 +26,8 @@ import java.util.Dictionary;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.makumba.Database;
 import org.makumba.Pointer;
+import org.makumba.OODB.DatabaseImplementation;
 
 public class ptrImporter extends FieldImporter
 {
@@ -70,7 +70,7 @@ public class ptrImporter extends FieldImporter
 	configError=makeError("join field or pointer index must be indicated for pointers");  
   }
 
-  public Object getValue(String s, Database db, Pointer[] indexes)
+  public Object getValue(String s, DatabaseImplementation db, Pointer[] indexes)
   {
     if(index!=-1)
       return indexes[index];
