@@ -39,10 +39,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.OODB.DatabaseImplementation;
 
 /**
 * Testing table operations
@@ -50,7 +50,7 @@ import org.makumba.Text;
 */
 public class table extends TestCase
 {
-  static Database db;
+  static DatabaseImplementation db;
   static long epsilon=2000;
 
   public table(String name) {

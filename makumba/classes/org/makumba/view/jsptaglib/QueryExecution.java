@@ -30,8 +30,8 @@ import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
 
-import org.makumba.Database;
 import org.makumba.LogicException;
+import org.makumba.OODB.DatabaseImplementation;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
@@ -102,7 +102,7 @@ public class QueryExecution
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
    
-    Database dbc= 
+    DatabaseImplementation dbc= 
       //      org.makumba.controller.http.RequestAttributes.getConnectionProvider
       //((javax.servlet.http.HttpServletRequest)pageContext.getRequest()).
       org.makumba.MakumbaSystem.
