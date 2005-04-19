@@ -21,7 +21,11 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba.abstr;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -309,5 +313,20 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
 
   /** which is the name of the set member (Pointer, Character or Integer), for set subtables */
   public String getSetMemberFieldName(){ return setField ; }
+  
+  
+
+//moved from RecordHandler
+  public void checkFieldNames(Dictionary d)
+  {
+    for(Enumeration e=d.keys(); e.hasMoreElements(); ) {
+        Object o = e.nextElement();
+        if(!(o instanceof String))
+          throw new org.makumba.NoSuchFieldException(this, "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+getName());
+        if(this.getFieldDefinition((String)o)==null)
+          throw new org.makumba.NoSuchFieldException(this, (String)o);
+        String checkFieldName = (String)o;
+    }
+  }
 
 }

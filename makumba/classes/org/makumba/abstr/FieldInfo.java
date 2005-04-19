@@ -21,10 +21,13 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba.abstr;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -37,6 +40,8 @@ import org.makumba.InvalidValueException;
 public class FieldInfo implements java.io.Serializable, FieldDefinition
 {
   DataDefinition ri;
+  
+  static final HashMap integerTypeMap = new HashMap();
 
   public DataDefinition getDataDefinition() { return ri; }
 
@@ -55,7 +60,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
     return (FieldInfo)new RecordParser().parse(t).getFieldDefinition(name);
   }
   
-  public FieldInfo(DataDefinition ri, String name) { this.ri=ri; this.name= name; }
+  public FieldInfo(DataDefinition ri, String name) { 
+  	this.ri=ri; this.name= name; 
+  }
 
   public FieldInfo(FieldInfo fi) 
   { 
@@ -110,7 +117,25 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
 	}
     }catch(StringIndexOutOfBoundsException e){throw new InvalidValueException("bad type "+type); }
     catch(NumberFormatException f){throw new InvalidValueException("bad char[] size "+type); }
-
+  }
+  
+  static {
+  	integerTypeMap.put("ptr", new Integer(FieldDefinition._ptr));
+  	integerTypeMap.put("ptrRel", new Integer(FieldDefinition._ptrRel));
+  	integerTypeMap.put("ptrOne", new Integer(FieldDefinition._ptrOne));
+  	integerTypeMap.put("ptrIndex", new Integer(FieldDefinition._ptrIndex));
+  	integerTypeMap.put("int", new Integer(FieldDefinition._int));
+  	integerTypeMap.put("intEnum", new Integer(FieldDefinition._intEnum));
+  	integerTypeMap.put("char", new Integer(FieldDefinition._char));
+  	integerTypeMap.put("charEnum", new Integer(FieldDefinition._charEnum));
+  	integerTypeMap.put("text", new Integer(FieldDefinition._text));
+  	integerTypeMap.put("date", new Integer(FieldDefinition._date));
+  	integerTypeMap.put("dateCreate", new Integer(FieldDefinition._dateCreate));
+  	integerTypeMap.put("dateModify", new Integer(FieldDefinition._dateModify));
+  	integerTypeMap.put("set", new Integer(FieldDefinition._set));
+  	integerTypeMap.put("setComplex", new Integer(FieldDefinition._setComplex));
+  	integerTypeMap.put("nil", new Integer(FieldDefinition._nil));
+  	integerTypeMap.put("real", new Integer(FieldDefinition._real));
   }
 
   public boolean isAssignableFrom(FieldDefinition fi) { return defa().isAssignableFrom((FieldInfo)fi); }
@@ -157,7 +182,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   }
 
   /** the value returned in case there is no value in the database and no defa()ult value is indicated */
-  public Object getEmptyValue() { return null; }
+  public Object getEmptyValue() { return defa().getNull(); }
 
   /** the name of this handler, normally the same with the name of the field */
   public String getName(){ return getDataName(); }
@@ -178,7 +203,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
 
   /** returns field's type */
   public String getType(){ return type; }
-
+  
+  /**returns field type's integer value */
+  public int getIntegerType(){
+  	return ((Integer)integerTypeMap.get(getType())).intValue();
+  }
+  
   // should be set while parsing
   // intEnum has int, set has null, etc
   public String getDataType() { return defa().getDataType(); }
@@ -258,6 +288,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
    * @exception ClassCastException for other types
   */
   public int getWidth() { return ((stringTypeFixed)defa()).getWidth(); }
+  
+  //inserted 20050418
+  public Object checkValueImpl(Object value) {return (defa()).checkValueImpl(value);}
   
   /** works only for date type
    * @exception ClassCastException for other types

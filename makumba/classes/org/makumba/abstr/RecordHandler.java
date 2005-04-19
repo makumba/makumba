@@ -21,6 +21,8 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba.abstr;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -97,6 +99,7 @@ import org.makumba.util.RuntimeWrappedException;
 
 public abstract class RecordHandler implements java.io.Serializable
 {
+  DataDefinition dd;	
   DataDefinition ri;
   protected Hashtable handlers= new Hashtable();
   protected Vector handlerOrder;
@@ -123,8 +126,8 @@ public abstract class RecordHandler implements java.io.Serializable
     for(int i= 0; i< ho.size();i++)
     {
         FieldDefinition fi= ri.getFieldDefinition((String)ho.elementAt(i));
-	if(fi==null)
-	  throw new RuntimeException(ho.elementAt(i).toString());
+        if(fi==null)
+        	throw new RuntimeException(ho.elementAt(i).toString());
         FieldHandler fh= makeHandler(fi.getType());
         fh.setFieldDefinition(fi);
         addFieldHandler(fh, fi);
@@ -478,39 +481,5 @@ public abstract class RecordHandler implements java.io.Serializable
   public FieldHandler getFieldHandler(String name)
     { return (FieldHandler)handlers.get(name); }
   
-  public void checkInsert(Dictionary d, Dictionary except)
-  {
-    checkFieldNames(d);
-    for(Enumeration e= handlerOrder.elements(); e.hasMoreElements(); )
-      {
-	FieldHandler fh=(FieldHandler)e.nextElement();
-	if(except.get(fh.getName())==null)
-	  fh.checkInsert(d);
-      }
-  }
-
-  public void checkUpdate(Dictionary d, Dictionary except)
-  {
-    checkFieldNames(d);
-    for(Enumeration e= handlerOrder.elements(); e.hasMoreElements(); )
-      {
-	FieldHandler fh=(FieldHandler)e.nextElement();
-	if(except.get(fh.getName())==null)
-	  fh.checkUpdate(d);
-      }
-  }
-
-  public void checkFieldNames(Dictionary d)
-  {
-    for(Enumeration e=d.keys(); e.hasMoreElements(); ) {
-        Object o = e.nextElement();
-        if(!(o instanceof String))
-          throw new org.makumba.NoSuchFieldException(getDataDefinition(), "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+getDataDefinition().getName());
-        if(getDataDefinition().getFieldDefinition((String)o)==null)
-          throw new org.makumba.NoSuchFieldException(getDataDefinition(), (String)o);
-        String checkFieldName = (String)o;
-    }
-  }
-
 }
 

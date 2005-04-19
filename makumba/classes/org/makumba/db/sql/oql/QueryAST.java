@@ -520,7 +520,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   {
     DataDefinition ri= (DataDefinition)labels.get(label);
     try{
-      return ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getDBName();
+      return ((org.makumba.db.sql.TableManager)d.getTable(ri)).getDBName();
     }catch(NullPointerException e)
       { return ri.getName(); }
   }
@@ -530,13 +530,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   {
     DataDefinition ri= (DataDefinition)labels.get(label);
     try{
-      return ((org.makumba.db.sql.FieldManager)
-	    ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getFieldHandler(field))
-	.getDBName();
+      return ((org.makumba.db.sql.TableManager)d.getTable(ri)).getFieldDBName(field);
     }catch(NullPointerException e)
       {return field; }
   }
-
 
   /** write the translator-generated joins */
   protected void writeJoins(Database d, StringBuffer ret)
