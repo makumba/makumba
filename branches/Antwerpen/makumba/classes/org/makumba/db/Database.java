@@ -537,7 +537,7 @@ public abstract class Database
 
   void configureTable(Table tbl, DataDefinition ri){
     tbl.db= Database.this;
-    tbl.setRecordInfo(ri);
+    tbl.setDataDefinition(ri);
     tbl.open(config);
   }
 

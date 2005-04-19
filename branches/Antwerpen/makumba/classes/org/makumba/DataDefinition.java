@@ -21,7 +21,11 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba;
+
+import java.util.Dictionary;
 
 /** Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is not needed usually, as the application programmer knows the makumba data structure.
@@ -66,4 +70,13 @@ public interface DataDefinition
 
   /** Add a new field definition. Works only for temporary data definitions */
   public void addField(FieldDefinition fd);
+  
+  /**Checks whether all fieldnames exist in the database */
+  public void checkFieldNames(Dictionary d);
+  
+  /**Checks whether all fields to be inserted exist in the database */
+  //public void checkInsert(Dictionary d, Dictionary except);
+  
+  /**Checks whether all fields to be updated exist in the database */
+  //public void checkUpdate(Dictionary d, Dictionary except);
 }

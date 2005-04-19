@@ -37,7 +37,6 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
-import org.makumba.abstr.FieldHandler;
 
 public abstract class DBConnection implements org.makumba.Database
 {
@@ -389,14 +388,14 @@ class DataHolder
     for(Enumeration e=others1.keys(); e.hasMoreElements(); )
       {
 	String fld= (String)e.nextElement();
-	FieldHandler fh=t.getFieldHandler(fld);
-	if(fh==null)
+	FieldDefinition fd=t.getDataDefinition().getFieldDefinition(fld);
+	if(fd==null)
 	  throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), fld);
 	if(dt.get(fld)!=null)
-	  throw new org.makumba.InvalidValueException(fh.getFieldDefinition(), "you cannot indicate both a subfield and the field itself. Values for "+fld+"."+others.get(fld)+" were also indicated");
-	if(!fh.getType().equals("ptrOne") &&  (!fh.isNotNull() || ! fh.isFixed()))
-	  throw new InvalidFieldTypeException(fh.getFieldDefinition(), "subpointer or base pointer, so it cannot be used for composite insert/edit");
-	others.put(fld, new DataHolder(d, (Dictionary)others1.get(fld), fh.getPointedType().getName()));
+	  throw new org.makumba.InvalidValueException(fd, "you cannot indicate both a subfield and the field itself. Values for "+fld+"."+others.get(fld)+" were also indicated");
+	if(!fd.getType().equals("ptrOne") &&  (!fd.isNotNull() || ! fd.isFixed()))
+	  throw new InvalidFieldTypeException(fd, "subpointer or base pointer, so it cannot be used for composite insert/edit");
+	others.put(fld, new DataHolder(d, (Dictionary)others1.get(fld), fd.getReferredType().getName()));
       }
   }
 
@@ -409,7 +408,7 @@ class DataHolder
   {
     for(Enumeration e=others.elements(); e.hasMoreElements(); )
       ((DataHolder)e.nextElement()).checkInsert();
-    t.checkInsert(dt, others);
+    t.checkInsert(dt, others);    
   }
 
   void checkUpdate()
