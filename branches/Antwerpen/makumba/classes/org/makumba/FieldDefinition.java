@@ -48,6 +48,8 @@ public interface FieldDefinition
   public static final int _setComplex = 13;
   public static final int _nil = 14;
   public static final int _real = 15;
+  public static final int _setCharEnum = 16;
+  public static final int _setIntEnum = 17;
   
   /** The name of this field, normally the same with the name of the field */
   public String getName();

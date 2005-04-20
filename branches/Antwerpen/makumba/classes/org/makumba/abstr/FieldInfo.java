@@ -136,6 +136,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   	integerTypeMap.put("setComplex", new Integer(FieldDefinition._setComplex));
   	integerTypeMap.put("nil", new Integer(FieldDefinition._nil));
   	integerTypeMap.put("real", new Integer(FieldDefinition._real));
+  	integerTypeMap.put("setCharEnum", new Integer(FieldDefinition._setCharEnum));
+  	integerTypeMap.put("setIntEnum", new Integer(FieldDefinition._setIntEnum));
   }
 
   public boolean isAssignableFrom(FieldDefinition fi) { return defa().isAssignableFrom((FieldInfo)fi); }
