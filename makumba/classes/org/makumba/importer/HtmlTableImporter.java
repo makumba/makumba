@@ -39,7 +39,7 @@ import org.makumba.util.HtmlTagEnumerator;
 
 public class HtmlTableImporter 
 {
-  RecordImporter imp;
+  ObjectImporter imp;
   boolean inRow=false;
   boolean inCell=false;
   String text;
@@ -71,7 +71,7 @@ public class HtmlTableImporter
   public HtmlTableImporter(Database db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
        throws IOException
   {
-    this.imp= new RecordImporter(type, true);
+    this.imp= new ObjectImporter(type, true);
     this.fieldOrder=fieldOrder;
     this.type= type.getName();
     this.db=db;
