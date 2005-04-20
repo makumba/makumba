@@ -1289,6 +1289,13 @@
 		<body-content>empty</body-content>
 		<description>prints Makumba version (a CVS tag)</description>
 	</tag>
+	
+	<tag>
+		<name>info</name>
+		<tag-class>org.makumba.view.jsptaglib.MakumbaInfoTag</tag-class>
+		<body-content>empty</body-content>
+		<description>prints Makumba and environment information</description>
+	</tag>
 
 	<function>
 		<name>count</name>
