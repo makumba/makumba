@@ -47,54 +47,6 @@ import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Table;
 
-/**
- * This is the SQL RecordHandler, corresponding to a SQL table. When building
- * its field handlers, it uses the rules in
- * org.makumba.db.sql/redirectManager.properties file:
- * 
- * <pre>
- * 
- *  
- *   
- *    
- *     
- *      
- *       
- *        
- *         
- *          
- *           
- *            
- *             
- *              intEnum=int
- *              charEnum=char
- *              
- *              ptrRelDB=ptrDB
- *              ptrOneDB=ptrDB
- *              
- *              setDB=no
- *              setcharEnumDB=no
- *              setinteEnumDB=no
- *              setComplexDB=no
- *              
- *             
- *            
- *           
- *          
- *         
- *        
- *       
- *      
- *     
- *    
- *   
- *  
- * </pre>
- * 
- * ... where the noManager builds no field handler.
- * 
- * @see org.makumba.db.sql.FieldManager
- */
 public class TableManager extends Table {
 	protected String tbname;
 
