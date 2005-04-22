@@ -44,7 +44,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   static final HashMap integerTypeMap = new HashMap();
 
   public DataDefinition getDataDefinition() { return ri; }
-
+//TODO adapt setIntEnum and setCharEnum in FieldDefinition 
   public static FieldInfo getFieldInfo(String name, Object type, 
 				       boolean typeSearch)
   {
@@ -136,8 +136,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   	integerTypeMap.put("setComplex", new Integer(FieldDefinition._setComplex));
   	integerTypeMap.put("nil", new Integer(FieldDefinition._nil));
   	integerTypeMap.put("real", new Integer(FieldDefinition._real));
-  	integerTypeMap.put("setCharEnum", new Integer(FieldDefinition._setCharEnum));
-  	integerTypeMap.put("setIntEnum", new Integer(FieldDefinition._setIntEnum));
+  	integerTypeMap.put("setcharEnum", new Integer(FieldDefinition._setCharEnum));
+  	integerTypeMap.put("setintEnum", new Integer(FieldDefinition._setIntEnum));
   }
 
   public boolean isAssignableFrom(FieldDefinition fi) { return defa().isAssignableFrom((FieldInfo)fi); }
