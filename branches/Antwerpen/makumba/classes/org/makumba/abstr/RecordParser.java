@@ -178,9 +178,7 @@ public class RecordParser {
 		String ttlt = null;
 		if (ttl != null) {
 			if (fields.get(ttlt = ttl.trim()) == null) {
-				mpe
-						.add(fail("no such field for title", makeLine(origCmd,
-								ttl)));
+				mpe.add(fail("no such field for title", makeLine(origCmd, ttl)));
 				return;
 			}
 		} else if (fields.get("name") != null)
@@ -322,7 +320,9 @@ public class RecordParser {
 			try {
 				parse(nm, new FieldCursor(this, makeLine(fields, nm)));
 			} catch (DataDefinitionParseError pe) {
-				mpe.add(pe);
+                ((RecordInfo)dd).fields.remove(nm);
+                ((RecordInfo)dd).fieldOrder.remove(nm);
+                mpe.add(pe);
 				continue;
 			}
 		}
@@ -454,7 +454,6 @@ public class RecordParser {
 	}
 
 	//moved from FieldParser
-	//TODO test NonExistentMdd fails here!
 	public void parseSubfields(String fieldName) {
 		switch (getFieldInfo(fieldName).getIntegerType()) {
 		case FieldDefinition._setComplex:
@@ -578,8 +577,9 @@ public class RecordParser {
 
 		if (setType(fieldName, fc.expectTypeLiteral(), fc) == null) {
 			String s = definedTypes.getProperty(getFieldInfo(fieldName).type);
-			if (s == null)
+			if (s == null)   
 				throw fc.fail("unknown type: " + getFieldInfo(fieldName).type);
+         
 			fc.substitute(getFieldInfo(fieldName).type.length(), s);
 
 			if (setType(fieldName, fc.expectTypeLiteral(), fc) == null)
