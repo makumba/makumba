@@ -34,6 +34,7 @@
 
 	<target name="install" depends="checkJars" unless="libs.present" >
 	<mkdir dir="work/temp"/>
+	<mkdir dir="tomcat/temp"/>
 	<get src="http://download.makumba.org/makumba/download/maklib.zip" dest="work/temp/maklib.zip" />
 	<unzip src="work/temp/maklib.zip" dest="."/>
 	<delete file="work/temp/maklib.zip"/>
