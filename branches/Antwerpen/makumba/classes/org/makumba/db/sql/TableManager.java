@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -536,8 +536,8 @@ public class TableManager extends Table {
 		String sep = "";
 		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
-			fieldName = (String) e.nextElement(); 
-			if(getFieldDefinition(fieldName).getType().startsWith("set"))
+			fieldName = (String) e.nextElement();
+			if (getFieldDefinition(fieldName).getType().startsWith("set"))
 				continue;
 			ret.append(sep).append(inCreate(fieldName, getSQLDatabase()));
 			sep = ",";
@@ -563,7 +563,7 @@ public class TableManager extends Table {
 
 		while (e.hasMoreElements()) {
 			String fieldName = (String) e.nextElement();
-			if(getFieldDefinition(fieldName).getType().startsWith("set"))
+			if (getFieldDefinition(fieldName).getType().startsWith("set"))
 				continue;
 			command.append(comma);
 			comma = ", ";
@@ -592,16 +592,16 @@ public class TableManager extends Table {
 		/* TODO: concatAll() */
 		StringBuffer ret = new StringBuffer();
 		String fieldName;
-		String sep="";
-		
+		String sep = "";
+
 		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
-			fieldName = (String) e.nextElement(); 
-			if(getFieldDefinition(fieldName).getType().startsWith("set"))
+			fieldName = (String) e.nextElement();
+			if (getFieldDefinition(fieldName).getType().startsWith("set"))
 				continue;
-				ret.append(sep).append(inPreparedInsert(fieldName));
-				sep=",";
-			}
+			ret.append(sep).append(inPreparedInsert(fieldName));
+			sep = ",";
+		}
 
 		return "INSERT INTO " + tbname + " (" + handlerList + ") VALUES ("
 				+ ret + ")";
@@ -772,9 +772,8 @@ public class TableManager extends Table {
 				org.makumba.MakumbaSystem
 						.getMakumbaLogger("db.query.execution").log(
 								java.util.logging.Level.SEVERE,
-								"" + i + " " + dd.getName()
-										+ " " + keyIndex + " "
-										+ dd.getFieldNames(), e);
+								"" + i + " " + dd.getName() + " " + keyIndex
+										+ " " + dd.getFieldNames(), e);
 				throw e;
 			}
 		}
@@ -842,7 +841,8 @@ public class TableManager extends Table {
 		Object o = base_getValue(fieldName, rs, i);
 		if (o == null)
 			return o;
-		return new SQLPointer(dd.getFieldDefinition(fieldName).getReferredType().getName(), ((Number) o).longValue());
+		return new SQLPointer(dd.getFieldDefinition(fieldName)
+				.getReferredType().getName(), ((Number) o).longValue());
 	}
 
 	//moved from intManager
@@ -1275,6 +1275,7 @@ public class TableManager extends Table {
 				return;
 			}
 			ps.setInt(n, (int) nxt_ptrIndex(fieldName, d).longValue());
+			break;
 		default:
 			base_setInsertArgument(fieldName, ps, n, d);
 		}
@@ -1479,8 +1480,7 @@ public class TableManager extends Table {
 	 * called at table open. determines the maximum index with this database's
 	 * dbsv public void onStartup(String fieldName, TableManager rm,
 	 * java.util.Properties p, SQLDBConnection dbc) throws SQLException {
-	 * super.onStartup(fieldName, p, dbc);
-	 *  }
+	 * super.onStartup(fieldName, p, dbc); }
 	 */
 
 	//moved from FieldManager
@@ -1668,7 +1668,6 @@ public class TableManager extends Table {
 
 	}
 
-
 	//moved from FieldManager
 	/**
 	 * check if the column from the SQL database (read from the catalog) still
@@ -1774,6 +1773,7 @@ public class TableManager extends Table {
 				break;
 			case FieldDefinition._ptrIndex:
 				checkCopy(fieldName, "index");
+				break;
 			default:
 				base_checkInsert(fieldName, d);
 				return;
@@ -1781,24 +1781,22 @@ public class TableManager extends Table {
 			d.put(fieldName, getFieldDefinition(fieldName).checkValue(o));
 		}
 	}
-	
+
 	public void base_checkInsert(String fieldName, Dictionary d) {
 		getFieldDefinition(fieldName).checkInsert(d);
 	}
-	
-//	moved from RecordHandler
-	  public void checkInsert(Dictionary d, Dictionary except)
-	  {
-	  	dd.checkFieldNames(d);
-	  	for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
-	  	{
-	  		String name = (String)e.nextElement();
-	  		if(except.get(name)==null){
-	  			checkInsert(name, d);
-	  		}
-	  	}
-	  }
-	
+
+	//	moved from RecordHandler
+	public void checkInsert(Dictionary d, Dictionary except) {
+		dd.checkFieldNames(d);
+		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			if (except.get(name) == null) {
+				checkInsert(name, d);
+			}
+		}
+	}
+
 	//	moved from dateCreateJavaManager, dateModifyJavaManager and
 	// ptrIndexJavaManager
 	public void checkUpdate(String fieldName, Dictionary d) {
@@ -1821,23 +1819,21 @@ public class TableManager extends Table {
 				base_checkUpdate(fieldName, d);
 			}
 	}
-	
+
 	public void base_checkUpdate(String fieldName, Dictionary d) {
 		getFieldDefinition(fieldName).checkUpdate(d);
 	}
 
-//	moved from RecordHandler
-	  public void checkUpdate(Dictionary d, Dictionary except)
-	  {
-	  	dd.checkFieldNames(d);
-	  	for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
-	  	{
-	  		String name = (String)e.nextElement();
-	  		if(except.get(name)==null){
-	  			checkUpdate(name, d);
-	  		}
-	  	}
-	  }
+	//	moved from RecordHandler
+	public void checkUpdate(Dictionary d, Dictionary except) {
+		dd.checkFieldNames(d);
+		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			if (except.get(name) == null) {
+				checkUpdate(name, d);
+			}
+		}
+	}
 
 	//	moved from timeStampManager
 	public Object check_timeStamp_ValueImpl(String fieldName, Object value) {

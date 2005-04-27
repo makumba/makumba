@@ -52,13 +52,13 @@ public class QedDatabase extends org.makumba.db.sql.Database
 
   protected String getJdbcUrl(Properties p)
   {
-    String url="jdbc:";
-    String eng=p.getProperty("#sqlEngine");
-    url+=eng+":";
-    String local= getEngineProperty(eng+".localJDBC");
+    String qedUrl="jdbc:";
+    String qedEng=p.getProperty("#sqlEngine");
+    qedUrl+=qedEng+":";
+    String local= getEngineProperty(qedEng+".localJDBC");
     if(local==null || !local.equals("true"))
-      url+="//"+p.getProperty("#host")+"/";
-    return url+p.getProperty("#database");
+      qedUrl+="//"+p.getProperty("#host")+"/";
+    return qedUrl+p.getProperty("#database");
   }
 
 }
