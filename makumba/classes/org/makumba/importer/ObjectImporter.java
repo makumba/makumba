@@ -246,8 +246,8 @@ public class ObjectImporter {
 		String query = null;
 
 		query = "SELECT p, p." + joinField + " FROM "
-				+ dd.getFieldDefinition(fieldName).getRelationType().getName() + " p WHERE p." + joinField
-				+ "=$1";
+				+ dd.getFieldDefinition(fieldName).getRelationType().getName()
+				+ " p WHERE p." + joinField + "=$1";
 
 		Vector v = db.executeQuery(query, arg);
 
@@ -266,8 +266,8 @@ public class ObjectImporter {
 		}
 
 		query = "SELECT p, p." + joinField + " FROM "
-				+ dd.getFieldDefinition(fieldName).getRelationType().getName() + " p WHERE p." + joinField
-				+ " like $1";
+				+ dd.getFieldDefinition(fieldName).getRelationType().getName()
+				+ " p WHERE p." + joinField + " like $1";
 		if (s.length() < nchar)
 			arg = s;
 		else
@@ -293,11 +293,11 @@ public class ObjectImporter {
 		case FieldDefinition._date:
 		case FieldDefinition._dateCreate:
 		case FieldDefinition._dateModify:
-			get_date_FieldValue(fieldName, s);
+			return get_date_FieldValue(fieldName, s);
 		case FieldDefinition._int:
-			get_int_FieldValue(fieldName, s);
+			return get_int_FieldValue(fieldName, s);
 		case FieldDefinition._intEnum:
-			get_intEnum_FieldValue(fieldName, s);
+			return get_intEnum_FieldValue(fieldName, s);
 		default:
 			return base_getFieldValue(fieldName, s);
 		}
@@ -333,7 +333,8 @@ public class ObjectImporter {
 		if (s.trim().length() == 0)
 			return null;
 		Enumeration f = dd.getFieldDefinition(fieldName).getValues();
-		for (Enumeration e = dd.getFieldDefinition(fieldName).getNames(); e.hasMoreElements();) {
+		for (Enumeration e = dd.getFieldDefinition(fieldName).getNames(); e
+				.hasMoreElements();) {
 			String v = (String) e.nextElement();
 			Integer i = (Integer) f.nextElement();
 			if (v.equals(s))
@@ -576,14 +577,17 @@ public class ObjectImporter {
 			switch (dd.getFieldDefinition(fieldName).getIntegerType()) {
 			case FieldDefinition._ptr:
 				configure_ptr_Field(fieldName, markers);
+				break;
 			case FieldDefinition._date:
 			case FieldDefinition._dateCreate:
 			case FieldDefinition._dateModify:
 				configure_date_Field(fieldName, markers);
+				break;
 			case FieldDefinition._ptrIndex:
 			case FieldDefinition._ptrOne:
 			case FieldDefinition._ptrRel:
 				configure_none_Field(fieldName, markers);
+				break;
 			default:
 				base_configureField(fieldName, markers);
 			}

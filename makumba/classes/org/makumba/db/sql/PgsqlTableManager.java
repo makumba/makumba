@@ -67,6 +67,7 @@ public class PgsqlTableManager extends org.makumba.db.sql.TableManager {
 		case FieldDefinition._text:
 			Text t = Text.getText(o);
 			ps.setString(n, t.toString());
+			break;
 		default:
 			super.setArgument(fieldName, ps, n, o);
 		}

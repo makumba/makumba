@@ -79,6 +79,7 @@ public class OdbcjetTableManager extends org.makumba.db.sql.TableManager {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			ps.setNull(n, Types.LONGVARCHAR);
+			break;
 		default:
 			super.setNullArgument(fieldName, ps, n);
 		}
@@ -94,6 +95,7 @@ public class OdbcjetTableManager extends org.makumba.db.sql.TableManager {
 				ps.setBytes(n, new byte[0]);
 			else
 				ps.setBinaryStream(n, t.toBinaryStream(), t.length());
+			break;
 		default:
 			super.setArgument(fieldName, ps, n, o);
 		}
