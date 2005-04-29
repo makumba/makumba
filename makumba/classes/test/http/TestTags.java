@@ -192,9 +192,12 @@ public class TestTags extends JspTestCase {
 		
 		assertEquals(pc.get("name"), output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
 		assertEquals(pc.get("surname"), output.substring(output.indexOf("testSurname!")+12, output.indexOf("!endSurname")));
-		assertEquals(((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testAllAuto!")+12, output.indexOf("!endAllAuto")));
-		assertEquals(pc.get("uniqChar"), output.substring(output.indexOf("testAllHtml!")+12, output.indexOf("!endAllHtml")));
-		assertEquals(((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testAllNoHtml!")+14, output.indexOf("!endAllNoHtml")));
+		assertEquals(((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharAuto!")+17, output.indexOf("!endUniqCharAuto")));
+		assertEquals(pc.get("uniqChar"), output.substring(output.indexOf("testUniqCharHtml!")+17, output.indexOf("!endUniqCharHtml")));
+		assertEquals(((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharNoHtml!")+19, output.indexOf("!endUniqCharNoHtml")));
+		assertEquals(((String)pc.get("uniqChar")).substring(0,5)+"...", output.substring(output.indexOf("testUniqCharMaxLength!")+22, output.indexOf("!endUniqCharMaxLength")));
+		assertEquals(((String)pc.get("uniqChar")).substring(0,5)+"---", output.substring(output.indexOf("testUniqCharMaxLengthEllipsis!")+30, output.indexOf("!endUniqCharMaxLengthEllipsis")));
+		
 	}
 	
 	public void testMakDate() throws ServletException, IOException {
@@ -203,7 +206,6 @@ public class TestTags extends JspTestCase {
 	}	
 	public void endMakDate(WebResponse response) {
 		String output = response.getText();
-		String value;
 		v = db.executeQuery(readPerson, ptr);
 		
 		pc = (Dictionary) v.elementAt(0);
@@ -212,8 +214,6 @@ public class TestTags extends JspTestCase {
 		assertEquals(df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
 		
 		df = new SimpleDateFormat("dd-mm-yy");
-		assertEquals(df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!testBirthdateFormat")));		
+		assertEquals(df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!endBirthdateFormat")));		
 	}
-		
-	
 }
