@@ -108,12 +108,13 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
     return origin==null;
   }
 
-  RecordInfo(){} 
+  RecordInfo(){ name= "temp"+hashCode(); } 
   
   /** make a temporary recordInfo that is only used for query results*/
   public RecordInfo(String name)
   {
-    origin=null;
+     this.name= name;
+     origin=null;
   }
   
   protected void addField1(FieldDefinition fi)
