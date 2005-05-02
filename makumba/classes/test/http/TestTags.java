@@ -183,7 +183,7 @@ public class TestTags extends JspTestCase {
 
 	public void testMakValueChar() throws ServletException, IOException {
 		QueryTag makobject = new QueryTag();
-		pageContext.include("testMakValueChaer.jsp");		
+		pageContext.include("testMakValueChar.jsp");		
 	}	
 	public void endMakValueChar(WebResponse response) {
 		String output = response.getText();
