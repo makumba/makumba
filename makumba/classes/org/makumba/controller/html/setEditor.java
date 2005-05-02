@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,29 +22,42 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+
 import java.util.Vector;
 
-public class setEditor extends ptrEditor
-{
-  public String getMultiple() { return " multiple"; }
-  public boolean isMultiple() { return true; }
+import org.makumba.view.RecordFormatter;
 
-  public int getDefaultSize() { return 10; }
+public class setEditor extends ptrEditor {
 
-  public Object readFrom(org.makumba.controller.http.HttpParameters p, String suffix) 
-  {
-    Object o= super.readFrom(p, suffix);
-    if(o==null)
-      return new Vector();
-    
-    /* we remove all nulls from the input */
-    if(o instanceof Vector){
-      for(java.util.Iterator i= ((Vector)o).iterator(); i.hasNext();)
-	if("".equals(i.next()))
-	  i.remove();
-    }
-    return o;
-  }
+	protected setEditor() {
+	}
 
+	public static final setEditor singleton = new setEditor();
+
+	public String getMultiple(RecordFormatter rf, int fieldIndex) {
+		return " multiple";
+	}
+
+	public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
+		return true;
+	}
+
+	public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
+		return 10;
+	}
+
+	public Object readFrom(RecordFormatter rf, int fieldIndex,
+			org.makumba.controller.http.HttpParameters p, String suffix) {
+		Object o = super.readFrom(rf, fieldIndex, p, suffix);
+		if (o == null)
+			return new Vector();
+
+		/* we remove all nulls from the input */
+		if (o instanceof Vector) {
+			for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();)
+				if ("".equals(i.next()))
+					i.remove();
+		}
+		return o;
+	}
 }
-

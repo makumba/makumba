@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,12 +22,20 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+
 import java.util.Dictionary;
 
-public class errorEditor extends FieldEditor
-{
-  public String formatShow(Object o, Dictionary formatParam)
-  {
-    throw new org.makumba.view.InvalidValueException(this, "cannot edit fields of type "+getType());
-  }
+import org.makumba.view.RecordFormatter;
+
+public class errorEditor extends FieldEditor {
+	
+	protected errorEditor() {
+	}
+
+	public static final errorEditor singleton = new errorEditor();
+
+	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParam) {
+		throw new org.makumba.view.InvalidValueException(rf.expr[fieldIndex],
+				"cannot edit fields of type " + rf.dd.getFieldDefinition(fieldIndex).getType());
+	}
 }

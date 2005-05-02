@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,12 +22,18 @@
 /////////////////////////////////////
 
 package org.makumba.view;
+
 import java.util.Dictionary;
 
 import org.makumba.Pointer;
 
-public class ptrFormatter extends FieldFormatter
-{
-  public String formatNotNull(Object o, Dictionary formatParams) 
-  {return ((Pointer)o).toExternalForm(); }
+public class ptrFormatter extends FieldFormatter {
+	protected ptrFormatter() {
+	}
+
+	public static final ptrFormatter singleton = new ptrFormatter();
+
+	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		return ((Pointer) o).toExternalForm();
+	}
 }

@@ -25,7 +25,7 @@
 
 package org.makumba;
 import java.util.Dictionary;
-import java.util.HashMap;
+import java.util.Vector;
 
 /** Information about a field from a makumba data definition as obtained from an MDD file.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is not needed usually, as the application programmer knows the makumba data structure.
@@ -223,7 +223,9 @@ public interface FieldDefinition
 
   /** check if the corresponding field from the dictionary can be updated */
   public void checkUpdate(Dictionary d);
-
+  
+  /** returns the deprecated valmues for intEnum*/
+  public Vector getDeprecatedValues();
 
 }
 

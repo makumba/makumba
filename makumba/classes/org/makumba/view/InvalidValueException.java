@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -23,11 +23,9 @@
 
 package org.makumba.view;
 
-public class InvalidValueException extends org.makumba.InvalidValueException
-{
-  public InvalidValueException(FieldFormatter f, String mes)
-  {
-    super("expression \'"+f.getExpr()+"\'", mes);
-  }
-  
+public class InvalidValueException extends org.makumba.InvalidValueException {
+	public InvalidValueException(String expr, String mes) {
+		super("expression \'" + expr + "\'", mes);
+	}
+
 }

@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -23,10 +23,23 @@
 
 package org.makumba.controller.html;
 
-public class setcharEnumEditor extends charEnumEditor
-{
-  public String getMultiple() { return " multiple"; }
-  public boolean isMultiple() { return true; }
+import org.makumba.view.RecordFormatter;
 
-  public int getDefaultSize() { return getEnumeratorSize(); }
+public class setcharEnumEditor extends charEnumEditor {
+	protected setcharEnumEditor() {
+	}
+
+	public static final setcharEnumEditor singleton = new setcharEnumEditor();
+
+	public String getMultiple(RecordFormatter rf, int fieldIndex) {
+		return " multiple";
+	}
+
+	public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
+		return true;
+	}
+
+	public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
+		return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
+	}
 }

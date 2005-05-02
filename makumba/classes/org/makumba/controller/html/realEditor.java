@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,18 +22,26 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
-import org.makumba.view.InvalidValueException;
 
-public class realEditor extends intEditor
-{
-  
-  public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
-  { 
-    Object o=par.getParameter(getInputName(suffix));
-    
-    if(o instanceof java.util.Vector)
-      { throw new InvalidValueException(this, "multiple value not accepted for real: "+o); }
-    return toReal(o);
-  }
+import org.makumba.view.InvalidValueException;
+import org.makumba.view.RecordFormatter;
+
+public class realEditor extends intEditor {
+
+	protected realEditor() {
+	}
+
+	public static final realEditor singleton = new realEditor();
+
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
+			String suffix) {
+		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+
+		if (o instanceof java.util.Vector) {
+			throw new InvalidValueException(rf.expr[fieldIndex],
+					"multiple value not accepted for real: " + o);
+		}
+		return toReal(rf, fieldIndex, o);
+	}
 
 }
