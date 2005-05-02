@@ -9,7 +9,7 @@
 
 <mak:object from="test.Person p, p.indiv i" where="i.name='john'">
   testName!<mak:value expr="p.indiv.name" />!endName<br>
-  testSurnameDefault!<mak:value expr="p.indiv.surname" default="N/A" />!endSurname<br>
+  testSurnameDefault!<mak:value expr="p.indiv.surname" default="N/A" />!endSurnameDefault<br>
   testUniqCharAuto!<mak:value expr="p.uniqChar" />!endUniqCharAuto<br>
   testUniqCharAutoAddTitleTrue!<mak:value expr="p.uniqChar" addTitle="true"/>!endUniqCharAutoAddTitleTrue<br>
   testUniqCharHtml!<mak:value expr="p.uniqChar" html="true" />!endUniqCharHtml<br>

@@ -199,7 +199,7 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testSurnameDefault! not found", output.indexOf("testSurnameDefault!") > 0 ? true : false);
 		assertTrue("!endSurnameDefault not found", output.indexOf("!endSurnameDefault", output.indexOf("testSurnameDefault!")) > 0 ? true : false);
-		assertEquals("default property not evaluated", "N/A", output.substring(output.indexOf("testSurnameDefault!")+12, output.indexOf("!endSurnameDefault")));		
+		assertEquals("default property not evaluated", "N/A", output.substring(output.indexOf("testSurnameDefault!")+19, output.indexOf("!endSurnameDefault")));		
 		
 		assertTrue("testUniqCharAuto! not found", output.indexOf("testUniqCharAuto!") > 0 ? true : false);
 		assertTrue("!endUniqCharAuto not found", output.indexOf("!endUniqCharAuto", output.indexOf("testUniqCharAuto!")) > 0 ? true : false);
