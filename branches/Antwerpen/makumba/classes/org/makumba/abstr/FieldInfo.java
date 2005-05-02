@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -181,6 +182,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition
   public void checkUpdate(Dictionary d)
   {
     defa().checkUpdate(d);
+  }
+  
+  public Vector getDeprecatedValues(){
+  	return defa().getDeprecatedValues();
   }
 
   /** the value returned in case there is no value in the database and no defa()ult value is indicated */

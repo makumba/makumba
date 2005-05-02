@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,30 +22,72 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
+import org.makumba.view.dateFormatter;
+import org.makumba.view.intEnumFormatter;
+import org.makumba.view.ptrFormatter;
+import org.makumba.view.timestampFormatter;
 
-public class RecordViewer extends RecordFormatter
-{
-  public RecordViewer(ComposedQuery q) { super(q); }
-  public RecordViewer(DataDefinition ri, Hashtable h) { super(ri, h); }  
+public class RecordViewer extends RecordFormatter {
+	public RecordViewer(ComposedQuery q) {
+		super(q);
+	}
 
-  protected String applyParameters(FieldFormatter ff, Dictionary formatParams, String s)
-  {
-    if(formatParams.get("urlEncode")!=null)
-        try {
-            return java.net.URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    return s;
-  }
+	public RecordViewer(DataDefinition ri, Hashtable h) {
+		super(ri, h);
+	}
 
+	protected String applyParameters(FieldFormatter ff,
+			Dictionary formatParams, String s) {
+		if (formatParams.get("urlEncode") != null)
+			try {
+				return java.net.URLEncoder.encode(s, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return s;
+	}
+
+	protected void initFormatters() {
+		formatterArray = new FieldFormatter[dd.getFieldNames().size()];
+		for (int i = 0; i < dd.getFieldNames().size(); i++) {
+			FieldDefinition fd = dd.getFieldDefinition(i);
+			switch (fd.getIntegerType()) {
+			case FieldDefinition._char:
+				formatterArray[i] = charViewer.singleton;
+				break;
+			case FieldDefinition._text:
+				formatterArray[i] = textViewer.singleton;
+				break;
+			case FieldDefinition._date:
+				formatterArray[i] = dateFormatter.singleton;
+				break;
+			case FieldDefinition._dateCreate:
+			case FieldDefinition._dateModify:
+				formatterArray[i] = timestampFormatter.singleton;
+				break;
+			case FieldDefinition._intEnum:
+				formatterArray[i] = intEnumFormatter.singleton;
+				break;
+			case FieldDefinition._ptr:
+			case FieldDefinition._ptrIndex:
+			case FieldDefinition._ptrOne:
+			case FieldDefinition._ptrRel:
+				formatterArray[i] = ptrFormatter.singleton;
+				break;
+			default:
+				formatterArray[i] = FieldViewer.singleton;
+			}
+		}
+	}
 }

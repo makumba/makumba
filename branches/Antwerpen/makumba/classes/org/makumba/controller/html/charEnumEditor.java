@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -23,27 +23,49 @@
 
 package org.makumba.controller.html;
 
-public class charEnumEditor extends choiceEditor{
+import org.makumba.view.RecordFormatter;
 
-  public Object getOptions(java.util.Dictionary fP){return null; }
+public class charEnumEditor extends choiceEditor {
 
-  public int getOptionsLength(Object opts){ return getEnumeratorSize(); }
+	protected charEnumEditor() {
+	}
 
-  public Object getOptionValue(Object options, int i)
-  { return getStringAt(i); }
+	public static final charEnumEditor singleton = new charEnumEditor();
 
-  public String formatOptionValue(Object val)
-  { return val.toString(); }
+	public Object getOptions(RecordFormatter rf, int fieldIndex, java.util.Dictionary fP) {
+		return null;
+	}
 
-  public String formatOptionValue(Object opts, int i, Object val)
-  { return val.toString(); }
-  
-  public String formatOptionTitle(Object options, int i)
-  { return getNameAt(i); } 
+	public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
+		return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
+	}
 
-  public String getMultiple() { return ""; }
-  public boolean isMultiple() { return false; }
+	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+		return rf.dd.getFieldDefinition(fieldIndex).getStringAt(i);
+	}
 
-  public int getDefaultSize() { return 1; }
-	
+	public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
+		return val.toString();
+	}
+
+	public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object opts, int i, Object val) {
+		return val.toString();
+	}
+
+	public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
+		return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
+	}
+
+	public String getMultiple(RecordFormatter rf, int fieldIndex) {
+		return "";
+	}
+
+	public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
+		return false;
+	}
+
+	public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
+		return 1;
+	}
+
 }
