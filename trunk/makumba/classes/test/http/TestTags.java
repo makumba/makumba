@@ -47,6 +47,7 @@ public class TestTags extends JspTestCase {
 	static Vector v;
 	static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 	private String output;
+	private String line;
 
 	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
 			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
@@ -404,7 +405,7 @@ public class TestTags extends JspTestCase {
 	
 	public void testMakValueTS_modify() throws ServletException, IOException {
 		QueryTag makobject = new QueryTag();
-		pageContext.include("testMakValueTS_modify.jsp");		
+		pageContext.include("testMakValueTS_modify.jsp");
 	}
 	public void endMakValueTS_modify(WebResponse response) {
 		try {
@@ -421,6 +422,43 @@ public class TestTags extends JspTestCase {
 		assertEquals("TS_modify value not correct", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
 	}
 
+	protected String removeMakumbaResponder(String line) {		
+		String parsed = line;
+		parsed = parsed.replaceAll("[\n\r]*", "");
+		parsed = parsed.replaceAll("value=\"[0-9]*\"", "");
+		return parsed;		
+	}
+	public void testMakNewForm() throws ServletException, IOException {
+		QueryTag makobject = new QueryTag();
+		pageContext.include("testMakNewForm.jsp");
+	}
+	public void endMakNewForm(WebResponse response) {
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
+		
+		assertTrue("testNewFormStart! not found", output.indexOf("testNewFormStart!") > 0 ? true : false);
+		assertTrue("!endNewFormStart not found", output.indexOf("!endNewFormStart", output.indexOf("testNewFormStart!")) > 0 ? true : false);
+		assertEquals("form start incorrect", "<form action=\"testMakNewForm.jsp\" method=\"post\">", output.substring(output.indexOf("testNewFormStart!")+17, output.indexOf("!endNewFormStart")));
+		
+		assertTrue("testNewFormEnd! not found", output.indexOf("testNewFormEnd!") > 0 ? true : false);
+		assertTrue("!endNewFormEnd not found", output.indexOf("!endNewFormEnd", output.indexOf("testNewFormEnd!")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testNewFormEnd!")+15, output.indexOf("!endNewFormEnd")).trim();
+		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", removeMakumbaResponder(line));
+		
+		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
+		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
+		assertEquals("problem with input field ", "<input name=\"indiv.name\" type=\"text\" value=\"\" maxlength=\"40\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
+		
+		assertTrue("testSubmit! not found", output.indexOf("testSubmit!") > 0 ? true : false);
+		assertTrue("!endSubmit not found", output.indexOf("!endSubmit", output.indexOf("testSubmit!")) > 0 ? true : false);
+		assertEquals("problem with submit button", "<input type=\"submit\">", output.substring(output.indexOf("testSubmit!")+11, output.indexOf("!endSubmit")));
+		
+	}
+	
 	protected String removeLabelStuff(String line) {
 		String parsed = line;
 		parsed = parsed.replaceAll("id=\"AutoLabel_[0-9]*\"", "");
@@ -438,9 +476,6 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
-		assertEquals("Database query empty", v.size(), 1);
-		pc = (Dictionary) v.elementAt(0);
 
 		assertTrue("editName! not found", output.indexOf("editName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("editName!")) > 0 ? true : false);
