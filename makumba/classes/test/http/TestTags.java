@@ -470,6 +470,20 @@ public class TestTags extends JspTestCase {
 		assertEquals("problem with submit button", "<input type=\"submit\">", output.substring(output.indexOf("testSubmit!")+11, output.indexOf("!endSubmit")));
 		
 	}
+
+/*	public void testMakAddForm() throws ServletException, IOException {
+		QueryTag makobject = new QueryTag();
+		pageContext.include("testMakAddForm.jsp");
+	}
+	public void endMakAddForm(WebResponse response) {
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
+		
+		
+	}*/
 	
 	public void testMakEditForm() throws ServletException, IOException {
 		QueryTag makobject = new QueryTag();
@@ -482,19 +496,48 @@ public class TestTags extends JspTestCase {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
 		
-		assertTrue("testMakEditStart! not found", output.indexOf("testMakEditStart!") > 0 ? true : false);
-		assertTrue("!endMakEditStart not found", output.indexOf("!endMakEditStart", output.indexOf("testMakEditStart")) > 0 ? true : false);
-		assertEquals("form start incorrect", "<form action=\"testMakEditForm.jsp\" method=\"post\">", output.substring(output.indexOf("testMakEditStart!")+17, output.indexOf("!endMakEditStart")));
+		assertTrue("testMakEditFormStart! not found", output.indexOf("testMakEditFormStart!") > 0 ? true : false);
+		assertTrue("!endMakEditFormStart not found", output.indexOf("!endMakEditFormStart", output.indexOf("testMakEditFormStart")) > 0 ? true : false);
+		assertEquals("form start incorrect", "<form action=\"testMakEditForm.jsp\" method=\"post\">", output.substring(output.indexOf("testMakEditFormStart!")+21, output.indexOf("!endMakEditFormStart")));
 		
-		assertTrue("testMakEditEnd! not found", output.indexOf("testMakEditEnd!") > 0 ? true : false);
-		assertTrue("!endMakEditEnd not found", output.indexOf("!endMakEditEnd", output.indexOf("testMakEditEnd!")) > 0 ? true : false);
-		line = output.substring(output.indexOf("testMakEditEnd!")+15, output.indexOf("!endMakEditEnd")).trim();
+		assertTrue("testMakEditFormEnd! not found", output.indexOf("testMakEditFormEnd!") > 0 ? true : false);
+		assertTrue("!endMakEditFormEnd not found", output.indexOf("!endMakEditFormEnd", output.indexOf("testMakEditFormEnd!")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testMakEditFormEnd!")+19, output.indexOf("!endMakEditFormEnd")).trim();
 		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
 		assertTrue("__makumba__base__ not found", line.indexOf("__makumba__base__") > 0 ? true : false);
 		line = removeNewlines(line);
 		line = removeMakumbaResponder(line);
 		line = removeMakumbaBase(line);
 		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__base__\" ><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		
+	}
+	
+	public void testMakForm() throws ServletException, IOException {
+		QueryTag makobject = new QueryTag();
+		pageContext.include("testMakForm.jsp");
+	}
+	public void endMakForm(WebResponse response) {
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
+		
+		assertTrue("testMakFormStart! not found", output.indexOf("testMakFormStart!") > 0 ? true : false);
+		assertTrue("!endMakFormStart not found", output.indexOf("!endMakFormStart", output.indexOf("testMakFormStart")) > 0 ? true : false);
+		assertEquals("form start incorrect", "<form action=\"testMakAddForm.jsp\" method=\"post\">", output.substring(output.indexOf("testMakFormStart!")+17, output.indexOf("!endMakFormStart")));
+		
+		assertTrue("testMakFormEnd! not found", output.indexOf("testMakFormEnd!") > 0 ? true : false);
+		assertTrue("!endMakFormEnd not found", output.indexOf("!endMakFormEnd", output.indexOf("testMakFormEnd!")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testMakFormEnd!")+15, output.indexOf("!endMakFormEnd")).trim();
+		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
+		line = removeNewlines(line);
+		line = removeMakumbaResponder(line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		
+		assertTrue("testInput! not found", output.indexOf("testInput!") > 0 ? true : false);
+		assertTrue("!endInput not found", output.indexOf("!endInput", output.indexOf("testInput")) > 0 ? true : false);
+		assertEquals("error in parsing input field", "<input name=\"xxx\" type=\"text\" value=\"john\" maxlength=\"40\" >", output.substring(output.indexOf("testInput!")+10, output.indexOf("!endInput")));
 		
 	}
 	
