@@ -155,6 +155,7 @@ public class table extends TestCase
 
     ptr= db.insert("test.Person", p);
     assertNotNull(ptr);
+    assertEquals(ptr.getType(), "test.Person");
 
     now= new Date();
 
