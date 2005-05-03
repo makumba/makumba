@@ -25,13 +25,14 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
-import org.apache.cactus.WebResponse;
 import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.view.jsptaglib.MakumbaVersionTag;
 import org.makumba.view.jsptaglib.QueryTag;
+
+import com.meterware.httpunit.WebResponse;
 
 
 /**
@@ -45,6 +46,7 @@ public class TestTags extends JspTestCase {
 	static Dictionary pc;
 	static Vector v;
 	static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
+	private String output;
 
 	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
 			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
@@ -146,7 +148,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakObjectTag.jsp");		
 	}
 	public void endMakObjectTag(WebResponse response) {
-		String output = response.getText();
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		
 		v = db.executeQuery(readPerson, ptr);
 
@@ -165,7 +171,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakListTag.jsp");
 	}
 	public void endMakListTag(WebResponse response) {
-		String output = response.getText();
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		int i = 0, begin, end;
 
 		while ((begin = output.indexOf("name")) != -1) {
@@ -177,7 +187,11 @@ public class TestTags extends JspTestCase {
 					.indexOf("\r")));
 			i++;
 		}
-		assertEquals(true, response.getText().indexOf("English") != -1);
+		try {
+			assertEquals(true, response.getText().indexOf("English") != -1);
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		return;
 	}
 
@@ -186,8 +200,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueChar.jsp");		
 	}	
 	public void endMakValueChar(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -245,8 +262,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueDate.jsp");		
 	}	
 	public void endMakValueDate(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -267,8 +287,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueInt.jsp");	
 	}
 	public void endMakValueInt(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -287,8 +310,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueDouble.jsp");
 	}
 	public void endMakValueDouble(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -303,8 +329,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueText.jsp");
 	}
 	public void endMakValueText(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -327,8 +356,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueSet.jsp");
 	}
 	public void endMakValueSet(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -356,8 +388,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueTS_create.jsp");		
 	}
 	public void endMakValueTS_create(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -372,8 +407,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakValueTS_modify.jsp");		
 	}
 	public void endMakValueTS_modify(WebResponse response) {
-		String output = response.getText();
-		assertTrue("JSP output empty", output.length() > 0 ? true : false);
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
 		v = db.executeQuery(readPerson, ptr);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
@@ -383,4 +421,46 @@ public class TestTags extends JspTestCase {
 		assertEquals("TS_modify value not correct", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
 	}
 
+	protected String removeLabelStuff(String line) {
+		String parsed = line;
+		parsed = parsed.replaceAll("id=\"AutoLabel_[0-9]*\"", "");
+		parsed = parsed.replaceAll("<LABEL for=\"AutoLabel_[0-9]*\">", "");
+		parsed = parsed.replaceAll("</LABEL>", "");
+		return parsed;		
+	}
+	public void testMakInput() throws ServletException, IOException {
+		QueryTag makobject = new QueryTag();
+		pageContext.include("testMakInput.jsp");	
+	}
+	public void endMakInput(WebResponse response) {
+		try {
+			output = response.getText();
+		} catch (IOException e) {
+			fail("JSP output error: " + response.getResponseMessage());
+		}
+		v = db.executeQuery(readPerson, ptr);
+		assertEquals("Database query empty", v.size(), 1);
+		pc = (Dictionary) v.elementAt(0);
+
+		assertTrue("editName! not found", output.indexOf("editName!") > 0 ? true : false);
+		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("editName!")) > 0 ? true : false);
+		assertEquals("char edit field not correct", "<input name=\"indiv.name\" type=\"text\" value=\"john\" maxlength=\"40\" >", output.substring(output.indexOf("editName!")+9, output.indexOf("!endName")));
+		
+		assertTrue("editSurname! not found", output.indexOf("editSurname!") > 0 ? true : false);
+		assertTrue("!endSurname not found", output.indexOf("!endSurname", output.indexOf("editSurname!")) > 0 ? true : false);
+		assertEquals("options for input field not parsed", "<input name=\"indiv.surname\" type=\"password\" value=\"\" maxlength=\"5\" >", output.substring(output.indexOf("editSurname!")+12, output.indexOf("!endSurname")));
+		
+		assertTrue("editGender! not found", output.indexOf("editGender!") > 0 ? true : false);
+		assertTrue("!endGender not found", output.indexOf("!endGender", output.indexOf("editGender!")) > 0 ? true : false);				
+		assertEquals("problem with radio buttons", "<INPUT TYPE=RADIO NAME=\"gender\"  VALUE=\"0\"  > Female <INPUT TYPE=RADIO NAME=\"gender\"  VALUE=\"1\" CHECKED  > Male", removeLabelStuff(output.substring(output.indexOf("editGender!")+11, output.indexOf("!endGender"))));
+
+		assertTrue("editBirthdate! not found", output.indexOf("editBirthdate!") > 0 ? true : false);
+		assertTrue("!endBirthdate not found", output.indexOf("!endBirthdate", output.indexOf("editBirthdate!")) > 0 ? true : false);
+		assertEquals("problem with radio buttons", "<input type=\"text\" name=\"birthdate_2\" value=\"1977\" maxlength=\"4\" size=\"4\">-<select name=\"birthdate_1\"><option value=\"0\">01</option><option value=\"1\">02</option><option value=\"2\" selected>03</option><option value=\"3\">04</option><option value=\"4\">05</option><option value=\"5\">06</option><option value=\"6\">07</option><option value=\"7\">08</option><option value=\"8\">09</option><option value=\"9\">10</option><option value=\"10\">11</option><option value=\"11\">12</option></select>-<select name=\"birthdate_0\"><option value=\"1\">01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\" selected>05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>", output.substring(output.indexOf("editBirthdate!")+14, output.indexOf("!endBirthdate")));
+		
+		assertTrue("editComment! not found", output.indexOf("editComment!") > 0 ? true : false);
+		assertTrue("!endComment not found", output.indexOf("!endComment", output.indexOf("editComment!")) > 0 ? true : false);
+		assertEquals("options for input field not parsed", "<TEXTAREA name=\"comment\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("editComment!")+12, output.indexOf("!endComment")));
+		
+	}
 }
