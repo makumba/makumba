@@ -59,13 +59,14 @@ public class mdd extends TestCase
     MakumbaSystem.getDataDefinition("test.Person.address.sth");
   }
 
-  public void testMddPrinter()
-  {
-    System.out.println("\n"+new org.makumba.abstr.printer.RecordPrinter("test.Individual"));
-    String personMdd=new org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
-    //IMPROVE: should try to parse the printer output again as another MDD, 
-    //then compare them (eg by comparing the printer output of the new and original MDD).
-  }
+/**removed printers, so no need to test them anymore!*/
+  //  public void testMddPrinter()
+//  {
+//    System.out.println("\n"+new org.makumba.abstr.printer.RecordPrinter("test.Individual"));
+//    String personMdd=new org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
+//    //IMPROVE: should try to parse the printer output again as another MDD, 
+//    //then compare them (eg by comparing the printer output of the new and original MDD).
+//  }
 
   public void testNonexistingMdd() {
 	try {
