@@ -195,11 +195,15 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("name"), output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
+		assertEquals("jsp differs from database content", pc.get("name"), output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
 		
 		assertTrue("testSurnameDefault! not found", output.indexOf("testSurnameDefault!") > 0 ? true : false);
 		assertTrue("!endSurnameDefault not found", output.indexOf("!endSurnameDefault", output.indexOf("testSurnameDefault!")) > 0 ? true : false);
 		assertEquals("default property not evaluated", "N/A", output.substring(output.indexOf("testSurnameDefault!")+19, output.indexOf("!endSurnameDefault")));		
+		
+		assertTrue("testUniqCharUrlEncode! not found", output.indexOf("testUniqCharUrlEncode!") > 0 ? true : false);
+		assertTrue("!endUniqCharUrlEncode not found", output.indexOf("!endUniqCharUrlEncode", output.indexOf("testUniqCharUrlEncode!")) > 0 ? true : false);
+		assertEquals("character string not url encoded", "testing+%26quot%3B+character+field", output.substring(output.indexOf("testUniqCharUrlEncode!")+22, output.indexOf("!endUniqCharUrlEncode")));		
 		
 		assertTrue("testUniqCharAuto! not found", output.indexOf("testUniqCharAuto!") > 0 ? true : false);
 		assertTrue("!endUniqCharAuto not found", output.indexOf("!endUniqCharAuto", output.indexOf("testUniqCharAuto!")) > 0 ? true : false);
@@ -232,7 +236,7 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testExtraDataSomethingEmpty! not found", output.indexOf("testExtraDataSomethingEmpty!") > 0 ? true : false);
 		assertTrue("!endExtraDataSomethingEmpty not found", output.indexOf("!endExtraDataSomethingEmpty", output.indexOf("testExtraDataSomethingEmpty!")) > 0 ? true : false);
-		assertEquals("empty propery not evaluated", "N/A", output.substring(output.indexOf("testExtraDataSomethingEmpty!")+28, output.indexOf("!endExtraDataSomethingEmpty")));		
+		assertEquals("empty property not evaluated", "N/A", output.substring(output.indexOf("testExtraDataSomethingEmpty!")+28, output.indexOf("!endExtraDataSomethingEmpty")));		
 		
 	}
 	
@@ -250,12 +254,12 @@ public class TestTags extends JspTestCase {
 		assertTrue("testBirthdate! not found", output.indexOf("testBirthdate!") > 0 ? true : false);
 		assertTrue("!endBirthdate not found", output.indexOf("!endBirthdate", output.indexOf("testBirthdate!")) > 0 ? true : false);
 		DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
-		assertEquals("jsp differs from database", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
+		assertEquals("jsp differs from database content", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
 		
 		assertTrue("testBirthdateFormat! not found", output.indexOf("testBirthdateFormat!") > 0 ? true : false);
 		assertTrue("!endBirthdateFormat not found", output.indexOf("!endBirthdateFormat", output.indexOf("testBirthdateFormat!")) > 0 ? true : false);
 		df = new SimpleDateFormat("dd-mm-yy", MakumbaSystem.getLocale());
-		assertEquals("jsp differs from database", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!endBirthdateFormat")));		
+		assertEquals("date isn't formatted to the one specified", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!endBirthdateFormat")));		
 	}
 
 	public void testMakValueInt() throws ServletException, IOException {
@@ -271,11 +275,11 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testGender! not found", output.indexOf("testGender!") > 0 ? true : false);
 		assertTrue("!endGender not found", output.indexOf("!endGender", output.indexOf("testGender")) > 0 ? true : false);
-		assertEquals("jsp differs from database", "Male", output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender")));
+		assertEquals("jsp differs from database content", "Male", output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender")));
 		
 		assertTrue("testUniqInt! not found", output.indexOf("testUniqInt!") > 0 ? true : false);
 		assertTrue("!endUniqInt not found", output.indexOf("!endUniqInt", output.indexOf("testUniqInt!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("uniqInt").toString(), output.substring(output.indexOf("testUniqInt!")+12, output.indexOf("!endUniqInt")));
+		assertEquals("jsp differs from database content", pc.get("uniqInt").toString(), output.substring(output.indexOf("testUniqInt!")+12, output.indexOf("!endUniqInt")));
 	}
 	
 	public void testMakValueDouble() throws ServletException, IOException {
@@ -291,7 +295,7 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testWeight! not found", output.indexOf("testWeight!") > 0 ? true : false);
 		assertTrue("!endWeight not found", output.indexOf("!endWeight", output.indexOf("testWeight!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("weight").toString(), output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
+		assertEquals("jsp differs from database content", pc.get("weight").toString(), output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
 	}
 	
 	public void testMakValueText() throws ServletException, IOException {
@@ -307,15 +311,15 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testComment! not found", output.indexOf("testComment!") > 0 ? true : false);
 		assertTrue("!endComment not found", output.indexOf("!endComment", output.indexOf("testComment!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", "<p>"+pc.get("comment")+"</p>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
+		assertEquals("default lineseperator not added", "<p>"+pc.get("comment")+"</p>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
 		
 		assertTrue("testCommentLineSeparator! not found", output.indexOf("testCommentLineSeparator!") > 0 ? true : false);
 		assertTrue("!endCommentLineSeparator not found", output.indexOf("!endCommentLineSeparator", output.indexOf("testCommentLineSeparator!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", "<abc>"+pc.get("comment"), output.substring(output.indexOf("testCommentLineSeparator!")+25, output.indexOf("!endCommentLineSeparator")));
+		assertEquals("custom lineseperator not added", "<abc>"+pc.get("comment"), output.substring(output.indexOf("testCommentLineSeparator!")+25, output.indexOf("!endCommentLineSeparator")));
 		
 		assertTrue("testCommentLongLineLength! not found", output.indexOf("testCommentLongLineLength!") > 0 ? true : false);
 		assertTrue("!endCommentLongLineLength not found", output.indexOf("!endCommentLongLineLength", output.indexOf("testCommentLongLineLength!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("comment").toString(), output.substring(output.indexOf("testCommentLongLineLength!")+26, output.indexOf("!endCommentLongLineLength")));
+		assertEquals("longLineLength not parsed", pc.get("comment").toString(), output.substring(output.indexOf("testCommentLongLineLength!")+26, output.indexOf("!endCommentLongLineLength")));
 	}
 	
 	public void testMakValueSet() throws ServletException, IOException {
@@ -331,20 +335,20 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testAddressDescription! not found", output.indexOf("testAddressDescription!") > 0 ? true : false);
 		assertTrue("!endAddressDescription not found", output.indexOf("!endAddressDescription", output.indexOf("testAddressDescription!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("description"), output.substring(output.indexOf("testAddressDescription!")+23, output.indexOf("!endAddressDescription")));
+		assertEquals("problem with empty field", pc.get("description"), output.substring(output.indexOf("testAddressDescription!")+23, output.indexOf("!endAddressDescription")));
 		
 		assertTrue("testAddressDescriptionEmpty! not found", output.indexOf("testAddressDescriptionEmpty!") > 0 ? true : false);
 		assertTrue("!endAddressDescriptionEmpty not found", output.indexOf("!endAddressDescriptionEmpty", output.indexOf("testAddressDescriptionEmpty!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", "N/A", output.substring(output.indexOf("testAddressDescriptionEmpty!")+28, output.indexOf("!endAddressDescriptionEmpty")));
+		assertEquals("problem with custom value for empty field", "N/A", output.substring(output.indexOf("testAddressDescriptionEmpty!")+28, output.indexOf("!endAddressDescriptionEmpty")));
 		
 		assertTrue("testAddressEmailDefault! not found", output.indexOf("testAddressEmailDefault!") > 0 ? true : false);
 		assertTrue("!endAddressEmailDefault not found", output.indexOf("!endAddressEmailDefault", output.indexOf("testAddressEmailDefault!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", "N/A", output.substring(output.indexOf("testAddressEmailDefault!")+24, output.indexOf("!endAddressEmailDefault")));
+		assertEquals("problem with default value for null field", "N/A", output.substring(output.indexOf("testAddressEmailDefault!")+24, output.indexOf("!endAddressEmailDefault")));
 		
 		assertTrue("testAddressUsagestart! not found", output.indexOf("testAddressUsagestart!") > 0 ? true : false);
 		assertTrue("!endAddressUsagestart not found", output.indexOf("!endAddressUsagestart", output.indexOf("testAddressUsagestart!")) > 0 ? true : false);
 		DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
-		assertEquals("jsp differs from database", df.format(pc.get("usagestart")), output.substring(output.indexOf("testAddressUsagestart!")+22, output.indexOf("!endAddressUsagestart")));
+		assertEquals("jsp differs from database content", df.format(pc.get("usagestart")), output.substring(output.indexOf("testAddressUsagestart!")+22, output.indexOf("!endAddressUsagestart")));
 	}
 	
 	public void testMakValueTS_create() throws ServletException, IOException {
@@ -360,7 +364,7 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testTS_create! not found", output.indexOf("testTS_create!") > 0 ? true : false);
 		assertTrue("!endTS_create not found", output.indexOf("!endTS_create", output.indexOf("testTS_create!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("TS_create").toString(), output.substring(output.indexOf("testTS_create!")+14, output.indexOf("!endTS_create")));
+		assertEquals("TS_create value not correct", pc.get("TS_create").toString(), output.substring(output.indexOf("testTS_create!")+14, output.indexOf("!endTS_create")));
 	}
 	
 	public void testMakValueTS_modify() throws ServletException, IOException {
@@ -376,7 +380,7 @@ public class TestTags extends JspTestCase {
 
 		assertTrue("testTS_modify! not found", output.indexOf("testTS_modify!") > 0 ? true : false);
 		assertTrue("!endTS_modify not found", output.indexOf("!endTS_modify", output.indexOf("testTS_modify!")) > 0 ? true : false);
-		assertEquals("jsp differs from database", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
+		assertEquals("TS_modify value not correct", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
 	}
 
 }
