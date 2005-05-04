@@ -96,7 +96,7 @@ public class FieldFormatter {
 	 */
 	public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		String formatted;
-		if (o == null || o.equals(rf.dd.getFieldDefinition(fieldIndex).getEmptyValue())) {
+		if (o == null || o.equals(rf.dd.getFieldDefinition(fieldIndex).getNull())) {
 			formatted = formatNull(rf, fieldIndex, formatParams);
 		} else {
 			formatted = formatNotNull(rf, fieldIndex, o, formatParams);

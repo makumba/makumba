@@ -394,7 +394,7 @@ public class ComposedQuery
 	  throw new InvalidFieldTypeException(fd, "pointer");
 	if(!fd.isNotNull())
 	  return s.substring(0, dot1);
-	dd=fd.getReferredType();
+	dd=fd.getPointedType();
 	dot=dot1;
       }
   }

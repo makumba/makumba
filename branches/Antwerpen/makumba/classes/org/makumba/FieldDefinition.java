@@ -61,6 +61,9 @@ public interface FieldDefinition
     no default value is indicated */
   public Object getEmptyValue();
 
+  /** The null value for this type */
+  public Object getNull();
+  
   /** Tells wether this field has a description in the MDD */
   public boolean hasDescription();
 
@@ -178,21 +181,21 @@ public interface FieldDefinition
    * @return the foreign type indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getRelationType();
+  public DataDefinition getForeignTable();
 
   /** The subtype created by an immediate ptr or set definition.
    * Works only for ptrOne, set, setComplex types
    * @return the subtype indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getSubtype();
+  public DataDefinition getSubtable();
 
   /** The type referred. Will return getRelationType() for ptr, ptrRel and set types and getSubtype() for ptrOne, set, setComplex types.
    * Works only for ptrOne, set, setComplex types
    * @return the subtype indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getReferredType();
+  public DataDefinition getPointedType();
 
   /** Get the alternative title field, if the title to be used is indicated specifically on a ptr or set. 
    * Works only for ptr and set types

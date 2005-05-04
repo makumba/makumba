@@ -230,8 +230,8 @@ public abstract class DBConnection implements org.makumba.Database
     
     if(fi.getType().equals("setComplex")) 
       {
-		data.put(fi.getSubtype().getSetOwnerFieldName(), base);
-		return insert(fi.getSubtype().getName(), data);
+		data.put(fi.getSubtable().getSetOwnerFieldName(), base);
+		return insert(fi.getSubtable().getName(), data);
       }
     else throw new InvalidFieldTypeException(fi, "subset");
   }
@@ -277,8 +277,8 @@ public abstract class DBConnection implements org.makumba.Database
 	FieldDefinition fi= ri.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set"))
 	  if(fi.getType().equals("setComplex"))
-	    executeUpdate(fi.getSubtype().getName()+" this", null, 
-			  "this."+fi.getSubtype().getFieldDefinition(3).getName()+"= $1", param);
+	    executeUpdate(fi.getSubtable().getName()+" this", null, 
+			  "this."+fi.getSubtable().getFieldDefinition(3).getName()+"= $1", param);
 	  else deleteSet(ptr, fi);
       }    
     // delete the record
@@ -288,7 +288,7 @@ public abstract class DBConnection implements org.makumba.Database
   // delete a set
   void deleteSet(Pointer base, FieldDefinition fi)
   {
-    executeUpdate(fi.getSubtype().getName()+" this", null, "this."+fi.getSubtype().getSetOwnerFieldName()+"=$1", base);
+    executeUpdate(fi.getSubtable().getName()+" this", null, "this."+fi.getSubtable().getSetOwnerFieldName()+"=$1", base);
   }
 
   /** Update the given external set */
@@ -304,11 +304,11 @@ public abstract class DBConnection implements org.makumba.Database
     Vector values=(Vector)val;
 
     Dictionary data= new Hashtable(10);
-    data.put(fi.getSubtype().getSetOwnerFieldName(), base);
+    data.put(fi.getSubtable().getSetOwnerFieldName(), base);
     for(Enumeration e= values.elements(); e.hasMoreElements(); )
       {
-		data.put(fi.getSubtype().getSetMemberFieldName(), e.nextElement());
-		db.getTable(fi.getSubtype()).insertRecord(this, data);
+		data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
+		db.getTable(fi.getSubtable()).insertRecord(this, data);
       }
   }
 
@@ -395,7 +395,7 @@ class DataHolder
 	  throw new org.makumba.InvalidValueException(fd, "you cannot indicate both a subfield and the field itself. Values for "+fld+"."+others.get(fld)+" were also indicated");
 	if(!fd.getType().equals("ptrOne") &&  (!fd.isNotNull() || ! fd.isFixed()))
 	  throw new InvalidFieldTypeException(fd, "subpointer or base pointer, so it cannot be used for composite insert/edit");
-	others.put(fld, new DataHolder(d, (Dictionary)others1.get(fld), fd.getReferredType().getName()));
+	others.put(fld, new DataHolder(d, (Dictionary)others1.get(fld), fd.getPointedType().getName()));
       }
   }
 

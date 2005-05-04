@@ -266,10 +266,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
       throw new antlr.SemanticException("no such field \""+field+"\" in makumba type \""+ type.getName()+"\"");
 
     try{
-      foreign=fi.getRelationType();
+      foreign=fi.getForeignTable();
     }catch(Exception e){}
     try{
-      sub=fi.getSubtype();
+      sub=fi.getSubtable();
     }catch(Exception e){}
 
     String label2= label;
@@ -457,7 +457,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 		break;
 	      
 	      label=join(label, field, null);
-	      ri= fi.getReferredType();
+	      ri= fi.getPointedType();
 	    }
 	id.label=label;
 	id.field=field;

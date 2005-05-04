@@ -50,7 +50,7 @@ public class AddTag extends FormTagBase
   {
     DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject):
       ((NewTag)findParentForm()).type;
-    return base.getFieldDefinition(field).getSubtype();
+    return base.getFieldDefinition(field).getSubtable();
   }
   
   String getOperation(){

@@ -121,7 +121,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
   {
     fieldOrder.addElement(fi.getName());
     fields.put(fi.getName(), fi);
-    ((FieldInfo)fi).ri=this;
+    ((FieldInfo)fi).dd=this;
   }
 
   /** only meant for building of temporary types */
@@ -211,9 +211,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
 	n= name.indexOf("->");
 	if(n==-1)
 	  break;
-	ri= ri.getFieldDefinition(name.substring(0, n)).getSubtype();
+	ri= ri.getFieldDefinition(name.substring(0, n)).getSubtable();
       }
-    ri=ri.getFieldDefinition(name).getSubtype();
+    ri=ri.getFieldDefinition(name).getSubtable();
     return ri;
   }
 
