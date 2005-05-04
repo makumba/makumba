@@ -8,7 +8,12 @@
 
 <mak:object from="test.Person p, p.indiv i" where="i.name='john'">
     testMakEditFormStart!<mak:editForm object="p" action="testMakEditForm.jsp" method="post">!endMakEditFormStart
-		<mak:input name="indiv.name" />
+    	testName!<mak:input name="indiv.name" />!endName
+        testSurname!<mak:input name="indiv.surname" type="password" maxlength="5" />!endSurname
+        testGender!<mak:input name="gender" type="tickbox" />!endGender
+        testBirthdate!<mak:input name="birthdate" format="yyyy-MM-dd" />!endBirthdate
+        testComment!<mak:input name="comment" />!endComment
+        testWeight!<mak:input name="weight" />!endWeight
     testMakEditFormEnd!</mak:editForm>!endMakEditFormEnd
 </mak:object>
 
