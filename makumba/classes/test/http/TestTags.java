@@ -41,8 +41,9 @@ import com.meterware.httpunit.WebResponse;
 public class TestTags extends JspTestCase {
 
 	static Database db;
-	static Pointer ptr;
-	static Pointer set;
+	static Pointer person;
+	static Pointer brother;
+	static Pointer address;
 	static Dictionary pc;
 	static Vector v;
 	static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
@@ -64,7 +65,11 @@ public class TestTags extends JspTestCase {
 			
 			protected void insertPerson() {
 				Properties p = new Properties();
+				
+				p.put("indiv.name", "bart");
+				brother=db.insert("test.Person", p);
 
+				p.clear();
 				p.put("indiv.name", "john");
 				
 				Calendar c = Calendar.getInstance();
@@ -81,24 +86,28 @@ public class TestTags extends JspTestCase {
 				
 				p.put("comment", new Text("This is a text field. It's a comment about this person."));
 
-				p.put("uniqInt", new Integer(255));
+				p.put("uniqInt", new Integer(255));				
 				
 				Vector intSet = new Vector();
 				intSet.addElement(new Integer(1));
 				intSet.addElement(new Integer(0));
 				p.put("intSet", intSet);
 
-				ptr = db.insert("test.Person", p);
+				p.put("brother", brother);
+				
+				person = db.insert("test.Person", p);
 				
 				p.clear();
 				p.put("description", "");
 				p.put("usagestart", birthdate);
-				set=db.insert(ptr, "address", p);
+				address=db.insert(person, "address", p);
+								
 				db.commit();
 			}
 			protected void deletePerson() {
-				db.delete(set);
-				db.delete(ptr);
+				db.delete(address);
+				db.delete(brother);
+				db.delete(person);
 			}
 			
 			protected void insertLanguages() {
@@ -140,8 +149,8 @@ public class TestTags extends JspTestCase {
 	}
 
 	public void testDataInput() throws JspException, JspException {
-		assertNotNull(ptr);
-		assertEquals(ptr.getType(), "test.Person");
+		assertNotNull(person);
+		assertEquals(person.getType(), "test.Person");
 	}
 	
 	public void testMakObjectTag() throws ServletException, IOException {
@@ -155,7 +164,7 @@ public class TestTags extends JspTestCase {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
 		
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 
 		assertEquals(1, v.size());
 		pc = (Dictionary) v.elementAt(0);
@@ -206,7 +215,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -268,7 +277,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -293,7 +302,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -316,7 +325,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -335,7 +344,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -362,7 +371,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -394,7 +403,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -413,7 +422,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		v = db.executeQuery(readPerson, ptr);
+		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -443,6 +452,11 @@ public class TestTags extends JspTestCase {
 		parsed = parsed.replaceAll("<LABEL for=\"AutoLabel_[0-9]*\">", "");
 		parsed = parsed.replaceAll("</LABEL>", "");
 		return parsed;		
+	}
+	protected String removeTabs(String line) {
+		String parsed = line;
+		parsed = parsed.replaceAll(">[\t]*<", "><");
+		return parsed;
 	}
 	
 	public void testMakNewForm() throws ServletException, IOException {
@@ -565,6 +579,18 @@ public class TestTags extends JspTestCase {
 		line = removeMakumbaResponder(line);
 		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
 		
+		assertTrue("testMakFormValueStart! not found", output.indexOf("testMakFormValueStart!") > 0 ? true : false);
+		assertTrue("!endMakFormValueStart not found", output.indexOf("!endMakFormValueStart", output.indexOf("testMakFormValueStart")) > 0 ? true : false);
+		assertEquals("form start incorrect", "<form action=\"testMakAddForm.jsp\" method=\"post\">", output.substring(output.indexOf("testMakFormValueStart!")+22, output.indexOf("!endMakFormValueStart")));
+		
+		assertTrue("testMakFormValueEnd! not found", output.indexOf("testMakFormValueEnd!") > 0 ? true : false);
+		assertTrue("!endMakFormValueEnd not found", output.indexOf("!endMakFormValueEnd", output.indexOf("testMakFormValueEnd!")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testMakFormValueEnd!")+20, output.indexOf("!endMakFormValueEnd")).trim();
+		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
+		line = removeNewlines(line);
+		line = removeMakumbaResponder(line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		
 		assertTrue("testCharInput! not found", output.indexOf("testCharInput!") > 0 ? true : false);
 		assertTrue("!endCharInput not found", output.indexOf("!endCharInput", output.indexOf("testCharInput")) > 0 ? true : false);
 		assertEquals("failure in char", "<input name=\"name\" type=\"text\" value=\"\" maxlength=\"255\" >", output.substring(output.indexOf("testCharInput!")+14, output.indexOf("!endCharInput")));
@@ -596,5 +622,29 @@ public class TestTags extends JspTestCase {
 		assertTrue("testTextInputValue! not found", output.indexOf("testTextInputValue!") > 0 ? true : false);
 		assertTrue("!endTextInputValue not found", output.indexOf("!endTextInputValue", output.indexOf("testTextInputValue")) > 0 ? true : false);
 		assertEquals("failure in text value", "<TEXTAREA name=\"commentValue\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("testTextInputValue!")+19, output.indexOf("!endTextInputValue")));
+		
+		assertTrue("testSetInput! not found", output.indexOf("testSetInput!") > 0 ? true : false);
+		assertTrue("!endSetInput not found", output.indexOf("!endSetInput", output.indexOf("testSetInput")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testSetInput!")+13, output.indexOf("!endSetInput"));
+		line = removeNewlines(line);
+		line = removeTabs(line);
+		assertEquals("failure in set", "<SELECT MULTIPLE NAME=\"language\" SIZE=10 ><OPTION VALUE=\"3vyr0id\">English</OPTION><OPTION VALUE=\"3vyr0ie\">French</OPTION><OPTION VALUE=\"5uzv2hj\">German</OPTION><OPTION VALUE=\"3vyr0i8\">Italian</OPTION><OPTION VALUE=\"5uzv2hd\">Spanish</OPTION></SELECT>", line);
+		
+		assertTrue("testPtrInput! not found", output.indexOf("testPtrInput!") > 0 ? true : false);
+		assertTrue("!endPtrInput not found", output.indexOf("!endPtrInput", output.indexOf("testPtrInput")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testPtrInput!")+13, output.indexOf("!endPtrInput"));
+		line = removeNewlines(line);
+		line = removeTabs(line);
+		line = line.replaceAll("[0-9]*:[0-9]*", "");
+		assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 ><OPTION value=\"34dqsls\">test.Individual[]</OPTION><OPTION value=\"34dqslv\">test.Individual[]</OPTION></SELECT>", line);
+		
+		assertTrue("testPtrInputValue! not found", output.indexOf("testPtrInputValue!") > 0 ? true : false);
+		assertTrue("!endPtrInputValue not found", output.indexOf("!endPtrInputValue", output.indexOf("testPtrInputValue")) > 0 ? true : false);
+		line = output.substring(output.indexOf("testPtrInputValue!")+18, output.indexOf("!endPtrInputValue"));
+		line = removeNewlines(line);
+		line = removeTabs(line);
+		line = line.replaceAll("[0-9]*:[0-9]*", "");
+		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\"34dqsls\" SELECTED>test.Individual[]</OPTION><OPTION value=\"34dqslv\">test.Individual[]</OPTION></SELECT>", line);
+		
 	}
 }
