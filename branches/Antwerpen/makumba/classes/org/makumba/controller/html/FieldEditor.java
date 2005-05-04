@@ -30,11 +30,17 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class FieldEditor extends org.makumba.view.FieldFormatter {
-
-	protected FieldEditor() {
+	
+	/* see http://c2.com/cgi/wiki?JavaSingleton */
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new FieldEditor();
+	}	
+	
+	protected FieldEditor() {}	
+	
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
 	}
-
-	public static final FieldEditor singleton = new FieldEditor();
 
 	static String[] params = { "default", "empty", "type" };
 

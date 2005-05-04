@@ -612,8 +612,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	public String getNameAt(int i) {
 		switch (getIntegerType()) {
 		case FieldDefinition._charEnum:
-		case FieldDefinition._intEnum:
 			return (String) ((Vector) this.extra1).elementAt(i);
+		case FieldDefinition._intEnum:
+			return (String) ((Vector) this.extra2).elementAt(i);
 		case FieldDefinition._setCharEnum:
 			return (String) ((Vector) getEnum().extra1).elementAt(i);
 		case FieldDefinition._setIntEnum:

@@ -28,10 +28,16 @@ import java.util.Vector;
 import org.makumba.view.RecordFormatter;
 
 public class setintEnumEditor extends setcharEnumEditor {
-	protected setintEnumEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setintEnumEditor();
 	}
-
-	public static final setintEnumEditor singleton = new setintEnumEditor();
+		
+	protected setintEnumEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
 		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));

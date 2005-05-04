@@ -29,10 +29,15 @@ import org.makumba.view.RecordFormatter;
 
 public class setEditor extends ptrEditor {
 
-	protected setEditor() {
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setEditor();
 	}
-
-	public static final setEditor singleton = new setEditor();
+		
+	protected setEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String getMultiple(RecordFormatter rf, int fieldIndex) {
 		return " multiple";

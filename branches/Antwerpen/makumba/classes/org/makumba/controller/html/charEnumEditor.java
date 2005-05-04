@@ -27,10 +27,15 @@ import org.makumba.view.RecordFormatter;
 
 public class charEnumEditor extends choiceEditor {
 
-	protected charEnumEditor() {
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new charEnumEditor();
 	}
-
-	public static final charEnumEditor singleton = new charEnumEditor();
+		
+	protected charEnumEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public Object getOptions(RecordFormatter rf, int fieldIndex, java.util.Dictionary fP) {
 		return null;

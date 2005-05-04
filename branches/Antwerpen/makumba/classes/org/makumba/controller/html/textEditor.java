@@ -29,10 +29,16 @@ import org.makumba.HtmlUtils;
 import org.makumba.view.RecordFormatter;
 
 public class textEditor extends FieldEditor {
-	protected textEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new textEditor();
 	}
-
-	public static final textEditor singleton = new textEditor();
+		
+	protected textEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	static String[] _params = { "default", "empty", "type", "rows", "cols" };
 

@@ -35,10 +35,16 @@ import org.makumba.view.RecordFormatter;
 import org.makumba.view.dateFormatter;
 
 public class dateEditor extends FieldEditor {
-	protected dateEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new dateEditor();
 	}
-
-	public static final dateEditor singleton = new dateEditor();
+		
+	protected dateEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	static String[] _params = { "format" };
 
