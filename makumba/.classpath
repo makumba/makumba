@@ -8,5 +8,9 @@
 	<classpathentry kind="lib" path="/makumba/lib/junit.jar"/>
 	<classpathentry kind="lib" path="/makumba/lib/mysql.jar"/>
 	<classpathentry kind="lib" path="/makumba/lib/cactus-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjrt-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-api.jar"/>
+	<classpathentry kind="lib" path="lib/httpunit-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-2.0.2.jar"/>
 	<classpathentry kind="output" path="/makumba/classes"/>
 </classpath>
