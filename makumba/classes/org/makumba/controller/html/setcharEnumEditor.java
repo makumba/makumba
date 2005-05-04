@@ -26,10 +26,16 @@ package org.makumba.controller.html;
 import org.makumba.view.RecordFormatter;
 
 public class setcharEnumEditor extends charEnumEditor {
-	protected setcharEnumEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setcharEnumEditor();
 	}
-
-	public static final setcharEnumEditor singleton = new setcharEnumEditor();
+		
+	protected setcharEnumEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String getMultiple(RecordFormatter rf, int fieldIndex) {
 		return " multiple";

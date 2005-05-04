@@ -34,10 +34,16 @@ import org.makumba.util.ChoiceSet;
 import org.makumba.view.RecordFormatter;
 
 public class ptrEditor extends choiceEditor {
-	protected ptrEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new ptrEditor();
 	}
-
-	public static final ptrEditor singleton = new ptrEditor();
+		
+	protected ptrEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public void onStartup(RecordFormatter rf, int fieldIndex) {
 		((RecordEditor)rf).db[fieldIndex] = ((RecordEditor)rf).database;

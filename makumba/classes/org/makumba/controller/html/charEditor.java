@@ -30,10 +30,19 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class charEditor extends FieldEditor {
-	protected charEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new charEditor();
 	}
+		
+	protected charEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
+	
 
-	public static final charEditor singleton = new charEditor();
+//	public static final charEditor singleton = new charEditor();
 
 	static String[] _params = { "default", "empty", "type", "size", "maxlength" };
 
@@ -67,10 +76,11 @@ public class charEditor extends FieldEditor {
 
 	/** Formats the input-field in case of not-null object */
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		String test = getParams(rf, fieldIndex, formatParams);
 		return "<input name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\""
 				+ getInputType(rf, fieldIndex, formatParams) + "\" value=\""
 				+ formatValue(rf, fieldIndex, o, formatParams) + "\" "
-				+ getParams(rf, fieldIndex, formatParams) + getExtraFormatting(rf, fieldIndex, formatParams)
+				+ test + getExtraFormatting(rf, fieldIndex, formatParams)
 				+ ">";
 	}
 

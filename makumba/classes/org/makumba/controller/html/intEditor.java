@@ -29,10 +29,16 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class intEditor extends charEditor {
-	protected intEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new intEditor();
 	}
-
-	public static final intEditor singleton = new intEditor();
+		
+	protected intEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	static String[] __params = { "default", "empty", "size", "maxlength" };
 

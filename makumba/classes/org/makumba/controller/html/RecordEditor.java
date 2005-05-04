@@ -85,50 +85,50 @@ public class RecordEditor extends RecordFormatter {
 			FieldDefinition fd = dd.getFieldDefinition(i);
 			switch (fd.getIntegerType()) {
 			case FieldDefinition._ptr:
-				formatterArray[i] = ptrEditor.singleton;
+				formatterArray[i] = ptrEditor.getInstance();
 				break;
 			case FieldDefinition._ptrOne:
 			case FieldDefinition._setComplex:
-				formatterArray[i] = FieldEditor.singleton;
+				formatterArray[i] = FieldEditor.getInstance();
 				break;
 			case FieldDefinition._int:
-				formatterArray[i] = intEditor.singleton;
+				formatterArray[i] = intEditor.getInstance();
 				break;
 			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumEditor.singleton;
+				formatterArray[i] = intEnumEditor.getInstance();
 				break;
 			case FieldDefinition._char:
-				formatterArray[i] = charEditor.singleton;
+				formatterArray[i] = charEditor.getInstance();
 				break;
 			case FieldDefinition._charEnum:
-				formatterArray[i] = charEnumEditor.singleton;
+				formatterArray[i] = charEnumEditor.getInstance();
 				break;
 			case FieldDefinition._text:
-				formatterArray[i] = textEditor.singleton;
+				formatterArray[i] = textEditor.getInstance();
 				break;
 			case FieldDefinition._date:
-				formatterArray[i] = dateEditor.singleton;
+				formatterArray[i] = dateEditor.getInstance();
 				break;
 			case FieldDefinition._set:
-				formatterArray[i] = setEditor.singleton;
+				formatterArray[i] = setEditor.getInstance();
 				break;
 			//			case FieldDefinition._nil:
 			//				formatterArray[i] = nilEditor.singleton;
 			//				break;
 			case FieldDefinition._real:
-				formatterArray[i] = realEditor.singleton;
+				formatterArray[i] = realEditor.getInstance();
 				break;
 			case FieldDefinition._setCharEnum:
-				formatterArray[i] = setcharEnumEditor.singleton;
+				formatterArray[i] = setcharEnumEditor.getInstance();
 				break;
 			case FieldDefinition._setIntEnum:
-				formatterArray[i] = setintEnumEditor.singleton;
+				formatterArray[i] = setintEnumEditor.getInstance();
 				break;
 			case FieldDefinition._dateCreate:
 			case FieldDefinition._dateModify:
 			case FieldDefinition._ptrIndex:
 			case FieldDefinition._ptrRel:
-				formatterArray[i] = errorEditor.singleton;
+				formatterArray[i] = errorEditor.getInstance();
 				break;
 			default:
 				throw new RuntimeException("Shouldn't be here");

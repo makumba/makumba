@@ -28,10 +28,15 @@ import org.makumba.view.RecordFormatter;
 
 public class realEditor extends intEditor {
 
-	protected realEditor() {
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new realEditor();
 	}
-
-	public static final realEditor singleton = new realEditor();
+		
+	protected realEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
 			String suffix) {

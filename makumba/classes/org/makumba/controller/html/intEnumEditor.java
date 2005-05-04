@@ -27,10 +27,16 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class intEnumEditor extends charEnumEditor {
-	protected intEnumEditor() {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new intEnumEditor();
 	}
-
-	public static final intEnumEditor singleton = new intEnumEditor();
+		
+	protected intEnumEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
 		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));

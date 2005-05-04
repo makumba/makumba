@@ -29,10 +29,15 @@ import org.makumba.view.RecordFormatter;
 
 public class errorEditor extends FieldEditor {
 	
-	protected errorEditor() {
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new errorEditor();
 	}
-
-	public static final errorEditor singleton = new errorEditor();
+		
+	protected errorEditor() {}
+		
+	public static FieldEditor getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParam) {
 		throw new org.makumba.view.InvalidValueException(rf.expr[fieldIndex],
