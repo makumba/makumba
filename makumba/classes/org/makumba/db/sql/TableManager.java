@@ -842,7 +842,7 @@ public class TableManager extends Table {
 		if (o == null)
 			return o;
 		return new SQLPointer(dd.getFieldDefinition(fieldName)
-				.getReferredType().getName(), ((Number) o).longValue());
+				.getPointedType().getName(), ((Number) o).longValue());
 	}
 
 	//moved from intManager
@@ -925,7 +925,7 @@ public class TableManager extends Table {
 	 */
 	public void setUpdateArgument(String fieldName, PreparedStatement ps,
 			int n, Object o) throws SQLException {
-		if (o == getFieldDefinition(fieldName).getEmptyValue())
+		if (o == getFieldDefinition(fieldName).getNull())
 			setNullArgument(fieldName, ps, n);
 		else
 			try {
@@ -1286,7 +1286,7 @@ public class TableManager extends Table {
 			int n, Dictionary d) throws SQLException {
 		Object o = d.get(fieldName);
 		if (o == null
-				|| o.equals(getFieldDefinition(fieldName).getEmptyValue()))
+				|| o.equals(getFieldDefinition(fieldName).getNull()))
 			setNullArgument(fieldName, ps, n);
 		else
 			setArgument(fieldName, ps, n, o);
@@ -1312,7 +1312,7 @@ public class TableManager extends Table {
 		try {
 			Object o = d.get(fieldName);
 			if (o == null
-					|| o.equals(getFieldDefinition(fieldName).getEmptyValue()))
+					|| o.equals(getFieldDefinition(fieldName).getNull()))
 				setNullArgument(fieldName, ps, n);
 			else
 				setArgument(fieldName, ps, n, o);
@@ -1399,7 +1399,7 @@ public class TableManager extends Table {
 		case FieldDefinition._dateModify:
 			return write_timeStamp_Constant(fieldName, o);
 		default:
-			if (o == getFieldDefinition(fieldName).getEmptyValue())
+			if (o == getFieldDefinition(fieldName).getNull())
 				return "null";
 			return toSQLObject(fieldName, o).toString();
 		}
@@ -1407,7 +1407,7 @@ public class TableManager extends Table {
 
 	//original writeConstant from FieldManager
 	public String base_writeConstant(String fieldName, Object o) {
-		if (o == getFieldDefinition(fieldName).getEmptyValue())
+		if (o == getFieldDefinition(fieldName).getNull())
 			return "null";
 		return toSQLObject(fieldName, o).toString();
 	}

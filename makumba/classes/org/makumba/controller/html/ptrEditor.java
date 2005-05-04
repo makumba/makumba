@@ -42,7 +42,7 @@ public class ptrEditor extends choiceEditor {
 	public void onStartup(RecordFormatter rf, int fieldIndex) {
 		((RecordEditor)rf).db[fieldIndex] = ((RecordEditor)rf).database;
 		((RecordEditor)rf).query[fieldIndex] = "SELECT choice as choice, choice." + rf.dd.getFieldDefinition(fieldIndex).getTitleField()
-				+ " as title FROM " + rf.dd.getFieldDefinition(fieldIndex).getReferredType().getName()
+				+ " as title FROM " + rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName()
 				+ " choice ORDER BY title";
 	}
 

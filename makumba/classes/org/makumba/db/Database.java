@@ -403,7 +403,7 @@ public abstract class Database
       {
 	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	  deleteFrom(c, fi.getSubtype().getName(), sourceDB);
+	  deleteFrom(c, fi.getSubtable().getName(), sourceDB);
       }
   }
 
@@ -460,7 +460,7 @@ public abstract class Database
       {
 	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	  copyFrom(c, fi.getSubtype().getName(),sourceDB);
+	  copyFrom(c, fi.getSubtable().getName(),sourceDB);
       }
   }
 
@@ -499,7 +499,7 @@ public abstract class Database
       {
 	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	  openTable(fi.getSubtype().getName());
+	  openTable(fi.getSubtable().getName());
       }
   }
 

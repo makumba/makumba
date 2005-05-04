@@ -246,7 +246,7 @@ public class ObjectImporter {
 		String query = null;
 
 		query = "SELECT p, p." + joinField + " FROM "
-				+ dd.getFieldDefinition(fieldName).getRelationType().getName()
+				+ dd.getFieldDefinition(fieldName).getForeignTable().getName()
 				+ " p WHERE p." + joinField + "=$1";
 
 		Vector v = db.executeQuery(query, arg);
@@ -266,7 +266,7 @@ public class ObjectImporter {
 		}
 
 		query = "SELECT p, p." + joinField + " FROM "
-				+ dd.getFieldDefinition(fieldName).getRelationType().getName()
+				+ dd.getFieldDefinition(fieldName).getForeignTable().getName()
 				+ " p WHERE p." + joinField + " like $1";
 		if (s.length() < nchar)
 			arg = s;

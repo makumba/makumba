@@ -56,7 +56,7 @@ public class OptionTag extends BasicValueTag implements BodyTag
     if(!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
       throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
 
-    return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr "+t.getRelationType().getName());
+    return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr "+t.getForeignTable().getName());
   }
 
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)

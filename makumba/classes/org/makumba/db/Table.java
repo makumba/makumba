@@ -70,11 +70,11 @@ public abstract class Table //extends RecordHandler
         if(fd.getType().equals("ptr")
         || fd.getType().equals("ptrRel"))
             // foreign
-            relatedTables.put(name, fd.getRelationType());
+            relatedTables.put(name, fd.getForeignTable());
         else if(fd.getType().startsWith("ptr") && !fd.getType().equals("ptrIndex")     
         || fd.getType().startsWith("set"))
             // subtable
-            relatedTables.put(name, fd.getSubtype());
+            relatedTables.put(name, fd.getSubtable());
         }
 } 
   public DataDefinition getDataDefinition(){ return dd; }

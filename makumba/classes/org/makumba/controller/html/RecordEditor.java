@@ -57,7 +57,7 @@ public class RecordEditor extends RecordFormatter {
 			if (o != null)
 				o = dd.getFieldDefinition(i).checkValue(o);
 			else
-				o = dd.getFieldDefinition(i).getEmptyValue();
+				o = dd.getFieldDefinition(i).getNull();
 
 			org.makumba.controller.http.RequestAttributes.setAttribute(req, fe
 					.getInputName(this, i, suffix)
