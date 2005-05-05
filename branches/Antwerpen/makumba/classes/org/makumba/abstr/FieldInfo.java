@@ -684,6 +684,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 			return ((Integer) this.extra2).intValue();
 		case FieldDefinition._setCharEnum:
 			return ((Integer) getEnum().extra2).intValue();
+		case FieldDefinition._int:
+		case FieldDefinition._real:
+			return 10;
 		default:
 			throw new RuntimeException("Shouldn't be here");
 		}
