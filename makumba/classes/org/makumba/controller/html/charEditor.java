@@ -57,14 +57,17 @@ public class charEditor extends FieldEditor {
 		return _paramValues;
 	}
 
+    public int getWidth(RecordFormatter rf, int fieldIndex)
+    { return  rf.dd.getFieldDefinition(fieldIndex).getWidth(); }
+    
 	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
 		String ret = getIntParamString(rf, fieldIndex, formatParams, "size");
 		int n = getIntParam(rf, fieldIndex, formatParams, "maxlength");
-		if (n > rf.dd.getFieldDefinition(fieldIndex).getWidth())
+		if (n > getWidth(rf, fieldIndex))
 			throw new InvalidValueException(rf.expr[fieldIndex],
 					"invalid too big for maxlength " + n);
 		if (n == -1)
-			n = rf.dd.getFieldDefinition(fieldIndex).getWidth();
+			n = getWidth(rf, fieldIndex);
 		ret += "maxlength=\"" + n + "\" ";
 		return ret;
 	}

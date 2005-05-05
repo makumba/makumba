@@ -52,6 +52,10 @@ public class intEditor extends charEditor {
 		return __paramValues;
 	}
 
+	public int getWidth(RecordFormatter rf, int fieldIndex) {
+		return 10;
+	}
+
 	/** Formats the value to appear in an input statement. */
 	public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		// note: only diff with charEditor.formatValue is not calling
