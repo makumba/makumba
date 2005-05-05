@@ -158,8 +158,9 @@ transparent manner</li>
 seems to be very original to Makumba</li>
   <li>number of queries generated is independent on the number of
 results of any enclosing mak:list.&nbsp; This is the crux to makumba
-performace.<br>
-  </li>
+performace.</li>
+  <li>recently there are ideas of displaying data from a generic
+database, e.g. from an XML file</li>
 </ul>
 <h3>design still not finished for</h3>
 <ul>
@@ -182,8 +183,11 @@ flexible now</li>
   </li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=572">default
 value</a>&nbsp; (should it be constant or OQL?)</li>
-  <li>mak:value() as a EL function ${mak:value("someOQLExpr") }<br>
-  </li>
+  <li>mak:value() as a EL function ${mak:value("someOQLExpr") }</li>
+  <li>text type formatting: there seems to be confusion around
+html=auto, <a href="http://bugs.best.eu.org/show_bug.cgi?id=440">html=true</a>,
+maxlinelength, <a href="http://bugs.best.eu.org/show_bug.cgi?id=38">problems
+with line separators</a>,&nbsp; etc</li>
 </ul>
 <h3>implementation status:</h3>
 <ul>
@@ -285,7 +289,7 @@ as links</a> (796), <a
 enable forms</a> (685)<br>
   </li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=510">date input
-control</a> needs improvement (510) </li>
+control</a> needs improvement (510)</li>
 </ul>
 <div style="margin-left: 40px;"></div>
 <h3>implementation status</h3>
@@ -313,7 +317,12 @@ analyzer should understand jsp:attribute</a>, especially for mak:action</li>
  href="http://bugs.best.eu.org/show_bug.cgi?id=822"> two-choser</a>
 variant</li>
   <li>set int{} <a href="http://bugs.best.eu.org/show_bug.cgi?id=788">should
-allow submitting empty sets</a> (788)<br>
+allow submitting empty sets</a> (788)</li>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=585">checkbox/radio
+button options </a>still not closed (585)<br>
+  </li>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=797">mak:option
+fails with subrecords</a> (797)<br>
   </li>
 </ul>
 <h3>3rd-party tools and standards</h3>
@@ -409,6 +418,8 @@ heavy. Besides, it is not type-safe.<br>
 <ul>
   <li>uncertainty about object-orientation (see MDD) <br>
   </li>
+  <li>case insensitivity is not provided <br>
+  </li>
 </ul>
 <h3>implementation status</h3>
 <ul>
@@ -424,8 +435,7 @@ to use</a></li>
   <li>timestamps should be <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=765">created server-side</a></li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=815">Error when
-no DBSV is specified</a><br>
-  </li>
+no DBSV is specified</a></li>
 </ul>
 <h3>3rd-party tools and standards</h3>
 <ul>
@@ -607,11 +617,15 @@ specific to the form <a
 specified in/near the JSP</a> and executed
 by the controller</li>
   <li>not able to show different pages after form submission ("view
-selection")</li>
+selection", bugs <a href="http://bugs.best.eu.org/show_bug.cgi?id=29">29</a>,
+    <a href="http://bugs.best.eu.org/show_bug.cgi?id=443">443</a>)</li>
   <li>in general, not enough flexibility in treating the errors</li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=800">attribute
-debugging</a> (800)<br>
-  </li>
+debugging</a> (800)</li>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=617">after_add
+doesn't have access to base pointer</a> (617)<a
+ href="http://bugs.best.eu.org/show_bug.cgi?id=617"><br>
+    </a></li>
 </ul>
 <h3>3rd-party tools:</h3>
 <ul>
