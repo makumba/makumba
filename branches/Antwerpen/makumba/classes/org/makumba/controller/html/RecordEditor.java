@@ -36,13 +36,15 @@ import org.makumba.view.RecordFormatter;
 public class RecordEditor extends RecordFormatter {
 	String database;
 	
-	String[] db = new String[dd.getFieldNames().size()];
+	String[] db;
 
-	String[] query = new String[dd.getFieldNames().size()];
+	String[] query;
 
 	public RecordEditor(DataDefinition ri, Hashtable h, String database) {
 		super(ri, h);
 		this.database = database;
+        db= new String[ri.getFieldNames().size()];
+        query= new String[ri.getFieldNames().size()];
 	}
 
 	public Dictionary readFrom(HttpServletRequest req, String suffix) {

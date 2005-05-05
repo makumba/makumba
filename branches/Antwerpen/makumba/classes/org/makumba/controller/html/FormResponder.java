@@ -56,8 +56,8 @@ public class FormResponder extends Responder
   public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams, String extraFormatting)
   {
     Dictionary paramCopy= (Dictionary)((Hashtable)formatParams).clone();
-    FieldEditor.getInstance().setSuffix(paramCopy, storedSuffix);
-    FieldEditor.getInstance().setExtraFormatting(paramCopy, extraFormatting);
+    FieldEditor.setSuffix(paramCopy, storedSuffix);
+    FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
 
     boolean display= (formatParams.get("org.makumba.noDisplay")==null);
     Integer i=(Integer)indexes.get(fname);
