@@ -64,29 +64,29 @@ public class RecordViewer extends RecordFormatter {
 			FieldDefinition fd = dd.getFieldDefinition(i);
 			switch (fd.getIntegerType()) {
 			case FieldDefinition._char:
-				formatterArray[i] = charViewer.singleton;
+				formatterArray[i] = charViewer.getInstance();
 				break;
 			case FieldDefinition._text:
-				formatterArray[i] = textViewer.singleton;
+				formatterArray[i] = textViewer.getInstance();
 				break;
 			case FieldDefinition._date:
-				formatterArray[i] = dateFormatter.singleton;
+				formatterArray[i] = dateFormatter.getInstance();
 				break;
 			case FieldDefinition._dateCreate:
 			case FieldDefinition._dateModify:
-				formatterArray[i] = timestampFormatter.singleton;
+				formatterArray[i] = timestampFormatter.getInstance();
 				break;
 			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumFormatter.singleton;
+				formatterArray[i] = intEnumFormatter.getInstance();
 				break;
 			case FieldDefinition._ptr:
 			case FieldDefinition._ptrIndex:
 			case FieldDefinition._ptrOne:
 			case FieldDefinition._ptrRel:
-				formatterArray[i] = ptrFormatter.singleton;
+				formatterArray[i] = ptrFormatter.getInstance();
 				break;
 			default:
-				formatterArray[i] = FieldViewer.singleton;
+				formatterArray[i] = FieldViewer.getInstance();
 			}
 		}
 	}

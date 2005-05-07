@@ -32,11 +32,18 @@ import org.makumba.view.RecordFormatter;
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter {
 
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new FieldViewer();
+	}
+
+	/** Don't use this, use getInstance() */
 	protected FieldViewer() {
 	}
 
-	public static final FieldViewer singleton = new FieldViewer();
-
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
+	
 	final static String defaultEllipsis = "...";
 
 	/**

@@ -23,7 +23,6 @@
 
 package org.makumba.devel;
 
-import org.makumba.util.JavaParseData;
 import org.makumba.util.JavaParseData.JavaAnalyzer;
 
 /**
@@ -31,11 +30,16 @@ import org.makumba.util.JavaParseData.JavaAnalyzer;
  *  
  */
 public class JavaSourceAnalyzer implements JavaAnalyzer {
+	
+	private static final class SingletonHolder {
+		static final JavaAnalyzer singleton = new JavaSourceAnalyzer();
+	}
 
-    private JavaSourceAnalyzer() {
-    }
+	private JavaSourceAnalyzer() {}
 
-    public static final JavaParseData.JavaAnalyzer singleton = new JavaSourceAnalyzer();
+	public static JavaAnalyzer getInstance() {
+		return SingletonHolder.singleton;
+	}
 
     /**
      * make a status holder, which is passed to all other methods

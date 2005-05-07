@@ -26,6 +26,7 @@ package org.makumba.controller.html;
 import java.util.Dictionary;
 
 import org.makumba.ProgrammerError;
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
@@ -35,10 +36,11 @@ public class FieldEditor extends org.makumba.view.FieldFormatter {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new FieldEditor();
 	}	
-	
+
+	/** Don't use this, use getInstance() */
 	protected FieldEditor() {}	
-	
-	public static FieldEditor getInstance() {
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

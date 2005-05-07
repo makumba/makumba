@@ -29,10 +29,16 @@ import java.util.Dictionary;
 
 public class timestampFormatter extends dateFormatter {
 
-	protected timestampFormatter() {
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new timestampFormatter();
 	}
 
-	public static final timestampFormatter singleton = new timestampFormatter();
+	private timestampFormatter() {
+	}
+
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		DateFormat formatter = timestamp;

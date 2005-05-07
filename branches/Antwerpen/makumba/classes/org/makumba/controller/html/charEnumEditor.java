@@ -23,6 +23,7 @@
 
 package org.makumba.controller.html;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class charEnumEditor extends choiceEditor {
@@ -30,10 +31,11 @@ public class charEnumEditor extends choiceEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new charEnumEditor();
 	}
-		
+
+	/** Don't use this, use getInstance() */
 	protected charEnumEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

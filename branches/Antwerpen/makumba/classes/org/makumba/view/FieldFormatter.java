@@ -39,6 +39,25 @@ public class FieldFormatter {
 	public String[][] getAcceptedValue() {
 		return paramValues;
 	}
+	
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new FieldFormatter();
+	}
+
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
+	
+	/** Don't use this, use getInstance() */
+	protected FieldFormatter() {
+		for (int i = 0; i < getAcceptedParams().length; i++) {
+			Hashtable h = new Hashtable(13);
+			if (getAcceptedValue()[i] != null)
+				for (int j = 0; j < getAcceptedValue()[i].length; j++)
+					h.put(getAcceptedValue()[i][j], dummy);
+			validParams.put(getAcceptedParams()[i], h);
+		}
+	}
 
 	static Object dummy = new Object();
 
@@ -53,18 +72,6 @@ public class FieldFormatter {
 	}
 
 	Hashtable validParams = new Hashtable(13);
-
-	public FieldFormatter() {
-		for (int i = 0; i < getAcceptedParams().length; i++) {
-			Hashtable h = new Hashtable(13);
-			if (getAcceptedValue()[i] != null)
-				for (int j = 0; j < getAcceptedValue()[i].length; j++)
-					h.put(getAcceptedValue()[i][j], dummy);
-			validParams.put(getAcceptedParams()[i], h);
-		}
-	}
-
-	public static final FieldFormatter singleton = new FieldFormatter();
 
 	public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
 		for (Enumeration e = formatParams.keys(); e.hasMoreElements();) {

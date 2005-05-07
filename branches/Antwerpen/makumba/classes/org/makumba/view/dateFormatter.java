@@ -41,11 +41,18 @@ public class dateFormatter extends FieldFormatter {
 	public String[][] getAcceptedValue() {
 		return _paramValues;
 	}
+	
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new dateFormatter();
+	}
 
+	/** Don't use this, use getInstance() */
 	protected dateFormatter() {
 	}
 
-	public static final dateFormatter singleton = new dateFormatter();
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		DateFormat formatter = yearDate;

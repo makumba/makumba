@@ -23,6 +23,7 @@
 
 package org.makumba.controller.html;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
@@ -31,10 +32,10 @@ public class intEnumEditor extends charEnumEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new intEnumEditor();
 	}
-		
-	protected intEnumEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	private intEnumEditor() {}
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

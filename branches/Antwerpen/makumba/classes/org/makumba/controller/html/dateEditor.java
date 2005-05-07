@@ -30,6 +30,7 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 import org.makumba.view.dateFormatter;
@@ -39,10 +40,10 @@ public class dateEditor extends FieldEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new dateEditor();
 	}
-		
-	protected dateEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	private dateEditor() {}
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

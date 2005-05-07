@@ -218,8 +218,16 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
   }
 
 
-  private MakumbaJspAnalyzer(){}
-  public static final JspParseData.JspAnalyzer singleton= new MakumbaJspAnalyzer();
+	private static final class SingletonHolder {
+		static final JspParseData.JspAnalyzer singleton = new MakumbaJspAnalyzer();
+	}
+
+	private MakumbaJspAnalyzer() {
+	}
+
+	public static JspParseData.JspAnalyzer getInstance() {
+		return SingletonHolder.singleton;
+	}  
 
   public void systemTag(JspParseData.TagData td, Object status)
   {

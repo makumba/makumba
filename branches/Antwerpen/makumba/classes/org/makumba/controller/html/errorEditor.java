@@ -25,6 +25,7 @@ package org.makumba.controller.html;
 
 import java.util.Dictionary;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class errorEditor extends FieldEditor {
@@ -32,10 +33,10 @@ public class errorEditor extends FieldEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new errorEditor();
 	}
-		
-	protected errorEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	private errorEditor() {}
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 
