@@ -50,12 +50,12 @@ public class TestTags extends JspTestCase {
 	private String output;
 	private String line;
 
+	static ArrayList languages = new ArrayList();
 	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
 			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
 	
 	public static Test suite() {
 		TestSetup setup = new TestSetup(new TestSuite(TestTags.class)) {
-			ArrayList ptrs = new ArrayList();
 			protected void setUp() {
 				// do your one-time setup here!
 				db = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
@@ -111,17 +111,18 @@ public class TestTags extends JspTestCase {
 			}
 			
 			protected void insertLanguages() {
-				Dictionary p = new Hashtable();				
+				languages.clear();
+				Dictionary p = new Hashtable();
 				for (int i = 0; i < languageData.length; i++) {
 					p.put("name", languageData[i][0]);
 					p.put("isoCode", languageData[i][1]);
-					ptrs.add(db.insert("test.Language", p));
+					languages.add(db.insert("test.Language", p));
 				}
 				db.commit();
 			}
 			protected void deleteLanguages() {
-				for (int i = 0; i<ptrs.size(); i++)
-					db.delete((Pointer)ptrs.get(i));
+				for (int i = 0; i<languages.size(); i++)
+					db.delete((Pointer)languages.get(i));
 			}
 			
 			protected void tearDown() {
@@ -628,7 +629,7 @@ public class TestTags extends JspTestCase {
 		line = output.substring(output.indexOf("testSetInput!")+13, output.indexOf("!endSetInput"));
 		line = removeNewlines(line);
 		line = removeTabs(line);
-		assertEquals("failure in set", "<SELECT MULTIPLE NAME=\"language\" SIZE=10 ><OPTION VALUE=\"3vyr0id\">English</OPTION><OPTION VALUE=\"3vyr0ie\">French</OPTION><OPTION VALUE=\"5uzv2hj\">German</OPTION><OPTION VALUE=\"3vyr0i8\">Italian</OPTION><OPTION VALUE=\"5uzv2hd\">Spanish</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT MULTIPLE NAME=\"language\" SIZE=10 ><OPTION VALUE=\""+((Pointer)languages.get(0)).toExternalForm()+"\">English</OPTION><OPTION VALUE=\""+((Pointer)languages.get(1)).toExternalForm()+"\">French</OPTION><OPTION VALUE=\""+((Pointer)languages.get(2)).toExternalForm()+"\">German</OPTION><OPTION VALUE=\""+((Pointer)languages.get(3)).toExternalForm()+"\">Italian</OPTION><OPTION VALUE=\""+((Pointer)languages.get(4)).toExternalForm()+"\">Spanish</OPTION></SELECT>", line);
 		
 		assertTrue("testPtrInput! not found", output.indexOf("testPtrInput!") > 0 ? true : false);
 		assertTrue("!endPtrInput not found", output.indexOf("!endPtrInput", output.indexOf("testPtrInput")) > 0 ? true : false);
@@ -636,7 +637,7 @@ public class TestTags extends JspTestCase {
 		line = removeNewlines(line);
 		line = removeTabs(line);
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
-		assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 ><OPTION value=\"34dqsls\">test.Individual[]</OPTION><OPTION value=\"34dqslv\">test.Individual[]</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\">test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 		assertTrue("testPtrInputValue! not found", output.indexOf("testPtrInputValue!") > 0 ? true : false);
 		assertTrue("!endPtrInputValue not found", output.indexOf("!endPtrInputValue", output.indexOf("testPtrInputValue")) > 0 ? true : false);
@@ -644,7 +645,7 @@ public class TestTags extends JspTestCase {
 		line = removeNewlines(line);
 		line = removeTabs(line);
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
-		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\"34dqsls\" SELECTED>test.Individual[]</OPTION><OPTION value=\"34dqslv\">test.Individual[]</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 	}
 }
