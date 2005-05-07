@@ -26,6 +26,7 @@ package org.makumba.view.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class textViewer extends FieldViewer {
@@ -45,10 +46,16 @@ public class textViewer extends FieldViewer {
 
 	static int screenLength = 30;
 
-	protected textViewer() {
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new textViewer();
 	}
 
-	public static final textViewer singleton = new textViewer();
+	private textViewer() {
+	}
+
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {

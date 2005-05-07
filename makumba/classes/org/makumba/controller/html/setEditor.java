@@ -25,6 +25,7 @@ package org.makumba.controller.html;
 
 import java.util.Vector;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class setEditor extends ptrEditor {
@@ -32,10 +33,10 @@ public class setEditor extends ptrEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new setEditor();
 	}
-		
-	protected setEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	private setEditor() {}
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

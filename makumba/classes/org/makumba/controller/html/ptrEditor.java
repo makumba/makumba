@@ -31,6 +31,7 @@ import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.util.ChoiceSet;
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class ptrEditor extends choiceEditor {
@@ -38,10 +39,11 @@ public class ptrEditor extends choiceEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new ptrEditor();
 	}
-		
+
+	/** Don't use this, use getInstance() */
 	protected ptrEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

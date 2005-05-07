@@ -25,6 +25,7 @@ package org.makumba.controller.html;
 
 import java.util.Vector;
 
+import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class setintEnumEditor extends setcharEnumEditor {
@@ -32,10 +33,10 @@ public class setintEnumEditor extends setcharEnumEditor {
 	private static final class SingletonHolder {
 		static final FieldEditor singleton = new setintEnumEditor();
 	}
-		
-	protected setintEnumEditor() {}
-		
-	public static FieldEditor getInstance() {
+
+	private setintEnumEditor() {}
+
+	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 

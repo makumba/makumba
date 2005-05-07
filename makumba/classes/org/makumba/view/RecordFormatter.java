@@ -76,20 +76,20 @@ public class RecordFormatter {
 			case FieldDefinition._ptrRel:
 			case FieldDefinition._ptrOne:
 			case FieldDefinition._ptrIndex:
-				formatterArray[i] = ptrFormatter.singleton;
+				formatterArray[i] = ptrFormatter.getInstance();
 				break;
 			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumFormatter.singleton;
+				formatterArray[i] = intEnumFormatter.getInstance();
 				break;
 			case FieldDefinition._date:
-				formatterArray[i] = dateFormatter.singleton;
+				formatterArray[i] = dateFormatter.getInstance();
 				break;
 			case FieldDefinition._dateCreate:
 			case FieldDefinition._dateModify:
-				formatterArray[i] = timestampFormatter.singleton;
+				formatterArray[i] = timestampFormatter.getInstance();
 				break;
 			default:
-				formatterArray[i] = FieldFormatter.singleton;
+				formatterArray[i] = FieldFormatter.getInstance();
 			}
 		}
 	}

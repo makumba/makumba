@@ -115,7 +115,7 @@ public class RecordEditor extends RecordFormatter {
 				formatterArray[i] = setEditor.getInstance();
 				break;
 			//			case FieldDefinition._nil:
-			//				formatterArray[i] = nilEditor.singleton;
+			//				formatterArray[i] = nilEditor.getInstance();
 			//				break;
 			case FieldDefinition._real:
 				formatterArray[i] = realEditor.getInstance();

@@ -28,10 +28,17 @@ import java.util.Dictionary;
 import org.makumba.Pointer;
 
 public class ptrFormatter extends FieldFormatter {
-	protected ptrFormatter() {
+	
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new ptrFormatter();
 	}
 
-	public static final ptrFormatter singleton = new ptrFormatter();
+	private ptrFormatter() {
+	}
+
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		return ((Pointer) o).toExternalForm();
