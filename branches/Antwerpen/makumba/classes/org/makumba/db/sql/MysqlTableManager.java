@@ -60,7 +60,10 @@ public class MysqlTableManager extends org.makumba.db.sql.TableManager
      int minor=dbc.getMetaData().getDriverMinorVersion();
      String mark=""+major+"."+minor+".";
      String minorStr=version.substring(version.indexOf(mark)+mark.length());
-     minorStr=minorStr.substring(0,minorStr.indexOf('-'));
+     if(minorStr.indexOf('-') == -1)
+     	minorStr=minorStr.substring(0,minorStr.indexOf(' '));
+     else
+       minorStr=minorStr.substring(0,minorStr.indexOf('-'));
      int minor2=Integer.parseInt(minorStr);
 
      if(major>3 || major==3 && minor>0 || major==3 && minor==0 && minor2>=8)
