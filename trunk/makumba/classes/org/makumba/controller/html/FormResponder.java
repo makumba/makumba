@@ -92,60 +92,99 @@ public class FormResponder extends Responder
   public void setExtraFormatting(StringBuffer extraFormatting)
   { this.extraFormatting=extraFormatting; }
 
-  public void writeFormPreamble(StringBuffer sb, String basePointer) 
-  {
-    if(!storedSuffix.equals(""))
-      // no preamble for non-root forms (forms included in other forms)
-      return;
 
-    if(operation.equals("delete"))
-      {
-	// a root deleteLink
-	String sep=action.indexOf('?')>=0?"&":"?";
-	sb.append("<a href=\"")
-	  .append(action)
-	  .append(sep)
-	  .append(basePointerName)
-	  .append("=")
-	  .append(basePointer)
-	  .append('&')
-	  .append(responderName)
-	  .append("=")
-	  .append(getPrototype())
-	  .append("\" ")
-	  .append(extraFormatting)
-	  .append(">");
-      }
-    else 
-      {
-	// a root form, translates into an HTML form
-	sb.append("<form action=");
-	sb.append("\""+action+"\"");
-	sb.append(" method=");
-	sb.append("\""+method+"\"");
-	if(multipart)
-	  sb.append(" enctype=\"multipart/form-data\" ");
-	sb.append(extraFormatting);
-	sb.append(">");
-      }
-  }
-  
+
+  public void writeFormPreamble(StringBuffer sb, String basePointer) 
+   {
+     if(!storedSuffix.equals(""))
+       // no preamble for non-root forms (forms included in other forms)
+       return;
+     String sep=action.indexOf('?')>=0?"&":"?";	
+     if(operation.equals("deleteLink"))
+       {
+
+ 	// a root deleteLink
+   	
+ 	sb.append("<a href=\"")
+ 	  .append(action)
+ 	  .append(sep)
+ 	  .append(basePointerName)
+ 	  .append("=")
+ 	  .append(basePointer)
+ 	  .append('&')
+ 	  .append(responderName)
+ 	  .append("=")
+ 	  .append(getPrototype())
+ 	  .append("\" ")
+ 	  .append(extraFormatting)
+ 	  .append(">");
+ 	
+     
+     
+     }
+ 	
+       
+     else if(operation.equals("deleteForm")){
+     	sb.append("<form action=");
+     	sb.append("\""+action);
+ 		sb.append(sep);
+ 		sb.append(basePointerName);
+ 		sb.append("=");
+ 		sb.append(basePointer);
+ 		sb.append('&');
+ 		sb.append(responderName);
+ 		sb.append("=");
+ 		sb.append(getPrototype()+"\"");
+     	
+     	sb.append(" method=");
+     	sb.append("\""+method+"\"");
+     	if(multipart)
+     	  sb.append(" enctype=\"multipart/form-data\" ");
+     	sb.append(extraFormatting);
+     	sb.append(">");
+     	
+     	
+     	sb.append("<input type=\"submit\" ");
+     	sb.append("value=\"");
+     
+     
+     }
+     else
+       {
+ 	// a root form, translates into an HTML form
+ 	sb.append("<form action=");
+ 	sb.append("\""+action+"\"");
+ 	sb.append(" method=");
+ 	sb.append("\""+method+"\"");
+ 	if(multipart)
+ 	  sb.append(" enctype=\"multipart/form-data\" ");
+ 	sb.append(extraFormatting);
+ 	sb.append(">");
+       }
+   }
+   
   public void writeFormPostamble(StringBuffer sb, String basePointer) 
   {
-    if(storedSuffix.equals("") && operation.equals("delete"))
-      {
-	// a root deleteLink
-	sb.append("</a>");
-	return;
-      }
-    if(basePointer!=null)
-      writeInput(sb, basePointerName, basePointer, storedSuffix);
-    writeInput(sb, responderName, ""+getPrototype()+storedSuffix+storedParentSuffix, "");
-    if(storedSuffix.equals(""))
-      // a root form
-      sb.append("\n</form>");
+  	if(storedSuffix.equals("") && operation.equals("deleteLink"))
+  	{
+  		// a root deleteLink
+  		sb.append("</a>");
+  		return;
+  	}else if(storedSuffix.equals("") && operation.equals("deleteForm")){
+  		sb.append("\"/>");
+  	}
+  	
+  	if(basePointer!=null)
+  		writeInput(sb, basePointerName, basePointer, storedSuffix);
+  	writeInput(sb, responderName, ""+getPrototype()+storedSuffix+storedParentSuffix, "");
+  	if(storedSuffix.equals(""))
+  		// a root form
+  		sb.append("\n</form>");
   }
-  
+
+
+
+
   void writeInput(StringBuffer sb, String name, String value, String suffix)
   {
     sb.append("<input type=\"hidden\" name=\"")

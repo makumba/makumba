@@ -50,6 +50,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     ,"addForm", "org.makumba.view.jsptaglib.AddTag"
     ,"editForm", "org.makumba.view.jsptaglib.EditTag"
     ,"deleteLink", "org.makumba.view.jsptaglib.DeleteTag"
+    ,"delete", "org.makumba.view.jsptaglib.DeleteTag"
     ,"input", "org.makumba.view.jsptaglib.InputTag"
     ,"action", "org.makumba.view.jsptaglib.ActionTag"
     ,"option", "org.makumba.view.jsptaglib.OptionTag"
