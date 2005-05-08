@@ -226,7 +226,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       bodyContent.writeOut(bodyContent.getEnclosingWriter());
 
       sb= new StringBuffer();
+   
       responder.writeFormPostamble(sb, basePointer);
+   
       bodyContent.getEnclosingWriter().print(sb.toString()); 
       if(findParentForm()!=null)
 	MakumbaSystem.getMakumbaLogger("taglib.performance").fine("form time: "+ ((new java.util.Date().getTime()-starttime)));

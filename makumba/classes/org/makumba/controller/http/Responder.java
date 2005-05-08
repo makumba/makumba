@@ -382,7 +382,7 @@ public abstract class Responder implements java.io.Serializable
 		       public String verify(Responder resp){ return null; }
 		     });
 
-    responderOps.put("delete", new ResponderOp()
+    responderOps.put("deleteLink", new ResponderOp()
 		     {
 		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
@@ -397,6 +397,22 @@ public abstract class Responder implements java.io.Serializable
 
 		       public String verify(Responder resp){ return null; }
 		     });
+    
+    responderOps.put("deleteForm", new ResponderOp()
+		     {
+		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+			 throws LogicException
+			 {
+		           return Logic.doDelete(resp.controller,
+						 resp.basePointerType,
+						 resp.getHttpBasePointer(req, suffix),
+						 new RequestAttributes(resp.controller, req, resp.database),
+						 resp.database,
+						 RequestAttributes.getConnectionProvider(req));
+			 }
+
+		       public String verify(Responder resp){ return null; }
+		     } );
   }
 }
 

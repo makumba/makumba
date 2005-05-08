@@ -23,8 +23,27 @@
 
 package org.makumba.view.jsptaglib;
 
+import org.makumba.ProgrammerError;
+
 public class DeleteTag extends EditTag
 {
-  // no input tags should be allowed
+	String widget;
+	
+	public void setWidget(String w){ 
+		if(w.equals("") || w.equals("link")  || w.equals("button")  )
+			widget=w;
+		else
+			throw new ProgrammerError("Wrong mak:delete widget attribute value. Type button or link");
+
+	
+	}
+	
+	String getOperation() 
+	{
+		//  FIXME 
+		return ( widget==null || widget.equals("") || widget.equals("link"))
+			?"deleteLink":"deleteForm"; 
+	}
+
 }
 
