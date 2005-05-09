@@ -1,10 +1,10 @@
 #$Id$
 #demonstrating all possible (and probable) field types
 #char variants (names are not conflicting):
-Char=char[11]		;Full name, long 
-cHar=unique char[22]	;short, unique string
-chAr=not null char[33]
-chaR=unique not null char[44]
+#Char=char[11]		;Full name, long 
+#cHar=unique char[22]	;short, unique string
+#chAr=not null char[33]
+#chaR=unique not null char[44]
 
 charEnum=char{"Only", "3", "valid strings"}
 

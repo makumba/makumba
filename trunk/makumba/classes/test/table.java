@@ -17,9 +17,6 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
 
 package test;
 import java.io.BufferedInputStream;
@@ -110,7 +107,7 @@ public class table extends TestCase
 			String fname=(String)e.nextElement();
 			String ftype=MakumbaSystem.getDataDefinition("test.validMdds."+(String)v.elementAt(i)).getFieldDefinition(fname).getDataType();
 			//System.out.println(fname+": "+ftype);
-			if(ftype!=null && !ftype.equals("null")) //skip setComplex fields
+			if(ftype!=null && !ftype.equals("null") && !ftype.startsWith("set")) //skip setComplex fields
 			  what=what+(what.length()>0?", ":"")+"t."+fname;
 		}
 		//System.out.println(what);
