@@ -40,7 +40,6 @@ import com.meterware.httpunit.WebResponse;
  */
 public class TestTags extends JspTestCase {
 
-	static Database db;
 	static Pointer person;
 	static Pointer brother;
 	static Pointer address;
@@ -57,13 +56,17 @@ public class TestTags extends JspTestCase {
 	public static Test suite() {
 		TestSetup setup = new TestSetup(new TestSuite(TestTags.class)) {
 			protected void setUp() {
-				// do your one-time setup here!
-				db = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
-				insertPerson();
-				insertLanguages();				
+				Database db = getDB();
+				insertPerson(db);
+				insertLanguages(db);
+				/* Just a dummy select, so the test_Person__extraData_ is mentioned in the server side part of the tests.
+				 * If this is not done, the server side and the client side will attempt to insert the same primary key
+				 * in the catalog table (because they use the same DBSV, because they use the same database connection file). */
+				db.executeQuery("SELECT p.extraData.something FROM test.Person p WHERE 1=0", null);
+				db.close();
 			}
 			
-			protected void insertPerson() {
+			protected void insertPerson(Database db) {
 				Properties p = new Properties();
 				
 				p.put("indiv.name", "bart");
@@ -101,39 +104,38 @@ public class TestTags extends JspTestCase {
 				p.put("description", "");
 				p.put("usagestart", birthdate);
 				address=db.insert(person, "address", p);
-								
-				db.commit();
+
 			}
-			protected void deletePerson() {
+			protected void deletePerson(Database db) {
 				db.delete(address);
 				db.delete(brother);
 				db.delete(person);
 			}
 			
-			protected void insertLanguages() {
+			protected void insertLanguages(Database db) {
 				languages.clear();
 				Dictionary p = new Hashtable();
 				for (int i = 0; i < languageData.length; i++) {
 					p.put("name", languageData[i][0]);
 					p.put("isoCode", languageData[i][1]);
 					languages.add(db.insert("test.Language", p));
-				}
-				db.commit();
+				}				
 			}
-			protected void deleteLanguages() {
+			protected void deleteLanguages(Database db) {
 				for (int i = 0; i<languages.size(); i++)
 					db.delete((Pointer)languages.get(i));
 			}
 			
 			protected void tearDown() {
 				// do your one-time tear down here!
-				deletePerson();
-				deleteLanguages();
+				Database db = getDB();
+				deletePerson(db);
+				deleteLanguages(db);
 				db.close();
 			}
 		};
 		return setup;
-	}	
+	}
 	
 	public void testVersionTag() throws JspException, IOException {
 		MakumbaVersionTag versionTag = new MakumbaVersionTag();
@@ -148,14 +150,8 @@ public class TestTags extends JspTestCase {
 		versionTag.doEndTag();
 		pageContext.popBody();
 	}
-
-	public void testDataInput() throws JspException, JspException {
-		assertNotNull(person);
-		assertEquals(person.getType(), "test.Person");
-	}
 	
 	public void testMakObjectTag() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakObjectTag.jsp");		
 	}
 	public void endMakObjectTag(WebResponse response) {
@@ -165,7 +161,9 @@ public class TestTags extends JspTestCase {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
 		
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 
 		assertEquals(1, v.size());
 		pc = (Dictionary) v.elementAt(0);
@@ -178,7 +176,6 @@ public class TestTags extends JspTestCase {
 	}
 
 	public void testMakListTag() throws ServletException, IOException {
-		QueryTag maklist = new QueryTag();
 		pageContext.include("testMakListTag.jsp");
 	}
 	public void endMakListTag(WebResponse response) {
@@ -216,8 +213,10 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
+		db.close();
 		pc = (Dictionary) v.elementAt(0);
 
 
@@ -278,7 +277,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -303,7 +304,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -326,7 +329,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 		
@@ -345,7 +350,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -372,7 +379,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -404,7 +413,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -423,7 +434,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
+		db.close();
 		assertEquals("Database query empty", v.size(), 1);
 		pc = (Dictionary) v.elementAt(0);
 
@@ -647,5 +660,9 @@ public class TestTags extends JspTestCase {
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
 		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
+	}
+
+	private static Database getDB() {
+		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
 }
