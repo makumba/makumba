@@ -391,25 +391,25 @@ The programmer could just as well decide that all makumba logging at or over the
 
   static void fillMdds(int baselength, java.io.File dir, java.util.Vector mdds)
   {
-	String[] list= dir.list();
-	for(int i=0; i<list.length; i++)
-	{
-		String s= list[i];
-		if(s.endsWith(".mdd"))
+	if (dir.isDirectory()) {
+		String[] list= dir.list();
+		for(int i=0; i<list.length; i++)
 		{
-			s=dir.toString()+java.io.File.separatorChar+s;
-			s=s.substring(baselength, s.length()-4); //cut off the ".mdd"
-			s=s.replace(java.io.File.separatorChar,'.'); 
-			mdds.add(s);
+			String s= list[i];
+			if(s.endsWith(".mdd"))
+			{
+				s=dir.toString()+java.io.File.separatorChar+s;
+				s=s.substring(baselength, s.length()-4); //cut off the ".mdd"
+				s=s.replace(java.io.File.separatorChar,'.'); 
+				mdds.add(s);
+			}
+			else
+			{
+				java.io.File f= new java.io.File(dir, s);
+				if(f.isDirectory())
+					fillMdds(baselength, f, mdds);
+			}
 		}
-		else
-		  {
-		    java.io.File f= new java.io.File(dir, s);
-		    if(f.isDirectory())
-		      fillMdds(baselength, f, mdds);
-		  }
-	}
+  	}
   }
-
-
 }
