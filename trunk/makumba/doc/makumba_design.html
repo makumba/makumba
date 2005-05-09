@@ -188,6 +188,8 @@ value</a>&nbsp; (should it be constant or OQL?)</li>
 html=auto, <a href="http://bugs.best.eu.org/show_bug.cgi?id=440">html=true</a>,
 maxlinelength, <a href="http://bugs.best.eu.org/show_bug.cgi?id=38">problems
 with line separators</a>,&nbsp; etc</li>
+  <li><span style="color: rgb(153, 0, 0);">paging</span><br>
+  </li>
 </ul>
 <h3>implementation status:</h3>
 <ul>
@@ -268,7 +270,9 @@ forms in mak:lists, etc</li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=281">form
 annotations</a></li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=417">expanding
-form interaction over more pages</a></li>
+form interaction over more pages</a> (wizard)<a
+ href="http://bugs.best.eu.org/show_bug.cgi?id=417"><br>
+    </a></li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=783">extra fields</a>
 (783)<br>
   </li>
@@ -294,7 +298,16 @@ control</a> needs improvement (510)</li>
 <div style="margin-left: 40px;"></div>
 <h3>implementation status</h3>
 <ul>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=190">multiple
+submission</a> of new and add forms should be detected</li>
+  <ul>
+    <li><span style="color: rgb(204, 0, 0);">hide the button on click
+via javascript (won't solve refresh)</span><br>
+    </li>
+  </ul>
   <li>see unfinished design above</li>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=790">show
+form/input whose response fails</a> (790)</li>
   <li>multiple forms: <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=687">use a result in a
 field of a subsequent form</a>&nbsp;
@@ -307,10 +320,6 @@ field of a subsequent form</a>&nbsp;
  href="http://bugs.best.eu.org/show_bug.cgi?id=363">lost</a> at webapp
 reload. The user needs to go back and resubmit the form if the webapp
 is reloaded while they submit it.</li>
-  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=190">multiple
-submission</a> of new and add forms should be detected</li>
-  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=790">show
-form/input whose response fails</a> (790)</li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=809">the page
 analyzer should understand jsp:attribute</a>, especially for mak:action</li>
   <li>set editors should offer a<a
@@ -364,13 +373,19 @@ EJB/Hibernate<span style="font-weight: bold;">.</span><br>
   <li>the initial ambition was to be
 object-oriented: encapsulation is more or less done, but inheritance
 and polymorphism are still not addressed. Is this really needed?</li>
-  <li>subtyping (a database theory concept) is supported but can be
+  <li><span style="color: rgb(153, 0, 0);">subtyping</span> (a database
+theory concept) is supported but can be
 made more
 explicit</li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=7">business rules</a>
 (see also <a href="http://bugs.best.eu.org/show_bug.cgi?id=234">business
 objects</a>). A data model should not only describe data, but
 also specify rules on how it can be created and changed</li>
+  <ul>
+    <li><span style="color: rgb(153, 0, 0);">session objects,&nbsp;
+caching, dirty caching</span><br>
+    </li>
+  </ul>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=832">bidirectional
 sets</a> is a new idea. Easy to implement, may still need a bit of MDD
 language design<br>
@@ -432,10 +447,19 @@ results in
 the <a href="#links_sql" class="simplelink">SQL</a> engine <a
  href="http://bugs.best.eu.org/show_bug.cgi?id=671">not knowing which
 to use</a></li>
+  <ul>
+    <li><span style="color: rgb(153, 0, 0);">maybe do the indexes only
+for foreign keys and some selected fields</span><br>
+    </li>
+  </ul>
   <li>timestamps should be <a
- href="http://bugs.best.eu.org/show_bug.cgi?id=765">created server-side</a></li>
+ href="http://bugs.best.eu.org/show_bug.cgi?id=765">created in the db
+server<br>
+    </a></li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=815">Error when
 no DBSV is specified</a></li>
+  <li><span style="color: rgb(153, 0, 0);">subrecord TS_modify update</span><br>
+  </li>
 </ul>
 <h3>3rd-party tools and standards</h3>
 <ul>
@@ -535,6 +559,17 @@ place to go<br>
   <li>based on "secret attributes". The design was so poor that it had
 to be patched with
 "checkAttributes".</li>
+  <ul>
+    <li><span style="color: rgb(204, 0, 0);">secret attribute $x in JSP
+less used</span><br>
+    </li>
+  </ul>
+  <li><span style="color: rgb(204, 0, 0);">bad support for
+authorization, separation of authorization logic</span></li>
+  <li><span style="color: rgb(204, 0, 0);">knowing the rights of the
+user in the view</span></li>
+  <li><span style="color: rgb(204, 0, 0);">acegisecurity.sourceforge.net<br>
+    </span></li>
   <li>the design led to a number of problems, including secret
 attributes
 with identical names in different parts of the site</li>
@@ -581,7 +616,8 @@ files, maybe near them. Currently they tend to follow the JSP page
 structure rather than the MDD structure</li>
   <li>parts that are more dependent on the interface (on the way the
 form was
-shown, etc) should be part of the controller<br>
+shown, etc) should be part of the controller</li>
+  <li><span style="color: rgb(204, 0, 0);">non-java BL</span><br>
   </li>
 </ul>
 <h3>design still not finished for</h3>
@@ -655,8 +691,12 @@ type of mak:list)</li>
   </ul>
   <li><a href="#links_jsp2.0" class="simplelink">JSP 2.0</a> supports
 the definition of new tags in JSP files (tag
-files) instead of Java classes. This can also support templating<br>
-  </li>
+files) instead of Java classes. This can also support templating</li>
+  <ul>
+    <li style="color: rgb(204, 0, 0);">Jakarta Tiles</li>
+    <li><span style="color: rgb(204, 0, 0);">OpenSymphony SiteMesh</span><br>
+    </li>
+  </ul>
 </ul>
 <h3>3rd-party tools</h3>
 <ul>
@@ -679,12 +719,18 @@ originality of MDD and JSP parts<br>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=39">interacting
 more with the
 programmer</a> during development</li>
+  <li><span style="color: rgb(204, 0, 0);">more Eclipse tools (MDD
+plugin)</span></li>
+  <li><span style="color: rgb(204, 0, 0);">Parade editors</span></li>
 </ul>
 <h3>implementation status:</h3>
 <ul>
-  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=816">linking to
-lines of sources rather than just to the file (816)</a></li>
-  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=814">expand
+  <li><span style="color: rgb(204, 0, 0);">API documentation</span></li>
+  <li><span style="color: rgb(204, 0, 0);">Mak specification is too big</span></li>
+  <li><span style="color: rgb(204, 0, 0);">Confluence with Bugzilla<br>
+    </span></li>
+  <li><span style="color: rgb(204, 0, 0);"></span><a
+ href="http://bugs.best.eu.org/show_bug.cgi?id=814">expand
 includes in JSP source viewer</a> (814)<br>
   </li>
   <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=782">"pages and
@@ -692,6 +738,8 @@ BL classes affected by an MDD"</a> (782) still not implemented,
 although most of the tools are in place (page analysis, etc) <br>
   </li>
   <li>splitting specification into more documents</li>
+  <li><a href="http://bugs.best.eu.org/show_bug.cgi?id=816">linking to
+lines of sources rather than just to the file (816)</a></li>
 </ul>
 <h3>3rd-party tools</h3>
 <ul>
