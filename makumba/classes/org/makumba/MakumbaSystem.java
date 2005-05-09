@@ -326,7 +326,12 @@ The programmer could just as well decide that all makumba logging at or over the
   static int parsedQueries= NamedResources.makeStaticCache
       ("OQL parsed queries", 
        new NamedResourceFactory(){
-    protected Object makeResource(Object nm, Object hashName) 
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm, Object hashName) 
       throws Exception
       {
 	return parseQueryFundamental((String)nm);

@@ -48,7 +48,11 @@ import org.makumba.view.jsptaglib.MakumbaTag;
  */
 public class TagExceptionServlet extends HttpServlet
 {
-  static Object errors [][]=
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+static Object errors [][]=
   {
     { org.makumba.OQLParseError.class, "query" },
     { org.makumba.DataDefinitionNotFoundError.class, "data definition not found" },

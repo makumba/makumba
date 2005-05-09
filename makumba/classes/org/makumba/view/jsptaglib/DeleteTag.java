@@ -25,6 +25,11 @@ package org.makumba.view.jsptaglib;
 
 public class DeleteTag extends EditTag
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
   // no input tags should be allowed
 }
 

@@ -23,7 +23,6 @@
 
 package org.makumba.devel;
 
-import org.makumba.util.JspParseData;
 import org.makumba.util.JspParseData.JspAnalyzer;
 import org.makumba.util.JspParseData.TagData;
 

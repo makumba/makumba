@@ -28,7 +28,11 @@ import java.io.PrintWriter;
 /** wrap an exception to throw it further as a RuntimeException. stacktraces of this exception will actually print the stracktrace of the wrapped exception */
 public class RuntimeWrappedException extends RuntimeException
 {
-  Throwable t;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Throwable t;
 
   /** wrap the given exception */
   public RuntimeWrappedException(Throwable e)

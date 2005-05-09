@@ -66,7 +66,11 @@ public class Logic
   static int logix= NamedResources.makeStaticCache("Business logic classes", 
 						   new NamedResourceFactory()
    {
-     {
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	{
        supplementary=new Hashtable();
      }
      protected Object makeResource(Object p)

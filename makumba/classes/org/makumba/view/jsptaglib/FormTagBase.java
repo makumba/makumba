@@ -41,7 +41,11 @@ import org.makumba.view.ComposedQuery;
 
 public class FormTagBase extends MakumbaTag implements BodyTag
 {
-  // the tag attributes
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+// the tag attributes
   String baseObject = null;
   String handler = null;
   String formMethod = null;

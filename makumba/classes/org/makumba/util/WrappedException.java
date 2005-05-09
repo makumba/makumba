@@ -28,7 +28,11 @@ import java.io.PrintWriter;
 /** wrap an exception to throw it further as a desired exception type. stacktraces of this exception will actually print the stracktrace of the wrapped exception */
 public class WrappedException extends Exception
 {
-  Throwable t;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Throwable t;
 
   /** wrap the given exception */
   public WrappedException(Throwable e)

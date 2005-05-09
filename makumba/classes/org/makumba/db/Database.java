@@ -136,7 +136,12 @@ public abstract class Database
     static int dbs= NamedResources.makeStaticCache("Databases open",
 						 new NamedResourceFactory()
    {
-     protected Object makeResource(Object nm) 
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm) 
        {
 	 Properties p= new Properties();
 	 String name= (String)nm;
@@ -236,7 +241,12 @@ public abstract class Database
   ("Database selection files",
    new NamedResourceFactory()
    {
-     protected Object makeResource(Object nm) 
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm) 
        {
 	 Properties p= new Properties();
 	 try{
@@ -302,6 +312,11 @@ public abstract class Database
     queries= new SoftNamedResources
       ("Database "+getName()+" query objects",
        new NamedResourceFactory(){
+	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 	public Object makeResource(Object name) 
 	  {
 	    return prepareQueryImpl((String)name);
@@ -311,6 +326,10 @@ public abstract class Database
     updates= new SoftNamedResources
       ("Database "+getName()+" update objects",
        new NamedResourceFactory(){
+	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 	public Object makeResource(Object o) 
 	  {
 	    Object[] multi=(Object[])o;
@@ -543,6 +562,11 @@ public abstract class Database
 
     NamedResourceFactory tableFactory= new NamedResourceFactory()
     {
+	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 	public Object getHashObject(Object name)
 	{
 	    return ((DataDefinition)name).getName();

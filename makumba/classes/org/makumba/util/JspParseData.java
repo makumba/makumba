@@ -68,7 +68,12 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
          ("JSP page analyses", 
           new NamedResourceFactory()
               {
-                 public Object getHashObject(Object o)
+                 /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public Object getHashObject(Object o)
                  {
 	           Object[]o1= (Object[])o;
                     return ((String)o1[0])+o1[1].getClass().getName();

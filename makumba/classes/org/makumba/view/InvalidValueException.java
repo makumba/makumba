@@ -24,6 +24,11 @@
 package org.makumba.view;
 
 public class InvalidValueException extends org.makumba.InvalidValueException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public InvalidValueException(String expr, String mes) {
 		super("expression \'" + expr + "\'", mes);
 	}

@@ -132,7 +132,12 @@ public abstract class Responder implements java.io.Serializable
   static NamedResources cache=new NamedResources
   ("controller.responders", new NamedResourceFactory()
    {
-     public Object getHashObject(Object o)
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Object getHashObject(Object o)
        {
 	 return ((Responder)o).responderKey();
        }
@@ -305,7 +310,11 @@ public abstract class Responder implements java.io.Serializable
   {
     responderOps.put("edit", new ResponderOp()
 		    {
-		      public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		      /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			throws LogicException
 			{
 			  return Logic.doEdit(resp.controller,
@@ -321,7 +330,11 @@ public abstract class Responder implements java.io.Serializable
     
     responderOps.put("simple", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doOp(resp.controller,
@@ -336,7 +349,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("new", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doNew(resp.controller,
@@ -352,7 +369,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("add", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doAdd(resp.controller,
@@ -368,7 +389,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("addToNew", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doAdd(resp.controller,
@@ -384,7 +409,12 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("delete", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doDelete(resp.controller,

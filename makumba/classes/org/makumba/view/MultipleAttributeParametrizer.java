@@ -77,7 +77,12 @@ public class MultipleAttributeParametrizer
    */
     
     NamedResourceFactory parametrizerFactory= new NamedResourceFactory(){
-    protected Object getHashObject(Object nm) 
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	protected Object getHashObject(Object nm) 
       throws Exception
       {
 	StringBuffer sb= new StringBuffer();

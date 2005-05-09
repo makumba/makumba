@@ -319,7 +319,12 @@ public class ComposedQuery
   
   NamedResources queries=new NamedResources("Composed queries", 
 					    new NamedResourceFactory(){
-    protected Object makeResource(Object nm, Object hashName) 
+    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm, Object hashName) 
       {
 	MultipleKey mk=(MultipleKey)nm;
 	String[] sections= new String[5];

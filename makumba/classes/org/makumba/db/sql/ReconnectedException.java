@@ -27,6 +27,11 @@ package org.makumba.db.sql;
  * detected and reconection is succesful */
 public class ReconnectedException extends org.makumba.util.RuntimeWrappedException
 {
-  public ReconnectedException(java.sql.SQLException se){super(se); }
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public ReconnectedException(java.sql.SQLException se){super(se); }
 }
 
