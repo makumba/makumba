@@ -28,7 +28,11 @@ import java.util.Enumeration;
 /** An insert in a certain type has violated a unique constraint */
 public class NotUniqueError extends DBError
 {
-  String type;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String type;
   Dictionary duplicates;
 
   public NotUniqueError(java.sql.SQLException se){

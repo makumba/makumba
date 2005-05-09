@@ -46,6 +46,11 @@ import org.makumba.Text;
  * href=org.makumba.abstr.FieldHandler.html#_top_>FieldHandler </a>
  */
 public class FieldInfo implements java.io.Serializable, FieldDefinition {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	DataDefinition dd;
 
 	static final HashMap integerTypeMap = new HashMap();

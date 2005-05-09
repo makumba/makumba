@@ -44,7 +44,12 @@ import javax.servlet.http.HttpServletResponse;
  * colouring (and maybe Java linking) can be outsourced.
  */
 public class SourceViewServlet extends HttpServlet {
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter w = res.getWriter();
 
         SourceViewer sw = null;

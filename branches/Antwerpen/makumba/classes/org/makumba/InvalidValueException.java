@@ -26,7 +26,12 @@ package org.makumba;
 /** This exception occurs when an invalid value is passed to a field */
 public class InvalidValueException extends RuntimeException
 {
-  public InvalidValueException(String message)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public InvalidValueException(String message)
   {
     super(message);
   }

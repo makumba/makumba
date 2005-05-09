@@ -33,7 +33,11 @@ import org.makumba.util.MultipleKey;
 
 public class OptionTag extends BasicValueTag implements BodyTag
 {
-  ValueComputer choiceComputer=null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+ValueComputer choiceComputer=null;
 
   public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) 
   {

@@ -29,7 +29,12 @@ import java.lang.ref.SoftReference;
 */
 public class SoftNamedResources extends NamedResources
 {
-  public SoftNamedResources(String name, NamedResourceFactory f)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public SoftNamedResources(String name, NamedResourceFactory f)
     { super(name, f); }
 
   protected NameValue getNameValue(Object name, Object hash)

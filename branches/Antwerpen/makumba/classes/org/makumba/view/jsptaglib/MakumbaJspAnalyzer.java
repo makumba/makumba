@@ -69,7 +69,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   class Types extends HashMap
   {
-    public void setType(String key, FieldDefinition value, MakumbaTag t)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void setType(String key, FieldDefinition value, MakumbaTag t)
     {
       Object []val1= (Object[])get(key);
       FieldDefinition fd= null; 

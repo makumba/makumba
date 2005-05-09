@@ -25,5 +25,10 @@ package org.makumba;
 
 public class LogicNotFoundException extends LogicException
 {
-  public LogicNotFoundException (String s) { super(s); }
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public LogicNotFoundException (String s) { super(s); }
 }

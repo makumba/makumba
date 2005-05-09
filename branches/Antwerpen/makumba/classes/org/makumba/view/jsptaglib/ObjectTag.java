@@ -26,7 +26,12 @@ import javax.servlet.jsp.JspException;
 
 public class ObjectTag extends QueryTag
 {
-  protected void setNumberOfIterations(int max) throws JspException
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+protected void setNumberOfIterations(int max) throws JspException
   {
     if(max>1)
       throw new MakumbaJspException(this, "Object tag should have only one result");

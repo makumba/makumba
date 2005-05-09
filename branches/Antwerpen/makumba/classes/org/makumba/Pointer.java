@@ -28,7 +28,12 @@ package org.makumba;
  */
 public class Pointer implements java.io.Serializable
 {
-  protected Pointer(){}
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+protected Pointer(){}
 
   static final protected int MASK_ORDER=24; 
 

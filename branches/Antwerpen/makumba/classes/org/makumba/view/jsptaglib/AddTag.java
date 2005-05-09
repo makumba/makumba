@@ -27,7 +27,11 @@ import org.makumba.util.MultipleKey;
 
 public class AddTag extends FormTagBase 
 {
-  // for input tags:
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+// for input tags:
   String field = null;
 
   public void setField(String s) { field=s; }

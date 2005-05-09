@@ -26,5 +26,10 @@ package org.makumba.controller.http;
 /** An exception allowed/left unreported by the controller */
 public class AllowedException extends RuntimeException
 {
-    public AllowedException(String s){ super(s); }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public AllowedException(String s){ super(s); }
 }

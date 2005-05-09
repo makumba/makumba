@@ -46,7 +46,11 @@ import org.makumba.util.RuntimeWrappedException;
  */
 public class RecordInfo implements java.io.Serializable, DataDefinition
 {
-  java.net.URL origin;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+java.net.URL origin;
   String name;
   Properties templateValues;
   //  Vector templateArgumentNames;
@@ -159,7 +163,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
   ("Data definitions parsed",
    new NamedResourceFactory()
    {
-     protected Object getHashObject(Object name)
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Object getHashObject(Object name)
        {
 	 java.net.URL u= RecordParser.findDataDefinition((String)name, "mdd");
 	 if(u== null)

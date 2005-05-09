@@ -26,7 +26,12 @@ package org.makumba;
 /** Error thrown if a data definition cannot be found */
 public class DataDefinitionNotFoundError extends DataDefinitionParseError
 {
-  public DataDefinitionNotFoundError(String typeName, java.io.IOException e) 
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public DataDefinitionNotFoundError(String typeName, java.io.IOException e) 
   { super(typeName, e);}
 
   public DataDefinitionNotFoundError(String expl){ super(expl); } 

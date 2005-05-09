@@ -35,7 +35,11 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 */
 public class LoginTag extends BodyTagSupport
 {
-  static final String pageAttr="org.makumba.original.request";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+static final String pageAttr="org.makumba.original.request";
 
   /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
   public int doStartTag() 

@@ -31,7 +31,11 @@ import org.makumba.ProgrammerError;
 
 public class ActionTag extends MakumbaTag implements BodyTag
 {
-  BodyContent bodyContent;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+BodyContent bodyContent;
   public void setBodyContent(BodyContent bc){ bodyContent=bc; }
 
   /** does this tag need the page cache? */

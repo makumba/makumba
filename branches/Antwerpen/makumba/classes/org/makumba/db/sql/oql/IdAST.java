@@ -26,7 +26,11 @@ import org.makumba.db.Database;
 
 public class IdAST extends OQLAST
 {
-  QueryAST query;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+QueryAST query;
   String field;
   String label;
   String projectionLabel;

@@ -28,7 +28,11 @@ import java.util.Vector;
 /** the values for a group of fields */
 public class MultipleKey extends Vector
 {
-  static private final Object theNull=new Object(){
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+static private final Object theNull=new Object(){
     public String toString(){ return "null key member"; }
   };
 

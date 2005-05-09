@@ -133,11 +133,19 @@ public abstract class Table //extends RecordHandler
 
 	final int dbsv=sourceDB.getHostDatabase().getDbsv();
 	selectLimits[0]=new Pointer(){
-	  public String getType(){ return nm; }
+	  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+	public String getType(){ return nm; }
 	  public long longValue(){ return dbsv<<MASK_ORDER; }
 	};
 	selectLimits[1]=new Pointer(){
-	  public String getType(){ return nm; }
+	  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+	public String getType(){ return nm; }
 	  public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
 	};
       }    

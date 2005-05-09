@@ -26,7 +26,11 @@ import org.makumba.db.Database;
 
 public class AggregateAST extends OQLAST
 {
-  OQLAST expr;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+OQLAST expr;
 
   public AggregateAST(){}
   //  public IdAST(antlr.Token t) { super(t); }

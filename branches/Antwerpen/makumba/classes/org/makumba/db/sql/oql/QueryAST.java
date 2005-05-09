@@ -36,7 +36,12 @@ import antlr.collections.AST;
 /** an OQL query, writes out the translated SQL query */
 public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 {
-  public QueryAST(){}
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public QueryAST(){}
   public QueryAST(antlr.Token t) { super(t); }
 
   String originalQuery;

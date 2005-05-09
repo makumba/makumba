@@ -26,6 +26,10 @@ package org.makumba;
 /** An unauthorized exception, due to mismatch of attribute values */
 public class UnauthorizedException extends LogicException
 {
-  public UnauthorizedException(){super("");}
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+public UnauthorizedException(){super("");}
   public UnauthorizedException(String message){super(message);}
 }

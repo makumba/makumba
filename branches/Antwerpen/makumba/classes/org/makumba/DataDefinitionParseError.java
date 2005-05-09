@@ -29,7 +29,11 @@ import java.util.Vector;
 /** Error occured during data definition parsing. It can contain a number of errors occured at different lines during parsing */
 public class DataDefinitionParseError extends MakumbaError
 {
-  String typeName;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String typeName;
   String line;
   int column;
 

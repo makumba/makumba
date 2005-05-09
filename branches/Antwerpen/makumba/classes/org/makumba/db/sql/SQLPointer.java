@@ -28,7 +28,12 @@ import org.makumba.Pointer;
 /** the SQL pointer, represents a pointer as a long, but only an int is needed... */
 public class SQLPointer extends Pointer
 {
-  static long compute(int dbsv, int uid)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+static long compute(int dbsv, int uid)
   {
     return (dbsv<<MASK_ORDER)+uid;
   }
