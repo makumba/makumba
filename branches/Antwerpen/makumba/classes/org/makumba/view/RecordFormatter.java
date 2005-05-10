@@ -23,19 +23,22 @@
 
 package org.makumba.view;
 
+import java.io.Serializable;
 import java.util.Dictionary;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 
-public class RecordFormatter {
+public class RecordFormatter implements Serializable {
 	public DataDefinition dd;
 
 	public String[] expr;
 
-	protected FieldFormatter[] formatterArray;
+	protected transient FieldFormatter[] formatterArray;
 	
 	public RecordFormatter() {}
+
+	private static final long serialVersionUID = 1L;
 
 	public RecordFormatter(ComposedQuery q) {
 		dd = (DataDefinition) q.getResultType();
