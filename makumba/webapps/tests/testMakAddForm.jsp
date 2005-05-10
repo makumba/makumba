@@ -6,10 +6,10 @@
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
-    <mak:addForm object="p" field="speaks"
-    		 action="testMakAddForm.jsp" method="post">
-    </mak:addForm>
+<mak:object from="test.Person p" where="p.indiv.name='john'">
+	testEmail!<mak:list from="p.address a">
+	   	<mak:value expr="a.email" />
+	</mak:list>!endEmail
 </mak:object>
 
 </body>
