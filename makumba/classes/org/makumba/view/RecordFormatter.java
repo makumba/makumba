@@ -34,6 +34,8 @@ public class RecordFormatter {
 	public String[] expr;
 
 	protected FieldFormatter[] formatterArray;
+	
+	public RecordFormatter() {}
 
 	public RecordFormatter(ComposedQuery q) {
 		dd = (DataDefinition) q.getResultType();
