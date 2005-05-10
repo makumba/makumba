@@ -35,7 +35,6 @@ import org.makumba.view.jsptaglib.MakumbaVersionTag;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.SubmitButton;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
@@ -536,8 +535,7 @@ public class TestTags extends JspTestCase {
 	
 	public void beginMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
 		WebConversation wc = new WebConversation();
-		WebRequest     req = new GetMethodWebRequest(System.getProperty("cactus.contextURL") + "/beginMakAddForm.jsp" );
-		WebResponse   resp = wc.getResponse( req );
+		WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/beginMakAddForm.jsp" );
 
 		// we get the first form in the jsp
 		WebForm form = resp.getForms()[0];
