@@ -52,7 +52,7 @@
 	<target name="publishDevelLibs" >
 		<mkdir dir="work/temp"/>
 		<zip destfile="work/temp/maklib.zip">
-			<zipfileset dir="lib/"/>
+			<zipfileset dir="lib/" prefix="lib"/>
 		</zip>
 		<ftp server="download.makumba.org"
 			userid="ftp-mak"
