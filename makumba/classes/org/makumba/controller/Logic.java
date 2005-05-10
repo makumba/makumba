@@ -27,9 +27,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import org.makumba.Attributes;
 import org.makumba.Database;
@@ -48,6 +50,7 @@ public class Logic
 {
   static Properties controllerConfig;
   static java.net.URL controllerURL;
+  static HashMap nameToObject = new HashMap();
   static
   {
     controllerConfig= new Properties();
@@ -63,6 +66,23 @@ public class Logic
 		    .getSupplementary()).get(cls);
   }
 
+  public static Object getController(String className) {
+  	if (nameToObject.get(className) == null) {
+		try {
+			Object controller = Class.forName(className).newInstance();
+			nameToObject.put(className, controller);
+			return controller;
+		} catch (ClassNotFoundException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
+		} catch (InstantiationException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
+		} catch (IllegalAccessException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);		
+		}
+	}
+	return nameToObject.get(className);
+  }
+  
   static int logix= NamedResources.makeStaticCache("Business logic classes", 
 						   new NamedResourceFactory()
    {
@@ -171,8 +191,13 @@ public class Logic
 	 
 	 MakumbaSystem.getMakumbaLogger("controller").info(msg);
 	 ((Hashtable)supplementary).put(p, msg);
-	 
-	 return lastFound;
+	 Object foundClass = nameToObject.get(lastFound.getClass().getName());
+	 if (foundClass != null) {
+	 	return foundClass;
+	 } else {
+		 return lastFound;	 	
+	 }
+  
        }
    },
      true

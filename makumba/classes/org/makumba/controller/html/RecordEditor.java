@@ -39,6 +39,9 @@ public class RecordEditor extends RecordFormatter {
 	String[] db;
 
 	String[] query;
+	
+	protected RecordEditor() {		
+	}
 
 	public RecordEditor(DataDefinition ri, Hashtable h, String database) {
 		super(ri, h);
