@@ -32,11 +32,12 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.view.jsptaglib.MakumbaVersionTag;
-import org.makumba.view.jsptaglib.QueryTag;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.SubmitButton;
 import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
@@ -55,6 +56,10 @@ public class TestTags extends JspTestCase {
 	static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 	private String output;
 	private String line;
+
+	static ArrayList languages = new ArrayList();
+	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
+			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
 
 	private static final class Suite extends TestSetup {
 		private Suite(Test arg0) {
@@ -109,6 +114,7 @@ public class TestTags extends JspTestCase {
 			p.clear();
 			p.put("description", "");
 			p.put("usagestart", birthdate);
+			p.put("email", "email1");
 			address=db.insert(person, "address", p);
 
 		}
@@ -143,13 +149,14 @@ public class TestTags extends JspTestCase {
 		}
 	}
 
-	static ArrayList languages = new ArrayList();
-	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
-			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
 	
 	public static Test suite() {
 		setup = new Suite(new TestSuite(TestTags.class));
 		return setup;
+	}
+	
+	private static Database getDB() {
+		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
 	
 	public void beginTomcat(Request request) {
@@ -234,7 +241,6 @@ public class TestTags extends JspTestCase {
 	}
 
 	public void testMakValueChar() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueChar.jsp");		
 	}	
 	public void endMakValueChar(WebResponse response) {
@@ -298,7 +304,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueDate() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueDate.jsp");		
 	}	
 	public void endMakValueDate(WebResponse response) {
@@ -325,7 +330,6 @@ public class TestTags extends JspTestCase {
 	}
 
 	public void testMakValueInt() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueInt.jsp");	
 	}
 	public void endMakValueInt(WebResponse response) {
@@ -350,7 +354,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueDouble() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueDouble.jsp");
 	}
 	public void endMakValueDouble(WebResponse response) {
@@ -371,7 +374,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueText() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueText.jsp");
 	}
 	public void endMakValueText(WebResponse response) {
@@ -400,7 +402,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueSet() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueSet.jsp");
 	}
 	public void endMakValueSet(WebResponse response) {
@@ -423,9 +424,9 @@ public class TestTags extends JspTestCase {
 		assertTrue("!endAddressDescriptionEmpty not found", output.indexOf("!endAddressDescriptionEmpty", output.indexOf("testAddressDescriptionEmpty!")) > 0 ? true : false);
 		assertEquals("problem with custom value for empty field", "N/A", output.substring(output.indexOf("testAddressDescriptionEmpty!")+28, output.indexOf("!endAddressDescriptionEmpty")));
 		
-		assertTrue("testAddressEmailDefault! not found", output.indexOf("testAddressEmailDefault!") > 0 ? true : false);
-		assertTrue("!endAddressEmailDefault not found", output.indexOf("!endAddressEmailDefault", output.indexOf("testAddressEmailDefault!")) > 0 ? true : false);
-		assertEquals("problem with default value for null field", "N/A", output.substring(output.indexOf("testAddressEmailDefault!")+24, output.indexOf("!endAddressEmailDefault")));
+		assertTrue("testAddressPhoneDefault! not found", output.indexOf("testAddressPhoneDefault!") > 0 ? true : false);
+		assertTrue("!endAddressPhoneDefault not found", output.indexOf("!endAddressPhoneDefault", output.indexOf("testAddressPhoneDefault!")) > 0 ? true : false);
+		assertEquals("problem with default value for null field", "N/A", output.substring(output.indexOf("testAddressPhoneDefault!")+24, output.indexOf("!endAddressPhoneDefault")));
 		
 		assertTrue("testAddressUsagestart! not found", output.indexOf("testAddressUsagestart!") > 0 ? true : false);
 		assertTrue("!endAddressUsagestart not found", output.indexOf("!endAddressUsagestart", output.indexOf("testAddressUsagestart!")) > 0 ? true : false);
@@ -434,7 +435,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueTS_create() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueTS_create.jsp");		
 	}
 	public void endMakValueTS_create(WebResponse response) {
@@ -455,7 +455,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakValueTS_modify() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakValueTS_modify.jsp");
 	}
 	public void endMakValueTS_modify(WebResponse response) {
@@ -504,7 +503,6 @@ public class TestTags extends JspTestCase {
 	}
 	
 	public void testMakNewForm() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakNewForm.jsp");
 	}
 	public void endMakNewForm(WebResponse response) {
@@ -535,9 +533,20 @@ public class TestTags extends JspTestCase {
 		assertEquals("problem with submit button", "<input type=\"submit\">", output.substring(output.indexOf("testSubmit!")+11, output.indexOf("!endSubmit")));
 		
 	}
+	
+	public void beginMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
+		WebConversation wc = new WebConversation();
+		WebRequest     req = new GetMethodWebRequest(System.getProperty("cactus.contextURL") + "/beginMakAddForm.jsp" );
+		WebResponse   resp = wc.getResponse( req );
 
-/*	public void testMakAddForm() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
+		// we get the first form in the jsp
+		WebForm form = resp.getForms()[0];
+		// set the input field "email" to "bartolomeus@rogue.be"
+		form.setParameter("email","bartolomeus@rogue.be");
+		// submit the form
+		form.submit();
+	}
+	public void testMakAddForm() throws ServletException, IOException {
 		pageContext.include("testMakAddForm.jsp");
 	}
 	public void endMakAddForm(WebResponse response) {
@@ -547,11 +556,16 @@ public class TestTags extends JspTestCase {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
 		
-		
-	}*/
+		//TODO bad parsing, should be rewritten
+		assertTrue("testEmail! not found", output.indexOf("testEmail!") > 0 ? true : false);
+		assertTrue("!endEmail not found", output.indexOf("!endEmail", output.indexOf("testEmail!")) > 0 ? true : false);
+		String line = output.substring(output.indexOf("testEmail!")+10, output.indexOf("!endEmail"));
+		line = removeNewlines(line);
+		line = line.replaceAll("[\t]*", "");
+		assertEquals("problem with form formatter", "   email1   bartolomeus@rogue.be", line);
+	}
 	
 	public void testMakEditForm() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
 		pageContext.include("testMakEditForm.jsp");
 	}
 	public void endMakEditForm(WebResponse response) {
@@ -598,10 +612,10 @@ public class TestTags extends JspTestCase {
 		assertTrue("testWeight! not found", output.indexOf("testWeight!") > 0 ? true : false);
 		assertTrue("!endWeight not found", output.indexOf("!endWeight", output.indexOf("testWeight!")) > 0 ? true : false);
 		assertEquals("problem with real", "<input name=\"weight\" type=\"text\" value=\"85.7\" maxlength=\"10\" >", output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
+				
 	}
 	
-	public void testMakForm() throws ServletException, IOException {
-		QueryTag makobject = new QueryTag();
+	public void testMakForm() throws ServletException, IOException, SAXException {
 		pageContext.include("testMakForm.jsp");
 	}
 	public void endMakForm(WebResponse response) {
@@ -690,9 +704,5 @@ public class TestTags extends JspTestCase {
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
 		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
-	}
-
-	private static Database getDB() {
-		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
 }
