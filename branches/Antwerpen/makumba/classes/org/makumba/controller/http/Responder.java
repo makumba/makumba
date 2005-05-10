@@ -22,6 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -62,7 +68,10 @@ public abstract class Responder implements java.io.Serializable
   protected int identity;
 
   /** the controller object, on which the handler method that performs the operation is invoked */
-  protected Object controller;
+  protected transient Object controller;
+  
+  /** store the name of the controller class */
+  protected String controllerClassname;
 
   /** the database in which the operation takes place */
   protected String database;
@@ -129,6 +138,8 @@ public abstract class Responder implements java.io.Serializable
   //--------------- responder caching section ------------------------
   static Hashtable indexedCache= new Hashtable();
   
+  public static String makumbaResponderBaseDirectory;
+  
   static NamedResources cache=new NamedResources
   ("controller.responders", new NamedResourceFactory()
    {
@@ -146,11 +157,29 @@ public abstract class Responder implements java.io.Serializable
        {
 	 Responder f= (Responder)name;
 	 f.identity= hashName.hashCode();
+
+	 String fileName = makumbaResponderBaseDirectory + "/" + f.identity;
+	 
+	 if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
+	 	try {
+	 		if (! new File(fileName).exists()) { // file does not exist
+	 			f.controllerClassname = f.controller.getClass().getName();
+		 		ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(fileName));
+				objectOut.writeObject(f); // we write the responder to disk
+				objectOut.close();
+	 		}
+		} catch (IOException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+		}
+	 }
 	 indexedCache.put(new Integer(f.identity), name);
+	 
 	 return name;
        }
    });
 
+  abstract protected void postDeserializaton();
+  
   /** a key that should identify this responder among all */
   public String responderKey()
   {
@@ -231,6 +260,14 @@ public abstract class Responder implements java.io.Serializable
   /** respond to a http request */
   static void response(HttpServletRequest req, HttpServletResponse resp)
   {
+    // set the correct working directory for the responders
+    if (Responder.makumbaResponderBaseDirectory == null) {
+    	Responder.makumbaResponderBaseDirectory = req.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir") + "/makumba-responders";
+	  	if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {	 	
+	  		new File(Responder.makumbaResponderBaseDirectory).mkdir();	 	
+	  	}      	
+    }
+  	
     if(req.getAttribute(RESPONSE_STRING_NAME)!=null)
       return;
     req.setAttribute(RESPONSE_STRING_NAME, "");
@@ -255,8 +292,30 @@ public abstract class Responder implements java.io.Serializable
 	  }
 	Integer i= new Integer(Integer.parseInt(responderCode));
 	Responder fr= ((Responder)indexedCache.get(i));
-	if(fr==null)
-	  throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
+	String fileName = makumbaResponderBaseDirectory + "/" + i;
+
+	if(fr==null) { // we do not have responder in cache --> try to get it from disk
+		ObjectInputStream objectIn = null;
+		try {
+			objectIn = new ObjectInputStream(new FileInputStream(fileName));
+			fr = (Responder) objectIn.readObject();
+			fr.postDeserializaton();
+			fr.controller = Logic.getController(fr.controllerClassname);
+		} catch (IOException e) {			
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+		} catch (ClassNotFoundException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: class not found: " + fileName, e);		
+		} finally {
+			if (objectIn != null) {
+				try {
+					objectIn.close();
+				} catch (IOException e1) {}
+			}
+		}
+		if (fr==null) { // we did not find the responder on the disk
+			throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
+		}
+	}
 	try{
 	  Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
 	  message="<font color=green>"+fr.message+"</font>";
