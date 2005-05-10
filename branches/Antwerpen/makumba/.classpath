@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="/makumba/classes"/>
+	<classpathentry kind="src" path="classes"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/makumba/lib/antlr.jar"/>
-	<classpathentry kind="lib" path="/makumba/lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="/makumba/lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/makumba/lib/junit.jar"/>
-	<classpathentry kind="lib" path="/makumba/lib/mysql.jar"/>
-	<classpathentry kind="lib" path="/makumba/lib/cactus-1.7.jar"/>
-	<classpathentry kind="output" path="/makumba/classes"/>
+	<classpathentry kind="lib" path="lib/antlr.jar"/>
+	<classpathentry kind="lib" path="lib/cactus.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="lib/httpunit.jar"/>
+	<classpathentry kind="output" path="classes"/>
 </classpath>
