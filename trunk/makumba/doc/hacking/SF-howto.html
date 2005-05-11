@@ -7,7 +7,6 @@
 </head>
 <body>
 <h2>SourceForge How-to</h2>
-<br>
 <h3>Anonymous CVS<br>
 </h3>
 As a non-developer, you can just do
@@ -32,6 +31,12 @@ cvs -d:ext:cristian_bogdan@cvs.sf.net:/cvsroot/makumba co makumba
 <br>
 to be able to do that you need
 <br>
+- a sourceforge account. initialize your sourceforge cvs account by
+doing ssh cvs.sf.net, you will automatically be logged out, that's
+normal<br>
+- membership in the makumba project, you can get that at <a
+ class="moz-txt-link-abbreviated"
+ href="mailto:makumba-comm-build@lists.sourceforge.net">makumba-comm-build@lists.sourceforge.net</a><br>
 - a ssh client, like ssh or putty's <span style="font-weight: bold;">plink</span>,
 which you should set as CVS_RSH
 . <br>
@@ -51,10 +56,9 @@ case, the password is the name of the most famous makumba tag, without
 <a href="http://lists.sourceforge.net/lists/admin/makumba-devel">http://lists.sourceforge.net/lists/admin/makumba-devel</a><br>
 <br>
 It's still not clear how to moderate lists.<br>
-<br>
 <h3>Publishing releases</h3>
-ant -Dtag=makumba-x_y_z publishJar will<a
- href="http://bugs.best.eu.org/show_bug.cgi?id=828"> fail if anonymous
+ant -Dtag=makumba-x_y_z publishJar will <a
+ href="http://bugs.best.eu.org/show_bug.cgi?id=828">fail if anonymous
 CVS is used</a>. Change your build.xml to use your personal cvs account<br>
 <br>
 </body>

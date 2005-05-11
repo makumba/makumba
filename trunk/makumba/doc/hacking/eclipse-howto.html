@@ -7,15 +7,17 @@
 </head>
 <body>
 1) Download<br>
-Java: you need the Java Development Kit (JDK) 5.0<br>
 <ul>
-  <li><a class="moz-txt-link-freetext"
+  <li>Java: you need the Java Development Kit (JDK) 5.0<br>
+    <a class="moz-txt-link-freetext"
  href="http://java.sun.com/j2se/1.5.0/download.jsp">http://java.sun.com/j2se/1.5.0/download.jsp</a><br>
 + install it</li>
   <li><a class="moz-txt-link-abbreviated" href="http://www.eclipse.org/">www.eclipse.org<br>
     </a>downloads -&gt; look for the version 3.1 (look link in the
 right column) <br>
-+ unpack the zip file to the root of the hard disk, e.g. c:\eclipse</li>
++ unpack the zip file to the root of the hard disk, e.g. c:\eclipse<br>
+    <span style="font-style: italic;">Do not </span>put Eclipse in a
+dir whose name contains spaces!</li>
   <li>&nbsp;If you don't already have it installed, install MySql.
 (preferably 4.1, to be found at<br>
     <a class="moz-txt-link-freetext"
@@ -32,12 +34,13 @@ just follow the instructions)</li>
  class="moz-txt-link-abbreviated"
  href="mailto:makumba-comm-build@lists.sourceforge.net">makumba-comm-build@lists.sourceforge.net</a>&nbsp;
 and specify your sourceforge username</li>
-  <li>to activate CVS access, use a secure shell (like SSH or putty) <br>
+  <li>to activate your CVS access, use a secure shell (like SSH or
+putty) <br>
   </li>
   <ul>
     <li>ssh cvs.sf.net <br>
     </li>
-    <li>You will be automatically logged out, that's normal.<br>
+    <li>you will be automatically logged out, that's normal.<br>
     </li>
   </ul>
 </ul>
@@ -92,12 +95,49 @@ to run with<br>
 </ul>
 5) Hack<br>
 <ul>
-  <li>Put your JSP test cases in webapps/tests. They can use MDDs from
-classes/test. <br>
+  <li>Your code can use MDDs from
+classes/test. They are already in the classpath, just use test.Person,
+test.Language, etc.<br>
+  </li>
+  <li>If you do just database/MDD code, simply start the automatic
+tests (mdd, dbtable) in Debug mode (Run/Debug, or click on the bug)<br>
+  </li>
+  <li>If you do taglib stuff (list, value, form, input, etc), put your
+JSP test cases in webapps/tests.<br>
   </li>
   <li>Start tomcat-mak in debug mode (Run/Debug/tomcat-mak) and you're
-ready to catch breakpoints<br>
+ready to catch breakpoints</li>
+  <li>If you want to hack stuff that will need regression tests, there
+may be a branch that is better to use for that. For example now there
+is the Antwerpen branch. <br>
   </li>
+  <ul>
+    <li>&nbsp;In Eclipse 3.1 you can switch just some directories to
+another branch, by pressing right-click on the dir, chose Team/Switch
+to Another Branch or Version</li>
+    <li>The following directories will typically need to switch to the
+branch:</li>
+    <ul>
+      <li>classes, but not classes/test (so switch classes to
+Antwerpen, and then switch test back to HEAD)<br>
+      </li>
+    </ul>
+    <ul>
+      <li>servlet-context (if you change something in makumba.tld)</li>
+    </ul>
+    <li>The following directories should most of the time stay in the
+HEAD (main) branch</li>
+    <ul>
+      <li>launchers</li>
+      <li>classes/test</li>
+      <li>tomcat</li>
+      <li>webapps/tests</li>
+      <li>.classpath, .project, build.xml, and all other files in the
+root<br>
+      </li>
+      <li>doc</li>
+    </ul>
+  </ul>
 </ul>
 </body>
 </html>
