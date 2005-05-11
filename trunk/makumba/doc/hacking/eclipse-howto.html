@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>eclipse-howto</title>
+</head>
+<body>
+1) Download<br>
+Java: you need the Java Development Kit (JDK) 5.0<br>
+<ul>
+  <li><a class="moz-txt-link-freetext"
+ href="http://java.sun.com/j2se/1.5.0/download.jsp">http://java.sun.com/j2se/1.5.0/download.jsp</a><br>
++ install it</li>
+  <li><a class="moz-txt-link-abbreviated" href="http://www.eclipse.org/">www.eclipse.org<br>
+    </a>downloads -&gt; look for the version 3.1 (look link in the
+right column) <br>
++ unpack the zip file to the root of the hard disk, e.g. c:\eclipse</li>
+  <li>&nbsp;If you don't already have it installed, install MySql.
+(preferably 4.1, to be found at<br>
+    <a class="moz-txt-link-freetext"
+ href="http://dev.mysql.com/downloads/mysql/4.1.html">http://dev.mysql.com/downloads/mysql/4.1.html</a>,
+just follow the instructions)</li>
+  <li>Create a "makumba" Mysql database, to be used for tests.<br>
+  </li>
+</ul>
+2) SourceForge access to makumba CVS<br>
+<ul>
+  <li>if you don't have a sourceforge account, create one at <a
+ href="http://www.sf.net">www.sf.net</a></li>
+  <li>to be added to the makumba project, send e-mail to <a
+ class="moz-txt-link-abbreviated"
+ href="mailto:makumba-comm-build@lists.sourceforge.net">makumba-comm-build@lists.sourceforge.net</a>&nbsp;
+and specify your sourceforge username</li>
+  <li>to activate CVS access, use a secure shell (like SSH or putty) <br>
+  </li>
+  <ul>
+    <li>ssh cvs.sf.net <br>
+    </li>
+    <li>You will be automatically logged out, that's normal.<br>
+    </li>
+  </ul>
+</ul>
+3) Checkout Makumba in Eclipse<br>
+<ul>
+  <li> it will ask where do you want your workspace: this will contain
+the makumba sources</li>
+  <li>you will get an welcome screen, just close it</li>
+  <li>File -&gt; Import -&gt; Check out project from CVS</li>
+  <ul>
+    <li>Host: cvs.sf.net</li>
+    <li>Repository path: /cvsroot/makumba</li>
+    <li>username + password&nbsp; from your sourceforge account</li>
+    <li>Connection type: extssh</li>
+    <li>use default port</li>
+    <li>click Next</li>
+    <li>User specified module name: makumba</li>
+    <li>click Finish</li>
+  </ul>
+  <li>After the checkout ends, the project will be compiled
+automatically<br>
+  </li>
+  <li>The makumba project will be shown with a red tick, ("errors").
+The cause for the errors is that, during first compilation, makumba
+downloads the JARs needed for the sources to compile. Eclipse does not
+know about these JARs. To fix that:<br>
+  </li>
+  <ul>
+    <li>click on the project name 'makumba' and press F5</li>
+  </ul>
+  <ul>
+    <li>if that fails,&nbsp; go to Project/Properties/Java Build Path,
+and remove and re-add manually each JAR<br>
+    </li>
+  </ul>
+</ul>
+4) Run the makumba tests<br>
+<ul>
+  <li>chose Run/Run</li>
+  <li>You will see there the makumba tests. Start with mdd, continue
+with dbtable</li>
+  <li>Before running the formatters tests, make sure you run tomcat-mak
+    <br>
+  </li>
+  <ul>
+    <li>note that accessing formatter tests directly from a browser is
+not a good idea because they insert data in the db just before they
+start and then they delete it, so most of them will not have any data
+to run with<br>
+    </li>
+  </ul>
+</ul>
+5) Hack<br>
+<ul>
+  <li>Put your JSP test cases in webapps/tests. They can use MDDs from
+classes/test. <br>
+  </li>
+  <li>Start tomcat-mak in debug mode (Run/Debug/tomcat-mak) and you're
+ready to catch breakpoints<br>
+  </li>
+</ul>
+</body>
+</html>
