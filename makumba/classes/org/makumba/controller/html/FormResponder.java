@@ -160,4 +160,10 @@ RecordEditor editor;
       .append("\">");
   }
 
+  protected void postDeserializaton() {
+      if (editor != null) {
+          editor.initFormatters();
+      }
+  }
+
 }
