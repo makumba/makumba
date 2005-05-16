@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
+import org.makumba.Database;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.controller.http.Responder;
@@ -163,7 +164,7 @@ public class FormResponder extends Responder
        }
    }
    
-  public void writeFormPostamble(StringBuffer sb, String basePointer) 
+  public void writeFormPostamble(StringBuffer sb, String basePointer, String session) 
   {
   	if(storedSuffix.equals("") && operation.equals("deleteLink"))
   	{
@@ -176,8 +177,25 @@ public class FormResponder extends Responder
   	
   	if(basePointer!=null)
   		writeInput(sb, basePointerName, basePointer, storedSuffix);
-  	writeInput(sb, responderName, ""+getPrototype()+storedSuffix+storedParentSuffix, "");
-  	if(storedSuffix.equals(""))
+	
+	String responderValue = getPrototype()+storedSuffix+storedParentSuffix;
+	String formSessionValue = responderValue + session; //gets the formSession value
+	
+	//writes the hidden fields
+  	writeInput(sb, responderName, responderValue, "");
+	if (multipleSubmitMsg != null && !multipleSubmitMsg.equals("")) {
+		sb.append('\n');
+		writeInput(sb, formSessionName, formSessionValue, "");	
+		
+		//insert the formSession into the database
+		Database db = MakumbaSystem.getConnectionTo(database);
+		Dictionary p = new Hashtable();
+		p.put("formSession", formSessionValue);
+		db.insert("org.makumba.controller.MultipleSubmit", p);
+		db.close();
+	}
+	
+	if(storedSuffix.equals(""))
   		// a root form
   		sb.append("\n</form>");
   }
