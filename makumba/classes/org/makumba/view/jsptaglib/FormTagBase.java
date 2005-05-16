@@ -226,8 +226,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       bodyContent.writeOut(bodyContent.getEnclosingWriter());
 
       sb= new StringBuffer();
-   
-      responder.writeFormPostamble(sb, basePointer);
+      responder.writeFormPostamble(sb, basePointer, pageContext.getSession().getId());
    
       bodyContent.getEnclosingWriter().print(sb.toString()); 
       if(findParentForm()!=null)

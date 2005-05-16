@@ -590,6 +590,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		
+		<attribute>
+			<name>multipleSubmitMsg</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 
 	</tag>
 
@@ -875,6 +881,12 @@
 
 		<attribute>
 			<name>onMouseOver</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<name>multipleSubmitMsg</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

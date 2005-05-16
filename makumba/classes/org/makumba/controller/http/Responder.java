@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -29,12 +30,15 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.GregorianCalendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
+import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -48,6 +52,9 @@ public abstract class Responder implements java.io.Serializable
 { 
   /** the name of the CGI parameter that passes the responder key, so the responder can be retrieved from the cache, "__makumba__responder__" */
   public final static String responderName="__makumba__responder__";
+  
+  /** used to fix the multiple submition bug (#190), it´s basicaliy respoder+sessionID. <br> TODO find a meaningful name :) */ 
+  public final static String formSessionName="__makumba__formSession__";
 
   /** the default label used to store the add and new result, "___mak___edited___"*/
   static public final String anonymousResult="___mak___edited___";
@@ -69,7 +76,10 @@ public abstract class Responder implements java.io.Serializable
 
   /** a response message to be shown in the response page */
   protected String message=defaultMessage;
-
+  
+  /** a response message to be shown when multiple submit occur */
+  protected String multipleSubmitMsg;
+  
   /** new and add responders set their result to a result attribute */
   protected String resultAttribute=anonymousResult;
 
@@ -110,7 +120,10 @@ public abstract class Responder implements java.io.Serializable
   
   /** pass the form response message */
   public void setMessage(String message) { this.message=message; }
-
+  
+  /** pass the multiple submit response message */
+  public void setMultipleSubmitMsg(String multipleSubmitMsg) { this.multipleSubmitMsg=multipleSubmitMsg; }
+  
   /** pass the response handler, if other than the default one */
   public void setHandler(String handler) { this.handler=handler; }
   
@@ -230,57 +243,92 @@ public abstract class Responder implements java.io.Serializable
       return;
     req.setAttribute(RESPONSE_STRING_NAME, "");
     String message="";
+	
+	Database db = null;
+	try {
+		db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+	} catch (LogicException le) {
+		//TODO handle exception
+	}
+	
     for(Iterator responderCodes= getResponderCodes(req); responderCodes.hasNext();)
       {
-	String code=(String)responderCodes.next();
-	String responderCode=code;
-	String suffix="";
-	String parentSuffix=null;
-	int n=code.indexOf(suffixSeparator);
-	if(n!=-1)
-	  {
-	    responderCode=code.substring(0, n);
-	    suffix=code.substring(n);
-	    parentSuffix="";
-	    n= suffix.indexOf(suffixSeparator, 1);
-	    if(n!=-1){
-	      parentSuffix=suffix.substring(n);
-	      suffix=suffix.substring(0, n);
-	    }
+		String code=(String)responderCodes.next();
+		String responderCode=code;
+		String suffix="";
+		String parentSuffix=null;
+		int n=code.indexOf(suffixSeparator);
+		if(n!=-1)
+		{
+			responderCode=code.substring(0, n);
+			suffix=code.substring(n);
+			parentSuffix="";
+			n= suffix.indexOf(suffixSeparator, 1);
+			if(n!=-1){
+				parentSuffix=suffix.substring(n);
+				suffix=suffix.substring(0, n);
+			}
+		}
+		Integer i= new Integer(Integer.parseInt(responderCode));
+		Responder fr= ((Responder)indexedCache.get(i));
+		if(fr==null)
+			throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
+	
+		try{
+			//check for multiple submition of forms
+			String reqFormSession = (String)RequestAttributes.getParameters(req).getParameter(formSessionName);
+			if (fr.multipleSubmitMsg != null && !fr.multipleSubmitMsg.equals("") && reqFormSession != null) {
+				//check to see if the ticket is valid... if it exists in the db
+				Vector v = db.executeQuery("SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1" , reqFormSession);
+				if (v.size() == 0) { // the ticket does not exist... error
+					throw new LogicException(fr.multipleSubmitMsg);
+					
+				} else if (v.size() >= 1) { // the ticket exists... continue
+					//garbage collection of old tickets
+					GregorianCalendar c = new GregorianCalendar();
+					c.add(GregorianCalendar.HOUR, -5); //how many hours of history do we want?
+					
+					Object[] params = {reqFormSession, c.getTime()};
+					//delete the currently used ticked and the expired ones
+					db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2", params);
+				}				
+			}
+			//end mulitiple submit check
+			
+			Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
+			message="<font color=green>"+fr.message+"</font>";
+			if(result!=null){
+				req.setAttribute(fr.resultAttribute, result);
+				req.setAttribute(resultNamePrefix+suffix, result);
+			}
+			req.setAttribute("makumba.successfulResponse", "yes");
+		}
+		catch(AttributeNotFoundException anfe)
+		{
+			// attribute not found is a programmer error and is reported
+			ControllerFilter.treatException(anfe, req, resp); 
+			continue;
+		}
+		catch(LogicException e){
+			MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
+			message=errorMessage(e);
+			req.setAttribute(fr.resultAttribute, Pointer.Null);
+			req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
+		}
+		catch(Throwable t){
+			// all included error types should be considered here
+			ControllerFilter.treatException(t, req, resp);
+		} finally {
+			try {
+				db.close();
+			} catch (Throwable t) {
+				//TODO handle exception
+			}		
+		}
+		// messages of inner forms are ignored
+		if(suffix.equals(""))
+			req.setAttribute(RESPONSE_STRING_NAME, message);
 	  }
-	Integer i= new Integer(Integer.parseInt(responderCode));
-	Responder fr= ((Responder)indexedCache.get(i));
-	if(fr==null)
-	  throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
-	try{
-	  Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
-	  message="<font color=green>"+fr.message+"</font>";
-	  if(result!=null){
-	    req.setAttribute(fr.resultAttribute, result);
-	    req.setAttribute(resultNamePrefix+suffix, result);
-	  }
-	  req.setAttribute("makumba.successfulResponse", "yes");
-	}
-	catch(AttributeNotFoundException anfe)
-	  {
-	    // attribute not found is a programmer error and is reported
-	    ControllerFilter.treatException(anfe, req, resp); 
-	    continue;
-	  }
-	catch(LogicException e){
-	  MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
-	  message=errorMessage(e);
-	  req.setAttribute(fr.resultAttribute, Pointer.Null);
-	  req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
-	}
-	catch(Throwable t){
-	  // all included error types should be considered here
-	  ControllerFilter.treatException(t, req, resp);
-	}
-	// messages of inner forms are ignored
-	if(suffix.equals(""))
-	   req.setAttribute(RESPONSE_STRING_NAME, message);
-      }
   }
 
   /** format an error message */
