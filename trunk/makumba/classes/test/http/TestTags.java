@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
+//TODO change Database to Transaction
 import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
@@ -154,6 +155,7 @@ public class TestTags extends JspTestCase {
 		return setup;
 	}
 	
+//	TODO change Database to Transaction
 	private static Database getDB() {
 		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
@@ -196,7 +198,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -248,6 +250,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		assertEquals("Database query empty", v.size(), 1);
@@ -311,6 +314,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -337,6 +341,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -361,6 +366,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -381,6 +387,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -409,6 +416,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -442,6 +450,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+//		TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
@@ -462,6 +471,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
+		//TODO change Database to Transaction
 		Database db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();

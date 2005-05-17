@@ -26,6 +26,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+//TODO change Database to Transaction
 import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 
@@ -50,6 +51,7 @@ public class lock extends TestCase
     return new TestSuite(lock.class);
   }
 
+//TODO change Database to Transaction
   Database db;
 
   public void setUp()

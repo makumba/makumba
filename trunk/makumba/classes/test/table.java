@@ -37,6 +37,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+//TODO change Database to Transaction
 import org.makumba.Database;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
@@ -48,6 +49,7 @@ import org.makumba.Text;
  * @author Cristian Bogdan
  */
 public class table extends TestCase {
+//	TODO change Database to Transaction
 	static Database db;
 
 	static long epsilon = 2000;
