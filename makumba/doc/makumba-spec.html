@@ -85,8 +85,7 @@ mak:lastCount()</a></li>
           <li><a href="#makadd">&lt;mak:addForm&gt;</a></li>
           <li><a href="#makedit">&lt;mak:editForm&gt;</a></li>
           <li><a href="#makform">&lt;mak:form&gt;</a></li>
-          <li><a href="#input">&lt;mak:input&gt;</a> and <a
- href="#choiceDisplay">&lt;mak:option&gt;</a></li>
+          <li><a href="#input">&lt;mak:input&gt;</a> and <a href="#choiceDisplay">&lt;mak:option&gt;</a></li>
           <li><a href="#action">&lt;mak:action&gt;</a></li>
         </ul>
       </li>
@@ -482,10 +481,7 @@ object.
 logic" of the organisation. Every makumba page will look for a handler,
 and will call its methods when needed. Check also the
 &lt;mak:newForm&gt; to know <a href="#handler_methods">which methods
-are called</a>. <span style="font-weight: bold;">If a handler class
-exists, then some operations cannot be performed if these methods are
-not defined in the handler class.</span><br>
-</p>
+are called</a>.</p>
 <h4>Handler Discovery</h4>
 <p>
 Each page will determine its handler class on first access, after being
@@ -565,9 +561,7 @@ contain:
 <p class="futfeat">There are good reasons to take into account the
 name of the response page of a form when looking for the business
 logic.
-Still, <span style="font-weight: bold;">it is the name of the page
-that contains the form which matters</span> <span
- style="font-style: italic;">not </span>the name of the action page.
+Still, it is the name of the page that contains the form which matters.
 It is good practice for both pages to actually have the same handler
 class.
 </p>
@@ -856,9 +850,7 @@ such as <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a>.
 The corresponding <b>WEB-INF/makumba.tld</b> is already included in
 the <a href="download.html">distribution</a>
 <code>makumba.jar</code>. The example <b>WEB-INF/web.xml</b> can be
-found in Makumba <a
- href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">cvs
-repository</a>.
+found in Makumba <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">cvs repository</a>.
 </p>
 <p>Before using Makumba tags in your JSP pages you also need to declare
 the taglib with:
@@ -908,9 +900,7 @@ instead of the requested page.</li>
   </li>
 </ul>
 <p>For this to work, the correct configuration must be applied in <code>WEB-INF/web.xml</code>
-(<a
- href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">example
-file</a>).
+(<a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/servlet_context/WEB-INF/">example file</a>).
 The following would tell the makumba controller to filter all requests
 for .jsp files.
 </p>
@@ -1028,8 +1018,7 @@ section</span></td>
     <tr>
       <td><tt>orderBy</tt></td>
       <td><a href="#OQL">OQL ORDER BY</a>&nbsp; section</td>
-      <td>Fixed, can contain #{ JSP EL expressions } <tt
- class="oldfeat">label.$fieldname used to be supported, not anymore</tt></td>
+      <td>Fixed, can contain #{ JSP EL expressions } <tt class="oldfeat">label.$fieldname used to be supported, not anymore</tt></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><tt>offset</tt></td>
@@ -1188,7 +1177,8 @@ not specified.</td>
       <td>The value of the expression is set to a new <code>java.lang.Object</code>
 variable by this name, as
 well as to a page-scope attribute, also by the same name (accessible as
-      <code>$attributename</code>). </td>
+      <code>$attributename</code>).
+      </td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
 exist in the Java scope at that point in the JSP. <br>
@@ -1201,7 +1191,8 @@ Date, Text, Pointer, Vector) before using it as such. </td>
       <td>The formatted output as it would have been printed, is
 instead stored in a new <code>java.lang.String</code>
 variable by this name, as well as to a page-scope attribute by the same
-name (accessible as <code>$attributename</code>). </td>
+name (accessible as <code>$attributename</code>).
+      </td>
       <td>Fixed. A new Java variable is created, so no other variable
 by the same name can
 exist in the Java scope at that point in the JSP. </td>
@@ -1315,15 +1306,12 @@ mak:list or mak:object. It has no value outside that tag. </li>
   <li> mak:maxCount() gives the total number of iterations inside a
 mak:list or mak:object (1). It has no value outside that tag. </li>
   <li> mak:lastCount() gives the total number of iterations of the
-previous mak:list or mak:object, respectively. It has no value inside
-the mak:list/object.
-    <div class="note">Note: if you want to store the value of some
-mak:list/object
-for usage in/after a later mak:list/object, you can do that with
-&lt;c:set var="<i>someVariableName</i>" value="${mak:lastCount()}" just
-after that
-mak:list/object.</div>
-  </li>
+previous mak:list or mak:object, respectively. It has no value inside the 
+mak:list/object.
+<div class="note">Note: if you want to store the value of some mak:list/object
+for usage in/after a later mak:list/object, you can do that with &lt;c:set 
+var="<i>someVariableName</i>" value="${mak:lastCount()}" just after that
+mak:list/object.</div></li>
 </ul>
 Example using the Java Standard Tag Library (<a
  href="http://java.sun.com/products/jsp/jstl/">JSTL</a>, prefix "c"): <br>
@@ -2260,6 +2248,7 @@ of the country of which person is a citizen, through the person edit
 form :
 </p>
 <pre class="example">&lt;mak:input name="person.citizenship.capital.name" /&gt;<br></pre>
+
 <p>Restrictions for different field types:
 </p>
 <ul>
@@ -2269,24 +2258,26 @@ form :
   <li>subset, subpointer: cannot be edited as a field,
 only as a separate object</li>
 </ul>
-<h5><a name="choiceDisplay"></a>&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
-By default, for pointer and set fields, <code>mak:input</code> will
-show a choser (selector) that includes the title of all possible
-options, ordered by that title. To change that behavior, the <code>mak:input</code>
-can include one or more <code>mak:option</code>. Options can be
-repeated using <code>mak:list</code>, <code>c:foreach</code>, and in
-general can appear inside any other tag.
-<p>Text inside <code>mak:option</code> will become an option title.
-The <code>value</code> attribute will become the option. All text
-produced inside the mak:input that is not inside a mak:option must be
-blank!</p>
-<p>If <code>mak:option</code> doesn't have a value indicated, it will
-produce a nil option. Such nil options will be ignored at form
-submission.</p>
-<p> If an option value appears many times it will only be shown the
-first time it occurs.</p>
-<p></p>
-<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;<br>&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someCondition" &gt;<br>    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someOtherCondition" &gt;<br>   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;/mak:input&gt;<br><br></pre>
+
+
+<h5><a name="choiceDisplay" ></a>&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
+By default, for pointer and set fields, <code>mak:input</code> will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the <code>mak:input</code> can include one or more <code>mak:option</code>. Options can be repeated using <code>mak:list</code>, <code>c:foreach</code>, and in general can appear inside any other tag.<p>
+Text inside <code>mak:option</code> will become an option title. The <code>value</code> attribute will become the option. All text produced inside the mak:input that is not inside a mak:option must be blank!<p>
+If <code>mak:option</code> doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.<p> 
+If an option value appears many times it will only be shown the first time it occurs.<p>
+
+<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;
+&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;
+&lt;mak:list from="T choice" where="someCondition" &gt;
+    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;
+&lt;/mak:list&gt;
+&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;
+&lt;mak:list from="T choice" where="someOtherCondition" &gt;
+   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;
+&lt;/mak:list&gt;
+&lt;/mak:input&gt;
+<br></pre>
+
 <table class="tagParamDef">
   <tbody>
     <tr>
@@ -2296,13 +2287,12 @@ first time it occurs.</p>
     </tr>
     <tr>
       <td><tt>value</tt> <br>
-      </td>
       <td>Value of the option, can be an OQL expression or a $attribute
-      </td>
+</td>
       <td>Fixed, if not indicated, nil (null option) is default</td>
     </tr>
-  </tbody>
 </table>
+
 <!-- ========================================================= -->
 <!-- ====================== mak:action ======================= -->
 <h4><a name="action">&lt;mak:action&gt;....&lt;/mak:action&gt;</a></h4>

@@ -21,14 +21,36 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba;
 import java.util.Dictionary;
+import java.util.Vector;
 
 /** Information about a field from a makumba data definition as obtained from an MDD file.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is not needed usually, as the application programmer knows the makumba data structure.
  */
 public interface FieldDefinition
 {
+  public static final int _ptr = 0;
+  public static final int _ptrRel = 1;
+  public static final int _ptrOne = 2;
+  public static final int _ptrIndex = 3;
+  public static final int _int = 4;
+  public static final int _intEnum = 5;
+  public static final int _char = 6;
+  public static final int _charEnum = 7;
+  public static final int _text = 8;
+  public static final int _date = 9;
+  public static final int _dateCreate = 10;
+  public static final int _dateModify = 11;
+  public static final int _set = 12;
+  public static final int _setComplex = 13;
+  public static final int _nil = 14;
+  public static final int _real = 15;
+  public static final int _setCharEnum = 16;
+  public static final int _setIntEnum = 17;
+  
   /** The name of this field, normally the same with the name of the field */
   public String getName();
 
@@ -39,6 +61,9 @@ public interface FieldDefinition
     no default value is indicated */
   public Object getEmptyValue();
 
+  /** The null value for this type */
+  public Object getNull();
+  
   /** Tells wether this field has a description in the MDD */
   public boolean hasDescription();
 
@@ -60,8 +85,12 @@ public interface FieldDefinition
    * dateModify: last modification date, automatically added
    * set: normal set in another table
    * setComplex: set of type defined on-the-spot
+   * TODO nil and real and timeStamp need to be added???
    */
   public String getType();
+  
+  /** returns the integer value associated with the field's internal makumba type. */ 
+  public int getIntegerType();
 
   /** The data type of this field. For example, intEnum and int both have int as data type */
   public String getDataType();
@@ -152,21 +181,21 @@ public interface FieldDefinition
    * @return the foreign type indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getRelationType();
+  public DataDefinition getForeignTable();
 
   /** The subtype created by an immediate ptr or set definition.
    * Works only for ptrOne, set, setComplex types
    * @return the subtype indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getSubtype();
+  public DataDefinition getSubtable();
 
   /** The type referred. Will return getRelationType() for ptr, ptrRel and set types and getSubtype() for ptrOne, set, setComplex types.
    * Works only for ptrOne, set, setComplex types
    * @return the subtype indicated in set or ptr definition
    * @exception ClassCastException for other types
    */
-  public DataDefinition getReferredType();
+  public DataDefinition getPointedType();
 
   /** Get the alternative title field, if the title to be used is indicated specifically on a ptr or set. 
    * Works only for ptr and set types
@@ -188,13 +217,18 @@ public interface FieldDefinition
 
   /** check if the value can be assigned */
   public Object checkValue(Object value);
+  
+  //inserted 20050418
+  public Object checkValueImpl(Object value);
 
   /** check if the corresponding field from the dictionary can be inserted */
   public void checkInsert(Dictionary d);
 
   /** check if the corresponding field from the dictionary can be updated */
   public void checkUpdate(Dictionary d);
-
+  
+  /** returns the deprecated valmues for intEnum*/
+  public Vector getDeprecatedValues();
 
 }
 

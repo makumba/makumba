@@ -22,7 +22,12 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -30,15 +35,12 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.GregorianCalendar;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
-import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -52,9 +54,6 @@ public abstract class Responder implements java.io.Serializable
 { 
   /** the name of the CGI parameter that passes the responder key, so the responder can be retrieved from the cache, "__makumba__responder__" */
   public final static String responderName="__makumba__responder__";
-  
-  /** used to fix the multiple submition bug (#190), it´s basicaliy respoder+sessionID. <br> TODO find a meaningful name :) */ 
-  public final static String formSessionName="__makumba__formSession__";
 
   /** the default label used to store the add and new result, "___mak___edited___"*/
   static public final String anonymousResult="___mak___edited___";
@@ -69,17 +68,17 @@ public abstract class Responder implements java.io.Serializable
   protected int identity;
 
   /** the controller object, on which the handler method that performs the operation is invoked */
-  protected Object controller;
+  protected transient Object controller;
+  
+  /** store the name of the controller class */
+  protected String controllerClassname;
 
   /** the database in which the operation takes place */
   protected String database;
 
   /** a response message to be shown in the response page */
   protected String message=defaultMessage;
-  
-  /** a response message to be shown when multiple submit occur */
-  protected String multipleSubmitMsg;
-  
+
   /** new and add responders set their result to a result attribute */
   protected String resultAttribute=anonymousResult;
 
@@ -120,10 +119,7 @@ public abstract class Responder implements java.io.Serializable
   
   /** pass the form response message */
   public void setMessage(String message) { this.message=message; }
-  
-  /** pass the multiple submit response message */
-  public void setMultipleSubmitMsg(String multipleSubmitMsg) { this.multipleSubmitMsg=multipleSubmitMsg; }
-  
+
   /** pass the response handler, if other than the default one */
   public void setHandler(String handler) { this.handler=handler; }
   
@@ -142,10 +138,17 @@ public abstract class Responder implements java.io.Serializable
   //--------------- responder caching section ------------------------
   static Hashtable indexedCache= new Hashtable();
   
+  public static String makumbaResponderBaseDirectory;
+  
   static NamedResources cache=new NamedResources
   ("controller.responders", new NamedResourceFactory()
    {
-     public Object getHashObject(Object o)
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Object getHashObject(Object o)
        {
 	 return ((Responder)o).responderKey();
        }
@@ -154,11 +157,29 @@ public abstract class Responder implements java.io.Serializable
        {
 	 Responder f= (Responder)name;
 	 f.identity= hashName.hashCode();
+
+	 String fileName = makumbaResponderBaseDirectory + "/" + f.identity;
+	 
+	 if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
+	 	try {
+	 		if (! new File(fileName).exists()) { // file does not exist
+	 			f.controllerClassname = f.controller.getClass().getName();
+		 		ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(fileName));
+				objectOut.writeObject(f); // we write the responder to disk
+				objectOut.close();
+	 		}
+		} catch (IOException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+		}
+	 }
 	 indexedCache.put(new Integer(f.identity), name);
+	 
 	 return name;
        }
    });
 
+  abstract protected void postDeserializaton();
+  
   /** a key that should identify this responder among all */
   public String responderKey()
   {
@@ -239,96 +260,91 @@ public abstract class Responder implements java.io.Serializable
   /** respond to a http request */
   static void response(HttpServletRequest req, HttpServletResponse resp)
   {
+    // set the correct working directory for the responders
+    if (Responder.makumbaResponderBaseDirectory == null) {
+    	Responder.makumbaResponderBaseDirectory = req.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir") + "/makumba-responders";
+	  	if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {	 	
+	  		new File(Responder.makumbaResponderBaseDirectory).mkdir();	 	
+	  	}      	
+    }
+  	
     if(req.getAttribute(RESPONSE_STRING_NAME)!=null)
       return;
     req.setAttribute(RESPONSE_STRING_NAME, "");
     String message="";
-	
-	Database db = null;
-	try {
-		db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
-	} catch (LogicException le) {
-		//TODO handle exception
-	}
-	
     for(Iterator responderCodes= getResponderCodes(req); responderCodes.hasNext();)
       {
-		String code=(String)responderCodes.next();
-		String responderCode=code;
-		String suffix="";
-		String parentSuffix=null;
-		int n=code.indexOf(suffixSeparator);
-		if(n!=-1)
-		{
-			responderCode=code.substring(0, n);
-			suffix=code.substring(n);
-			parentSuffix="";
-			n= suffix.indexOf(suffixSeparator, 1);
-			if(n!=-1){
-				parentSuffix=suffix.substring(n);
-				suffix=suffix.substring(0, n);
-			}
-		}
-		Integer i= new Integer(Integer.parseInt(responderCode));
-		Responder fr= ((Responder)indexedCache.get(i));
-		if(fr==null)
-			throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
-	
-		try{
-			//check for multiple submition of forms
-			String reqFormSession = (String)RequestAttributes.getParameters(req).getParameter(formSessionName);
-			if (fr.multipleSubmitMsg != null && !fr.multipleSubmitMsg.equals("") && reqFormSession != null) {
-				//check to see if the ticket is valid... if it exists in the db
-				Vector v = db.executeQuery("SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1" , reqFormSession);
-				if (v.size() == 0) { // the ticket does not exist... error
-					throw new LogicException(fr.multipleSubmitMsg);
-					
-				} else if (v.size() >= 1) { // the ticket exists... continue
-					//garbage collection of old tickets
-					GregorianCalendar c = new GregorianCalendar();
-					c.add(GregorianCalendar.HOUR, -5); //how many hours of history do we want?
-					
-					Object[] params = {reqFormSession, c.getTime()};
-					//delete the currently used ticked and the expired ones
-					db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2", params);
-				}				
-			}
-			//end mulitiple submit check
-			
-			Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
-			message="<font color=green>"+fr.message+"</font>";
-			if(result!=null){
-				req.setAttribute(fr.resultAttribute, result);
-				req.setAttribute(resultNamePrefix+suffix, result);
-			}
-			req.setAttribute("makumba.successfulResponse", "yes");
-		}
-		catch(AttributeNotFoundException anfe)
-		{
-			// attribute not found is a programmer error and is reported
-			ControllerFilter.treatException(anfe, req, resp); 
-			continue;
-		}
-		catch(LogicException e){
-			MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
-			message=errorMessage(e);
-			req.setAttribute(fr.resultAttribute, Pointer.Null);
-			req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
-		}
-		catch(Throwable t){
-			// all included error types should be considered here
-			ControllerFilter.treatException(t, req, resp);
-		} finally {
-			try {
-				db.close();
-			} catch (Throwable t) {
-				//TODO handle exception
-			}		
-		}
-		// messages of inner forms are ignored
-		if(suffix.equals(""))
-			req.setAttribute(RESPONSE_STRING_NAME, message);
+	String code=(String)responderCodes.next();
+	String responderCode=code;
+	String suffix="";
+	String parentSuffix=null;
+	int n=code.indexOf(suffixSeparator);
+	if(n!=-1)
+	  {
+	    responderCode=code.substring(0, n);
+	    suffix=code.substring(n);
+	    parentSuffix="";
+	    n= suffix.indexOf(suffixSeparator, 1);
+	    if(n!=-1){
+	      parentSuffix=suffix.substring(n);
+	      suffix=suffix.substring(0, n);
+	    }
 	  }
+	Integer i= new Integer(Integer.parseInt(responderCode));
+	Responder fr= ((Responder)indexedCache.get(i));
+	String fileName = makumbaResponderBaseDirectory + "/" + i;
+
+	if(fr==null) { // we do not have responder in cache --> try to get it from disk
+		ObjectInputStream objectIn = null;
+		try {
+			objectIn = new ObjectInputStream(new FileInputStream(fileName));
+			fr = (Responder) objectIn.readObject();
+			fr.postDeserializaton();
+			fr.controller = Logic.getController(fr.controllerClassname);
+		} catch (IOException e) {			
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+		} catch (ClassNotFoundException e) {
+			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: class not found: " + fileName, e);		
+		} finally {
+			if (objectIn != null) {
+				try {
+					objectIn.close();
+				} catch (IOException e1) {}
+			}
+		}
+		if (fr==null) { // we did not find the responder on the disk
+			throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
+		}
+	}
+	try{
+	  Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
+	  message="<font color=green>"+fr.message+"</font>";
+	  if(result!=null){
+	    req.setAttribute(fr.resultAttribute, result);
+	    req.setAttribute(resultNamePrefix+suffix, result);
+	  }
+	  req.setAttribute("makumba.successfulResponse", "yes");
+	}
+	catch(AttributeNotFoundException anfe)
+	  {
+	    // attribute not found is a programmer error and is reported
+	    ControllerFilter.treatException(anfe, req, resp); 
+	    continue;
+	  }
+	catch(LogicException e){
+	  MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
+	  message=errorMessage(e);
+	  req.setAttribute(fr.resultAttribute, Pointer.Null);
+	  req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
+	}
+	catch(Throwable t){
+	  // all included error types should be considered here
+	  ControllerFilter.treatException(t, req, resp);
+	}
+	// messages of inner forms are ignored
+	if(suffix.equals(""))
+	   req.setAttribute(RESPONSE_STRING_NAME, message);
+      }
   }
 
   /** format an error message */
@@ -353,7 +369,11 @@ public abstract class Responder implements java.io.Serializable
   {
     responderOps.put("edit", new ResponderOp()
 		    {
-		      public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		      /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			throws LogicException
 			{
 			  return Logic.doEdit(resp.controller,
@@ -369,7 +389,11 @@ public abstract class Responder implements java.io.Serializable
     
     responderOps.put("simple", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doOp(resp.controller,
@@ -384,7 +408,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("new", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doNew(resp.controller,
@@ -400,7 +428,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("add", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doAdd(resp.controller,
@@ -416,7 +448,11 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("addToNew", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doAdd(resp.controller,
@@ -430,9 +466,14 @@ public abstract class Responder implements java.io.Serializable
 		       public String verify(Responder resp){ return null; }
 		     });
 
-    responderOps.put("deleteLink", new ResponderOp()
+    responderOps.put("delete", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+		       /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doDelete(resp.controller,
@@ -445,22 +486,6 @@ public abstract class Responder implements java.io.Serializable
 
 		       public String verify(Responder resp){ return null; }
 		     });
-    
-    responderOps.put("deleteForm", new ResponderOp()
-		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
-			 throws LogicException
-			 {
-		           return Logic.doDelete(resp.controller,
-						 resp.basePointerType,
-						 resp.getHttpBasePointer(req, suffix),
-						 new RequestAttributes(resp.controller, req, resp.database),
-						 resp.database,
-						 RequestAttributes.getConnectionProvider(req));
-			 }
-
-		       public String verify(Responder resp){ return null; }
-		     } );
   }
 }
 

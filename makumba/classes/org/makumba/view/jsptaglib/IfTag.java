@@ -37,7 +37,11 @@ import org.makumba.ProgrammerError;
 
 public class IfTag extends MakumbaTag implements BodyTag
 {
-  String testExpr;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String testExpr;
   private static final Integer TRUE_INT = new Integer(1);
   
   

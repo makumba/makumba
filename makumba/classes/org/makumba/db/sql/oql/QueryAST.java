@@ -36,7 +36,12 @@ import antlr.collections.AST;
 /** an OQL query, writes out the translated SQL query */
 public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 {
-  public QueryAST(){}
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public QueryAST(){}
   public QueryAST(antlr.Token t) { super(t); }
 
   String originalQuery;
@@ -266,10 +271,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
       throw new antlr.SemanticException("no such field \""+field+"\" in makumba type \""+ type.getName()+"\"");
 
     try{
-      foreign=fi.getRelationType();
+      foreign=fi.getForeignTable();
     }catch(Exception e){}
     try{
-      sub=fi.getSubtype();
+      sub=fi.getSubtable();
     }catch(Exception e){}
 
     String label2= label;
@@ -457,7 +462,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
 		break;
 	      
 	      label=join(label, field, null);
-	      ri= fi.getReferredType();
+	      ri= fi.getPointedType();
 	    }
 	id.label=label;
 	id.field=field;
@@ -520,7 +525,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   {
     DataDefinition ri= (DataDefinition)labels.get(label);
     try{
-      return ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getDBName();
+      return ((org.makumba.db.sql.TableManager)d.getTable(ri)).getDBName();
     }catch(NullPointerException e)
       { return ri.getName(); }
   }
@@ -530,13 +535,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
   {
     DataDefinition ri= (DataDefinition)labels.get(label);
     try{
-      return ((org.makumba.db.sql.FieldManager)
-	    ((org.makumba.db.sql.RecordManager)d.getTable(ri)).getFieldHandler(field))
-	.getDBName();
+      return ((org.makumba.db.sql.TableManager)d.getTable(ri)).getFieldDBName(field);
     }catch(NullPointerException e)
       {return field; }
   }
-
 
   /** write the translator-generated joins */
   protected void writeJoins(Database d, StringBuffer ret)

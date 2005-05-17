@@ -19,9 +19,6 @@ NOT TO BE RELEASED YET (need more testing)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
-0.5.14.1; 02 may 2005
-fixed bug 838 
-
 0.5.14;
 rudi; 21 mar 2005: fixed bug 49 (source viewers eat too many resources), improvements on jsp source code viewer: recognises EL, fixed a bug for nested tags & empty lines
 rudi; 21 mar 2005: fixed bug 94 (source viewer, linking of java files), adapted java source viewer to use syntax points, highlights reserved & keywords, provides links to API docs for sun & makumba classes, links to found .java files

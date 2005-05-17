@@ -26,7 +26,12 @@ import org.makumba.db.Database;
 
 public class ParamAST extends OQLAST
 {
-  public String toString(){ return "$"+number; }
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public String toString(){ return "$"+number; }
   public ParamAST(){};
 
   public String writeInSQLQuery(Database d)

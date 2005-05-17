@@ -28,14 +28,17 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
-import org.makumba.Database;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.controller.http.Responder;
 
 public class FormResponder extends Responder
 {
-  RecordEditor editor;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+RecordEditor editor;
   
   /** reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved as attributes  */
   public Dictionary getHttpData(HttpServletRequest req, String suffix)
@@ -93,116 +96,60 @@ public class FormResponder extends Responder
   public void setExtraFormatting(StringBuffer extraFormatting)
   { this.extraFormatting=extraFormatting; }
 
-
-
   public void writeFormPreamble(StringBuffer sb, String basePointer) 
-   {
-     if(!storedSuffix.equals(""))
-       // no preamble for non-root forms (forms included in other forms)
-       return;
-     String sep=action.indexOf('?')>=0?"&":"?";	
-     if(operation.equals("deleteLink"))
-       {
-
- 	// a root deleteLink
-   	
- 	sb.append("<a href=\"")
- 	  .append(action)
- 	  .append(sep)
- 	  .append(basePointerName)
- 	  .append("=")
- 	  .append(basePointer)
- 	  .append('&')
- 	  .append(responderName)
- 	  .append("=")
- 	  .append(getPrototype())
- 	  .append("\" ")
- 	  .append(extraFormatting)
- 	  .append(">");
- 	
-     
-     
-     }
- 	
-       
-     else if(operation.equals("deleteForm")){
-     	sb.append("<form action=");
-     	sb.append("\""+action);
- 		sb.append(sep);
- 		sb.append(basePointerName);
- 		sb.append("=");
- 		sb.append(basePointer);
- 		sb.append('&');
- 		sb.append(responderName);
- 		sb.append("=");
- 		sb.append(getPrototype()+"\"");
-     	
-     	sb.append(" method=");
-     	sb.append("\""+method+"\"");
-     	if(multipart)
-     	  sb.append(" enctype=\"multipart/form-data\" ");
-     	sb.append(extraFormatting);
-     	sb.append(">");
-     	
-     	
-     	sb.append("<input type=\"submit\" ");
-     	sb.append("value=\"");
-     
-     
-     }
-     else
-       {
- 	// a root form, translates into an HTML form
- 	sb.append("<form action=");
- 	sb.append("\""+action+"\"");
- 	sb.append(" method=");
- 	sb.append("\""+method+"\"");
- 	if(multipart)
- 	  sb.append(" enctype=\"multipart/form-data\" ");
- 	sb.append(extraFormatting);
- 	sb.append(">");
-       }
-   }
-   
-  public void writeFormPostamble(StringBuffer sb, String basePointer, String session) 
   {
-  	if(storedSuffix.equals("") && operation.equals("deleteLink"))
-  	{
-  		// a root deleteLink
-  		sb.append("</a>");
-  		return;
-  	}else if(storedSuffix.equals("") && operation.equals("deleteForm")){
-  		sb.append("\"/>");
-  	}
-  	
-  	if(basePointer!=null)
-  		writeInput(sb, basePointerName, basePointer, storedSuffix);
-	
-	String responderValue = getPrototype()+storedSuffix+storedParentSuffix;
-	String formSessionValue = responderValue + session; //gets the formSession value
-	
-	//writes the hidden fields
-  	writeInput(sb, responderName, responderValue, "");
-	if (multipleSubmitMsg != null && !multipleSubmitMsg.equals("")) {
-		sb.append('\n');
-		writeInput(sb, formSessionName, formSessionValue, "");	
-		
-		//insert the formSession into the database
-		Database db = MakumbaSystem.getConnectionTo(database);
-		Dictionary p = new Hashtable();
-		p.put("formSession", formSessionValue);
-		db.insert("org.makumba.controller.MultipleSubmit", p);
-		db.close();
-	}
-	
-	if(storedSuffix.equals(""))
-  		// a root form
-  		sb.append("\n</form>");
+    if(!storedSuffix.equals(""))
+      // no preamble for non-root forms (forms included in other forms)
+      return;
+
+    if(operation.equals("delete"))
+      {
+	// a root deleteLink
+	String sep=action.indexOf('?')>=0?"&":"?";
+	sb.append("<a href=\"")
+	  .append(action)
+	  .append(sep)
+	  .append(basePointerName)
+	  .append("=")
+	  .append(basePointer)
+	  .append('&')
+	  .append(responderName)
+	  .append("=")
+	  .append(getPrototype())
+	  .append("\" ")
+	  .append(extraFormatting)
+	  .append(">");
+      }
+    else 
+      {
+	// a root form, translates into an HTML form
+	sb.append("<form action=");
+	sb.append("\""+action+"\"");
+	sb.append(" method=");
+	sb.append("\""+method+"\"");
+	if(multipart)
+	  sb.append(" enctype=\"multipart/form-data\" ");
+	sb.append(extraFormatting);
+	sb.append(">");
+      }
   }
-
-
-
-
+  
+  public void writeFormPostamble(StringBuffer sb, String basePointer) 
+  {
+    if(storedSuffix.equals("") && operation.equals("delete"))
+      {
+	// a root deleteLink
+	sb.append("</a>");
+	return;
+      }
+    if(basePointer!=null)
+      writeInput(sb, basePointerName, basePointer, storedSuffix);
+    writeInput(sb, responderName, ""+getPrototype()+storedSuffix+storedParentSuffix, "");
+    if(storedSuffix.equals(""))
+      // a root form
+      sb.append("\n</form>");
+  }
+  
   void writeInput(StringBuffer sb, String name, String value, String suffix)
   {
     sb.append("<input type=\"hidden\" name=\"")
@@ -211,6 +158,12 @@ public class FormResponder extends Responder
       .append("\" value=\"")
       .append(value)
       .append("\">");
+  }
+
+  protected void postDeserializaton() {
+      if (editor != null) {
+          editor.initFormatters();
+      }
   }
 
 }

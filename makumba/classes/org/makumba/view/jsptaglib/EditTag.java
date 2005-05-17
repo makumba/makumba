@@ -27,7 +27,12 @@ import org.makumba.DataDefinition;
 
 public class EditTag extends FormTagBase 
 {
-  // for input tags:
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+// for input tags:
   public String getDefaultExpr(String fieldName) 
   { return baseObject+"."+fieldName; }
 

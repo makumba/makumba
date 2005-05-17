@@ -33,7 +33,11 @@ import org.makumba.util.MultipleKey;
 /** This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is defined by a set of keys of the dictionary. Elements of each group come in a Vector that is guaranteed to respect the order in the original enumeration. */ 
 public class Grouper extends Hashtable
 {
-  Vector keyNameSets;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Vector keyNameSets;
 
   /** group the given data according to the given key sets. keyNameSets is a Vector of Vectors of Strings that represent key names */
   public Grouper(Vector keyNameSets, Enumeration e)

@@ -35,7 +35,11 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class LogoutTag extends TagSupport
 {
-  String attr=null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String attr=null;
 
   public void setActor(String a){ attr=a; }
   

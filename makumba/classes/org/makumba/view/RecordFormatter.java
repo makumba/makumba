@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,42 +22,80 @@
 /////////////////////////////////////
 
 package org.makumba.view;
+
+import java.io.Serializable;
 import java.util.Dictionary;
 
 import org.makumba.DataDefinition;
-import org.makumba.abstr.RecordHandler;
+import org.makumba.FieldDefinition;
 
-public class RecordFormatter extends RecordHandler
-{
-  public RecordFormatter(DataDefinition ri) 
-  {
-    super(ri); 
-  }
-  
-  public RecordFormatter(ComposedQuery q) 
-  {
-    super((DataDefinition)q.getResultType()); 
-    for(int i=0; i<handlerOrder.size(); i++)
-      ((FieldFormatter)handlerOrder.elementAt(i)).initExpr(q.getProjectionAt(i));
-  }
+public class RecordFormatter implements Serializable {
+	public DataDefinition dd;
 
-  public RecordFormatter(DataDefinition ri, java.util.Hashtable names) 
-  {
-    super(ri);
-    for(int i=0; i<handlerOrder.size(); i++)
-      {
-	FieldFormatter ff= (FieldFormatter)handlerOrder.elementAt(i);
-	ff.initExpr((String)names.get(ff.getName()));
-      }
-  }
+	public String[] expr;
 
-  protected String applyParameters(FieldFormatter ff, Dictionary formatParams, String s)
-  { return s; }
+	protected transient FieldFormatter[] formatterArray;
+	
+	public RecordFormatter() {}
 
-  public String format(int i, Object value, Dictionary formatParams)
-  {
-    FieldFormatter ff= (FieldFormatter)handlerOrder.elementAt(i); 
-    ff.checkParams(formatParams);
-    return applyParameters(ff, formatParams, ff.format(value, formatParams));
-  }
+	private static final long serialVersionUID = 1L;
+
+	public RecordFormatter(ComposedQuery q) {
+		dd = (DataDefinition) q.getResultType();
+		initFormatters();
+
+		expr = new String[dd.getFieldNames().size()];
+
+		for (int i = 0; i < dd.getFieldNames().size(); i++)
+			expr[i] = q.getProjectionAt(i);
+	}
+
+	public RecordFormatter(DataDefinition dd, java.util.Hashtable names) {
+		this.dd = dd;
+		initFormatters();
+
+		expr = new String[dd.getFieldNames().size()];
+
+		for (int i = 0; i < dd.getFieldNames().size(); i++) {
+			expr[i] = (String) names.get(dd.getFieldDefinition(i).getName());
+		}
+	}
+
+	protected String applyParameters(FieldFormatter ff,
+			Dictionary formatParams, String s) {
+		return s;
+	}
+
+	public String format(int i, Object value, Dictionary formatParams) {
+		formatterArray[i].checkParams(this, i, formatParams);
+		return applyParameters(formatterArray[i], formatParams,
+				formatterArray[i].format(this, i, value, formatParams));
+	}
+
+	protected void initFormatters() {
+		formatterArray = new FieldFormatter[dd.getFieldNames().size()];
+		for (int i = 0; i < dd.getFieldNames().size(); i++) {
+			FieldDefinition fd = dd.getFieldDefinition(i);
+			switch (fd.getIntegerType()) {
+			case FieldDefinition._ptr:
+			case FieldDefinition._ptrRel:
+			case FieldDefinition._ptrOne:
+			case FieldDefinition._ptrIndex:
+				formatterArray[i] = ptrFormatter.getInstance();
+				break;
+			case FieldDefinition._intEnum:
+				formatterArray[i] = intEnumFormatter.getInstance();
+				break;
+			case FieldDefinition._date:
+				formatterArray[i] = dateFormatter.getInstance();
+				break;
+			case FieldDefinition._dateCreate:
+			case FieldDefinition._dateModify:
+				formatterArray[i] = timestampFormatter.getInstance();
+				break;
+			default:
+				formatterArray[i] = FieldFormatter.getInstance();
+			}
+		}
+	}
 }

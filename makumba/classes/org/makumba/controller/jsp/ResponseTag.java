@@ -30,7 +30,12 @@ import javax.servlet.jsp.JspException;
 
 public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport
 {
-  public int doStartTag() throws JspException
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public int doStartTag() throws JspException
   {
     try{
       Object response= pageContext.getRequest().getAttribute

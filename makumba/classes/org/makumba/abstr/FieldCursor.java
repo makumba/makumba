@@ -52,7 +52,7 @@ public class FieldCursor
 
   public DataDefinitionParseError fail(String reason)
   {
-    return new DataDefinitionParseError(rp.ri.getName(), reason, toParse, index);
+    return new DataDefinitionParseError(rp.dd.getName(), reason, toParse, index);
   }
 
   void skipBlank()

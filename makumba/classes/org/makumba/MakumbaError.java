@@ -30,7 +30,11 @@ import java.io.PrintWriter;
 */
 public class MakumbaError extends Error
 {
-  Throwable t;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Throwable t;
   String explanation;
 
   /**  Build a makumba error and associate it with the given reason */

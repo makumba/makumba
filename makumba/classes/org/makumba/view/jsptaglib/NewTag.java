@@ -28,12 +28,14 @@ import org.makumba.util.MultipleKey;
 
 public class NewTag extends FormTagBase
 {
-  // for input tags:
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+// for input tags:
   DataDefinition type = null;
-  String multipleSubmitMsg = null;
 
   public void setType(String s) { type=MakumbaSystem.getDataDefinition(s); }
-  public void setMultipleSubmitMsg(String s) { checkNoParent("multipleSubmitMsg"); multipleSubmitMsg=s; }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
@@ -45,7 +47,6 @@ public class NewTag extends FormTagBase
   public void initialiseState() {
       super.initialiseState();
       if (type != null) responder.setNewType(type);
-	  if (multipleSubmitMsg != null) responder.setMultipleSubmitMsg(multipleSubmitMsg);
   }
 
 

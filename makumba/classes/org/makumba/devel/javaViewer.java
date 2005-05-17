@@ -140,7 +140,7 @@ public class javaViewer extends LineViewer {
             }
         }
 
-        JavaParseData jspParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.singleton);
+        JavaParseData jspParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
         jspParseData.getAnalysisResult(null);
 
         syntaxPoints = jspParseData.getSyntaxPoints();

@@ -28,7 +28,11 @@ import org.makumba.MakumbaSystem;
 
 public class ValueTag extends MakumbaTag
 {
-  String expr;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String expr;
   String var;
   String printVar;
   
