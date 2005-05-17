@@ -27,7 +27,7 @@ import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.util.ChoiceSet;
@@ -62,7 +62,7 @@ public class ptrEditor extends choiceEditor {
 
 		Vector v = null;
 
-		Database dbc = MakumbaSystem.getConnectionTo(((RecordEditor)rf).db[fieldIndex]);
+		Transaction dbc = MakumbaSystem.getConnectionTo(((RecordEditor)rf).db[fieldIndex]);
 		try {
 			v = dbc.executeQuery(((RecordEditor)rf).query[fieldIndex], null);
 		} finally {

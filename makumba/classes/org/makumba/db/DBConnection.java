@@ -38,7 +38,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 
-public abstract class DBConnection implements org.makumba.Database
+public abstract class DBConnection implements org.makumba.Transaction
 {
   protected org.makumba.db.Database db;
       
