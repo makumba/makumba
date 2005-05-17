@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -146,7 +146,7 @@ public class ObjectImporter {
 		}
 	}
 
-	Object getValue(String fieldName, String s, Database db, Pointer[] indexes) {
+	Object getValue(String fieldName, String s, Transaction db, Pointer[] indexes) {
 		if (isIgnored(fieldName))
 			return null;
 		return getFieldValue(fieldName, replaceField(fieldName, s), db, indexes);
@@ -173,7 +173,7 @@ public class ObjectImporter {
 	 * import data from a text. indexes contains the pointers to other records
 	 * imported from the same text, at the same time
 	 */
-	public Dictionary importFrom(String s, Database db, Pointer[] indexes) {
+	public Dictionary importFrom(String s, Transaction db, Pointer[] indexes) {
 
 		Hashtable ht = new Hashtable();
 
@@ -205,7 +205,7 @@ public class ObjectImporter {
 	}
 
 	//moved from FieldImporter
-	public Object getFieldValue(String fieldName, String s, Database db,
+	public Object getFieldValue(String fieldName, String s, Transaction db,
 			Pointer[] indexes) {
 		switch (dd.getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._ptr:
@@ -216,13 +216,13 @@ public class ObjectImporter {
 	}
 
 	//original getFieldValue from FieldImporter
-	public Object base_getFieldValue(String fieldName, String s, Database db,
+	public Object base_getFieldValue(String fieldName, String s, Transaction db,
 			Pointer[] indexes) {
 		return getFieldValue(fieldName, s);
 	}
 
 	//moved from ptrImporter
-	public Object get_ptr_FieldValue(String fieldName, String s, Database db,
+	public Object get_ptr_FieldValue(String fieldName, String s, Transaction db,
 			Pointer[] indexes) {
 		if (index != -1)
 			return indexes[index];
@@ -526,7 +526,7 @@ public class ObjectImporter {
 
 	//	moved from FieldImporter
 	public void importFieldTo(String fieldName, Dictionary d, String s,
-			Database db, Pointer[] indexes) {
+			Transaction db, Pointer[] indexes) {
 		try {
 			if (isIgnored(fieldName) || !isFieldMarked(fieldName))
 				return;

@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import org.makumba.Attributes;
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
@@ -244,14 +244,14 @@ public class Logic
     return NamedResources.getStaticCache(logix).getResource(path);
   }
 
-  static Class[] argDb= { Attributes.class, Database.class };
+  static Class[] argDb= { Attributes.class, Transaction.class };
   
   public static Object getAttribute(Object controller, String attname, Attributes a, String db, DbConnectionProvider dbcp) 
        throws NoSuchMethodException, LogicException
   {
     if(controller instanceof LogicNotFoundException)
       throw new NoSuchMethodException("no controller=> no attribute method");
-    Database d=dbcp.getConnectionTo(db);
+    Transaction d=dbcp.getConnectionTo(db);
     Object [] args= {a, d};
     try{
       return (controller.getClass().getMethod("find"+firstUpper(attname), argDb)).invoke(controller, args);
@@ -266,8 +266,8 @@ public class Logic
       }
   }
 
-  static Class[] editArgs= { Pointer.class, Dictionary.class, Attributes.class, Database.class };
-  static Class[] opArgs= { Dictionary.class, Attributes.class, Database.class };
+  static Class[] editArgs= { Pointer.class, Dictionary.class, Attributes.class, Transaction.class };
+  static Class[] opArgs= { Dictionary.class, Attributes.class, Transaction.class };
   static Class[]noClassArgs= {};
   static Object[]noObjectArgs= {};
 
@@ -302,7 +302,7 @@ public class Logic
   {
     if(controller instanceof LogicNotFoundException)
       return;
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
 	  Method init= getMethod("checkAttributes", argDb, controller);
 	  Method oldInit= getMethod("requiredAttributes", noClassArgs, controller);
 	  if(init==null && oldInit==null)
@@ -365,7 +365,7 @@ public class Logic
     if((controller instanceof LogicNotFoundException) )
       throw new ProgrammerError("there is no controller object to look for the Form handler method "+opName);
     
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
       Object [] editArg= {data, a, db};
       Method op=null;
       op=getMethod(opName, opArgs, controller);
@@ -395,7 +395,7 @@ public class Logic
 			       Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   {
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
       Object [] editArg= {p, data, a, db};
       Method edit=null;
       String upper= upperCase(typename);
@@ -429,13 +429,13 @@ public class Logic
 	}
   }
 
-  static Class[] deleteArgs= { Pointer.class, Attributes.class, Database.class };
+  static Class[] deleteArgs= { Pointer.class, Attributes.class, Transaction.class };
 
   public static Pointer doDelete(Object controller, String typename, 
 				 Pointer p, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   {
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
       Object [] deleteArg= {p, a, db};
       Method delete=null;
       String upper= upperCase(typename);
@@ -475,7 +475,7 @@ public class Logic
 			       Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   {
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
       Object [] addArg= {p, data, a, db};
       Method on=null;
       Method after=null;
@@ -521,12 +521,12 @@ public class Logic
 	}
   }
 
-  static Class[] newArgs= { Dictionary.class, Attributes.class, Database.class };
+  static Class[] newArgs= { Dictionary.class, Attributes.class, Transaction.class };
 
   public static Pointer doNew(Object controller, String typename, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   { 
-    Database db=dbcp.getConnectionTo(dbName);
+    Transaction db=dbcp.getConnectionTo(dbName);
       Object [] onArgs= {data, a, db};
       Object [] afterArgs= {null, data, a, db};
       Method on=null;

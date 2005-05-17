@@ -27,15 +27,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 
 /** A group of database connections, at most one per database name. They can be closed all at a time. This object is not thread-safe. The typical use is database accesses made by a JSP page (which take place all in the same thread of the servlet engine). */
 public class DbConnectionProvider{
   Map connections= new HashMap(7);
 
-  public Database getConnectionTo(String dbname){
-    Database db= (Database)connections.get(dbname);
+  public Transaction getConnectionTo(String dbname){
+    Transaction db= (Transaction)connections.get(dbname);
     if(db==null)
       connections.put(dbname, db= MakumbaSystem.getConnectionTo(dbname));
     return db;
@@ -44,7 +44,7 @@ public class DbConnectionProvider{
   /** Close all connections.*/
   public void close(){
     for(Iterator i= connections.values().iterator(); i.hasNext(); )
-      ((Database)i.next()).close();
+      ((Transaction)i.next()).close();
     connections.clear();
   }
   

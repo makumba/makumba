@@ -40,7 +40,7 @@ public class delete
       }
     else
       {
-	Database db1=null;
+	Transaction db1=null;
 
 	try{
 	  String [] types;
