@@ -16,25 +16,28 @@ import javassist.CtNewMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
-public class JavaOutTest extends HibernateUtils {
+public class MddToClass extends HibernateUtils {
 	private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
-	private LinkedList appendFieldName = new LinkedList();
 
-	public JavaOutTest(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
+	public MddToClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
 		generateClass(dd);
 		while (!mddsToDo.isEmpty()) {
 			generateClass((DataDefinition)mddsToDo.removeFirst());	
 		}
 
 		while (!appendToClass.isEmpty()) {
-			appendClass((String)appendToClass.removeFirst(), (FieldDefinition)appendFieldName.removeFirst());
+			Object[] append = (Object[]) appendToClass.removeFirst();
+			appendClass((String)append[0], (FieldDefinition)append[1]);
 		}
 	}
 	
+	/**
+	 * Creates a bytecode .class file for the given DataDefinition
+	 * @param dd DataDefinition that needs to be mapped   
+	 **/
 	public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException, IOException {
-		System.out.println(classname);
 		ClassPool cp = ClassPool.getDefault();
 		CtClass cc = cp.get(HibernateTest.packageprefix + "/" + classname);
 		cc.defrost();
@@ -54,8 +57,7 @@ public class JavaOutTest extends HibernateUtils {
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
 
-//		addFields(cc, type, name);
-		cc.writeFile("/home/jpeeters/eclipse/antwerpen/makumba/classes");
+		cc.writeFile("classes");
 	}
 	
 	public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
@@ -69,8 +71,8 @@ public class JavaOutTest extends HibernateUtils {
 			String name = null;
 			
 			for (int i = 0; i < dd.getFieldNames().size(); i++) {
+				Object[] append = new Object[2];
 				FieldDefinition fd = dd.getFieldDefinition(i);
-//				System.out.println(dd.getFieldDefinition(i).getName() + " : " + dd.getFieldDefinition(i).getType());
 				name = fd.getName();
 				switch (fd.getIntegerType()) {
 					case FieldDefinition._intEnum:
@@ -91,9 +93,10 @@ public class JavaOutTest extends HibernateUtils {
 						break;
 					case FieldDefinition._ptr:
 					case FieldDefinition._ptrOne:
-						mddsToDo.add(fd.getPointedType());						
-						appendToClass.add(arrowToDot(dd.getName()));
-						appendFieldName.add(fd);
+						mddsToDo.add(fd.getPointedType());
+						append[0] = arrowToDot(dd.getName());
+						append[1] = fd;
+						appendToClass.add(append);
 						continue;
 					case FieldDefinition._ptrRel:
 						name = getBaseName(fd.getPointedType().getName());

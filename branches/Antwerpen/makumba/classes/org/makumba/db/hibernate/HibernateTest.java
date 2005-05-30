@@ -31,7 +31,7 @@ public class HibernateTest extends HibernateUtils {
 		DataDefinition dd = MakumbaSystem.getDataDefinition("test/Person");
 		
 		try {
-			JavaOutTest jot = new JavaOutTest(dd);
+			MddToClass jot = new MddToClass(dd);
 		} catch (CannotCompileException e) {
 			e.printStackTrace();
 		} catch (NotFoundException e) {
@@ -40,7 +40,7 @@ public class HibernateTest extends HibernateUtils {
 			e.printStackTrace();
 		}
 		try {
-			XMLOutTest xot = new XMLOutTest(dd);
+			MddToMapping xot = new MddToMapping(dd);
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
