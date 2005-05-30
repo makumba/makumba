@@ -47,7 +47,7 @@ static long compute(int dbsv, int uid)
     this.type=type; 
   }
 
-  SQLPointer(String type, long n){ this(type); this.n= n;  }
+  public SQLPointer(String type, long n){ this(type); this.n= n;  }
 
   SQLPointer(String type, int dbsv, int uid)
   {
