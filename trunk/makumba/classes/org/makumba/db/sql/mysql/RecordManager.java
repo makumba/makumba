@@ -40,7 +40,7 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
     rs.next();
     String def=rs.getString(2).trim();
-    if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB")){
+    if(def.lastIndexOf(')') > Math.max(def.lastIndexOf(" TYPE=InnoDB"), def.lastIndexOf(" ENGINE=InnoDB"))){
       String s="ALTER TABLE "+getDBName()+" TYPE=InnoDB";
       MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
       st.executeUpdate(s);
@@ -60,7 +60,11 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
      int minor=dbc.getMetaData().getDriverMinorVersion();
      String mark=""+major+"."+minor+".";
      String minorStr=version.substring(version.indexOf(mark)+mark.length());
-     minorStr=minorStr.substring(0,minorStr.indexOf('-'));
+     int endPos = minorStr.indexOf('-');
+     if(endPos>-1)
+     {
+     	minorStr=minorStr.substring(0, endPos);
+     }
      int minor2=Integer.parseInt(minorStr);
 
      if(major>3 || major==3 && minor>0 || major==3 && minor==0 && minor2>=8)
