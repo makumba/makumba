@@ -25,9 +25,12 @@ package org.makumba.db.sql.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.MakumbaSystem;
 import org.makumba.db.sql.SQLDBConnection;
+
 
 public class RecordManager extends org.makumba.db.sql.RecordManager
 {
@@ -58,20 +61,19 @@ public class RecordManager extends org.makumba.db.sql.RecordManager
      String version=dbc.getMetaData().getDriverVersion();
      int major=dbc.getMetaData().getDriverMajorVersion();
      int minor=dbc.getMetaData().getDriverMinorVersion();
-     String mark=""+major+"."+minor+".";
-     String minorStr=version.substring(version.indexOf(mark)+mark.length());
-     int endPos = minorStr.indexOf('-');
-     if(endPos>-1)
-     {
-     	minorStr=minorStr.substring(0, endPos);
-     }
-     int minor2=Integer.parseInt(minorStr);
+
+     String pattern = ".*"+major+"\\."+minor+"\\.(\\d+).*";
+     Matcher matcher = Pattern.compile(pattern).matcher(version);
+     matcher.matches();
+	 int minor2 = Integer.parseInt(matcher.group(1));	
+     MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("Determined MySQL JDBC driver version: " +major+"."+minor+"."+minor2);
 
      if(major>3 || major==3 && minor>0 || major==3 && minor==0 && minor2>=8)
        return "tableMissing";
      else
        return "tableMissing-before308";
    }catch(Exception e) {
+    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("Could not determine MySQL JDBC driver version, assuming 3.0.8 or later.");
 	e.printStackTrace();
 	return "tableMissing";
    }
