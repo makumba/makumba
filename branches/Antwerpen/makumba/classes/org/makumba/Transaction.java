@@ -34,7 +34,21 @@ package org.makumba;
  */
 public interface Transaction extends Database
 {
-	
+    public java.util.Dictionary read(Pointer ptr, Object fields);
+    public String getName();
+    public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
+    public java.util.Vector executeQuery(String OQL, Object parameterValues);
+    public Pointer insert(String type, java.util.Dictionary data);
+    public Pointer insert(Pointer host, String subsetField, java.util.Dictionary data);
+    public void update(Pointer ptr, java.util.Dictionary fieldsToChange);
+    public int update(String from, String set, String where, Object parameterValues);
+    public int delete(String from, String where, Object parameterValues);
+    public void commit();
+    public void close();
+
+    public void rollback();
+    public void lock(String symbol);
+    public void unlock(String symbol);
 }
 
 
