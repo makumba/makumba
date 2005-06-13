@@ -86,7 +86,10 @@ public class errorViewer extends LineViewer {
                     if (indexNumberBegin != -1) {
                         int indexEnd = source.substring(indexAfter).indexOf(")");
                         String lineNumberText = source.substring(indexAfter).substring(indexNumberBegin, indexEnd);
-                        lineNumber = Integer.valueOf(lineNumberText);
+                        try {
+                            lineNumber = Integer.valueOf(lineNumberText);
+                        } catch (NumberFormatException e) {
+                        }
                     }
                     result.append(formatClassLink(javaClass.getName(), token, lineNumber));
                 } else if ((sunClass = findJDKClass(token)) != null) {
