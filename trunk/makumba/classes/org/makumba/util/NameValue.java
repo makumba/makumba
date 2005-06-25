@@ -30,7 +30,11 @@ interface NameValueReturner
 
 class NameValue implements NameValueReturner, java.io.Serializable
 {
-  Object value;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Object value;
   NameValueReturner returner;
 
   NameValue(Object name, Object hashName, NamedResourceFactory f)
@@ -54,7 +58,11 @@ class NameValue implements NameValueReturner, java.io.Serializable
 
 class ProducerReturner implements NameValueReturner, java.io.Serializable
 {
-  NameValue nv;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+NameValue nv;
   Object name, hashName;
   NamedResourceFactory f;
   
@@ -84,7 +92,11 @@ class ProducerReturner implements NameValueReturner, java.io.Serializable
 
 class ErrorReturner implements NameValueReturner, java.io.Serializable
 {
-  Object name;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Object name;
 
   ErrorReturner(Object n){ name= n; }
 

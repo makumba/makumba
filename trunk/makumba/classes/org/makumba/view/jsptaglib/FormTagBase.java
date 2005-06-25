@@ -41,7 +41,11 @@ import org.makumba.view.ComposedQuery;
 
 public class FormTagBase extends MakumbaTag implements BodyTag
 {
-  // the tag attributes
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+// the tag attributes
   String baseObject = null;
   String handler = null;
   String formMethod = null;
@@ -160,7 +164,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
       return;
     ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
     vc.doEndAnalyze(this, pageCache);
-    pageCache.basePointerTypes.put(tagKey, vc.type.getReferredType().getName());
+    pageCache.basePointerTypes.put(tagKey, vc.type.getPointedType().getName());
   }
 
   /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
@@ -266,7 +270,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
 	  throw new org.makumba.NoSuchFieldException(dd, fname);
 	if(!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
 	  throw new org.makumba.InvalidFieldTypeException(fieldName+" must be linked via not null pointers, "+fd.getDataDefinition().getName()+"->"+fd.getName()+" is not");  
-	dd= fd.getReferredType();
+	dd= fd.getPointedType();
 	dot=dot1;
       }
   }

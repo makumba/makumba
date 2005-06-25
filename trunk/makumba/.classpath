@@ -2,11 +2,28 @@
 <classpath>
 	<classpathentry kind="src" path="classes"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/antlr.jar"/>
-	<classpathentry kind="lib" path="lib/cactus.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="lib/junit.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="lib/httpunit.jar"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/antlr.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/asm.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/aspectjrt.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/cactus.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/cglib.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/commons-collections.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/commons-daemon.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/commons-logging-api.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/dom4j.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/ehcache.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/httpunit.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/javassist.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/js.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/jta.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/junit.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/mysql.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/Tidy.jar"/>
+	<classpathentry kind="lib" path="/home/rudi/makumba/lib/tomcat-bootstrap.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

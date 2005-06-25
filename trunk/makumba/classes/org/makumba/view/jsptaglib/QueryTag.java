@@ -37,7 +37,11 @@ import org.makumba.view.html.RecordViewer;
  */
 public class QueryTag extends MakumbaTag implements IterationTag
 {
-  String[] queryProps=new String[5];
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String[] queryProps=new String[5];
   String separator="";
   String countVar;
   String maxCountVar;

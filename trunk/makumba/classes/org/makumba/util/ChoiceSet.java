@@ -2,7 +2,11 @@ package org.makumba.util;
 
 /** An ordered set of chooser choices */
 public class ChoiceSet extends java.util.ArrayList{
-  public static final String PARAMNAME="org.makumba.ChoiceSet";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+public static final String PARAMNAME="org.makumba.ChoiceSet";
 
   public class Choice{
     Object value;

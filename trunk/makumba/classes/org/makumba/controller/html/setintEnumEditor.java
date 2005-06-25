@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,26 +22,40 @@
 /////////////////////////////////////
 
 package org.makumba.controller.html;
+
 import java.util.Vector;
 
-public class setintEnumEditor extends setcharEnumEditor
-{
-  public Object getOptionValue(Object options, int i)
-  { return new Integer(getIntAt(i)); }
+import org.makumba.view.FieldFormatter;
+import org.makumba.view.RecordFormatter;
 
-  public Object readFrom(org.makumba.controller.http.HttpParameters par, String suffix)
-  { 
-    Object o=par.getParameter(getInputName(suffix));
+public class setintEnumEditor extends setcharEnumEditor {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setintEnumEditor();
+	}
 
-    if(o==null || o==org.makumba.Pointer.NullSet)
-      return o;
-    if(o instanceof Vector)
-      {
-	Vector v=(Vector)o;
-	for(int i=0; i<v.size(); i++)
-	  v.setElementAt(toInt(v.elementAt(i)), i);
-	return v;
-      }
-    return toInt(o);
-  }
+	private setintEnumEditor() {}
+
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
+
+	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
+	}
+
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
+			String suffix) {
+		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+
+		if (o == null || o == org.makumba.Pointer.NullSet)
+			return o;
+		if (o instanceof Vector) {
+			Vector v = (Vector) o;
+			for (int i = 0; i < v.size(); i++)
+				v.setElementAt(toInt(rf, fieldIndex, v.elementAt(i)), i);
+			return v;
+		}
+		return toInt(rf, fieldIndex, o);
+	}
 }

@@ -32,7 +32,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SystemServlet extends HttpServlet
 {
-  public void service(HttpServletRequest req, HttpServletResponse resp)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public void service(HttpServletRequest req, HttpServletResponse resp)
   {
     String s=(String)req.getAttribute("org.makumba.systemServlet.command");
     if("setLoggingRoot".equals(s))

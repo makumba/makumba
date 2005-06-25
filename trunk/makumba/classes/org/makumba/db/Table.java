@@ -24,6 +24,7 @@
 package org.makumba.db;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -31,10 +32,9 @@ import java.util.Vector;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.DataTransformer;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
-import org.makumba.abstr.FieldHandler;
-import org.makumba.abstr.RecordHandler;
 
 /** This is a generic database table RecordHandler. Upon building, it uses the rules in org.makumba/db/redirectHandler.properties :
 <pre>
@@ -51,30 +51,45 @@ setComplex=subtable
 * @see org.makumba.db.foreignHandler
 * @see org.makumba.db.subtableHandler
 */
-public abstract class Table extends RecordHandler
+public abstract class Table //extends RecordHandler
 {
-  public Table(){}
+	protected DataDefinition dd;
+	protected HashMap fieldDBNames = new HashMap();
+	public Table(){}
 
   org.makumba.db.Database db;
 
   /** What database does this table belong to */
   public org.makumba.db.Database getDatabase() { return db; }
 
-  /** set the RecordInfo */
-  protected void setRecordInfo(DataDefinition ri){ super.setRecordInfo(ri); }
-
+  protected void setDataDefinition(DataDefinition dd){
+    this.dd= dd; // needed as we don't extend FieldHandler anymore
+    for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); ){
+        String name= (String)e.nextElement();
+        FieldDefinition fd= dd.getFieldDefinition(name);
+        if(fd.getType().equals("ptr")
+        || fd.getType().equals("ptrRel"))
+            // foreign
+            relatedTables.put(name, fd.getForeignTable());
+        else if(fd.getType().startsWith("ptr") && !fd.getType().equals("ptrIndex")     
+        || fd.getType().startsWith("set"))
+            // subtable
+            relatedTables.put(name, fd.getSubtable());
+        }
+} 
+  public DataDefinition getDataDefinition(){ return dd; }
+  
   Hashtable relatedTables= new Hashtable();
+  
+  public FieldDefinition getFieldDefinition(String fieldName){
+  	return dd.getFieldDefinition(fieldName);
+  }
 
   /** get the related table for the field indicated by name (of any set or ptr type) */
   public Table getRelatedTable(String field)
   {
     return getDatabase().getTable((DataDefinition)relatedTables.get(field));
     //    return (Table)relatedTables.get(field);
-  }
-
-  public Enumeration getRelatedTableFields()
-  {
-    return relatedTables.keys();
   }
 
   /** does the table exist in the database ? */
@@ -106,11 +121,11 @@ public abstract class Table extends RecordHandler
         StringBuffer list=new StringBuffer();
 	String comma="";
 	
-	for(Enumeration e=handlerOrder.elements(); e.hasMoreElements();)
+	for(Enumeration e=dd.getFieldNames().elements(); e.hasMoreElements();)
 	  {
 	    list.append(comma);
 	    comma=", ";
-	    String name=((FieldHandler)e.nextElement()).getName(); 
+	    String name=(String)e.nextElement(); 
 	    list.append("t.").append(name);
 	  }
 	String indexName= getDataDefinition().getIndexPointerFieldName();
@@ -118,11 +133,19 @@ public abstract class Table extends RecordHandler
 
 	final int dbsv=sourceDB.getHostDatabase().getDbsv();
 	selectLimits[0]=new Pointer(){
-	  public String getType(){ return nm; }
+	  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+	public String getType(){ return nm; }
 	  public long longValue(){ return dbsv<<MASK_ORDER; }
 	};
 	selectLimits[1]=new Pointer(){
-	  public String getType(){ return nm; }
+	  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+	public String getType(){ return nm; }
 	  public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
 	};
       }    
@@ -147,8 +170,12 @@ public abstract class Table extends RecordHandler
     Hashtable data= new Hashtable(23);
     Hashtable nameKey= new Hashtable(23);
 
-    for(int f=0; f<handlerOrder.size(); f++)
-      nameKey.put("col"+(f+1), ((FieldHandler)handlerOrder.elementAt(f)).getName());
+    int f=0;
+    for(Enumeration e=  dd.getFieldNames().elements(); e.hasMoreElements(); ){
+        String name= (String)e.nextElement();
+        nameKey.put("col"+(f+1), name);
+        f++;
+    }
 
     for(int j=0; j<v.size(); j++)
       {
@@ -209,6 +236,10 @@ public abstract class Table extends RecordHandler
   }
 
   public abstract Pointer insertRecordImpl(DBConnection c, Dictionary d);
+  
+  public abstract void checkInsert(Dictionary data, Dictionary d); 
+  
+  public abstract void checkUpdate(Dictionary data, Dictionary d);
 }
 
 

@@ -34,7 +34,11 @@ import org.makumba.util.MultipleKey;
 public class InputTag extends BasicValueTag
 implements javax.servlet.jsp.tagext.BodyTag
 {
-  String name = null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String name = null;
   String display=null;
   String nameVar=null;
 

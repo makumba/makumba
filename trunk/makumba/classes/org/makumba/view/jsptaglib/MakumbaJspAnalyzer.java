@@ -70,7 +70,12 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
   class Types extends HashMap
   {
-    public void setType(String key, FieldDefinition value, MakumbaTag t)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void setType(String key, FieldDefinition value, MakumbaTag t)
     {
       Object []val1= (Object[])get(key);
       FieldDefinition fd= null; 
@@ -219,8 +224,16 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
   }
 
 
-  private MakumbaJspAnalyzer(){}
-  public static final JspParseData.JspAnalyzer singleton= new MakumbaJspAnalyzer();
+	private static final class SingletonHolder {
+		static final JspParseData.JspAnalyzer singleton = new MakumbaJspAnalyzer();
+	}
+
+	private MakumbaJspAnalyzer() {
+	}
+
+	public static JspParseData.JspAnalyzer getInstance() {
+		return SingletonHolder.singleton;
+	}  
 
   public void systemTag(JspParseData.TagData td, Object status)
   {

@@ -27,6 +27,12 @@ import org.makumba.ProgrammerError;
 
 public class DeleteTag extends EditTag
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+  // no input tags should be allowed
+
 	String widget;
 	
 	public void setWidget(String w){ 
@@ -46,4 +52,3 @@ public class DeleteTag extends EditTag
 	}
 
 }
-

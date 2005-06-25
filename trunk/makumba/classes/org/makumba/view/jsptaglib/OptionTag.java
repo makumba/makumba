@@ -33,7 +33,11 @@ import org.makumba.util.MultipleKey;
 
 public class OptionTag extends BasicValueTag implements BodyTag
 {
-  ValueComputer choiceComputer=null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+ValueComputer choiceComputer=null;
 
   public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) 
   {
@@ -56,7 +60,7 @@ public class OptionTag extends BasicValueTag implements BodyTag
     if(!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
       throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
 
-    return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr "+t.getRelationType().getName());
+    return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr "+t.getForeignTable().getName());
   }
 
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)

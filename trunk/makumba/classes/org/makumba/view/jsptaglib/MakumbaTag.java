@@ -118,7 +118,7 @@ public abstract class MakumbaTag extends TagSupport
 	  (
 	   pageContext.getServletConfig().getServletContext().getRealPath("/"),
 	   TomcatJsp.getJspURI((HttpServletRequest)pageContext.getRequest()),
-	   MakumbaJspAnalyzer.singleton
+	   MakumbaJspAnalyzer.getInstance()
 	    ).getAnalysisResult(null); 
 
 	if((result instanceof Throwable)&& result.getClass().getName().startsWith("org.makumba"))

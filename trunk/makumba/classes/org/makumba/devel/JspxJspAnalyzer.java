@@ -23,7 +23,6 @@
 
 package org.makumba.devel;
 
-import org.makumba.util.JspParseData;
 import org.makumba.util.JspParseData.JspAnalyzer;
 import org.makumba.util.JspParseData.TagData;
 
@@ -34,10 +33,15 @@ import org.makumba.util.JspParseData.TagData;
  */
 public class JspxJspAnalyzer implements JspAnalyzer {
 
-    private JspxJspAnalyzer() {
-    }
+	private static final class SingletonHolder {
+		static final JspAnalyzer singleton = new JspxJspAnalyzer();
+	}
 
-    public static final JspParseData.JspAnalyzer singleton = new JspxJspAnalyzer();
+	private JspxJspAnalyzer() {}
+
+	public static JspAnalyzer getInstance() {
+		return SingletonHolder.singleton;
+	}
 
     /**
      * make a status holder, which is passed to all other methods

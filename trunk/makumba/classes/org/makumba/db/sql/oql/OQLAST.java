@@ -28,7 +28,12 @@ import antlr.CommonAST;
 
 public class OQLAST extends CommonAST
 {
-  public OQLAST(){};
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public OQLAST(){};
   public OQLAST(antlr.Token t) { super(t); }
   public String writeInSQLQuery(Database d){return getText(); }
 

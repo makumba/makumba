@@ -73,13 +73,13 @@ public class DBConnectionWrapper extends DBConnection
     public void unlock(String symbol)
     { getWrapped().lock(symbol); }
 
-    public synchronized void close(){ 
+    public synchronized void close(){
       commit();
       getHostDatabase().connections.put(getWrapped()); 
-      wrapped=ClosedDBConnection.singleton;
-    }	
-    protected synchronized void finalize(){ 
-	if(wrapped!=ClosedDBConnection.singleton)
+      wrapped=ClosedDBConnection.getInstance();
+    }
+    protected synchronized void finalize(){
+	if(wrapped!=ClosedDBConnection.getInstance())
 	    close();
     }
   
@@ -87,7 +87,16 @@ public class DBConnectionWrapper extends DBConnection
 
 class ClosedDBConnection extends DBConnectionWrapper
 {
-    static DBConnection singleton= new ClosedDBConnection();
+	private static final class SingletonHolder {
+		static final DBConnection singleton = new ClosedDBConnection();
+	}
+
+	private ClosedDBConnection() {}
+
+	public static DBConnection getInstance() {
+		return SingletonHolder.singleton;
+	}
+	
     public DBConnection getWrapped() { throw new IllegalStateException("connection already closed"); }
 }
 

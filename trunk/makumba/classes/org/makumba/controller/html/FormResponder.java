@@ -35,7 +35,11 @@ import org.makumba.controller.http.Responder;
 
 public class FormResponder extends Responder
 {
-  RecordEditor editor;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+RecordEditor editor;
   
   /** reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved as attributes  */
   public Dictionary getHttpData(HttpServletRequest req, String suffix)
@@ -211,6 +215,12 @@ public class FormResponder extends Responder
       .append("\" value=\"")
       .append(value)
       .append("\">");
+  }
+
+  protected void postDeserializaton() {
+      if (editor != null) {
+          editor.initFormatters();
+      }
   }
 
 }
