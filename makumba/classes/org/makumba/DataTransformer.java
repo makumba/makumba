@@ -73,5 +73,5 @@ public interface DataTransformer
 	@return true if specified database operation should be done (eg data transformed succesfully or data is valid), false 
 otherwise.
     */
-    public boolean transform(java.util.Dictionary d, Database db);
+    public boolean transform(java.util.Dictionary d, Transaction db);
 }

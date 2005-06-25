@@ -28,20 +28,21 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.OQLAnalyzer;
 
 /** this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The order in the two is different, because OQL paramters are numbered. Also, strict type checking is performed for the parameters */
 public class ParameterAssigner 
 {
-  RecordManager paramHandler;
+  TableManager paramHandler;
   OQLAnalyzer tree;
 
   ParameterAssigner(org.makumba.db.Database db, OQLAnalyzer tree)
   {
     this.tree=tree;
     if(tree.parameterNumber()>0)
-      paramHandler=(RecordManager)db.makePseudoTable((DataDefinition)tree.getParameterTypes());
+      paramHandler=(TableManager)db.makePseudoTable((DataDefinition)tree.getParameterTypes());
   }
   static final Object[] empty=new Object[0];
 
@@ -55,13 +56,13 @@ public class ParameterAssigner
       Hashtable errors=new Hashtable();
       for(int i=0; i< tree.parameterNumber(); i++)
 	{
-	  FieldManager fm=(FieldManager)(paramHandler.getFieldHandler("param"+i));
+	  FieldDefinition fd=(paramHandler.getDataDefinition().getFieldDefinition("param"+i));
 	  Integer para= new Integer(tree.parameterAt(i));
 	  String spara="$"+para;
 	  Object value= args[para.intValue()-1];
 	  
 	  try{
-	    value=fm.checkValue(value);
+	    value=fd.checkValue(value);
 	  }
 	  catch(InvalidValueException e)
 	    {
@@ -70,7 +71,7 @@ public class ParameterAssigner
 	      if(correct.get(spara)==null)
 		errors.put(spara, e);
 	      //	      if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString || value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
-		fm.setNullArgument(ps, i+1);
+		paramHandler.setNullArgument("param"+i, ps, i+1);
 		//else
 		// there is a bug here, manifests when the value is not serializable... 
 		// maybe one should insert just a dummy
@@ -80,7 +81,7 @@ public class ParameterAssigner
 	  correct.put(spara, para);
 	  errors.remove(spara);
 	  
-	  fm.setUpdateArgument(ps, i+1, value);
+	  paramHandler.setUpdateArgument("param"+i, ps, i+1, value);
 	}
       if(errors.size()>0)
 	{

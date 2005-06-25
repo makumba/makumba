@@ -27,7 +27,12 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class MakumbaVersionTag extends TagSupport
 {
-  public int doStartTag() throws JspException 
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public int doStartTag() throws JspException 
   {
     try{
 	  pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());

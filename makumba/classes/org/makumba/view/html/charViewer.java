@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,28 +22,49 @@
 /////////////////////////////////////
 
 package org.makumba.view.html;
+
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
+import org.makumba.view.FieldFormatter;
+import org.makumba.view.RecordFormatter;
 
-public class charViewer extends FieldViewer
-{
-  static String[] params= { "default", "empty", "urlEncode", "html", "maxLength", "ellipsis", "ellipsisLength", "addTitle" };
-  static String[][] paramValues= { null, null, {"true", "false"}, { "true", "false", "auto" }, null, null, null, { "true", "false", "auto" }};
+public class charViewer extends FieldViewer {
+	static String[] params = { "default", "empty", "urlEncode", "html",
+			"maxLength", "ellipsis", "ellipsisLength", "addTitle" };
 
-  public String[] getAcceptedParams(){ return params; }
-  public String[][] getAcceptedValue(){ return paramValues; }
+	static String[][] paramValues = { null, null, { "true", "false" },
+			{ "true", "false", "auto" }, null, null, null,
+			{ "true", "false", "auto" } };
 
+	public String[] getAcceptedParams() {
+		return params;
+	}
 
-  public String formatNotNull(Object o, Dictionary formatParams) 
-  {
-    String txt=o.toString();
-    String ht= (String)formatParams.get("html");
+	public String[][] getAcceptedValue() {
+		return paramValues;
+	}
 
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new charViewer();
+	}
 
-    if(ht!=null && (ht.equals("true") || ht.equals("auto") && HtmlUtils.detectHtml(txt)))
-      return txt;
+	private charViewer() {
+	}
 
-    return formatMaxLengthEllipsis(txt, formatParams);
-  }
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
+	
+	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		String txt = o.toString();
+		String ht = (String) formatParams.get("html");
+
+		if (ht != null
+				&& (ht.equals("true") || ht.equals("auto")
+						&& HtmlUtils.detectHtml(txt)))
+			return txt;
+
+		return formatMaxLengthEllipsis(rf, fieldIndex, txt, formatParams);
+	}
 }

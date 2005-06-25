@@ -237,7 +237,7 @@ class SetValueComputer extends QueryValueComputer
 
     if(analyzed instanceof ValueTag)
       {
-	name= label+"."+set.getRelationType().getTitleFieldName();
+	name= label+"."+set.getForeignTable().getTitleFieldName();
 	queryProps[ComposedQuery.ORDERBY]= name;
       }
 

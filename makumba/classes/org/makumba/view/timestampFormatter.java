@@ -1,6 +1,6 @@
-///////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2003 http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -9,7 +9,7 @@
 //
 //  This library is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public
@@ -22,32 +22,42 @@
 /////////////////////////////////////
 
 package org.makumba.view;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Dictionary;
 
-public class timestampFormatter extends dateFormatter
-{
+public class timestampFormatter extends dateFormatter {
 
-  public String formatNotNull(Object o, Dictionary formatParams) 
-  {
-    DateFormat formatter=timestamp;
-    String s=(String)formatParams.get("format");
-    if(s!=null)
-      {
-	formatter= new SimpleDateFormat(s, org.makumba.MakumbaSystem.getLocale());
-	formatter.setCalendar(calendar);
-      }      
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new timestampFormatter();
+	}
 
-    return formatter.format((java.util.Date)o); 
-  }
+	private timestampFormatter() {
+	}
 
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
-  public static final DateFormat timestamp;
+	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		DateFormat formatter = timestamp;
+		String s = (String) formatParams.get("format");
+		if (s != null) {
+			formatter = new SimpleDateFormat(s, org.makumba.MakumbaSystem
+					.getLocale());
+			formatter.setCalendar(calendar);
+		}
 
-  static {
-    timestamp= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S",org.makumba.MakumbaSystem.getLocale());
-    timestamp.setCalendar(calendar);
-  }
+		return formatter.format((java.util.Date) o);
+	}
+
+	public static final DateFormat timestamp;
+
+	static {
+		timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S",
+				org.makumba.MakumbaSystem.getLocale());
+		timestamp.setCalendar(calendar);
+	}
 
 }

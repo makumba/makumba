@@ -28,7 +28,7 @@ import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
 
-/** The makumba runtime system. Provides starter methods to obtain {@link Database} and {@link DataDefinition} objects */
+/** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem 
 {
   /** The date at which makumba is loaded */
@@ -65,7 +65,7 @@ public class MakumbaSystem
    * The operations carried out during database initialization are logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.init"</code></b> and <b><code>"db.init.tablechecking"</code></b> loggers, with {@link java.util.logging.Level#INFO} (connections, checkings), {@link java.util.logging.Level#SEVERE} (fatal errors) and with {@link java.util.logging.Level#WARNING} logging levels.
     @since makumba-0.5.4
    */
-  public static Database getConnectionTo(String name)
+  public static Transaction getConnectionTo(String name)
   {
     return org.makumba.db.Database.getDatabase(name).getDBConnection(); 
   }
@@ -75,7 +75,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(getDefaultDatabaseName()) instead
    */
-  public static Database findDatabase()
+  public static Transaction findDatabase()
   { return getConnectionTo(getDefaultDatabaseName()); }
   
   /** Find the Database according to the given lookup file from the CLASSPATH. The file name will include the .properties extension 
@@ -83,7 +83,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(getDefaultDatabaseName(dbLookupFile)) instead
    */
-  public static Database findDatabase(String dbLookupFile) 
+  public static Transaction findDatabase(String dbLookupFile) 
   { return getConnectionTo(getDefaultDatabaseName(dbLookupFile)); }
   
   /** Get the Database defined by the given connection file from the CLASSPATH. The file name should not include the .properties extension 
@@ -91,7 +91,7 @@ public class MakumbaSystem
     @deprecated This method name is misleading since it returns a connection, not a database. 
     Use getConnectionTo(connectionFile) instead
    */
-  public static Database getDatabase(String connectionFile) 
+  public static Transaction getDatabase(String connectionFile) 
   { return getConnectionTo(connectionFile); }
 
 
@@ -219,8 +219,8 @@ The programmer could just as well decide that all makumba logging at or over the
     <tr><td>database querying
     <td>loggingRoot + <code>db.query.compilation</code>,
     <code>db.query.execution</code>, <code>db.query.performance
-    <td>see {@link org.makumba.Database#executeQuery(java.lang.String, java.lang.Object)}, 
-    {@link org.makumba.Database#read(org.makumba.Pointer, java.lang.Object)}
+    <td>see {@link org.makumba.Transaction#executeQuery(java.lang.String, java.lang.Object)}, 
+    {@link org.makumba.Transaction#read(org.makumba.Pointer, java.lang.Object)}
     <td>{@link java.util.logging.Level#FINE}
 
     <tr><td>database query grouping
@@ -235,7 +235,7 @@ The programmer could just as well decide that all makumba logging at or over the
 
     <tr><td>database updating
     <td>loggingRoot + <code>db.update.execution</code>, <code>db.update.performance
-    <td>see {@link org.makumba.Database}, all insert, delete, and update operations
+    <td>see {@link org.makumba.Transaction}, all insert, delete, and update operations
     <td>{@link java.util.logging.Level#FINE}
 
     <tr><td>business logic discovery
@@ -326,7 +326,12 @@ The programmer could just as well decide that all makumba logging at or over the
   static int parsedQueries= NamedResources.makeStaticCache
       ("OQL parsed queries", 
        new NamedResourceFactory(){
-    protected Object makeResource(Object nm, Object hashName) 
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm, Object hashName) 
       throws Exception
       {
 	return parseQueryFundamental((String)nm);
@@ -386,25 +391,25 @@ The programmer could just as well decide that all makumba logging at or over the
 
   static void fillMdds(int baselength, java.io.File dir, java.util.Vector mdds)
   {
-	String[] list= dir.list();
-	for(int i=0; i<list.length; i++)
-	{
-		String s= list[i];
-		if(s.endsWith(".mdd"))
+	if (dir.isDirectory()) {
+		String[] list= dir.list();
+		for(int i=0; i<list.length; i++)
 		{
-			s=dir.toString()+java.io.File.separatorChar+s;
-			s=s.substring(baselength, s.length()-4); //cut off the ".mdd"
-			s=s.replace(java.io.File.separatorChar,'.'); 
-			mdds.add(s);
+			String s= list[i];
+			if(s.endsWith(".mdd"))
+			{
+				s=dir.toString()+java.io.File.separatorChar+s;
+				s=s.substring(baselength, s.length()-4); //cut off the ".mdd"
+				s=s.replace(java.io.File.separatorChar,'.'); 
+				mdds.add(s);
+			}
+			else
+			{
+				java.io.File f= new java.io.File(dir, s);
+				if(f.isDirectory())
+					fillMdds(baselength, f, mdds);
+			}
 		}
-		else
-		  {
-		    java.io.File f= new java.io.File(dir, s);
-		    if(f.isDirectory())
-		      fillMdds(baselength, f, mdds);
-		  }
-	}
+  	}
   }
-
-
 }

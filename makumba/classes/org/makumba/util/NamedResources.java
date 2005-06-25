@@ -34,7 +34,11 @@ import java.util.Vector;
 */
 public class NamedResources implements java.io.Serializable 
 {
-  static boolean soft_static_caches;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+static boolean soft_static_caches;
   static
   {
     String soft=null;

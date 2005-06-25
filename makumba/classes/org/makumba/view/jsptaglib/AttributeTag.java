@@ -30,7 +30,11 @@ import org.makumba.controller.jsp.PageAttributes;
 
 public class AttributeTag extends MakumbaTag
 {
-  String name;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+String name;
   String var;
   String exceptionVar;
 

@@ -138,7 +138,7 @@ public class ObjectToRecord
 	  if(value!=null)
 	    {
 	      if(!value.getClass().getName().startsWith("java"))
-		value= db.getPointer(type.getFieldDefinition(s).getRelationType().getName(),
+		value= db.getPointer(type.getFieldDefinition(s).getForeignTable().getName(),
 				     value.hashCode());
 	      h.put(s, value);
 	    }

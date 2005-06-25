@@ -21,7 +21,11 @@
 //  $Name$
 /////////////////////////////////////
 
+//TODO extra comments about changes from refactoring
+
 package org.makumba.abstr;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -42,7 +46,11 @@ import org.makumba.util.RuntimeWrappedException;
  */
 public class RecordInfo implements java.io.Serializable, DataDefinition
 {
-  java.net.URL origin;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+java.net.URL origin;
   String name;
   Properties templateValues;
   //  Vector templateArgumentNames;
@@ -117,7 +125,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
   {
     fieldOrder.addElement(fi.getName());
     fields.put(fi.getName(), fi);
-    ((FieldInfo)fi).ri=this;
+    ((FieldInfo)fi).dd=this;
   }
 
   /** only meant for building of temporary types */
@@ -155,7 +163,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
   ("Data definitions parsed",
    new NamedResourceFactory()
    {
-     protected Object getHashObject(Object name)
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Object getHashObject(Object name)
        {
 	 java.net.URL u= RecordParser.findDataDefinition((String)name, "mdd");
 	 if(u== null)
@@ -207,9 +219,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
 	n= name.indexOf("->");
 	if(n==-1)
 	  break;
-	ri= ri.getFieldDefinition(name.substring(0, n)).getSubtype();
+	ri= ri.getFieldDefinition(name.substring(0, n)).getSubtable();
       }
-    ri=ri.getFieldDefinition(name).getSubtype();
+    ri=ri.getFieldDefinition(name).getSubtable();
     return ri;
   }
 
@@ -310,5 +322,20 @@ public class RecordInfo implements java.io.Serializable, DataDefinition
 
   /** which is the name of the set member (Pointer, Character or Integer), for set subtables */
   public String getSetMemberFieldName(){ return setField ; }
+  
+  
+
+//moved from RecordHandler
+  public void checkFieldNames(Dictionary d)
+  {
+    for(Enumeration e=d.keys(); e.hasMoreElements(); ) {
+        Object o = e.nextElement();
+        if(!(o instanceof String))
+          throw new org.makumba.NoSuchFieldException(this, "Dictionaries passed to makumba DB operations should have String keys. Key <"+o+"> is of type "+o.getClass()+getName());
+        if(this.getFieldDefinition((String)o)==null)
+          throw new org.makumba.NoSuchFieldException(this, (String)o);
+        String checkFieldName = (String)o;
+    }
+  }
 
 }

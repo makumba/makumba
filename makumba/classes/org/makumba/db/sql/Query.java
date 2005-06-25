@@ -39,7 +39,7 @@ import org.makumba.db.sql.oql.QueryAST;
 public class Query implements org.makumba.db.Query
 {
   String query;
-  RecordManager resultHandler;
+  TableManager resultHandler;
   String command;
   ParameterAssigner assigner;
 
@@ -50,7 +50,7 @@ public class Query implements org.makumba.db.Query
   {
     command= ((QueryAST)tree).writeInSQLQuery(db);
 
-    resultHandler= (RecordManager)db.makePseudoTable((DataDefinition)tree.getProjectionType());
+    resultHandler= (TableManager)db.makePseudoTable((DataDefinition)tree.getProjectionType());
     assigner= new ParameterAssigner(db, tree);
   }
 
@@ -84,7 +84,7 @@ public class Query implements org.makumba.db.Query
     catch(SQLException e){ throw new org.makumba.DBError(e); }  
   }
 
-  Vector goThru(ResultSet rs, RecordManager rm) 
+  Vector goThru(ResultSet rs, TableManager rm) 
   {
     int size= rm.keyIndex.size();
 

@@ -167,7 +167,7 @@ public class jspViewer extends LineViewer {
         thisFile = thisFile.substring(0, thisFile.length() - 1);
 
         JspParseData jspParseData = JspParseData.getParseData(sv.getServletContext().getRealPath("/"), thisFile,
-                JspxJspAnalyzer.singleton);
+                JspxJspAnalyzer.getInstance());
         jspParseData.getAnalysisResult(null);
 
         syntaxPoints = jspParseData.getSyntaxPoints();

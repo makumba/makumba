@@ -28,7 +28,12 @@ import org.makumba.Pointer;
 /** the SQL pointer, represents a pointer as a long, but only an int is needed... */
 public class SQLPointer extends Pointer
 {
-  static long compute(int dbsv, int uid)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+static long compute(int dbsv, int uid)
   {
     return (dbsv<<MASK_ORDER)+uid;
   }
@@ -42,7 +47,7 @@ public class SQLPointer extends Pointer
     this.type=type; 
   }
 
-  SQLPointer(String type, long n){ this(type); this.n= n;  }
+  public SQLPointer(String type, long n){ this(type); this.n= n;  }
 
   SQLPointer(String type, int dbsv, int uid)
   {

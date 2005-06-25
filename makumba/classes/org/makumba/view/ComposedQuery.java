@@ -302,7 +302,7 @@ public class ComposedQuery
 
   // ------------
   /** execute the contained query in the given database */ 
-  public Grouper execute(org.makumba.Database db, Attributes a, Evaluator v, int offset, int limit) 
+  public Grouper execute(org.makumba.Transaction db, Attributes a, Evaluator v, int offset, int limit) 
        throws LogicException
   {
     analyze();
@@ -319,7 +319,12 @@ public class ComposedQuery
   
   NamedResources queries=new NamedResources("Composed queries", 
 					    new NamedResourceFactory(){
-    protected Object makeResource(Object nm, Object hashName) 
+    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+	protected Object makeResource(Object nm, Object hashName) 
       {
 	MultipleKey mk=(MultipleKey)nm;
 	String[] sections= new String[5];
@@ -394,7 +399,7 @@ public class ComposedQuery
 	  throw new InvalidFieldTypeException(fd, "pointer");
 	if(!fd.isNotNull())
 	  return s.substring(0, dot1);
-	dd=fd.getReferredType();
+	dd=fd.getPointedType();
 	dot=dot1;
       }
   }
