@@ -623,10 +623,10 @@ public class TableManager extends Table {
 			int n = 0;
 			for (Enumeration e = dd.getFieldNames().elements(); e
 					.hasMoreElements();) {
-				n++;
 				String fieldName = (String) e.nextElement();
 				if (getFieldDefinition(fieldName).getType().startsWith("set"))
 					continue;
+				n++;
 				try {
 					setInsertArgument(fieldName, ps, n, d);
 				} catch (Throwable ex) {
