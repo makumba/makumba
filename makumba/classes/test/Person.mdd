@@ -28,7 +28,6 @@ extraData->what=int
 uniqInt=unique int		;test int uniqness
 uniqChar=unique char[33]	;test char uniqness
 uniqDate=unique date		;test date uniqness
-uniqPtr=unique ptr test.Language	;test ptr uniqness
 
 
 speaks=set test.Language
@@ -49,3 +48,6 @@ address=set			 ;Addresses
   address->usageend=date		;Use till
   address->sth=ptr
   address->sth->aaa=char[20]
+
+uniqPtr=unique ptr test.Language	;test ptr uniqness
+  
