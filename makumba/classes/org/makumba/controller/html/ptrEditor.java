@@ -71,7 +71,10 @@ public class ptrEditor extends choiceEditor {
 		c = new ChoiceSet();
 		for (Iterator i = v.iterator(); i.hasNext();) {
 			Dictionary d = (Dictionary) i.next();
-			c.add(d.get("choice"), d.get("title").toString(), false, false);
+            Object ttl= d.get("title");
+            if(ttl==null)
+                throw new org.makumba.ProgrammerError("null set title for "+d.get("choice"));
+			c.add(d.get("choice"), ttl.toString(), false, false);
 		}
 		return c;
 	}
