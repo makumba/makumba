@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.controller.http.Responder;
@@ -192,7 +192,7 @@ RecordEditor editor;
 		writeInput(sb, formSessionName, formSessionValue, "");	
 		
 		//insert the formSession into the database
-		Database db = MakumbaSystem.getConnectionTo(database);
+		Transaction db = MakumbaSystem.getConnectionTo(database);
 		Dictionary p = new Hashtable();
 		p.put("formSession", formSessionValue);
 		db.insert("org.makumba.controller.MultipleSubmit", p);

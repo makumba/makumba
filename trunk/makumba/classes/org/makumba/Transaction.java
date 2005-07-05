@@ -42,6 +42,7 @@ public interface Transaction extends Database
     public Pointer insert(Pointer host, String subsetField, java.util.Dictionary data);
     public void update(Pointer ptr, java.util.Dictionary fieldsToChange);
     public int update(String from, String set, String where, Object parameterValues);
+    public void delete(Pointer ptr);
     public int delete(String from, String where, Object parameterValues);
     public void commit();
     public void close();

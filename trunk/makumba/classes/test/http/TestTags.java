@@ -27,8 +27,7 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
-//TODO change Database to Transaction
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
@@ -67,7 +66,7 @@ public class TestTags extends JspTestCase {
 		}
 
 		protected void setUp() {
-			Database db = getDB();
+			Transaction db = getDB();
 			insertPerson(db);
 			insertLanguages(db);
 			/* Just a dummy select, so the test_Person__extraData_ is mentioned in the client side part of the tests.
@@ -77,7 +76,7 @@ public class TestTags extends JspTestCase {
 			db.close();
 		}
 
-		protected void insertPerson(Database db) {
+		protected void insertPerson(Transaction db) {
 			Properties p = new Properties();
 			
 			p.put("indiv.name", "bart");
@@ -119,13 +118,13 @@ public class TestTags extends JspTestCase {
 
 		}
 
-		protected void deletePerson(Database db) {
+		protected void deletePerson(Transaction db) {
 			db.delete(address);
 			db.delete(brother);
 			db.delete(person);
 		}
 
-		protected void insertLanguages(Database db) {
+		protected void insertLanguages(Transaction db) {
 			languages.clear();
 			Dictionary p = new Hashtable();
 			for (int i = 0; i < languageData.length; i++) {
@@ -135,14 +134,14 @@ public class TestTags extends JspTestCase {
 			}				
 		}
 
-		protected void deleteLanguages(Database db) {
+		protected void deleteLanguages(Transaction db) {
 			for (int i = 0; i<languages.size(); i++)
 				db.delete((Pointer)languages.get(i));
 		}
 
 		public void tearDown() {
 			// do your one-time tear down here!
-			Database db = getDB();
+			Transaction db = getDB();
 			deletePerson(db);
 			deleteLanguages(db);
 			db.close();
@@ -155,8 +154,8 @@ public class TestTags extends JspTestCase {
 		return setup;
 	}
 	
-//	TODO change Database to Transaction
-	private static Database getDB() {
+//	TODO change Transaction to Transaction
+	private static Transaction getDB() {
 		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
 	
@@ -198,8 +197,8 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+        
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 
@@ -250,10 +249,9 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
-		assertEquals("Database query empty", v.size(), 1);
+		assertEquals("Transaction query empty", v.size(), 1);
 		db.close();
 		pc = (Dictionary) v.elementAt(0);
 
@@ -314,8 +312,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -341,8 +338,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -366,8 +362,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -387,8 +382,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+        Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -416,8 +410,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+		Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -450,8 +443,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-//		TODO change Database to Transaction
-		Database db = getDB();
+        Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
@@ -471,8 +463,7 @@ public class TestTags extends JspTestCase {
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
-		//TODO change Database to Transaction
-		Database db = getDB();
+        Transaction db = getDB();
 		v = db.executeQuery(readPerson, person);
 		db.close();
 		assertEquals("Database query empty", v.size(), 1);
