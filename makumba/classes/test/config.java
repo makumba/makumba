@@ -27,8 +27,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.makumba.ConfigFileError;
-//TODO change Database to Transaction
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 
 /**
@@ -69,7 +68,7 @@ public class config extends TestCase
   {
     String preferredDB=MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties");
 //	TODO change Database to Transaction
-    Database db=MakumbaSystem.getConnectionTo(preferredDB);
+    Transaction db=MakumbaSystem.getConnectionTo(preferredDB);
     assertEquals(preferredDB, db.getName());
     db.close();
   }

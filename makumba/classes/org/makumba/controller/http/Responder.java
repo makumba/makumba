@@ -36,14 +36,12 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.GregorianCalendar;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
-import org.makumba.Database;
+import org.makumba.Transaction;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -285,7 +283,7 @@ public abstract class Responder implements java.io.Serializable
     req.setAttribute(RESPONSE_STRING_NAME, "");
     String message="";
 	
-	Database db = null;
+	Transaction db = null;
 	try {
 		db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 	} catch (LogicException le) {
