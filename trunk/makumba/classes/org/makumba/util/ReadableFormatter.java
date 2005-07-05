@@ -1,7 +1,6 @@
 package org.makumba.util;
 
-import java.util.*;
-import java.io.*;
+import java.util.TimeZone;
 
 /**
  * Formats argument in a readable (meaningful) way
