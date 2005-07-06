@@ -375,16 +375,20 @@ working,
 while support for <b>unique</b> is in progress.
 </div>
 <h3><a name="ObjectTitle">Object title</a></h3>
+<div class="note">The object title is used for <i>set</i> and <i>ptr</i> choosers</div>
 <p>
-One of the fields is always the object title, and is normally presented
-differently from other fields in user interface. This is the field
-called "name"
+One of the fields is always the <i>object title</i>, and is normally presented
+differently from other fields in user interface. For example, when you have a
+field that is a set and you use a <i>mak:input</i> on that field, Makumba will
+automatically create a list with all the items in the set and it will use the
+<i>object title</i> to know what field to display.
+The default is the field called "name"
 if that exists, otherwise it is the first non-pointer field in the
 record
 description. If another field needs to be title, it can be specified
 like
 </p>
-<pre class="example">!title=gender<br></pre>
+<pre class="example">!title=gender</pre>
 <div class="note">
 for the on-the spot types in the current implementation,
 the following notation works:
@@ -777,7 +781,8 @@ or file upload</td>
     </tr>
     <tr>
       <td>ptr</td>
-      <td>dropdown select of record titles</td>
+      
+<td>dropdown select of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</td>
       <td>preferably a long (foreign index)</td>
       <td rowspan="3">org.makumba.Pointer</td>
     </tr>
@@ -803,7 +808,8 @@ modification date</td>
     </tr>
     <tr>
       <td>set</td>
-      <td>multiple choice of record titles</td>
+      
+<td>multiple choice of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</td>
       <td>table with ptrRel to the parent table and ptr to the foreign
 table</td>
       <td>java.util.Vector of org.makumba.Pointer</td>
@@ -1381,7 +1387,7 @@ but changed to reflect practice in XSL and <a
 <p>
 Example:
 </p>
-<pre class="example">&lt;mak:attribute name="pattern" var="pattern" exceptionVar="exception"/&gt;<br><br>&lt;% if (exception!==null) {<br>     pageContext.setAttribute("pattern", (String)pattern+"%");<br>%&gt;<br>   &lt;mak:list from="type t" where="t.field like $pattern" &gt;...&lt;/mak:list&gt;<br><br>&lt;% } else { %&gt;<br>   No pattern argument. Please indicate one.<br>&lt;% } %&gt;<br></pre>
+<pre class="example">&lt;mak:attribute name="pattern" var="pattern" exceptionVar="exception"/&gt;<br><br>&lt;% if (exception!=null) {<br>     pageContext.setAttribute("pattern", (String)pattern+"%");<br>%&gt;<br>   &lt;mak:list from="type t" where="t.field like $pattern" &gt;...&lt;/mak:list&gt;<br><br>&lt;% } else { %&gt;<br>   No pattern argument. Please indicate one.<br>&lt;% } %&gt;<br></pre>
 <br>
 <p>
 </p>
@@ -2024,7 +2030,8 @@ see <a href="#maknew"><code>newForm</code></a></td>
 <p>
 An input field to be created, depending on the makumba type of the
 field.
-</p>
+See the <a href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</p>
+<p>scripts/makumba-javascript.html</p>
 <p>
 The difference between <code>&lt;mak:input &gt;</code> and normal
 HTML <code>&lt;input&gt;</code> in a makumba form are:
@@ -2286,7 +2293,7 @@ submission.</p>
 <p> If an option value appears many times it will only be shown the
 first time it occurs.</p>
 <p></p>
-<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;<br>&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someCondition" &gt;<br>    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someOtherCondition" &gt;<br>   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;/mak:input&gt;<br><br></pre>
+<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;<br>&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someCondition" &gt;<br>    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField" /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someOtherCondition" &gt;<br>   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;/mak:input&gt;<br><br></pre>
 <table class="tagParamDef">
   <tbody>
     <tr>
