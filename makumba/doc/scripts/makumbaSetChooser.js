@@ -59,6 +59,8 @@ function Moveup(dbox) {
          dbox.options[i].text = dbox.options[i - 1].text
          dbox.options[i-1].value = tmpval;
          dbox.options[i-1].text = tmpval2;
+	 dbox.selectedIndex = i-1;
+	 break;
       }
    }
 }//end: Moveup(dbox)
@@ -74,6 +76,8 @@ function Movedown(ebox) {
          ebox.options[i].text = ebox.options[i+1].text
          ebox.options[i+1].value = tmpval;
          ebox.options[i+1].text = tmpval2;
+	 ebox.selectedIndex = i+1;
+	 break;
       }
    }
 }//end: Movedown(ebox)
