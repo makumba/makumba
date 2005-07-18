@@ -20,62 +20,11 @@
 
 	<property name="jar.place" value="." />
 	<!-- check if the OQL grammar has changed since last OQL parser generation-->
-	<target name="checkJars">
-		<condition property="libs.present">
-		<and>
-		<available file="lib/antlr.jar" />
-		<available file="lib/asm.jar" />
-		<available file="lib/aspectjrt.jar" />
-		<available file="lib/cactus.jar" />
-		<available file="lib/cglib.jar" />
-		<available file="lib/commons-collections.jar" />
-		<available file="lib/commons-daemon.jar" />
-		<available file="lib/commons-httpclient.jar" />
-		<available file="lib/commons-logging-api.jar" />
-		<available file="lib/dom4j.jar" />
-		<available file="lib/ehcache.jar" />
-		<available file="lib/hibernate3.jar" />
-		<available file="lib/httpunit.jar" />
-		<available file="lib/javassist.jar" />
-		<available file="lib/jdom.jar" />
-		<available file="lib/js.jar" />
-		<available file="lib/jsp-api.jar" />
-		<available file="lib/jta.jar" />
-		<available file="lib/junit.jar" />
-		<available file="lib/mysql.jar" />
-		<available file="lib/servlet-api.jar" />
-		<available file="lib/tomcat-bootstrap.jar" />
-		<available file="lib/Tidy.jar" />
-		</and>
-		</condition>
-	</target>
-
-	<target name="install" depends="checkJars" unless="libs.present" >
+	<target name="install" >
 	<mkdir dir="work/temp"/>
 	<mkdir dir="tomcat/temp"/>
-	<get src="http://download.makumba.org/makumba/download/maklib.zip" dest="work/temp/maklib.zip" />
-	<unzip src="work/temp/maklib.zip" dest="."/>
-	<delete file="work/temp/maklib.zip"/>
 	</target>
 	
-	<target name="publishDevelLibs" >
-		<mkdir dir="work/temp"/>
-		<zip destfile="work/temp/maklib.zip">
-			<zipfileset dir="lib/" prefix="lib"/>
-		</zip>
-		<ftp server="download.makumba.org"
-			userid="ftp-mak"
-			password="ftp-mak"
-			remotedir="makumba/doc/download"
-			binary="yes" >
-
-			<fileset dir="work/temp/">
-				<include name="maklib.zip" />
-		    </fileset>
-		</ftp>
-		<delete file="work/temp/maklib.zip" />
-	</target>
-
 	<target name="checkAntlr">
 		<uptodate property="antlr.notRequired"
 		      targetfile="classes/org/makumba/db/sql/oql/OQLParser.java" >
