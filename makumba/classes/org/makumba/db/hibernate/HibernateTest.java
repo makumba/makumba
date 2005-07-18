@@ -1,7 +1,6 @@
 package org.makumba.db.hibernate;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
@@ -19,13 +18,11 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Text;
 import org.xml.sax.SAXException;
 
-public class HibernateTest extends HibernateUtils {
-	public static List allmdds;
-	public static final String packageprefix = "generatedfiles";
-	
+public class HibernateTest  {
 	public static void main (String[] args) {
-		allmdds = new ArrayList();
-		DataDefinition dd = MakumbaSystem.getDataDefinition("test/Person");
+		
+		DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
+        Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/hibernate.cfg.xml");
 		
 		try {
 			MddToClass jot = new MddToClass(dd);
@@ -37,18 +34,13 @@ public class HibernateTest extends HibernateUtils {
 			e.printStackTrace();
 		}
 		try {
-			MddToMapping xot = new MddToMapping(dd);
+			MddToMapping xot = new MddToMapping(dd, cfg);
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
 
-		Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/hibernate.cfg.xml");
-		for (int i = 0; i < allmdds.size(); i++ ) {
-			cfg.addResource("generatedfiles/"+(String)allmdds.get(i));
-			System.out.println(allmdds.get(i));
-		}
 
 		SessionFactory sf = cfg.buildSessionFactory();
 		SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
@@ -86,14 +78,31 @@ public class HibernateTest extends HibernateUtils {
 //		session.saveOrUpdate(person);		
 //		tx.commit();
 //		
-		//Query q = session.createQuery("UPDATE test.hibernate.Person SET indiv.name = :newName WHERE indiv.name = :oldName").setString("newName", "Johannes").setString("oldName", "Bart");
+		//Query q = session.createQuery("UPDATE test.Person SET indiv.name = :newName WHERE indiv.name = :oldName").setString("newName", "Johannes").setString("oldName", "Bart");
 
-		Query q = session.createQuery("SELECT p.hibernate_indiv FROM generatedfiles.test.Person p");
+		//       SELECT p would select the whole test.Person!
+        //Query q = session.createQuery("SELECT p.id FROM test.Person p");
+        
+        //       SELECT p.indiv would select the whole test.Individual!
+        //Query q = session.createQuery("SELECT p.hibernate_indiv FROM test.Person p");
+        
+        //       FROM test.Person p, p.indiv i does not pass the HQL-SQL parser
+		//Query q = session.createQuery("SELECT i.surname, p.weight FROM test.Person p, IN(p.indiv) i WHERE i.name = 'Bart'");
+        
+		//       FROM test.Person p, p.intSet s, p.speaks l does not pass the HQL-SQL parser
+		//       SELECT s will select the whole enumerator rather than just the value!
+        //Query q = session.createQuery("SELECT s.enum, s1.name FROM test.Person p JOIN p.intSet s JOIN p.speaks s1 WHERE p.indiv.name = 'Bart'");
+
+		//      FROM test.Person p, p.address a does not pass the HQL-SQL parser
+        Query q = session.createQuery("SELECT a.streetno FROM test.Person p JOIN p.address a WHERE p.indiv.name = 'Bart'");
+
+        //       a manual pointer join
+        //Query q = session.createQuery("SELECT i.name, p.weight FROM test.Person p, test.Individual i WHERE p.indiv = i");
 		
-		//Query q = session.createQuery("SELECT i.surname, p.weight FROM test.hibernate.Person p, IN(p.individual) i WHERE i.name = 'Bart'");
-		//Query q = session.createQuery("SELECT s FROM test.hibernate.Person p join p.speaks s WHERE p.individual.name = 'Bart'");
-		//Query q = session.createQuery("SELECT i.name, p.weight FROM test.hibernate.Person p, test.hibernate.Individual i WHERE p.individual = i");
-		List list = q.list();
+        //       a more automatic pointer join
+        //Query q = session.createQuery("SELECT p.indiv.name, p.weight FROM test.Person p");
+        
+        List list = q.list();
 		for (int i=0; i < list.size(); i++) {
 			if (list.get(i) == null) continue;
 //			test = (Person)list.get(i);
@@ -108,3 +117,5 @@ public class HibernateTest extends HibernateUtils {
 		session.close();
 	}
 }
+
+
