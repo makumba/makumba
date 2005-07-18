@@ -11,21 +11,23 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import org.hibernate.cfg.Configuration;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class MddToMapping extends HibernateUtils {
+    public static final String generatedMappingPath="generated";
 	private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	
-	public MddToMapping(DataDefinition dd) throws TransformerConfigurationException, SAXException {
-		generateMapping(dd);
+	public MddToMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException, SAXException {
+		generateMapping(dd, cfg);
 		
 		/* generate the mappings for the related mdd files */
 		while (!mddsToDo.isEmpty()) {
-			generateMapping((DataDefinition)mddsToDo.removeFirst());	
+			generateMapping((DataDefinition)mddsToDo.removeFirst(), cfg);	
 		}
 	}
 
@@ -33,14 +35,14 @@ public class MddToMapping extends HibernateUtils {
 	 * Creates an xml file for the given DataDefinition
 	 * @param dd DataDefinition that needs to be mapped   
 	 **/
-	public void generateMapping(DataDefinition dd) throws TransformerConfigurationException, SAXException { 
-		if (!mddsDone.contains(dd.getName())) {
+	public void generateMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException, SAXException { 
+		if (mddsDone.contains(dd.getName())) 
+            return;
 			
 			mddsDone.add(dd.getName());
 			
 			String filename = arrowToDot(dd.getName()) + ".hbm.xml";
-			HibernateTest.allmdds.add(filename);
-			StreamResult streamResult = new StreamResult("classes/" + HibernateTest.packageprefix + "/" + filename);
+			StreamResult streamResult = new StreamResult(generatedMappingPath+"/" + filename);
 			SAXTransformerFactory tf = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
 			// SAX2.0 ContentHandler
 			TransformerHandler hd = tf.newTransformerHandler();
@@ -58,7 +60,7 @@ public class MddToMapping extends HibernateUtils {
 			
 			/* class definition */
 			atts.clear();
-			atts.addAttribute("","","name","", HibernateTest.packageprefix + "." + arrowToDot(dd.getName()));
+			atts.addAttribute("","","name","", arrowToDot(dd.getName()));
 			atts.addAttribute("","","table","", dotToUnderscore(arrowToDoubleDot(dd.getName())) + "_");
 			hd.startElement("", "", "class", atts);
 			
@@ -138,7 +140,7 @@ public class MddToMapping extends HibernateUtils {
 						break;
 					case FieldDefinition._set:
 						atts.addAttribute("", "", "name", "", fd.getName());
-						atts.addAttribute("", "", "table", "", dd.getName() + "__" + fd.getName() + "_");
+						atts.addAttribute("", "", "table", "", dd.getName().replace(".","_").replace("->", "__") + "__" + fd.getName() + "_");
 						atts.addAttribute("", "", "cascade", "", "all-delete-orphan");
 						hd.startElement("", "", "bag", atts);
 						atts.clear();
@@ -146,7 +148,7 @@ public class MddToMapping extends HibernateUtils {
 						hd.startElement("", "", "key", atts);
 						hd.endElement("","","key");
 						atts.clear();
-						atts.addAttribute("", "", "class", "", HibernateTest.packageprefix + "." + fd.getPointedType().getName());
+						atts.addAttribute("", "", "class", "", fd.getPointedType().getName());
 						atts.addAttribute("", "", "column", "", fd.getPointedType().getIndexPointerFieldName()+"_");
 						hd.startElement("", "", "many-to-many", atts);
 						hd.endElement("","","many-to-many");
@@ -165,7 +167,7 @@ public class MddToMapping extends HibernateUtils {
 						hd.startElement("", "", "key", atts);
 						hd.endElement("","","key");
 						atts.clear();
-						atts.addAttribute("", "", "class", "", HibernateTest.packageprefix + "." + arrowToDot(fd.getPointedType().getName()));
+						atts.addAttribute("", "", "class", "", arrowToDot(fd.getPointedType().getName()));
 						hd.startElement("", "", "one-to-many", atts);
 						hd.endElement("","","one-to-many");
 						hd.endElement("","","bag");
@@ -176,7 +178,7 @@ public class MddToMapping extends HibernateUtils {
 						atts.clear();
 						atts.addAttribute("", "", "name", "", getBaseName(getArrowBaseName(dd.getName())).toLowerCase());
 						atts.addAttribute("", "", "column", "", getBaseName(getArrowBaseName(dd.getName()) + "_"));
-						atts.addAttribute("", "", "class", "", HibernateTest.packageprefix + "." + arrowToDot(getArrowBaseName(dd.getName())));
+						atts.addAttribute("", "", "class", "", arrowToDot(getArrowBaseName(dd.getName())));
 						hd.startElement("", "", "many-to-one", atts);
 						hd.endElement("", "", "many-to-one");
 						break;
@@ -191,6 +193,6 @@ public class MddToMapping extends HibernateUtils {
 			hd.endElement("", "", "class");
 			hd.endElement("", "", "hibernate-mapping");
 			hd.endDocument();
-		}
+            cfg.addResource(filename);	
 	}
 }
