@@ -17,7 +17,8 @@ import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
 public class MddToClass extends HibernateUtils {
-	private List mddsDone = new ArrayList();
+    public static final String generatedClassPath="generated";
+    private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
 
@@ -39,7 +40,7 @@ public class MddToClass extends HibernateUtils {
 	 **/
 	public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException, IOException {
 		ClassPool cp = ClassPool.getDefault();
-		CtClass cc = cp.get(HibernateTest.packageprefix + "/" + classname);
+		CtClass cc = cp.get(classname);
 		cc.defrost();
 		
 		String type = null;
@@ -47,7 +48,7 @@ public class MddToClass extends HibernateUtils {
 		switch (fd.getIntegerType()) {
 			case FieldDefinition._ptr:
 			case FieldDefinition._ptrOne:
-				type = HibernateTest.packageprefix + "." + arrowToDot(fd.getPointedType().getName());
+				type = arrowToDot(fd.getPointedType().getName());
 				break;
 			case FieldDefinition._set:
 				type = "java.util.ArrayList";
@@ -57,7 +58,7 @@ public class MddToClass extends HibernateUtils {
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
 
-		cc.writeFile("classes");
+		cc.writeFile(generatedClassPath);
 	}
 	
 	public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
@@ -65,7 +66,7 @@ public class MddToClass extends HibernateUtils {
 			mddsDone.add(dd.getName());
 
 			ClassPool cp = ClassPool.getDefault();
-			CtClass cc = cp.makeClass(HibernateTest.packageprefix + "/" + arrowToDot(dd.getName()));
+			CtClass cc = cp.makeClass(arrowToDot(dd.getName()));
 
 			String type = null;
 			String name = null;
@@ -100,7 +101,7 @@ public class MddToClass extends HibernateUtils {
 						continue;
 					case FieldDefinition._ptrRel:
 						name = getBaseName(fd.getPointedType().getName());
-						type = HibernateTest.packageprefix + "." + fd.getPointedType().getName();
+						type = fd.getPointedType().getName();
 						break;
 					case FieldDefinition._ptrIndex:
 						name = "id";
@@ -128,9 +129,16 @@ public class MddToClass extends HibernateUtils {
 				}
 				addFields(cc, type, name);
 			}
-			cc.addConstructor(CtNewConstructor.make("public Person() {}", cc));
+            String nm= dd.getName();
+            int lst= nm.lastIndexOf("->");
+            if(lst!=-1)
+                lst++;
+            else
+                lst=nm.lastIndexOf(".");
+                
+			cc.addConstructor(CtNewConstructor.make("public "+ nm.substring(lst+1)+"() {}", cc));
 //			ClassFileWriter.print(cc.getClassFile());
-			cc.writeFile("/home/jpeeters/eclipse/antwerpen/makumba/classes");
+			cc.writeFile(generatedClassPath);
 		}
 	}
 	
