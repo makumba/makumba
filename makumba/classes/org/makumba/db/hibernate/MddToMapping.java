@@ -140,7 +140,7 @@ public class MddToMapping extends HibernateUtils {
 						break;
 					case FieldDefinition._set:
 						atts.addAttribute("", "", "name", "", fd.getName());
-						atts.addAttribute("", "", "table", "", dd.getName().replace(".","_").replace("->", "__") + "__" + fd.getName() + "_");
+						atts.addAttribute("", "", "table", "", dd.getName().replaceAll("\\.","_").replaceAll("->", "__") + "__" + fd.getName() + "_");
 						atts.addAttribute("", "", "cascade", "", "all-delete-orphan");
 						hd.startElement("", "", "bag", atts);
 						atts.clear();
