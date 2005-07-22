@@ -9,15 +9,17 @@
 Here are the presently known issues with the makumba - HQL query
 transition.<br>
 Note that all the indicated Makumba queries do pass the HQL parser.
-They will not however pass the HQL-SQL translator (in the first 2
-cases) or have a different semantic (in the next 3). The rightmost
+They will not however pass the HQL-SQL translator (in the ptr and set
+join
+cases) or have a different semantic (in the other cases). <br>
+The rightmost
 column suggests ways to automatically translate the Makumba OQL (once
 passed by the HQL parser) into HQL that would pass the HQL-SQL
 translator.<br>
 It is interesting to note that a label means different things in the
 Hibernate FROM and SELECT sections. In FROM, it is a pointer/reference,
 in SELECT it is a whole object. Makumba is more consistent in this area
-so the suggested resolutions for projections below seem to make sense.<br>
+(hence the suggestions below).<br>
 <br>
 <table style="text-align: left; width: 100%;" border="1" cellspacing="2"
  cellpadding="2">
@@ -37,47 +39,47 @@ so the suggested resolutions for projections below seem to make sense.<br>
     <tr>
       <td style="vertical-align: top;">SELECT i.surname, p.weight FROM
 test.Person p, <span style="font-weight: bold;">p.indiv i</span> WHERE
-i.name = 'Bart'<br>
-      </td>
+i.name = 'Bart'</td>
       <td style="vertical-align: top;">SELECT i.surname, p.weight FROM
-test.Person p,<span style="font-weight: bold;"> IN(p.indiv) i</span>
-WHERE i.name = 'Bart'<br>
-      </td>
-      <td style="vertical-align: top;">ptr joining<br>
-      </td>
-      <td style="vertical-align: top;">Hibernate pointer joining is not
+test.Person p<span style="font-weight: bold;"> JOIN p.indiv i</span>
+WHERE i.name = 'Bart'</td>
+      <td style="vertical-align: top;" rowspan="3">ptr and set joining</td>
+      <td style="vertical-align: top;" rowspan="3">Hibernate set and
+pointer joining is not
 as obvious as in Makumba but most probably more flexible (IN operator
 more powerful)<br>
-      </td>
-      <td style="vertical-align: top;">Accept at JSP level but
-recommend the Hibernate form<br>
-      </td>
+Generated Hibernate SQL uses JOIN... ON (while&nbsp;
+makumba's will use supplementary WHERE conditions, one for pointers,
+one for sets). <br>
+      <br>
+Note that this is the case for all kinds of Makumba sets.<br>
+      <br>
+Instead of JOIN p.indiv i, one can use the equivalent form , IN
+(p.indiv) i<br>
+      <br>
+This problem is more important for sets, for pointers you can always use<span
+ style="font-weight: bold;"> p.indiv</span> instead of<span
+ style="font-weight: bold;"> i </span>in the SELECT and WHERE
+expressions.</td>
+      <td style="vertical-align: top;" rowspan="3">Accept at JSP level
+but
+recommend the Hibernate form</td>
     </tr>
     <tr>
       <td style="vertical-align: top;">SELECT s.name FROM test.Person p<span
  style="font-weight: bold;">, p.speaks s</span> WHERE p.indiv.name =
-'Bart'<br>
-SELECT a.streetno FROM test.Person p<span style="font-weight: bold;">,
-p.address a</span><br>
-      </td>
+'Bart'</td>
       <td style="vertical-align: top;">SELECT s.name FROM test.Person p
       <span style="font-weight: bold;">JOIN p.speaks s</span> WHERE
-p.indiv.name = 'Bart'<br>
-      <br>
-SELECT a.streetno FROM test.Person p, <span style="font-weight: bold;">JOIN
-p.address a</span><br>
-      </td>
-      <td style="vertical-align: top;">set joining<br>
-      </td>
-      <td style="vertical-align: top;">Hibernate pointer joining is not
-as obvious as in Makumba but most probably more flexible (JOIN more
-powerful). Generated Hibernate SQL uses JOIN... ON (while&nbsp;
-makumba's will use two supplementary WHERE conditions). <br>
-Note that this is the case for all kinds of Makumba sets.<br>
-      </td>
-      <td style="vertical-align: top;">Accept at JSP level but
-recommend the Hibernate form. <span style="font-style: italic;"></span><br>
-      </td>
+p.indiv.name = 'Bart'</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SELECT a.streetno FROM
+test.Person p<span style="font-weight: bold;">,
+p.address a</span></td>
+      <td style="vertical-align: top;">SELECT a.streetno FROM
+test.Person p, <span style="font-weight: bold;">JOIN
+p.address a</span></td>
     </tr>
     <tr>
       <td style="vertical-align: top;">SELECT <span
@@ -100,6 +102,7 @@ indivPtr instead of hibernate_indiv).<br>
       </td>
       <td style="vertical-align: top;">Selecting whole objects<br>
 (&lt;mak:value expr="p.indiv" /&gt;) makes little sense at JSP level.
+      <br>
 Accept the current makumba form and translate into the Hibernate form.<br>
       </td>
     </tr>
@@ -119,7 +122,8 @@ The current solution is to use the Hibernate-level field name (id) of
 the Makumba primary key<br>
       </td>
       <td style="vertical-align: top;">Selecting whole objects <br>
-(&lt;mak:value expr="p" /&gt;) makes little sense at JSP level. Accept
+(&lt;mak:value expr="p" /&gt;) makes little sense at JSP level. <br>
+Accept
 the current makumba form and translate into the Hibernate form.</td>
     </tr>
     <tr>
