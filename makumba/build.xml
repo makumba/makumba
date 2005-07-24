@@ -54,17 +54,33 @@
 	</target>
 	<!-- check if the OQL grammar has changed since last OQL parser generation-->
 	<target name="checkAntlr">
-		<uptodate property="antlr.notRequired"
+		<condition property="antlr.notRequired">
+		<and>
+		<uptodate
 		      targetfile="classes/org/makumba/db/sql/oql/OQLParser.java" >
 
 		      <srcfiles dir= "classes/org/makumba/db/sql/oql/" 
 				includes="**/OQL-translator.g"/>
 		</uptodate>
+		<uptodate
+		      targetfile="classes/org/makumba/db/hibernate/hql/HqlAnalyzeBaseWalker.java" >
+			      <srcfiles dir= "classes/org/makumba/db/hibernate/hql" 
+					includes="**/hql-analyze.g"/>
+		</uptodate>		
+		</and>
+		</condition>
 	</target>
 
 	<!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
-	<target name= "OQLParserGeneration" depends="checkAntlr, install, version"
+	<target name= "OQLParserGeneration" depends="checkAntlr, install, version, detectHqlTokens"
                 unless="antlr.notRequired">
+
+		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/hibernate/hql"
+			failonerror="true" taskname="antlr"
+		>
+		     <classpath refid="project.class.path" />
+			<arg value="hql-analyze.g"/>
+	 	</java>
 
 		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/sql/oql/"
 			failonerror="true" taskname="antlr"
