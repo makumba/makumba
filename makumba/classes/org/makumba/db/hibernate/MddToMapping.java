@@ -18,11 +18,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class MddToMapping extends HibernateUtils {
-    public static final String generatedMappingPath="generated";
+    public static final String generatedMappingPath="work/generated-hibernate-mappings";
 	private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	
 	public MddToMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException, SAXException {
+//    TODO: generate only if file doesn't exist already            
 		generateMapping(dd, cfg);
 		
 		/* generate the mappings for the related mdd files */
@@ -193,6 +194,7 @@ public class MddToMapping extends HibernateUtils {
 			hd.endElement("", "", "class");
 			hd.endElement("", "", "hibernate-mapping");
 			hd.endDocument();
+// TODO: add to configuration whether it was generated or not.
             cfg.addResource(filename);	
 	}
 }
