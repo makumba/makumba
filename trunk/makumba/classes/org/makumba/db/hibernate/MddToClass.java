@@ -17,7 +17,7 @@ import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
 public class MddToClass extends HibernateUtils {
-    public static final String generatedClassPath="generated";
+    public static final String generatedClassPath="work/generated-hibernate-classes";
     private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
