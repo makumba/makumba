@@ -19,12 +19,40 @@
 	<property environment="env"/>
 
 	<property name="jar.place" value="." />
-	<!-- check if the OQL grammar has changed since last OQL parser generation-->
+
 	<target name="install" >
 	<mkdir dir="work/temp"/>
 	<mkdir dir="tomcat/temp"/>
+	<mkdir dir="work/generated-hibernate-classes"/>
+	<mkdir dir="work/generated-hibernate-mappings"/>
 	</target>
 	
+	<target name="detectHqlTokens">
+		<javac srcdir="classes"
+         destdir="classes"
+	     includes="org/makumba/db/hibernate/hql/DetectHQLTokenTypes.java">
+	     <classpath refid="project.class.path" />
+		</javac>
+		<java	classname="org.makumba.db.hibernate.hql.DetectHQLTokenTypes" 
+			failonerror="true" dir="." fork="true" taskname="detecting tokens"			
+		>
+		     <classpath>
+		     	<path refid="project.class.path" />
+		     	<pathelement path="classes"/>
+		     </classpath>
+	 	</java>		
+		<antcall target="eclipse-antlr-warning"></antcall>
+	</target>
+	
+	<target name="eclipse-antlr-warning">
+		<echo>
+			Please note that proper Makumba building in Eclipse requires the antlr-eclipse tool.
+			http://antlreclipse.sourceforge.net
+			Currently used version: 3.0.5
+			Use Help/Software Updates for installation, chose http://antlreclipse.sourceforge.net/updates
+		</echo>
+	</target>
+	<!-- check if the OQL grammar has changed since last OQL parser generation-->
 	<target name="checkAntlr">
 		<uptodate property="antlr.notRequired"
 		      targetfile="classes/org/makumba/db/sql/oql/OQLParser.java" >
