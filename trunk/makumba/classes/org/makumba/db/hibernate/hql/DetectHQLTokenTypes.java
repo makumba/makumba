@@ -24,7 +24,7 @@ public class DetectHQLTokenTypes {
 
         PrintStream out=null;
         try {
-            out= new PrintStream(new FileOutputStream("classes/"+getClass().getName().substring(0, getClass().getName().lastIndexOf(".")).replace(".", "/")+"/HqlTokenTypes.txt"));
+            out= new PrintStream(new FileOutputStream("classes/"+getClass().getName().substring(0, getClass().getName().lastIndexOf(".")).replace('.', '/')+"/HqlTokenTypes.txt"));
         } catch (FileNotFoundException e1) { e1.printStackTrace(); }
         out.println("Hql");
         Field flds[]= c.getFields();
