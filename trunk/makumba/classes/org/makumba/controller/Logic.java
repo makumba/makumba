@@ -34,13 +34,14 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import org.makumba.Attributes;
-import org.makumba.Transaction;
+import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.Transaction;
 import org.makumba.util.DbConnectionProvider;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
@@ -244,7 +245,7 @@ public class Logic
     return NamedResources.getStaticCache(logix).getResource(path);
   }
 
-  static Class[] argDb= { Attributes.class, Transaction.class };
+  static Class[] argDb= { Attributes.class, Database.class };
   
   public static Object getAttribute(Object controller, String attname, Attributes a, String db, DbConnectionProvider dbcp) 
        throws NoSuchMethodException, LogicException
@@ -266,8 +267,8 @@ public class Logic
       }
   }
 
-  static Class[] editArgs= { Pointer.class, Dictionary.class, Attributes.class, Transaction.class };
-  static Class[] opArgs= { Dictionary.class, Attributes.class, Transaction.class };
+  static Class[] editArgs= { Pointer.class, Dictionary.class, Attributes.class, Database.class };
+  static Class[] opArgs= { Dictionary.class, Attributes.class, Database.class };
   static Class[]noClassArgs= {};
   static Object[]noObjectArgs= {};
 
@@ -429,7 +430,7 @@ public class Logic
 	}
   }
 
-  static Class[] deleteArgs= { Pointer.class, Attributes.class, Transaction.class };
+  static Class[] deleteArgs= { Pointer.class, Attributes.class, Database.class };
 
   public static Pointer doDelete(Object controller, String typename, 
 				 Pointer p, Attributes a, String dbName, DbConnectionProvider dbcp) 
@@ -521,7 +522,7 @@ public class Logic
 	}
   }
 
-  static Class[] newArgs= { Dictionary.class, Attributes.class, Transaction.class };
+  static Class[] newArgs= { Dictionary.class, Attributes.class, Database.class };
 
   public static Pointer doNew(Object controller, String typename, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
