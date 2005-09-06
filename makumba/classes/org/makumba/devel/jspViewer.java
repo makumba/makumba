@@ -115,7 +115,7 @@ public class jspViewer extends LineViewer {
             taglibgSytleProperties = jspSyntaxProperties;
         } catch (Throwable t) { // the properties file was not found / readable / etc.
 
-            MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").fine(
+            MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
                     "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
 
@@ -244,7 +244,7 @@ public class jspViewer extends LineViewer {
             int currentLineLength = lineText.length();
 
             if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > syntaxPoints.getLineText(currentLine).length() + 1) {
-                MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").finest(
+                MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").finest(
                         "skipped syntax Point due to wrong offset: "
                                 + (currentSyntaxPoint.isBegin() ? "begin " : "end ") + currentSyntaxPoint.getType()
                                 + " " + currentSyntaxPoint.getLine() + ":" + currentSyntaxPoint.getColumn()
@@ -347,7 +347,7 @@ public class jspViewer extends LineViewer {
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").finer(
+        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").finer(
                 "Sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 

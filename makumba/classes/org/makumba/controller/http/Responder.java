@@ -179,7 +179,7 @@ public abstract class Responder implements java.io.Serializable
 				objectOut.close();
 	 		}
 		} catch (IOException e) {
-			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+			MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
 		}
 	 }
 	 indexedCache.put(new Integer(f.identity), name);
@@ -321,9 +321,9 @@ public abstract class Responder implements java.io.Serializable
 				fr.postDeserializaton();
 				fr.controller = Logic.getController(fr.controllerClassname);
 			} catch (IOException e) {			
-				MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
 			} catch (ClassNotFoundException e) {
-				MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: class not found: " + fileName, e);		
+				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: class not found: " + fileName, e);		
 			} finally {
 				if (objectIn != null) {
 					try {
@@ -373,7 +373,7 @@ public abstract class Responder implements java.io.Serializable
 			continue;
 		}
 		catch(LogicException e){
-			MakumbaSystem.getLogger("logic.error").log(Level.INFO, "error", e);
+			MakumbaSystem.getMakumbaLogger("logic.error").log(Level.INFO, "error", e);
 			message=errorMessage(e);
 			req.setAttribute(fr.resultAttribute, Pointer.Null);
 			req.setAttribute(resultNamePrefix+suffix, Pointer.Null);
