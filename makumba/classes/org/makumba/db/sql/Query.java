@@ -42,6 +42,8 @@ public class Query implements org.makumba.db.Query
   TableManager resultHandler;
   String command;
   ParameterAssigner assigner;
+  String limitSyntax;
+  boolean offsetFirst;
 
   public String getCommand(){ return command; }
 
@@ -52,17 +54,28 @@ public class Query implements org.makumba.db.Query
 
     resultHandler= (TableManager)db.makePseudoTable((DataDefinition)tree.getProjectionType());
     assigner= new ParameterAssigner(db, tree);
+	limitSyntax=db.getLimitSyntax();
+	offsetFirst=db.isLimitOffsetFirst();
   }
 
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
   {
     PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command
-								     +" LIMIT ?, ?"
+								     +limitSyntax
 								     );
     try{
       String s=assigner.assignParameters(ps, args);
-      ps.setInt(assigner.tree.parameterNumber()+1, offset);
-      ps.setInt(assigner.tree.parameterNumber()+2, limit==-1?Integer.MAX_VALUE:limit);
+	  
+	  int limit1=limit==-1?Integer.MAX_VALUE:limit;
+	  
+	  if(offsetFirst){
+		  ps.setInt(assigner.tree.parameterNumber()+1, offset);
+		  ps.setInt(assigner.tree.parameterNumber()+2, limit1);
+	  }else{
+		  ps.setInt(assigner.tree.parameterNumber()+1, limit1);
+		  ps.setInt(assigner.tree.parameterNumber()+2, offset);
+		  
+	  }
 
       if(s!=null)
 	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+command+"\n"+s);
