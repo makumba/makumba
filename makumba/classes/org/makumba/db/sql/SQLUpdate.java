@@ -172,7 +172,7 @@ public class SQLUpdate implements Update
 	 rez=ps.executeUpdate();
       }catch(SQLException se)
 	{ 
-	  if(Database.isDuplicateException(se))
+	  if(((Database)dbc.getHostDatabase()).isDuplicateException(se))
 	    // FIXME: need to determine the field that produced the error
 	    throw new org.makumba.NotUniqueError(se);
 	  

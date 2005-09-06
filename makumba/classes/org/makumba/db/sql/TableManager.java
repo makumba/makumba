@@ -74,7 +74,7 @@ public class TableManager extends Table {
 			preparedDeleteFromString;
 
 	/** The query that searches for duplicates on this field */
-	String checkDuplicate;
+	Hashtable checkDuplicate= new Hashtable();
 
 	public boolean exists() {
 		return exists_;
@@ -1454,8 +1454,8 @@ public class TableManager extends Table {
 		if (shouldIndex(fieldName))
 			extraIndexes.remove(getFieldDBIndexName(fieldName).toLowerCase());
 
-		checkDuplicate = "SELECT 1 FROM " + getDBName() + " WHERE "
-				+ getFieldDBName(fieldName) + "=?";
+		checkDuplicate.put(fieldName, "SELECT 1 FROM " + getDBName() + " WHERE "
+				+ getFieldDBName(fieldName) + "=?");
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._ptrIndex:
 			dbsv = getSQLDatabase().getDbsv();
@@ -1657,13 +1657,13 @@ public class TableManager extends Table {
 		Object val = data.get(fieldName);
 		if (val == null) // FIXME: not sure about null duplicates
 			return false;
-		PreparedStatement ps = dbc.getPreparedStatement(checkDuplicate);
+		PreparedStatement ps = dbc.getPreparedStatement((String)checkDuplicate.get(fieldName));
 		try {
 			setUpdateArgument(fieldName, ps, 1, val);
 			return ps.executeQuery().next();
 		} catch (SQLException se) {
 			Database.logException(se, dbc);
-			throw new org.makumba.DBError(se, checkDuplicate);
+			throw new org.makumba.DBError(se, (String)checkDuplicate.get(fieldName));
 		}
 
 	}
