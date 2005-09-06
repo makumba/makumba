@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 import org.makumba.Transaction;
@@ -48,7 +49,6 @@ import org.makumba.Text;
  * @author Cristian Bogdan
  */
 public class table extends TestCase {
-//	TODO change Database to Transaction
 	static Transaction db;
 
 	static long epsilon = 2000;
@@ -590,22 +590,37 @@ public class table extends TestCase {
 		assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
 		assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
 		db.delete(ptr1);
-		String nm = MakumbaSystem
-				.getDefaultDatabaseName("test/testDatabase.properties");
-
-		System.out.println("\nworked with: "
-				+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
-				+ " version: "
-				+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version")
-				+ "\njdbc driver: "
-				+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name")
-				+ " version: "
-				+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
-				+ "\njdbc connections allocated: "
-				+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
-				+ "\ncaches: " + org.makumba.util.NamedResources.getCacheInfo()
-
-		);
 		db.delete("test.Individual i","1=1",null);
 	}
-}
+	
+	public void run(TestResult r){
+		try{
+			super.run(r);
+
+		}catch(Throwable t){ t.printStackTrace();  }
+		
+		/* very shitty solution, more JUnit should be studied for a better one...
+		 * we want to find out whether we just finished the last test
+		 * if yes, we do cleanup
+		 */
+		if(toString().equals("testCopy(test.table)")){
+			String nm = MakumbaSystem
+			.getDefaultDatabaseName("test/testDatabase.properties");
+	
+			System.out.println("\nworked with: "
+			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
+			+ " version: "
+			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version")
+			+ "\njdbc driver: "
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name")
+			+ " version: "
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
+			+ "\njdbc connections allocated: "
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
+			+ "\ncaches: " + org.makumba.util.NamedResources.getCacheInfo()
+	
+	);
+			 MakumbaSystem.close();
+		}
+	}
+	}
