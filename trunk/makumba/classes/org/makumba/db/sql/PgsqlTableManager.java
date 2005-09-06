@@ -51,7 +51,7 @@ public class PgsqlTableManager extends org.makumba.db.sql.TableManager {
 	}
 
 	//	Moved from pgsql.textManager
-	protected int getfieldSQLType(String fieldName) {
+	protected int getSQLType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return Types.VARCHAR;
