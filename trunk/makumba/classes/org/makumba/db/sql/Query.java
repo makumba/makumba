@@ -54,8 +54,8 @@ public class Query implements org.makumba.db.Query
 
     resultHandler= (TableManager)db.makePseudoTable((DataDefinition)tree.getProjectionType());
     assigner= new ParameterAssigner(db, tree);
-	limitSyntax=db.getLimitSyntax();
-	offsetFirst=db.isLimitOffsetFirst();
+	limitSyntax=((org.makumba.db.sql.Database)db).getLimitSyntax();
+	offsetFirst=((org.makumba.db.sql.Database)db).isLimitOffsetFirst();
   }
 
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
