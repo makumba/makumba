@@ -29,7 +29,7 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
   public NamedResourcesContextListener()
   {
     // this also ensures that the loadTime of MakumbaSystem is set
-    org.makumba.MakumbaSystem.getLogger("system").info("loading context listener");
+    org.makumba.MakumbaSystem.getMakumbaLogger("system").info("loading makumba context listener");
   }
   
   public void contextInitialized(ServletContextEvent sce)
@@ -37,7 +37,6 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
   
   public void contextDestroyed(ServletContextEvent sce)
   {
-    org.makumba.MakumbaSystem.getLogger("system").info("destroying makumba caches");
-    NamedResources.cleanup();
+    org.makumba.MakumbaSystem.close();
   }
 }

@@ -59,7 +59,7 @@ static boolean soft_static_caches;
   
   static Vector allCaches= new Vector();
   
-  static void cleanup()
+  static public void cleanup()
   {
     for(int i=0;i<staticCaches.size(); i++)
       ((NamedResources)staticCaches.get(i)).close();

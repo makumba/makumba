@@ -34,6 +34,12 @@ public class MakumbaSystem
   /** The date at which makumba is loaded */
   static public final java.util.Date loadingTime=new java.util.Date();
 
+  /** cleanup all the makumba resources at the end of a makumba program or at e.g. servlet context reload */
+  public static void close(){
+	  org.makumba.MakumbaSystem.getMakumbaLogger("system").info("destroying makumba caches");
+	  NamedResources.cleanup();
+  }
+  
   /** Get information about the makumba cache sizes.
    * @return a {@link java.util.Map} with cache categories as keys and cache sizes as values
    * @since makumba-0.5.5.13
