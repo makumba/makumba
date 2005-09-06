@@ -74,11 +74,11 @@ public class Logic
 			nameToObject.put(className, controller);
 			return controller;
 		} catch (ClassNotFoundException e) {
-			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
+			MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
 		} catch (InstantiationException e) {
-			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
+			MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);
 		} catch (IllegalAccessException e) {
-			MakumbaSystem.getLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);		
+			MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to load controller class " + className, e);		
 		}
 	}
 	return nameToObject.get(className);

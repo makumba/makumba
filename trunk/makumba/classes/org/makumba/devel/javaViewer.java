@@ -102,7 +102,7 @@ public class javaViewer extends LineViewer {
                     DEFAULT_JAVASTRINGLITERAL_STYLE));
         } catch (Throwable t) { // the properties file was not found / readable / etc.
 
-            MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").fine(
+            MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
                     "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
             // we use only default values
@@ -135,7 +135,7 @@ public class javaViewer extends LineViewer {
                 setSearchLevels(false, false, false, false); // for compiled JSP files, we search only for MDDs.
                 compiledJSP = true;
             } else {
-                MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").info(
+                MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").info(
                         "Could not find the compiled JSP '" + virtualPath + "'");
             }
         }
@@ -206,7 +206,7 @@ public class javaViewer extends LineViewer {
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").finer(
+        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").finer(
                 "Java sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 

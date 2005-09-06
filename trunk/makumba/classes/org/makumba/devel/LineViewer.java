@@ -150,7 +150,7 @@ public class LineViewer implements SourceViewer {
         printPageEnd(writer);
         reader.close();
         double timeTaken = new Date(new GregorianCalendar().getTimeInMillis() - begin.getTimeInMillis()).getTime();
-        MakumbaSystem.getLogger("org.makumba.devel.sourceViewer").fine(
+        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
                 "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
