@@ -402,7 +402,7 @@ public class TableManager extends Table {
 					 */
 					present.addElement(fieldName);
 					if (!cs.checkColumn(fieldName)
-							&& !(alter && alter(dbc, fieldName, "MODIFY"))) {
+							&& !(alter && alter(dbc, fieldName, getColumnAlterKeyword()))) {
 						MakumbaSystem.getMakumbaLogger("db.init.tablechecking")
 								.warning(
 										"should modify: " + fieldName + " "
@@ -446,6 +446,10 @@ public class TableManager extends Table {
 		}
 
 		doAlter(dbc, drop, present, add, modify);
+	}
+
+	protected String getColumnAlterKeyword() {
+		return "MODIFY";
 	}
 
 	boolean alter(SQLDBConnection dbc, String fieldName, String op)
