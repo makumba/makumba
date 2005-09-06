@@ -448,4 +448,12 @@ public class Database extends org.makumba.db.Database {
 	public Pointer getPointer(String type, int uid) {
 		return new SQLPointer(type, getDbsv(), uid);
 	}
+	
+	public String getLimitSyntax() {
+		return "LIMIT ?, ?";
+	}
+
+	public boolean isLimitOffsetFirst() {
+		return true;
+	}
 }
