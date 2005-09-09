@@ -61,7 +61,7 @@ public class Query implements org.makumba.db.Query
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
   {
     PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command
-								     +limitSyntax
+								     +" "+limitSyntax
 								     );
     try{
       String s=assigner.assignParameters(ps, args);
