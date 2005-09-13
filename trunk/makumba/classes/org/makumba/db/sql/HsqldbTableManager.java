@@ -15,7 +15,7 @@ public class HsqldbTableManager extends org.makumba.db.sql.TableManager {
 	protected int getSQLType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
-			return -3;
+			return -4;
 		default:
 			return super.getSQLType(fieldName);
 		}
