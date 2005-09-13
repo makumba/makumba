@@ -23,5 +23,10 @@ public class HsqldbTableManager extends org.makumba.db.sql.TableManager {
 	protected String getColumnAlterKeyword() {
 		return "ALTER COLUMN";
 	}
+	
+	public String getFieldDBIndexName(String fieldName) {
+		return getFieldDBName(fieldName)+"_"+this.getDBName();
+	}
+
 
 }
