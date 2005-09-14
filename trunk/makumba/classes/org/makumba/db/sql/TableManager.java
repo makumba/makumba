@@ -820,12 +820,22 @@ public class TableManager extends Table {
 				return get_timeStamp_Value(fieldName, rs, i);
 			case FieldDefinition._nil:
 				return get_nil_Value(fieldName, rs, i);
+			case FieldDefinition._real:
+				return get_real_Value(fieldName, rs, i);
 			default:
 				return base_getValue(fieldName, rs, i);
 			}
 		} else {
 			throw new RuntimeException("shouldn't be here");
 		}
+	}
+
+	private Object get_real_Value(String fieldName, ResultSet rs, int i) 
+	throws SQLException{
+		double n = rs.getDouble(i);
+		if (rs.wasNull())
+			return null;
+		return new Double(n);
 	}
 
 	//original getValue() from FieldManager
