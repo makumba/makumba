@@ -40,7 +40,8 @@ public class MysqlTableManager extends org.makumba.db.sql.TableManager
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
     rs.next();
     String def=rs.getString(2).trim();
-    if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB")){
+    if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB") &&
+			def.lastIndexOf(')') > def.lastIndexOf(" ENGINE=InnoDB")){
       String s="ALTER TABLE "+getDBName()+" TYPE=InnoDB";
       MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
       st.executeUpdate(s);
