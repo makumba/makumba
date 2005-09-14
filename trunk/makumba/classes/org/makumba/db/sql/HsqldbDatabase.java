@@ -33,9 +33,12 @@ public class HsqldbDatabase extends org.makumba.db.sql.Database
 {
 	
 	protected String getJdbcUrl(Properties p) {
+		// makumba hsqldb implementation accepts stuff like localhost_hsql_path_to_some_dir.properties
 		String s=super.getJdbcUrl(p);
+		String dbn= p.getProperty("#database");
+		dbn=dbn.replace('_','/');
 		int n = s.lastIndexOf(':');
-		return s.substring(0,n+1)+"data_folder/"+s.substring(n+1);
+		return s.substring(0,n+1)+dbn;
 	}
 	
   /** simply calls super */
