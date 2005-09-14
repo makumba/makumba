@@ -34,4 +34,14 @@ public class AdditiveTree extends AnalysisTree
   {
     return otherOperandType;
   }
+  
+  public void negociateOperandTypes(Object t1, Object t2)
+  throws antlr.RecognitionException
+	{ 
+		if(t1.equals("int") && t2.equals("real")
+		  ||t2.equals("int") && t1.equals("real") )
+		 return;
+	
+	super.negociateOperandTypes(t1, t2);
+	}
 }
