@@ -820,7 +820,7 @@ aggregateExpr :
                 s:"sum"{#s.setText("sum("); }
             |   mn:"min"{#mn.setText("min("); }
             |   mx:"max"{#mx.setText("max("); }
-            |   av:"avg"{#av.setText("avg("); }
+            |   av:"avg"{#av.setText("avg(0.0+"); }
             )
             l:TOK_LPAREN {#l.setText("");} q:query TOK_RPAREN  
 
