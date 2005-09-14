@@ -24,6 +24,8 @@
 package org.makumba.db.sql.oql;
 import org.makumba.db.Database;
 
+import antlr.collections.AST;
+
 public class AggregateAST extends OQLAST
 {
   /**
@@ -39,7 +41,14 @@ OQLAST expr;
 
     public String writeInSQLQuery(Database d)
     {
-	return getText()+expr.writeInSQLQuery(d)+")";
+		StringBuffer sb= new StringBuffer();
+		sb.append(getText());
+		sb.append(expr.writeInSQLQuery(d));
+		 for(AST a= expr.getNextSibling(); !a.getText().equals(")"); a=a.getNextSibling())
+			  sb.append(((OQLAST)a).writeInSQLQuery(d));
+		 
+		sb.append(")");
+		return sb.toString();	
     }
     
     public Object getMakumbaType() throws antlr.RecognitionException
