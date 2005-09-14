@@ -26,9 +26,6 @@ package org.makumba.db.sql;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.makumba.DBError;
-import org.makumba.db.DBConnectionWrapper;
-
 //this file was based in the Claudspace... so it needs to be
 
 /** the database adapter for Hsqldb */
