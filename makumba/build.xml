@@ -8,9 +8,9 @@
 	 </fileset>	
        </path>
 
-	<!-- jikes as default compiler -->
+	<!-- jikes as default compiler
        	<property name="build.compiler" value="jikes" />
-
+ -->
 	<!-- jikes options for ant -emacs  -->
        	<property name="build.compiler.emacs" value="true" />
 
