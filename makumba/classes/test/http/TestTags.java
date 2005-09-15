@@ -67,8 +67,9 @@ public class TestTags extends JspTestCase {
 
 		protected void setUp() {
 			Transaction db = getDB();
+            insertLanguages(db);
 			insertPerson(db);
-			insertLanguages(db);
+			
 			/* Just a dummy select, so the test_Person__extraData_ is mentioned in the client side part of the tests.
 			 * If this is not done, the server side and the client side will attempt to insert the same primary key
 			 * in the catalog table (because they use the same DBSV, because they use the same database connection file). */
@@ -91,7 +92,7 @@ public class TestTags extends JspTestCase {
 			Date birthdate = c.getTime();
 			p.put("birthdate", birthdate);
 					
-			
+			p.put("uniqDate", birthdate);
 			p.put("gender", new Integer(1));
 			p.put("uniqChar", new String("testing \" character field"));
 			
@@ -107,7 +108,7 @@ public class TestTags extends JspTestCase {
 			p.put("intSet", intSet);
 
 			p.put("brother", brother);
-			
+			p.put("uniqPtr", languages.get(0));
 			person = db.insert("test.Person", p);
 			
 			p.clear();
