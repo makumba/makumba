@@ -75,6 +75,7 @@ public class TableManager extends Table {
 
 	/** The query that searches for duplicates on this field */
 	Hashtable checkDuplicate= new Hashtable();
+    Hashtable checkNullDuplicate= new Hashtable();
 
 	public boolean exists() {
 		return exists_;
@@ -675,10 +676,11 @@ public class TableManager extends Table {
 		Dictionary duplicates = new Hashtable();
 		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 			String fieldName = (String) e.nextElement();
+            Object val=d.get(fieldName);
 			if (getFieldDefinition(fieldName).getType().startsWith("set"))
 				continue;
 			if (checkDuplicate(fieldName, dbc, d))
-				duplicates.put(fieldName, d.get(fieldName));
+				duplicates.put(fieldName, val==null?"null":val);
 		}
 		return new NotUniqueError(getDataDefinition().getName(), duplicates);
 	}
@@ -1470,6 +1472,8 @@ public class TableManager extends Table {
 
 		checkDuplicate.put(fieldName, "SELECT 1 FROM " + getDBName() + " WHERE "
 				+ getFieldDBName(fieldName) + "=?");
+        checkNullDuplicate.put(fieldName, "SELECT 1 FROM " + getDBName() + " WHERE "
+                + getFieldDBName(fieldName) + " is null");
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._ptrIndex:
 			dbsv = getSQLDatabase().getDbsv();
@@ -1669,11 +1673,14 @@ public class TableManager extends Table {
 		if (!getFieldDefinition(fieldName).isUnique())
 			return false;
 		Object val = data.get(fieldName);
-		if (val == null) // FIXME: not sure about null duplicates
-			return false;
-		PreparedStatement ps = dbc.getPreparedStatement((String)checkDuplicate.get(fieldName));
+        PreparedStatement ps;
+		if (val == null) 
+            ps = dbc.getPreparedStatement((String)checkNullDuplicate.get(fieldName));
+        else
+            ps = dbc.getPreparedStatement((String)checkDuplicate.get(fieldName));
 		try {
-			setUpdateArgument(fieldName, ps, 1, val);
+            if(val!=null)
+                setUpdateArgument(fieldName, ps, 1, val);
 			return ps.executeQuery().next();
 		} catch (SQLException se) {
 			Database.logException(se, dbc);
