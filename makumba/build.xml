@@ -20,7 +20,7 @@
 
 	<property name="jar.place" value="." />
 
-	<target name="install" >
+	<target name="install" depends="version">
 	<mkdir dir="work/temp"/>
 	<mkdir dir="tomcat/temp"/>
 	<mkdir dir="work/generated-hibernate-classes"/>
