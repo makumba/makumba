@@ -777,7 +777,7 @@ public class RecordParser {
 		if (o != null)
 			return;
 
-		getFieldInfo(fieldName).unique = true;
+		//getFieldInfo(fieldName).unique = true;
 		getFieldInfo(fieldName).type = "ptrOne";
 	}
 
