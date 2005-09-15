@@ -6,12 +6,9 @@
  */
 package org.makumba.db.hibernate.hql;
 
-
-
 import java.util.Map;
 
 import antlr.CommonAST;
-import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;
 
@@ -28,7 +25,11 @@ public class ObjectTypeAST extends CommonAST {
                 throw new SemanticException("unknown alias: "+lhs.getText()+ " in property reference: "+lhs.getText()+"."+rhs.getText());
             }
         }
-        
+
+        /* analysis can look like
+        Type t= SessionFactory.getClassMetadata(type).getPropertyType(rhs.getText());
+        then check if t is a ptr or a set, and to what type it points, and do setText() with that type
+        */ 
         setText(type+"->"+rhs.getText());
         System.out.println(getText());
     }

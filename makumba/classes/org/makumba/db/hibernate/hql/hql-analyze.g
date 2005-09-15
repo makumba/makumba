@@ -330,20 +330,10 @@ joinElement!
 
 // Returns an node type integer that represents the join type
 // tokens.
-joinType returns [int j] {
-	j = INNER;
-	}
-	: ( (left:LEFT | right:RIGHT) (outer:OUTER)? ) {
-		if (left != null)       j = LEFT_OUTER;
-		else if (right != null) j = RIGHT_OUTER;
-		else if (outer != null) j = RIGHT_OUTER;
-	}
-	| FULL {
-		j = FULL;
-	}
-	| INNER {
-		j = INNER;
-	}
+joinType 
+	: ( (LEFT | RIGHT) (OUTER)? ) 
+	| FULL
+	| INNER 
 	;
 
 // Matches a path and returns the normalized string for the path (usually
