@@ -123,9 +123,11 @@ public abstract class Table //extends RecordHandler
 	
 	for(Enumeration e=dd.getFieldNames().elements(); e.hasMoreElements();)
 	  {
+		String name=(String)e.nextElement(); 
+		if(dd.getFieldDefinition(name).getType().startsWith("set"))
+			continue;
 	    list.append(comma);
 	    comma=", ";
-	    String name=(String)e.nextElement(); 
 	    list.append("t.").append(name);
 	  }
 	String indexName= getDataDefinition().getIndexPointerFieldName();
