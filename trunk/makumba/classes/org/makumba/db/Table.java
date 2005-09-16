@@ -135,28 +135,22 @@ public abstract class Table //extends RecordHandler
 
 	final int dbsv=sourceDB.getHostDatabase().getDbsv();
 	selectLimits[0]=new Pointer(){
-	  /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
-	public String getType(){ return nm; }
-	  public long longValue(){ return dbsv<<MASK_ORDER; }
+		public String getType(){ return nm; }
+		public long longValue(){ return dbsv<<MASK_ORDER; }
 	};
 	selectLimits[1]=new Pointer(){
-	  /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-	public String getType(){ return nm; }
-	  public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
+	  	private static final long serialVersionUID = 1L;
+		public String getType(){ return nm; }
+		public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
 	};
-      }    
+   }    
       
     Vector v=sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
     if(v.size()==0)
       {
-	MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": no records to copy");
-	return;
+		MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": no records to copy");
+		return;
       }
 
     MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying "+v.size()+" records");
@@ -174,34 +168,36 @@ public abstract class Table //extends RecordHandler
 
     int f=0;
     for(Enumeration e=  dd.getFieldNames().elements(); e.hasMoreElements(); ){
-        String name= (String)e.nextElement();
+		String name= (String)e.nextElement();
+		if(dd.getFieldDefinition(name).getType().startsWith("set"))
+			continue;
         nameKey.put("col"+(f+1), name);
         f++;
     }
 
     for(int j=0; j<v.size(); j++)
       {
-	Dictionary d= (Dictionary)v.elementAt(j);
-	for(Enumeration e= d.keys(); e.hasMoreElements();)
-	  {
-	    Object k= e.nextElement();
-	    data.put(nameKey.get(k), d.get(k));
-	  }
+		Dictionary d= (Dictionary)v.elementAt(j);
+		for(Enumeration e= d.keys(); e.hasMoreElements();)
+		{
+			Object k= e.nextElement();
+			data.put(nameKey.get(k), d.get(k));
+		}
 
-	dest.insert(getDataDefinition().getName(), data);
+		dest.insert(getDataDefinition().getName(), data);
 	
-	// free up some memory
-	data.clear();
-	v.setElementAt(null, j);
+		// 	free up some memory
+		data.clear();
+		v.setElementAt(null, j);
 
-	// display progress bar
-	int nstars= (int)(((float)j+1)/step);
-	while(nstars>stars)
-	  {
-	    System.out.print("*"); 
-	    System.out.flush();
-	    stars++;
-	  }
+		// 	display progress bar
+		int nstars= (int)(((float)j+1)/step);
+		while(nstars>stars)
+		{
+		    System.out.print("*"); 
+		    System.out.flush();
+		    stars++;
+		}
       }
     System.out.println();
   }
