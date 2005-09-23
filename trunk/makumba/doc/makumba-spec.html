@@ -229,6 +229,8 @@ control
 </select>
 )
 </p>
+<div class="note">"deprecated" can be used in this way to denote a deprecated option:<br>
+                  userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}</div>
 <div class="internals note">In the present implementation, this type is
 called "intEnum" internally.<br>
 Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).</div>
@@ -304,6 +306,13 @@ ommitted in future parsers</div>
 The type can be defined on-the-spot for a single usage. For example
 </p>
 <pre class="example">addres= ptr ; Address<br>address-&gt;street= char[80]; Street<br>address-&gt;number= int; Number<br></pre>
+<div class="note">The main difference between sets of external types and internal sets is
+     that when the host object (e.g. Person.mdd that has the above field "address") is 
+     deleted from the database (DB), also all elements of the set (addresses) are deleted 
+     automatically, so there is no orphans (addresses) in the DB. Elements (addresses) of
+     an internal set of some host object (Person X) also can't be used in a set of some
+     other host object (Company Y).</div>
+
 <!-- FIXME. Is there any relevance to this? bug 607 -->
 <div class="note futfeat">future parsers might read this:
 <pre class="example">address= ptr{<br>    street= char[80]; Street<br>    number= int; Number}; address<br></pre>
@@ -2329,8 +2338,7 @@ Example:
 <h3><a name="delete">&lt;mak:deleteLink&gt;...&lt;/mak:deleteLink&gt;</a></h3>
 <p>
 Produces a link to the page that will delete the object indicated by
-any
-of the labels of the mandatory enclosing <code>&lt;mak:object&gt;</code>
+any of the labels of the mandatory enclosing <code>&lt;mak:object&gt;</code>
 or <code>&lt;mak:list&gt;</code>
 </p>
 <p>
