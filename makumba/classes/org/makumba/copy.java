@@ -33,36 +33,55 @@ public class copy
   public static void main(String[]argv) 
   {
     int exit=0;
-    if(argv.length<2)
+	int nargs= argv.length;
+	int firstArg=0;
+	boolean ignoreDbsv=false;
+	
+	while(nargs>0 && argv[firstArg].startsWith("-")){
+		if(argv[firstArg].equals("-ignoreDbsv")){
+			ignoreDbsv=true;
+		}
+		else{
+			usage();
+			System.exit(1);
+		}
+		nargs--;
+		firstArg++;
+	}
+    if(nargs<2)
       {
-	usage();
-	exit=1;
+		usage();
+		exit=1;
       }
     else
       {
-	try{
-	  String [] types;
-	  if(argv.length==2)
-	    {
-	      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
-	      types= new String[v.size()];
-	      for(int i=0; i<v.size(); i++)
-		types[i]= (String)v.elementAt(i);
-	    }
-	  else
-	    {
-	      types= new String[argv.length-2];
-	      System.arraycopy(argv, 2, types, 0, types.length);
-	    }
-	  MakumbaSystem._copy(argv[0], argv[1], types);
-	}catch(Throwable tr){ tr.printStackTrace(); exit=1;usage(); }
+		try{
+		  String [] types;
+		  if(nargs==2)
+		    {
+		      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+		      types= new String[v.size()];
+		      for(int i=0; i<v.size(); i++)
+				  types[i]= (String)v.elementAt(i);
+		    }
+		  else
+		    {
+		      types= new String[nargs-2];
+		      System.arraycopy(argv, firstArg+2, types, 0, types.length);
+		    }
+		  MakumbaSystem._copy(argv[firstArg], argv[firstArg+1], types, ignoreDbsv);
+		  MakumbaSystem.close();
+		}catch(Throwable tr){ tr.printStackTrace(); exit=1;usage(); }
       }
     System.exit(exit);
   }
   
   static void usage()
   {
-    System.err.println("org.makumba.copy copies data of several types and their subtypes from one database to another. All types must have an admin# confirmation in the destination database connection file.All information copied previously from the source database is deleted.\r\nUsage: \r\n java org.makumba.copy source destination [type1 type2 ...]\r\nIndicate the databases as hostname_jdbcsubprotocol_databasename. If no types are indicated, data of all known types is copied");
+    System.err.println("org.makumba.copy copies data of several types and their subtypes from one database to another. All types must have an admin# confirmation in the destination database connection file.All information copied previously from the source database is deleted.\r\nUsage: \r\n java org.makumba.copy source destination [type1 type2 ...]\r\nIndicate the databases as hostname_jdbcsubprotocol_databasename. If no types are indicated, data of all known types is copied\n"+
+			"\t java org.makumba.copy [-ignoreDbsv] host1_subprotocol1_db1 host2_subprotocol2_db2 [type1 type2...]\n"+
+			"if -ignoreDbsv is not indicated, only records with the dbsv indicated in host1_subprotocol1_db1.properties will be copied"
+			);
   }
   
 }

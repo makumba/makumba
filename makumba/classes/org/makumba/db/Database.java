@@ -413,77 +413,77 @@ public abstract class Database
   public abstract int getMinPointerValue();
   public abstract int getMaxPointerValue();
 
-  public void deleteFrom(DBConnection c, String table, DBConnection sourceDB)
+  public void deleteFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv)
   {
     DataDefinition dd= MakumbaSystem.getDataDefinition(table);
-    MakumbaSystem.getMakumbaLogger("db.admin.delete").info("deleted "+getTable(table).deleteFrom(c, sourceDB)+" old objects from "+table);
+    MakumbaSystem.getMakumbaLogger("db.admin.delete").info("deleted "+getTable(table).deleteFrom(c, sourceDB, ignoreDbsv)+" old objects from "+table);
+
+    for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
+      {
+		FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
+		if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+		  deleteFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
+      }
+  }
+
+  public void deleteFrom(String sourceDB, String table,  boolean ignoreDbsv)
+  {
+    String[]_tables = {table};
+    deleteFrom(sourceDB, _tables, ignoreDbsv);
+  }
+
+  public void deleteFrom(String source, String[] tables, boolean ignoreDbsv)
+  {
+    DBConnection c= getDBConnection();    
+    DBConnection sourceDBc=getDatabase(source).getDBConnection();
+    try{
+      deleteFrom(c, tables, sourceDBc, ignoreDbsv);
+    }finally{ c.close(); sourceDBc.close(); }
+  }
+
+  public void deleteFrom(DBConnection c, String[] tables, DBConnection sourceDB, boolean ignoreDbsv)
+  {
+    for (int i=0;i<tables.length;i++) 
+      deleteFrom(c, tables[i], sourceDB, ignoreDbsv);
+  }
+
+
+  public void copyFrom(String sourceDB, String table, boolean ignoreDbsv)
+  {
+    String[]_tables = {table};
+    copyFrom(sourceDB, _tables, ignoreDbsv);
+  }
+
+  public void copyFrom(String source, String[] tables, boolean ignoreDbsv)
+  {
+    DBConnection c= getDBConnection();    
+    DBConnection sourceDBc=getDatabase(source).getDBConnection();
+    try{
+      copyFrom(c, tables, sourceDBc, ignoreDbsv);
+    }finally{ c.close(); sourceDBc.close(); }
+  }
+
+  public void copyFrom(DBConnection c, String[] tables, DBConnection sourceDB, boolean ignoreDbsv)
+  {
+    deleteFrom(c, tables, sourceDB, ignoreDbsv);
+    for (int i=0;i<tables.length;i++) 
+      copyFrom(c, tables[i], sourceDB, ignoreDbsv);
+  }
+
+  public void copyFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv)
+  {
+    DataDefinition dd= MakumbaSystem.getDataDefinition(table);
+    getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB, ignoreDbsv);
 
     for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
       {
 	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
 	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	  deleteFrom(c, fi.getSubtable().getName(), sourceDB);
+	  copyFrom(c, fi.getSubtable().getName(),sourceDB, ignoreDbsv);
       }
   }
 
-  public void deleteFrom(String sourceDB, String table)
-  {
-    String[]_tables = {table};
-    deleteFrom(sourceDB, _tables);
-  }
-
-  public void deleteFrom(String source, String[] tables)
-  {
-    DBConnection c= getDBConnection();    
-    DBConnection sourceDBc=getDatabase(source).getDBConnection();
-    try{
-      deleteFrom(c, tables, sourceDBc);
-    }finally{ c.close(); sourceDBc.close(); }
-  }
-
-  public void deleteFrom(DBConnection c, String[] tables, DBConnection sourceDB)
-  {
-    for (int i=0;i<tables.length;i++) 
-      deleteFrom(c, tables[i], sourceDB);
-  }
-
-
-  public void copyFrom(String sourceDB, String table)
-  {
-    String[]_tables = {table};
-    copyFrom(sourceDB, _tables);
-  }
-
-  public void copyFrom(String source, String[] tables)
-  {
-    DBConnection c= getDBConnection();    
-    DBConnection sourceDBc=getDatabase(source).getDBConnection();
-    try{
-      copyFrom(c, tables, sourceDBc);
-    }finally{ c.close(); sourceDBc.close(); }
-  }
-
-  public void copyFrom(DBConnection c, String[] tables, DBConnection sourceDB)
-  {
-    deleteFrom(c, tables, sourceDB);
-    for (int i=0;i<tables.length;i++) 
-      copyFrom(c, tables[i], sourceDB);
-  }
-
-  public void copyFrom(DBConnection c, String table, DBConnection sourceDB)
-  {
-    DataDefinition dd= MakumbaSystem.getDataDefinition(table);
-    getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB);
-
-    for(Enumeration e= dd.getFieldNames().elements(); e.hasMoreElements(); )
-      {
-	FieldDefinition fi= dd.getFieldDefinition((String)e.nextElement());
-	if(fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
-	  copyFrom(c, fi.getSubtable().getName(),sourceDB);
-      }
-  }
-
-  public void copyFrom(String source)
+  public void copyFrom(String source, boolean ignoreDbsv)
   {
     DBConnection c= getDBConnection();    
     DBConnection sourceDB=findDatabase(source).getDBConnection();
@@ -492,12 +492,12 @@ public abstract class Database
       String[] _tables= new String[v.size()];
       
       for (int i=0; i<_tables.length; i++)
-	{
-	  String nm=(String)((Dictionary)v.elementAt(i)).get("name");
-	  MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm);
-	  _tables[i]=nm;
-	}
-      copyFrom(c, _tables, sourceDB);
+		{
+		  String nm=(String)((Dictionary)v.elementAt(i)).get("name");
+		  MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm);
+		  _tables[i]=nm;
+		}
+      copyFrom(c, _tables, sourceDB, ignoreDbsv);
     }
     finally{c.close(); sourceDB.close(); }
   }

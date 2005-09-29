@@ -146,7 +146,7 @@ public class ObjectToRecord
 
       if(!cleaned && clean!=null && ((Boolean)clean.invoke(o, args)).booleanValue())
 	{
-	  db.deleteFrom(db.getName(), type.getName());
+	  db.deleteFrom(db.getName(), type.getName(), false);
 	  cleaned=true;
 	}      
       if(transform==null  || ((Boolean)transform.invoke(o, args)).booleanValue())

@@ -99,108 +99,129 @@ public abstract class Table //extends RecordHandler
   public abstract boolean exists();
 
   /** delete all the records created within the indicated database and return their number */
-  public abstract int deleteFrom(DBConnection here, DBConnection source); 
+  public abstract int deleteFrom(DBConnection here, DBConnection source, boolean ignoreDbsv); 
 
   /** does the field exist in the database ? */
   public abstract boolean exists(String fieldName);
 
   String selectAllWithDbsv; 
-  Object[] selectLimits= new Object[2];
+  Object[] selectLimits= null;
 
   static final int BAR= 75;
   /** copies all records from the table1 to table2 */
-  void copyFrom(DBConnection dest, Table source, DBConnection sourceDB) 
-  {
-    final String nm= getDataDefinition().getName();
-    if(!source.exists()|| nm.equals("org.makumba.db.Catalog"))
-      // catalog is never copied
-      return;
+  /** TODO: makumba now supports query limitation (limit and offset).
+   * so this method (copyFrom) could run a number of queries per table
+   *  (instead of one query per table), limited to say 100 records each so
+   *  we don't have memory problems when the db is very big
+   */
+  void copyFrom(DBConnection dest, Table source, DBConnection sourceDB,
+			boolean ignoreDbsv) {
+		final String nm = getDataDefinition().getName();
+		if (!source.exists() || nm.equals("org.makumba.db.Catalog"))
+			// catalog is never copied
+			return;
 
-    if(selectAllWithDbsv==null)
-      {
-        StringBuffer list=new StringBuffer();
-	String comma="";
+		if (selectAllWithDbsv == null) {
+			StringBuffer list = new StringBuffer();
+			String comma = "";
+
+			for (Enumeration e = dd.getFieldNames().elements(); e
+					.hasMoreElements();) {
+				String name = (String) e.nextElement();
+				if (dd.getFieldDefinition(name).getType().startsWith("set"))
+					continue;
+				list.append(comma);
+				comma = ", ";
+				list.append("t.").append(name);
+			}
+			String indexName = getDataDefinition().getIndexPointerFieldName();
+			String dbsvLimitation=""; 
+			if(!ignoreDbsv){
+				dbsvLimitation= "WHERE t." + indexName + ">=$1 AND t." + indexName
+				+ " <=$2";
+
+				selectLimits= new Object[2];
+				final int dbsv = sourceDB.getHostDatabase().getDbsv();
+				selectLimits[0] = new Pointer() {
+					private static final long serialVersionUID = 1L;
 	
-	for(Enumeration e=dd.getFieldNames().elements(); e.hasMoreElements();)
-	  {
-		String name=(String)e.nextElement(); 
-		if(dd.getFieldDefinition(name).getType().startsWith("set"))
-			continue;
-	    list.append(comma);
-	    comma=", ";
-	    list.append("t.").append(name);
-	  }
-	String indexName= getDataDefinition().getIndexPointerFieldName();
-	selectAllWithDbsv= "SELECT "+list+" FROM "+nm+" t WHERE t."+indexName+ ">=$1 AND t."+indexName+" <=$2";
-
-	final int dbsv=sourceDB.getHostDatabase().getDbsv();
-	selectLimits[0]=new Pointer(){
-		private static final long serialVersionUID = 1L;
-		public String getType(){ return nm; }
-		public long longValue(){ return dbsv<<MASK_ORDER; }
-	};
-	selectLimits[1]=new Pointer(){
-	  	private static final long serialVersionUID = 1L;
-		public String getType(){ return nm; }
-		public long longValue(){ return ((dbsv+1)<<MASK_ORDER)-1;}
-	};
-   }    
-      
-    Vector v=sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
-    if(v.size()==0)
-      {
-		MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": no records to copy");
-		return;
-      }
-
-    MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm+": starting copying "+v.size()+" records");
-    
-    
-    System.out.print("|");
-    for(int b=0; b<BAR; b++)
-      System.out.print("-");
-    System.out.print("|\n "); System.out.flush();
-    float step=((float)v.size()/BAR);
-
-    int stars=0;
-    Hashtable data= new Hashtable(23);
-    Hashtable nameKey= new Hashtable(23);
-
-    int f=0;
-    for(Enumeration e=  dd.getFieldNames().elements(); e.hasMoreElements(); ){
-		String name= (String)e.nextElement();
-		if(dd.getFieldDefinition(name).getType().startsWith("set"))
-			continue;
-        nameKey.put("col"+(f+1), name);
-        f++;
-    }
-
-    for(int j=0; j<v.size(); j++)
-      {
-		Dictionary d= (Dictionary)v.elementAt(j);
-		for(Enumeration e= d.keys(); e.hasMoreElements();)
-		{
-			Object k= e.nextElement();
-			data.put(nameKey.get(k), d.get(k));
+					public String getType() {
+						return nm;
+					}
+	
+					public long longValue() {
+						return dbsv << MASK_ORDER;
+					}
+				};
+				selectLimits[1] = new Pointer() {
+					private static final long serialVersionUID = 1L;
+	
+					public String getType() {
+						return nm;
+					}
+	
+					public long longValue() {
+						return ((dbsv + 1) << MASK_ORDER) - 1;
+					}
+				};
+			}
+			selectAllWithDbsv = "SELECT " + list + " FROM " + nm
+			+ " t "+dbsvLimitation;
 		}
 
-		dest.insert(getDataDefinition().getName(), data);
-	
-		// 	free up some memory
-		data.clear();
-		v.setElementAt(null, j);
-
-		// 	display progress bar
-		int nstars= (int)(((float)j+1)/step);
-		while(nstars>stars)
-		{
-		    System.out.print("*"); 
-		    System.out.flush();
-		    stars++;
+		Vector v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
+		if (v.size() == 0) {
+			MakumbaSystem.getMakumbaLogger("db.admin.copy").info(
+					nm + ": no records to copy");
+			return;
 		}
-      }
-    System.out.println();
-  }
+
+		MakumbaSystem.getMakumbaLogger("db.admin.copy").info(
+				nm + ": starting copying " + v.size() + " records");
+
+		System.out.print("|");
+		for (int b = 0; b < BAR; b++)
+			System.out.print("-");
+		System.out.print("|\n ");
+		System.out.flush();
+		float step = ((float) v.size() / BAR);
+
+		int stars = 0;
+		Hashtable data = new Hashtable(23);
+		Hashtable nameKey = new Hashtable(23);
+
+		int f = 0;
+		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			if (dd.getFieldDefinition(name).getType().startsWith("set"))
+				continue;
+			nameKey.put("col" + (f + 1), name);
+			f++;
+		}
+
+		for (int j = 0; j < v.size(); j++) {
+			Dictionary d = (Dictionary) v.elementAt(j);
+			for (Enumeration e = d.keys(); e.hasMoreElements();) {
+				Object k = e.nextElement();
+				data.put(nameKey.get(k), d.get(k));
+			}
+
+			dest.insert(getDataDefinition().getName(), data);
+
+			// free up some memory
+			data.clear();
+			v.setElementAt(null, j);
+
+			// display progress bar
+			int nstars = (int) (((float) j + 1) / step);
+			while (nstars > stars) {
+				System.out.print("*");
+				System.out.flush();
+				stars++;
+			}
+		}
+		System.out.println();
+	}
   
   /**
     Prepares everything needed for database management. identifies the database adapter that will be used, the type of connection manager, etc.
