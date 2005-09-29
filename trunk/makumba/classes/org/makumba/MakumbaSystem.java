@@ -163,17 +163,33 @@ public class MakumbaSystem
    */
   public static void _delete(String whereDB, String provenienceDB, String[] typeNames)
   {
-    org.makumba.db.Database.getDatabase(whereDB).deleteFrom(provenienceDB, typeNames);
+    org.makumba.db.Database.getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, false);
   }
 
-  /** Copies records of certain types (and their subtypes) from a database to another. The destination database must have admin# confirmations that match each of the indicated types 
+  /** Deletes the records of certain types. Useful for failed imports or copies. The database configuration must have admin# confirmations that match each of the indicated types. Use _delete(d, d, ...) for databases that need re-import of data of certain types. 
+   * Deletion is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.delete"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
+   */
+  public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv)
+  {
+    org.makumba.db.Database.getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, ignoreDbsv);
+  }
+
+  /** Copies records of certain types (and their subtypes) from a database to another. Only data having the dbsv of the first database is copied. The destination database must have admin# confirmations that match each of the indicated types 
    * Copying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
    */
   public static void _copy(String sourceDB, String destinationDB, String[] typeNames)
   {
-    org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames);
+    org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames, false);
   }
-
+  
+  /** Copies records of certain types (and their subtypes) from a database to another. The destination database must have admin# confirmations that match each of the indicated types 
+   * Copying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
+   */
+  public static void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv)
+  {
+	  org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames, ignoreDbsv); 
+  }
+  
   /** Returns a Makumba version (derived from a CVS tag) */
   public static String getVersion() {
     return org.makumba.version.getVersion();

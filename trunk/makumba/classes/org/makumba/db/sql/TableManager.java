@@ -71,7 +71,7 @@ public class TableManager extends Table {
 	Dictionary keyIndex;
 
 	String preparedInsertString, preparedDeleteString,
-			preparedDeleteFromString;
+			preparedDeleteFromString, preparedDeleteFromIgnoreDbsvString;
 
 	/** The query that searches for duplicates on this field */
 	Hashtable checkDuplicate= new Hashtable();
@@ -121,6 +121,7 @@ public class TableManager extends Table {
 				initFields(dbc, config);
 				preparedInsertString = prepareInsert();
 				preparedDeleteString = prepareDelete();
+				preparedDeleteFromIgnoreDbsvString=  "DELETE FROM " + getDBName();
 				preparedDeleteFromString = "DELETE FROM " + getDBName()
 						+ " WHERE " + indexDBField + " >= ?" + " AND "
 						+ indexDBField + " <= ?";
@@ -353,7 +354,7 @@ public class TableManager extends Table {
 		}
 	}
 
-	public int deleteFrom(DBConnection here, DBConnection source) {
+	public int deleteFrom(DBConnection here, DBConnection source, boolean ignoreDbsv) {
 		if (!exists())
 			return 0;
 		if (!canAdmin())
@@ -362,14 +363,21 @@ public class TableManager extends Table {
 
 		if (here instanceof DBConnectionWrapper)
 			here = ((DBConnectionWrapper) here).getWrapped();
-		PreparedStatement ps = (PreparedStatement) ((SQLDBConnection) here)
-				.getPreparedStatement(preparedDeleteFromString);
-		try {
-			ps.setInt(1, source.getHostDatabase().getMinPointerValue());
-			ps.setInt(2, source.getHostDatabase().getMaxPointerValue());
-		} catch (SQLException e) {
-			org.makumba.db.sql.Database.logException(e);
-			throw new DBError(e);
+		PreparedStatement ps= null;
+		if(ignoreDbsv){
+			ps= (PreparedStatement) ((SQLDBConnection) here)
+			.getPreparedStatement(preparedDeleteFromIgnoreDbsvString);			
+		}
+		else{
+			ps = (PreparedStatement) ((SQLDBConnection) here)
+					.getPreparedStatement(preparedDeleteFromString);
+			try {
+				ps.setInt(1, source.getHostDatabase().getMinPointerValue());
+				ps.setInt(2, source.getHostDatabase().getMaxPointerValue());
+			} catch (SQLException e) {
+				org.makumba.db.sql.Database.logException(e);
+				throw new DBError(e);
+			}
 		}
 		int n = getSQLDatabase().exec(ps);
 
