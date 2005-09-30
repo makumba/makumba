@@ -150,6 +150,9 @@ public class Database extends org.makumba.db.Database {
 				addUnderscore = s.equals("true");
 
 			if (driver == null)
+				driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));
+
+			if (driver == null)
 				driver = sqlDrivers.getProperty(url.substring(5, url.indexOf(
 						':', 6)));
 
