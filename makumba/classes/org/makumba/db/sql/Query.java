@@ -44,6 +44,7 @@ public class Query implements org.makumba.db.Query
   ParameterAssigner assigner;
   String limitSyntax;
   boolean offsetFirst;
+  boolean supportsLimitInQuery;
 
   public String getCommand(){ return command; }
 
@@ -56,42 +57,47 @@ public class Query implements org.makumba.db.Query
     assigner= new ParameterAssigner(db, tree);
 	limitSyntax=((org.makumba.db.sql.Database)db).getLimitSyntax();
 	offsetFirst=((org.makumba.db.sql.Database)db).isLimitOffsetFirst();
+	supportsLimitInQuery=((org.makumba.db.sql.Database)db).supportsLimitInQuery();
   }
 
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
   {
-    PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(command
-								     +" "+limitSyntax
-								     );
+	String com = command;  
+	if(supportsLimitInQuery)
+		com += " " + limitSyntax; //TODO: it might happen that it should be in other places than at the end.
+    PreparedStatement ps=((SQLDBConnection)dbc).getPreparedStatement(com);
+    
     try{
       String s=assigner.assignParameters(ps, args);
 	  
-	  int limit1=limit==-1?Integer.MAX_VALUE:limit;
-	  
-	  if(offsetFirst){
-		  ps.setInt(assigner.tree.parameterNumber()+1, offset);
-		  ps.setInt(assigner.tree.parameterNumber()+2, limit1);
-	  }else{
-		  ps.setInt(assigner.tree.parameterNumber()+1, limit1);
-		  ps.setInt(assigner.tree.parameterNumber()+2, offset);
+      if(supportsLimitInQuery)
+      {
+		  int limit1=limit==-1?Integer.MAX_VALUE:limit;
 		  
-	  }
+		  if(offsetFirst){
+			  ps.setInt(assigner.tree.parameterNumber()+1, offset);
+			  ps.setInt(assigner.tree.parameterNumber()+2, limit1);
+		  }else{
+			  ps.setInt(assigner.tree.parameterNumber()+1, limit1);
+			  ps.setInt(assigner.tree.parameterNumber()+2, offset);
+		  }
+      }
 
       if(s!=null)
-	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+command+"\n"+s);
+    	throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+com+"\n"+s);
 
       MakumbaSystem.getMakumbaLogger("db.query.execution").fine(""+ps);
       java.util.Date d= new java.util.Date();
       ResultSet rs= null; 
       try{
-	rs= ps.executeQuery();
+    	  rs= ps.executeQuery();
       }catch(SQLException se)
 	{ 
 	  org.makumba.db.sql.Database.logException(se, dbc);
-	  throw new DBError(se, command);
+	  throw new DBError(se, com);
       }
       long diff = new java.util.Date().getTime()-d.getTime();
-      MakumbaSystem.getMakumbaLogger("db.query.performance").fine(""+ diff +" ms "+command);
+      MakumbaSystem.getMakumbaLogger("db.query.performance").fine(""+ diff +" ms "+com);
       return goThru(rs, resultHandler);
     }
     catch(SQLException e){ throw new org.makumba.DBError(e); }  
@@ -99,6 +105,7 @@ public class Query implements org.makumba.db.Query
 
   Vector goThru(ResultSet rs, TableManager rm) 
   {
+	//TODO: if(!supportsLimitInQuery) { do slower limit & offset in java}
     int size= rm.keyIndex.size();
 
     Vector ret=new Vector(100, 100);
