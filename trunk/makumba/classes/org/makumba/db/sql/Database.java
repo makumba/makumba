@@ -452,6 +452,11 @@ public class Database extends org.makumba.db.Database {
 		return new SQLPointer(type, getDbsv(), uid);
 	}
 	
+	/** whether specific engine supports LIMIT & OFFSET extensions to the SQL-92 syntax */
+	public boolean supportsLimitInQuery() {
+		return true;
+	}
+
 	public String getLimitSyntax() {
 		return "LIMIT ?, ?";
 	}
