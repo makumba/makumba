@@ -23,7 +23,11 @@
 
 
 package org.makumba.db.sql;
+import java.sql.SQLException;
 import java.util.Properties;
+
+import org.makumba.DBError;
+import org.makumba.db.DBConnection;
 
 
 /** the database adapter for Microsoft SQL Server */
@@ -62,6 +66,21 @@ public class MsSqlDatabase extends org.makumba.db.sql.Database
 		return url;
 	}
 
+	//Solving http://bugs.best.eu.org/show_bug.cgi?id=905
+	protected DBConnection makeDBConnection() {
+		SQLDBConnection dbc=(SQLDBConnection)super.makeDBConnection();
+		try
+		{
+			java.sql.Statement s = dbc.createStatement();
+			s.execute("SET QUOTED_IDENTIFIER OFF");
+		} catch (SQLException e) {
+			logException(e);
+			throw new DBError(e);
+		}
+		return dbc;
+	}
+
+	
 	/*
 	protected boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
