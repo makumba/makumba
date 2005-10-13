@@ -63,7 +63,7 @@ This problem is more important for sets, for pointers you can always use<span
 expressions.</td>
       <td style="vertical-align: top;" rowspan="3">Accept at JSP level
 but
-recommend the Hibernate form</td>
+recommend/train people with the Hibernate form</td>
     </tr>
     <tr>
       <td style="vertical-align: top;">SELECT s.name FROM test.Person p<span
@@ -101,9 +101,9 @@ test.Individual table). Maybe a better name can be chosen (e.g.
 indivPtr instead of hibernate_indiv).<br>
       </td>
       <td style="vertical-align: top;">Selecting whole objects<br>
-(&lt;mak:value expr="p.indiv" /&gt;) makes little sense at JSP level.
-      <br>
-Accept the current makumba form and translate into the Hibernate form.<br>
+(&lt;mak:value expr="p.indiv" /&gt;) makes little sense at JSP level. <br>
+Accept the current makumba form and translate into the Hibernate form.
+NOT sure if the Makumba form should be deprecated (like in other cases)<br>
       </td>
     </tr>
     <tr>
@@ -124,7 +124,8 @@ the Makumba primary key<br>
       <td style="vertical-align: top;">Selecting whole objects <br>
 (&lt;mak:value expr="p" /&gt;) makes little sense at JSP level. <br>
 Accept
-the current makumba form and translate into the Hibernate form.</td>
+the current makumba form and translate into the Hibernate form BUT but
+recommend/train people with the Hibernate form.</td>
     </tr>
     <tr>
       <td style="vertical-align: top;">SELECT <span
@@ -141,7 +142,25 @@ label projection. Selecting s would select the whole enumerator object,
 which is typically useless.<br>
       </td>
       <td style="vertical-align: top;">Accept the current makumba form
-and translate into the Hibernate form.</td>
+and translate into the Hibernate form. NOT sure if the Makumba form
+should be deprecated (like in other cases)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">label.field=nil<br>
+label.field &lt;&gt; nil<br>
+      </td>
+      <td style="vertical-align: top;">label.field is null<br>
+label.field is not null<br>
+      </td>
+      <td style="vertical-align: top;">null comparisson<br>
+      </td>
+      <td style="vertical-align: top;">Hibernate follows SQL. <br>
+      </td>
+      <td style="vertical-align: top;">While the above Makumba
+notations are syntactically correct in HQL, this one is probably not.
+Maybe
+it's easier to change the existing JSPs.<br>
+      </td>
     </tr>
   </tbody>
 </table>
