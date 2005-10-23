@@ -337,5 +337,5 @@ java.net.URL origin;
         String checkFieldName = (String)o;
     }
   }
-
+  public String toString(){ return getName(); }
 }
