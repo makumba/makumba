@@ -1,31 +1,28 @@
 package org.makumba.db.hibernate;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Vector;
+
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.makumba.DataDefinition;
-import org.makumba.MakumbaSystem;
-import org.makumba.Text;
 import org.xml.sax.SAXException;
 
 public class HibernateTest  {
 	public static void main (String[] args) {
-		
-		DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
-        Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/hibernate.cfg.xml");
+        
+        Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+        Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
 		
 		try {
-			MddToClass jot = new MddToClass(dd);
+			MddToClass jot = new MddToClass(dds);
 		} catch (CannotCompileException e) {
 			e.printStackTrace();
 		} catch (NotFoundException e) {
@@ -34,7 +31,7 @@ public class HibernateTest  {
 			e.printStackTrace();
 		}
 		try {
-			MddToMapping xot = new MddToMapping(dd, cfg);
+			MddToMapping xot = new MddToMapping(dds, cfg);
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
@@ -94,7 +91,7 @@ public class HibernateTest  {
         //Query q = session.createQuery("SELECT s.enum, s1.name FROM test.Person p JOIN p.intSet s JOIN p.speaks s1 WHERE p.indiv.name = 'Bart'");
 
 		//      FROM test.Person p, p.address a does not pass the HQL-SQL parser
-        Query q = session.createQuery("SELECT a.streetno FROM test.Person p JOIN p.address a WHERE p.indiv.name = 'Bart'");
+        //Query q = session.createQuery("SELECT a.streetno FROM test.Person p JOIN p.address a WHERE p.indiv.name = 'Bart'");
 
         //       a manual pointer join
         //Query q = session.createQuery("SELECT i.name, p.weight FROM test.Person p, test.Individual i WHERE p.indiv = i");
@@ -102,14 +99,14 @@ public class HibernateTest  {
         //       a more automatic pointer join
         //Query q = session.createQuery("SELECT p.indiv.name, p.weight FROM test.Person p");
         
-        List list = q.list();
-		for (int i=0; i < list.size(); i++) {
-			if (list.get(i) == null) continue;
+        //List list = q.list();
+		//for (int i=0; i < list.size(); i++) {
+		//	if (list.get(i) == null) continue;
 //			test = (Person)list.get(i);
-			System.out.println(list.get(i).getClass());
+		//	System.out.println(list.get(i).getClass());
 //			Double row = (Double)list.get(i);
 //			System.out.println(row.toString() + "\n");
-		}
+		//}
 //		list = test.getSpeaks();
 //		for (int i=0; i<list.size(); i++ ) {
 //			System.out.println((Language)list.get(i));
