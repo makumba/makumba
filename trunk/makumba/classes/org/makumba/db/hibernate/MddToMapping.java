@@ -72,12 +72,14 @@ public class MddToMapping extends HibernateUtils {
 			AttributesImpl atts = new AttributesImpl();
 			
 			/* hibernate mapping */
+            // no auto-import to allow for classes with same name in different packages 
             atts.addAttribute("","","auto-import","", "false");
             hd.startElement("", "", "hibernate-mapping", atts);
 			
 			/* class definition */
 			atts.clear();
 			atts.addAttribute("","","name","", arrowToDoubleUnderscore(dd.getName()));
+            // TODO: might actually work without toLowerCase()
 			atts.addAttribute("","","table","", dotToUnderscore(arrowToDoubleDot(dd.getName())).toLowerCase() + "_");
 			hd.startElement("", "", "class", atts);
 			
@@ -167,6 +169,9 @@ public class MddToMapping extends HibernateUtils {
 						hd.endElement("","","key");
 						atts.clear();
 						atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                        
+                        // TODO: "formula" works around hibernate bug 572
+                        // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
 						atts.addAttribute("", "", "formula", "", columnName(fd.getPointedType().getIndexPointerFieldName()));
 						hd.startElement("", "", "many-to-many", atts);
 						hd.endElement("","","many-to-many");
