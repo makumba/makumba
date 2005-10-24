@@ -5,22 +5,6 @@ import java.util.Set;
 
 public class HibernateUtils {
 
-	protected String getBaseName(String name) {
-		int dot;
-		dot = name.lastIndexOf(".");
-		if (dot != -1)
-			return name.substring(dot+1);
-		return name;
-	}
-
-	protected String getArrowBaseName(String name) {
-		int dot;
-		dot = name.lastIndexOf("->");
-		if (dot != -1)
-			return name.substring(0, dot);
-		return name;
-	}
-
 	protected String dotToUnderscore(String name) {
 		return name.replaceAll("\\.", "_");
 	}
