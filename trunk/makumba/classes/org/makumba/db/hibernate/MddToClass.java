@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -22,6 +24,16 @@ public class MddToClass extends HibernateUtils {
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
 
+    public MddToClass(Vector v)throws CannotCompileException, NotFoundException, IOException{
+      for(int i=0; i<v.size(); i++)
+        generateClass(MakumbaSystem.getDataDefinition((String)v.elementAt(i)));
+      while (!mddsToDo.isEmpty()) 
+            generateClass((DataDefinition)mddsToDo.removeFirst());
+        while (!appendToClass.isEmpty()) {
+            Object[] append = (Object[]) appendToClass.removeFirst();
+            appendClass((String)append[0], (FieldDefinition)append[1]);
+        }
+    }
 	public MddToClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
 		generateClass(dd);
 		while (!mddsToDo.isEmpty()) {
@@ -48,12 +60,13 @@ public class MddToClass extends HibernateUtils {
 		switch (fd.getIntegerType()) {
 			case FieldDefinition._ptr:
 			case FieldDefinition._ptrOne:
-				type = arrowToDot(fd.getPointedType().getName());
+				type = arrowToDoubleUnderscore(fd.getPointedType().getName());
 				break;
 			case FieldDefinition._set:
 				type = "java.util.ArrayList";
 				break;
 		}
+        name=checkJavaReserved(name);
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
@@ -66,7 +79,7 @@ public class MddToClass extends HibernateUtils {
 			mddsDone.add(dd.getName());
 
 			ClassPool cp = ClassPool.getDefault();
-			CtClass cc = cp.makeClass(arrowToDot(dd.getName()));
+			CtClass cc = cp.makeClass(arrowToDoubleUnderscore(dd.getName()));
 
 			String type = null;
 			String name = null;
@@ -74,7 +87,7 @@ public class MddToClass extends HibernateUtils {
 			for (int i = 0; i < dd.getFieldNames().size(); i++) {
 				Object[] append = new Object[2];
 				FieldDefinition fd = dd.getFieldDefinition(i);
-				name = fd.getName();
+				name = arrowToDoubleUnderscore(fd.getName());
 				switch (fd.getIntegerType()) {
 					case FieldDefinition._intEnum:
 					case FieldDefinition._int:
@@ -95,7 +108,7 @@ public class MddToClass extends HibernateUtils {
 					case FieldDefinition._ptr:
 					case FieldDefinition._ptrOne:
 						mddsToDo.add(fd.getPointedType());
-						append[0] = arrowToDot(dd.getName());
+						append[0] = arrowToDoubleUnderscore(dd.getName());
 						append[1] = fd;
 						appendToClass.add(append);
 						continue;
@@ -104,7 +117,7 @@ public class MddToClass extends HibernateUtils {
 						type = fd.getPointedType().getName();
 						break;
 					case FieldDefinition._ptrIndex:
-						name = "id";
+						name = "primaryKey";
 						type = "int";
 						break;
 					case FieldDefinition._text:
@@ -143,6 +156,8 @@ public class MddToClass extends HibernateUtils {
 	}
 	
 	private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
+        type= arrowToDoubleUnderscore(type);
+        name= checkJavaReserved(arrowToDoubleUnderscore(name));
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
