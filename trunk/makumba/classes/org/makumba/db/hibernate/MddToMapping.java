@@ -80,13 +80,13 @@ public class MddToMapping extends HibernateUtils {
 			atts.clear();
 			atts.addAttribute("","","name","", arrowToDoubleUnderscore(dd.getName()));
             // TODO: might actually work without toLowerCase()
-			atts.addAttribute("","","table","", dotToUnderscore(arrowToDoubleDot(dd.getName())).toLowerCase() + "_");
+			atts.addAttribute("","","table","", dotToUnderscore(arrowToDoubleDot(dd.getName())) + "_");
 			hd.startElement("", "", "class", atts);
 			
 			for (int i = 0; i < dd.getFieldNames().size(); i++) {
 				FieldDefinition fd = dd.getFieldDefinition(i);
 				atts.clear();
-				System.out.println(dd.getFieldDefinition(i).getName() + " : " + dd.getFieldDefinition(i).getType());
+//				System.out.println(dd.getFieldDefinition(i).getName() + " : " + dd.getFieldDefinition(i).getType());
 				switch (fd.getIntegerType()) {
 					case FieldDefinition._int:
 					case FieldDefinition._real:
@@ -199,12 +199,14 @@ public class MddToMapping extends HibernateUtils {
 					case FieldDefinition._ptrRel:
 						/* do we need to add a mapping to the parent field? */
 						atts.clear();
-						atts.addAttribute("", "", "name", "", checkJavaReserved(getBaseName(getArrowBaseName(dd.getName()))));
-						atts.addAttribute("", "", "column", "", columnName(getBaseName(getArrowBaseName(dd.getName()))));
-						atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(getArrowBaseName(dd.getName())));
-						hd.startElement("", "", "many-to-one", atts);
-						hd.endElement("", "", "many-to-one");
-						break;
+                        atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                        atts.addAttribute("", "", "column", "", columnName(fd.getName()));
+                        atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                        hd.startElement("", "", "many-to-one", atts);
+                        hd.endElement("","","many-to-one");
+
+                        
+                        break;
 					default:
 						try {
 							throw new Exception("Unmapped type: " + fd.getName() + "-" + fd.getType());
