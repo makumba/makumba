@@ -113,7 +113,7 @@ public class MddToClass extends HibernateUtils {
 						appendToClass.add(append);
 						continue;
 					case FieldDefinition._ptrRel:
-						name = getBaseName(fd.getPointedType().getName());
+						name = fd.getName();
 						type = fd.getPointedType().getName();
 						break;
 					case FieldDefinition._ptrIndex:
