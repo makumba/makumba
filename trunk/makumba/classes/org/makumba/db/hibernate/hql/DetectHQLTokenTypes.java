@@ -1,20 +1,16 @@
-/*
- * Created on 21-Jul-2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.makumba.db.hibernate.hql;
 import java.lang.reflect.Field;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+/**
+ * @author Cristian Bogdan
+ * Generateds file org/makumba/db/hibernate/hql/HqlTokenTypes.txt.
+ * The file is needed for HQL analysis");
+ */
 public class DetectHQLTokenTypes {
 
-    /**
-     * @param args
-     */
     public static void main(String[] args){
         new DetectHQLTokenTypes().generate();
     }
@@ -35,7 +31,9 @@ public class DetectHQLTokenTypes {
               catch (IllegalAccessException e) {  e.printStackTrace(); }
         }
        out.close();
-       System.out.println("detected "+flds.length+" token types in the HQL supported by the hibernate.jar included in this version");
+       System.out.println("Detected "+flds.length+" token types in the HQL supported by the hibernate.jar included in this version.\n"+
+               "Generated file org/makumba/db/hibernate/hql/HqlTokenTypes.txt\n"+
+               "The file is needed for HQL analysis");
     }
 
 }
