@@ -19,7 +19,7 @@ options
 	// as those in the target tree.  If this is not the case, tree translation can result in
 	// token types from the *source* tree being present in the target tree.
 	importVocab=Hql;        // import definitions from "Hql"
-	exportVocab=HqlAnalyze;     // Call the resulting definitions "HqlSql"
+	exportVocab=HqlAnalyze;     // Call the resulting definitions "HqlAnalyze"
 	buildAST=true;
 }
 
@@ -479,7 +479,7 @@ addrExpr! [ boolean root ]
 	: #(d:DOT lhs:addrExprLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree 
 		// to process collection properties (.elements, etc).
-		#addrExpr = #(#d, #lhs, #rhs);
+		#addrExpr = new ObjectTypeAST(#lhs, #rhs, aliasTypes);
 //		#addrExpr = lookupProperty(#addrExpr,root,false);
 	}
 	| #(i:INDEX_OP lhs2:addrExprLhs rhs2:expr)	{

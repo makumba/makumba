@@ -30,6 +30,8 @@ public class TreeViewer {
                 ASTFrame frame = new ASTFrame("tree", t1);
                 frame.setVisible(true);
                 
+                // pass here a session factory
+                // HqlAnalyzerWalker passes itself (with the sf) to all object it creates
                 HqlAnalyzeWalker w= new HqlAnalyzeWalker();
                 
                 w.statement(t1);
