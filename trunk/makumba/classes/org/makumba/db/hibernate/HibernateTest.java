@@ -18,9 +18,12 @@ import org.xml.sax.SAXException;
 public class HibernateTest  {
 	public static void main (String[] args) {
         
+        
         Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+        //dds= new Vector(); dds.add("general.survey.Response");
         Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
 		
+        System.out.println(new java.util.Date());
 		try {
 			MddToClass jot = new MddToClass(dds);
 		} catch (CannotCompileException e) {
@@ -30,6 +33,8 @@ public class HibernateTest  {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        System.out.println(new java.util.Date());
+        
 		try {
 			MddToMapping xot = new MddToMapping(dds, cfg);
 		} catch (TransformerConfigurationException e) {
