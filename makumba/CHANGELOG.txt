@@ -20,9 +20,9 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
 0.5.15; 01 dec 2005
-Bart and Johannes: handler families eliminated by 
+Bart and Johannes: handler families eliminated 
 Bart and Johannes: work on hibernate started
-Rudi fixed the double loading bug
+Rudi fixed the "form responder lost" bug (363)
 maybe other things? change here...
 
 0.5.14.1; 02 may 2005
