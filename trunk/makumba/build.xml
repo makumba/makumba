@@ -132,6 +132,7 @@
        <condition property="meta-inf.ok">
        <and>
        <uptodate srcfile="servlet_context/WEB-INF/makumba.tld" targetfile="META-INF/makumba.tld" />
+       <uptodate srcfile="servlet_context/WEB-INF/makumba-hibernate.tld" targetfile="META-INF/makumba-hibernate.tld" />
        <uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
        </and>
        </condition>
@@ -152,7 +153,9 @@
          <!-- Copy the manifest in order to replace the version token filter -->
          <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
          <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
+         <copy file="servlet_context/WEB-INF/makumba-hibernate.tld" todir="META-INF" filtering="on" overwrite="true"/>
          <copy file="META-INF/makumba.tld" tofile="META-INF/taglib.tld" filtering="off" overwrite="true"/>
+         <copy file="META-INF/makumba-hibernate.tld" tofile="META-INF/taglib-hibernate.tld" filtering="off" overwrite="true"/>
        </target>
 
 

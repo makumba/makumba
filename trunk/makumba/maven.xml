@@ -24,6 +24,8 @@ http://maven.apache.org/reference/scripting.html
     <!-- Copy the manifest in order to replace the version token filter -->
     <ant:copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true" dir="${basedir}"/>
     <ant:copy file="servlet_context/WEB-INF/makumba.tld" todir="target/classes/META-INF" filtering="on" overwrite="true" dir="${basedir}"/>
+    <ant:copy file="servlet_context/WEB-INF/makumba-hibernate.tld" todir="target/classes/META-INF" filtering="on" overwrite="true" dir="${basedir}"/>
     <ant:copy file="META-INF/makumba.tld" tofile="target/classes/META-INF/taglib.tld" filtering="off" overwrite="true" dir="${basedir}"/>
+    <ant:copy file="META-INF/makumba-hibernate.tld" tofile="target/classes/META-INF/taglib.tld" filtering="off" overwrite="true" dir="${basedir}"/>
   </preGoal>
 </project>
