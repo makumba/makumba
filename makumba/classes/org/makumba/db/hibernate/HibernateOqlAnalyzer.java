@@ -2,6 +2,9 @@ package org.makumba.db.hibernate;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.hibernate.QueryException;
@@ -60,16 +63,55 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 
 		DataDefinition result = MakumbaSystem
 				.getTemporaryDataDefinition("Projections for " + query);
+        
 
-		for (int i = 0; i < paramTypes.length; i++) {			
-			FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
-					paramTypes[i].getName(), false);
-			result.addField(fd);
+		for (int i = 0; i < paramTypes.length; i++) {
+            //System.out.println(i+" ==> "+paramTypes[i].getName());
+            
+            if(paramTypes[i].getName().equals("org.makumba.db.hibernate.customtypes.TextUserType")) {
+                FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
+                        "text", false);
+                result.addField(fd);
+                //FIXME this should return the real pointer
+            } else if(paramTypes[i].getName().equals("org.makumba.db.hibernate.customtypes.PointerUserType")) {
+                FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
+                        "ptr toBeFixed", false);
+                result.addField(fd);
+            } else if(paramTypes[i].getName().equals("string")) {
+                FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),     
+                        "char", false);
+                result.addField(fd);
+            } else if(paramTypes[i].getName().equals("integer")) {
+                FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
+                        "int", false);
+                result.addField(fd);
+            } else {
+                FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
+                        paramTypes[i].getName(), false);
+                result.addField(fd);
+            }
+			
 		}
-
+        
 		return result;
 
 	}
+    
+    public String[] getProjectionLeftSides() {
+        String queryProjection = query.substring(7, query.indexOf("FROM"));
+        StringTokenizer separateProjections = new StringTokenizer(queryProjection, ",");
+        String[] result = new String[separateProjections.countTokens()];
+        int i = 0;
+        while(separateProjections.hasMoreElements()) {
+            String token = separateProjections.nextToken().toLowerCase();
+            if(token.toLowerCase().indexOf("as") > 0) {
+                result[i++] = token.substring(0, token.indexOf("as")).trim();
+            } else {
+                result[i++] = token;
+            }
+        }
+        return result;
+    }
 
     private String getColumnName(String colName) {
         try {
@@ -149,10 +191,11 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 
 		System.out.println("Number of ordinal parameters: "
 				+ oA.parameterNumber());
-		System.out
-				.println("Type for 'personName': "
-						+ oA.getLabelType("personName").getFieldDefinition(0)
-								.getType());
+        
+        System.out.println("ProjectionLeftSide:\n");
+        for(int i=0; i<oA.getProjectionLeftSides().length;i++) {
+            System.out.print(oA.getProjectionLeftSides()[i]+" - ");
+        }
 
 		System.out.println("getProjectionType():\n");
 		Vector w = oA.getProjectionType().getFieldNames();
