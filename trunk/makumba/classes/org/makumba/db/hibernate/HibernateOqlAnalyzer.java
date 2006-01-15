@@ -73,7 +73,7 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 			}
 			
 			if(!(colNum == -1)) {
-				colName="column"+(colNum+1);
+				colName="col"+(colNum+1);
 			}
 			
 			FieldDefinition fd = FieldInfo.getFieldInfo(colName,
