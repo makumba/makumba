@@ -20,10 +20,13 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author manu
- * @version $id
+ * @author rudi
+ * @version $Id$
  */
 public class HibernateSFManager {
     
+    private static SessionFactory sessionFactory;
+
     public static String findClassesRootFolder(String locatorSeed) {
         String rootFolder ="";
         try {
@@ -32,37 +35,52 @@ public class HibernateSFManager {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return rootFolder;
-        
+        return rootFolder;        
     }
     
     public static SessionFactory getSF(Vector dds, String locatorSeed, String cfgFilePath, String prefix) {
-        Configuration cfg = new Configuration().configure(cfgFilePath);
-        
-        System.out.println(new java.util.Date());
-        try {
-            MddToClass jot = new MddToClass(dds, org.makumba.HibernateSFManager.findClassesRootFolder(locatorSeed));
-        } catch (CannotCompileException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (sessionFactory == null) {
+            Configuration cfg = new Configuration().configure(cfgFilePath);
+            
+            System.out.println(new java.util.Date());
+            try {
+                MddToClass jot = new MddToClass(dds, org.makumba.HibernateSFManager.findClassesRootFolder(locatorSeed));
+            } catch (CannotCompileException e) {
+                e.printStackTrace();
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println(new java.util.Date());
+            
+            try {
+                MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(locatorSeed),prefix);
+            } catch (TransformerConfigurationException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            }
+            
+            sessionFactory = cfg.buildSessionFactory();
+            SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
+            schemaUpdate.execute(true, true);
         }
-        System.out.println(new java.util.Date());
-        
-        try {
-            MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(locatorSeed),prefix);
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
+        return sessionFactory;
+    }
 
-        SessionFactory sf = cfg.buildSessionFactory();
-        SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
-        schemaUpdate.execute(true, true);
-        return sf;
+    public static SessionFactory getSF() {
+        if (sessionFactory == null) {
+            // TODO: hard-coded parameters should come from some other place
+            Vector dds = new Vector();
+            dds.add("general.Person");
+            dds.add("general.Country");
+            
+            return getSF(dds, "dataDefinitions",
+                    "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml",
+            "makumbaGeneratedMappings");
+        }
+        return sessionFactory;
     }
 
 }
