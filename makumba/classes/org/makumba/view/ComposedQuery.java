@@ -31,9 +31,11 @@ import java.util.Vector;
 import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.HibernateSFManager;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
+import org.makumba.db.hibernate.HibernateOqlAnalyzer;
 import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.NamedResourceFactory;
@@ -105,11 +107,31 @@ public class ComposedQuery
     empty.addElement(new Vector());
   }
 
-  public DataDefinition getResultType()
-  { return typeAnalyzerOQL==null?null:MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getProjectionType(); }
-
-  public DataDefinition getLabelType(String s)
-  { return typeAnalyzerOQL==null?null:MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s); }
+    public DataDefinition getResultType() {
+        if (typeAnalyzerOQL == null) {
+            return null;
+        } else {
+            if (useHibernate) {
+                //TODO: use a cache for this
+                return HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF()).getProjectionType();               
+            } else {
+                return MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getProjectionType();
+            }
+        }
+    }
+    
+    public DataDefinition getLabelType(String s) {
+        if (typeAnalyzerOQL == null) {
+            return null;
+        } else {
+            if (useHibernate) {
+                //TODO: use a cache for this
+                return HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF()).getLabelType(s);
+            } else {
+                return MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s);
+            }
+        }
+    }
 
   /** initialize the object, template method */
   public void init()
