@@ -72,6 +72,11 @@ public class TableManager extends Table {
 
 	String preparedInsertString, preparedDeleteString,
 			preparedDeleteFromString, preparedDeleteFromIgnoreDbsvString;
+	
+	/**
+	 * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself
+	 */
+	boolean usesHibernateIndexes = true; 
 
 	/** The query that searches for duplicates on this field */
 	Hashtable checkDuplicate= new Hashtable();
@@ -1473,8 +1478,7 @@ public class TableManager extends Table {
 	public void onStartup(String fieldName, Properties config,
 			SQLDBConnection dbc) throws SQLException {
 		if (alter && shouldIndex(fieldName))
-			manageIndexes(fieldName, dbc);
-
+			manageIndexes(fieldName, dbc);			
 		if (shouldIndex(fieldName))
 			extraIndexes.remove(getFieldDBIndexName(fieldName).toLowerCase());
 
@@ -1545,21 +1549,17 @@ public class TableManager extends Table {
 		String brief = getDataDefinition().getName() + "#" + fieldName + " ("
 				+ getFieldDefinition(fieldName).getDescription() + ")";
 
+		if (usesHibernateIndexes) { // if we use hibernate and we are allowed to change the table
+			dropIndex(fieldName, dbc, "RESIDUAL MAKUMBA INDEX DROPPED on " + brief); // we drop the index
+			return;
+		}
+		
 		if (!isIndexOk(fieldName, dbc)) {
 			//org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			//	"ALTERING INDEX on field "+getName()+" of
 			// "+rm.getRecordInfo().getName() );
 
-			try { //drop the old, wrong index if it exists
-				Statement st = dbc.createStatement();
-				st.executeUpdate(indexDropSyntax(fieldName));
-				org.makumba.MakumbaSystem.getMakumbaLogger(
-						"db.init.tablechecking").info(
-						"INDEX DROPPED on " + brief);
-				st.close();
-
-			} catch (SQLException e) {
-			}
+			dropIndex(fieldName, dbc, "INDEX DROPPED on " + brief);
 
 			boolean createNormalEvenIfUnique = false;
 
@@ -1613,6 +1613,18 @@ public class TableManager extends Table {
 		}//isIndexOk
 
 	}//method
+
+	private void dropIndex(String fieldName, SQLDBConnection dbc, String message) {
+		try { //drop the old, wrong index if it exists
+			Statement st = dbc.createStatement();
+			st.executeUpdate(indexDropSyntax(fieldName));
+			org.makumba.MakumbaSystem.getMakumbaLogger(
+					"db.init.tablechecking").info(message);
+			st.close();
+		} catch (SQLException e) {
+		}
+		
+	}
 
 	//moved from FieldManager
 	/** Syntax for index creation. */
