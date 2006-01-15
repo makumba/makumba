@@ -24,15 +24,27 @@
 package org.makumba;
 
 /** An OQL parse error */
-public class OQLParseError extends MakumbaError
-{
-  /**
+public class OQLParseError extends MakumbaError {
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-/** Construct an OQL parse error with the given explanation */
-  public OQLParseError(String explanation ){super(explanation); }
-  
-  public OQLParseError(String explanation, Throwable cause){ super(cause, explanation); }
+	/** Construct an OQL parse error with the given explanation */
+	public OQLParseError(String explanation) {
+		super(explanation);
+	}
+
+	public OQLParseError(String explanation, Throwable cause) {
+		super(cause, explanation);
+	}
+
+	public OQLParseError(org.hibernate.QueryException qe) {
+		super("Error in OQL/HQL query: " + qe.getMessage());
+
+	}
+
+	public OQLParseError(Error e) {
+		super("Error in OQL/HQL query: " + e.getMessage());
+	}
 }
