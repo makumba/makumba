@@ -61,22 +61,8 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 		DataDefinition result = MakumbaSystem
 				.getTemporaryDataDefinition("Projections for " + query);
 
-		for (int i = 0; i < paramTypes.length; i++) {
-			
-			String colName = aliases[i];
-			int colNum = -1;
-			
-			try {
-				colNum = Integer.parseInt(colName);
-			} catch(NumberFormatException e) {
-				colNum = -1;
-			}
-			
-			if(!(colNum == -1)) {
-				colName="col"+(colNum+1);
-			}
-			
-			FieldDefinition fd = FieldInfo.getFieldInfo(colName,
+		for (int i = 0; i < paramTypes.length; i++) {			
+			FieldDefinition fd = FieldInfo.getFieldInfo(getColumnName(aliases[i]),
 					paramTypes[i].getName(), false);
 			result.addField(fd);
 		}
@@ -85,29 +71,24 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 
 	}
 
-	public DataDefinition getLabelType(String labelName) {
-		DataDefinition result = MakumbaSystem
-				.getTemporaryDataDefinition("ProjectionType for " + query);
+    private String getColumnName(String colName) {
+        try {
+        	return "col" + Integer.parseInt(colName);            
+        } catch(NumberFormatException e) {
+            return colName;
+        }        
+    }
 
+	public DataDefinition getLabelType(String labelName) {
 		String[] aliases = qti.getReturnAliases();
 		Type[] paramTypes = qti.getReturnTypes();
 
-		int pos = -1;
 		for (int i = 0; i < aliases.length; i++) {
-			if (labelName.equals(aliases[i]))
-				pos = i;
-
+			if (labelName.equals(getColumnName(aliases[i]))) {
+                return MakumbaSystem.getDataDefinition(paramTypes[i].getName());
+            }
 		}
-		if (!(pos == -1)) {
-			FieldDefinition fd = FieldInfo.getFieldInfo(aliases[pos],
-					paramTypes[pos].getName(), false);
-			result.addField(fd);
-			return result;
-		} else {
-			throw new OQLParseError("Could not determine type of label "
-					+ labelName);
-		}
-
+		throw new OQLParseError("Could not determine type of label " + labelName);
 	}
 
 	// TODO this doesn't work
