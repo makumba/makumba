@@ -113,18 +113,17 @@ public class ComposedQuery
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            return getOQLAnalyzer().getProjectionType();
+            return getOQLAnalyzer(typeAnalyzerOQL).getProjectionType();
         }
     }
 
-    private OQLAnalyzer getOQLAnalyzer() {
+    private OQLAnalyzer getOQLAnalyzer(String type) {
         OQLAnalyzer oqa= null;
         if (useHibernate) {
             //TODO: use a cache for this
-            oqa= HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF());
-                         
+            oqa= HibernateOqlAnalyzer.getOqlAnalyzer(type, HibernateSFManager.getSF());                         
         } else {
-           oqa= MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL);
+           oqa= MakumbaSystem.getOQLAnalyzer(type);
         }
         return oqa;
     }
@@ -133,7 +132,7 @@ public class ComposedQuery
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            return getOQLAnalyzer().getLabelType(s);
+            return getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s);
         }
     }
 
@@ -408,7 +407,7 @@ public class ComposedQuery
     int dot=s.indexOf(".");
     if(dot==-1)
       return null;
-    DataDefinition dd= getOQLAnalyzer().getLabelType(s.substring(0, dot));
+    DataDefinition dd= getOQLAnalyzer(fromAnalyzerOQL).getLabelType(s.substring(0, dot));
     if(dd==null)
       throw new org.makumba.InvalidValueException("no such label "+s.substring(0, dot));
     while(true)
