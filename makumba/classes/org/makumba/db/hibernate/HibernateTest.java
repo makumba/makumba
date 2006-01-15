@@ -22,8 +22,10 @@ public class HibernateTest  {
     
 	public static void main (String[] args) {
         
+        Vector dds= new Vector();
+        dds.addElement("general.Person");
         
-        Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+        //Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
         SessionFactory sf = HibernateSFManager.getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml", "makumbaGeneratedMappings");
 		
 		Session session = sf.openSession();
@@ -88,12 +90,8 @@ public class HibernateTest  {
 			if (list.get(i) == null) continue;
 			//test = (Person)list.get(i);
 			System.out.println(list.get(i).getClass());
-			Double row = (Double)list.get(i);
-			System.out.println(row.toString() + "\n");
-		}
-		//list = test.getSpeaks();
-		for (int i=0; i<list.size(); i++ ) {
-			//System.out.println((Language)list.get(i));
+            System.out.println(list.get(i));
+			
 		}
 		session.close();
 	}
