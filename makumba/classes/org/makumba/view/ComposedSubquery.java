@@ -31,10 +31,11 @@ public class ComposedSubquery extends ComposedQuery
   /** the enclosing query */
   ComposedQuery superQuery;
 
-  /** make a subquery of the indicated query, from the given sections */
-  public ComposedSubquery(String[] subsections, ComposedQuery cq) 
+  /** make a subquery of the indicated query, from the given sections 
+ * @param usesHQL */
+  public ComposedSubquery(String[] subsections, ComposedQuery cq, boolean usesHQL) 
   { 
-    super(subsections);
+    super(subsections, usesHQL);
     superQuery=cq; 
     superQuery.addSubquery(this);
     derivedSections= new String[5];

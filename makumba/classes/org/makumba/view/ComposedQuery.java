@@ -50,11 +50,13 @@ public class ComposedQuery
     String evaluate(String s);
   }
 
-  /** constructor */
-  public ComposedQuery(String[] sections)
+  /** constructor 
+ * @param usesHQL */
+  public ComposedQuery(String[] sections, boolean usesHQL)
   {
     this.sections=sections;
     this.derivedSections= sections;
+    this.useHibernate= usesHQL;
   }
   
   /** the subqueries of this query */
@@ -91,6 +93,9 @@ public class ComposedQuery
 
   /** the labels of the keyset */
   Vector keysetLabels;
+  
+  /** do we use hibernate for execution or do we use makumba? */
+  boolean useHibernate;
   
   /** a Vector containing and empty vector. Used for empty keysets */
   static Vector empty;
@@ -302,7 +307,7 @@ public class ComposedQuery
 
   // ------------
   /** execute the contained query in the given database */ 
-  public Grouper execute(org.makumba.Transaction db, Attributes a, Evaluator v, int offset, int limit) 
+  public Grouper execute(AbstractQueryRunner db, Attributes a, Evaluator v, int offset, int limit) 
        throws LogicException
   {
     analyze();

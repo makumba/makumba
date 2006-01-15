@@ -123,8 +123,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       ComposedQuery ret= (ComposedQuery)queries.get(key);
       if(ret!=null)
 	return ret;
-      ret=parentKey==null? new ComposedQuery(sections):
-	new ComposedSubquery(sections, getQuery(parentKey));
+      ret=parentKey==null? new ComposedQuery(sections, usesHQL):
+	new ComposedSubquery(sections, getQuery(parentKey), usesHQL);
       
       ret.init();
       queries.put(key,ret);
