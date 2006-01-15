@@ -1,6 +1,9 @@
 package org.makumba.db.hibernate;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +60,7 @@ public class MddToMapping extends HibernateUtils {
         new File(generatedMappingPath).mkdirs();
     }
 
+    SAXTransformerFactory tf = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
 	/**
 	 * Creates an xml file for the given DataDefinition
 	 * @param dd DataDefinition that needs to be mapped   
@@ -70,16 +74,26 @@ public class MddToMapping extends HibernateUtils {
             takenColumnNames= new HashSet();
             columnNames=new HashMap();
 			String filename = arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
-			StreamResult streamResult = new StreamResult(generatedMappingPath+"/" + filename);
-			SAXTransformerFactory tf = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+            Writer w = null;
+            try {
+               w = new FileWriter(generatedMappingPath+File.separator + filename);
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            
+			StreamResult streamResult = new StreamResult(w);
+			
 			// SAX2.0 ContentHandler
 			TransformerHandler hd = tf.newTransformerHandler();
 			Transformer serializer = hd.getTransformer();
 			serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//Hibernate/Hibernate Mapping DTD 3.0//EN");
 			serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd");
 			serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+            
 			hd.setResult(streamResult);
 			hd.startDocument();
+            
 			
 			AttributesImpl atts = new AttributesImpl();
 			
@@ -232,6 +246,13 @@ public class MddToMapping extends HibernateUtils {
 			hd.endElement("", "", "class");
 			hd.endElement("", "", "hibernate-mapping");
 			hd.endDocument();
+            
+            try {
+                w.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 // TODO: add to configuration whether it was generated or not.
             cfg.addResource(prefix+File.separator+filename);	
 	}
