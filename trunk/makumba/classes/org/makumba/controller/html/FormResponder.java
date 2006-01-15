@@ -26,6 +26,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.makumba.DataDefinition;
 import org.makumba.Transaction;
@@ -168,8 +169,9 @@ RecordEditor editor;
        }
    }
    
-  public void writeFormPostamble(StringBuffer sb, String basePointer, String session) 
-  {
+  public void writeFormPostamble(StringBuffer sb, String basePointer, HttpSession sess) {
+	  String session = sess.getId();
+	  setResponderWorkingDir(sess);
   	if(storedSuffix.equals("") && operation.equals("deleteLink"))
   	{
   		// a root deleteLink

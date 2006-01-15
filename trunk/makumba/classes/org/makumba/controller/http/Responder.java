@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.GregorianCalendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
@@ -163,12 +164,11 @@ public abstract class Responder implements java.io.Serializable
 	 return ((Responder)o).responderKey();
        }
 
-     public Object makeResource(Object name, Object hashName)
-       {
+     public Object makeResource(Object name, Object hashName) {
 	 Responder f= (Responder)name;
 	 f.identity= hashName.hashCode();
 
-	 String fileName = makumbaResponderBaseDirectory + "/" + f.identity;
+	 String fileName = validResponderFilename(f.identity);
 	 
 	 if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
 	 	try {
@@ -267,17 +267,26 @@ public abstract class Responder implements java.io.Serializable
 
   static final String resultNamePrefix= "org.makumba.controller.resultOf_";
 
-  /** respond to a http request */
-  static void response(HttpServletRequest req, HttpServletResponse resp)
-  {
-    // set the correct working directory for the responders
-    if (Responder.makumbaResponderBaseDirectory == null) {
-    	Responder.makumbaResponderBaseDirectory = req.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir") + "/makumba-responders";
-	  	if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {	 	
-	  		new File(Responder.makumbaResponderBaseDirectory).mkdir();	 	
-	  	}      	
+    private static String validResponderFilename(int responderValue) {
+        return new String(makumbaResponderBaseDirectory + "/") + String.valueOf(responderValue).replaceAll("-", "_");
     }
-  	
+
+    protected static void setResponderWorkingDir(HttpSession sess) {
+        // set the correct working directory for the responders
+        if (Responder.makumbaResponderBaseDirectory == null) {
+            System.out.println("had an empty responder dir - working dir ==> " + sess.getServletContext().getAttribute("javax.servlet.context.tempdir"));
+            Responder.makumbaResponderBaseDirectory = sess.getServletContext().getAttribute("javax.servlet.context.tempdir") + "/makumba-responders";
+            if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {         
+                new File(Responder.makumbaResponderBaseDirectory).mkdir();         
+            }
+            System.out.println("base dir: " + Responder.makumbaResponderBaseDirectory);
+        }
+    }
+
+    /** respond to a http request */
+    static void response(HttpServletRequest req, HttpServletResponse resp) {
+    	setResponderWorkingDir(req.getSession());
+	  
     if(req.getAttribute(RESPONSE_STRING_NAME)!=null)
       return;
     req.setAttribute(RESPONSE_STRING_NAME, "");
@@ -310,7 +319,7 @@ public abstract class Responder implements java.io.Serializable
 		}
 		Integer i= new Integer(Integer.parseInt(responderCode));
 		Responder fr= ((Responder)indexedCache.get(i));
-		String fileName = makumbaResponderBaseDirectory + "/" + i;
+		String fileName = validResponderFilename(i.intValue());
 
 		// responder check
 		if(fr==null) { // we do not have responder in cache --> try to get it from disk
@@ -320,6 +329,12 @@ public abstract class Responder implements java.io.Serializable
 				fr = (Responder) objectIn.readObject();
 				fr.postDeserializaton();
 				fr.controller = Logic.getController(fr.controllerClassname);
+			} catch (UnsupportedClassVersionError e) {
+				// if we try to read a responder that was written with a different version of the responder class
+				// we delete it, and throw an exception
+				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
+				new File(fileName).delete();
+				throw new org.makumba.InvalidValueException("Responder cannot be re-used due to Makumba version change! Please reload this page.");
 			} catch (IOException e) {			
 				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
 			} catch (ClassNotFoundException e) {
@@ -332,7 +347,7 @@ public abstract class Responder implements java.io.Serializable
 				}
 			}
 			if (fr==null) { // we did not find the responder on the disk
-				throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload the form page.");
+				throw new org.makumba.InvalidValueException("Responder cannot be found, probably due to server restart. Please reload this page.");
 			}
 		}			
 		// end responder check
