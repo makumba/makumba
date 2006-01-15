@@ -12,6 +12,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 
 import javassist.CannotCompileException;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
@@ -56,6 +57,7 @@ public class MddToClass extends HibernateUtils {
 	 **/
 	public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException, IOException {
 		ClassPool cp = ClassPool.getDefault();
+        cp.insertClassPath(new ClassClassPath(this.getClass()));
 		CtClass cc = cp.get(classname);
 		cc.defrost();
 		
@@ -83,6 +85,7 @@ public class MddToClass extends HibernateUtils {
 			mddsDone.add(dd.getName());
 
 			ClassPool cp = ClassPool.getDefault();
+            cp.insertClassPath(new ClassClassPath(this.getClass()));
 			CtClass cc = cp.makeClass(arrowToDoubleUnderscore(dd.getName()));
 
 			String type = null;
