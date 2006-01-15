@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,12 +20,14 @@ import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
 public class MddToClass extends HibernateUtils {
-    public static final String generatedClassPath="work/generated-hibernate-classes";
+    //public static final String generatedClassPath="work/generated-hibernate-classes";
+    public String generatedClassPath="";
     private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
 
-    public MddToClass(Vector v)throws CannotCompileException, NotFoundException, IOException{
+    public MddToClass(Vector v, String generationPath)throws CannotCompileException, NotFoundException, IOException{
+      this.generatedClassPath = generationPath;
       for(int i=0; i<v.size(); i++)
         generateClass(MakumbaSystem.getDataDefinition((String)v.elementAt(i)));
       while (!mddsToDo.isEmpty()) 
@@ -34,8 +37,9 @@ public class MddToClass extends HibernateUtils {
             appendClass((String)append[0], (FieldDefinition)append[1]);
         }
     }
-	public MddToClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
-		generateClass(dd);
+	public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException, IOException {
+        this.generatedClassPath = generationPath;
+        generateClass(dd);
 		while (!mddsToDo.isEmpty()) {
 			generateClass((DataDefinition)mddsToDo.removeFirst());	
 		}
