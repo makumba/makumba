@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,19 +25,24 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class MddToMapping extends HibernateUtils {
-    public static final String generatedMappingPath="work/generated-hibernate-mappings";
+    //public static final String generatedMappingPath="work/generated-hibernate-mappings";
 	private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
+    private String generatedMappingPath="";
+    private String prefix="";
 	
-    public MddToMapping(Vector v, Configuration cfg) throws TransformerConfigurationException, SAXException {
-    for(int i=0; i<v.size(); i++)
+    public MddToMapping(Vector v, Configuration cfg, String generationPath, String prefix) throws TransformerConfigurationException, SAXException {
+      managePaths(generationPath, prefix);
+      for(int i=0; i<v.size(); i++)
         generateMapping(MakumbaSystem.getDataDefinition((String)v.elementAt(i)), cfg);
       while (!mddsToDo.isEmpty()) 
             generateMapping((DataDefinition)mddsToDo.removeFirst(), cfg);  
     }
     
-	public MddToMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException, SAXException {
-//    TODO: generate only if file doesn't exist already            
+	public MddToMapping(DataDefinition dd, Configuration cfg, String generationPath, String prefix) throws TransformerConfigurationException, SAXException {
+//    TODO: generate only if file doesn't exist already
+        managePaths(generationPath, prefix);
+        this.generatedMappingPath = generationPath;
 		generateMapping(dd, cfg);
 		
 		/* generate the mappings for the related mdd files */
@@ -44,6 +50,12 @@ public class MddToMapping extends HibernateUtils {
 			generateMapping((DataDefinition)mddsToDo.removeFirst(), cfg);	
 		}
 	}
+
+    private void managePaths(String generationPath, String prefix) {
+        this.generatedMappingPath = generationPath+File.separator+prefix;
+        this.prefix = prefix;
+        new File(generatedMappingPath).mkdirs();
+    }
 
 	/**
 	 * Creates an xml file for the given DataDefinition
@@ -196,6 +208,8 @@ public class MddToMapping extends HibernateUtils {
 						hd.endElement("","","bag");
 						mddsToDo.add(fd.getSubtable());
 						break;
+						
+						/* ptrRel is the pointer type used in case of sets (ie pointing to two tables) */
 					case FieldDefinition._ptrRel:
 						/* do we need to add a mapping to the parent field? */
 						atts.clear();
@@ -219,7 +233,7 @@ public class MddToMapping extends HibernateUtils {
 			hd.endElement("", "", "hibernate-mapping");
 			hd.endDocument();
 // TODO: add to configuration whether it was generated or not.
-            cfg.addResource(filename);	
+            cfg.addResource(prefix+File.separator+filename);	
 	}
 
     Set takenColumnNames;
