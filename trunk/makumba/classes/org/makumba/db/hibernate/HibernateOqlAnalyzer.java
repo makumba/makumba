@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.Hashtable;
 
 import org.hibernate.QueryException;
 import org.hibernate.SessionFactory;
@@ -21,6 +22,7 @@ import org.makumba.OQLParseError;
 import org.makumba.abstr.FieldInfo;
 
 public class HibernateOqlAnalyzer implements OQLAnalyzer {
+    private static Hashtable labels;
 
 	private SessionFactory sf = null;
 
@@ -122,15 +124,29 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
     }
 
 	public DataDefinition getLabelType(String labelName) {
-		String[] aliases = qti.getReturnAliases();
-		Type[] paramTypes = qti.getReturnTypes();
-
-		for (int i = 0; i < aliases.length; i++) {
-			if (labelName.equals(getColumnName(aliases[i]))) {
-                return MakumbaSystem.getDataDefinition(paramTypes[i].getName());
+        //FIXME: dirty HACK!
+        //TODO: use hibernate internals to do this?
+        //TODO: use a real parser?
+        if (labels == null) {
+            labels = new Hashtable();
+            String query = qti.getQueryString();
+            String labelString = query.substring(query.toLowerCase().indexOf("from") + 4);
+            labelString = labelString.substring(0, labelString.toLowerCase().indexOf("where"));
+            StringTokenizer tokenizer = new StringTokenizer(labelString, ",");
+            while (tokenizer.hasMoreTokens()) {
+                String l = tokenizer.nextElement().toString();
+                StringTokenizer tokenizerLabel = new StringTokenizer(l, " ");
+                Object type = tokenizerLabel.nextElement();
+                Object label = tokenizerLabel.nextElement();
+                labels.put(label, type);
             }
-		}
-		throw new OQLParseError("Could not determine type of label " + labelName);
+        }
+        
+        if (labels.get(labelName) != null) {
+            return MakumbaSystem.getDataDefinition(labels.get(labelName).toString());
+        } else {
+            throw new OQLParseError("Could not determine type of label " + labelName);
+        }
 	}
 
 	// TODO this doesn't work
