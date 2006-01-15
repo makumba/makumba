@@ -35,6 +35,7 @@ import org.makumba.HibernateSFManager;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
+import org.makumba.OQLAnalyzer;
 import org.makumba.db.hibernate.HibernateOqlAnalyzer;
 import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.MultipleKey;
@@ -107,29 +108,32 @@ public class ComposedQuery
     empty.addElement(new Vector());
   }
 
+      
     public DataDefinition getResultType() {
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            if (useHibernate) {
-                //TODO: use a cache for this
-                return HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF()).getProjectionType();               
-            } else {
-                return MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getProjectionType();
-            }
+            return getOQLAnalyzer().getProjectionType();
         }
+    }
+
+    private OQLAnalyzer getOQLAnalyzer() {
+        OQLAnalyzer oqa= null;
+        if (useHibernate) {
+            //TODO: use a cache for this
+            oqa= HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF());
+                         
+        } else {
+           oqa= MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL);
+        }
+        return oqa;
     }
     
     public DataDefinition getLabelType(String s) {
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            if (useHibernate) {
-                //TODO: use a cache for this
-                return HibernateOqlAnalyzer.getOqlAnalyzer(typeAnalyzerOQL, HibernateSFManager.getSF()).getLabelType(s);
-            } else {
-                return MakumbaSystem.getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s);
-            }
+            return getOQLAnalyzer().getLabelType(s);
         }
     }
 
@@ -404,7 +408,7 @@ public class ComposedQuery
     int dot=s.indexOf(".");
     if(dot==-1)
       return null;
-    DataDefinition dd= MakumbaSystem.getOQLAnalyzer(fromAnalyzerOQL).getLabelType(s.substring(0, dot));
+    DataDefinition dd= getOQLAnalyzer().getLabelType(s.substring(0, dot));
     if(dd==null)
       throw new org.makumba.InvalidValueException("no such label "+s.substring(0, dot));
     while(true)
