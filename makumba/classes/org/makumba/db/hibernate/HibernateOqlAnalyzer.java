@@ -100,7 +100,7 @@ public class HibernateOqlAnalyzer implements OQLAnalyzer {
 	}
     
     public String[] getProjectionLeftSides() {
-        String queryProjection = query.substring(7, query.toLowerCase().indexOf("FROM"));
+        String queryProjection = query.substring(7, query.toLowerCase().indexOf("from"));
         StringTokenizer separateProjections = new StringTokenizer(queryProjection, ",");
         String[] result = new String[separateProjections.countTokens()];
         int i = 0;
