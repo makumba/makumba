@@ -34,6 +34,7 @@ function makeNavBar(pathToBase)
 	document.write('<a href="http://bugzilla.makumba.org/query.cgi?product=Makumba">Bugzilla</a><br>');
 	document.write('<a href="'+bDir+'documentation.html#devel"><b>Developer</b></a><br>');
 	document.write('- <a href="'+bDir+'hacking/index.html">documentation</a><br>');
+	document.write('- <a href="'+bDir+'issues/index.html">issues</a><br>');
 	document.write('- <a href="http://cvs.sf.net/viewcvs.py/makumba/">CVS repository</a><br>');
 	document.write('<br>');
 	document.write('<FORM method=GET action=http://www.google.com/custom class="search" id="searchForm">');
