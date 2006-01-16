@@ -271,12 +271,14 @@ public abstract class Responder implements java.io.Serializable
         return new String(makumbaResponderBaseDirectory + "/") + String.valueOf(responderValue).replaceAll("-", "_");
     }
 
-    protected static void setResponderWorkingDir(HttpSession sess) {
+    protected static void setResponderWorkingDir(HttpServletRequest request) {
         // set the correct working directory for the responders
         if (Responder.makumbaResponderBaseDirectory == null) {
-            System.out.println("had an empty responder dir - working dir ==> " + sess.getServletContext().getAttribute("javax.servlet.context.tempdir"));
-            Responder.makumbaResponderBaseDirectory = sess.getServletContext().getAttribute("javax.servlet.context.tempdir") + "/makumba-responders";
-            if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {         
+            System.out.println("had an empty responder dir - working dir ==> " + request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir"));
+            String baseDir =  request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir") + System.getProperty("file.separator") + "makumba-responders" + System.getProperty("file.separator");
+            Responder.makumbaResponderBaseDirectory = baseDir + request.getContextPath();
+            if (!new File(Responder.makumbaResponderBaseDirectory).exists()) {
+                new File(baseDir).mkdir();         
                 new File(Responder.makumbaResponderBaseDirectory).mkdir();         
             }
             System.out.println("base dir: " + Responder.makumbaResponderBaseDirectory);
@@ -285,7 +287,7 @@ public abstract class Responder implements java.io.Serializable
 
     /** respond to a http request */
     static void response(HttpServletRequest req, HttpServletResponse resp) {
-    	setResponderWorkingDir(req.getSession());
+    	setResponderWorkingDir(req);
 	  
     if(req.getAttribute(RESPONSE_STRING_NAME)!=null)
       return;
