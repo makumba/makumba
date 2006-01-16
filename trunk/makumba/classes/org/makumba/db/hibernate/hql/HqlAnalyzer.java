@@ -100,6 +100,9 @@ public class HqlAnalyzer implements OQLAnalyzer {
             ExprTypeAST atom = (ExprTypeAST) walker.getResult().get(i);
             
             String name = atom.getIdentifier();
+            if(name == null) {
+                name = "col"+i;
+            }
             if(atom.getObjectType() == null) {
                 result.addField(FieldInfo.getFieldInfo(name, getTypeName(atom.getType()), false));
             } else{
