@@ -21,7 +21,7 @@ import antlr.collections.AST;
 public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
 
     private String objectType;
-
+    
     public MddObjectTypeAST(AST lhs, AST rhs, Map aliasTypes) throws SemanticException {
         super(-2);
         String type = null;
@@ -55,22 +55,20 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
 
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
         System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
+        
+        this.setDescription(field);
 
         DataDefinition dd = null;
         String computedType;
 
         if (field.equals("id")) {
-            FieldDefinition fd = FieldInfo.getFieldInfo("", "ptr " + type, false);
-            dd.addField(fd);
-            return dd;
+            return type;
         } else if (field.startsWith("hibernate_")) {
             String ptrToCheck = field.substring(field.indexOf("_"));
             DataDefinition ddPtr = MakumbaSystem.getDataDefinition(type);
             FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
             if (fiPtr.getType().equals("ptr")) {
-                FieldDefinition fd = FieldInfo.getFieldInfo("", "ptr " + fiPtr.getForeignTable().getName(), false);
-                dd.addField(fd);
-                return dd;
+                return fiPtr.getForeignTable().getName();
             }
         }
 

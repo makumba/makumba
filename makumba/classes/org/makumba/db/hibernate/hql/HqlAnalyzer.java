@@ -60,11 +60,6 @@ public class HqlAnalyzer implements OQLAnalyzer {
           // Print the resulting tree out in LISP notation
           if(t1!=null)
           {
-              //ASTFrame frame = new ASTFrame("tree", t1);
-              //frame.setVisible(true);
-              
-              // pass here a session factory
-              // HqlAnalyzerWalker passes itself (with the sf) to all object it creates
               walker= new HqlAnalyzeWalker();
               walker.objectTypeFactory= new ObjectTypeFactory(){
                   public ObjectType make(AST lhs, AST rhs, Map aliasTypes) throws SemanticException{
@@ -103,10 +98,11 @@ public class HqlAnalyzer implements OQLAnalyzer {
             if(name == null) {
                 name = "col"+i;
             }
+            
             if(atom.getObjectType() == null) {
-                result.addField(FieldInfo.getFieldInfo(name, getTypeName(atom.getType()), false));
+                result.addField(FieldInfo.getFieldInfoWithDescription(name, getTypeName(atom.getType()),  false, atom.getDescription()));
             } else{
-                result.addField(FieldInfo.getFieldInfo(name, "ptr "+atom.getObjectType(), false));
+                result.addField(FieldInfo.getFieldInfoWithDescription(name, "ptr "+atom.getObjectType(), false, atom.getDescription()));
             }
         }
         return result;
