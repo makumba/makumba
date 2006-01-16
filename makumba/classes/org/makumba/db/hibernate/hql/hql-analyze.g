@@ -46,8 +46,10 @@ tokens
 // -- Declarations --
 {
 	
+	ObjectTypeFactory objectTypeFactory;
+	
   AST deriveArithmethicExpr(AST ae){ 
-	  	    ae.setText("bla"); return ae; 
+  	return ae; 
 	  	 }
 		  AST deriveParamExpr(AST ae){  return ae; 	  	 }
 	
@@ -58,6 +60,9 @@ tokens
 		  	   	   throw new antlr.SemanticException("alias "+alias.getText()+" defined twice");
 		  	   	aliasTypes.put(alias.getText(), path);	
 		  }
+		  
+		  public void getReturnTypes(AST a) { }
+		  		
 
 	private int level = 0;
 	private boolean inSelect = false;
@@ -148,8 +153,11 @@ tokens
 			currentTopLevelClauseType = clauseType;
 		}
 	}
-
+	
+			protected void setAlias(AST se, AST i) {}
 	}
+
+
 
 // The main statement rule.
 statement
@@ -244,6 +252,8 @@ groupClause
 selectClause!
 	: #(SELECT { handleClauseStart( SELECT ); /* ***beforeSelectClause();*/ } (d:DISTINCT)? x:selectExprList ) {
 		#selectClause = #([SELECT_CLAUSE,"{select clause}"], #d, #x);
+		getReturnTypes(		#selectClause);
+		//***analysis finished, here we should copy stuff somewhere (List (ordered), ...)
 	}
 	;
 
@@ -258,7 +268,7 @@ selectExprList {
 
 aliasedSelectExpr!
 	: #(AS se:selectExpr i:identifier) {
-	   //*** setAlias(#se,#i);
+	   setAlias(#se,#i);
 		#aliasedSelectExpr = #se;
 	}
 	;
@@ -268,11 +278,11 @@ selectExpr
 	| #(ALL ar2:aliasRef) 			{ /* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
 	| #(OBJECT ar3:aliasRef)		{ /* *** resolveSelectExpression(#ar3)*/; #selectExpr = #ar3; }
 	| con:constructor 				{ /* *** processConstructor(#con)*/ ; }
-	| functionCall
-	| count
+	| functionCall {System.out.println("functionCall");}//***look at the hibernate source
+	| count //*** this is an integer
 	| collectionFunction			// elements() or indices()
-	| literal
-	| arithmeticExpr
+	| literal //***already done
+	| are:arithmeticExpr { #selectExpr= deriveArithmethicExpr(#are); }
 		| logicalExpr
 	;
 
@@ -479,7 +489,7 @@ addrExpr! [ boolean root ]
 	: #(d:DOT lhs:addrExprLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree 
 		// to process collection properties (.elements, etc).
-		#addrExpr = new ObjectTypeAST(#lhs, #rhs, aliasTypes);
+		#addrExpr = (AST)objectTypeFactory.make(#lhs, #rhs, aliasTypes);
 //		#addrExpr = lookupProperty(#addrExpr,root,false);
 	}
 	| #(i:INDEX_OP lhs2:addrExprLhs rhs2:expr)	{
@@ -506,7 +516,7 @@ propertyName
 
 propertyRef
 	: #(DOT lhs:propertyRefLhs rhs:propertyName )	{
-#propertyRef = new ObjectTypeAST(#lhs, #rhs, aliasTypes);
+#propertyRef = (AST)objectTypeFactory.make(#lhs, #rhs, aliasTypes);
 		}
 	|
 	p:identifier {
