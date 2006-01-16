@@ -12,17 +12,17 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.abstr.FieldInfo;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;
 
 public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
-    
+
     private String objectType;
 
-    public MddObjectTypeAST(AST lhs, AST rhs, Map aliasTypes)
-            throws SemanticException {
+    public MddObjectTypeAST(AST lhs, AST rhs, Map aliasTypes) throws SemanticException {
         super(-2);
         String type = null;
         if (lhs instanceof MddObjectTypeAST) {
@@ -30,9 +30,8 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
         } else {
             type = (String) aliasTypes.get(lhs.getText());
             if (type == null) {
-                throw new SemanticException("unknown alias: " + lhs.getText()
-                        + " in property reference: " + lhs.getText() + "."
-                        + rhs.getText());
+                throw new SemanticException("unknown alias: " + lhs.getText() + " in property reference: "
+                        + lhs.getText() + "." + rhs.getText());
             }
         }
 
@@ -46,37 +45,49 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
 
         System.out.println("GOT TYPE: " + computedType);
 
-        if(computedType instanceof Integer) {
-            setDataType(((Integer)computedType).intValue());
+        if (computedType instanceof Integer) {
+            setDataType(((Integer) computedType).intValue());
         }
-        
+
         setObjectType((String) computedType);
-        
+
     }
 
-    
-    public Object determineType(String type, String field)
-            throws RecognitionException, SemanticException {
-        System.out.println("Trying to get field type: " + field + " from type "
-                + type + " ...");
+    public Object determineType(String type, String field) throws RecognitionException, SemanticException {
+        System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
 
+        DataDefinition dd = null;
         String computedType;
-        DataDefinition dd;
+
+        if (field.equals("id")) {
+            FieldDefinition fd = FieldInfo.getFieldInfo("", "ptr " + type, false);
+            dd.addField(fd);
+            return dd;
+        } else if (field.startsWith("hibernate_")) {
+            String ptrToCheck = field.substring(field.indexOf("_"));
+            DataDefinition ddPtr = MakumbaSystem.getDataDefinition(type);
+            FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
+            if (fiPtr.getType().equals("ptr")) {
+                FieldDefinition fd = FieldInfo.getFieldInfo("", "ptr " + fiPtr.getForeignTable().getName(), false);
+                dd.addField(fd);
+                return dd;
+            }
+        }
+
         try {
             dd = MakumbaSystem.getDataDefinition(type);
-        } catch(DataDefinitionNotFoundError e) {
+        } catch (DataDefinitionNotFoundError e) {
             throw new SemanticException("No such MDD \"" + type + "\"");
         }
-        
+
         FieldDefinition fi = dd.getFieldDefinition(field);
         try {
             computedType = fi.getType();
         } catch (NullPointerException ne) {
             try {
-                throw new SemanticException("No such field \"" + field
-                        + "\" in Makumba type \"" + dd.getName() + "\"");
+                throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
             } catch (SemanticException e) {
-                //TODO throw error in Syntax
+                // TODO throw error in Syntax
                 e.printStackTrace();
             }
         }
@@ -94,29 +105,25 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
 
         if (fi.getType().equals("ptr"))
             return foreign.getName();
-        
+
         else if (fi.getType().equals("ptrOne"))
             return sub.getIndexPointerFieldName();
-        
-        else if (fi.getType().equals("setComplex")
-                || fi.getType().equals("setintEnum")
+
+        else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum")) {
             return sub.getName();
-            
+
         } else if (fi.getType().equals("set")) {
             return sub.getName();
-            
+
         } else
-            return new Integer(MakumbaSystem.getDataDefinition(type).getFieldDefinition(
-                    field).getIntegerType());
+            return new Integer(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
 
     }
-
 
     public String getObjectType() {
         return objectType;
     }
-
 
     public void setObjectType(String objectType) {
         this.objectType = objectType;
