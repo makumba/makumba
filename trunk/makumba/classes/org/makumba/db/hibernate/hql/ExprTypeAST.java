@@ -10,7 +10,8 @@ import antlr.CommonAST;
 
 public class ExprTypeAST extends CommonAST {
     int dataType;
-    String identifier;
+    private String identifier;
+    private String description;
     
     public void setIdentifier(String i) {
         this.identifier = i;
@@ -74,5 +75,13 @@ public class ExprTypeAST extends CommonAST {
     
     public String getObjectType() {
         return null;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
