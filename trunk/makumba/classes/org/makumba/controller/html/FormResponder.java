@@ -169,9 +169,9 @@ RecordEditor editor;
        }
    }
    
-  public void writeFormPostamble(StringBuffer sb, String basePointer, HttpSession sess) {
-	  String session = sess.getId();
-	  setResponderWorkingDir(sess);
+  public void writeFormPostamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
+	  String session = request.getSession().getId();
+	  setResponderWorkingDir(request);
   	if(storedSuffix.equals("") && operation.equals("deleteLink"))
   	{
   		// a root deleteLink
