@@ -46,22 +46,19 @@ tokens
 // -- Declarations --
 {
 	
-	ObjectTypeFactory objectTypeFactory;
+			  ObjectType typeComputer;
 	
-  AST deriveArithmethicExpr(AST ae){ 
-  	return ae; 
+  AST deriveArithmethicExpr(AST ae)throws antlr.RecognitionException { 
+  			    return ae; 
 	  	 }
-		  AST deriveParamExpr(AST ae){  return ae; 	  	 }
+	  	 
+		  AST deriveParamExpr(AST ae)throws antlr.RecognitionException{  return ae; 	  	 }
 	
 	  java.util.Map aliasTypes= new java.util.HashMap();
 	  
-		  public void setAliasType(AST alias, String path) throws antlr.RecognitionException{
-		  	   if(aliasTypes.get(alias.getText())!= null)
-		  	   	   throw new antlr.SemanticException("alias "+alias.getText()+" defined twice");
-		  	   	aliasTypes.put(alias.getText(), path);	
-		  }
-		  
-		  public void getReturnTypes(AST a) { }
+		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
+ 
+  void getReturnTypes(AST a) throws antlr.RecognitionException { }
 		  		
 
 	private int level = 0;
@@ -334,7 +331,7 @@ fromElement!{
 
 joinElement! 
 		: #(JOIN (joinType)? (FETCH)? ref:propertyRef (a:ALIAS)? (FETCH)? (WITH)? ) {
-			  setAliasType(#a, (#ref).getText());
+			  setAliasType(#a, ((ObjectTypeAST)#ref).getObjectType());
 }
 	;
 
@@ -489,7 +486,7 @@ addrExpr! [ boolean root ]
 	: #(d:DOT lhs:addrExprLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree 
 		// to process collection properties (.elements, etc).
-		#addrExpr = (AST)objectTypeFactory.make(#lhs, #rhs, aliasTypes);
+		#addrExpr = new ObjectTypeAST(#lhs, #rhs, aliasTypes, typeComputer);
 //		#addrExpr = lookupProperty(#addrExpr,root,false);
 	}
 	| #(i:INDEX_OP lhs2:addrExprLhs rhs2:expr)	{
@@ -516,7 +513,7 @@ propertyName
 
 propertyRef
 	: #(DOT lhs:propertyRefLhs rhs:propertyName )	{
-#propertyRef = (AST)objectTypeFactory.make(#lhs, #rhs, aliasTypes);
+#propertyRef = new ObjectTypeAST(#lhs, #rhs, aliasTypes, typeComputer);
 		}
 	|
 	p:identifier {
