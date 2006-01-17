@@ -12,6 +12,7 @@ import org.makumba.OQLAnalyzer;
 import org.makumba.OQLParseError;
 import antlr.SemanticException;
 import antlr.collections.AST;
+import antlr.debug.misc.ASTFrame;
 
 public class HqlAnalyzer implements OQLAnalyzer {
     
@@ -66,7 +67,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
               }catch(RuntimeException e){
                   throw new OQLParseError("during analysis of query: "+query, e);
               }
-              /* print the tree 
+              /* print the tree
               AST t = walker.getAST();
               if(t!=null){
                   ASTFrame frame = new ASTFrame("analyzed", t);
@@ -99,7 +100,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
             if(atom.getObjectType() == null) {
                 result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()),  atom.getDescription()));
             } else {
-                result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr "+atom.getObjectType()+"; "+atom.getDescription()));
+                result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr "+atom.getObjectType()+";"+atom.getDescription()));
             }
         }
         }catch(RuntimeException e){throw new OQLParseError("during analysis of query: "+query, e);}
