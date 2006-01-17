@@ -38,7 +38,8 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     public void getReturnTypes(AST r) {
         result = new LinkedList();
         AST a = r.getFirstChild();
-        for(a = r.getFirstChild(); a != null; a = a.getNextSibling()) {
+        System.out.println();
+        for(/*a = a.getNextSibling()*/; a != null; a = a.getNextSibling()) {
             result.add(a);
         }
         

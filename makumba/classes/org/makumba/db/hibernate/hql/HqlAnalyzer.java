@@ -2,6 +2,7 @@ package org.makumba.db.hibernate.hql;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.hibernate.hql.ast.HqlParser;
 import org.makumba.DataDefinition;
@@ -68,14 +69,13 @@ public class HqlAnalyzer implements OQLAnalyzer {
               };
               walker.statement(t1);
 
-              
-              
-              //print the tree
+              /* print the tree 
               AST t = walker.getAST();
               if(t!=null){
                   ASTFrame frame = new ASTFrame("analyzed", t);
                   frame.setVisible(true);
-              }   
+              }
+              */
           }
         }
         catch(antlr.ANTLRException f){ 
@@ -100,8 +100,8 @@ public class HqlAnalyzer implements OQLAnalyzer {
             }
             
             if(atom.getObjectType() == null) {
-                result.addField(FieldInfo.getFieldInfoWithDescription(name, getTypeName(atom.getType()),  false, atom.getDescription()));
-            } else{
+                result.addField(FieldInfo.getFieldInfoWithDescription(name, getTypeName(atom.getDataType()),  false, atom.getDescription()));
+            } else {
                 result.addField(FieldInfo.getFieldInfoWithDescription(name, "ptr "+atom.getObjectType(), false, atom.getDescription()));
             }
         }
@@ -128,6 +128,40 @@ public class HqlAnalyzer implements OQLAnalyzer {
     
     String getTypeName(int i) {
         return (String) integerTypeMap.get(new Integer(i));
+    }
+    
+    public static void main(String argv[]) {
+
+        HqlAnalyzer oA = new HqlAnalyzer(argv[0]);
+        String query = oA.getOQL();
+        System.out.println("Query:\n" + query);
+
+                System.out.println("getProjectionType():\n");
+        Vector w = oA.getProjectionType().getFieldNames();
+        System.out.println(w.size());
+        for (int i = 0; i < w.size(); i++) {
+            System.out.println(i + " Field Name: " + w.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
+            System.out.println(i + " FieldDef Name: "
+                    + (oA.getProjectionType().getFieldDefinition(i).getName()));
+            System.out.println(i + " FieldDef Type: "
+                    + (oA.getProjectionType().getFieldDefinition(i).getType()));
+            System.out.println(i + " FieldDef Comment: "
+                    + (oA.getProjectionType().getFieldDefinition(i).getDescription()));
+        }
+        
+        /*
+        System.out.println("getParameterTypes():\n");
+        Vector v = oA.getParameterTypes().getFieldNames();
+        System.out.println(v.size());
+        for (int i = 0; i < v.size(); i++) {
+            System.out.println(i + " Field Name: " + v.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
+            System.out.println(i + " FieldDef Name: "
+                    + (oA.getParameterTypes().getFieldDefinition(i).getName()));
+            System.out.println(i + " FieldDef Type: "
+                    + (oA.getParameterTypes().getFieldDefinition(i).getType()));
+        }
+        */
+
     }
     
     
