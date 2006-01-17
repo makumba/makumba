@@ -25,7 +25,7 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
         super(-2);
         String type = null;
         if (lhs instanceof MddObjectTypeAST) {
-            type = lhs.getText();
+            type = ((MddObjectTypeAST)lhs).getObjectType();
         } else {
             type = (String) aliasTypes.get(lhs.getText());
             if (type == null) {
