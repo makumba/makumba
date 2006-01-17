@@ -9,7 +9,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
-import org.makumba.abstr.FieldInfo;
 
 import antlr.SemanticException;
 import antlr.collections.AST;
@@ -100,9 +99,9 @@ public class HqlAnalyzer implements OQLAnalyzer {
             }
             
             if(atom.getObjectType() == null) {
-                result.addField(FieldInfo.getFieldInfoWithDescription(name, getTypeName(atom.getDataType()),  false, atom.getDescription()));
+                result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()),  atom.getDescription()));
             } else {
-                result.addField(FieldInfo.getFieldInfoWithDescription(name, "ptr "+atom.getObjectType(), false, atom.getDescription()));
+                result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr "+atom.getObjectType()+"; "+atom.getDescription()));
             }
         }
         return result;
