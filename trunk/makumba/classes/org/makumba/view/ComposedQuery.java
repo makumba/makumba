@@ -180,7 +180,11 @@ public class ComposedQuery
 	if(j==-1)
 	  throw new RuntimeException("invalid FROM");
 	label=label.substring(j+1).trim();
-	keysetLabels.addElement(label);
+    if(this.useHibernate && label.indexOf('.')==-1)
+        label+=".id";
+
+    keysetLabels.addElement(label);
+        
 	keyset.addElement(addProjection(label));
       }
 
