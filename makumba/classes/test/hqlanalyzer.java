@@ -27,51 +27,26 @@ public class hqlanalyzer extends TestCase {
         } catch(Throwable t){ t.printStackTrace();  }
     }
     
- public void testAnalysisQ1() {
+ public void testAnalysisComplexSet() {
         
         String q1 = "SELECT p.id AS pointer, i.surname as surname, p.address.description as addressdescription FROM test.Person p JOIN p.indiv as i";
         HqlAnalyzer oA = new HqlAnalyzer(q1);
-        String query = oA.getOQL();
-        System.out.println("Query:\n" + query);
-
-        System.out.println("getProjectionType():\n");
-        Vector w = oA.getProjectionType().getFieldNames();
         
-        for (int i = 0; i < w.size(); i++) {
-            System.out.println(i + " Field Name: " + w.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
-            System.out.println(i + " FieldDef Name: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getName()));
-            System.out.println(i + " FieldDef Type: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getType()));
-            System.out.println(i + " FieldDef Comment: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getDescription()));
-        }
-        
-        //TODO - adapt the asserts
-        /*
         assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
-        assertEquals("key", oA.getProjectionType().getFieldDefinition(1).getName());
-        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(1).getDescription());
+        assertEquals("surname", oA.getProjectionType().getFieldDefinition(1).getName());
+        assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
+        assertEquals("surname", oA.getProjectionType().getFieldDefinition(1).getDescription());
         
-        assertEquals("personName", oA.getProjectionType().getFieldDefinition(2).getName());
+        assertEquals("addressdescription", oA.getProjectionType().getFieldDefinition(2).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(2).getType());
-        assertEquals("name", oA.getProjectionType().getFieldDefinition(2).getDescription());
+        assertEquals("description", oA.getProjectionType().getFieldDefinition(2).getDescription());
         
-        assertEquals("col3", oA.getProjectionType().getFieldDefinition(3).getName());
-        assertEquals("char", oA.getProjectionType().getFieldDefinition(3).getType());
-        assertEquals("surname", oA.getProjectionType().getFieldDefinition(3).getDescription());
-        
-        assertEquals("specialShit", oA.getProjectionType().getFieldDefinition(4).getName());
-        assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getType());
-        assertEquals("specialDiet", oA.getProjectionType().getFieldDefinition(4).getDescription());
-        */
     }
  
- public void testAnalysisQ2() {
+ public void testAnalysisSimpleFields() {
      
      String q2 = "SELECT p.id AS pointer, p.id AS key, p.birthdate AS birthdate, p.uniqInt, p.hobbies AS text FROM test.Person p";
      HqlAnalyzer oA = new HqlAnalyzer(q2);
@@ -88,7 +63,7 @@ public class hqlanalyzer extends TestCase {
      assertEquals("date", oA.getProjectionType().getFieldDefinition(2).getType());
      assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getDescription());
      
-     assertEquals("col3", oA.getProjectionType().getFieldDefinition(3).getName());
+     assertEquals("col4", oA.getProjectionType().getFieldDefinition(3).getName());
      assertEquals("int", oA.getProjectionType().getFieldDefinition(3).getType());
      assertEquals("uniqInt", oA.getProjectionType().getFieldDefinition(3).getDescription());
      
@@ -97,49 +72,57 @@ public class hqlanalyzer extends TestCase {
      assertEquals("hobbies", oA.getProjectionType().getFieldDefinition(4).getDescription());
  }
     
-    public void testAnalysisQ3() {
+    public void testAnalysisExtenalSetSimple() {
         
-        String q3 = "SELECT p.intSet as myIntSet, p.address as addr FROM test.Person p";
+        String q3 = "SELECT l.name as n FROM test.Person p JOIN p.speaks as l";
         HqlAnalyzer oA = new HqlAnalyzer(q3);
-        String query = oA.getOQL();
-        System.out.println("Query:\n" + query);
-
-        System.out.println("getProjectionType():\n");
-        Vector w = oA.getProjectionType().getFieldNames();
         
-        for (int i = 0; i < w.size(); i++) {
-            System.out.println(i + " Field Name: " + w.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
-            System.out.println(i + " FieldDef Name: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getName()));
-            System.out.println(i + " FieldDef Type: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getType()));
-            System.out.println(i + " FieldDef Comment: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getDescription()));
-        }
-        //TODO - adapt the asserts
-        /*
+        assertEquals("n", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("char", oA.getProjectionType().getFieldDefinition(0).getType());
+        assertEquals("name", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
-        assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
+    }
+    
+public void testAnalysisExtenalSetSelectSetPointer() {
+        
+        String q3 = "SELECT l.id FROM test.Person p JOIN p.speaks as l";
+        HqlAnalyzer oA = new HqlAnalyzer(q3);
+        
+        assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
-        assertEquals("key", oA.getProjectionType().getFieldDefinition(1).getName());
-        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(1).getDescription());
-        
-        assertEquals("personName", oA.getProjectionType().getFieldDefinition(2).getName());
-        assertEquals("char", oA.getProjectionType().getFieldDefinition(2).getType());
-        assertEquals("name", oA.getProjectionType().getFieldDefinition(2).getDescription());
-        
-        assertEquals("col3", oA.getProjectionType().getFieldDefinition(3).getName());
-        assertEquals("char", oA.getProjectionType().getFieldDefinition(3).getType());
-        assertEquals("surname", oA.getProjectionType().getFieldDefinition(3).getDescription());
-        
-        assertEquals("specialShit", oA.getProjectionType().getFieldDefinition(4).getName());
-        assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getType());
-        assertEquals("specialDiet", oA.getProjectionType().getFieldDefinition(4).getDescription());
-        */
-        
     }
+
+public void testAnalysisSelectPointer() {
+    
+    String q3 = "SELECT p.id FROM test.Person p";
+    HqlAnalyzer oA = new HqlAnalyzer(q3);
+    /*
+    String query = oA.getOQL();
+    System.out.println("Query:\n" + query);
+    Vector w = oA.getProjectionType().getFieldNames();
+    System.out.println("getProjectionType(): +"+w.size()+"\n");
+    
+    
+    for (int i = 0; i < w.size(); i++) {
+       System.out.println(i + " Field Name: " + w.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
+        System.out.println(i + " FieldDef Name: "
+                + (oA.getProjectionType().getFieldDefinition(i).getName()));
+        System.out.println(i + " FieldDef Type: "
+                + (oA.getProjectionType().getFieldDefinition(i).getType()));
+        System.out.println(i + " FieldDef Comment: "
+                + (oA.getProjectionType().getFieldDefinition(i).getDescription()));
+    }
+    */
+    
+    
+    assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
+    assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+    assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+    
+}
+
+
 }
 
