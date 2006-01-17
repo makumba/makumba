@@ -9,10 +9,9 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
-
+import org.makumba.OQLParseError;
 import antlr.SemanticException;
 import antlr.collections.AST;
-import antlr.debug.misc.ASTFrame;
 
 public class HqlAnalyzer implements OQLAnalyzer {
     
@@ -66,8 +65,11 @@ public class HqlAnalyzer implements OQLAnalyzer {
                       return new MddObjectTypeAST(lhs, rhs, aliasTypes);
                   }
               };
-              walker.statement(t1);
-
+              try{
+                  walker.statement(t1);
+              }catch(RuntimeException e){
+                  throw new OQLParseError("during analysis of query: "+query, e);
+              }
               /* print the tree 
               AST t = walker.getAST();
               if(t!=null){
@@ -78,7 +80,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
           }
         }
         catch(antlr.ANTLRException f){ 
-            f.printStackTrace();
+            throw new OQLParseError("during analysis of query: "+query, f);
         }
     }
 
@@ -88,7 +90,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
 
     public DataDefinition getProjectionType() {
         DataDefinition result = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
-
+        try{
         for(int i = 0; i < walker.getResult().size(); i++) {
             
             ExprTypeAST atom = (ExprTypeAST) walker.getResult().get(i);
@@ -104,6 +106,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
                 result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr "+atom.getObjectType()+"; "+atom.getDescription()));
             }
         }
+        }catch(RuntimeException e){throw new OQLParseError("during analysis of query: "+query, e);}
         return result;
     }
 
