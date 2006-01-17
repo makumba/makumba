@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -39,17 +38,21 @@ import org.hibernate.Session;
 import org.makumba.DataDefinition;
 import org.makumba.HibernateSFManager;
 import org.makumba.Pointer;
-import org.makumba.db.hibernate.HibernateOqlAnalyzer;
 import org.makumba.db.hibernate.HibernatePointer;
+import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.db.sql.SQLPointer;
+import org.makumba.util.ArrayMap;
 
 public class HibernateQueryRunner extends AbstractQueryRunner {
     Session session;
 
     public Vector execute(String query, Object[] args, int offset, int limit) {
-        session = HibernateSFManager.getSF().openSession();
-        
         query = query.replaceAll("\\$", "\\:p"); // replace makumba style params to hibernate style params
+
+        HqlAnalyzer analyzer = new HqlAnalyzer(query);
+
+        session = HibernateSFManager.getSF().openSession();
+
         Query q = session.createQuery(query);
 
         q.setFirstResult(offset);
@@ -59,47 +62,53 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         if (args != null) {
             // TODO: take out the && i < q.getNamedParameters().length [used for testing]
             for (int i = 0; i < args.length && i < q.getNamedParameters().length; i++) {
-                String param = "p" + (i+1);
+                String param = "p" + (i + 1);
                 if (args[i] instanceof Vector) {
                     q.setParameterList(param, (Collection) args[i]);
                 } else if (args[i] instanceof Date) {
                     q.setParameter(param, args[i], Hibernate.DATE);
                 } else if (args[i] instanceof Integer) {
-                    q.setParameter(param, args[i], Hibernate.INTEGER );
-                } else { // we have any param type (most likely String) 
+                    q.setParameter(param, args[i], Hibernate.INTEGER);
+                } else { // we have any param type (most likely String)
                     q.setParameter("p" + (+1), args[i]);
                 }
             }
         }
         List list = q.list();
         Vector results = new Vector(list.size());
-        HibernateOqlAnalyzer analyzer = HibernateOqlAnalyzer.getOqlAnalyzer(
-                query, HibernateSFManager.getSF());
+
         DataDefinition dataDef = analyzer.getProjectionType();
+        
         Object[] projections = dataDef.getFieldNames().toArray();
+        Dictionary keyIndex = new java.util.Hashtable(projections.length);
+        for (int i = 0; i < projections.length; i++) {
+            keyIndex.put(projections[i], new Integer(i));
+        }
+        
         int i = 1;
         for (Iterator iter = list.iterator(); iter.hasNext(); i++) {
             Object resultRow = iter.next();
-            Dictionary dic = new Hashtable();
-            Object[] elements;
+            Object[] resultFields;
             if (!(resultRow instanceof Object[])) { // our query result has only one field
-                elements = new Object[] {resultRow};
-            } else {
-                elements = (Object[]) resultRow;
+                resultFields = new Object[] { resultRow }; // we put it into an object[]
+            } else {  // our query had more results ==>
+                resultFields = (Object[]) resultRow; // we had an object[] already
             }
-            for (int j = 0; j < elements.length; j++) {
-                if (elements[j] != null) { // we add to the dictionary only fields with values in the DB
-                    if (analyzer.getProjectionLeftSides()[j].endsWith(".id")) { // we have a pointer
-                        String labelName = analyzer.getProjectionLeftSides()[j];
-                        labelName = labelName.substring(0, labelName.length() -3);
-                        DataDefinition dd = analyzer.getLabelType(labelName);
-                        Pointer pointer = new HibernatePointer(dd.getName(), ((Integer) elements[j]).intValue());
-                        dic.put(projections[j], pointer);                        
+            
+            // process each field's result
+            for (int j = 0; j < resultFields.length; j++) { // 
+                if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
+                    if (analyzer.getProjectionType().getFieldDefinition(j).getType().startsWith("ptr")) {                        
+                        // we have a pointer
+                        String ddName = analyzer.getProjectionType().getFieldDefinition(j).getPointedType().getName();
+                        Pointer pointer = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
+                        resultFields[j] = pointer;
                     } else {
-                        dic.put(projections[j], elements[j]);
+                        resultFields[j] = resultFields[j];
                     }
                 }
             }
+            Dictionary dic = new ArrayMap(keyIndex, resultFields);
             results.add(dic);
         }
         return results;
@@ -118,22 +127,24 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         Vector v = new Vector();
         v.add(new Integer(1));
         v.add(new Integer(2));
-        Object[] params1 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), v, new Integer(1), new SQLPointer("general.Person", 151022406)  };
-        Object[] params2 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), new Integer(1), new Integer(2)};
+        Object[] params1 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), v, new Integer(1),
+                new SQLPointer("general.Person", 151022406) };
+        Object[] params2 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), new Integer(1),
+                new Integer(2) };
         Object[] params3 = new Object[] { new Double(2.0) };
 
         String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = $1 AND p.birthdate is not null AND p.birthdate > :p2 and p.T_shirt in (:p3)";
         String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = $1 AND p.birthdate is not null AND p.birthdate > :p2 and p.T_shirt in (:p3, :p4)";
-        String query3 = "SELECT e.subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :p1";
+        String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :p1";
 
-        String[] queries = new String[] {query1, query2, query3};
-        Object[] params = new Object[] {params1, params2, params3};
-        for (int i=0; i<Math.min(queries.length, params.length); i++) {
-            System.out.println("Query" + queries[i] + " ==> \n" + printQueryResults(qr.execute(queries[i], (Object[]) params[i], 0, 100)) + "\n\n");
+        String[] queries = new String[] { query1, query2, query3 };
+        Object[] params = new Object[] { params1, params2, params3 };
+        for (int i = 0; i < Math.min(queries.length, params.length); i++) {
+            System.out.println("Query" + queries[i] + " ==> \n"
+                    + printQueryResults(qr.execute(queries[i], (Object[]) params[i], 0, 100)) + "\n\n");
         }
-        //printQueryResults(qr.execute(, params2, 0, -1));
     }
-    
+
     public static String printQueryResults(Vector v) {
         String result = "";
         for (int i = 0; i < v.size(); i++) {
