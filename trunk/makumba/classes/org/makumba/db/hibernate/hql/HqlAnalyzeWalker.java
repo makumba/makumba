@@ -53,17 +53,24 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
   //      System.out.println(alias.getText()+" "+aliasTypes.get(alias.getText()));
     }
 
-    AST deriveArithmethicExpr(AST ae) {
+    AST deriveArithmethicExpr(AST ae) throws SemanticException {
         String operator = ae.getText();
-        AST firstValue = ae.getFirstChild();
-        AST secondValue = firstValue.getNextSibling();
-//        System.out.println(firstValue);
-//       System.out.println(secondValue);
-
-        // TODO check if this is valid with ObjectTypeAST
-        // ObjectTypeAST typeAnalyzer = new ObjectTypeAST(firstValue, secondValue, Map aliasTypes);
-
-        return new ExprTypeAST(ExprTypeAST.INT);
+        ExprTypeAST firstValue = null;
+        ExprTypeAST secondValue = null;
+        try {
+            firstValue = (ExprTypeAST) ae.getFirstChild();
+            secondValue = (ExprTypeAST) firstValue.getNextSibling();
+        } catch (ClassCastException e) {
+            //this may occur if the expression is neither of type ExprTypeAST nor ObjectTypeAST (ie, it is a CommonAST)
+            throw new SemanticException("Cannot perform operation "+operator+" on elements "+ae.getFirstChild().getType()+" and "+ae.getFirstChild().getNextSibling().getType());
+        }
+        
+        // if the expr are not litterals
+        if(firstValue.getObjectType() != null || secondValue.getObjectType() != null) {
+            throw new SemanticException("Cannot perform operation "+operator+" on elements "+firstValue.getText()+" and "+secondValue.getText());
+        }
+        
+        return new ExprTypeAST(firstValue.getDataType()>secondValue.getDataType()?firstValue.getDataType():secondValue.getDataType());
     }
 
     protected void setAlias(AST se, AST i) {
