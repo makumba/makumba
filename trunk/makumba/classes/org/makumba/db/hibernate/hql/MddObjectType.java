@@ -65,9 +65,13 @@ public class MddObjectType implements ObjectType {
             return sub.getName();
 
         } else if (fi.getType().equals("set")) {
-            return sub.getName();
+            //System.out.println("In SET: Trying to get field type: " + field + " from type " + type + " ...");
+            //System.out.println(MakumbaSystem.getDataDefinition(foreign.getName()).getName());
+            
+            return MakumbaSystem.getDataDefinition(foreign.getName()).getName();
 
         } else
+            //System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
             return new Integer(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
 
     }
