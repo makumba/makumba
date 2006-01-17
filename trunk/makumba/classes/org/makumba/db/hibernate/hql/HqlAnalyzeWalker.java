@@ -39,7 +39,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
                     field= type.substring(dot+1);
                 else
                     field= type.substring(dot+1, dot1);
-                System.out.println(field);
+//                System.out.println(field);
                 Object tp= typeComputer.determineType(labelType, field);
                 if(!(tp instanceof String))
                     throw new SemanticException("composite type expected in FROM expression "+type+". "+field +" is a non-composite field of type "+labelType);
@@ -50,15 +50,15 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
             }
             aliasTypes.put(alias.getText(), labelType);            
         }
-        System.out.println(alias.getText()+" "+aliasTypes.get(alias.getText()));
+  //      System.out.println(alias.getText()+" "+aliasTypes.get(alias.getText()));
     }
 
     AST deriveArithmethicExpr(AST ae) {
         String operator = ae.getText();
         AST firstValue = ae.getFirstChild();
         AST secondValue = firstValue.getNextSibling();
-        System.out.println(firstValue);
-        System.out.println(secondValue);
+//        System.out.println(firstValue);
+//       System.out.println(secondValue);
 
         // TODO check if this is valid with ObjectTypeAST
         // ObjectTypeAST typeAnalyzer = new ObjectTypeAST(firstValue, secondValue, Map aliasTypes);
