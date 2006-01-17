@@ -127,8 +127,7 @@ public class ComposedQuery {
     private OQLAnalyzer getOQLAnalyzer(String type) {
         OQLAnalyzer oqa = null;
         if (useHibernate) {
-            // TODO: use a cache for this
-            oqa = new HqlAnalyzer(type);
+            oqa = MakumbaSystem.getHqlAnalyzer(type);
         } else {
             oqa = MakumbaSystem.getOQLAnalyzer(type);
         }
