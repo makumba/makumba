@@ -73,7 +73,7 @@ public class hqlanalyzer extends TestCase {
  
  public void testAnalysisQ2() {
      
-     String q2 = "SELECT p.id AS pointer, p.id AS key, p.name AS personName, p.surname, p.specialDiet AS specialShit FROM general.Person p";
+     String q2 = "SELECT p.id AS pointer, p.id AS key, p.birthdate AS birthdate, p.uniqInt, p.hobbies AS text FROM test.Person p";
      HqlAnalyzer oA = new HqlAnalyzer(q2);
      
      assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
@@ -84,22 +84,22 @@ public class hqlanalyzer extends TestCase {
      assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
      assertEquals("id", oA.getProjectionType().getFieldDefinition(1).getDescription());
      
-     assertEquals("personName", oA.getProjectionType().getFieldDefinition(2).getName());
-     assertEquals("char", oA.getProjectionType().getFieldDefinition(2).getType());
-     assertEquals("name", oA.getProjectionType().getFieldDefinition(2).getDescription());
+     assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getName());
+     assertEquals("date", oA.getProjectionType().getFieldDefinition(2).getType());
+     assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getDescription());
      
      assertEquals("col3", oA.getProjectionType().getFieldDefinition(3).getName());
-     assertEquals("char", oA.getProjectionType().getFieldDefinition(3).getType());
-     assertEquals("surname", oA.getProjectionType().getFieldDefinition(3).getDescription());
+     assertEquals("int", oA.getProjectionType().getFieldDefinition(3).getType());
+     assertEquals("uniqInt", oA.getProjectionType().getFieldDefinition(3).getDescription());
      
-     assertEquals("specialShit", oA.getProjectionType().getFieldDefinition(4).getName());
+     assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getName());
      assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getType());
-     assertEquals("specialDiet", oA.getProjectionType().getFieldDefinition(4).getDescription());
+     assertEquals("hobbies", oA.getProjectionType().getFieldDefinition(4).getDescription());
  }
     
     public void testAnalysisQ3() {
         
-        String q3 = "SELECT p.name, p.surname, c.name FROM general.Person p JOIN p.citizenship as c";
+        String q3 = "SELECT p.intSet as myIntSet, p.address as addr FROM test.Person p";
         HqlAnalyzer oA = new HqlAnalyzer(q3);
         String query = oA.getOQL();
         System.out.println("Query:\n" + query);
