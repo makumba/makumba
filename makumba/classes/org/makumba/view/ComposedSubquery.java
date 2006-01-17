@@ -22,86 +22,90 @@
 /////////////////////////////////////
 
 package org.makumba.view;
+
 import java.util.Enumeration;
 import java.util.Vector;
 
 /** a subquery of a composed query */
-public class ComposedSubquery extends ComposedQuery
-{
-  /** the enclosing query */
-  ComposedQuery superQuery;
+public class ComposedSubquery extends ComposedQuery {
+    /** the enclosing query */
+    ComposedQuery superQuery;
 
-  /** make a subquery of the indicated query, from the given sections 
- * @param usesHQL */
-  public ComposedSubquery(String[] subsections, ComposedQuery cq, boolean usesHQL) 
-  { 
-    super(subsections, usesHQL);
-    superQuery=cq; 
-    superQuery.addSubquery(this);
-    derivedSections= new String[5];
-    deriveFrom(FROM);
-    deriveFrom(VARFROM);
+    /**
+     * make a subquery of the indicated query, from the given sections
+     * 
+     * @param usesHQL
+     */
+    public ComposedSubquery(String[] subsections, ComposedQuery cq, boolean usesHQL) {
+        super(subsections, usesHQL);
+        superQuery = cq;
+        superQuery.addSubquery(this);
+        derivedSections = new String[5];
+        deriveFrom(FROM);
+        deriveFrom(VARFROM);
 
-    concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
-    //    concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
-    String gpb= sections[GROUPBY];
-    if(gpb!=null)
-      derivedSections[GROUPBY]=gpb;
+        concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
+        // concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
+        String gpb = sections[GROUPBY];
+        if (gpb != null)
+            derivedSections[GROUPBY] = gpb;
 
-    //    concat(derivedSections, superQuery.derivedSections, sections, "ORDERBY", ",");
-    String order=sections[ORDERBY];
-    if(order!=null)
-      derivedSections[ORDERBY]=order;
-  }
+        // concat(derivedSections, superQuery.derivedSections, sections, "ORDERBY", ",");
+        String order = sections[ORDERBY];
+        if (order != null)
+            derivedSections[ORDERBY] = order;
+    }
 
-  void deriveFrom(int n){
-    derivedSections[n]=superQuery.derivedSections[n];
-    if(sections[n]!=null)
-      if(derivedSections[n]!=null)
-	derivedSections[n]+=","+sections[n];
-      else
-	derivedSections[n]= sections[n];
-  }
+    void deriveFrom(int n) {
+        derivedSections[n] = superQuery.derivedSections[n];
+        if (sections[n] != null)
+            if (derivedSections[n] != null)
+                if(sections[n].trim().toLowerCase().startsWith("join"))
+                    // FIXME: this seems to be a dirty fix...maybe the separator should be join in all cases?
+                    derivedSections[n] += " " + sections[n];
+                else
+                    derivedSections[n] += "," + sections[n];
+            else
+                derivedSections[n] = sections[n];
+    }
 
-  /** concatenate sections on the given index, with the given separator */
-  static void concat(String[] result, String[] h1, String[] h2, int what, String sep, boolean paran)
-  {
-    String lp="";
-    String rp="";
-    if(paran)
-      { lp="("; rp=")"; }
-    String s1=h1[what];
-    String s2=h2[what];
-    if(s1!=null && s1.trim().length()==0)
-      s1=null;
+    /** concatenate sections on the given index, with the given separator */
+    static void concat(String[] result, String[] h1, String[] h2, int what, String sep, boolean paran) {
+        String lp = "";
+        String rp = "";
+        if (paran) {
+            lp = "(";
+            rp = ")";
+        }
+        String s1 = h1[what];
+        String s2 = h2[what];
+        if (s1 != null && s1.trim().length() == 0)
+            s1 = null;
 
-    if(s2!=null && s2.trim().length()==0)
-      s2=null;
+        if (s2 != null && s2.trim().length() == 0)
+            s2 = null;
 
-    if(s1==null && s2!=null)
-      {
-	result[what]= s2;
-	return; 
-      }
-    if(s2==null &&  s1!=null)
-      {
-	result[what]= s1;
-	return;
-      }
-    if(s2!=null &&  s1!=null)
-      result[what]=lp+s1+rp+sep+lp+s2+rp;
-  }
+        if (s1 == null && s2 != null) {
+            result[what] = s2;
+            return;
+        }
+        if (s2 == null && s1 != null) {
+            result[what] = s1;
+            return;
+        }
+        if (s2 != null && s1 != null)
+            result[what] = lp + s1 + rp + sep + lp + s2 + rp;
+    }
 
-  /** initialize the keysets by adding the superquery's previousKeyset to its keyset */
-  protected void initKeysets()
-  {
-    previousKeyset=(Vector)superQuery.previousKeyset.clone();
-    keyset=(Vector)superQuery.keyset.clone();
-    keysetLabels= (Vector)superQuery.keysetLabels.clone();
+    /** initialize the keysets by adding the superquery's previousKeyset to its keyset */
+    protected void initKeysets() {
+        previousKeyset = (Vector) superQuery.previousKeyset.clone();
+        keyset = (Vector) superQuery.keyset.clone();
+        keysetLabels = (Vector) superQuery.keysetLabels.clone();
 
-    for(Enumeration e= keysetLabels.elements(); e.hasMoreElements(); )
-      addProjection((String)e.nextElement());
-    previousKeyset.addElement(superQuery.keyset);
-  }
+        for (Enumeration e = keysetLabels.elements(); e.hasMoreElements();)
+            addProjection((String) e.nextElement());
+        previousKeyset.addElement(superQuery.keyset);
+    }
 
 }
