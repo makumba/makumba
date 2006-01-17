@@ -152,6 +152,17 @@ public class MakumbaSystem
     return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
   }
 
+  /** Make a field definition with the elementary type*/
+  public static FieldDefinition makeFieldOfType(String name, String type, String description)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
+  }
+
+  /** Make a field definition identical with the given one, except for the name*/
+  public static FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description)
+  {
+    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
+  }
   /** Get the DataDefinition of the records returned by the given OQL query 
    *@deprecated use {@link #getOQLAnalyzer} for better OQL functionality
    */

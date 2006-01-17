@@ -74,7 +74,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		return (FieldInfo) new RecordParser().parse(t).getFieldDefinition(name);
 	}
     
-	public static FieldInfo getFieldInfoWithDescription(String name, Object type, boolean typeSearch, String description) {
+	public static FieldInfo getFieldInfo(String name, Object type, boolean typeSearch, String description) {
         FieldInfo a = getFieldInfo(name, type, typeSearch);
         a.description = description;
 
