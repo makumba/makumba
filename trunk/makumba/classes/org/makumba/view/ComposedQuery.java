@@ -31,12 +31,11 @@ import java.util.Vector;
 import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.HibernateSFManager;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
-import org.makumba.db.hibernate.HibernateOqlAnalyzer;
+import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.util.ArgumentReplacer;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.NamedResourceFactory;
@@ -121,7 +120,7 @@ public class ComposedQuery
         OQLAnalyzer oqa= null;
         if (useHibernate) {
             //TODO: use a cache for this
-            oqa= HibernateOqlAnalyzer.getOqlAnalyzer(type, HibernateSFManager.getSF());                         
+            oqa= new HqlAnalyzer(type);                         
         } else {
            oqa= MakumbaSystem.getOQLAnalyzer(type);
         }
@@ -140,7 +139,7 @@ public class ComposedQuery
   public void init()
   {
     initKeysets();
-    fromAnalyzerOQL= "SELECT nil ";
+    fromAnalyzerOQL= "SELECT 1 ";
     if(derivedSections[FROM]!=null)
       fromAnalyzerOQL+="FROM "+derivedSections[FROM];
   }
