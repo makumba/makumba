@@ -60,11 +60,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
           if(t1!=null)
           {
               walker= new HqlAnalyzeWalker();
-              walker.objectTypeFactory= new ObjectTypeFactory(){
-                  public ObjectType make(AST lhs, AST rhs, Map aliasTypes) throws SemanticException{
-                      return new MddObjectTypeAST(lhs, rhs, aliasTypes);
-                  }
-              };
+              walker.typeComputer= new MddObjectType();
               try{
                   walker.statement(t1);
               }catch(RuntimeException e){
@@ -97,7 +93,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
             
             String name = atom.getIdentifier();
             if(name == null) {
-                name = "col"+i;
+                name = "col"+(i+1);
             }
             
             if(atom.getObjectType() == null) {
