@@ -12,7 +12,6 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.FieldInfo;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
@@ -43,23 +42,22 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
             e.printStackTrace();
         }
 
-        System.out.println("GOT TYPE: " + computedType);
+        //System.out.println("GOT TYPE: " + computedType);
 
         if (computedType instanceof Integer) {
             setDataType(((Integer) computedType).intValue());
+            
+        } else {
+            setObjectType(computedType.toString());
         }
-
-        setObjectType((String) computedType);
-
     }
 
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
-        System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
+        //System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
         
         this.setDescription(field);
 
         DataDefinition dd = null;
-        String computedType;
 
         if (field.equals("id")) {
             return type;
@@ -79,16 +77,9 @@ public class MddObjectTypeAST extends ExprTypeAST implements ObjectType {
         }
 
         FieldDefinition fi = dd.getFieldDefinition(field);
-        try {
-            computedType = fi.getType();
-        } catch (NullPointerException ne) {
-            try {
-                throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
-            } catch (SemanticException e) {
-                // TODO throw error in Syntax
-                e.printStackTrace();
-            }
-        }
+        if(fi == null)
+            throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
+
 
         DataDefinition foreign = null, sub = null;
 
