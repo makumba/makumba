@@ -48,17 +48,21 @@ tokens
 	
 			  ObjectType typeComputer;
 	
-  AST deriveArithmethicExpr(AST ae)throws antlr.RecognitionException { 
+  AST deriveArithmethicExpr(AST ae) throws antlr.RecognitionException { 
   			    return ae; 
 	  	 }
 	  	 
-		  AST deriveParamExpr(AST ae)throws antlr.RecognitionException{  return ae; 	  	 }
+	  	AST deriveLogicalExpr(AST le) throws antlr.RecognitionException{  return le; 	  	 }
+	  	 
+		  AST deriveParamExpr(AST pe) throws antlr.RecognitionException{  return pe; 	  	 }
 	
 	  java.util.Map aliasTypes= new java.util.HashMap();
 	  
+	  java.util.Stack stackAliases = new java.util.Stack();
+	  
 		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
  
-  void getReturnTypes(AST a) throws antlr.RecognitionException { }
+  void getReturnTypes(AST a, java.util.Stack stackAliases) throws antlr.RecognitionException { }
 		  		
 
 	private int level = 0;
@@ -119,12 +123,14 @@ tokens
 		return statementType == SELECT;
 	}
 
-	private void beforeStatement(String statementName, int statementType) {
+void beforeStatement(String statementName, int statementType) {
 		inFunctionCall = false;
 		level++;
+		
 		if ( level == 1 ) {
 			this.statementTypeName = statementName;
 			this.statementType = statementType;
+		
 		}
 		/* *** if ( log.isDebugEnabled() ) {
 			log.debug( statementName + " << begin [level=" + level + ", statement=" + this.statementTypeName + "]" );
@@ -137,7 +143,7 @@ tokens
 		}*/
 	}
 
-	private void afterStatementCompletion(String statementName) {
+	void afterStatementCompletion(String statementName) {
 		/* *** if ( log.isDebugEnabled() ) {
 			log.debug( statementName + " >> end [level=" + level + ", statement=" + statementTypeName + "]" );
 		}*/
@@ -249,7 +255,7 @@ groupClause
 selectClause!
 	: #(SELECT { handleClauseStart( SELECT ); /* ***beforeSelectClause();*/ } (d:DISTINCT)? x:selectExprList ) {
 		#selectClause = #([SELECT_CLAUSE,"{select clause}"], #d, #x);
-		getReturnTypes(		#selectClause);
+		getReturnTypes(		#selectClause, stackAliases);
 		//***analysis finished, here we should copy stuff somewhere (List (ordered), ...)
 	}
 	;
@@ -377,7 +383,7 @@ logicalExpr
 	: #(AND logicalExpr logicalExpr)
 	| #(OR logicalExpr logicalExpr)
 	| #(NOT logicalExpr)
-	| comparisonExpr
+	| co:comparisonExpr { #logicalExpr =  deriveLogicalExpr(#co); }
 	;
 
 // TODO: Add any other comparison operators here.
@@ -429,7 +435,7 @@ expr
 	| constant
 	| are:arithmeticExpr { #expr= deriveArithmethicExpr(#are); }
 	| functionCall							// Function call, not in the SELECT clause.
-	| parameter { #expr= deriveParamExpr(#are); }
+	| par:parameter { #expr= deriveParamExpr(#par); }
 	| count										// Count, not in the SELECT clause.
 	;
 

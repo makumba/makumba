@@ -1,6 +1,7 @@
 package org.makumba.db.hibernate.hql;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,11 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
         return new ParamTypeAST(ExprTypeAST.PARAMETER);
     }
+    
+    AST deriveLogicalExpr(AST le) {
+        //FIXME check if the IN operands are of the same type
+        return new ExprTypeAST(ExprTypeAST.INT);
+    }
 
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
         String operator = ae.getText();
@@ -92,13 +98,27 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     /** this method is called when the SELECT section (projections) is parsed */
-    void getReturnTypes(AST r) throws RecognitionException {
+    void getReturnTypes(AST r, java.util.Stack stackAliases) throws RecognitionException {
+        if(isSubQuery())
+            return;
         result = new ArrayList();
         for (AST a = r.getFirstChild(); a != null; a = a.getNextSibling()) {
             result.add(a);
         }
     }
-
+    
+    void beforeStatement(String statementName, int statementType) {
+        super.beforeStatement(statementName, statementType);
+        stackAliases.push(aliasTypes);
+        aliasTypes= new java.util.HashMap();
+    }
+    
+    void afterStatementCompletion(String statementName) {
+        super.afterStatementCompletion(statementName);
+        aliasTypes = (HashMap) stackAliases.pop();
+    }
+    
+    
     public Map getLabelTypes() {
         return aliasTypes;
     }
