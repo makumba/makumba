@@ -39,6 +39,7 @@ public class ExprTypeAST extends CommonAST {
     
     */
     
+    
     static public final int NULL=-1;
     static public final int INT=4;
     static public final int STRING=6;
@@ -48,6 +49,8 @@ public class ExprTypeAST extends CommonAST {
     
     static public final int LONG=4;
     static public final int FLOAT=3;
+    
+    static public final int PARAMETER=100;
     
     public ExprTypeAST(int type){
         dataType=type;

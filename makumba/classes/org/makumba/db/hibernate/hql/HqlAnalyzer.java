@@ -15,69 +15,62 @@ import antlr.collections.AST;
 import antlr.debug.misc.ASTFrame;
 
 public class HqlAnalyzer implements OQLAnalyzer {
-    
+
+    private DataDefinition result;
+
     private final static Map integerTypeMap = new HashMap();
     static {
-        integerTypeMap.put(new Integer(FieldDefinition._ptr),"ptr");
-        integerTypeMap.put(new Integer(FieldDefinition._ptrRel),"ptrRel");
-        integerTypeMap.put(new Integer(FieldDefinition._ptrOne),"ptrOne");
-        integerTypeMap.put(new Integer(FieldDefinition._ptrIndex),"ptrIndex");
-        integerTypeMap.put(new Integer(FieldDefinition._int),"int");
-        integerTypeMap.put(new Integer(FieldDefinition._intEnum),"intEnum");
-        integerTypeMap.put(new Integer(FieldDefinition._char),"char");
-        integerTypeMap.put(new Integer(FieldDefinition._charEnum),"charEnum");
-        integerTypeMap.put(new Integer(FieldDefinition._text),"text");
-        integerTypeMap.put(new Integer(FieldDefinition._date),"date");
-        integerTypeMap.put(new Integer(
-                FieldDefinition._dateCreate),"dateCreate");
-        integerTypeMap.put(new Integer(
-                FieldDefinition._dateModify),"dateModify");
-        integerTypeMap.put(new Integer(FieldDefinition._set),"set");
-        integerTypeMap.put(new Integer(
-                FieldDefinition._setComplex),"setComplex");
-        integerTypeMap.put(new Integer(FieldDefinition._nil),"nil");
-        integerTypeMap.put(new Integer(FieldDefinition._real),"real");
-        integerTypeMap.put(new Integer(
-                FieldDefinition._setCharEnum),"setcharEnum");
-        integerTypeMap.put(new Integer(
-                FieldDefinition._setIntEnum),"setintEnum");
+        integerTypeMap.put(new Integer(FieldDefinition._ptr), "ptr");
+        integerTypeMap.put(new Integer(FieldDefinition._ptrRel), "ptrRel");
+        integerTypeMap.put(new Integer(FieldDefinition._ptrOne), "ptrOne");
+        integerTypeMap.put(new Integer(FieldDefinition._ptrIndex), "ptrIndex");
+        integerTypeMap.put(new Integer(FieldDefinition._int), "int");
+        integerTypeMap.put(new Integer(FieldDefinition._intEnum), "intEnum");
+        integerTypeMap.put(new Integer(FieldDefinition._char), "char");
+        integerTypeMap.put(new Integer(FieldDefinition._charEnum), "charEnum");
+        integerTypeMap.put(new Integer(FieldDefinition._text), "text");
+        integerTypeMap.put(new Integer(FieldDefinition._date), "date");
+        integerTypeMap.put(new Integer(FieldDefinition._dateCreate), "dateCreate");
+        integerTypeMap.put(new Integer(FieldDefinition._dateModify), "dateModify");
+        integerTypeMap.put(new Integer(FieldDefinition._set), "set");
+        integerTypeMap.put(new Integer(FieldDefinition._setComplex), "setComplex");
+        integerTypeMap.put(new Integer(FieldDefinition._nil), "nil");
+        integerTypeMap.put(new Integer(FieldDefinition._real), "real");
+        integerTypeMap.put(new Integer(FieldDefinition._setCharEnum), "setcharEnum");
+        integerTypeMap.put(new Integer(FieldDefinition._setIntEnum), "setintEnum");
+        integerTypeMap.put(new Integer(ExprTypeAST.PARAMETER), "parameter");
     }
-    
-    
+
     private String query;
+
     private HqlAnalyzeWalker walker;
-    
+
     public HqlAnalyzer(String query) {
         this.query = query;
-        
-        HqlParser parser= HqlParser.getInstance(query);
-        
+
+        HqlParser parser = HqlParser.getInstance(query);
+
         // Parse the input expression
-        try{
-          parser.statement();
-          AST t1 = parser.getAST();
-                     
-          // Print the resulting tree out in LISP notation
-          if(t1!=null)
-          {
-              walker= new HqlAnalyzeWalker();
-              walker.typeComputer= new MddObjectType();
-              try{
-                  walker.statement(t1);
-              }catch(RuntimeException e){
-                  throw new OQLParseError("during analysis of query: "+query, e);
-              }
-              /* print the tree
-              AST t = walker.getAST();
-              if(t!=null){
-                  ASTFrame frame = new ASTFrame("analyzed", t);
-                  frame.setVisible(true);
-              }
-              */
-          }
-        }
-        catch(antlr.ANTLRException f){ 
-            throw new OQLParseError("during analysis of query: "+query, f);
+        try {
+            parser.statement();
+            AST t1 = parser.getAST();
+
+            // Print the resulting tree out in LISP notation
+            if (t1 != null) {
+                walker = new HqlAnalyzeWalker();
+                walker.typeComputer = new MddObjectType();
+                try {
+                    walker.statement(t1);
+                } catch (RuntimeException e) {
+                    throw new OQLParseError("during analysis of query: " + query, e);
+                }
+                /*
+                 * print the tree AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
+                 * frame.setVisible(true); }
+                 */
+            }
+        } catch (antlr.ANTLRException f) {
+            throw new OQLParseError("during analysis of query: " + query, f);
         }
     }
 
@@ -85,30 +78,36 @@ public class HqlAnalyzer implements OQLAnalyzer {
         return query;
     }
 
-    public DataDefinition getProjectionType() {
-        DataDefinition result = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
-        try{
-        for(int i = 0; i < walker.getResult().size(); i++) {
-            
-            ExprTypeAST atom = (ExprTypeAST) walker.getResult().get(i);
-            
-            String name = atom.getIdentifier();
-            if(name == null) {
-                name = "col"+(i+1);
+    public synchronized DataDefinition getProjectionType() {
+        if (result != null)
+            return result;
+        result = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
+        try {
+            for (int i = 0; i < walker.getResult().size(); i++) {
+
+                ExprTypeAST atom = (ExprTypeAST) walker.getResult().get(i);
+
+                String name = atom.getIdentifier();
+                if (name == null) {
+                    name = "col" + (i + 1);
+                }
+
+                if (atom.getObjectType() == null) {
+                    result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()), atom
+                            .getDescription()));
+                } else {
+                    result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr " + atom.getObjectType() + ";"
+                            + atom.getDescription()));
+                }
             }
-            
-            if(atom.getObjectType() == null) {
-                result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()),  atom.getDescription()));
-            } else {
-                result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr "+atom.getObjectType()+";"+atom.getDescription()));
-            }
+        } catch (RuntimeException e) {
+            throw new OQLParseError("during analysis of query: " + query, e);
         }
-        }catch(RuntimeException e){throw new OQLParseError("during analysis of query: "+query, e);}
         return result;
     }
 
     public DataDefinition getLabelType(String labelName) {
-        return MakumbaSystem.getDataDefinition((String)walker.getLabelTypes().get(labelName));
+        return MakumbaSystem.getDataDefinition((String) walker.getLabelTypes().get(labelName));
     }
 
     public DataDefinition getParameterTypes() {
@@ -123,48 +122,23 @@ public class HqlAnalyzer implements OQLAnalyzer {
     public int parameterAt(int index) {
         throw new UnsupportedOperationException("parameterAt");
     }
-    
-    
+
     String getTypeName(int i) {
         return (String) integerTypeMap.get(new Integer(i));
     }
-    
-    public static void main(String argv[]) {
 
-        HqlAnalyzer oA = new HqlAnalyzer(argv[0]);
-        String query = oA.getOQL();
-        System.out.println("Query:\n" + query);
+    public String toString() {
+        String result = "Query:\n" + this.getOQL() + "\n";
+        Vector w = this.getProjectionType().getFieldNames();
+        result += "Number of projections: " + w.size() + "\n";
 
-                System.out.println("getProjectionType():\n");
-        Vector w = oA.getProjectionType().getFieldNames();
-        System.out.println(w.size());
         for (int i = 0; i < w.size(); i++) {
-            System.out.println(i + " Field Name: " + w.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
-            System.out.println(i + " FieldDef Name: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getName()));
-            System.out.println(i + " FieldDef Type: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getType()));
-            System.out.println(i + " FieldDef Comment: "
-                    + (oA.getProjectionType().getFieldDefinition(i).getDescription()));
+            result += (i + " FieldDef Name: " + (this.getProjectionType().getFieldDefinition(i).getName()) + "\n");
+            result += (i + " FieldDef Type: " + (this.getProjectionType().getFieldDefinition(i).getType()) + "\n");
+            result += (i + " FieldDef Comment: " + (this.getProjectionType().getFieldDefinition(i).getDescription()) + "\n");
         }
-        
-        /*
-        System.out.println("getParameterTypes():\n");
-        Vector v = oA.getParameterTypes().getFieldNames();
-        System.out.println(v.size());
-        for (int i = 0; i < v.size(); i++) {
-            System.out.println(i + " Field Name: " + v.get(i)); // +oA.getProjectionType().getFieldDefinition(i).getDataType()
-            System.out.println(i + " FieldDef Name: "
-                    + (oA.getParameterTypes().getFieldDefinition(i).getName()));
-            System.out.println(i + " FieldDef Type: "
-                    + (oA.getParameterTypes().getFieldDefinition(i).getType()));
-        }
-        */
 
+        return result;
     }
-    
-    
 
 }
-
-    
