@@ -7,7 +7,7 @@
 	<description>Makumba @version@ http://www.makumba.org</description>
 	<tlib-version>2.0</tlib-version>
 	<short-name>mak</short-name>
-	<uri>http://www.makumba.org/hibernate</uri>
+	<uri>http://www.makumba.org/view-hql</uri>
 
 	<listener>
 	<listener-class>org.makumba.util.NamedResourcesContextListener</listener-class>
