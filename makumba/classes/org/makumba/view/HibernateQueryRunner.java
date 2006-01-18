@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -35,9 +36,14 @@ import java.util.Vector;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.makumba.Attributes;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
+import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
 import org.makumba.db.hibernate.HibernatePointer;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.db.sql.SQLPointer;
@@ -47,62 +53,82 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
     Session session;
 
     public Vector execute(String query, Object[] args, int offset, int limit) {
-        query = query.replaceAll("\\$", "\\:p"); // replace makumba style params to hibernate style params
+        return null;
+    }
 
-        HqlAnalyzer analyzer = new HqlAnalyzer(query);
+    public Vector executeDirect(String query, Attributes a, int offset, int limit) throws LogicException {
+        MakumbaSystem.getLogger("hibernate").info("Executing hibernate query " + query);
+
+        HqlAnalyzer analyzer = MakumbaSystem.getHqlAnalyzer(query);
+        DataDefinition dataDef = analyzer.getProjectionType();
+
+        // check the query for correctness (we do not allow "select p from Person p", only "p.id")
+        for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
+            FieldDefinition fd = dataDef.getFieldDefinition(i);
+            if (fd.getType().equals("ptr")) { // we have a pointer
+                if (!(fd.getDescription().equalsIgnoreCase("ID") || fd.getDescription().startsWith("hibernate_"))) {
+                    throw new ProgrammerError("Invalid HQL query - you must not select the whole object '" + fd.getDescription() + "' in the query'" + query + "'!");
+                }
+            }
+        }
 
         session = HibernateSFManager.getSF().openSession();
-
         Query q = session.createQuery(query);
 
         q.setFirstResult(offset);
         if (limit != -1) { // limit parameter was specified
             q.setMaxResults(limit);
         }
-        if (args != null) {
-            // TODO: take out the && i < q.getNamedParameters().length [used for testing]
-            for (int i = 0; i < args.length && i < q.getNamedParameters().length; i++) {
-                String param = "p" + (i + 1);
-                if (args[i] instanceof Vector) {
-                    q.setParameterList(param, (Collection) args[i]);
-                } else if (args[i] instanceof Date) {
-                    q.setParameter(param, args[i], Hibernate.DATE);
-                } else if (args[i] instanceof Integer) {
-                    q.setParameter(param, args[i], Hibernate.INTEGER);
+        if (a != null) {
+            String[] queryParams = q.getNamedParameters();
+            for (int i = 0; i < queryParams.length; i++) {
+                if (a.getAttribute(queryParams[i]) instanceof Vector) {
+                    q.setParameterList(queryParams[i], (Collection) a.getAttribute(queryParams[i]));
+                } else if (a.getAttribute(queryParams[i]) instanceof Date) {
+                    q.setParameter(queryParams[i], a.getAttribute(queryParams[i]), Hibernate.DATE);
+                } else if (a.getAttribute(queryParams[i]) instanceof Integer) {
+                    q.setParameter(queryParams[i], a.getAttribute(queryParams[i]), Hibernate.INTEGER);
                 } else { // we have any param type (most likely String)
-                    q.setParameter("p" + (+1), args[i]);
+                    q.setParameter(queryParams[i], a.getAttribute(queryParams[i]));
                 }
             }
         }
+
+        // TODO: find a way to not fetch the results all by one, but row by row, to reduce the memory used in both the
+        // list returned from the query and the Vector composed out of.
+        // see also bug
         List list = q.list();
         Vector results = new Vector(list.size());
 
-        DataDefinition dataDef = analyzer.getProjectionType();
-        
         Object[] projections = dataDef.getFieldNames().toArray();
         Dictionary keyIndex = new java.util.Hashtable(projections.length);
         for (int i = 0; i < projections.length; i++) {
             keyIndex.put(projections[i], new Integer(i));
         }
-        
+
         int i = 1;
         for (Iterator iter = list.iterator(); iter.hasNext(); i++) {
             Object resultRow = iter.next();
             Object[] resultFields;
             if (!(resultRow instanceof Object[])) { // our query result has only one field
                 resultFields = new Object[] { resultRow }; // we put it into an object[]
-            } else {  // our query had more results ==>
+            } else { // our query had more results ==>
                 resultFields = (Object[]) resultRow; // we had an object[] already
             }
-            
+
             // process each field's result
             for (int j = 0; j < resultFields.length; j++) { // 
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
-                    if (analyzer.getProjectionType().getFieldDefinition(j).getType().startsWith("ptr")) {                        
+                    FieldDefinition fd;
+                    if ((fd = dataDef.getFieldDefinition(j)).getType().equals("ptr")) {
                         // we have a pointer
-                        String ddName = analyzer.getProjectionType().getFieldDefinition(j).getPointedType().getName();
-                        Pointer pointer = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
-                        resultFields[j] = pointer;
+                        String ddName = fd.getPointedType().getName();
+                        // FIXME: once we do not get dummy pointers from hibernate queries, take this out
+                        if (resultFields[j] instanceof Pointer) { // we have a dummy pointer
+                            resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getUid());
+                        } else { // we have an integer
+                            resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
+                        }
                     } else {
                         resultFields[j] = resultFields[j];
                     }
@@ -115,33 +141,38 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
     }
 
     public void close() {
-        session.close();
+        if (session != null) {
+            session.close();
+        }
     }
 
     /**
      * Method for testing the query runner outside a JSP
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LogicException {
+        HibernateSFManager.getTestSF(); // we use a simple configuration
         HibernateQueryRunner qr = new HibernateQueryRunner();
-        GregorianCalendar cal = new GregorianCalendar(1984, 1, 1);
         Vector v = new Vector();
         v.add(new Integer(1));
         v.add(new Integer(2));
-        Object[] params1 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), v, new Integer(1),
-                new SQLPointer("general.Person", 151022406) };
-        Object[] params2 = new Object[] { "Cristian", new Timestamp(cal.getTimeInMillis()), new Integer(1),
-                new Integer(2) };
-        Object[] params3 = new Object[] { new Double(2.0) };
+        v.add(new Integer(3));
+        v.add(new Integer(4));
+        Attributes params = qr.new MyAttributes();
+        params.setAttribute("date", new Timestamp(new GregorianCalendar(1970, 1, 1).getTimeInMillis()));
+        params.setAttribute("name", "Cristian");
+        params.setAttribute("someInt", new Integer(1));
+        params.setAttribute("someSet", v);
+        params.setAttribute("generalPerson", new SQLPointer("general.Person", 151022406));
+        params.setAttribute("someDouble", new Double(2.0));
 
-        String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = $1 AND p.birthdate is not null AND p.birthdate > :p2 and p.T_shirt in (:p3)";
-        String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = $1 AND p.birthdate is not null AND p.birthdate > :p2 and p.T_shirt in (:p3, :p4)";
-        String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :p1";
+        String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
+        String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date and p.T_shirt in (:someSet) order by p.surname DESC";
+        String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :someDouble";
 
         String[] queries = new String[] { query1, query2, query3 };
-        Object[] params = new Object[] { params1, params2, params3 };
-        for (int i = 0; i < Math.min(queries.length, params.length); i++) {
-            System.out.println("Query" + queries[i] + " ==> \n"
-                    + printQueryResults(qr.execute(queries[i], (Object[]) params[i], 0, 100)) + "\n\n");
+        for (int i = 0; i < queries.length; i++) {
+            System.out.println("Query " + queries[i] + " ==> \n"
+                    + printQueryResults(qr.executeDirect(queries[i], params, 0, 50)) + "\n\n");
         }
     }
 
@@ -151,5 +182,21 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
             result += "Row " + i + ":" + v.elementAt(i) + "\n";
         }
         return result;
+    }
+
+    class MyAttributes implements Attributes {
+        Hashtable attr = new Hashtable();
+
+        public Object getAttribute(String name) throws LogicException {
+            return attr.get(name);
+        }
+
+        public Object setAttribute(String name, Object value) throws LogicException {
+            if (value != null) {
+                return attr.put(name, value);
+            } else {
+                throw new LogicException("No value for " + name);
+            }
+        }
     }
 }
