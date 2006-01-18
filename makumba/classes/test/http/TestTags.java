@@ -155,7 +155,6 @@ public class TestTags extends JspTestCase {
 		return setup;
 	}
 	
-//	TODO change Transaction to Transaction
 	private static Transaction getDB() {
 		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
@@ -705,4 +704,5 @@ public class TestTags extends JspTestCase {
 		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 	}
+
 }
