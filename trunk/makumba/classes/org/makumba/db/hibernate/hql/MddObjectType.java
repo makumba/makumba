@@ -24,9 +24,11 @@ public class MddObjectType implements ObjectType {
         if (field.equals("id")) {
             return type;
         } else if (field.startsWith("hibernate_")) {
-            String ptrToCheck = field.substring(field.indexOf("_"));
+            String ptrToCheck = field.substring(field.indexOf("_")+1);
             DataDefinition ddPtr = MakumbaSystem.getDataDefinition(type);
             FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
+            if(fiPtr==null)
+                throw new SemanticException("No such field \"" + field + "\" in type "+type);
             if (fiPtr.getType().equals("ptr")) {
                 return fiPtr.getForeignTable().getName();
             }
