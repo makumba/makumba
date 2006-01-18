@@ -340,8 +340,12 @@ public class ComposedQuery {
         for (int i = 1; i < 5; i++)
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
 
-        return new Grouper(previousKeyset, ((MultipleAttributeParametrizer) queries.getResource(new MultipleKey(vars)))
+        if (useHibernate) {
+            return new Grouper(previousKeyset, ((HibernateQueryRunner) db).executeDirect(computeQuery(vars, false), a, offset, limit).elements());
+        } else {
+            return new Grouper(previousKeyset, ((MultipleAttributeParametrizer) queries.getResource(new MultipleKey(vars)))
                 .execute(db, a, offset, limit).elements());
+        }
     }
 
     NamedResources queries = new NamedResources("Composed queries", new NamedResourceFactory() {
