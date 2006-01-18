@@ -265,6 +265,8 @@ public class ComposedQuery {
                 p = checkProjection(s);
             ret.append(p).append(rest);
         }
+        if(this.useHibernate)
+            return str;                
         return ret.toString();
     }
 
@@ -402,9 +404,20 @@ public class ComposedQuery {
         while (true) {
             int dot1 = s.indexOf(".", dot + 1);
             if (dot1 == -1) {
-                FieldDefinition fd = dd.getFieldDefinition(s.substring(dot + 1));
-                if (fd == null)
-                    throw new org.makumba.NoSuchFieldException(dd, s.substring(dot + 1));
+                String fn= s.substring(dot + 1);
+                FieldDefinition fd = dd.getFieldDefinition(fn);
+                if (fd == null){
+                    if(!this.useHibernate || !(fn.equals("id") || fn.startsWith("hibernate_")))
+                        throw new org.makumba.NoSuchFieldException(dd, fn);
+                    if(fn.equals("id"))
+                        fd=dd.getFieldDefinition(dd.getIndexPointerFieldName());
+                    else
+                    {
+                        fd= dd.getFieldDefinition(fn.substring("hibernate_".length()));
+                        if(fd==null)
+                            throw new org.makumba.NoSuchFieldException(dd, fn);
+                    }
+                }
                 if (fd.getType().equals("set"))
                     return fd;
                 return null;
