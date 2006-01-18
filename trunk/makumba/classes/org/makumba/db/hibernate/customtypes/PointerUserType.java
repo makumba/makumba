@@ -28,10 +28,9 @@ public class PointerUserType implements UserType {
 	public boolean isMutable() { return false; }
 	
 	public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
-	    Pointer p = (Pointer) owner;
-		SQLPointer pointer = new SQLPointer(p.getType(), resultSet.getInt(names[0]));
-		if (resultSet.wasNull()) return null;
-		return pointer;
+        SQLPointer pointer = new SQLPointer("dummyType", resultSet.getInt(names[0]));
+        if (resultSet.wasNull()) return null;
+        return pointer;
 	}
 	
 	public void nullSafeSet(PreparedStatement statement, Object value, int index)
