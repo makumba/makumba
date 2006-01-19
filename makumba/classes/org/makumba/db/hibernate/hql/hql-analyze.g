@@ -280,8 +280,8 @@ aliasedSelectExpr!
 
 selectExpr
 	: p:propertyRef					{ /* *** resolveSelectExpression(#p); */ }
-	| #(ALL ar2:aliasRef) 			{ /* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
-	| #(OBJECT ar3:aliasRef)		{ /* *** resolveSelectExpression(#ar3)*/; #selectExpr = #ar3; }
+	| #(ALL ar2:aliasRef) 			{/* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
+	| #(OBJECT ar3:aliasRef)		{/* *** resolveSelectExpression(#ar3);*/ #selectExpr = #ar3; }
 	| con:constructor 				{ /* *** processConstructor(#con)*/ ; }
 	| functionCall
 	| count { #selectExpr = new ExprTypeAST(ExprTypeAST.INT);}
@@ -525,6 +525,8 @@ propertyRef
 		}
 	|
 	p:identifier {
+		
+		#propertyRef = new ObjectTypeAST(#p, aliasTypes);
 		// In many cases, things other than property-refs are recognized
 		// by this propertyRef rule.  Some of those I have seen:
 		//  1) select-clause from-aliases

@@ -53,6 +53,8 @@ public class ExprTypeAST extends CommonAST {
     
     static public final int PARAMETER=100;
     
+    public ExprTypeAST() { }
+    
     public ExprTypeAST(int type){
         dataType=type;
     }

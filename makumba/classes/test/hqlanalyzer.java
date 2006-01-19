@@ -282,8 +282,19 @@ public class hqlanalyzer extends TestCase {
         
     }
     
+    public void testAnalysisSelectWholeObject() {
+
+        String q1 = "SELECT p as superPointer FROM test.Person p)";
+        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        
+        //System.out.println(oA.toString());
+        
+        assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+        assertEquals("p", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        
+    }
     
-   
     
 
 }
