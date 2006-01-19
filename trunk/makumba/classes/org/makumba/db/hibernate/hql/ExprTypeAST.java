@@ -43,6 +43,7 @@ public class ExprTypeAST extends CommonAST {
     static public final int NULL=-1;
     static public final int INT=4;
     static public final int STRING=6;
+    static public final int DATE = 9;
     static public final int LONGSTRING=8;
     static public final int DOUBLE=15;
     static public final int BOOLEAN=16;

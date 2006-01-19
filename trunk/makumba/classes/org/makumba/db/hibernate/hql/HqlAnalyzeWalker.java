@@ -65,6 +65,114 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         //FIXME check if the IN operands are of the same type
         return new ExprTypeAST(ExprTypeAST.INT);
     }
+    
+    AST deriveFunctionCallExpr(AST fc, AST e) {
+        
+        String functionCall = fc.getText().toUpperCase();
+        //String arguments = e.getFirstChild().getClass().getName();
+        //System.out.println("FC: "+functionCall+"args: "+arguments);
+        
+        /* determining the type returned by the method */
+        if(functionCall.equals("COS")
+                || functionCall.equals("COSH")
+                || functionCall.equals("EXP")
+                || functionCall.equals("LN")
+                || functionCall.equals("LOG")
+                || functionCall.equals("SIN")
+                || functionCall.equals("SINH")
+                || functionCall.equals("SQRT")
+                || functionCall.equals("TAN")
+                || functionCall.equals("TANH")
+                || functionCall.equals("ACOS")
+                || functionCall.equals("ASIN")
+                || functionCall.equals("ATAN")) {
+            return new ExprTypeAST(ExprTypeAST.DOUBLE);
+        }
+        if(functionCall.equals("CHR")
+                || functionCall.equals("CONCAT")
+                || functionCall.equals("INITCAP")
+                || functionCall.equals("LOWER")
+                || functionCall.equals("LPAD")
+                || functionCall.equals("LTRIM")
+                || functionCall.equals("NLS_INITCAP")
+                || functionCall.equals("NLS_LOWER")
+                || functionCall.equals("NLSSORT")
+                || functionCall.equals("NLS_UPPER")
+                || functionCall.equals("RPAD")
+                || functionCall.equals("RTRIM")
+                || functionCall.equals("SOUNDEX")
+                || functionCall.equals("SUBSTR")
+                || functionCall.equals("TRANSLATE")
+                || functionCall.equals("TREAT")
+                || functionCall.equals("TRIM")
+                || functionCall.equals("UPPER")) {
+            return new ExprTypeAST(ExprTypeAST.STRING);
+        }
+        if(functionCall.equals("ASCII")
+                || functionCall.equals("INSTR")
+                || functionCall.equals("LENGTH")) {
+            return new ExprTypeAST(ExprTypeAST.INT);
+        }
+        
+        if(functionCall.equals("ADD_MONTHS")
+                || functionCall.equals("ADD_MONTHS")
+                || functionCall.equals("CURRENT_DATE")
+                || functionCall.equals("CURRENT_TIMESTAMP")
+                || functionCall.equals("DBTIMEZONE")
+                || functionCall.equals("EXTRACT")
+                || functionCall.equals("FROM_TZ")
+                || functionCall.equals("LAST_DAY")
+                || functionCall.equals("LOCALTIMESTAMP")
+                || functionCall.equals("MONTHS_BETWEEN")
+                || functionCall.equals("NEW_TIME")
+                || functionCall.equals("NEXT_DAY")
+                || functionCall.equals("NUMTODSINTERVAL")
+                || functionCall.equals("NUMTOYMINTERVAL")
+                || functionCall.equals("ROUND")
+                || functionCall.equals("SESSIONTIMEZONE")
+                || functionCall.equals("SYS_EXTRACT_UTC")
+                || functionCall.equals("SYSDATE")
+                || functionCall.equals("SYSTIMESTAMP")
+                || functionCall.equals("TO_DSINTERVAL")
+                || functionCall.equals("TO_TIMESTAMP")
+                || functionCall.equals("TO_TIMESTAMP_TZ")
+                || functionCall.equals("TO_YMINTERVAL")
+                || functionCall.equals("TRUNC")
+                || functionCall.equals("TZ_OFFSET")
+                || functionCall.equals("DAYOFWEEK")
+                || functionCall.equals("WEEKDAY")
+                || functionCall.equals("DAYOFMONTH")
+                || functionCall.equals("DAYOFYEAR")
+                || functionCall.equals("MONTH")
+                || functionCall.equals("DAYNAME")
+                || functionCall.equals("MONTHNAME")
+                || functionCall.equals("QUARTER")
+                || functionCall.equals("WEEK")
+                || functionCall.equals("YEARWEEK")
+                || functionCall.equals("HOUR")
+                || functionCall.equals("MINUTE")
+                || functionCall.equals("SECOND")
+                || functionCall.equals("PERIOD_ADD")
+                || functionCall.equals("PERIOD_DIFF")
+                || functionCall.equals("DATE_ADD")
+                || functionCall.equals("DATE_SUB")
+                || functionCall.equals("ADDDATE")
+                || functionCall.equals("SUBDATE")
+                || functionCall.equals("TO_DAYS")
+                || functionCall.equals("FROM_DAYS")
+                || functionCall.equals("DATE_FORMAT")
+                || functionCall.equals("TIME_FORMAT")
+                || functionCall.equals("CURDATE")
+                || functionCall.equals("NOW")
+                || functionCall.equals("UNIX_TIMESTAMP")
+                || functionCall.equals("SEC_TO_TIME")
+                || functionCall.equals("TIME_TO_SEC")) {
+            return new ExprTypeAST(ExprTypeAST.DATE);
+        }
+                
+        return fc;
+        
+    }
 
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
         String operator = ae.getText();

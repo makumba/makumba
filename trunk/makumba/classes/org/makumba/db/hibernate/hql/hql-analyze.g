@@ -55,6 +55,8 @@ tokens
 	  	AST deriveLogicalExpr(AST le) throws antlr.RecognitionException{  return le; 	  	 }
 	  	 
 		  AST deriveParamExpr(AST pe) throws antlr.RecognitionException{  return pe; 	  	 }
+		  
+		  AST deriveFunctionCallExpr(AST fc, AST e) throws antlr.RecognitionException{  return fc; 	  	 }
 	
 	  java.util.Map aliasTypes= new java.util.HashMap();
 	  
@@ -281,8 +283,8 @@ selectExpr
 	| #(ALL ar2:aliasRef) 			{ /* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
 	| #(OBJECT ar3:aliasRef)		{ /* *** resolveSelectExpression(#ar3)*/; #selectExpr = #ar3; }
 	| con:constructor 				{ /* *** processConstructor(#con)*/ ; }
-	| functionCall {System.out.println("functionCall");}//***look at the hibernate source
-	| count //*** this is an integer
+	| functionCall
+	| count { #selectExpr = new ExprTypeAST(ExprTypeAST.INT);}
 	| collectionFunction			// elements() or indices()
 	| literal //***already done
 	| are:arithmeticExpr { #selectExpr= deriveArithmethicExpr(#are); }
@@ -436,7 +438,7 @@ expr
 	| are:arithmeticExpr { #expr= deriveArithmethicExpr(#are); }
 	| functionCall							// Function call, not in the SELECT clause.
 	| par:parameter { #expr= deriveParamExpr(#par); }
-	| count										// Count, not in the SELECT clause.
+	| count										 { #expr = new ExprTypeAST(ExprTypeAST.INT);} // Count, not in the SELECT clause.
 	;
 
 arithmeticExpr
@@ -464,8 +466,8 @@ collectionFunction
 	;
 
 functionCall
-	: #(METHOD_CALL  {inFunctionCall=true;} pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
-		{ /* ***processFunction(#functionCall,inSelect);*/ } {inFunctionCall=false;}
+	: #(METHOD_CALL  {inFunctionCall=true;} p:pathAsIdent ( #(e:EXPR_LIST (expr)* ) )? )
+		{ #functionCall = deriveFunctionCallExpr(#p, #e); } {inFunctionCall=false;}
 	| #(AGGREGATE aggregateExpr )
 	;
 
