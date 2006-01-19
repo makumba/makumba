@@ -25,9 +25,9 @@ import org.xml.sax.SAXException;
  */
 public class HibernateSFManager {
 
-    private static final String PREFIX = "makumbaGeneratedMappings";
+    //private static final String PREFIX = "makumbaGeneratedMappings";
 
-    private static final String SEED = "dataDefinitions";
+    //private static final String SEED = "dataDefinitions";
 
     private static SessionFactory sessionFactory;
 
@@ -42,7 +42,7 @@ public class HibernateSFManager {
         return rootFolder;
     }
 
-    public static SessionFactory getSF(Vector dds, String locatorSeed, String cfgFilePath, String prefix) {
+    public static SessionFactory getSF(Vector dds, String locatorSeed, String cfgFilePath) {
         if (sessionFactory == null) {
             Configuration cfg = new Configuration().configure(cfgFilePath);
 
@@ -60,13 +60,14 @@ public class HibernateSFManager {
 
             try {
                 MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager
-                        .findClassesRootFolder(locatorSeed), prefix);
+                        .findClassesRootFolder(cfg.getProperty("makumba.seed")), cfg.getProperty("makumba.prefix"));
+      
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
                 e.printStackTrace();
             }
-
+            System.out.println(cfg.getProperty("makumba.seed"));
             sessionFactory = cfg.buildSessionFactory();
             SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
             schemaUpdate.execute(true, true);
@@ -76,9 +77,16 @@ public class HibernateSFManager {
 
     public static SessionFactory getSF() {
         if (sessionFactory == null) {
-            Vector dds = org.makumba.MakumbaSystem.mddsInDirectory(SEED);
-            String configFile = MakumbaSystem.getDefaultDatabaseName() + ".cfg.xml";
-            return getSF(dds, SEED, configFile, PREFIX);
+            String configFile;
+            if(MakumbaSystem.getDefaultDatabaseName() == null) {
+                configFile = "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml";
+            } else {
+                configFile = MakumbaSystem.getDefaultDatabaseName() + ".cfg.xml";
+            }
+            
+            Vector dds = org.makumba.MakumbaSystem.mddsInDirectory(getConfiguration(configFile).getProperty("makumba.seed"));
+            
+            return getSF(dds, configFile, "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
         }
         return sessionFactory;
     }
@@ -89,13 +97,18 @@ public class HibernateSFManager {
     public static SessionFactory getTestSF() {
         if (sessionFactory == null) {
             Vector dds = new Vector();
-            dds.add("general.Person");
-            dds.add("general.Country");
-            dds.add("general.archive.Email");
-            return getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml",
-                    PREFIX);
+            dds.add("test.Person");
+            //dds.add("test.Country");
+            //dds.add("test.archive.Email");
+            return getSF(dds, "test", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
         }
         return sessionFactory;
     }
+    
+    public static Configuration getConfiguration(String cfgFilePath) {
+        Configuration cfg = new Configuration().configure(cfgFilePath);
+        return cfg;
+    }
+    
 
 }

@@ -5,11 +5,14 @@
 
 <hibernate-configuration>
 	<session-factory>
-		<property name="hibernate.connection.url">jdbc:mysql://localhost/karambasmall</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/small</property>
 		<property name="hibernate.connection.driver_class">org.gjt.mm.mysql.Driver</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password" />
 		<property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
 		<property name="hibernate.show_sql">true</property>
+		<property name="makumba.seed">dataDefinitions</property>
+		<property name="makumba.prefix">makumbaGeneratedMappings</property>
+		
 	</session-factory>
 </hibernate-configuration>
