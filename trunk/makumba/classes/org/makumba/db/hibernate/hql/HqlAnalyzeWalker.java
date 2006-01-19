@@ -67,110 +67,47 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
     
     AST deriveFunctionCallExpr(AST fc, AST e) {
-        
+        //FIXME put the initialization stuff in another class
+        Map methodTypes = new HashMap();
         String functionCall = fc.getText().toUpperCase();
         //String arguments = e.getFirstChild().getClass().getName();
         //System.out.println("FC: "+functionCall+"args: "+arguments);
         
         /* determining the type returned by the method */
-        if(functionCall.equals("COS")
-                || functionCall.equals("COSH")
-                || functionCall.equals("EXP")
-                || functionCall.equals("LN")
-                || functionCall.equals("LOG")
-                || functionCall.equals("SIN")
-                || functionCall.equals("SINH")
-                || functionCall.equals("SQRT")
-                || functionCall.equals("TAN")
-                || functionCall.equals("TANH")
-                || functionCall.equals("ACOS")
-                || functionCall.equals("ASIN")
-                || functionCall.equals("ATAN")) {
-            return new ExprTypeAST(ExprTypeAST.DOUBLE);
-        }
-        if(functionCall.equals("CHR")
-                || functionCall.equals("CONCAT")
-                || functionCall.equals("INITCAP")
-                || functionCall.equals("LOWER")
-                || functionCall.equals("LPAD")
-                || functionCall.equals("LTRIM")
-                || functionCall.equals("NLS_INITCAP")
-                || functionCall.equals("NLS_LOWER")
-                || functionCall.equals("NLSSORT")
-                || functionCall.equals("NLS_UPPER")
-                || functionCall.equals("RPAD")
-                || functionCall.equals("RTRIM")
-                || functionCall.equals("SOUNDEX")
-                || functionCall.equals("SUBSTR")
-                || functionCall.equals("TRANSLATE")
-                || functionCall.equals("TREAT")
-                || functionCall.equals("TRIM")
-                || functionCall.equals("UPPER")) {
-            return new ExprTypeAST(ExprTypeAST.STRING);
-        }
-        if(functionCall.equals("ASCII")
-                || functionCall.equals("INSTR")
-                || functionCall.equals("LENGTH")) {
-            return new ExprTypeAST(ExprTypeAST.INT);
+        String[] methodReal = {"COS","COSH","EXP","LN","LOG","SIN","SINH","SQRT","TAN","TANH","ACOS","ASIN","ATAN"};
+
+        for(int i=0; i<methodReal.length;i++) {
+            methodTypes.put(methodReal[i],new Integer(ExprTypeAST.DOUBLE));
         }
         
-        if(functionCall.equals("ADD_MONTHS")
-                || functionCall.equals("ADD_MONTHS")
-                || functionCall.equals("CURRENT_DATE")
-                || functionCall.equals("CURRENT_TIMESTAMP")
-                || functionCall.equals("DBTIMEZONE")
-                || functionCall.equals("EXTRACT")
-                || functionCall.equals("FROM_TZ")
-                || functionCall.equals("LAST_DAY")
-                || functionCall.equals("LOCALTIMESTAMP")
-                || functionCall.equals("MONTHS_BETWEEN")
-                || functionCall.equals("NEW_TIME")
-                || functionCall.equals("NEXT_DAY")
-                || functionCall.equals("NUMTODSINTERVAL")
-                || functionCall.equals("NUMTOYMINTERVAL")
-                || functionCall.equals("ROUND")
-                || functionCall.equals("SESSIONTIMEZONE")
-                || functionCall.equals("SYS_EXTRACT_UTC")
-                || functionCall.equals("SYSDATE")
-                || functionCall.equals("SYSTIMESTAMP")
-                || functionCall.equals("TO_DSINTERVAL")
-                || functionCall.equals("TO_TIMESTAMP")
-                || functionCall.equals("TO_TIMESTAMP_TZ")
-                || functionCall.equals("TO_YMINTERVAL")
-                || functionCall.equals("TRUNC")
-                || functionCall.equals("TZ_OFFSET")
-                || functionCall.equals("DAYOFWEEK")
-                || functionCall.equals("WEEKDAY")
-                || functionCall.equals("DAYOFMONTH")
-                || functionCall.equals("DAYOFYEAR")
-                || functionCall.equals("MONTH")
-                || functionCall.equals("DAYNAME")
-                || functionCall.equals("MONTHNAME")
-                || functionCall.equals("QUARTER")
-                || functionCall.equals("WEEK")
-                || functionCall.equals("YEARWEEK")
-                || functionCall.equals("HOUR")
-                || functionCall.equals("MINUTE")
-                || functionCall.equals("SECOND")
-                || functionCall.equals("PERIOD_ADD")
-                || functionCall.equals("PERIOD_DIFF")
-                || functionCall.equals("DATE_ADD")
-                || functionCall.equals("DATE_SUB")
-                || functionCall.equals("ADDDATE")
-                || functionCall.equals("SUBDATE")
-                || functionCall.equals("TO_DAYS")
-                || functionCall.equals("FROM_DAYS")
-                || functionCall.equals("DATE_FORMAT")
-                || functionCall.equals("TIME_FORMAT")
-                || functionCall.equals("CURDATE")
-                || functionCall.equals("NOW")
-                || functionCall.equals("UNIX_TIMESTAMP")
-                || functionCall.equals("SEC_TO_TIME")
-                || functionCall.equals("TIME_TO_SEC")) {
-            return new ExprTypeAST(ExprTypeAST.DATE);
+        //return new ExprTypeAST(ExprTypeAST.DOUBLE);
+        
+        String[] methodChar = {"CHR","CONCAT","INITCAP","LOWER","LPAD","LTRIM","NLS_INITCAP","NLS_LOWER","NLSSORT","NLS_UPPER",
+                "RPAD","RTRIM","SOUNDEX","SUBSTR","TRANSLATE","TREAT","TRIM","UPPER"};
+        
+        for(int i=0; i<methodChar.length;i++) {
+            methodTypes.put(methodChar[i],new Integer(ExprTypeAST.STRING));
         }
-                
-        return fc;
+        
+        String[] methodInt = {"ASCII","INSTR","LENGTH"};
+        
+        for(int i=0; i<methodInt.length;i++) {
+            methodTypes.put(methodInt[i],new Integer(ExprTypeAST.INT));
+        }
+        
+        String[] methodDate = {"ADD_MONTHS","CURRENT_DATE","CURRENT_TIMESTAMP","DBTIMEZONE","EXTRACT","FROM_TZ",
+                "LAST_DAY","LOCALTIMESTAMP","MONTHS_BETWEEN","NEW_TIME","NEXT_DAY","NUMTODSINTERVAL","NUMTOYMINTERVAL",
+                "ROUND","SESSIONTIMEZONE","SYS_EXTRACT_UTC","SYSDATE","SYSTIMESTAMP","TO_DSINTERVAL","TO_TIMESTAMP",
+                "TO_TIMESTAMP_TZ","TO_YMINTERVAL","TRUNC","TZ_OFFSET","DAYOFWEEK","WEEKDAY","DAYOFMONTH","DAYOFYEAR",
+                "MONTH","DAYNAME","MONTHNAME","QUARTER","WEEK","YEARWEEK","HOUR","MINUTE","SECOND","PERIOD_ADD","PERIOD_DIFF",
+                "DATE_ADD","DATE_SUB","ADDDATE","SUBDATE","TO_DAYS","FROM_DAYS","DATE_FORMAT","TIME_FORMAT","CURDATE",
+                "NOW","UNIX_TIMESTAMP","SEC_TO_TIME","TIME_TO_SEC"};
+        
+        for(int i=0; i<methodDate.length;i++) {
+            methodTypes.put(methodDate[i],new Integer(ExprTypeAST.DATE));
+        }
+
+        return new ExprTypeAST(((Integer)methodTypes.get(functionCall)).intValue());
         
     }
 

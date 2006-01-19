@@ -55,6 +55,11 @@ public class HqlAnalyzer implements OQLAnalyzer {
             parser.statement();
             AST t1 = parser.getAST();
             
+            /*
+            if(t1!=null){ ASTFrame frame = new ASTFrame("normal", t1);
+            frame.setVisible(true); }
+            */
+            
             //here I can display the tree and look at the tokens, then find them in the grammar and implement the function type detection
 
             // Print the resulting tree out in LISP notation
@@ -66,10 +71,13 @@ public class HqlAnalyzer implements OQLAnalyzer {
                 } catch (RuntimeException e) {
                     throw new OQLParseError("during analysis of query: " + query, e);
                 }
+                
+                  //print the tree
                 /*
-                 * print the tree AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
-                 * frame.setVisible(true); }
-                 */
+                AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
+                frame.setVisible(true); }
+                */
+                 
             }
         } catch (antlr.ANTLRException f) {
             throw new OQLParseError("during analysis of query: " + query, f);
@@ -88,12 +96,12 @@ public class HqlAnalyzer implements OQLAnalyzer {
             for (int i = 0; i < walker.getResult().size(); i++) {
 
                 ExprTypeAST atom = (ExprTypeAST) walker.getResult().get(i);
+                
 
                 String name = atom.getIdentifier();
                 if (name == null) {
                     name = "col" + (i + 1);
                 }
-
                 if (atom.getObjectType() == null) {
                     result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()), atom
                             .getDescription()));
@@ -141,6 +149,13 @@ public class HqlAnalyzer implements OQLAnalyzer {
         }
 
         return result;
+    }
+    
+    public static void main(String[] args) {
+        String q1 = "SELECT p as bullshit FROM test.Person p)";
+        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        
+        System.out.println(oA.toString());
     }
 
 }

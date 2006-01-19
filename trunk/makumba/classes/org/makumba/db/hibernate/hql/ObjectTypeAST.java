@@ -47,6 +47,12 @@ public class ObjectTypeAST extends ExprTypeAST {
             setObjectType(computedType.toString());
         }
     }
+    
+    public ObjectTypeAST(AST pointer, Map aliasTypes) throws SemanticException {
+        String type = (String) aliasTypes.get(pointer.getText());
+        setObjectType(type);
+        setDescription(pointer.getText());
+    }
 
     public String getObjectType() {
         return objectType;
