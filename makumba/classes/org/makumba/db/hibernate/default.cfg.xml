@@ -5,7 +5,7 @@
 
 <hibernate-configuration>
 	<session-factory>
-		<property name="hibernate.connection.url">jdbc:mysql://localhost/small</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/ksmall</property>
 		<property name="hibernate.connection.driver_class">org.gjt.mm.mysql.Driver</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password" />

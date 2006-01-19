@@ -3,7 +3,6 @@ package org.makumba;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
-
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 
@@ -79,14 +78,14 @@ public class HibernateSFManager {
         if (sessionFactory == null) {
             String configFile;
             if(MakumbaSystem.getDefaultDatabaseName() == null) {
-                configFile = "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml";
+                configFile = "org/makumba/db/hibernate/default.cfg.xml";
             } else {
                 configFile = MakumbaSystem.getDefaultDatabaseName() + ".cfg.xml";
             }
             
             Vector dds = org.makumba.MakumbaSystem.mddsInDirectory(getConfiguration(configFile).getProperty("makumba.seed"));
             
-            return getSF(dds, configFile, "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
+            return getSF(dds, configFile, "org/makumba/db/hibernate/default.cfg.xml");
         }
         return sessionFactory;
     }
