@@ -26,8 +26,8 @@ public class HibernateTest  {
         dds.addElement("general.Person");
         
         //Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
-        SessionFactory sf = HibernateSFManager.getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml", "makumbaGeneratedMappings");
-		
+        //SessionFactory sf = HibernateSFManager.getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
+		SessionFactory sf = HibernateSFManager.getSF();
 		Session session = sf.openSession();
 		Transaction tx = session.beginTransaction();
 		
