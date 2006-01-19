@@ -54,6 +54,8 @@ public class HqlAnalyzer implements OQLAnalyzer {
         try {
             parser.statement();
             AST t1 = parser.getAST();
+            
+            //here I can display the tree and look at the tokens, then find them in the grammar and implement the function type detection
 
             // Print the resulting tree out in LISP notation
             if (t1 != null) {
