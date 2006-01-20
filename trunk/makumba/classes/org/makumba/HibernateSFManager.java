@@ -26,7 +26,7 @@ public class HibernateSFManager {
 
     private static final String PREFIX = "makumbaGeneratedMappings";
 
-    private static final String SEED = "dataDefinitions";
+    private static final String SEED = "SEED.txt";
 
     private static SessionFactory sessionFactory;
 
@@ -82,7 +82,7 @@ public class HibernateSFManager {
         if (sessionFactory == null) {
             String seed, configFile;
             if(MakumbaSystem.getDefaultDatabaseName() == null) {
-                configFile = "org/makumba/db/hibernate/default.cfg.xml";
+                configFile = "default.cfg.xml";
             } else {
                 configFile = MakumbaSystem.getDefaultDatabaseName() + ".cfg.xml";
             }
@@ -105,7 +105,7 @@ public class HibernateSFManager {
             dds.add("test.Person");
             //dds.add("test.Country");
             //dds.add("test.archive.Email");
-            return getSF(dds, "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
+            return getSF(dds, "default.cfg.xml");
         }
         return sessionFactory;
     }
