@@ -4,6 +4,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.ProgrammerError;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
@@ -28,7 +29,8 @@ public class MddObjectType implements ObjectType {
             DataDefinition ddPtr = MakumbaSystem.getDataDefinition(type);
             FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
             if(fiPtr==null)
-                throw new SemanticException("No such field \"" + field + "\" in type "+type);
+                //throw new SemanticException("No such field \"" + field + "\" in type "+type);
+                throw new ProgrammerError("No such field \"" + field + "\" in type "+type);
             if (fiPtr.getType().equals("ptr")) {
                 return fiPtr.getForeignTable().getName();
             }
@@ -37,12 +39,14 @@ public class MddObjectType implements ObjectType {
         try {
             dd = MakumbaSystem.getDataDefinition(type);
         } catch (DataDefinitionNotFoundError e) {
-            throw new SemanticException("No such MDD \"" + type + "\"");
+            //throw new SemanticException("No such MDD \"" + type + "\"");
+            throw new ProgrammerError("No such MDD \"" + type + "\"");
         }
 
         FieldDefinition fi = dd.getFieldDefinition(field);
         if(fi == null)
-            throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
+            //throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
+            throw new ProgrammerError("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
 
 
         DataDefinition foreign = null, sub = null;
