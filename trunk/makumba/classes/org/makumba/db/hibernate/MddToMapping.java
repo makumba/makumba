@@ -20,6 +20,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -68,10 +69,12 @@ public class MddToMapping extends HibernateUtils {
     SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 
     /**
-     * Creates an xml file for the given DataDefinition
+     * Creates an xml file for the given DataDefinition and adds it to the configuration resource
      * 
      * @param dd
      *            DataDefinition that needs to be mapped
+     * @param cfg
+     *            Configuration in which it will be used
      */
     public void generateMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException,
             SAXException {
@@ -83,13 +86,16 @@ public class MddToMapping extends HibernateUtils {
         columnNames = new HashMap();
         String filename = arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
         
+        /*
         //checks if the MDD has to be generated
-        File checkFile = new File(filename);
+        File checkFile = new File(generatedMappingPath + File.separator + filename);
         File mddFile = new File(((RecordInfo) dd).getOrigin().getFile());
+        
         if(checkFile.exists()) {
-            if(mddFile.lastModified() < checkFile.lastModified())
-                return;
+            cfg.addResource(prefix + File.separator + filename);
+            return;
         }
+        */
             
         
         Writer w = null;
@@ -271,7 +277,6 @@ public class MddToMapping extends HibernateUtils {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        // TODO: add to configuration whether it was generated or not.
         cfg.addResource(prefix + File.separator + filename);
     }
 
