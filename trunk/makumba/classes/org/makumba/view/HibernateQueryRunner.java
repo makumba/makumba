@@ -33,9 +33,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.hibernate.CacheMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -52,6 +54,8 @@ import org.makumba.util.ArrayMap;
 public class HibernateQueryRunner extends AbstractQueryRunner {
     Session session;
 
+    Transaction transaction;
+
     public Vector execute(String query, Object[] args, int offset, int limit) {
         return null;
     }
@@ -67,13 +71,20 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
             FieldDefinition fd = dataDef.getFieldDefinition(i);
             if (fd.getType().equals("ptr")) { // we have a pointer
                 if (!(fd.getDescription().equalsIgnoreCase("ID") || fd.getDescription().startsWith("hibernate_"))) {
-                    throw new ProgrammerError("Invalid HQL query - you must not select the whole object '" + fd.getDescription() + "' in the query'" + query + "'!");
+                    throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
+                            + fd.getDescription() + "' in the query'" + query + "'!\nYou have to select '"
+                            + fd.getDescription() + ".id' instead.");
                 }
             }
         }
 
+        // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
         session = HibernateSFManager.getSF().openSession();
+        session.setCacheMode(CacheMode.IGNORE);
+        transaction = session.beginTransaction();
         Query q = session.createQuery(query);
+
+        q.setCacheable(false); // we do not cache queries
 
         q.setFirstResult(offset);
         if (limit != -1) { // limit parameter was specified
@@ -142,6 +153,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
 
     public void close() {
         if (session != null) {
+            transaction.commit();
             session.close();
         }
     }
