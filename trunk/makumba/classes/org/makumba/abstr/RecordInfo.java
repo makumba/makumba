@@ -338,4 +338,8 @@ java.net.URL origin;
     }
   }
   public String toString(){ return getName(); }
+
+public java.net.URL getOrigin() {
+    return origin;
+}
 }
