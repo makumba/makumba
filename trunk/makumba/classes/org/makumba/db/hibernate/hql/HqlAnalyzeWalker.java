@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.makumba.DataDefinitionNotFoundError;
+
 import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;
@@ -18,7 +20,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     private List result;
 
-    void setAliasType(AST alias, String type) throws antlr.RecognitionException {
+    void setAliasType(AST alias, String type) throws antlr.RecognitionException{
         if (aliasTypes.get(alias.getText()) != null)
             throw new antlr.SemanticException("alias " + alias.getText() + " defined twice");
 
@@ -29,11 +31,11 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
             // a must be a recognizable label
             int dot = type.indexOf('.');
             if (dot == -1)
-                throw new SemanticException("unknown OQL type: " + type);
+                throw new DataDefinitionNotFoundError(type);
             String label = type.substring(0, dot);
             String labelType = (String) aliasTypes.get(label);
             if (labelType == null)
-                throw new SemanticException("unknown OQL label/alias: " + label);
+                throw new SemanticException("Unknown label: "+label+"\n"+(new NoSuchFieldException(label)).getStackTrace());
             while (true) {
                 int dot1 = type.indexOf('.', dot + 1);
                 String field;
@@ -115,15 +117,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         String operator = ae.getText();
         ExprTypeAST firstValue = null;
         ExprTypeAST secondValue = null;
-        try {
-            firstValue = (ExprTypeAST) ae.getFirstChild();
-            secondValue = (ExprTypeAST) firstValue.getNextSibling();
-        } catch (ClassCastException e) {
-            // this may occur if the expression is neither of type ExprTypeAST nor ObjectTypeAST (ie, it is a CommonAST)
-            throw new SemanticException("Cannot perform operation " + operator + " on elements "
-                    + ae.getFirstChild().getType() + " and " + ae.getFirstChild().getNextSibling().getType());
-        }
-
+        firstValue = (ExprTypeAST) ae.getFirstChild();
+        secondValue = (ExprTypeAST) firstValue.getNextSibling();
+        
         // if the expr are not litterals
         if (firstValue.getObjectType() != null || secondValue.getObjectType() != null) {
             throw new SemanticException("Cannot perform operation " + operator + " on elements " + firstValue.getText()

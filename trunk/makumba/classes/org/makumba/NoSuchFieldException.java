@@ -23,17 +23,22 @@
 
 package org.makumba;
 
-/** This exception occurs when a field of a makumba type is mentioned but does not exist. This is a programmer error, it should be fixed, not caught */
-public class NoSuchFieldException extends RuntimeException
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+/**
+ * This exception occurs when a field of a makumba type is mentioned but does not exist. This is a programmer error, it
+ * should be fixed, not caught
+ */
+public class NoSuchFieldException extends RuntimeException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-/** indicate the missing pointer */
-  public NoSuchFieldException(DataDefinition dd, String message) 
-  {
-    super("type "+dd.getName()+" : "+message);
-  }
+    /** indicate the missing pointer */
+    public NoSuchFieldException(DataDefinition dd, String message) {
+        super("type " + dd.getName() + " : " + message);
+    }
+
+    public NoSuchFieldException(String label) {
+        super("label " + label);
+    }
 }
