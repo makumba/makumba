@@ -124,7 +124,7 @@ public class ComposedQuery {
         }
     }
 
-    private OQLAnalyzer getOQLAnalyzer(String type) {
+    public OQLAnalyzer getOQLAnalyzer(String type) {
         OQLAnalyzer oqa = null;
         if (useHibernate) {
             oqa = MakumbaSystem.getHqlAnalyzer(type);
@@ -146,8 +146,12 @@ public class ComposedQuery {
     public void init() {
         initKeysets();
         fromAnalyzerOQL = "SELECT 1 ";
-        if (derivedSections[FROM] != null)
-            fromAnalyzerOQL += "FROM " + derivedSections[FROM];
+        if (getFromSection() != null)
+            fromAnalyzerOQL += "FROM " + getFromSection();
+    }
+
+    public String getFromSection() {
+        return derivedSections[FROM];
     }
 
     /** initialize the keysets. previousKeyset is "empty" */
@@ -336,7 +340,7 @@ public class ComposedQuery {
             throws LogicException {
         analyze();
         String[] vars = new String[5];
-        vars[0] = derivedSections[FROM];
+        vars[0] = getFromSection();
         for (int i = 1; i < 5; i++)
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
 
@@ -436,5 +440,13 @@ public class ComposedQuery {
             dd = fd.getPointedType();
             dot = dot1;
         }
+    }
+
+    public String transformPointer(String expr2) {
+        if(this.useHibernate && getOQLAnalyzer("SELECT "+expr2+" as gigi FROM "+getFromSection()).getProjectionType().getFieldDefinition("gigi").getType().equals("ptr")){
+              int dot = expr2.lastIndexOf('.')+1;
+              return expr2.substring(0,dot)+"hibernate_"+expr2.substring(dot);
+          }
+          return expr2;
     }
 }

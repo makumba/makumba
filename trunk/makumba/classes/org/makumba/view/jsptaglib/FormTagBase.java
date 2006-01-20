@@ -129,7 +129,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   {
     if(!shouldComputeBasePointer())
       return;
-    ValueComputer vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);
+    ValueComputer vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject+".id", pageCache);
     pageCache.valueComputers.put(tagKey, vc);
   }
 
