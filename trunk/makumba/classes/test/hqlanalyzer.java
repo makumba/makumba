@@ -3,6 +3,7 @@ package test;
 import java.util.Vector;
 
 import org.makumba.MakumbaSystem;
+import org.makumba.ProgrammerError;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 
 import junit.framework.Test;
@@ -295,6 +296,14 @@ public class hqlanalyzer extends TestCase {
         
     }
     
+    public void testAnalysisNoSuchField() {
+
+        String q1 = "SELECT p as superPointer FROM test.Person p JOIN p.t q)";
+        try{
+            HqlAnalyzer oA = new HqlAnalyzer(q1);
+            fail("ProgrammerError expected" );
+        }catch(ProgrammerError e){assertEquals(e.getMessage(), "No such field \"t\" in Makumba type \"test.Person\""); }
+    }
     
 
 }
