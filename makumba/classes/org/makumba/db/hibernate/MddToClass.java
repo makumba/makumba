@@ -1,6 +1,7 @@
 package org.makumba.db.hibernate;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -10,6 +11,8 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.abstr.RecordInfo;
+import org.makumba.util.ClassResource;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -83,6 +86,18 @@ public class MddToClass extends HibernateUtils {
 	public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
 		if (!mddsDone.contains(dd.getName())) {
 			mddsDone.add(dd.getName());
+            
+            
+			//checks if the class has to be generated
+            File checkFile = new File(arrowToDoubleUnderscore(dd.getName()));
+            File mddFile = new File(((RecordInfo) dd).getOrigin().getFile());
+            
+            if(checkFile.exists()) {
+                
+                if(mddFile.lastModified() < checkFile.lastModified())
+                    return;
+            }
+            
 
 			ClassPool cp = ClassPool.getDefault();
             cp.insertClassPath(new ClassClassPath(this.getClass()));
