@@ -162,7 +162,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
      * Method for testing the query runner outside a JSP
      */
     public static void main(String[] args) throws LogicException {
-        HibernateSFManager.getTestSF(); // we use a simple configuration
+        HibernateSFManager.getSF(); // we use a simple configuration
         HibernateQueryRunner qr = new HibernateQueryRunner();
         Vector v = new Vector();
         v.add(new Integer(1));
