@@ -226,10 +226,10 @@ public class TestTags extends JspTestCase {
 		while ((begin = output.indexOf("name")) != -1) {
 			output = output.substring(begin + 5);
 			assertEquals(languageData[i][0], output.substring(0, output
-					.indexOf("\r")));
+					.indexOf("<br>")));
 			output = output.substring(output.indexOf("isoCode") + 8);
 			assertEquals(languageData[i][1], output.substring(0, output
-					.indexOf("\r")));
+					.indexOf("<br>")));
 			i++;
 		}
 		try {

@@ -234,12 +234,6 @@ public class TestHibernateTags extends JspTestCase {
 
     public void endHibernateMakListTag(WebResponse response) {
         try {
-            System.out.println(response.getText());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
             output = response.getText();
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
@@ -248,9 +242,9 @@ public class TestHibernateTags extends JspTestCase {
 
         while ((begin = output.indexOf("name")) != -1) {
             output = output.substring(begin + 5);
-            assertEquals(languageData[i][0], output.substring(0, output.indexOf("\r")));
+            assertEquals(languageData[i][0], output.substring(0, output.indexOf("<br>")));
             output = output.substring(output.indexOf("isoCode") + 8);
-            assertEquals(languageData[i][1], output.substring(0, output.indexOf("\r")));
+            assertEquals(languageData[i][1], output.substring(0, output.indexOf("<br>")));
             i++;
         }
         try {
