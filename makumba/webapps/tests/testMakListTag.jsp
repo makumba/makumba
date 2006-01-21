@@ -9,10 +9,8 @@
 <b>Languages:</b>
 <br><br><br>
 <mak:list from="test.Language l">
-  name:<mak:value expr="l.name"/>
-  <br>
-  isoCode:<mak:value expr="l.isoCode"/>
-  <br><br>
+  name:<mak:value expr="l.name"/><br>
+  isoCode:<mak:value expr="l.isoCode"/><br><br>
 </mak:list>
 
 </body>
