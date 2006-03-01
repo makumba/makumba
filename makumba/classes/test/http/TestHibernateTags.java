@@ -263,6 +263,8 @@ public class TestHibernateTags extends JspTestCase {
         WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/beginHibernateMakAddForm.jsp");
 
         // we get the first form in the jsp
+        if(resp.getForms().length==0)
+            fail("forms expected\n"+resp.getText());
         WebForm form = resp.getForms()[0];
         // set the input field "email" to "bartolomeus@rogue.be"
         form.setParameter("email","bartolomeus@rogue.be");
