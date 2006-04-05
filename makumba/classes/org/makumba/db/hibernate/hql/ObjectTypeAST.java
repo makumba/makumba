@@ -40,11 +40,11 @@ public class ObjectTypeAST extends ExprTypeAST {
         
         //System.out.println("GOT TYPE: " + computedType);
 
-        if (computedType instanceof Integer) {
-            setDataType(((Integer) computedType).intValue());
-            
-        } else {
+        if (computedType instanceof String) {
             setObjectType(computedType.toString());
+        }else{
+            setExtraTypeInfo(computedType);
+            setDataType(typeComputer.getTypeOf(computedType));   
         }
     }
     
