@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
   testGender!<mak:value expr="p.gender" />!endGender<br>
   testUniqInt!<mak:value expr="p.uniqInt" />!endUniqInt<br>
 </mak:object>

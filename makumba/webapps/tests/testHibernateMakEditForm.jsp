@@ -6,7 +6,7 @@
 
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
     testMakEditFormStart!<mak:editForm object="p" action="testMakEditForm.jsp" method="post">!endMakEditFormStart
     	testName!<mak:input name="indiv.name" />!endName
         testSurname!<mak:input name="indiv.surname" type="password" maxlength="5" />!endSurname

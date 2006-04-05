@@ -199,6 +199,297 @@ public class TestHibernateTags extends JspTestCase {
         pageContext.popBody();
     }
 
+    public void testHibernateMakObjectTag() throws ServletException, IOException {
+        pageContext.include("testHibernateMakObjectTag.jsp");        
+    }
+    public void endMakObjectTag(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+
+        assertEquals(1, v.size());
+        pc = (Dictionary) v.elementAt(0);
+
+        output = output.substring(output.indexOf("name") + 5);
+        assertEquals(pc.get("name"), output.substring(0, output.indexOf("\r")));
+        output = output.substring(output.indexOf("weight") + 7);
+        assertEquals(pc.get("weight").toString(), output.substring(0, output
+                .indexOf("\r")));
+    }
+
+    public void testHibernateMakListTag() throws ServletException, IOException {
+        pageContext.include("testHibernateMakListTag.jsp");
+    }
+
+    public void endHibernateMakListTag(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        System.out.println(output);
+        int i = 0, begin, end;
+
+        while ((begin = output.indexOf("name")) != -1) {
+            output = output.substring(begin + 5);
+            assertEquals(languageData[i][0], output.substring(0, output.indexOf("<br>")));
+            output = output.substring(output.indexOf("isoCode") + 8);
+            assertEquals(languageData[i][1], output.substring(0, output.indexOf("<br>")));
+            i++;
+        }
+        try {
+            assertEquals(true, response.getText().indexOf("English") != -1);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        return;
+    }
+
+    public void testHibernateMakValueChar() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueChar.jsp");        
+    }   
+
+    public void endHibernateMakValueChar(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);  
+        assertEquals("Transaction query empty", v.size(), 1);
+        db.close();
+        pc = (Dictionary) v.elementAt(0);
+
+
+        assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
+        assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
+        assertEquals("jsp differs from database content", pc.get("name"), output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
+        
+        assertTrue("testSurnameDefault! not found", output.indexOf("testSurnameDefault!") > 0 ? true : false);
+        assertTrue("!endSurnameDefault not found", output.indexOf("!endSurnameDefault", output.indexOf("testSurnameDefault!")) > 0 ? true : false);
+        assertEquals("default property not evaluated", "N/A", output.substring(output.indexOf("testSurnameDefault!")+19, output.indexOf("!endSurnameDefault")));        
+        
+        assertTrue("testUniqCharUrlEncode! not found", output.indexOf("testUniqCharUrlEncode!") > 0 ? true : false);
+        assertTrue("!endUniqCharUrlEncode not found", output.indexOf("!endUniqCharUrlEncode", output.indexOf("testUniqCharUrlEncode!")) > 0 ? true : false);
+        assertEquals("character string not url encoded", "testing+%26quot%3B+character+field", output.substring(output.indexOf("testUniqCharUrlEncode!")+22, output.indexOf("!endUniqCharUrlEncode")));     
+        
+        assertTrue("testUniqCharAuto! not found", output.indexOf("testUniqCharAuto!") > 0 ? true : false);
+        assertTrue("!endUniqCharAuto not found", output.indexOf("!endUniqCharAuto", output.indexOf("testUniqCharAuto!")) > 0 ? true : false);
+        assertEquals("automatic html transformation doesn't work", ((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharAuto!")+17, output.indexOf("!endUniqCharAuto")));
+
+        // TODO addTitle prints ' for "
+        // assertEquals("<span title=\""+pc.get("uniqChar")+"\">"+((String)pc.get("uniqChar")).replaceAll("\"","&quot;")+"</span>", output.substring(output.indexOf("testUniqCharAutoAddTitleTrue!")+29, output.indexOf("!endUniqCharAutoAddTitleTrue")));      
+        
+        assertTrue("testUniqCharHtml! not found", output.indexOf("testUniqCharHtml!") > 0 ? true : false);
+        assertTrue("!endUniqCharHtml not found", output.indexOf("!endUniqCharHtml", output.indexOf("testUniqCharHtml!")) > 0 ? true : false);
+        assertEquals("content transformed to html, although we didn't ask for it", pc.get("uniqChar"), output.substring(output.indexOf("testUniqCharHtml!")+17, output.indexOf("!endUniqCharHtml")));
+        
+        assertTrue("testUniqCharNoHtml! not found", output.indexOf("testUniqCharNoHtml!") > 0 ? true : false);
+        assertTrue("!endUniqCharNoHtml not found", output.indexOf("!endUniqCharNoHtml", output.indexOf("testUniqCharNoHtml!")) > 0 ? true : false);     
+        assertEquals("html tranformation failed", ((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharNoHtml!")+19, output.indexOf("!endUniqCharNoHtml")));
+        
+        assertTrue("testUniqCharMaxLength! not found", output.indexOf("testUniqCharMaxLength!") > 0 ? true : false);
+        assertTrue("!endUniqCharMaxLength not found", output.indexOf("!endUniqCharMaxLength", output.indexOf("testUniqCharMaxLength!")) > 0 ? true : false);
+        assertEquals("char not cut off or ellipsis not added", ((String)pc.get("uniqChar")).substring(0,5)+"...", output.substring(output.indexOf("testUniqCharMaxLength!")+22, output.indexOf("!endUniqCharMaxLength")));
+        
+        assertTrue("testUniqCharMaxLengthEllipsis! not found", output.indexOf("testUniqCharMaxLengthEllipsis!") > 0 ? true : false);
+        assertTrue("!endUniqCharMaxLengthEllipsis not found", output.indexOf("!endUniqCharMaxLengthEllipsis", output.indexOf("testUniqCharMaxLengthEllipsis!")) > 0 ? true : false);
+        assertEquals("ellipsis property not evaluated", ((String)pc.get("uniqChar")).substring(0,5)+"---", output.substring(output.indexOf("testUniqCharMaxLengthEllipsis!")+30, output.indexOf("!endUniqCharMaxLengthEllipsis")));
+        
+//      assertEquals("<span title=\""+pc.get("uniqChar")+"\">"+((String)pc.get("uniqChar")).substring(0,5)+"---</span>", output.substring(output.indexOf("testUniqCharMaxLengthEllipsisAddTitleAuto!")+42, output.indexOf("!endUniqCharMaxLengthEllipsisAddTitleAuto")));
+        
+        assertTrue("testExtraDataSomething! not found", output.indexOf("testExtraDataSomething!") > 0 ? true : false);
+        assertTrue("!endExtraDataSomething not found", output.indexOf("!endExtraDataSomething", output.indexOf("testExtraDataSomething!")) > 0 ? true : false);
+        assertEquals("problem with printing empty char", pc.get("description"), output.substring(output.indexOf("testExtraDataSomething!")+23, output.indexOf("!endExtraDataSomething")));
+
+        assertTrue("testExtraDataSomethingEmpty! not found", output.indexOf("testExtraDataSomethingEmpty!") > 0 ? true : false);
+        assertTrue("!endExtraDataSomethingEmpty not found", output.indexOf("!endExtraDataSomethingEmpty", output.indexOf("testExtraDataSomethingEmpty!")) > 0 ? true : false);
+        assertEquals("empty property not evaluated", "N/A", output.substring(output.indexOf("testExtraDataSomethingEmpty!")+28, output.indexOf("!endExtraDataSomethingEmpty")));        
+        
+    }
+    
+    public void testHibernateMakValueDate() throws ServletException, IOException {
+        pageContext.include("testMakValueDate.jsp");        
+    }   
+    
+    public void endHibernateMakValueDate(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+        
+        assertTrue("testBirthdate! not found", output.indexOf("testBirthdate!") > 0 ? true : false);
+        assertTrue("!endBirthdate not found", output.indexOf("!endBirthdate", output.indexOf("testBirthdate!")) > 0 ? true : false);
+        DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
+        assertEquals("jsp differs from database content", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
+        
+        assertTrue("testBirthdateFormat! not found", output.indexOf("testBirthdateFormat!") > 0 ? true : false);
+        assertTrue("!endBirthdateFormat not found", output.indexOf("!endBirthdateFormat", output.indexOf("testBirthdateFormat!")) > 0 ? true : false);
+        df = new SimpleDateFormat("dd-mm-yy", MakumbaSystem.getLocale());
+        assertEquals("date isn't formatted to the one specified", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!endBirthdateFormat")));      
+    }
+
+    public void testHibernateMakValueInt() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueInt.jsp"); 
+    }
+    
+    public void endHibernateMakValueInt(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        System.out.println(output);
+
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+        
+        assertTrue("testGender! not found", output.indexOf("testGender!") > 0 ? true : false);
+        assertTrue("!endGender not found", output.indexOf("!endGender", output.indexOf("testGender")) > 0 ? true : false);
+        assertEquals("jsp differs from database content", "Male", output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender")));
+        
+        assertTrue("testUniqInt! not found", output.indexOf("testUniqInt!") > 0 ? true : false);
+        assertTrue("!endUniqInt not found", output.indexOf("!endUniqInt", output.indexOf("testUniqInt!")) > 0 ? true : false);
+        assertEquals("jsp differs from database content", pc.get("uniqInt").toString(), output.substring(output.indexOf("testUniqInt!")+12, output.indexOf("!endUniqInt")));
+    }
+    
+    public void testHibernateMakValueDouble() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueDouble.jsp");
+    }
+    public void endMakValueDouble(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+        
+        assertTrue("testWeight! not found", output.indexOf("testWeight!") > 0 ? true : false);
+        assertTrue("!endWeight not found", output.indexOf("!endWeight", output.indexOf("testWeight!")) > 0 ? true : false);
+        assertEquals("jsp differs from database content", pc.get("weight").toString(), output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
+    }
+    
+    public void testHibernateMakValueText() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueText.jsp");
+    }
+    public void endHibernateMakValueText(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+
+        assertTrue("testComment! not found", output.indexOf("testComment!") > 0 ? true : false);
+        assertTrue("!endComment not found", output.indexOf("!endComment", output.indexOf("testComment!")) > 0 ? true : false);
+        assertEquals("default lineseperator not added", "<p>"+pc.get("comment")+"</p>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
+        
+        assertTrue("testCommentLineSeparator! not found", output.indexOf("testCommentLineSeparator!") > 0 ? true : false);
+        assertTrue("!endCommentLineSeparator not found", output.indexOf("!endCommentLineSeparator", output.indexOf("testCommentLineSeparator!")) > 0 ? true : false);
+        assertEquals("custom lineseperator not added", "<abc>"+pc.get("comment"), output.substring(output.indexOf("testCommentLineSeparator!")+25, output.indexOf("!endCommentLineSeparator")));
+        
+        assertTrue("testCommentLongLineLength! not found", output.indexOf("testCommentLongLineLength!") > 0 ? true : false);
+        assertTrue("!endCommentLongLineLength not found", output.indexOf("!endCommentLongLineLength", output.indexOf("testCommentLongLineLength!")) > 0 ? true : false);
+        assertEquals("longLineLength not parsed", pc.get("comment").toString(), output.substring(output.indexOf("testCommentLongLineLength!")+26, output.indexOf("!endCommentLongLineLength")));
+    }
+    
+    public void testHibernateMakValueSet() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueSet.jsp");
+    }
+    public void endHibernateMakValueSet(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+
+        assertTrue("testAddressDescription! not found", output.indexOf("testAddressDescription!") > 0 ? true : false);
+        assertTrue("!endAddressDescription not found", output.indexOf("!endAddressDescription", output.indexOf("testAddressDescription!")) > 0 ? true : false);
+        assertEquals("problem with empty field", pc.get("description"), output.substring(output.indexOf("testAddressDescription!")+23, output.indexOf("!endAddressDescription")));
+        
+        assertTrue("testAddressDescriptionEmpty! not found", output.indexOf("testAddressDescriptionEmpty!") > 0 ? true : false);
+        assertTrue("!endAddressDescriptionEmpty not found", output.indexOf("!endAddressDescriptionEmpty", output.indexOf("testAddressDescriptionEmpty!")) > 0 ? true : false);
+        assertEquals("problem with custom value for empty field", "N/A", output.substring(output.indexOf("testAddressDescriptionEmpty!")+28, output.indexOf("!endAddressDescriptionEmpty")));
+        
+        assertTrue("testAddressPhoneDefault! not found", output.indexOf("testAddressPhoneDefault!") > 0 ? true : false);
+        assertTrue("!endAddressPhoneDefault not found", output.indexOf("!endAddressPhoneDefault", output.indexOf("testAddressPhoneDefault!")) > 0 ? true : false);
+        assertEquals("problem with default value for null field", "N/A", output.substring(output.indexOf("testAddressPhoneDefault!")+24, output.indexOf("!endAddressPhoneDefault")));
+        
+        assertTrue("testAddressUsagestart! not found", output.indexOf("testAddressUsagestart!") > 0 ? true : false);
+        assertTrue("!endAddressUsagestart not found", output.indexOf("!endAddressUsagestart", output.indexOf("testAddressUsagestart!")) > 0 ? true : false);
+        DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
+        assertEquals("jsp differs from database content", df.format(pc.get("usagestart")), output.substring(output.indexOf("testAddressUsagestart!")+22, output.indexOf("!endAddressUsagestart")));
+    }
+    
+    public void testHibernateMakValueTS_create() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueTS_create.jsp");       
+    }
+    public void endHibernateMakValueTS_create(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+
+        assertTrue("testTS_create! not found", output.indexOf("testTS_create!") > 0 ? true : false);
+        assertTrue("!endTS_create not found", output.indexOf("!endTS_create", output.indexOf("testTS_create!")) > 0 ? true : false);
+        assertEquals("TS_create value not correct", pc.get("TS_create").toString(), output.substring(output.indexOf("testTS_create!")+14, output.indexOf("!endTS_create")));
+    }
+    
+    public void testHibernateMakValueTS_modify() throws ServletException, IOException {
+        pageContext.include("testHibernateMakValueTS_modify.jsp");
+    }
+    public void endHibernateMakValueTS_modify(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        Transaction db = getDB();
+        v = db.executeQuery(readPerson, person);
+        db.close();
+        assertEquals("Database query empty", v.size(), 1);
+        pc = (Dictionary) v.elementAt(0);
+
+        assertTrue("testTS_modify! not found", output.indexOf("testTS_modify!") > 0 ? true : false);
+        assertTrue("!endTS_modify not found", output.indexOf("!endTS_modify", output.indexOf("testTS_modify!")) > 0 ? true : false);
+        assertEquals("TS_modify value not correct", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
+    }
+
     protected String removeNewlines(String line) {
         String parsed = line;
         parsed = parsed.replaceAll("[\n\r]*", "");
@@ -231,33 +522,39 @@ public class TestHibernateTags extends JspTestCase {
         return parsed;
     }
 
-    public void testHibernateMakListTag() throws ServletException, IOException {
-        pageContext.include("testHibernateMakListTag.jsp");
+    
+    public void testHibernateMakNewForm() throws ServletException, IOException {
+        pageContext.include("testHibernateMakNewForm.jsp");
     }
-
-    public void endHibernateMakListTag(WebResponse response) {
+    public void endHibernateMakNewForm(WebResponse response) {
         try {
             output = response.getText();
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        int i = 0, begin, end;
-
-        while ((begin = output.indexOf("name")) != -1) {
-            output = output.substring(begin + 5);
-            assertEquals(languageData[i][0], output.substring(0, output.indexOf("<br>")));
-            output = output.substring(output.indexOf("isoCode") + 8);
-            assertEquals(languageData[i][1], output.substring(0, output.indexOf("<br>")));
-            i++;
-        }
-        try {
-            assertEquals(true, response.getText().indexOf("English") != -1);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        return;
+        
+        assertTrue("testNewFormStart! not found", output.indexOf("testNewFormStart!") > 0 ? true : false);
+        assertTrue("!endNewFormStart not found", output.indexOf("!endNewFormStart", output.indexOf("testNewFormStart!")) > 0 ? true : false);
+        assertEquals("form start incorrect", "<form action=\"testHibernateMakNewForm.jsp\" method=\"post\">", output.substring(output.indexOf("testNewFormStart!")+17, output.indexOf("!endNewFormStart")));
+        
+        assertTrue("testNewFormEnd! not found", output.indexOf("testNewFormEnd!") > 0 ? true : false);
+        assertTrue("!endNewFormEnd not found", output.indexOf("!endNewFormEnd", output.indexOf("testNewFormEnd!")) > 0 ? true : false);
+        line = output.substring(output.indexOf("testNewFormEnd!")+15, output.indexOf("!endNewFormEnd")).trim();
+        assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
+        line = removeNewlines(line);
+        line = removeMakumbaResponder(line);
+        assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+        
+        assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
+        assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
+        assertEquals("problem with input field ", "<input name=\"indiv.name\" type=\"text\" value=\"\" maxlength=\"40\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));       
+        
+        assertTrue("testSubmit! not found", output.indexOf("testSubmit!") > 0 ? true : false);
+        assertTrue("!endSubmit not found", output.indexOf("!endSubmit", output.indexOf("testSubmit!")) > 0 ? true : false);
+        assertEquals("problem with submit button", "<input type=\"submit\">", output.substring(output.indexOf("testSubmit!")+11, output.indexOf("!endSubmit")));
+        
     }
-    
+
     public void beginHibernateMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
         WebConversation wc = new WebConversation();
         WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/beginHibernateMakAddForm.jsp");
@@ -281,7 +578,7 @@ public class TestHibernateTags extends JspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        
+
         //TODO bad parsing, should be rewritten
         assertTrue("testEmail! not found", output.indexOf("testEmail!") > 0 ? true : false);
         assertTrue("!endEmail not found", output.indexOf("!endEmail", output.indexOf("testEmail!")) > 0 ? true : false);
@@ -430,296 +727,5 @@ public class TestHibernateTags extends JspTestCase {
         line = line.replaceAll("[0-9]*:[0-9]*", "");
         assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
         
-    }
-    
-    public void testHibernateMakNewForm() throws ServletException, IOException {
-        pageContext.include("testHibernateMakNewForm.jsp");
-    }
-    public void endHibernateMakNewForm(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        
-        assertTrue("testNewFormStart! not found", output.indexOf("testNewFormStart!") > 0 ? true : false);
-        assertTrue("!endNewFormStart not found", output.indexOf("!endNewFormStart", output.indexOf("testNewFormStart!")) > 0 ? true : false);
-        assertEquals("form start incorrect", "<form action=\"testHibernateMakNewForm.jsp\" method=\"post\">", output.substring(output.indexOf("testNewFormStart!")+17, output.indexOf("!endNewFormStart")));
-        
-        assertTrue("testNewFormEnd! not found", output.indexOf("testNewFormEnd!") > 0 ? true : false);
-        assertTrue("!endNewFormEnd not found", output.indexOf("!endNewFormEnd", output.indexOf("testNewFormEnd!")) > 0 ? true : false);
-        line = output.substring(output.indexOf("testNewFormEnd!")+15, output.indexOf("!endNewFormEnd")).trim();
-        assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
-        line = removeNewlines(line);
-        line = removeMakumbaResponder(line);
-        assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
-        
-        assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
-        assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
-        assertEquals("problem with input field ", "<input name=\"indiv.name\" type=\"text\" value=\"\" maxlength=\"40\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));       
-        
-        assertTrue("testSubmit! not found", output.indexOf("testSubmit!") > 0 ? true : false);
-        assertTrue("!endSubmit not found", output.indexOf("!endSubmit", output.indexOf("testSubmit!")) > 0 ? true : false);
-        assertEquals("problem with submit button", "<input type=\"submit\">", output.substring(output.indexOf("testSubmit!")+11, output.indexOf("!endSubmit")));
-        
-    }
-    
-    public void testHibernateMakObjectTag() throws ServletException, IOException {
-        pageContext.include("testHibernateMakObjectTag.jsp");        
-    }
-    public void endMakObjectTag(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-
-        assertEquals(1, v.size());
-        pc = (Dictionary) v.elementAt(0);
-
-        output = output.substring(output.indexOf("name") + 5);
-        assertEquals(pc.get("name"), output.substring(0, output.indexOf("\r")));
-        output = output.substring(output.indexOf("weight") + 7);
-        assertEquals(pc.get("weight").toString(), output.substring(0, output
-                .indexOf("\r")));
-    }
-
-    public void testHibernateMakValueChar() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueChar.jsp");        
-    }   
-    public void endHibernateMakValueChar(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        assertEquals("Transaction query empty", v.size(), 1);
-        db.close();
-        pc = (Dictionary) v.elementAt(0);
-
-
-        assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
-        assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
-        assertEquals("jsp differs from database content", pc.get("name"), output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
-        
-        assertTrue("testSurnameDefault! not found", output.indexOf("testSurnameDefault!") > 0 ? true : false);
-        assertTrue("!endSurnameDefault not found", output.indexOf("!endSurnameDefault", output.indexOf("testSurnameDefault!")) > 0 ? true : false);
-        assertEquals("default property not evaluated", "N/A", output.substring(output.indexOf("testSurnameDefault!")+19, output.indexOf("!endSurnameDefault")));        
-        
-        assertTrue("testUniqCharUrlEncode! not found", output.indexOf("testUniqCharUrlEncode!") > 0 ? true : false);
-        assertTrue("!endUniqCharUrlEncode not found", output.indexOf("!endUniqCharUrlEncode", output.indexOf("testUniqCharUrlEncode!")) > 0 ? true : false);
-        assertEquals("character string not url encoded", "testing+%26quot%3B+character+field", output.substring(output.indexOf("testUniqCharUrlEncode!")+22, output.indexOf("!endUniqCharUrlEncode")));     
-        
-        assertTrue("testUniqCharAuto! not found", output.indexOf("testUniqCharAuto!") > 0 ? true : false);
-        assertTrue("!endUniqCharAuto not found", output.indexOf("!endUniqCharAuto", output.indexOf("testUniqCharAuto!")) > 0 ? true : false);
-        assertEquals("automatic html transformation doesn't work", ((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharAuto!")+17, output.indexOf("!endUniqCharAuto")));
-
-        // TODO addTitle prints ' for "
-        // assertEquals("<span title=\""+pc.get("uniqChar")+"\">"+((String)pc.get("uniqChar")).replaceAll("\"","&quot;")+"</span>", output.substring(output.indexOf("testUniqCharAutoAddTitleTrue!")+29, output.indexOf("!endUniqCharAutoAddTitleTrue")));      
-        
-        assertTrue("testUniqCharHtml! not found", output.indexOf("testUniqCharHtml!") > 0 ? true : false);
-        assertTrue("!endUniqCharHtml not found", output.indexOf("!endUniqCharHtml", output.indexOf("testUniqCharHtml!")) > 0 ? true : false);
-        assertEquals("content transformed to html, although we didn't ask for it", pc.get("uniqChar"), output.substring(output.indexOf("testUniqCharHtml!")+17, output.indexOf("!endUniqCharHtml")));
-        
-        assertTrue("testUniqCharNoHtml! not found", output.indexOf("testUniqCharNoHtml!") > 0 ? true : false);
-        assertTrue("!endUniqCharNoHtml not found", output.indexOf("!endUniqCharNoHtml", output.indexOf("testUniqCharNoHtml!")) > 0 ? true : false);     
-        assertEquals("html tranformation failed", ((String)pc.get("uniqChar")).replaceAll("\"","&quot;"), output.substring(output.indexOf("testUniqCharNoHtml!")+19, output.indexOf("!endUniqCharNoHtml")));
-        
-        assertTrue("testUniqCharMaxLength! not found", output.indexOf("testUniqCharMaxLength!") > 0 ? true : false);
-        assertTrue("!endUniqCharMaxLength not found", output.indexOf("!endUniqCharMaxLength", output.indexOf("testUniqCharMaxLength!")) > 0 ? true : false);
-        assertEquals("char not cut off or ellipsis not added", ((String)pc.get("uniqChar")).substring(0,5)+"...", output.substring(output.indexOf("testUniqCharMaxLength!")+22, output.indexOf("!endUniqCharMaxLength")));
-        
-        assertTrue("testUniqCharMaxLengthEllipsis! not found", output.indexOf("testUniqCharMaxLengthEllipsis!") > 0 ? true : false);
-        assertTrue("!endUniqCharMaxLengthEllipsis not found", output.indexOf("!endUniqCharMaxLengthEllipsis", output.indexOf("testUniqCharMaxLengthEllipsis!")) > 0 ? true : false);
-        assertEquals("ellipsis property not evaluated", ((String)pc.get("uniqChar")).substring(0,5)+"---", output.substring(output.indexOf("testUniqCharMaxLengthEllipsis!")+30, output.indexOf("!endUniqCharMaxLengthEllipsis")));
-        
-//      assertEquals("<span title=\""+pc.get("uniqChar")+"\">"+((String)pc.get("uniqChar")).substring(0,5)+"---</span>", output.substring(output.indexOf("testUniqCharMaxLengthEllipsisAddTitleAuto!")+42, output.indexOf("!endUniqCharMaxLengthEllipsisAddTitleAuto")));
-        
-        assertTrue("testExtraDataSomething! not found", output.indexOf("testExtraDataSomething!") > 0 ? true : false);
-        assertTrue("!endExtraDataSomething not found", output.indexOf("!endExtraDataSomething", output.indexOf("testExtraDataSomething!")) > 0 ? true : false);
-        assertEquals("problem with printing empty char", pc.get("description"), output.substring(output.indexOf("testExtraDataSomething!")+23, output.indexOf("!endExtraDataSomething")));
-
-        assertTrue("testExtraDataSomethingEmpty! not found", output.indexOf("testExtraDataSomethingEmpty!") > 0 ? true : false);
-        assertTrue("!endExtraDataSomethingEmpty not found", output.indexOf("!endExtraDataSomethingEmpty", output.indexOf("testExtraDataSomethingEmpty!")) > 0 ? true : false);
-        assertEquals("empty property not evaluated", "N/A", output.substring(output.indexOf("testExtraDataSomethingEmpty!")+28, output.indexOf("!endExtraDataSomethingEmpty")));        
-        
-    }
-    
-    public void testHibernateMakValueDate() throws ServletException, IOException {
-        pageContext.include("testMakValueDate.jsp");        
-    }   
-    public void endHibernateMakValueDate(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-        
-        assertTrue("testBirthdate! not found", output.indexOf("testBirthdate!") > 0 ? true : false);
-        assertTrue("!endBirthdate not found", output.indexOf("!endBirthdate", output.indexOf("testBirthdate!")) > 0 ? true : false);
-        DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
-        assertEquals("jsp differs from database content", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
-        
-        assertTrue("testBirthdateFormat! not found", output.indexOf("testBirthdateFormat!") > 0 ? true : false);
-        assertTrue("!endBirthdateFormat not found", output.indexOf("!endBirthdateFormat", output.indexOf("testBirthdateFormat!")) > 0 ? true : false);
-        df = new SimpleDateFormat("dd-mm-yy", MakumbaSystem.getLocale());
-        assertEquals("date isn't formatted to the one specified", df.format(pc.get("birthdate")), output.substring(output.indexOf("testBirthdateFormat!")+20, output.indexOf("!endBirthdateFormat")));      
-    }
-
-    public void testHibernateMakValueInt() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueInt.jsp"); 
-    }
-    public void endHibernateMakValueInt(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-        
-        assertTrue("testGender! not found", output.indexOf("testGender!") > 0 ? true : false);
-        assertTrue("!endGender not found", output.indexOf("!endGender", output.indexOf("testGender")) > 0 ? true : false);
-        assertEquals("jsp differs from database content", "Male", output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender")));
-        
-        assertTrue("testUniqInt! not found", output.indexOf("testUniqInt!") > 0 ? true : false);
-        assertTrue("!endUniqInt not found", output.indexOf("!endUniqInt", output.indexOf("testUniqInt!")) > 0 ? true : false);
-        assertEquals("jsp differs from database content", pc.get("uniqInt").toString(), output.substring(output.indexOf("testUniqInt!")+12, output.indexOf("!endUniqInt")));
-    }
-    
-    public void testHibernateMakValueDouble() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueDouble.jsp");
-    }
-    public void endMakValueDouble(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-        
-        assertTrue("testWeight! not found", output.indexOf("testWeight!") > 0 ? true : false);
-        assertTrue("!endWeight not found", output.indexOf("!endWeight", output.indexOf("testWeight!")) > 0 ? true : false);
-        assertEquals("jsp differs from database content", pc.get("weight").toString(), output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
-    }
-    
-    public void testHibernateMakValueText() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueText.jsp");
-    }
-    public void endHibernateMakValueText(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-
-        assertTrue("testComment! not found", output.indexOf("testComment!") > 0 ? true : false);
-        assertTrue("!endComment not found", output.indexOf("!endComment", output.indexOf("testComment!")) > 0 ? true : false);
-        assertEquals("default lineseperator not added", "<p>"+pc.get("comment")+"</p>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
-        
-        assertTrue("testCommentLineSeparator! not found", output.indexOf("testCommentLineSeparator!") > 0 ? true : false);
-        assertTrue("!endCommentLineSeparator not found", output.indexOf("!endCommentLineSeparator", output.indexOf("testCommentLineSeparator!")) > 0 ? true : false);
-        assertEquals("custom lineseperator not added", "<abc>"+pc.get("comment"), output.substring(output.indexOf("testCommentLineSeparator!")+25, output.indexOf("!endCommentLineSeparator")));
-        
-        assertTrue("testCommentLongLineLength! not found", output.indexOf("testCommentLongLineLength!") > 0 ? true : false);
-        assertTrue("!endCommentLongLineLength not found", output.indexOf("!endCommentLongLineLength", output.indexOf("testCommentLongLineLength!")) > 0 ? true : false);
-        assertEquals("longLineLength not parsed", pc.get("comment").toString(), output.substring(output.indexOf("testCommentLongLineLength!")+26, output.indexOf("!endCommentLongLineLength")));
-    }
-    
-    public void testHibernateMakValueSet() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueSet.jsp");
-    }
-    public void endHibernateMakValueSet(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-
-        assertTrue("testAddressDescription! not found", output.indexOf("testAddressDescription!") > 0 ? true : false);
-        assertTrue("!endAddressDescription not found", output.indexOf("!endAddressDescription", output.indexOf("testAddressDescription!")) > 0 ? true : false);
-        assertEquals("problem with empty field", pc.get("description"), output.substring(output.indexOf("testAddressDescription!")+23, output.indexOf("!endAddressDescription")));
-        
-        assertTrue("testAddressDescriptionEmpty! not found", output.indexOf("testAddressDescriptionEmpty!") > 0 ? true : false);
-        assertTrue("!endAddressDescriptionEmpty not found", output.indexOf("!endAddressDescriptionEmpty", output.indexOf("testAddressDescriptionEmpty!")) > 0 ? true : false);
-        assertEquals("problem with custom value for empty field", "N/A", output.substring(output.indexOf("testAddressDescriptionEmpty!")+28, output.indexOf("!endAddressDescriptionEmpty")));
-        
-        assertTrue("testAddressPhoneDefault! not found", output.indexOf("testAddressPhoneDefault!") > 0 ? true : false);
-        assertTrue("!endAddressPhoneDefault not found", output.indexOf("!endAddressPhoneDefault", output.indexOf("testAddressPhoneDefault!")) > 0 ? true : false);
-        assertEquals("problem with default value for null field", "N/A", output.substring(output.indexOf("testAddressPhoneDefault!")+24, output.indexOf("!endAddressPhoneDefault")));
-        
-        assertTrue("testAddressUsagestart! not found", output.indexOf("testAddressUsagestart!") > 0 ? true : false);
-        assertTrue("!endAddressUsagestart not found", output.indexOf("!endAddressUsagestart", output.indexOf("testAddressUsagestart!")) > 0 ? true : false);
-        DateFormat df = new SimpleDateFormat("dd MMMM yyyy", MakumbaSystem.getLocale());
-        assertEquals("jsp differs from database content", df.format(pc.get("usagestart")), output.substring(output.indexOf("testAddressUsagestart!")+22, output.indexOf("!endAddressUsagestart")));
-    }
-    
-    public void testHibernateMakValueTS_create() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueTS_create.jsp");       
-    }
-    public void endHibernateMakValueTS_create(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-
-        assertTrue("testTS_create! not found", output.indexOf("testTS_create!") > 0 ? true : false);
-        assertTrue("!endTS_create not found", output.indexOf("!endTS_create", output.indexOf("testTS_create!")) > 0 ? true : false);
-        assertEquals("TS_create value not correct", pc.get("TS_create").toString(), output.substring(output.indexOf("testTS_create!")+14, output.indexOf("!endTS_create")));
-    }
-    
-    public void testHibernateMakValueTS_modify() throws ServletException, IOException {
-        pageContext.include("testHibernateMakValueTS_modify.jsp");
-    }
-    public void endHibernateMakValueTS_modify(WebResponse response) {
-        try {
-            output = response.getText();
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        Transaction db = getDB();
-        v = db.executeQuery(readPerson, person);
-        db.close();
-        assertEquals("Database query empty", v.size(), 1);
-        pc = (Dictionary) v.elementAt(0);
-
-        assertTrue("testTS_modify! not found", output.indexOf("testTS_modify!") > 0 ? true : false);
-        assertTrue("!endTS_modify not found", output.indexOf("!endTS_modify", output.indexOf("testTS_modify!")) > 0 ? true : false);
-        assertEquals("TS_modify value not correct", pc.get("TS_modify").toString(), output.substring(output.indexOf("testTS_modify!")+14, output.indexOf("!endTS_modify")));
-    }
-
+    }    
 }
