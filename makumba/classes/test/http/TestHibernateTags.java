@@ -1,5 +1,4 @@
 /*
- * Created on Jan 18, 2006
  *
  */
 package test.http;
@@ -233,7 +232,6 @@ public class TestHibernateTags extends JspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        System.out.println(output);
         int i = 0, begin, end;
 
         while ((begin = output.indexOf("name")) != -1) {
@@ -352,7 +350,6 @@ public class TestHibernateTags extends JspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        System.out.println(output);
 
         Transaction db = getDB();
         v = db.executeQuery(readPerson, person);
