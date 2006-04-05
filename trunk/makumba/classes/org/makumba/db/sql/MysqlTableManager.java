@@ -72,7 +72,7 @@ public class MysqlTableManager extends org.makumba.db.sql.TableManager
      else
        return "tableMissing-before308";
    }catch(Exception e) {
-	e.printStackTrace();
+       //e.printStackTrace();
 	return "tableMissing";
    }
   }
