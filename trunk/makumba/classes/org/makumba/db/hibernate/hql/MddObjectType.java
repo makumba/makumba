@@ -19,7 +19,7 @@ public class MddObjectType implements ObjectType {
             return type;
         }catch(DataDefinitionNotFoundError err){ return null; }
 
-        //System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
+//        System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
         DataDefinition dd = null;
 
         if (field.equals("id")) {
@@ -64,7 +64,7 @@ public class MddObjectType implements ObjectType {
             return foreign.getName();
 
         else if (fi.getType().equals("ptrOne"))
-            return sub.getIndexPointerFieldName();
+            return sub.getName();
 
         else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum")) {
