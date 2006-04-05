@@ -78,7 +78,12 @@ public class MddObjectType implements ObjectType {
 
         } else
             //System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
-            return new Integer(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
-
+            return MakumbaSystem.getDataDefinition(type).getFieldDefinition(field);
     }
+
+    /** given a type descriptor, resolve it to an integer for type analysis */
+    public int getTypeOf(Object descriptor){
+        return ((FieldDefinition)descriptor).getIntegerType();
+    }
+
 }

@@ -12,6 +12,7 @@ public class ExprTypeAST extends CommonAST {
     int dataType;
     private String identifier;
     private String description;
+    private Object extraTypeInfo;
     
     public void setIdentifier(String i) {
         this.identifier = i;
@@ -89,5 +90,13 @@ public class ExprTypeAST extends CommonAST {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    protected Object getExtraTypeInfo() {
+        return extraTypeInfo;
+    }
+
+    protected void setExtraTypeInfo(Object extraTypeInfo) {
+        this.extraTypeInfo = extraTypeInfo;
     }
 }

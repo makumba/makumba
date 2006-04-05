@@ -102,13 +102,18 @@ public class HqlAnalyzer implements OQLAnalyzer {
                 if (name == null) {
                     name = "col" + (i + 1);
                 }
+                FieldDefinition fd=null;
                 if (atom.getObjectType() == null) {
-                    result.addField(MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()), atom
-                            .getDescription()));
+                    if(atom.getExtraTypeInfo()!=null)
+                        fd=MakumbaSystem.makeFieldWithName(name, (FieldDefinition)atom.getExtraTypeInfo(), atom.getDescription());
+                    else
+                        fd= MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()), atom
+                            .getDescription());
                 } else {
-                    result.addField(MakumbaSystem.makeFieldDefinition(name, "ptr " + atom.getObjectType() + ";"
-                            + atom.getDescription()));
+                    fd= MakumbaSystem.makeFieldDefinition(name, "ptr " + atom.getObjectType() + ";"
+                            + atom.getDescription());
                 }
+                result.addField(fd);
             }
         } catch (RuntimeException e) {
             throw new OQLParseError("during analysis of query: " + query, e);

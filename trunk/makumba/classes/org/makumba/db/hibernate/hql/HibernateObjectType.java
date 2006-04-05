@@ -14,4 +14,9 @@ public class HibernateObjectType implements ObjectType {
         return null;
     }
 
+    public int getTypeOf(Object descriptor) {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
 }
