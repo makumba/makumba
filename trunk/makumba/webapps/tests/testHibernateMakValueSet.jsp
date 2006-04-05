@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 
-<mak:object from="test.Person p, p.indiv i, p.address a" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i join p.address a" where="i.name='john'">
   testAddressDescription!<mak:value expr="a.description" />!endAddressDescription<br>
   testAddressDescriptionEmpty!<mak:value expr="a.description" empty="N/A" />!endAddressDescriptionEmpty<br>
   testAddressPhoneDefault!<mak:value expr="a.phone" default="N/A" />!endAddressPhoneDefault<br>

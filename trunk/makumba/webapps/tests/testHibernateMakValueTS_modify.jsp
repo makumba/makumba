@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
   testTS_modify!<mak:value expr="p.TS_create" />!endTS_modify<br>  
 </mak:object>
 

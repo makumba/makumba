@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 <mak:object from="test.Person p" where="p.indiv.name='john'">
-	testEmail!<mak:list from="p.address a">
+	testEmail!<mak:list from=" IN (p.address) a">
 	   	<mak:value expr="a.email" />
 	</mak:list>!endEmail
 </mak:object>

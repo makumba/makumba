@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
   testName!<mak:value expr="p.indiv.name" />!endName<br>
   testSurnameDefault!<mak:value expr="p.indiv.surname" default="N/A" />!endSurnameDefault<br>
   testUniqCharUrlEncode!<mak:value expr="p.uniqChar" urlEncode="true" />!endUniqCharUrlEncode<br>
