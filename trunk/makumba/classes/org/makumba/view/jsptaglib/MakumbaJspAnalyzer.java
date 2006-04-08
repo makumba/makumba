@@ -240,7 +240,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 
 	public void systemTag(JspParseData.TagData td, Object status) {
 		if(td.name.equals("taglib")) {
-			if (td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
+            //JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+			if (td.attributes.get("uri")!=null && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
 				((ParseStatus)status).makumbaPrefix= (String)td.attributes.get("prefix");
 				((ParseStatus)status).makumbaURI= (String)td.attributes.get("uri");
 				if (((ParseStatus) status).makumbaURI.equals("http://www.makumba.org/presentation")) {
