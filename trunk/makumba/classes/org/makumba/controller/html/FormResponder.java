@@ -105,14 +105,24 @@ RecordEditor editor;
      if(!storedSuffix.equals(""))
        // no preamble for non-root forms (forms included in other forms)
        return;
-     String sep=action.indexOf('?')>=0?"&":"?";	
+     String sep=action.indexOf('?')>=0?"&":"?";
+     //handle anchors in actions (bla.jsp?person=hg34bw#employment)
+     String actionBase=action;
+     String actionAnchor="";
+     int actionHashPos=action.indexOf('#');
+     if(actionHashPos>-1)
+     {
+         actionBase=action.substring(0,actionHashPos);
+         actionAnchor=action.substring(actionHashPos);
+     }
+     
      if(operation.equals("deleteLink"))
        {
 
  	// a root deleteLink
    	
  	sb.append("<a href=\"")
- 	  .append(action)
+ 	  .append(actionBase)
  	  .append(sep)
  	  .append(basePointerName)
  	  .append("=")
@@ -121,7 +131,8 @@ RecordEditor editor;
  	  .append(responderName)
  	  .append("=")
  	  .append(getPrototype())
- 	  .append("\" ")
+ 	  .append(actionAnchor)
+      .append("\" ")
  	  .append(extraFormatting)
  	  .append(">");
  	
@@ -132,7 +143,7 @@ RecordEditor editor;
        
      else if(operation.equals("deleteForm")){
      	sb.append("<form action=");
-     	sb.append("\""+action);
+     	sb.append("\""+actionBase);
  		sb.append(sep);
  		sb.append(basePointerName);
  		sb.append("=");
@@ -140,7 +151,9 @@ RecordEditor editor;
  		sb.append('&');
  		sb.append(responderName);
  		sb.append("=");
- 		sb.append(getPrototype()+"\"");
+        sb.append(getPrototype());
+        sb.append(actionAnchor);
+        sb.append("\"");
      	
      	sb.append(" method=");
      	sb.append("\""+method+"\"");
