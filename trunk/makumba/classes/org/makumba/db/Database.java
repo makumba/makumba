@@ -36,6 +36,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.util.ClassResource;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.ResourcePool;
@@ -131,6 +132,8 @@ public abstract class Database {
 
     Hashtable queryCache = new Hashtable();
 
+    String fullName;
+
     /** return the unique index of this database */
     public int getDbsv() {
         return dbsv;
@@ -141,7 +144,7 @@ public abstract class Database {
     static Class[] theProp = { java.util.Properties.class };
 
     public String getConfiguration() {
-        return configName;
+        return fullName;
     }
 
     public String getConfiguration(String v) {
@@ -165,6 +168,7 @@ public abstract class Database {
             }
 
             try {
+                String origName= name;
                 name = name.substring(name.lastIndexOf('/') + 1);
                 int n = name.indexOf('_');
                 String host;
@@ -191,6 +195,7 @@ public abstract class Database {
                 try {
                     Database d = (Database) Class.forName(dbclass).getConstructor(theProp).newInstance(pr);
                     d.configName = (String) name;
+                    d.fullName=origName;
                     d.tables = new NamedResources("Database tables for " + name, d.tableFactory);
                     return d;
                 } catch (InvocationTargetException ite) {
@@ -202,37 +207,40 @@ public abstract class Database {
         }
     });
 
+    static String findInHostProperties(Properties p, String str){
+        for (Enumeration e = p.keys(); e.hasMoreElements();) {
+            String s = (String) e.nextElement();
+            int i = s.indexOf('#');
+            try {
+                if ((i==-1|| java.net.InetAddress.getByName(s.substring(0, i)).equals(java.net.InetAddress.getLocalHost()))
+                        && str.endsWith(s.substring(i + 1)))
+                    return p.getProperty(s);
+            } catch (java.net.UnknownHostException uhe) {
+            }
+        }
+        return null;
+    }
+    
     /**
      * finds the database name of the server according to the host name and current directory. If none is specified, a
      * default is used, if available
      */
     public static String findDatabaseName(Properties p) {
-        for (Enumeration e = p.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
-            int i = s.indexOf('#');
-            if (i == -1)
-                continue;
-            try {
-                if (java.net.InetAddress.getByName(s.substring(0, i)).equals(java.net.InetAddress.getLocalHost())
-                        && s.substring(i + 1).equals(System.getProperty("user.dir")))
-                    return p.getProperty(s);
-            } catch (java.net.UnknownHostException uhe) {
-            }
-        }
-
-        for (Enumeration e = p.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
-            int i = s.indexOf('#');
-            if (i == -1)
-                continue;
-            try {
-                if (java.net.InetAddress.getByName(s.substring(0, i)).equals(java.net.InetAddress.getLocalHost())
-                        && s.substring(i + 1).equals("default"))
-                    return p.getProperty(s);
-            } catch (java.net.UnknownHostException uhe) {
-            }
-        }
-
+        String userDir= System.getProperty("user.dir");
+        String n;
+        java.net.URL u= ClassResource.get("/"); 
+        String wbp= u!=null?u.toString():null;
+        
+        if(
+                (n= findInHostProperties(p, userDir))!=null 
+                ||
+                wbp!=null &&((n= findInHostProperties(p, wbp))!=null)
+                ||
+                (n= findInHostProperties(p, "default"))!=null
+                )
+          
+            return n;
+        
         return p.getProperty("default");
     }
 
