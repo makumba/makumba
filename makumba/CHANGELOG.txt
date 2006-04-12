@@ -7,8 +7,8 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
-- add your changes -
-
+cristi: default database can also be determined by webapp name
+cristi: makumba indexes are dropped only if a hibernate config file exists
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
