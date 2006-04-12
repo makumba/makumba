@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.AllowedException;
 import org.makumba.DBError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
@@ -46,6 +47,7 @@ import org.makumba.Text;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Table;
+import org.makumba.util.ClassResource;
 
 public class TableManager extends Table {
 	protected String tbname;
@@ -115,7 +117,8 @@ public class TableManager extends Table {
 	}
 
 	/** the SQL table opening. might call create() or alter() */
-	protected void open(Properties config) {
+	protected void open(Properties config) {        
+        usesHibernateIndexes= ClassResource.get(getDatabase().getConfiguration()+".cfg.xml")!=null;
 		setTableAndFieldNames(config);
 		if (!getDataDefinition().isTemporary()) {
 			DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase()
