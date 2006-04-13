@@ -13,6 +13,8 @@ cristi: makumba indexes are dropped only if a hibernate config file exists
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
 - add your changes -
+stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
+stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
