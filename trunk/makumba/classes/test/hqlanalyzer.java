@@ -305,6 +305,25 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
     }
     
+    public void testAnalysisWholeObjectWithOtherSelections() {
+        String q1 ="SELECT p.id AS col1,p AS col2,p.allergies AS col3,p.birthdate AS col4 FROM general.Person p";
+        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        
+        assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("col2", oA.getProjectionType().getFieldDefinition(1).getName());
+        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
+        assertEquals("p", oA.getProjectionType().getFieldDefinition(1).getDescription());
+        assertEquals("col3", oA.getProjectionType().getFieldDefinition(2).getName());
+        assertEquals("text", oA.getProjectionType().getFieldDefinition(2).getType());
+        assertEquals("allergies", oA.getProjectionType().getFieldDefinition(2).getDescription());
+        assertEquals("col4", oA.getProjectionType().getFieldDefinition(3).getName());
+        assertEquals("date", oA.getProjectionType().getFieldDefinition(3).getType());
+        assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(3).getDescription());
+
+    }
+    
     public void testAnalysisNoSuchField() {
 
         String q1 = "SELECT p as superPointer FROM test.Person p JOIN p.t q)";
