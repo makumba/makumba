@@ -296,6 +296,15 @@ public class hqlanalyzer extends TestCase {
         
     }
     
+    public void testAnalysisSelectWholeObjectIndirect() {
+        String q1 = "SELECT p.brother as superPointer FROM test.Person p)";
+        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        
+        assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
+    }
+    
     public void testAnalysisNoSuchField() {
 
         String q1 = "SELECT p as superPointer FROM test.Person p JOIN p.t q)";
@@ -304,6 +313,20 @@ public class hqlanalyzer extends TestCase {
             fail("ProgrammerError expected" );
         }catch(ProgrammerError e){assertEquals(e.getMessage(), "No such field \"t\" in Makumba type \"test.Person\""); }
     }
+    
+    public void test() {
+
+        String q1 = "SELECT p.TS_create AS col1 FROM test.Person p, p.indiv i WHERE i.name='john'";
+        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        
+        //System.out.println(oA.toString());
+        
+        //assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
+        //assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+        //assertEquals("p", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        
+    }
+    
     
 
 }
