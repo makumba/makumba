@@ -48,7 +48,7 @@
 		<echo>
 			Please note that proper Makumba building in Eclipse requires the antlr-eclipse tool.
 			http://antlreclipse.sourceforge.net
-			Currently used version: 3.0.5
+			Currently used version: latest or 4.1.1
 			Use Help/Software Updates for installation, chose http://antlreclipse.sourceforge.net/updates
 		</echo>
 	</target>
