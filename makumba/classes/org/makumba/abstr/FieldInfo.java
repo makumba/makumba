@@ -168,7 +168,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	}
 
 	public boolean isAssignableFrom(FieldDefinition fi) {
-		switch (fi.getIntegerType()) {
+		switch (getIntegerType()) {
 		case FieldDefinition._int:
 			return is_int_AssignableFrom(fi);
 		case FieldDefinition._intEnum:
