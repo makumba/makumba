@@ -705,4 +705,26 @@ public class TestTags extends JspTestCase {
 		
 	}
 
+    public void testBug946() throws ServletException, IOException, SAXException {
+        pageContext.include("testBug946.jsp");
+    }
+    public void endBug946(WebResponse response) throws IOException {
+        String responseText = response.getText().trim();
+        String expectedResponse = "<html>\n"+
+        "<head><title>Test Bug 946</title></head>\n"+
+        "<body>\n"+
+        "\n"+
+        "\n"+
+        "\n"+
+        "<form action=\"\" method=\"GET\">\n"+
+        "  Gender: <SELECT NAME=\"gender\" SIZE=1 >\n"+
+        "\t<OPTION value=\"0\">Female</OPTION>\n"+
+        "\t<OPTION value=\"1\" SELECTED>Male</OPTION>\n"+
+        "</SELECT>\n"+
+        "<input type=\"hidden\" name=\"__makumba__responder__\" value=\"35725075\">\n"+
+        "</form>\n"+
+        "\n"+
+        "</body>";
+        assertEquals(expectedResponse, responseText);
+    }
 }
