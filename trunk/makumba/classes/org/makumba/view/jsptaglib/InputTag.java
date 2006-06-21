@@ -91,8 +91,12 @@ String name = null;
     super.doStartAnalyze(pageCache);
   }
   
-  protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {
-      return pageCache.getQuery(getForm().getParentListKey(pageCache)).transformPointer(expr2);
+  protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {      
+      MultipleKey parentListKey = getForm().getParentListKey(pageCache);
+      if (parentListKey == null) { // If there is no enclosing mak:list
+          return expr2; 
+      }
+      return pageCache.getQuery(parentListKey).transformPointer(expr2);
   }
 
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
