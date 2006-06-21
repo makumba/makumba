@@ -250,11 +250,11 @@
 			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
 			{
 				clasUrl=clasUrl.concat('',clas,'.java');
-				cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
+				cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
 			} else {
 				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
 			}
-                        cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/makumba/makumba/classes/',clasUrl,'>CVS</a>');
+                        cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/makumba/makumba/classes/',clasUrl,'>CVS</a>');
 		   	document.write(cvsLink);
 		   } 
                 </script>
@@ -287,7 +287,7 @@
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@cvs.sf.net:/cvsroot/makumba" dest="work/makumba.distrib/"/>
+	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@makumba.cvs.sourceforge.net:/cvsroot/makumba" dest="work/makumba.distrib/"/>
 	<mkdir dir="${jar.place}/lib" />
 
 	<!-- make the source tarball: -->
