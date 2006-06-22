@@ -294,13 +294,6 @@ public abstract class Responder implements java.io.Serializable
     req.setAttribute(RESPONSE_STRING_NAME, "");
     String message="";
 	
-	Transaction db = null;
-	try {
-		db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
-	} catch (LogicException le) {
-		//TODO handle exception
-	}
-	
     for(Iterator responderCodes= getResponderCodes(req); responderCodes.hasNext();)
       {
 		String code=(String)responderCodes.next();
@@ -354,7 +347,10 @@ public abstract class Responder implements java.io.Serializable
 		}			
 		// end responder check
 		
+        Transaction db = null;
 		try{
+            db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+            
 			//check for multiple submition of forms
 			String reqFormSession = (String)RequestAttributes.getParameters(req).getParameter(formSessionName);
 			if (fr.multipleSubmitMsg != null && !fr.multipleSubmitMsg.equals("") && reqFormSession != null) {
@@ -402,7 +398,7 @@ public abstract class Responder implements java.io.Serializable
 			try {
 				db.close();
 			} catch (Throwable t) {
-				//TODO handle exception
+				t.printStackTrace();
 			}		
 		}
 		// messages of inner forms are ignored
