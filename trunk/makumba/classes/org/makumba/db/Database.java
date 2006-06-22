@@ -148,6 +148,9 @@ public abstract class Database {
     }
 
     public String getConfiguration(String v) {
+        if (v.equals("resource_pool_size")) {
+            return String.valueOf(connections.getSize());
+        }
         return config.getProperty(v);
     }
 

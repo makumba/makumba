@@ -143,7 +143,12 @@ public abstract class ResourcePool
 	}	    
       }
     }
-  } 
+  }
+
+  public int getSize() {
+      return stack.size();    
+  }
+  
 }
 
 /** a thread that wakes up periodically and asks the pool to look for stale resources */
