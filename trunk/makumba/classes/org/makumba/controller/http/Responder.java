@@ -347,29 +347,33 @@ public abstract class Responder implements java.io.Serializable
 		}			
 		// end responder check
 		
-        Transaction db = null;
 		try{
-            db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
-            
 			//check for multiple submition of forms
+            
 			String reqFormSession = (String)RequestAttributes.getParameters(req).getParameter(formSessionName);
 			if (fr.multipleSubmitMsg != null && !fr.multipleSubmitMsg.equals("") && reqFormSession != null) {
-				//check to see if the ticket is valid... if it exists in the db
-				Vector v = db.executeQuery("SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1" , reqFormSession);
-				if (v.size() == 0) { // the ticket does not exist... error
-					throw new LogicException(fr.multipleSubmitMsg);
-					
-				} else if (v.size() >= 1) { // the ticket exists... continue
-					//garbage collection of old tickets
-					GregorianCalendar c = new GregorianCalendar();
-					c.add(GregorianCalendar.HOUR, -5); //how many hours of history do we want?
-					
-					Object[] params = {reqFormSession, c.getTime()};
-					//delete the currently used ticked and the expired ones
-					db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2", params);
-				}				
-			}
-			//end mulitiple submit check
+                Transaction db = null;
+                try{
+                    db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+
+                    //check to see if the ticket is valid... if it exists in the db
+    				Vector v = db.executeQuery("SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1" , reqFormSession);
+    				if (v.size() == 0) { // the ticket does not exist... error
+    					throw new LogicException(fr.multipleSubmitMsg);
+    					
+    				} else if (v.size() >= 1) { // the ticket exists... continue
+    					//garbage collection of old tickets
+    					GregorianCalendar c = new GregorianCalendar();
+    					c.add(GregorianCalendar.HOUR, -5); //how many hours of history do we want?
+    					
+    					Object[] params = {reqFormSession, c.getTime()};
+    					//delete the currently used ticked and the expired ones
+    					db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2", params);
+    				}
+                }finally{ db.close(); }
+    		}    
+    		
+                //end mulitiple submit check
 			
 			Object result=fr.op.respondTo(req, fr, suffix, parentSuffix);
 			message="<font color=green>"+fr.message+"</font>";
@@ -394,12 +398,6 @@ public abstract class Responder implements java.io.Serializable
 		catch(Throwable t){
 			// all included error types should be considered here
 			ControllerFilter.treatException(t, req, resp);
-		} finally {
-			try {
-				db.close();
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}		
 		}
 		// messages of inner forms are ignored
 		if(suffix.equals(""))
