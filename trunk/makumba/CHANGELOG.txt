@@ -21,14 +21,17 @@ stefan: properly handles anchors in deleteLink (#anchor is moved to the back of 
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
-0.5.15; 01 dec 2005
+0.5.15; 26 jun 2006
 Bart and Johannes: handler families eliminated 
 Bart and Johannes: work on hibernate started
 Rudi fixed the "form responder lost" bug (363)
+Somebody fixed bug 190 (limiting forms to one submittal) but that still needs testing and documentation. It introduced bug 950, fixed now
+Fixed bug 908 (display warning if a connection is not close()d )
+
 maybe other things? change here...
 
 0.5.14.1; 02 may 2005
-fixed bug 838 
+fixed bug 838 <mak:input dataType="set char{...}"/>
 
 0.5.14;
 rudi; 21 mar 2005: fixed bug 49 (source viewers eat too many resources), improvements on jsp source code viewer: recognises EL, fixed a bug for nested tags & empty lines
