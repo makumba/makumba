@@ -1,0 +1,753 @@
+<!-- ============================================================================= -->
+<!-- ============ THESE CHANGES ARE NOT YET PART OF A STABLE RELEASE ============= -->
+
+--------------------------------------
+
+--------------------------------------
+
+TO BE RELEASED IMMEDIATELY (No need for more testing)
+-----------------------------------------------
+cristi: default database can also be determined by webapp name
+cristi: makumba indexes are dropped only if a hibernate config file exists
+
+NOT TO BE RELEASED YET (need more testing)
+------------------------------------------
+- add your changes -
+stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
+stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
+
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+<!-- ============================================================================= -->
+<!-- ============================== RELEASES ===================================== -->
+0.5.15; 26 jun 2006
+Bart and Johannes: handler families eliminated 
+Bart and Johannes: work on hibernate started
+Rudi fixed the "form responder lost" bug (363)
+Somebody fixed bug 190 (limiting forms to one submittal) but that still needs testing and documentation. It introduced bug 950, fixed now
+Fixed bug 908 (display warning if a connection is not close()d )
+
+maybe other things? change here...
+
+0.5.14.1; 02 may 2005
+fixed bug 838 <mak:input dataType="set char{...}"/>
+
+0.5.14;
+rudi; 21 mar 2005: fixed bug 49 (source viewers eat too many resources), improvements on jsp source code viewer: recognises EL, fixed a bug for nested tags & empty lines
+rudi; 21 mar 2005: fixed bug 94 (source viewer, linking of java files), adapted java source viewer to use syntax points, highlights reserved & keywords, provides links to API docs for sun & makumba classes, links to found .java files
+rudi; 21 mar 2005: fixed bug 812 (syntax viewer is polluting the log)
+cristi; 18 feb 2005: fixed bug 63, allowing for semiconstants in where, orderBy, groupBy, and variableFrom. Eliminated AttributeParametrizer heuristix.
+
+0.5.13.8; 1 feb 2005 cristi
+rudi's improvements on .JSP and .java source viewers
+
+0.5.13.7; 27 jan 2005 cristi
+fixed LIMIT bug with mysql 5
+reversed two arguments in 2 calls.
+
+0.5.13.6; 18 jan 2005 cristi
+fixed bug 793, errors computing error messages at @include
+
+0.5.13.5; 13 jan 2005 cristi
+fixed bug with 0.5.13.4 at jsp:include
+
+0.5.13.4; 13 jan 2005 cristi
+fixed bug 789. errors from other pages were shown
+
+0.5.13.3; 05 jan 2005 cristi
+fixed bug occuring at ptr mak:input if the title of the type is not string
+if mak:input has display false, the formatting of the input is not done any more (it was done, then ignored, resulting to resource waste)
+
+0.5.13.2; 04 jan 2005 cristi
+fixed small null-related problem with mak:input 
+fixed a number of teething problems of the new exception handling
+
+0.5.13.1; 03 jan 2005 cristi
+better fix for bug 60 (mak:option)
+currently running/analyzed tag is now displayed for all errors/exceptions (bug 780)
+changed signature of setTagKey()
+
+0.5.13; 02 jan 2005 cristi
+fixed bug 59 and 60: the option lists of set and ptr chosers can be freely formatted, ordered, etc, and nil can be an option
+
+0.5.12.7; 01 jan 2005 cristi
+fixed some bugs of 0.5.12.6: some methods became useless due to signature or name change
+renamed some more methods to indicate "atAnalysis"
+fixed an OQL parser problem for <mak:input ... value="nil" /> (queries without labels should not generate a FROM)
+
+0.5.12.6; 22 dec 2004 cristi
+refactoring: pageCache is not stored in the MakumbaTag anymore, but is passed to its methods
+made more clear which methods are executed at analysis and which at runtime
+
+0.5.12.5; 22 dec 2004 cristi
+fixed bug 722, problem with limit and offset when mak:list is included in mak:object
+printing file and line number information when a tag is mentioned in an error message
+keeping the file and line number info at runtime (not only at analysis)
+rudi: removed a parasite printout
+
+0.5.12.4; 7 dec 2004 cristi
+fixed minor bug: the reason of a OQL failed parsing in update was not shown
+
+0.5.12.3; 27 nov 2004 cristi
+fixed minor bug: the return value of Database.read() was not a proper Dictionary
+
+0.5.12.2; 4 nov 2004 cristi
+fixed bugs 55 and 57 (query and mak:list start and limit, also documented)
+improved a bit documentation in regard to multiple forms and deprecated mak:list features
+
+0.5.12.1; 19 oct 2004 cristi
+fixed a packaging error. org.makumba.db.Lock.mdd was missing from the 0.5.12 package
+
+0.5.12; 27 aug 2004 cristi
+first version that only works with JSP 2.0
+implemented some makumba functions: mak:count(), mak:maxCount(), mak:lastCount()
+
+0.5.11.2; 15 aug 2004 cristi
+support for the standar servlet authentication mechanism (bug 663)
+the support is as follows: 
+- the users and roles can be configured in the servlet container (e.g. Tomcat)
+- security constraints limiting some parts of the site to some users and roles can be declared in the webapp descriptor (web.xml)
+- if the value of the R attribute is requested (e.g. via $R or via mak:attribute) 
+and R is not present in the HTTP session, 
+and the standard servlet authentication indicates that there is a user U logged in and has the role R, 
+- then the value U is returned. 
+BL checkAttributes() can use Attributes.setAttribute() to transform the String attribute U into a pointer, or anything else.
+- otherwise, the old mechanism is used to search for R (in the page attributes, in findR() BL method, in the HTTP parameters)
+so the old login mechanism is still supported but the standard servlet mechanism (if used) takes precedence.
+
+0.5.11.1; 30 jul 2004 cristi
+support for Attributes.setAttribute()
+fixed a problem with tomcat 5 and tomcat > 4.1.20; the jar now includes META-INF/taglib.tld
+
+0.5.11; 21 jul 2004 cristi
+- refactoring to ensure efficient use of memory (fix for bug 709). soft caches were tested quite sucesfully in production
+- initial number of db connections is configurable in the db connection file
+
+0.5.10.5; 9 jul 2004, cristi
+Made sure that some resources are immediately freed at context reload, without waiting for garbage collection. Connections are freed and closed that way.
+
+0.5.10.4; 17 jun 2004, cristi
+The first stable release after a long time, incorporating major changes like transactions, which needed testing and were harder to release:
+
+adler; 16 jun 2004: fixed bug 103: reduce upload memory
+cristi; 10 jun 2004: fixed bug 699, pages executed without controller (e.g. from 404 handler) lead to infinite recursion
+cristi; 10 jun 2004: fixed bug 697, dots in <mak:input > names produced error
+cristi; 1 jun 2004: fixed bug 695, too often occurence of "servlet call not found in stacktrace"
+cristi; 24 may 2004: closed bug 430, real type
+cristi; 24 may 2004: fixed bug 686, problem with spaces in OQL queries
+cristi; 23 may 2004: fixed bug 48, transactions and locking
+cristi; 17 may 2004: fixed bug 544, support for @include
+cristi; 25 apr 2004: fixed bug: NotUniqueError was not detected in updates
+cristi; 21 apr 2004: fixed bug 37 (multiple forms). 
+- addForms can add to the subsets of object produced by the enclosing newForm.
+- any number of levels of form inclusion is possible but only the outermost form can have an action, onSubmit, and method and other attributes specific to HTML forms. 
+- all form actions take place in a single transaction, which is rolled back by the controller filter if there is an error. 
+- after_ methods are not executed in correct order (bug 689)
+cristi; 21 apr 2004: fixed bug 56. data inconsistencies between queries in groups of mak:lists are not possible anymore because all queries in a page are executed in a single (repeatable-read) transaction
+cristi; 7 apr 2004: fixed bug 4: unique keyword in MDDs. values that break unique constraints are detected and reported.
+cristi; 7 apr 2004: fixed bug 643: oldstyle indexes are dropped automatically 
+cristi; 6 apr 2004: fixed small bug: OQL errors reported as internal
+cristi; 1 apr 2004: MDDs read from JARs can be displayed by the syntax colouring org.makumba.devel classes
+cristi; 1 apr 2004: db= can be a <%= jsp runtime expression %>
+stefan; 27 feb 2004: bug 677 (".jspx" conflicting with XML & XHTML) - added support for ".jsps" alternative 
+cristi; 6 apr 2004: BL may not be available in .java format, just .class
+stefan; 6 feb 2004: bug 430 fixed (floating point type needed) 
+stefan; 6 feb 2004: bug 673 fixed (delete API call generates broken SQL) 
+stefan; 4 feb 2004: bug 639 semi fixed (MDD names in Catalog are longer, but still limited in length) 
+stefan; 1 feb 2004: bug 672 fixed (made !include mechanism in MDD insensitive to whitespace)
+cristi; 25 jan 2004: fixed bug 655 (Communication link failure). added staling prevention to the connection pool 
+stefan; 16 jan 2004: bug 512 fixed (Makumba fails to create new tables with Connector/J 3.0.8 and later). Ready, but halted by unfinished work done on bug 4. cristi: this is blocked mainly by work related to the fix of bug 48, that can only be relesed afer thorough tests. 
+stefan; 24 dec 2003: bug 661 fixed (whitespace in field definitions), fixed file also contains unique keyword support, so it needs to wait for that to be released
+stefan; 18 nov 2003: bug 638 fixed (Makumba altered InnoDB tables to InnoDB on MySQL 4.1)
+cristi; 6 nov 2003: published FieldDefinition.getNameFor(int)
+cristi; 25 oct 2003: org.makumba.db.sql.ParameterAssigner had a bug when wrong parameters are passed to a query, i put in a fix in revision 2.2, it's not tested enough, on the other hand it won't occur in working pages anyway
+stefan; 16 oct 2003: bug 516 (Names of identifiers in DB need to be made valid)
+cristi; 24 sept: a number of fixes related to ODBC (reopened bug 564) in org.makumba.db.sql.RecordManager (revisions 2.2-2.4). 
+cristi;21 sep 2003: bug 48: added transactions: commit() and rollback() in org.makumba.Database. Database.close() commits the transaction. Business logic rolls back the transaction in case of errors in the BL code, and committs it otherwise by calling . default transaction isolation is REPEATABLE READ. Autocommit is always OFF.
+stefan; 11 sep 2003: bug 565 (isolated SQL syntax for index creation)
+stefan; 22 jul 2003: bug 4 improved (uses databaseMetaData,getIndexInfo() to manageIndexes() )
+stefan; 16 jul 2003: bug 3 fixed (ptrIndex and ptrOne are declared as unique)
+stefan; 15 jul 2003: bug 4 fixed (unique indexes created and dropped in the DB as needed during table checking)
+stefan; 4 jul 2003: unique MDD keyword supported on abstract level and is used in table creation (part of bug 4)
+
+0.5.9.18; 18 jan 2004 fred
+fred; 18 jan 2004: bug 62c30 : implemented type check on IfTag at analysis time
+fred; 18 jan 2004: fix in .17 for bug 654 & bug 583 created an error for InputTag's setType()
+
+0.5.9.17; 6 dec 2003 fred
+fred; 1 dec 2003: bug 28 comment 12: error with getDeprecatedValues()
+fred; 6 dec 2003: bug 654 & bug 583: bad tag life cycle implementation; not ready for pooling.
+
+0.5.9.16; 30 nov 2003 fred
+stefan; *: bug 511 (dos2unix cr/lf)
+fred; 30 nov 2003: undid 1 change makumba.tld of 26 oct 2003 (mak:input#display is rtexpr)
+fred; 30 nov 2003: bug 653 fixed (STILL NEEDS TESTING) hidden input for char[] generates bad html
+cristi; 29 oct 2003: made makumba work from java applets, needed to catch security exceptions in org.makumba.MakumbaSystem, org.makumba.util.NamedResources, org.makumba.Text
+fred; 26 oct 2003: HtmlChoiceWriter: more javadoc, changed 1 method name. ChoiceEditor changed accordingly.
+fred; 26 oct 2003: changed in makumba.tld RuntimeExpression=true where it was wrong
+stefan; 22 oct 2003: SQL errors show state & code in the error page (see bug 612)
+stefan; 21 oct 2003: Fixed bug 624 (FieldEditor not handling null Integers)
+stefan; 21 oct 2003: Fixed bug 28 (support for deprecated values in intEnum also in presentation layer) and bug 601
+stefan; 11 oct 2003: bug 28 - support for "deprecated" options of int{} on abstract layer
+fred; 11 oct 2003: CHANGELOG docbug. Fixes (28, 537) wrongly reported as included in 0.5.9.15
+stefan; 4 oct 2003: fixed bug 537 (char[x]; x limited to 255)
+
+0.5.9.15; 11 oct 2003 fred
+stefan; * : updates in build.xml (v2.9 to v2.16)
+stefan; 7 oct 2003: followup bug 101 : updated TLD for deletelink, typo fixed in FormTagBase, usage in textareas
+stefan; 7 oct 2003: removed unnecessary / out-dated makumba.tld.1.2
+stefan; 26 sep 2003: new getVersionDewey in version.java
+fred; 21 sep 2003: bug 585 new HTML representation for choosers [risky]
+
+0.5.9.14; 26 sep 2003 cristi
+cristi; 21 sep 2003: provided enumeration of MDDs in MakumbaSystem (bug 341)
+cristi; 23 sep 2003: odbc support restored (bug 569, bug 564)
+cristi; 24 sep 2003: informix support 
+cristi; 23 sep 2003: fixed copying from other DBs (bug 93)
+cristi; 24 sep 2003: open, delete and copy will go through all known types if no type is indicated
+cristi; 25 sep 2003: fixed lack of recursion in org.makumba.db.open, now all types are checked
+cristi; 25 sep 2003: partial fix for bug 596: enum keyword removed from OQL translator
+stefan; 25 sep 2003: bug 101 (more JSP author control over the HTML produced by mak: tags)
+
+0.5.9.13; 21 sep 2003 fred
+fred; 21 sep 2003: improved bug 62, mak:if test=... instead of expr=..., check the expression type
+cristi; 20 sep 2003: fixed bug 583: cleanState renamed to release()
+fred; 20 sep 2003: fixed bug 584: a NPE in ValueComputer (fixed in v2.4)
+
+0.5.9.12; 16 sep 2003 fred
+cristi; 15 sep 2003: fixed bug 571 & bug 575 in OQL-translator.g, yet NEEDS TO BE TESTED
+cristi; 16 sep 2003: added constructor in OQLParseError (and usage in MakumbaSystem and SQLUpdate)
+cristi: 16 sep 2003: fixed bug 574, problem was that $bla was not transformed to $3 when doing OQL parsing during page analysis
+stefan; 15 sep 2003: added org.makumba.Text.equals()
+
+0.5.9.11; 16 sep 2003 fred
+fred; 15 sep 2003; bug 62 : mak:if
+fred; 15 sep 2003; bug 572 & 501: default=... and empty=...  (still NEEDS TESTING!)
+
+0.5.9.10; 11 sep 2003 fred
+# this release retrofits all summer work _except_ bug 3, bug 4
+# skipped a number (.9) on purpose, to mark the major change
+stefan; 10 sep 2003: bug 530 (org.makumba.util.HtmlUtils @deprecated, all makumba uses org.makumba.HtmlUtils)
+stefan; 10 sep 2003: fixed bug 557 (drop support for mak:list/object header= and footer=)
+stefan; 20 aug 2003: extended test suite, now ready for additional tests
+stefan; 6 aug 2003: bug 171 fixed (record printer now prints description of subtables)
+stefan; 2 jul 2003:improved solution for bug 449 (mak:value  maxLength, ellipsis...)
+stefan; 2 jul 2003: fix for bug 366 (printVar for empty texts should be empty)
+stefan; 30 jun 2003: bug 449 (limiting output of mak:value with new tag parameter e.g. maxLength)  semi fixed
+
+0.5.9.8; 7 sep 2003 stefan
+stefan; 8 sept 2003: fixed bug 539 (deprecate mak:list/object header= and footer=) Logs warning and gives a tip how to solve
+
+0.5.9.7; 7 sep 2003 fred
+fix for bug 555. IterationGroup starts at doBeginTag, ends at doEndTag; doesn't depend on onAfterBody to run.
+
+0.5.9.6; 6 sep 2003 fred
+# this release retrofits a number of "old improvements" which were at the HEAD of the main branch, 
+# but can easily fit in the stable release
+fred;  6 sep 2003: added Created-By: to the manifest (java version and vendor for the build)
+cristi; 1 sept 2003: build.xml - changed the semantics of publishJar to only publish the version, not to tag anything. Tag needs be done manually before. A warning is displayed about that. (note: also other small changes in build.xml v2.2 -> 2.8)
+fred; 24 aug 2003: bug 530 (added HtmlUtils to org.makumba package, the old class in org.makumba.util extends the new)
+stefan; 23 jul 2003: bug 518: MakumbaSystem.getBuildDate(), development version 'number' includes it
+fred; 1 jul 2003: fixed bug 34 (logout design, with wildcard "*") 
+
+0.5.9.5; 1 sep 2003 cristi
+bug 454: recompiled with antlr 2.7.2. Needs antlr.jar 2.7.2 in <webapp>/WEB-INF/classes/lib to run!
+
+0.5.9.4; 30 jun 2003 cristi
+bug 58: query tags now check for identical keys. the id attribute is suported and the programmer advised to use it to fix
+bug 17: accepted for "value": 1, 'Yes', nil, $xxx (see also bug 375, bug 59)
+support for dummy queries like "SELECT 5, nil, 'blabla'" for forms not included in a query
+special type handlers for nil OQL projectons
+bug 464: printing tag lines
+fred: fix for bug 275
+stefan; 27 jun 2003: bug 329 (chmod before ziping doc)  fixed
+stefan; 27 jun 2003: bug 488 (ant tagJar will not work if lib/ doesn't exist) fixed
+
+0.5.9.3; 26 jun 2003 cristi
+0.5.9 major improvements:
+completely refactored tag library, taking more advantage of page analysis
+static page analysis, no need for attributes to be passed to the analysis. 
+non-OQL-parameters restricted to where=, orderby= and groupBy=
+0.5.9.3-specific
+org.makumba.FieldDefinition exposes more functionality of org.makumba.abstr.FieldInfo
+org.makumba.view.jsptaglib uses no org.makumba.abstr (it was using RecordInfo and FieldInfo)
+better type checking in mak:input (addressing bugs 17, 451)
+check for existence of form action (bug 357)
+support for style, styleClass, styleId (bug 101) and possibility of adding more extra formatting
+
+0.5.8.8; 21 jun 2003 fred
+fixed bug 479 and 486 : parser cannot handle \n (newline) or \\ (backslash) in attribute value
+
+0.5.8.7; 18 jun 2003 fred
+fixed bug 465 (JSP parser should recognize and ignore JSP comments and Java scriplets)
+
+0.5.8.6; 8 jun 2003 cristi
+added page parsing, and page analysis (not yet static)
+removed training loops and lots of code that dealt with them. tr-loop structures are still in place, more refactoring is needed
+incorporated a potential fix for bug 403 (config file not found)
+
+0.5.7.6; 21 may 2003 cristi
+several bugs of the FLE protection are fixed. 
+the newController branch (0.5.6, 0.5.7) is now in the main CVS trunk
+
+stefan;23 apr 2003: source tarball is published whenever jar is published
+
+0.5.7; in preparation, cristi
+first-load errors are fixed, no need for more workarounds to avoid them, no need for instanceof checks
+
+bug 6 is finally fixed, the controller/form responder code is now separated
+
+cristi: some timestamps were read from DB as BigDecimal. they are normal Timestamp now
+cristi: improved HTML guess detection to include other tags
+cristi: if <mak:input > sees both a type and a value, they are checked for compatibility (bugs 371 and 372 resulted, were fixed).
+
+0.5.5.27; 27 mar 2003 stefan
+fixed bug 367 (Makumba Error messages are messy HTML)
+bug 327 (TagExceptions are linking wrongly)
+and bug 365 (comparison of date with TS_create or TS_modify produces type error) 
+
+0.5.5.26; 25 mar 2003 fred
+fixed bug 35 c7 (login form doesn't include POST parameters)
+
+0.5.5.25; 25 mar 2003 stefan
+source viewers generate valid html 4.01 + other visual improvements there
+removed old support for MDD discovery in metadata.files/ (however .{m|i}dd extension is still optional)
+LineViewer works better with strict Mozilla
+fixed bug 343 (browsing for mdds under "/dataDefinitions" fails)
+
+0.5.5.24; 03 mar 2003 stefan
+fixed bug 283 (some JSPX don't link pages indicated in jsp:include)
+fixed bug 282 (JSPX - absolute links to included files are broken when the makumba servlet context is not root)
+fixed bug 173 (getDataDefinition() works for java package names, should not)
+centralized version computation
+fixed bug 70 (returns field name for description if description is not set)
+
+0.5.5.23; 28 feb 2003 stefan
+fix for bug 291 in LineViewer
+
+0.5.5.22; 27 feb 2003 cristi
+fixes for bugs 
+- 300: bad treatment of root data in the case of multiple roots)
+- 310: problem with AT_BEGIN variables in jasper2, replaced with NESTED+AT_END
+- 311: problem with jasper2 reusing InputTags, fixed
+
+0.5.5.21; 20 feb 2003 cristi
+better fix for bug 301: connections seem to be closed by a non-makumba entity with mysql 4
+through a fix for bug 314: ResourcePool loses elements in garbage collection finalization
+
+0.5.5.20; 18 feb 2003 cristi
+fix for bug 301: connections seem to be closed by a non-makumba entity with mysql 4
+
+0.5.5.19; 12 feb 2003 stefan
+fixed bug 299 (content type was prefixed by ' ' on file upload)
+
+0.5.5.18; 13 jan 2003 stefan
+publish jar uses download.makumba.org and it publishes also to sourceforge.net
+makumba.jar is always the latest one
+makumba-a_b_c_d.jar files are kept for historical reasons.
+
+----------------------------------------------
+| 2003-01-08 - CVS repository lost due to HDD failure.    
+| reconstructed all sources, but lost history, hence lover revision numbers
+----------------------------------------------
+
+0.5.5.17; 6 jan 2003 cristi
+better ways of buiding jars, without interfering with ../../util-java/lib
+
+better util.longContent logging level and documentation (too little change for a new version)
+
+0.5.5.16; 9 dec 2002 cristi
+added the path info to login form action to make login work in the pages that use path info in the URL, e.g. /archive/doc/xx-yy
+
+0.5.5.15; 6 dec 2002 cristi
+added a small servlet so parade can set the logging root at webapp runtime.
+some more meaningful cache names
+
+0.5.5.14; 4 dec 2002 cristi
+fixed bug 208 "comparing Date to a timestamp field (TS_*) always fails"
+
+0.5.5.13; 3 dec 2002 cristi
+fix for bug 189  "mak:LIST SEPARATOR not working if list is on top level"
+added cache size info
+soft reference alternative for static caches now available (util.SoftNamedResources)
+
+0.5.5.12; 30 nov 2002 cristi
+startup/cleanup functionality needed for web applications
+now makumba will correctly clean up its caches at webapp reload if its servlet context listener is used
+
+0.5.5.11; 27 nov 2002 cristi
+makumba registers the loading time for applications to know it
+
+0.5.5.10; 27 nov 2002 cristi
+refactored to expose the OQL analyzer and remove dependencies between packages
+
+0.5.5.9; 26 nov 2002 cristi
+removed some memory leaks: better OQL parse caching, no more prepared statement caching
+
+0.5.5.8; 20 nov 2002 cristi
+simpler AttributeParametrizer (will need rewrite anyway)
+autoReconnect=true is default now (to address bug 139)
+minor bug fixed in RecordManager (guards against DBConnectionWrapper class cast exception)
+
+0.5.5.7; 20 nov 2002 cristi
+better database information
+
+0.5.5.6; 20 nov 2002 cristi
+fix for bug 139
+
+0.5.5.5; 19 nov 2002 stefan
+jdbc driver info shown at startup
+
+0.5.5.4; 18 nov 2002 cristi
+more info logged, in the attempt to fix bug 139, "Communication link failure"
+
+0.5.5.3; 8 nov 2002 cristi
+standard logging for all classes. took out logging directly to console
+
+0.5.5.2; 7 nov 2002 cristi
+db is now a variable argument to the tags. may break in pages that change it often
+
+0.5.5.1; 6 nov 2002 cristi
+fixed deletion of objects coming from another db
+
+0.5.6.1; 6 jan 2003 cristi
+- refactored the forms further, only the jsptaglib1-dependent features are now left in org.makumba.view.jsptaglib, the rest of the stuff is in form responders, org.makumba.controller
+action
+- while refactoring, i got more acquainted to the jsptaglib code, especially forms, so there are more features...
+- <mak:action> is now added and documented to support complex form actions that include makumba tags
+- infrastructure for multiple forms is now in place, and runs ok in the 'particular' case of the simple form. 
+
+0.5.6; 17 dec 2002 cristi
+- the need for "first makumba tag" is eliminated for login and form response
+- now anything can be a response or can request login, including plain HTTPs or JPGs. that also means that all separate (non-include) accesses (e.g. images) are authenticated!
+- as excpected, authentication is only done once, included JSPs are not authenticated
+- some tag classes moved (login, logout, response) so tomcat/work/Standalone/localhost/context_name will have to be deleted before working with this version
+- quite a lot of the form response code moved from org.makumba.view.jsptaglib to org.makumba.controller.http, org.makumba.controller.html, org.makumba.controller.jsp. that should make the taglib rewrite easier.
+
+0.5.5; 3 nov 2002
+cristi: joined the 0.5.4 branch with the main branch
+
+stefan: fixed bug 75
+
+cristi: work on build.xml
+- added the tagJar target, which tags a version from the current checked out branch, but doesn't publish it, just places it in util-java/lib
+- added makeJar which compiles and jars any version of makumba and places it in util-java/lib
+- deleted target dist2, put jsptaglib2 in another branch and use tagJar instead
+- added description to main targets
+
+0.5.4.4; 3 nov 2002 cristi
+risk-free connection closing. it was possible to close a connection twice, it was possible to close a connection owned by somebody else...
+
+0.5.4.3; 30 oct 2002 cristi
+connections used to insert in the catalog were not close()d. 
+
+0.5.4.2; 29 oct 2002 cristi
+fixed bug 82
+
+0.5.4.1; 28 oct 2002 cristi
+fixed bug 76, had forgotten to join latest changes in 0.5.3.36
+
+0.5.4; 27 oct 2002 cristi
+fixed bug 2 (too many connections) and added update(where) and delete(where)
+
+0.5.3.36; 22 oct 2002 cristi
+fixed http://bugs.best.eu.org/show_bug.cgi?id=43
+
+0.5.3.35; stefan
+fix in dateEditor
+
+0.5.3.34; 9 sep 2002 cristi
+getParameterValues doesn't work for multipart requests (e.g. file upload)
+
+0.5.3.33; 3 sep 2002 cristi
+allow successful response to be detected by the page code
+
+0.5.3.32; 31 aug 2002 cristi
+a small fix that makes makumba compiled with 1.4 to run with 1.3
+
+0.5.3.31; 28 aug 2002 stefan
+stefan: 28 aug 2002: TS_* fields are treated as dates - can be formatted for display via taglib
+cristi: 26 aug 2002: started jsptaglib2
+stefan: 27 jun 2002: added more html tag examples in htmlUtil for html detection
+stefan: 15 jun 2002: distribution jar contains better build host info
+cristi: 14 jun 2002: in case of a wrapper that does a redirection, the action of the generated login form contains the original URL instead of the redirected url
+
+0.5.3.30; 22 may 2002 cristi
+small fix in IN SET 
+
+0.5.3.29; 23 apr 2002 cristi
+one connection per query in the pools
+no db access limit by default
+
+0.5.3.28; 23 apr 2002 cristi
+database access experiments
+better db access logging
+
+0.5.3.27; 18 apr 2002 cristi
+AttributeNotFoundException is now a programmer error and is reported even if there is no <mak:response /> 
+Stacktraces are fixed and shown whenever they occur in business logic
+
+0.5.3.26; 04 apr 2002 cristi
+detected the source of the database-related timezone problems
+timezone settings back to the default.
+
+0.5.3.25; 28 mar 2002
+cristi: 28 mar 2002: fixed a small bug in org.makumba.view.jsptaglib.FormResponder
+stefan: 28 mar 2002: COPYING renamed to COPYING.txt
+stefan: 27 mar 2002: added makumba reference (doc and pdf)
+
+0.5.3.24; 25 mar 2002 cristi
+fixed a timezone bug
+
+0.5.3.23; 24 mar 2002 stefan
+distribution jar contains META-INF/makumba.tld
+COPYING contains latest LGPL v2.1 (http://www.gnu.org/copyleft/lesser.txt)
+
+0.5.3.22; 23 mar 2002 stefan
+added manifest.mf file to the distribution jar
+
+0.5.3.21; 20 mar 2002 cristi
+fixed a design flaw: the text swapping code was allocating 32k for each text, no matter how small. due to that, database copies needed huge memory. every other code that uses texts was affected, due to CPU-hungry memory allocation efforts.
+
+0.5.3.20; 19 mar 2002 stefan
+cristi: pageContext.findAttribute(pageContext.EXCEPTION) should return a reason for exception (if specified in logic). instead of 
+mak:response for login forms
+
+0.5.3.19; 14 mar 2002 stefan
+lowercase generated delete link html tag 
+integer html tag parameters in quotes (size, rows, cols...) in FieldFormatter
+
+0.5.3.18; 14 mar 2002 stefan
+lowercase generated html tags
+html tag parameters in quotes
+removed unnesecary \n
+
+0.5.3.17; 13 mar 2002 cristi
+better treatment of dataDefinitions -> dataDefinitions/ redirect
+
+0.5.3.16; 13 mar 2002 cristi
+classes/dataDefinitions/ is preferred to classes/ when looking for the root of dataDefinitions/
+
+0.5.3.15; 12 mar 2002 cristi
+performance improvement in choiceEditor: if the field is hidden, options are not read
+
+0.5.3.14; 6 mar 2002 cristi
+fixed bug: "cannot have <mak:list > in <mak:form > when the form is root tag" (tnx Amo). lists in other kind of root forms (e.g. newForm) might still present problems
+adjusted the date printouts at database opening/closing
+
+0.5.3.13; 4 mar 2002 cristi
+time zone and locale are now treated uniformly 
+better error handling in org.makumba.Text
+
+0.5.3.12; 21 feb 2002 stefan
+org.makumba.devel.jspViewer adds context path before links in header
+
+0.5.3.11; 17 feb 2002 stefan
+fixed bug: login tag is now context aware
+
+0.5.3.10; 9 feb 2002 cristi
+fixed small bug: BL detection didn't work if MakumbaController was missing
+made the source viewers generate correct links if the context is not root
+
+0.5.3.9; 7 feb 2002 cristi
+fixed bug: only 30 JSP->OQL query attributes were supported correctly due to an int (32 bit) mask. using BigInteger instead (tnx Jesus)
+fixed bugs in Text and LongData related to Text.toString()
+fixed bug in NullableValueStrategy, more precise determination of the enclosing query status before repetition
+LongData is now fully used in long page swapping
+
+0.5.3.8; 5 feb 2002 cristi
+made all long texts swap to disk. swapping of the pages uses the same code.
+
+requiredAttributes() replaced by checkAttributes(Attributes, Database) in the business logic
+
+UnauthenticatedException (wrong username/password) was separated from UnauthorizedException (good authentication but no access to a resource) are now separated, but both produce a login screen
+
+a more general catch() ensures catching more errors in the business logic.
+
+db reconnection message more clear 
+
+toto: improved org.makumba.util.NameCase
+
+0.5.3.7 3 feb 2002, stefan
+fixed bug: dateEditor was system date dependant, generating weird interface in february... 
+
+0.5.3.6 1 feb 2002, stefan
+new jsp tag <mak:version/> prints a CVS tag 
+
+0.5.3.5 31 jan 2002, cristi
+small feature: logging of connection and disconnection dates
+
+0.5.3.4 29 jan 2002, cristi
+fixed bug: the fix of "mak:value with nullable expression" in 0.5.3.3 produced wrong results if the nullable <mak:value > was in a looping <mak:list> (tnx Stefan)
+
+fixed bug: tag parameters "lineSeparator" and longLineLength produced NPE in org.makumba.view.FieldFormatter#checkParams (tnx Stefan)
+
+fixed bug: mak:input type="hidden" dataType="char" (and text) produced strange HTML when the field value is null (tnx Raul). 
+
+devel feature: shortened stack traces shown to developer in org.makumba.devel.TagExceptionServlet. eliminated long tomcat-specific stacktrace lines.
+
+0.5.3.3 25 jan 2002, cristi
+fixed bug: double mak:value with nullable expression didn't work
+fixed bug: orderBy in a mak:list that had an enclosing mak:list produced empty result
+
+0.5.3.2 22 jan 2002, cristi
+fixed the null date problem at form submit
+
+0.5.3.1 21 jan 2002, cristi
+fixed a bug that was not displaying some <mak:object> bodies at first page run
+files in the servlet context are now linked by the source viewers
+
+0.5.3 18 jan 2002, cristi
+fixed bugs related to checking values (for int, charEnum). tnx Stefan, Jesus, Janez.
+
+devel: source file paths are printed in canonical form now (no more \..\ )
+
+design change: mak:attriute sets the attribute to null if exceptionVar is present
+
+mak:input can now have both a dataType and an internal declared type. their compatibilty is computed. before, if both were present, an error was shown.
+
+since representing set int{ ...}  and set char {...} as separate set is not convenient at presentaion level, they were updated to work again
+- specification update, removed their deprecation
+- at database level, they can now be updated with Vectors (similar to sets to foreign types)
+- OQL was modified to interpret a "lonely" label of type setint or setchar as the set member (rather than a pointer to the record where the member is kept) 
+- presentation level (org.makumba.view.jsptaglib.set*EnumEditor)
+
+bugfix: files included in login.jsp are not asked for login, to avoid infinite loops (tnx Priit)
+
+groupBy is not inherited to inner mak:list anymore (tnx Fred)
+
+0.5.2.3 17 jan 2002
+stefan: deleteLink works with actions containing parameters (no double '?')
+
+0.5.2.2 16 jan 2002
+cristi: fixed a bug that was executing form actions multiple times due to different PageContext objects being created at jsp:include (double inserts signaled by Jesus and Stefan)
+
+cristi: fixed a documentation bug for addForm (which had messed up Raul's mind)
+
+0.5.2.1 15 jan 2002
+cristi: improvements in file upload memory profile, which required improvements in org.makumba.Text, and changes in org.makumba.db.sql.textManager
+
+0.5.2 14 jan 2002
+cristi: implemented file upload
+
+0.5.1 10 jan 2002
+cristi: made the OQL IN operator work
+
+0.5.0.10 10 dec 2001
+stefan added: String org.makumba.MakumbaSystem.getVersion()
+
+0.5.0.9  10 dec 2001
+stefan fixed a </mak:deleteLink> - now really prints </A>
+
+0.5.0.8   4 dec 2001
+fixes related to empty sets and one-element sets
+	
+0.5.0.7   3 dec 2001
+Stefan fixed a bug in intEnum presentation
+cristi fixed a bug in resource loading when makumba is loaded dynamically. affected view of dataDefinition/ and classes/*
+
+0.5.0.6 23 nov 2001
+better hooks for import
+	
+0.5.0.5 21 nov 2001
+adapted for tomcat4
+better Jar distribution
+	
+0.5.0.4 19 nov 2001
+fixed a bug in source viewer
+
+0.5.0.3 17 nov 2001
+bugfixes related to table altering, importing
+	
+0.5.0.2 4 nov 2001
+bugfixes in OQL parser: sets in the same table didn't work, intEnum replacement was order-dependent
+importer issues warnings instead of stopping on invalid values
+
+0.5.0.1 2 nov 2001
+minor bugfixes in importer and mak:value set/nullable checker
+
+0.5    31 Oct 2001
+The first complete version
+fast <mak:list> and <mak:object> rendering engine (since May)
+finished design and support for forms and business logic
+API final design, API isolation in org.makumba
+better OQL , strict type checking
+Makumba-> Java communication in the page
+Java->Makumba communication in the page
+Support for type-specific HTML formatting
+Forms and generic forms
+Generic form INPUT
+Business logic lookup designed and implemented
+Security based on attributes, designed and implemented
+
+	
+0.3 18 Feb 2001
+Started a new database layer, based on prepared statements
+	
+0.2.1 04 Jan 2001
+added a lot of small features
+- deduce jdbc url from the database config name
+- deduce dbclass and tableclass from the SQL engine type 
+- alteration rules based on prefixes rather than table names
+- extensions of mtd filez, idd, mdd, no-extensions are accepted but warned
+- database lookup files, MakumbaDatabase.properties
+- minerva works with present makumba
+- org.makumba.db.copy, org.makumba.db.open
+- fixed mysql text bug, the object returned was byte[] instead of String
+- fixed a bug in postgresql getFieldName
+- added ANT build.xml file
+- tested minerva on postgres, on devel (host#dir, etc)
+- made copy not take place if table is not empty
+- better config file error messages 
+- cached Selects in MakumbaDatabase.properties and API, re-cache
+- added support for Java-based SQL engines: cloudscape, QED, FirstSQL
+- better closing
+- debug options: update and query
+- general JDBC options, sql.user, sql.password, sql.anything_else_that_the_driver_supports
+- better SQL escape
+- re-organised SQL engine documentation
+
+0.2 18 dec 2000
+name changed to makumba
+reorganized packages
+slash in data definitions is replaced by dot
+metadata.files replaced by dataDefinitions
+
+0.1.3 21 Nov 2000, early morning
+New-generation documentation!
+Fixed an unpdate bug
+Added automated tests
+Started the JSP taglib... we'll soon have a presentation layer
+addUnderscore in table names to avoid SQL keywords. will be standard
+shortening table names using templates for SQL engines that need this
+	
+0.1.2  14 Nov 2000
+Added better type introspection (RecordInfo)
+Added OQL functionality (major change)
+Fixed some assorted bugs, especially in SQL
+
+0.1.1.4  12 March 2000
+added support for odbc version 4 (by Igor) and MS Excel
+renamed odbc to odbcjet
+added Database.close() method for DB drivers that need it
+
+0.1.1.3  9 March 2000
+borrowed some bugfixes from Minerva
+
+0.1.1.2  4 March 2000
+fixed metadata.sql.Database so now it runs with java 1.2
+
+0.1.1.1  28 Feb 2000
+
+cleaned the garbage from sources and put it in the docs package
+corrected bin/distr-sources accordingly
+
+0.1.1	26 Feb 2000
+reorganized directories (put all scripts in bin), cleaned some garbage
+
+better release script for sources. still need release scripts for user documentation, developer documentation, website
+fix a bug in testQuery
+
+0.1	24 Feb 2000
+first numbered version. has support for odbc, msql, mysql, pgsql. no finished interface code, poor documentation
