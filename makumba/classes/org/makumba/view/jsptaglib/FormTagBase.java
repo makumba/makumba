@@ -125,17 +125,12 @@ public class FormTagBase extends MakumbaTag implements BodyTag
   }
 
 
-  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache){
-      if (!shouldComputeBasePointer()) {
-          return;
-      }
-      ValueComputer vc;
-      if (pageCache.usesHQL) { // if we use hibernate, we have to select object.id, not the whole object
-          vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject + ".id", pageCache);
-      } else {
-          vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);            
-      }
-      pageCache.valueComputers.put(tagKey, vc);
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    if(!shouldComputeBasePointer())
+      return;
+    ValueComputer vc= ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);
+    pageCache.valueComputers.put(tagKey, vc);
   }
 
   FormTagBase findParentForm(){

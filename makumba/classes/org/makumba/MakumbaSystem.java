@@ -24,7 +24,6 @@
 package org.makumba;
 import java.io.StringReader;
 
-import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -153,17 +152,6 @@ public class MakumbaSystem
     return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
   }
 
-  /** Make a field definition with the elementary type*/
-  public static FieldDefinition makeFieldOfType(String name, String type, String description)
-  {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
-  }
-
-  /** Make a field definition identical with the given one, except for the name*/
-  public static FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description)
-  {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
-  }
   /** Get the DataDefinition of the records returned by the given OQL query 
    *@deprecated use {@link #getOQLAnalyzer} for better OQL functionality
    */
@@ -409,22 +397,6 @@ The programmer could just as well decide that all makumba logging at or over the
     MakumbaSystem.getMakumbaLogger("db.query.compilation").fine("OQL to SQL: "+ diff +" ms: "+oqlQuery);
     return t;
   }
-  
-    /**
-     * Get the Hibernate HQL analyzer for the indicated query
-     */
-    static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
-        return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
-    }
-
-    static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
-        new NamedResourceFactory() {
-            private static final long serialVersionUID = 1L;
-
-            protected Object makeResource(Object nm, Object hashName) throws Exception {
-                return new HqlAnalyzer((String) nm);
-            }
-        }, true);
 
   /** 
   * Discover mdds in a directory in classpath.
