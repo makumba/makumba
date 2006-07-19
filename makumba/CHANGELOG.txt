@@ -13,14 +13,26 @@ cristi: makumba indexes are dropped only if a hibernate config file exists
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
 - add your changes -
+rudi, manu, cristi: hibernate database management
+rudi, manu, cristi: HQL in JSPs used via a new taglib URI
 stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
 stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.6; 19 jul 2006
+rudi, manu, cristi: hibernate database management
+rudi, manu, cristi: HQL in JSPs used via a new taglib URI
+stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
+stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
+cristi: default database can also be determined by webapp name
+cristi: makumba indexes are dropped only if a hibernate config file exists
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.15.1; 
+same as 0.5.15, made after a number of bugfixes to distinguish from older jars
+
 0.5.15; 26 jun 2006
 Bart and Johannes: handler families eliminated 
 Bart and Johannes: work on hibernate started
