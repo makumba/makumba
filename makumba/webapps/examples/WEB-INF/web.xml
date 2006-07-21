@@ -63,12 +63,4 @@
   		../../../servlet_context/WEB-INF/makumba.tld
   	</taglib-location>
   </taglib>
-
-  <taglib>
-  	<taglib-uri>http://www.makumba.org/hibernate</taglib-uri>
-  	<taglib-location>
-  		../../../servlet_context/WEB-INF/makumba-hibernate.tld
-  	</taglib-location>
-  </taglib>
-  
 </web-app>

@@ -10,7 +10,6 @@ field=char[80]           ;another reserved word
 
 militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
 driver=yesNo		 ;Driving Licence
-age=int				;Age
 
 weight=real ; weight in kilos
 
