@@ -1,0 +1,5 @@
+# Person.mdd
+# Description file for Person entity
+
+name=not null char[32]  ; Name
+age=not null int        ; Age
