@@ -30,6 +30,9 @@ cristi: makumba indexes are dropped only if a hibernate config file exists
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.15.2; 22 jul 2006
+cristi: fixed bug 953
+
 0.5.15.1; 
 same as 0.5.15, made after a number of bugfixes to distinguish from older jars
 
