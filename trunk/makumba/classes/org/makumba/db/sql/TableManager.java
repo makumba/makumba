@@ -1091,6 +1091,8 @@ public class TableManager extends Table {
 		case FieldDefinition._ptrIndex:
 			return toSQL_ptrDB_Object(fieldName, o);
 		case FieldDefinition._date:
+        case FieldDefinition._dateCreate:
+        case FieldDefinition._dateModify:
 			return toSQL_dateTime_Object(fieldName, o);
 		default:
 			return o;
