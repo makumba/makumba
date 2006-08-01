@@ -310,13 +310,49 @@
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
 
+	<target name="uploadJar" depends="compile" if="tag" 
+	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version" >
+	<mkdir dir="work/makumba.distrib" />
+	<delete dir="work/makumba.distrib/makumba/" />
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	<antcall target="uploadMadeJar" />
+	</target>
+
+	<target name="uploadMadeJar" >	
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc/download"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+                <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
+    	</fileset>
+	</ftp>
+		<ftp server="upload.sourceforge.net"
+			userid="anonymous"
+			password="makumba.developer@makumba.org"
+			remotedir="incoming"
+			binary="yes"
+		>
+	    	<fileset dir="lib/">
+	                <include name="${tag}.jar"/>
+	                <include name="${tag}-src.zip"/>
+		</fileset>
+		</ftp>
+		<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
+			http://sourceforge.net/project/admin/qrs.php?group_id=25704
+			within the next 24 hours.
+		</echo>
+	</target>	
 
 	<target name="publishJar" depends="compile" if="tag" 
 	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web" >
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagThis</echo>
-	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	<antcall target="uploadJar"></antcall>
 
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -326,27 +362,9 @@
 	>
     	<fileset dir="lib/">
       		<include name="makumba.jar" />
-                <include name="${tag}.jar"/>
-                <include name="${tag}-src.zip"/>
     	</fileset>
 	</ftp>
-
-	<ftp server="upload.sourceforge.net"
-		userid="anonymous"
-		password="makumba.developer@makumba.org"
-		remotedir="incoming"
-		binary="yes"
-	>
-    	<fileset dir="lib/">
-                <include name="${tag}.jar"/>
-                <include name="${tag}-src.zip"/>
-	</fileset>
-	</ftp>
-	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
-		http://sourceforge.net/project/admin/qrs.php?group_id=25704
-		within the next 24 hours.
-	</echo>
-        </target>
+    </target>
 
 
 	<target name="publishDoc" description="publishes the documentation">
