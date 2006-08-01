@@ -226,6 +226,7 @@ public class Database extends org.makumba.db.Database {
 					h.put("DATA_TYPE", new Integer(rs.getInt("DATA_TYPE")));
 					h.put("TYPE_NAME", rs.getString("TYPE_NAME"));
 					h.put("COLUMN_SIZE", new Integer(rs.getInt("COLUMN_SIZE")));
+                    h.put("IS_NULLABLE", rs.getString("IS_NULLABLE"));
 					v.addElement(h);
 				}
 			rs.close();

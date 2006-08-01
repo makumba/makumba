@@ -36,7 +36,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.makumba.AllowedException;
 import org.makumba.DBError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
@@ -52,7 +51,7 @@ import org.makumba.util.ClassResource;
 public class TableManager extends Table {
 	protected String tbname;
 
-	protected String handlerList;
+	protected String handlerList, handlerListAutoIncrement;
 
 	protected String indexDBField;
 
@@ -72,7 +71,7 @@ public class TableManager extends Table {
 
 	Dictionary keyIndex;
 
-	String preparedInsertString, preparedDeleteString,
+	String preparedInsertString, preparedInsertAutoIncrementString, preparedDeleteString,
 			preparedDeleteFromString, preparedDeleteFromIgnoreDbsvString;
 	
 	/**
@@ -126,8 +125,9 @@ public class TableManager extends Table {
 			SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
 			try {
 				checkStructure(dbc, config);
-				initFields(dbc, config);
-				preparedInsertString = prepareInsert();
+                initFields(dbc, config);
+				preparedInsertString = prepareInsert(false);
+                preparedInsertAutoIncrementString = prepareInsert(true);
 				preparedDeleteString = prepareDelete();
 				preparedDeleteFromIgnoreDbsvString=  "DELETE FROM " + getDBName();
 				preparedDeleteFromString = "DELETE FROM " + getDBName()
@@ -228,6 +228,10 @@ public class TableManager extends Table {
 
 	Hashtable extraIndexes;
 
+    private boolean autoIncrementAlter;
+
+//    private boolean primaryKeyOK;
+
 	protected void initFields(SQLDBConnection dbc, Properties config)
 			throws SQLException {
 		try {
@@ -289,6 +293,11 @@ public class TableManager extends Table {
 		StringBuffer sb = new StringBuffer();
 		fieldList(sb, dd.getFieldNames().elements());
 		handlerList = sb.toString();
+        sb= new StringBuffer();
+        Enumeration e= dd.getFieldNames().elements();
+        e.nextElement();
+        fieldList(sb, e);
+        handlerListAutoIncrement=sb.toString();
 		indexField = dd.getIndexPointerFieldName();
 		indexDBField = getFieldDBName(indexField);
 	}
@@ -389,7 +398,8 @@ public class TableManager extends Table {
 		}
 		int n = getSQLDatabase().exec(ps);
 
-		resetPrimaryKey();
+        if(!getSQLDatabase().isAutoIncrement())
+            resetPrimaryKey();
 		return n;
 	}
 
@@ -472,18 +482,17 @@ public class TableManager extends Table {
 	boolean alter(SQLDBConnection dbc, String fieldName, String op)
 			throws SQLException {
 		Statement st = dbc.createStatement();
-		String s = "ALTER TABLE " + getDBName() + " " + op + " "
-				+ inCreate(fieldName, getSQLDatabase());
-		MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-				getSQLDatabase().getConfiguration() + ": " + s);
-		try {
-			String command = "DROP INDEX " + getFieldDBIndexName(fieldName)
-					+ " ON " + getDBName();
-			st.executeUpdate(command);
-			MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
-					"SUCCESS: " + command);
-		} catch (SQLException e) {
-		}
+        if (!autoIncrementAlter)
+            try {
+                String command = "DROP INDEX " + getFieldDBIndexName(fieldName) + " ON " + getDBName();
+                st.executeUpdate(command);
+                MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("SUCCESS: " + command);
+            } catch (SQLException e) {
+            }
+        autoIncrementAlter=false;
+        String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
+        MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                getSQLDatabase().getConfiguration() + ": " + s);
 		st.executeUpdate(s);
 		handlerExist.put(fieldName, "");
 		dbc.commit();
@@ -608,7 +617,7 @@ public class TableManager extends Table {
 
 	//---------------------------------------
 
-	protected String prepareInsert() {
+	protected String prepareInsert(boolean autoIncrement) {
 
 		/* TODO: concatAll() */
 		StringBuffer ret = new StringBuffer();
@@ -618,13 +627,15 @@ public class TableManager extends Table {
 		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
 			fieldName = (String) e.nextElement();
-			if (getFieldDefinition(fieldName).getType().startsWith("set"))
-				continue;
+			if (getFieldDefinition(fieldName).getType().startsWith("set")
+                    || getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._ptrIndex
+                    && autoIncrement)
+                continue;
 			ret.append(sep).append(inPreparedInsert(fieldName));
 			sep = ",";
 		}
 
-		return "INSERT INTO " + tbname + " (" + handlerList + ") VALUES ("
+		return "INSERT INTO " + tbname + " (" + (autoIncrement?handlerListAutoIncrement:handlerList )+ ") VALUES ("
 				+ ret + ")";
 	}
 
@@ -637,17 +648,23 @@ public class TableManager extends Table {
 		try {
 			if (dbc instanceof DBConnectionWrapper)
 				dbc = ((DBConnectionWrapper) dbc).getWrapped();
-
-			PreparedStatement ps = (PreparedStatement) ((SQLDBConnection) dbc)
-					.getPreparedStatement(preparedInsertString);
-
+			
+       
+			PreparedStatement ps;
+            if (wasIndex || !getSQLDatabase().isAutoIncrement())
+                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertString);
+            else
+                ps= (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertAutoIncrementString);
 			int n = 0;
 			for (Enumeration e = dd.getFieldNames().elements(); e
 					.hasMoreElements();) {
 				String fieldName = (String) e.nextElement();
 				if (getFieldDefinition(fieldName).getType().startsWith("set"))
 					continue;
-				n++;
+                if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._ptrIndex && !wasIndex
+                        && getSQLDatabase().isAutoIncrement())
+                    continue;
+                n++;
 				try {
 					setInsertArgument(fieldName, ps, n, d);
 				} catch (Throwable ex) {
@@ -669,7 +686,16 @@ public class TableManager extends Table {
 			}
 			if (getSQLDatabase().exec(ps) == -1)
 				throw findDuplicates((SQLDBConnection) dbc, d);
-			Pointer ret = (Pointer) d.get(indexField);
+            
+            if(!wasIndex && getSQLDatabase().isAutoIncrement()){
+                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement("SELECT LAST_INSERT_ID()");
+                ResultSet rs= ps.executeQuery();
+                rs.next();
+                d.put(indexField, new SQLPointer(getDataDefinition().getName(), rs.getInt(1)));
+            }
+            
+            Pointer ret=(Pointer) d.get(indexField);;
+                
 			if (!wasIndex)
 				d.remove(indexField);
 			if (!wasCreate)
@@ -1148,12 +1174,14 @@ public class TableManager extends Table {
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
 			return in_char_Create(fieldName, d);
+        case FieldDefinition._ptrIndex:
+            return in_primaryKeyCreate(fieldName, d);
 		default:
 			return base_inCreate(fieldName, d);
 		}
 	}
 
-	//original inCreate() from FieldManager
+    //original inCreate() from FieldManager
 	public String base_inCreate(String fieldName, Database d) {
 		return getFieldDBName(fieldName) + " "
 				+ this.getFieldDBType(fieldName, d);
@@ -1300,15 +1328,15 @@ public class TableManager extends Table {
 			set_timeStamp_InsertArgument(fieldName, ps, n, d);
 			break;
 		case FieldDefinition._ptrIndex:
+            // this is not executed on autoIncrement
 			org.makumba.Pointer p = (org.makumba.Pointer) d.get(fieldName);
-			if (p != null) {
-				base_setInsertArgument(fieldName, ps, n, d);
-				if (p.getDbsv() == dbsv
-						&& p.longValue() > this.primaryKeyCurrentIndex)
-					this.primaryKeyCurrentIndex = p.longValue();
-				return;
+            if (p != null) {
+                    base_setInsertArgument(fieldName, ps, n, d);
+                    if (p.getDbsv() == dbsv && p.longValue() > this.primaryKeyCurrentIndex)
+                        this.primaryKeyCurrentIndex = p.longValue();
+                    return;
 			}
-			ps.setInt(n, (int) nxt_ptrIndex(fieldName, d).longValue());
+                ps.setInt(n, (int) nxt_ptrIndex(fieldName, d).longValue());
 			break;
 		default:
 			base_setInsertArgument(fieldName, ps, n, d);
@@ -1353,57 +1381,6 @@ public class TableManager extends Table {
 		} catch (Exception e) {
 			throw new RuntimeException(fieldName + " " + e.getMessage());
 		}
-	}
-
-	//moved from FieldManager, adapted to dateCreateJavaManager,
-	// dateModifyJavaManager and ptrIndexJavaManager
-	/** OLDCODE ask this field to write its value in a SQL INSERT statement */
-	public String inInsert(String fieldName, Dictionary d) {
-		try {
-			switch (getFieldDefinition(fieldName).getIntegerType()) {
-			case FieldDefinition._dateCreate:
-			case FieldDefinition._dateModify:
-				if (d.get(fieldName) == null)
-					nxt(fieldName, d);
-				break;
-			case FieldDefinition._ptrIndex:
-				org.makumba.Pointer p = (org.makumba.Pointer) d.get(fieldName);
-				if (p == null)
-					return "" + nxt_ptrIndex(fieldName, d).longValue();
-				else if (p.getDbsv() == dbsv
-						&& p.longValue() > this.primaryKeyCurrentIndex) {
-					this.primaryKeyCurrentIndex = p.longValue();
-				}
-			}
-			return writeConstant(fieldName, d.get(fieldName));
-		} catch (NullPointerException e) {
-			return "null";
-		}
-	}
-
-	//moved from FieldManager
-	/** OLDCODE ask this field to write its value in a SQL INSERT statement */
-	public String inCopy(String fieldName, Dictionary d) {
-		return inInsert(fieldName, d);
-	}
-
-	//moved from FieldManager and adapted to dateCreateJavaManager and
-	// dateModifyJavaManager
-	/**
-	 * OLDCODE ask this field to write its contribution in a SQL UPDATE
-	 * statement should return "" if this field doesn't want to take part in the
-	 * update
-	 */
-	public String inUpdate(String fieldName, Dictionary d) {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._dateCreate:
-		case FieldDefinition._ptrIndex:
-			throw new RuntimeException("shouldn't be called");
-		case FieldDefinition._dateModify:
-			nxt(fieldName, d);
-			break;
-		}
-		return getDBName() + "=" + writeConstant(fieldName, d.get(fieldName));
 	}
 
 	//moved from FieldManager
@@ -1493,21 +1470,23 @@ public class TableManager extends Table {
                 + getFieldDBName(fieldName) + " is null");
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._ptrIndex:
-			dbsv = getSQLDatabase().getDbsv();
-			Statement st = dbc.createStatement();
-			resetPrimaryKey();
-			ResultSet rs = st.executeQuery("SELECT MAX("
-					+ getFieldDBName(fieldName) + "), COUNT("
-					+ getFieldDBName(fieldName) + ") FROM " + tbname
-					+ " WHERE " + getFieldDBName(fieldName) + ">="
-					+ primaryKeyCurrentIndex + " AND "
-					+ getFieldDBName(fieldName) + "<="
-					+ getSQLDatabase().getMaxPointerValue());
-			rs.next();
-			if (rs.getLong(2) > 0)
-				primaryKeyCurrentIndex = rs.getLong(1);
-			rs.close();
-			st.close();
+            if(!getSQLDatabase().isAutoIncrement()){
+    			dbsv = getSQLDatabase().getDbsv();
+    			Statement st = dbc.createStatement();
+    			resetPrimaryKey();
+    			ResultSet rs = st.executeQuery("SELECT MAX("
+    					+ getFieldDBName(fieldName) + "), COUNT("
+    					+ getFieldDBName(fieldName) + ") FROM " + tbname
+    					+ " WHERE " + getFieldDBName(fieldName) + ">="
+    					+ primaryKeyCurrentIndex + " AND "
+    					+ getFieldDBName(fieldName) + "<="
+    					+ getSQLDatabase().getMaxPointerValue());
+    			rs.next();
+    			if (rs.getLong(2) > 0)
+    				primaryKeyCurrentIndex = rs.getLong(1);
+    			rs.close();
+    			st.close();
+            }
 		}
 	}
 
@@ -1534,7 +1513,7 @@ public class TableManager extends Table {
 
 	//moved from FieldManager
 	/** Examine DB indexes. */
-	public boolean isIndexOk(String fieldName, SQLDBConnection dbc) {
+	public boolean isIndexOk(String fieldName) {
 		Boolean b = (Boolean) indexes.get(getFieldDBIndexName(fieldName)
 				.toLowerCase());
 		if (b != null)
@@ -1559,7 +1538,7 @@ public class TableManager extends Table {
 			return;
 		}
 		
-		if (!isIndexOk(fieldName, dbc)) {
+		if (!isIndexOk(fieldName)) {
 			//org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
 			//	"ALTERING INDEX on field "+getName()+" of
 			// "+rm.getRecordInfo().getName() );
@@ -1725,18 +1704,42 @@ public class TableManager extends Table {
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
 			return unmodified_char(fieldName, type, size, columns, index);
+        case FieldDefinition._ptrIndex:
+            return unmodified_primaryKey(fieldName, type, size, columns, index);
 		default:
 			return base_unmodified(fieldName, type, size, columns, index);
 		}
 	}
 
-	//original unmodified() from FieldManager
+    //original unmodified() from FieldManager
 	protected boolean base_unmodified(String fieldName, int type, int size,
 			Vector columns, int index) throws SQLException {
 		return type == getSQLType(fieldName);
 	}
 
-	//moved from charManager
+    private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector columns, int index) throws SQLException {
+        if(!base_unmodified(fieldName, type, size, columns, index))
+            return false;
+        if(!getSQLDatabase().isAutoIncrement())
+            return true;
+        boolean unmod= unmodifiedAutoIncrement((Hashtable) columns.elementAt(index-1));
+        autoIncrementAlter=!unmod;
+        return unmod;
+    }
+
+    private boolean unmodifiedAutoIncrement(Hashtable column) {
+        // this is a hack. we know that auto_increment is always not null, and we take advantage of makumba having created _nullable_ primary keys before.
+        return "NO".equals(column.get("IS_NULLABLE"));
+        
+    }
+
+    private String in_primaryKeyCreate(String fieldName, Database d) {
+        if(getSQLDatabase().isAutoIncrement())
+            return base_inCreate(fieldName, d)+" auto_increment primary key";
+         else
+            return base_inCreate(fieldName, d);
+    }
+    //moved from charManager
 	/**
 	 * Checks if the type is java.sql.Types.CHAR. Then, if the size of the SQL
 	 * column is still large enough, this returns true. Some SQL drivers
@@ -1748,6 +1751,7 @@ public class TableManager extends Table {
 				&& check_char_Width(fieldName, size);
 	}
 
+    
 	//moved from wrapperManager
 	/**
 	 * check if the column from the SQL database still coresponds with the
