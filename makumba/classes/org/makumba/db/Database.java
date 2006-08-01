@@ -122,8 +122,10 @@ public abstract class Database {
 
     // ---------------------------------------------------
 
-    int dbsv;
+    private int dbsv=0;
 
+    private boolean autoIncrement;
+    
     Properties config = null;
 
     Class tableclass;
@@ -137,6 +139,10 @@ public abstract class Database {
     /** return the unique index of this database */
     public int getDbsv() {
         return dbsv;
+    }
+
+    public boolean isAutoIncrement() {
+        return autoIncrement;
     }
 
     public abstract Pointer getPointer(String type, int uid);
@@ -316,8 +322,15 @@ public abstract class Database {
 
         config.put("jdbc_connections", "0");
         try {
-            dbsv = new Integer((String) config.get("dbsv")).intValue();
-
+        	if(config.get("dbsv")!=null && config.get("autoIncrement")!=null)
+	        	throw new org.makumba.ConfigFileError("only one of dbsv and autoIncrement can be specified");
+            if(config.get("dbsv")!=null)
+                dbsv = new Integer((String) config.get("dbsv")).intValue();
+            else 
+                if(config.get("autoIncrement")!=null)
+                    autoIncrement=true;
+                else throw new org.makumba.ConfigFileError("either dbsv or autoIncrement must be specified");
+            
             tableclass = getTableClassConfigured();
 
             config.put("alter#org.makumba.db.Catalog", "true");

@@ -58,8 +58,12 @@ For example
   <blockquote>sends a setting to the JDBC driver (for example user, password,
 create, etc). Such settings are JDBC driver specific</blockquote>
 <tt>dbsv=<i>value</i></tt>
-  <blockquote>the DBSV will be used to set the most significant 8 bits of all primary keys generated for the new records created by this makumba client. Using different DBSVs can help to ensure key uniqueness among multiple clients using (or synchronizing with) the same database. Database inserts of records that have the same primary key as an already existing record in that table (i.e. a record created by a client that used the same DBSV) will fail.
+  <blockquote>the DBSV will be used to set the most significant 8 bits of all primary keys generated for the new records created by this makumba client. Using different DBSVs can help to ensure key uniqueness among multiple clients using (or synchronizing with) the same database. Database inserts of records that have the same primary key as an already existing record in that table (i.e. a record created by a client that used the same DBSV) will fail. You cannot specify both dbsv and auto_increment in the same configuration file, but you can access the same database with some clients using (different) dbsv-s, and others using autoIncrement.
 </blockquote>
+<tt>autoIncrement=true</tt>
+<blockquote>if autoIncrement is on, makumba will use the server-side primary key generation. You cannot specify both dbsv and auto_increment in the same configuration file, but you can access the same database with some clients using (different) dbsv-s, and others using autoIncrement.
+</blockquote>
+
   <tt>initConnections=<i>value</i></tt>
   <blockquote>specifies the initial number of connections that makumba will open when connecting to the database. Default is 1, though some makumba versions will open 2-3 more connections pretty early in their activity. High server load will lead to more connections being open.</blockquote>
 
