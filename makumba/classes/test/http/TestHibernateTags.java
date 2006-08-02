@@ -130,8 +130,9 @@ public class TestHibernateTags extends JspTestCase {
 
         protected void deletePerson(Transaction db) {
             db.delete(address);
-            db.delete(brother);
             db.delete(person);
+            // brother is referenced by person so we delete it after person
+            db.delete(brother);
         }
 
         protected void insertLanguages(Transaction db) {
