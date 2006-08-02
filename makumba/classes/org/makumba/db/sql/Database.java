@@ -186,7 +186,7 @@ public class Database extends org.makumba.db.Database {
 								+ " version: " + p.get("sql_engine.version")
 								+ "\n\tusing " + p.get("jdbc_driver.name")
 								+ " version: " + p.get("jdbc_driver.version")
-								+ "\n\tusing DBSV " + p.get("dbsv"));
+								+ ("\n\tusing "+(isAutoIncrement()?"auto increment (no DBSV)":"DBSV " + p.get("dbsv"))));
 				if (!dbc.getMetaData().supportsTransactionIsolationLevel(
 						DESIRED_TRANSACTION_LEVEL)) {
 					MakumbaSystem.getMakumbaLogger("db.init").warning(
