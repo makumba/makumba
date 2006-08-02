@@ -318,7 +318,9 @@
 	<antcall target="uploadMadeJar" />
 	</target>
 
-	<target name="uploadMadeJar" >	
+	<target name="uploadMadeJar" 
+		description="uplads a jar and a src tarball of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version" 
+		>	
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
 		password="ftp-mak"
@@ -351,7 +353,7 @@
 	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web" >
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagThis</echo>
+	<echo>Warning! publishJar changed semantics. You have to tag the version manually, or use tagThis</echo>
 	<antcall target="uploadJar"></antcall>
 
 	<ftp server="download.makumba.org"
@@ -367,8 +369,12 @@
     </target>
 
 
-	<target name="publishDoc" description="publishes the documentation">
+	<target name="publishDoc" description="publishes the documentation (and website)">
 	<antcall target="zipdoc" />
+	<antcall target="uploadMadeDoc"/>
+	</target>
+		
+    <target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publisDoc">
 	<echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -376,13 +382,11 @@
 		remotedir="makumba/doc/download"
 		binary="yes"
 	>
-	<fileset dir="${temp.dir}" includes="makumbadoc.zip"/>
+	<fileset dir="lib" includes="makumbadoc.zip"/>
 	</ftp>
 	</target>
 
-
-
-	<target name="zipdoc"  >
+	<target name="zipdoc" description="makes the documentation and zips it" >
 	<delete file="${temp.dir}/makumbadoc.zip" />
 	<antcall target="doc" />
 	<fileset id="wwwdocs" dir="..">
@@ -400,7 +404,9 @@
 	<zip zipfile="${temp.dir}/makumbadoc.zip">
 	  <fileset refid="wwwdocs"/>
 	</zip>
-        </target>	
+	<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip"/>
+
+    </target>	
 
 	<target name= "test" depends="compile" description="run all test cases" >	
 		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>
