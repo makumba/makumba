@@ -7,6 +7,8 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
+cristi: default database can also be determined by webapp name
+cristi: makumba indexes are dropped only if a hibernate config file exists
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
@@ -25,13 +27,9 @@ stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdi
 stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
 cristi: default database can also be determined by webapp name
 cristi: makumba indexes are dropped only if a hibernate config file exists
-cristi: support for autoIncrement
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
-0.5.15.3; 1 aug 2005
-cristi: support for autoIncrement
-
 0.5.15.2; 22 jul 2006
 cristi: fixed bug 953
 

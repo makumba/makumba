@@ -155,6 +155,7 @@ public class TestTags extends JspTestCase {
 		return setup;
 	}
 	
+//	TODO change Transaction to Transaction
 	private static Transaction getDB() {
 		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
 	}
@@ -226,10 +227,10 @@ public class TestTags extends JspTestCase {
 		while ((begin = output.indexOf("name")) != -1) {
 			output = output.substring(begin + 5);
 			assertEquals(languageData[i][0], output.substring(0, output
-					.indexOf("<br>")));
+					.indexOf("\r")));
 			output = output.substring(output.indexOf("isoCode") + 8);
 			assertEquals(languageData[i][1], output.substring(0, output
-					.indexOf("<br>")));
+					.indexOf("\r")));
 			i++;
 		}
 		try {
@@ -704,27 +705,4 @@ public class TestTags extends JspTestCase {
 		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 	}
-
-    public void testBug946() throws ServletException, IOException, SAXException {
-        pageContext.include("testBug946.jsp");
-    }
-    public void endBug946(WebResponse response) throws IOException {
-        String responseText = response.getText().trim();
-        String expectedResponse = "<html>\n"+
-        "<head><title>Test Bug 946</title></head>\n"+
-        "<body>\n"+
-        "\n"+
-        "\n"+
-        "\n"+
-        "<form action=\"\" method=\"GET\">\n"+
-        "  Gender: <SELECT NAME=\"gender\" SIZE=1 >\n"+
-        "\t<OPTION value=\"0\">Female</OPTION>\n"+
-        "\t<OPTION value=\"1\" SELECTED>Male</OPTION>\n"+
-        "</SELECT>\n"+
-        "<input type=\"hidden\" name=\"__makumba__responder__\" value=\"35725075\">\n"+
-        "</form>\n"+
-        "\n"+
-        "</body>";
-        assertEquals(expectedResponse, responseText);
-    }
 }

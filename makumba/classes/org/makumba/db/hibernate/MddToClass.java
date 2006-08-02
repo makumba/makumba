@@ -1,7 +1,5 @@
 package org.makumba.db.hibernate;
 
-
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,11 +9,8 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordInfo;
-import org.makumba.util.ClassResource;
 
 import javassist.CannotCompileException;
-import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
@@ -24,14 +19,12 @@ import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
 public class MddToClass extends HibernateUtils {
-    //public static final String generatedClassPath="work/generated-hibernate-classes";
-    public String generatedClassPath="";
+    public static final String generatedClassPath="work/generated-hibernate-classes";
     private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
 
-    public MddToClass(Vector v, String generationPath)throws CannotCompileException, NotFoundException, IOException{
-      this.generatedClassPath = generationPath;
+    public MddToClass(Vector v)throws CannotCompileException, NotFoundException, IOException{
       for(int i=0; i<v.size(); i++)
         generateClass(MakumbaSystem.getDataDefinition((String)v.elementAt(i)));
       while (!mddsToDo.isEmpty()) 
@@ -41,9 +34,8 @@ public class MddToClass extends HibernateUtils {
             appendClass((String)append[0], (FieldDefinition)append[1]);
         }
     }
-	public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException, IOException {
-        this.generatedClassPath = generationPath;
-        generateClass(dd);
+	public MddToClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
+		generateClass(dd);
 		while (!mddsToDo.isEmpty()) {
 			generateClass((DataDefinition)mddsToDo.removeFirst());	
 		}
@@ -60,7 +52,6 @@ public class MddToClass extends HibernateUtils {
 	 **/
 	public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException, IOException {
 		ClassPool cp = ClassPool.getDefault();
-        cp.insertClassPath(new ClassClassPath(this.getClass()));
 		CtClass cc = cp.get(classname);
 		cc.defrost();
 		
@@ -86,21 +77,8 @@ public class MddToClass extends HibernateUtils {
 	public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
 		if (!mddsDone.contains(dd.getName())) {
 			mddsDone.add(dd.getName());
-            
-            
-			//checks if the class has to be generated
-            File checkFile = new File(arrowToDoubleUnderscore(dd.getName()));
-            File mddFile = new File(((RecordInfo) dd).getOrigin().getFile());
-            
-            if(checkFile.exists()) {
-                
-                if(mddFile.lastModified() < checkFile.lastModified())
-                    return;
-            }
-            
 
 			ClassPool cp = ClassPool.getDefault();
-            cp.insertClassPath(new ClassClassPath(this.getClass()));
 			CtClass cc = cp.makeClass(arrowToDoubleUnderscore(dd.getName()));
 
 			String type = null;
