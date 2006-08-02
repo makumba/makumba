@@ -192,7 +192,7 @@ public class MddToMapping extends HibernateUtils {
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
                 hd.startElement("", "", "id", atts);
                 atts.clear();
-                atts.addAttribute("", "", "class", "", "increment");
+                atts.addAttribute("", "", "class", "", "identity");
                 hd.startElement("", "", "generator", atts);
                 hd.endElement("", "", "generator");
                 hd.endElement("", "", "id");

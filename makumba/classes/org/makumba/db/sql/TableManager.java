@@ -1720,7 +1720,7 @@ public class TableManager extends Table {
     private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector columns, int index) throws SQLException {
         if(!base_unmodified(fieldName, type, size, columns, index))
             return false;
-        if(!getSQLDatabase().isAutoIncrement())
+        if(!getSQLDatabase().isAutoIncrement() && !this.usesHibernateIndexes)
             return true;
         boolean unmod= unmodifiedAutoIncrement((Hashtable) columns.elementAt(index-1));
         autoIncrementAlter=!unmod;
@@ -1734,7 +1734,7 @@ public class TableManager extends Table {
     }
 
     private String in_primaryKeyCreate(String fieldName, Database d) {
-        if(getSQLDatabase().isAutoIncrement())
+        if(getSQLDatabase().isAutoIncrement() || this.usesHibernateIndexes)
             return base_inCreate(fieldName, d)+" auto_increment primary key";
          else
             return base_inCreate(fieldName, d);
