@@ -114,7 +114,7 @@ public interface Transaction extends Database
      */ 
     public Pointer insert(Pointer host, String subsetField, java.util.Dictionary data);
 
-    /** Insert the results of the query in the given type. Generates an INSERT...SELECT
+    /** Insert the results of the query in the given type. Generates an INSERT...SELECT. The labels of the OQL query must match field names of the given type.
      * @param type the type where to insert
      * @param OQL the OQL query to execute. Refers to parameters as $1, $2 ...
      * @param parameterValues the parameter values. Should be null if there are no parameters. If there is only one parameter, it can be indicated directly. If there are more parameters, they can be indicated in a Object[] or a java.util.Vector
