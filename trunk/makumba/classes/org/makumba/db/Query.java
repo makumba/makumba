@@ -29,4 +29,7 @@ public interface Query
 {
   /** Execute the query with the given arguments */
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit);
+
+  public int insert(Object[] args, DBConnection dbc);
+
 }
