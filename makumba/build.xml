@@ -48,7 +48,7 @@
 		<echo>
 			Please note that proper Makumba building in Eclipse requires the antlr-eclipse tool.
 			http://antlreclipse.sourceforge.net
-			Currently used version: latest or 4.1.1
+			Currently used version: 3.0.5
 			Use Help/Software Updates for installation, chose http://antlreclipse.sourceforge.net/updates
 		</echo>
 	</target>
@@ -132,7 +132,6 @@
        <condition property="meta-inf.ok">
        <and>
        <uptodate srcfile="servlet_context/WEB-INF/makumba.tld" targetfile="META-INF/makumba.tld" />
-       <uptodate srcfile="servlet_context/WEB-INF/makumba-hibernate.tld" targetfile="META-INF/makumba-hibernate.tld" />
        <uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
        </and>
        </condition>
@@ -153,9 +152,7 @@
          <!-- Copy the manifest in order to replace the version token filter -->
          <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
          <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
-         <copy file="servlet_context/WEB-INF/makumba-hibernate.tld" todir="META-INF" filtering="on" overwrite="true"/>
          <copy file="META-INF/makumba.tld" tofile="META-INF/taglib.tld" filtering="off" overwrite="true"/>
-         <copy file="META-INF/makumba-hibernate.tld" tofile="META-INF/taglib-hibernate.tld" filtering="off" overwrite="true"/>
        </target>
 
 
@@ -250,11 +247,11 @@
 			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
 			{
 				clasUrl=clasUrl.concat('',clas,'.java');
-				cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
+				cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
 			} else {
 				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
 			}
-                        cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/makumba/makumba/classes/',clasUrl,'>CVS</a>');
+                        cvsLink=cvsLink.concat('<a href=http://cvs.sf.net/viewcvs.py/makumba/makumba/classes/',clasUrl,'>CVS</a>');
 		   	document.write(cvsLink);
 		   } 
                 </script>
@@ -287,7 +284,7 @@
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@makumba.cvs.sourceforge.net:/cvsroot/makumba" dest="work/makumba.distrib/"/>
+	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@cvs.sf.net:/cvsroot/makumba" dest="work/makumba.distrib/"/>
 	<mkdir dir="${jar.place}/lib" />
 
 	<!-- make the source tarball: -->
@@ -310,51 +307,13 @@
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
 	</target>
 
-	<target name="uploadJar" depends="compile" if="tag" 
-	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version" >
-	<mkdir dir="work/makumba.distrib" />
-	<delete dir="work/makumba.distrib/makumba/" />
-	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
-	<antcall target="uploadMadeJar" />
-	</target>
-
-	<target name="uploadMadeJar" 
-		description="uplads a jar and a src tarball of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version" 
-		>	
-	<ftp server="download.makumba.org"
-		userid="ftp-mak"
-		password="ftp-mak"
-		remotedir="makumba/doc/download"
-		binary="yes"
-	>
-    	<fileset dir="lib/">
-                <include name="${tag}.jar"/>
-                <include name="${tag}-src.zip"/>
-    	</fileset>
-	</ftp>
-		<ftp server="upload.sourceforge.net"
-			userid="anonymous"
-			password="makumba.developer@makumba.org"
-			remotedir="incoming"
-			binary="yes"
-		>
-	    	<fileset dir="lib/">
-	                <include name="${tag}.jar"/>
-	                <include name="${tag}-src.zip"/>
-		</fileset>
-		</ftp>
-		<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
-			http://sourceforge.net/project/admin/qrs.php?group_id=25704
-			within the next 24 hours.
-		</echo>
-	</target>	
 
 	<target name="publishJar" depends="compile" if="tag" 
 	description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web" >
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<echo>Warning! publishJar changed semantics. You have to tag the version manually, or use tagThis</echo>
-	<antcall target="uploadJar"></antcall>
+	<echo>Warning! publishDoc changed semantics. You have to tag the version manually, or use tagThis</echo>
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
 
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -364,17 +323,31 @@
 	>
     	<fileset dir="lib/">
       		<include name="makumba.jar" />
+                <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
     	</fileset>
 	</ftp>
-    </target>
+
+	<ftp server="upload.sourceforge.net"
+		userid="anonymous"
+		password="makumba.developer@makumba.org"
+		remotedir="incoming"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+                <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
+	</fileset>
+	</ftp>
+	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
+		http://sourceforge.net/project/admin/qrs.php?group_id=25704
+		within the next 24 hours.
+	</echo>
+        </target>
 
 
-	<target name="publishDoc" description="publishes the documentation (and website)">
+	<target name="publishDoc" description="publishes the documentation">
 	<antcall target="zipdoc" />
-	<antcall target="uploadMadeDoc"/>
-	</target>
-		
-    <target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publisDoc">
 	<echo>updating zip for distribution</echo>
 	<ftp server="download.makumba.org"
 		userid="ftp-mak"
@@ -382,11 +355,13 @@
 		remotedir="makumba/doc/download"
 		binary="yes"
 	>
-	<fileset dir="lib" includes="makumbadoc.zip"/>
+	<fileset dir="${temp.dir}" includes="makumbadoc.zip"/>
 	</ftp>
 	</target>
 
-	<target name="zipdoc" description="makes the documentation and zips it" >
+
+
+	<target name="zipdoc"  >
 	<delete file="${temp.dir}/makumbadoc.zip" />
 	<antcall target="doc" />
 	<fileset id="wwwdocs" dir="..">
@@ -404,9 +379,7 @@
 	<zip zipfile="${temp.dir}/makumbadoc.zip">
 	  <fileset refid="wwwdocs"/>
 	</zip>
-	<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip"/>
-
-    </target>	
+        </target>	
 
 	<target name= "test" depends="compile" description="run all test cases" >	
 		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit"/>

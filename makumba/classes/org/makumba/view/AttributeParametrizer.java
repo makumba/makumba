@@ -56,13 +56,13 @@ public class AttributeParametrizer
   }
 
   /** execute the query */
-  public Vector execute(AbstractQueryRunner db, Dictionary a, int offset, int limit) 
+  public Vector execute(Transaction db, Dictionary a, int offset, int limit) 
        throws LogicException
   {
     Object args[]= new Object[argumentNames.size()];
     for(int i=0; i<args.length; i++)
       args[i]=a.get((String)argumentNames.elementAt(i));
-    return db.execute(oql, args, offset, limit);
+    return db.executeQuery(oql, args, offset, limit);
   }
 }
 
