@@ -25,14 +25,19 @@ package org.makumba.db.sql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.NoSuchFieldException;
 import org.makumba.OQLAnalyzer;
 import org.makumba.db.DBConnection;
+import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.sql.oql.QueryAST;
 
 /** SQL implementation of a OQL query */
@@ -45,11 +50,14 @@ public class Query implements org.makumba.db.Query
   String limitSyntax;
   boolean offsetFirst;
   boolean supportsLimitInQuery;
-
+  
+  String insertIn;
+  TableManager insertHandler;
+  
   public String getCommand(){ return command; }
 
-  public Query(org.makumba.db.Database db, String OQLQuery){ this(db, MakumbaSystem.getOQLAnalyzer(OQLQuery)); }
-  public Query(org.makumba.db.Database db, OQLAnalyzer tree) 
+  public Query(org.makumba.db.Database db, String OQLQuery, String insertIn){ this(db, MakumbaSystem.getOQLAnalyzer(OQLQuery), insertIn); }
+  public Query(org.makumba.db.Database db, OQLAnalyzer tree, String insertIn) 
   {
     command= ((QueryAST)tree).writeInSQLQuery(db);
 
@@ -58,6 +66,9 @@ public class Query implements org.makumba.db.Query
 	limitSyntax=((org.makumba.db.sql.Database)db).getLimitSyntax();
 	offsetFirst=((org.makumba.db.sql.Database)db).isLimitOffsetFirst();
 	supportsLimitInQuery=((org.makumba.db.sql.Database)db).supportsLimitInQuery();
+    this.insertIn= insertIn;
+    if(insertIn!=null && insertIn.length()>0)
+        analyzeInsertIn(tree.getProjectionType(), db);
   }
 
   public Vector execute(Object [] args, DBConnection dbc, int offset, int limit)
@@ -120,8 +131,52 @@ public class Query implements org.makumba.db.Query
     }catch(SQLException e){ throw new org.makumba.DBError(e, rm.getDataDefinition().getName()); }
     return ret;
   }
-   
 
+    void analyzeInsertIn(DataDefinition proj, org.makumba.db.Database db){
+        DataDefinition insert= MakumbaSystem.getDataDefinition(insertIn);
+        for (Iterator i = proj.getFieldNames().iterator(); i.hasNext();) {
+            String s = (String) i.next();
+            if (insert.getFieldDefinition(s) == null) {
+                throw new NoSuchFieldException(insert, s);
+            }
+        }
+        insertHandler = (TableManager)db.getTable(insert);
+    }
 
+    public int insert(Object[] args, DBConnection dbc) {
+        String comma="";
+        StringBuffer fieldList= new StringBuffer();
+        for(Iterator i= resultHandler.getDataDefinition().getFieldNames().iterator(); i.hasNext(); ){
+            fieldList.append(comma); 
+            comma=",";
+            fieldList.append(insertHandler.getFieldDBName((String)i.next()));
+        }
+        
+        String tablename= "temp_"+(int)(Math.random()*10000.0);
+        
+        String com= "INSERT INTO "+tablename+" ( "+fieldList+") "+command ;
+        try{
+            SQLDBConnection sqldbc= (SQLDBConnection)((DBConnectionWrapper)dbc).getWrapped();
+            resultHandler.create(sqldbc, tablename, true);
+            PreparedStatement ps=sqldbc.getPreparedStatement(com);
+            String s=assigner.assignParameters(ps, args);
+            if(s!=null)
+                throw new InvalidValueException("Errors while trying to assign arguments to query:\n"+com+"\n"+s);
+            
+            int n= ps.executeUpdate();
+            
+            com="INSERT INTO "+insertHandler.getDBName()+" ("+fieldList+") SELECT "+fieldList+" FROM "+tablename;
+            ps=sqldbc.getPreparedStatement(com);
+
+            int m= ps.executeUpdate();
+
+            if(m!=n)
+                throw new MakumbaError("inserted in temp " +n+" inserted in final "+m);
+            Statement st=sqldbc.createStatement();
+            st.execute("DROP TABLE "+tablename);
+            return n;
+        }catch(SQLException e){ throw new org.makumba.DBError(e); }
+        
+    }
 }
 

@@ -207,8 +207,15 @@ public abstract class DBConnection implements org.makumba.Transaction
    * @return a Vector of Dictionaries */
   public java.util.Vector executeQuery(String OQL, Object args, int offset, int limit)
   {
-    return ((Query)getHostDatabase().queries.getResource(OQL)).execute(treatParam(args), this, offset, limit); 
+    Object []k ={OQL, ""};
+    return ((Query)getHostDatabase().queries.getResource(k)).execute(treatParam(args), this, offset, limit); 
   }
+  
+  public int insertFromQuery(String type, String OQL, Object args){
+      Object []k ={OQL, type};
+      return  ((Query)getHostDatabase().queries.getResource(k)).insert(treatParam(args), this); 
+  }
+  
   public java.util.Vector executeQuery(String OQL, Object args){
     return executeQuery(OQL, args, 0, -1);
   }

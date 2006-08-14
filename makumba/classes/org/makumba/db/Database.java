@@ -345,8 +345,15 @@ public abstract class Database {
              */
             private static final long serialVersionUID = 1L;
 
-            public Object makeResource(Object name) {
-                return prepareQueryImpl((String) name);
+            public Object makeResource(Object o) {
+                Object[] multi = (Object[]) o;
+
+                return prepareQueryImpl((String) multi[0], (String) multi[1]);
+            }
+
+            protected Object getHashObject(Object name) {
+                Object[] multi = (Object[]) name;
+                return "" + multi[0] + "####" + multi[1];
             }
         });
 
@@ -431,7 +438,7 @@ public abstract class Database {
         return ret;
     }
 
-    public abstract Query prepareQueryImpl(String query);
+    public abstract Query prepareQueryImpl(String query, String insertIn);
 
     public abstract Update prepareUpdateImpl(String type, String set, String where);
 

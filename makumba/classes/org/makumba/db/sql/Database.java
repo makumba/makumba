@@ -252,8 +252,8 @@ public class Database extends org.makumba.db.Database {
 		return _url + p.getProperty("#database");
 	}
 
-	public org.makumba.db.Query prepareQueryImpl(String oqlQuery) {
-		return new Query(this, oqlQuery);
+	public org.makumba.db.Query prepareQueryImpl(String oqlQuery, String insertIn) {
+		return new Query(this, oqlQuery, insertIn);
 	}
 
 	public Update prepareUpdateImpl(String type, String set, String where) {
