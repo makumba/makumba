@@ -552,7 +552,7 @@ public class TableManager extends Table {
 			throws SQLException {
 		Statement st = dbc.createStatement();
 		Object[] dbArg = { getSQLDatabase() };
-		if (really)
+		if (really && !tblname.startsWith("temp"))
 			try {
 				st.executeUpdate("DROP TABLE " + tblname);
 			} catch (SQLException e) {
@@ -565,7 +565,6 @@ public class TableManager extends Table {
 		String fieldName;
 		String sep = "";
 		for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-
 			fieldName = (String) e.nextElement();
 			if (getFieldDefinition(fieldName).getType().startsWith("set"))
 				continue;
@@ -580,9 +579,11 @@ public class TableManager extends Table {
 					"would be:\n" + command);
 			return;
 		}
-		MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(command);
+        if(!tblname.startsWith("temp"))
+            MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(command);
 		st.executeUpdate(command);
-		dbc.commit();
+        if(!tblname.startsWith("temp"))
+            dbc.commit();
 		st.close();
 	}
 
