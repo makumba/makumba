@@ -66,6 +66,8 @@ public class javaViewer extends LineViewer {
     private static final String DEFAULT_JAVASTRINGLITERAL_STYLE = "color: red; font-style: italic; ";
 
     private boolean compiledJSP = false;
+    
+    private boolean haveFile = false;
 
     private SourceSyntaxPoints syntaxPoints;
 
@@ -123,10 +125,21 @@ public class javaViewer extends LineViewer {
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(sv.getServletContext());
 
         contextPath = req.getContextPath();
-        virtualPath = req.getPathInfo().substring(1);
-        URL url = org.makumba.util.ClassResource.get(virtualPath.replace('.', '/') + ".java");
+        virtualPath = req.getPathInfo();
+        if (virtualPath == null) {
+            virtualPath = "/";
+        } else {
+            virtualPath = virtualPath.substring(1);
+        }
+        URL url;
+        if (virtualPath.endsWith(".java")) {
+            url = org.makumba.util.ClassResource.get(virtualPath);
+        } else {
+        url = org.makumba.util.ClassResource.get(virtualPath.replace('.', '/') + ".java");
+        }
         if (url != null) {
             setSearchLevels(false, false, true, true);
+            haveFile = true;
         } else {
             String filePath = jspClasspath + "/" + virtualPath.replace('.', '/') + ".java";
             File jspClassFile = new File(filePath);
@@ -134,19 +147,22 @@ public class javaViewer extends LineViewer {
                 url = new URL("file://" + filePath);
                 setSearchLevels(false, false, false, false); // for compiled JSP files, we search only for MDDs.
                 compiledJSP = true;
+                haveFile = true;
             } else {
-                MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").info(
-                        "Could not find the compiled JSP '" + virtualPath + "'");
+                String s = virtualPath;
+                if (s.startsWith("/")) {
+                    s = s.substring(1);
+                }
+                url= org.makumba.util.ClassResource.get(s.replace('.', '/'));
             }
         }
-
-        JavaParseData jspParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
-        jspParseData.getAnalysisResult(null);
-
-        syntaxPoints = jspParseData.getSyntaxPoints();
-
-        sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
-
+        
+        if (haveFile) { // we actually read a file
+            JavaParseData jspParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
+            jspParseData.getAnalysisResult(null);
+            syntaxPoints = jspParseData.getSyntaxPoints();
+            sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
+        }
         readFromURL(url);
     }
 
@@ -210,5 +226,13 @@ public class javaViewer extends LineViewer {
                 "Java sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 
-}
+    public void intro(PrintWriter w) {
+        w.print("<td align=\"center\" bgcolor=\"darkblue\"><font color=\"lightblue\">Java</font></td>");
+        String path = contextPath + "/classes/" + virtualPath.substring(0, virtualPath.lastIndexOf('/') + 1);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        w.print("<td align=\"center\"><a href=\"/" + path + "\"><font color=\"darkblue\">browse</font></a></td>");
+    }
 
+}
