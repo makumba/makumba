@@ -26,6 +26,7 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -117,8 +118,12 @@ public class SourceViewServlet extends HttpServlet {
                 }
 
                 if (sw instanceof javaViewer) {
-                    String[] list = dir.list();
+                    // process and display directories
                     processDirectory(w, dir, ".java");
+                    
+                    // process and display files
+                    String[] list = dir.list();
+                    Arrays.sort(list);
                     for (int i = 0; i < list.length; i++) {
                         String s = list[i];
                         File f = new File(dir.getAbsolutePath() + File.separator + s);
@@ -127,9 +132,12 @@ public class SourceViewServlet extends HttpServlet {
                         }
                     }
                 } else if (sw instanceof mddViewer) {
-                    String[] list = dir.list();
+                    // process and display directories
                     processDirectory(w, dir, "dd");
 
+                    // process and display files
+                    String[] list = dir.list();
+                    Arrays.sort(list);
                     for (int i = 0; i < list.length; i++) {
                         String s = list[i];
                         if (s.indexOf(".") != -1 && s.endsWith("dd")) {
@@ -153,6 +161,7 @@ public class SourceViewServlet extends HttpServlet {
 
     private void processDirectory(PrintWriter w, File dir, String extension) {
         String[] list = dir.list();
+        Arrays.sort(list);
         for (int i = 0; i < list.length; i++) {
             String s = list[i];
             File f = new File(dir.getAbsolutePath() + File.separator + s);
