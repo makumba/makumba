@@ -100,7 +100,13 @@ public class PageAttributes implements Attributes
             Enumeration enumeration = pageContext.getAttributeNamesInScope(scopes[i]);
             while (enumeration.hasMoreElements()) {
                 String name = (String) enumeration.nextElement();
-                s += name + "=" + pageContext.getAttribute(name, scopes[i]);
+                s += name + "=";
+                Object value = pageContext.getAttribute(name, scopes[i]);
+                if (value instanceof PageAttributes) { // don't print if type is from this class --> avoid endless loop
+                    s += value.getClass();
+                } else {
+                    s += value;
+                }
                 if (enumeration.hasMoreElements()) {
                     s += ", ";
                 }
