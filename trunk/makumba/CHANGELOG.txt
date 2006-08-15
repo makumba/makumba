@@ -27,9 +27,15 @@ cristi: default database can also be determined by webapp name
 cristi: makumba indexes are dropped only if a hibernate config file exists
 cristi: support for autoIncrement
 cristi: insertFromQuery, rapid mass inserts
+rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
+rudi: improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.15.5; 15 aug 2006
+rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
+improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
+
 0.5.15.4; 14 aug 2006
 cristi: insertFromQuery, rapid mass inserts
 
