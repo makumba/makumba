@@ -117,10 +117,11 @@ public class mddViewer extends LineViewer {
         StringBuffer result = new StringBuffer();
         String closeLine = "";
         int current = 0;
+        String subFieldSeperator = "-&gt;";
         while (current < s.length()) {
             switch (s.charAt(current)) {
             case '=':
-                result.append("=<span style=\"color:#000077\">");
+                result.append("<span style=\"color:black\">=</span><span style=\"color:#0000AA\">");
                 closeLine = "</span>" + closeLine;
                 break;
             case '#':
@@ -128,7 +129,13 @@ public class mddViewer extends LineViewer {
                 closeLine = "</span>" + closeLine;
                 break;
             case ';':
-                result.append("<span style=\"color:green\">");
+                // check whether we have a simple ';' or have '->' (which gets translated to -gt;)
+                String substring = s.substring(current-subFieldSeperator.length()+1, current+1);
+                if (current > subFieldSeperator.length() && substring.equals(subFieldSeperator)) {
+                    result.append(";<span style=\"color:red\">");
+                } else {
+                    result.append(";<span style=\"color:green\">");
+                }
                 closeLine = "</span>" + closeLine;
                 break;
             default:
