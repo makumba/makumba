@@ -167,35 +167,48 @@ public class RequestAttributes implements Attributes
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        String s = "Session: {";
+        String s = "Makumba Atributes:\n";
+        s += "\tSession: {";
         HttpSession ss = request.getSession(true);
-        Enumeration e = ss.getAttributeNames();
-        while (e.hasMoreElements()) {
-            String key = (String) e.nextElement();
-            s += key + "=" + ss.getAttribute(key);
-            if (e.hasMoreElements()) {
+        Enumeration enumSession = ss.getAttributeNames();
+        while (enumSession.hasMoreElements()) {
+            String key = (String) enumSession.nextElement();
+            s += key + "=";
+            Object value = ss.getAttribute(key);
+            if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
+                s += value.getClass();
+            } else {
+                s += value;
+            }
+            if (enumSession.hasMoreElements()) {
                 s += ", ";
             }
         }
         s += "}\n";
 
-        e = request.getAttributeNames();
-        s += "Request: {";
-        while (e.hasMoreElements()) {
-            String key = (String) e.nextElement();
-            s += key + "=" + request.getAttribute(key);
-            if (e.hasMoreElements()) {
+        Enumeration enumRequest = request.getAttributeNames();
+        s += "\tRequest: {";
+        while (enumRequest.hasMoreElements()) {
+            String key = (String) enumRequest.nextElement();
+            s += key + "=";
+            Object value = request.getAttribute(key);
+            if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
+                s += value.getClass();
+            } else {
+                s += value;
+            }
+            if (enumRequest.hasMoreElements()) {
                 s += ", ";
             }
         }
         s += "}\n";
 
-        e = request.getParameterNames();
-        s += "Parameters: {";
-        while (e.hasMoreElements()) {
-            String key = (String) e.nextElement();
+        Enumeration enumParams = request.getParameterNames();
+        s += "\tParameters: {";
+        while (enumParams.hasMoreElements()) {
+            String key = (String) enumParams.nextElement();
             s += key + "=" + request.getParameter(key);
-            if (e.hasMoreElements()) {
+            if (enumParams.hasMoreElements()) {
                 s += ", ";
             }
         }
