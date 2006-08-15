@@ -106,7 +106,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
     HashMap basePointerTypes= new HashMap();
     HashMap tags= new HashMap();
     HashMap tagData= new HashMap();
-    boolean usesHQL = false;
 
     public ComposedQuery getQuery(MultipleKey key)
     {
@@ -123,8 +122,8 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
       ComposedQuery ret= (ComposedQuery)queries.get(key);
       if(ret!=null)
 	return ret;
-      ret=parentKey==null? new ComposedQuery(sections, usesHQL):
-	new ComposedSubquery(sections, getQuery(parentKey), usesHQL);
+      ret=parentKey==null? new ComposedQuery(sections):
+	new ComposedSubquery(sections, getQuery(parentKey));
       
       ret.init();
       queries.put(key,ret);
@@ -136,8 +135,6 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
   class ParseStatus
   {
     String makumbaPrefix;
-    String makumbaURI;
-    
     List tags= new ArrayList();
     List parents= new ArrayList();
     PageCache pageCache= new PageCache();
@@ -238,20 +235,13 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer
 		return SingletonHolder.singleton;
 	}  
 
-	public void systemTag(JspParseData.TagData td, Object status) {
-		if(td.name.equals("taglib")) {
-            //JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-			if (td.attributes.get("uri")!=null && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
-				((ParseStatus)status).makumbaPrefix= (String)td.attributes.get("prefix");
-				((ParseStatus)status).makumbaURI= (String)td.attributes.get("uri");
-				if (((ParseStatus) status).makumbaURI.equals("http://www.makumba.org/presentation")) {
-					((ParseStatus) status).pageCache.usesHQL = false;
-				} else { // every other makumba.org tag-lib is treated to be hibernate
-					((ParseStatus) status).pageCache.usesHQL = true;
-				}
-			}
-		}
-	}
+  public void systemTag(JspParseData.TagData td, Object status)
+  {
+    if(!td.name.equals("taglib") ||
+       !td.attributes.get("uri").equals("http://www.makumba.org/presentation"))
+      return;
+    ((ParseStatus)status).makumbaPrefix= (String)td.attributes.get("prefix");
+  }
  
   public void simpleTag(JspParseData.TagData td, Object status)
   {

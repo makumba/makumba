@@ -30,7 +30,6 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.ComposedQuery;
 
 public class InputTag extends BasicValueTag
 implements javax.servlet.jsp.tagext.BodyTag
@@ -89,14 +88,6 @@ String name = null;
     if(name==null)
       throw new ProgrammerError("name attribute is required");
     super.doStartAnalyze(pageCache);
-  }
-  
-  protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {      
-      MultipleKey parentListKey = getForm().getParentListKey(pageCache);
-      if (parentListKey == null) { // If there is no enclosing mak:list
-          return expr2; 
-      }
-      return pageCache.getQuery(parentListKey).transformPointer(expr2);
   }
 
   /** tell the ValueComputer to finish analysis, and set the types for var and printVar */

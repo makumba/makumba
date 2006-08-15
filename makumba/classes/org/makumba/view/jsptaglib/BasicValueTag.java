@@ -31,8 +31,6 @@ import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.ComposedQuery;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache;
 
 /** This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in similar manner (value="$attribute" or value="OQL expr" */
 public abstract class BasicValueTag extends MakumbaTag 
@@ -75,14 +73,9 @@ public abstract class BasicValueTag extends MakumbaTag
   /** determine the ValueComputer and associate it with the tagKey */
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
-    if (isValue()) {
-        pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, checkPtrExpr(expr, pageCache), pageCache));
-    }
+    if(isValue())
+      pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
   }
-
-  protected String checkPtrExpr(String expr2, PageCache pageCache) {
-    return expr2;
-}
 
   abstract FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache);
 

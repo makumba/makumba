@@ -46,26 +46,18 @@ tokens
 // -- Declarations --
 {
 	
-			  ObjectType typeComputer;
-	
-  AST deriveArithmethicExpr(AST ae) throws antlr.RecognitionException { 
-  			    return ae; 
+  AST deriveArithmethicExpr(AST ae){ 
+	  	    ae.setText("bla"); return ae; 
 	  	 }
-	  	 
-	  	AST deriveLogicalExpr(AST le) throws antlr.RecognitionException{  return le; 	  	 }
-	  	 
-		  AST deriveParamExpr(AST pe) throws antlr.RecognitionException{  return pe; 	  	 }
-		  
-		  AST deriveFunctionCallExpr(AST fc, AST e) throws antlr.RecognitionException{  return fc; 	  	 }
+		  AST deriveParamExpr(AST ae){  return ae; 	  	 }
 	
 	  java.util.Map aliasTypes= new java.util.HashMap();
 	  
-	  java.util.Stack stackAliases = new java.util.Stack();
-	  
-		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
- 
-  void getReturnTypes(AST a, java.util.Stack stackAliases) throws antlr.RecognitionException { }
-		  		
+		  public void setAliasType(AST alias, String path) throws antlr.RecognitionException{
+		  	   if(aliasTypes.get(alias.getText())!= null)
+		  	   	   throw new antlr.SemanticException("alias "+alias.getText()+" defined twice");
+		  	   	aliasTypes.put(alias.getText(), path);	
+		  }
 
 	private int level = 0;
 	private boolean inSelect = false;
@@ -125,14 +117,12 @@ tokens
 		return statementType == SELECT;
 	}
 
-void beforeStatement(String statementName, int statementType) {
+	private void beforeStatement(String statementName, int statementType) {
 		inFunctionCall = false;
 		level++;
-		
 		if ( level == 1 ) {
 			this.statementTypeName = statementName;
 			this.statementType = statementType;
-		
 		}
 		/* *** if ( log.isDebugEnabled() ) {
 			log.debug( statementName + " << begin [level=" + level + ", statement=" + this.statementTypeName + "]" );
@@ -145,7 +135,7 @@ void beforeStatement(String statementName, int statementType) {
 		}*/
 	}
 
-	void afterStatementCompletion(String statementName) {
+	private void afterStatementCompletion(String statementName) {
 		/* *** if ( log.isDebugEnabled() ) {
 			log.debug( statementName + " >> end [level=" + level + ", statement=" + statementTypeName + "]" );
 		}*/
@@ -158,11 +148,8 @@ void beforeStatement(String statementName, int statementType) {
 			currentTopLevelClauseType = clauseType;
 		}
 	}
-	
-			protected void setAlias(AST se, AST i) {}
+
 	}
-
-
 
 // The main statement rule.
 statement
@@ -257,8 +244,6 @@ groupClause
 selectClause!
 	: #(SELECT { handleClauseStart( SELECT ); /* ***beforeSelectClause();*/ } (d:DISTINCT)? x:selectExprList ) {
 		#selectClause = #([SELECT_CLAUSE,"{select clause}"], #d, #x);
-		getReturnTypes(		#selectClause, stackAliases);
-		//***analysis finished, here we should copy stuff somewhere (List (ordered), ...)
 	}
 	;
 
@@ -273,21 +258,21 @@ selectExprList {
 
 aliasedSelectExpr!
 	: #(AS se:selectExpr i:identifier) {
-	   setAlias(#se,#i);
+	   //*** setAlias(#se,#i);
 		#aliasedSelectExpr = #se;
 	}
 	;
 
 selectExpr
 	: p:propertyRef					{ /* *** resolveSelectExpression(#p); */ }
-	| #(ALL ar2:aliasRef) 			{/* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
-	| #(OBJECT ar3:aliasRef)		{/* *** resolveSelectExpression(#ar3);*/ #selectExpr = #ar3; }
+	| #(ALL ar2:aliasRef) 			{ /* *** resolveSelectExpression(#ar2); */ #selectExpr = #ar2; }
+	| #(OBJECT ar3:aliasRef)		{ /* *** resolveSelectExpression(#ar3)*/; #selectExpr = #ar3; }
 	| con:constructor 				{ /* *** processConstructor(#con)*/ ; }
 	| functionCall
-	| count { #selectExpr = new ExprTypeAST(ExprTypeAST.INT);}
+	| count
 	| collectionFunction			// elements() or indices()
-	| literal //***already done
-	| are:arithmeticExpr { #selectExpr= deriveArithmethicExpr(#are); }
+	| literal
+	| arithmeticExpr
 		| logicalExpr
 	;
 
@@ -339,7 +324,7 @@ fromElement!{
 
 joinElement! 
 		: #(JOIN (joinType)? (FETCH)? ref:propertyRef (a:ALIAS)? (FETCH)? (WITH)? ) {
-			  setAliasType(#a, ((ObjectTypeAST)#ref).getObjectType());
+			  setAliasType(#a, (#ref).getText());
 }
 	;
 
@@ -385,7 +370,7 @@ logicalExpr
 	: #(AND logicalExpr logicalExpr)
 	| #(OR logicalExpr logicalExpr)
 	| #(NOT logicalExpr)
-	| co:comparisonExpr { #logicalExpr =  deriveLogicalExpr(#co); }
+	| comparisonExpr
 	;
 
 // TODO: Add any other comparison operators here.
@@ -437,8 +422,8 @@ expr
 	| constant
 	| are:arithmeticExpr { #expr= deriveArithmethicExpr(#are); }
 	| functionCall							// Function call, not in the SELECT clause.
-	| par:parameter { #expr= deriveParamExpr(#par); }
-	| count										 { #expr = new ExprTypeAST(ExprTypeAST.INT);} // Count, not in the SELECT clause.
+	| parameter { #expr= deriveParamExpr(#are); }
+	| count										// Count, not in the SELECT clause.
 	;
 
 arithmeticExpr
@@ -466,8 +451,8 @@ collectionFunction
 	;
 
 functionCall
-	: #(METHOD_CALL  {inFunctionCall=true;} p:pathAsIdent ( #(e:EXPR_LIST (expr)* ) )? )
-		{ #functionCall = deriveFunctionCallExpr(#p, #e); } {inFunctionCall=false;}
+	: #(METHOD_CALL  {inFunctionCall=true;} pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
+		{ /* ***processFunction(#functionCall,inSelect);*/ } {inFunctionCall=false;}
 	| #(AGGREGATE aggregateExpr )
 	;
 
@@ -494,7 +479,7 @@ addrExpr! [ boolean root ]
 	: #(d:DOT lhs:addrExprLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree 
 		// to process collection properties (.elements, etc).
-		#addrExpr = new ObjectTypeAST(#lhs, #rhs, aliasTypes, typeComputer);
+		#addrExpr = new ObjectTypeAST(#lhs, #rhs, aliasTypes);
 //		#addrExpr = lookupProperty(#addrExpr,root,false);
 	}
 	| #(i:INDEX_OP lhs2:addrExprLhs rhs2:expr)	{
@@ -521,12 +506,10 @@ propertyName
 
 propertyRef
 	: #(DOT lhs:propertyRefLhs rhs:propertyName )	{
-#propertyRef = new ObjectTypeAST(#lhs, #rhs, aliasTypes, typeComputer);
+#propertyRef = new ObjectTypeAST(#lhs, #rhs, aliasTypes);
 		}
 	|
 	p:identifier {
-		
-		#propertyRef = new ObjectTypeAST(#p, aliasTypes);
 		// In many cases, things other than property-refs are recognized
 		// by this propertyRef rule.  Some of those I have seen:
 		//  1) select-clause from-aliases

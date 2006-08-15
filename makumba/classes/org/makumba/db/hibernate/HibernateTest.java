@@ -1,7 +1,6 @@
 package org.makumba.db.hibernate;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Vector;
 
 import javassist.CannotCompileException;
@@ -9,25 +8,46 @@ import javassist.NotFoundException;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.makumba.HibernateSFManager;
 import org.xml.sax.SAXException;
 
 public class HibernateTest  {
-    
 	public static void main (String[] args) {
         
-        Vector dds= new Vector();
-        dds.addElement("general.Person");
         
-        //Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
-        //SessionFactory sf = HibernateSFManager.getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
-		SessionFactory sf = HibernateSFManager.getSF();
+        Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+        //dds= new Vector(); dds.add("general.survey.Response");
+        Configuration cfg = new Configuration().configure("org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
+		
+        System.out.println(new java.util.Date());
+		try {
+			MddToClass jot = new MddToClass(dds);
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        System.out.println(new java.util.Date());
+        
+		try {
+			MddToMapping xot = new MddToMapping(dds, cfg);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+
+
+		SessionFactory sf = cfg.buildSessionFactory();
+		SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
+		schemaUpdate.execute(true, true);
+		
 		Session session = sf.openSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -82,17 +102,20 @@ public class HibernateTest  {
         //Query q = session.createQuery("SELECT i.name, p.weight FROM test.Person p, test.Individual i WHERE p.indiv = i");
 		
         //       a more automatic pointer join
-        Query q = session.createQuery("SELECT p.name, p.surname FROM general.Person p WHERE p.surname='Mayer'");
+        //Query q = session.createQuery("SELECT p.indiv.name, p.weight FROM test.Person p");
         
-        
-        List list = q.list();
-		for (int i=0; i < list.size(); i++) {
-			if (list.get(i) == null) continue;
-			//test = (Person)list.get(i);
-			System.out.println(list.get(i).getClass());
-            System.out.println(list.get(i));
-			
-		}
+        //List list = q.list();
+		//for (int i=0; i < list.size(); i++) {
+		//	if (list.get(i) == null) continue;
+//			test = (Person)list.get(i);
+		//	System.out.println(list.get(i).getClass());
+//			Double row = (Double)list.get(i);
+//			System.out.println(row.toString() + "\n");
+		//}
+//		list = test.getSpeaks();
+//		for (int i=0; i<list.size(); i++ ) {
+//			System.out.println((Language)list.get(i));
+//		}
 		session.close();
 	}
 }
