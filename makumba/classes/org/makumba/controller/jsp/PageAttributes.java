@@ -22,6 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.controller.jsp;
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
 
@@ -60,10 +62,57 @@ public class PageAttributes implements Attributes
       }
   }
 
+  /**
+   * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
+   */
   public Object setAttribute(String s, Object o) throws LogicException{
     return RequestAttributes.getAttributes((HttpServletRequest)pageContext.getRequest()).setAttribute(s, o);
   }
 
+    /**
+     * @see org.makumba.Attributes#removeAttribute(java.lang.String)
+     */
+    public void removeAttribute(String s) throws LogicException {
+        RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).removeAttribute(s);
+    }
+
+    /**
+     * @see org.makumba.Attributes#hasAttribute(java.lang.String)
+     */
+    public boolean hasAttribute(String s) {
+        try {
+            return (RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).hasAttribute(s) || checkPageForAttribute(s) != RequestAttributes.notFound);
+        } catch (LogicException e) {
+            return false;
+        }
+    }
+  
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        String[] scopeNames = { "Session", "Application", "Request", "Page" };
+        int[] scopes = { PageContext.SESSION_SCOPE, PageContext.APPLICATION_SCOPE, PageContext.REQUEST_SCOPE,
+                PageContext.PAGE_SCOPE };
+        String s = "";
+        for (int i = 0; i < scopes.length; i++) {
+            s += scopeNames[i] + ": {";
+            Enumeration enumeration = pageContext.getAttributeNamesInScope(scopes[i]);
+            while (enumeration.hasMoreElements()) {
+                String name = (String) enumeration.nextElement();
+                s += name + "=" + pageContext.getAttribute(name, scopes[i]);
+                if (enumeration.hasMoreElements()) {
+                    s += ", ";
+                }
+            }
+            s += "}\n";
+        }
+        return s;
+    }
+  
+  /**
+   * @see org.makumba.Attributes#getAttribute(java.lang.String)
+   */  
   public Object getAttribute(String s) 
        throws LogicException
   {

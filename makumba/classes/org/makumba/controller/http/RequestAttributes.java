@@ -22,6 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -125,6 +127,9 @@ public class RequestAttributes implements Attributes
 
   public static final Object notFound="not found";
 
+  /**
+   * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
+   */
   public Object setAttribute(String s, Object o){
     String snull=s+"_null";    
     HttpSession ss= request.getSession(true);
@@ -137,7 +142,70 @@ public class RequestAttributes implements Attributes
       ss.removeAttribute(snull);
     return value;
   }
+  
+    /**
+     * @see org.makumba.Attributes#removeAttribute(java.lang.String)
+     */  
+    public void removeAttribute(String s) throws LogicException {
+        request.getSession(true).removeAttribute(s);
+    }
 
+    /**
+     * @see org.makumba.Attributes#hasAttribute(java.lang.String)
+     */
+    public boolean hasAttribute(String s) {
+        try {
+            return (checkSessionForAttribute(s) != RequestAttributes.notFound
+                    || checkServletLoginForAttribute(s) != RequestAttributes.notFound
+                    || checkLogicForAttribute(s) != RequestAttributes.notFound || checkParameterForAttribute(s) != RequestAttributes.notFound);
+        } catch (LogicException e) {
+            return false;
+        }
+    }
+  
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        String s = "Session: {";
+        HttpSession ss = request.getSession(true);
+        Enumeration e = ss.getAttributeNames();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            s += key + "=" + ss.getAttribute(key);
+            if (e.hasMoreElements()) {
+                s += ", ";
+            }
+        }
+        s += "}\n";
+
+        e = request.getAttributeNames();
+        s += "Request: {";
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            s += key + "=" + request.getAttribute(key);
+            if (e.hasMoreElements()) {
+                s += ", ";
+            }
+        }
+        s += "}\n";
+
+        e = request.getParameterNames();
+        s += "Parameters: {";
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            s += key + "=" + request.getParameter(key);
+            if (e.hasMoreElements()) {
+                s += ", ";
+            }
+        }
+        s += "}";
+        return s;
+    }
+
+  /**
+   * @see org.makumba.Attributes#getAttribute(java.lang.String)
+   */  
   public Object getAttribute(String s) 
        throws LogicException
   {
