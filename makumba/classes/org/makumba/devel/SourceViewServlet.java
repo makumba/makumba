@@ -93,36 +93,94 @@ public class SourceViewServlet extends HttpServlet {
                 }
 
                 // make a directory listing
+                String relativeDirectory = dir.getName();
+                if (dir.getAbsolutePath().indexOf("classes/") != -1) { // class viewer
+                    relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("classes"));
+                } else if (dir.getAbsolutePath().indexOf("dataDefinitions/") != -1) { // MDD viewer
+                    relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
+                }
                 res.setContentType("text/html");
                 w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-                w.println("<html><head><title>" + dir.getName() + "</title>");
+                w.println("<html><head><title>" + relativeDirectory + "</title>");
                 w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-                w.println("</head>\n<body><pre>");
-                String[] list = dir.list();
 
-                w.println("<b><a href=\"../\">../</a></b> (up one level)");
-                for (int i = 0; i < list.length; i++) {
-                    String s = list[i];
-                    if (s.indexOf(".") == -1 && !s.equals("CVS"))
-                        w.println("<b><a href=\"" + s + "/\">" + s + "/</a></b>");
+                w .println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
+                w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">"
+                        + relativeDirectory + "</font></a></font>");
+                w.print("<font size=\"-1\"><br>" + dir.getCanonicalPath() + "</font>");
+                w.print("</td>");
+
+                w.print("</tr></table>\n<pre style=\"margin-top:0\">");
+
+                if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
+                    w.println("<b><a href=\"../\">../</a></b> (up one level)");
                 }
 
-                for (int i = 0; i < list.length; i++) {
-                    String s = list[i];
-                    if (s.indexOf(".") != -1 && !s.endsWith("~") && !s.endsWith("class")) {
-                        String addr = s;
-                        if (s.endsWith("dd")) {
+                if (sw instanceof javaViewer) {
+                    String[] list = dir.list();
+                    processDirectory(w, dir, ".java");
+                    for (int i = 0; i < list.length; i++) {
+                        String s = list[i];
+                        File f = new File(dir.getAbsolutePath() + File.separator + s);
+                        if (f.isFile() && f.getName().endsWith(".java")) {
+                            w.println("<b><a href=\"" + s + "\">" + s + "</a></b>");
+                        }
+                    }
+                } else if (sw instanceof mddViewer) {
+                    String[] list = dir.list();
+                    processDirectory(w, dir, "dd");
+
+                    for (int i = 0; i < list.length; i++) {
+                        String s = list[i];
+                        if (s.indexOf(".") != -1 && s.endsWith("dd")) {
                             String dd = req.getPathInfo() + s;
                             dd = dd.substring(1, dd.lastIndexOf(".")).replace('/', '.');
-                            addr = req.getContextPath() + "/dataDefinitions/" + dd;
+                            String addr = req.getContextPath() + "/dataDefinitions/" + dd;
+                            w.println("<a href=\"" + addr + "\">" + s + "</a>");
                         }
-                        w.println("<a href=\"" + addr + "\">" + s + "</a>");
                     }
+                } else {
+                    System.out.println("don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
                 }
-                w.println("</pre></body></html>");
+                w.println("</pre>");
+                w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
+                                + org.makumba.MakumbaSystem.getVersion() + "</font>");
+                w.println("</body></html>");
             }
         } else
             w.println("unknown source type: " + servletPath);
     }
-}
 
+    private void processDirectory(PrintWriter w, File dir, String extension) {
+        String[] list = dir.list();
+        for (int i = 0; i < list.length; i++) {
+            String s = list[i];
+            File f = new File(dir.getAbsolutePath() + File.separator + s);
+            if (f.isDirectory() && !f.getName().equals("CVS")) {
+                if (containsFilesWithExtension(f, extension)) {
+                    w.println("<b><a href=\"" + s + "/\">" + s + "/</a></b>");
+                }
+            }
+        }
+    }
+
+    private boolean containsFilesWithExtension(File dir, String extension) {
+        String[] list = dir.list();
+        // we first process only files, to decrease the amount of sub-directories we search
+        for (int i = 0; i < list.length; i++) {
+            File f = new File(dir.getAbsolutePath() + File.separator + list[i]);
+            if (f.isFile() && f.getName().endsWith(extension)) {
+                return true;
+            }
+        }
+        for (int i = 0; i < list.length; i++) {
+            File f = new File(dir.getAbsolutePath() + File.separator + list[i]);
+            if (f.isDirectory()) {
+                if (containsFilesWithExtension(f, extension)) { // if not a dir with classes, we continue the search
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
