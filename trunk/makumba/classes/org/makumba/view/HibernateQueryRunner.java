@@ -199,16 +199,43 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
     class MyAttributes implements Attributes {
         Hashtable attr = new Hashtable();
 
+        /**
+         * @see org.makumba.Attributes#getAttribute(java.lang.String)
+         */
         public Object getAttribute(String name) throws LogicException {
             return attr.get(name);
         }
 
+        /**
+         * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
+         */
         public Object setAttribute(String name, Object value) throws LogicException {
             if (value != null) {
                 return attr.put(name, value);
             } else {
                 throw new LogicException("No value for " + name);
             }
+        }
+
+        /**
+         * @see org.makumba.Attributes#removeAttribute(java.lang.String)
+         */
+        public void removeAttribute(String name) throws LogicException {
+            attr.remove(name);
+        }
+
+        /**
+         * @see org.makumba.Attributes#hasAttribute(java.lang.String)
+         */
+        public boolean hasAttribute(String s) {
+            return attr.get(s) != null;
+        }
+        
+        /**
+         * @see java.lang.Object#toString()
+         */
+        public String toString() {
+            return attr.toString();
         }
     }
 }

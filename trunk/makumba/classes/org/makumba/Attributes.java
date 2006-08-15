@@ -40,7 +40,22 @@ public interface Attributes
     @param name the name of the attribute
     @param value the value of the attribute
     @return the old value of the attribue, or null if there was none
-    *@throws LogicException if a business logic problem occured while trying to set the attribute (though at present the BL has no supported way to check that
+    *@throws LogicException if a business logic problem occured while trying to set the attribute (though at present the BL has no supported way to check that).
     */
   public Object setAttribute(String name, Object value) throws LogicException;
+  
+  /**
+   * Removes an attribute
+   * @param name the name of the attribute
+   * @throws LogicException if a business logic problem occured while trying to remove the attribute
+   */
+  public void removeAttribute(String name) throws LogicException;
+  
+  /**
+   * Checks whether an attribute exists
+   * @param name the name of the attribute
+   * @return true if the attribute exists, false otherwise.
+   */
+  public boolean hasAttribute(String name);
+  
 }
