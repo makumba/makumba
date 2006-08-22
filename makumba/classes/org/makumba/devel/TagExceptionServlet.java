@@ -45,6 +45,11 @@ import org.makumba.view.jsptaglib.MakumbaTag;
  * meant to be friendly for developer, so he'll see helpful stuff during development and not 
  * stupid stakctraces (which are shown only in case of unknown exceptions)
  * also indented for intercepting lack of authorization and show login pages
+ * 
+ * @version $Id$
+ * @author Cristian Bogdan
+ * @author Stefan Baebler
+ * @author Rudolf Mayer
  */
 public class TagExceptionServlet extends HttpServlet
 {
@@ -151,12 +156,9 @@ static Object errors [][]=
       // ignore source code retrieving bugs
       t.printStackTrace();
     }
-    try{
-      return tagExpl+"\n"+tagData.getStart().getFile().getCanonicalPath()+":"+
-	tagData.getStart().getLine()+":"+tagData.getStart().getColumn()+":"+
-	tagData.getEnd().getLine()+":"+tagData.getEnd().getColumn()+"\n"+
-	sb.toString()+"\n\n";
-    }catch(java.io.IOException e) { throw new MakumbaError(e.toString()); }
+    String filePath = "/" + tagData.getStart().getFile().getAbsolutePath().substring(getServletContext().getRealPath("/").length());
+    return tagExpl + "\n" + filePath + ":" + tagData.getStart().getLine() + ":" + tagData.getStart().getColumn() + ":"
+           + tagData.getEnd().getLine() + ":" + tagData.getEnd().getColumn() + "\n" + sb.toString() + "\n\n";
   }
 
   String trace(Throwable t) 

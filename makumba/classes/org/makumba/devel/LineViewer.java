@@ -48,7 +48,7 @@ import org.makumba.MakumbaSystem;
  * a viewer that shows everything per line
  * 
  * 
- * @version $ID $
+ * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
  *  
@@ -275,8 +275,6 @@ public class LineViewer implements SourceViewer {
         String jdkClass;
         String jspPage;
         String jspClass;
-        java.net.URL mdd;
-        java.net.URL idd;
 
         StringBuffer source = new StringBuffer(s);
         StringBuffer result = new StringBuffer();
@@ -294,8 +292,8 @@ public class LineViewer implements SourceViewer {
                 result.append(formatMakumbaLink(token));
             } else if (token.indexOf("java.sun.com") != -1) {
                 result.append(formatSunLink(token));
-            } else if (searchMDD && (mdd = org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd")) != null
-                    || (idd = org.makumba.abstr.RecordParser.findDataDefinition(token, "idd")) != null) {
+            } else if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
+                    || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
                 result.append(formatMDDLink(token));
             } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
                 result.append(formatClassLink(javaClass.getName(), token, null));
@@ -505,7 +503,7 @@ public class LineViewer implements SourceViewer {
             }
             if (c != null && c.getName().startsWith("java")) {
                 return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
-                        + ".html#" + methodName + "()\">" + c.getName() + "</a>";
+                        + ".html#" + methodName + "()\">" + c.getName() + "." + methodName + "()" + "</a>";
             } else {
                 return null;
             }
