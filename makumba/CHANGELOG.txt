@@ -6,6 +6,10 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
+rudi: Improvements in error viewer
+- line numbers are added to the link to JSP-generated class files
+- link to the jsp page with the error works (relative path, not absolute anymore)
+- link to java classes improved (shows metdod name)
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
