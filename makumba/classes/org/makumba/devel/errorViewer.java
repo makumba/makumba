@@ -107,7 +107,6 @@ public class errorViewer extends LineViewer {
         int indexNumberBegin = s.indexOf(beginToken) + 1;
         if (indexNumberBegin != -1) {
             int indexNumberEnd = s.indexOf(endToken, indexNumberBegin);
-            System.out.println("string: " + s + "--> begin: " + indexNumberBegin + ", end: " + indexNumberEnd);
             if (indexNumberEnd != -1) {
                 String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd);
                 try {
