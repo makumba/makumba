@@ -36,7 +36,7 @@ import org.makumba.view.jsptaglib.TomcatJsp;
 /**
  * the error viewer. To be used from TagExceptionServlet.
  * 
- * @version $ID $
+ * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
  *  
@@ -59,8 +59,6 @@ public class errorViewer extends LineViewer {
         Class javaClass;
         String jspPage;
         String jspClass;
-        java.net.URL mdd;
-        java.net.URL idd;
         String sunClass;
 
         StringBuffer source = new StringBuffer(s);
@@ -76,28 +74,23 @@ public class errorViewer extends LineViewer {
             result.append(source.substring(0, indexOf));
 
             if (token.indexOf(".") != -1) {
+                Integer lineNumber = null;
 
-                if (searchMDD && (mdd = org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd")) != null
-                        || (idd = org.makumba.abstr.RecordParser.findDataDefinition(token, "idd")) != null) {
+                if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
+                        || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
-                    int indexNumberBegin = source.substring(indexAfter).indexOf(":") + 1;
-                    Integer lineNumber = null;
-                    if (indexNumberBegin != -1) {
-                        int indexEnd = source.substring(indexAfter).indexOf(")");
-                        String lineNumberText = source.substring(indexAfter).substring(indexNumberBegin, indexEnd);
-                        try {
-                            lineNumber = Integer.valueOf(lineNumberText);
-                        } catch (NumberFormatException e) {
-                        }
-                    }
+                    String substring = source.substring(indexAfter);
+                    lineNumber = findLineNumber(substring, ":", ")");
                     result.append(formatClassLink(javaClass.getName(), token, lineNumber));
                 } else if ((sunClass = findJDKClass(token)) != null) {
                     result.append(sunClass);
                 } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
-                    result.append(formatJSPLink(jspPage, token, null));
+                    lineNumber = findLineNumber(source.toString(), ":", ":");
+                    result.append(formatJSPLink(jspPage, token, lineNumber));
                 } else if (searchCompiledJSPClasses && (jspClass = findCompiledJSP(token)) != null) {
-                    result.append(formatClassLink(jspClass, token, null));
+                    lineNumber = findLineNumber(source.toString(), ":", ")");
+                    result.append(formatClassLink(jspClass, token, lineNumber));
                 } else {
                     result.append(token);
                 }
@@ -107,6 +100,23 @@ public class errorViewer extends LineViewer {
             source.delete(0, indexOf + token.length());
         }
         return result.append(source).toString();
+    }
+
+    private Integer findLineNumber(String s, String beginToken, String endToken) {
+        Integer lineNr = null;
+        int indexNumberBegin = s.indexOf(beginToken) + 1;
+        if (indexNumberBegin != -1) {
+            int indexNumberEnd = s.indexOf(endToken, indexNumberBegin);
+            System.out.println("string: " + s + "--> begin: " + indexNumberBegin + ", end: " + indexNumberEnd);
+            if (indexNumberEnd != -1) {
+                String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd);
+                try {
+                    lineNr = Integer.valueOf(lineNumberText);
+                } catch (NumberFormatException e) {
+                }
+            }
+        }
+        return lineNr;
     }
 
     /**
