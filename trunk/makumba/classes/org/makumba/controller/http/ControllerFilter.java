@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
 import org.makumba.UnauthorizedException;
 import org.makumba.util.DbConnectionProvider;
 
@@ -141,6 +142,13 @@ public class ControllerFilter implements Filter
 	// tomcat will deal with it
 	catch(ServletException se){ se.printStackTrace(); throw new MakumbaError(se); }
 	catch(java.io.IOException ioe){ ioe.printStackTrace(); throw new MakumbaError(ioe); }
+    catch(java.lang.IllegalStateException ise) { // we get an java.lang.IllegalStateException
+        // most likely due to not being able to redirect the page to the error page due to already flushed buffers
+        // ==> we display a warning
+        // TODO: ideally, we would print the error message in the logs
+        MakumbaSystem.getMakumbaLogger("controller").severe("Page execution breaks on page '" + req.getServletPath() + "' but the error page can't be displayed due to too small buffer size. Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page");
+        ise.printStackTrace();
+    }
 	finally {
 	  org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
 	}
