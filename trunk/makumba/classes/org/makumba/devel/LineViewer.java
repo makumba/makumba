@@ -92,7 +92,9 @@ public class LineViewer implements SourceViewer {
     protected String servletPath;
 
     protected String logicPath;
-
+    
+    protected String codeBackgroundStyle = "";
+    
     //  TODO: temporarily, to be determined by java Anlyzer
     private String[] importedPackages = new String[] { "", "java.lang." };
 
@@ -177,8 +179,12 @@ public class LineViewer implements SourceViewer {
         else if (title == null || title != null && title.equals(""))
             title = "";
         writer.println("<title>" + title + "</title>");
-        if (printLineNumbers)
-            writer.println("<style type=\"text/css\">\n A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}\n</style>");
+        if (printLineNumbers) {
+            writer.println("<style type=\"text/css\">");
+            writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
+            writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
+            writer.println("\n</style>");
+        }
         writer.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
 
         if (title != null && !title.equals("") && !title.equals(virtualPath))
@@ -193,7 +199,7 @@ public class LineViewer implements SourceViewer {
         writer.print("</td>");
 
         intro(writer);
-        writer.print("</tr></table>\n<pre style=\"margin-top:0\">");
+        writer.print("</tr></table>\n<pre class=\"code\">");
     }
 
     /**
