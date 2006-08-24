@@ -57,6 +57,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   /** The JSP URI, for debugging purposes. */
   String uri;
 
+  private boolean usingHibernate = false;
+
   /** The patterns used to parse the page. */
   static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern, JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, Word, TagName;
 
@@ -378,6 +380,15 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
     td.start=start;
     td.end=end;
 
+    if (td.name.equals("taglib")) { // find out whether we have a taglib tag
+        if (td.attributes.get("uri")!=null && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
+            if (!td.attributes.get("uri").equals("http://www.makumba.org/presentation")) {
+                // every other makumba.org tag-lib than www.makumba.org/presentation is treated to be hibernate
+                usingHibernate = true;
+            }
+        }
+    }
+
     Logger log= MakumbaSystem.getMakumbaLogger("jspparser.tags");
     
     // we avoid evaluation of the logging expression
@@ -391,7 +402,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
   /** FIXME: This seems to build some nice illustration for a parse-error message */
   public static void tagDataLine(JspParseData.TagData td, StringBuffer sb)
   {
-	sb.append(td.start.getLine()).append(":\n").
+	sb.append("\n").
 	    append(td.start.sourceFile.getLineText(td.start.getLine())).
 	    append('\n');
 	for(int i=1; i<td.start.getColumn(); i++)
@@ -486,6 +497,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
 
   }
 
+    public boolean isUsingHibernate() {
+        return usingHibernate;
+    }
 
 } // end class
 

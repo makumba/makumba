@@ -45,7 +45,7 @@ import org.makumba.view.jsptaglib.TomcatJsp;
  * 
  * This classe implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
  * 
- * @version $ID $
+ * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
  *  
@@ -82,6 +82,10 @@ public class jspViewer extends LineViewer {
 
     private static final String DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE = "font-style:italic;";
 
+    private static final String DEFAULT_HIBERNATEPAGE_STYLE = "background-color: #CCFFCC;";
+
+    private static String hibernateCodeBackgroundStyle;
+
     static {
         initProperties();
     }
@@ -113,6 +117,11 @@ public class jspViewer extends LineViewer {
             jspSyntaxProperties.remove("JSPSystemTag");
             jspSyntaxProperties.remove("ExpressionLanguage");
             taglibgSytleProperties = jspSyntaxProperties;
+
+            // set background colour for hibernate code
+            hibernateCodeBackgroundStyle = jspSyntaxProperties.getProperty("HibernatePage",
+                    DEFAULT_HIBERNATEPAGE_STYLE);
+
         } catch (Throwable t) { // the properties file was not found / readable / etc.
 
             MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
@@ -125,6 +134,7 @@ public class jspViewer extends LineViewer {
             SystemStyleProperties.put("JspComment", DEFAULT_JSPCOMMENT_STYLE);
             SystemStyleProperties.put("JSPSystemTag", DEFAULT_JSPSYSTEMTAG_STYLE);
             taglibgSytleProperties = defaultTaglibProperties;
+            hibernateCodeBackgroundStyle = DEFAULT_HIBERNATEPAGE_STYLE;
         }
     }
 
@@ -169,6 +179,11 @@ public class jspViewer extends LineViewer {
         JspParseData jspParseData = JspParseData.getParseData(sv.getServletContext().getRealPath("/"), thisFile,
                 JspxJspAnalyzer.getInstance());
         jspParseData.getAnalysisResult(null);
+        
+        // set background colour for hibernate code
+        if (jspParseData.isUsingHibernate()) {
+            codeBackgroundStyle = hibernateCodeBackgroundStyle;
+        }
 
         syntaxPoints = jspParseData.getSyntaxPoints();
 
