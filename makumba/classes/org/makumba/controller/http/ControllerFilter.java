@@ -37,9 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.UnauthorizedException;
+import org.makumba.devel.TagExceptionServlet;
 import org.makumba.util.DbConnectionProvider;
 
-/** The filter that controls each makumba HTTP access. Performs login, form response, exception handling. */
+/**
+ * 
+ * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
+ * @version $Id$ * 
+ */
 public class ControllerFilter implements Filter
 {
   public static final String ORIGINAL_REQUEST="org.makumba.originalRequest";
@@ -144,10 +149,10 @@ public class ControllerFilter implements Filter
 	catch(java.io.IOException ioe){ ioe.printStackTrace(); throw new MakumbaError(ioe); }
     catch(java.lang.IllegalStateException ise) { // we get an java.lang.IllegalStateException
         // most likely due to not being able to redirect the page to the error page due to already flushed buffers
-        // ==> we display a warning
-        // TODO: ideally, we would print the error message in the logs
-        MakumbaSystem.getMakumbaLogger("controller").severe("Page execution breaks on page '" + req.getServletPath() + "' but the error page can't be displayed due to too small buffer size. Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page");
-        ise.printStackTrace();
+        // ==> we display a warning, and display the error message as it would have been on the page
+        MakumbaSystem.getMakumbaLogger("controller").severe("Page execution breaks on page '" + req.getServletPath() + "' but the error page can't be displayed due to too small buffer size.\n" +
+                "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"+
+                "The makumba error message would have been:\n" + new TagExceptionServlet().getErrorMessage(req));
     }
 	finally {
 	  org.makumba.view.jsptaglib.MakumbaTag.initializeThread();

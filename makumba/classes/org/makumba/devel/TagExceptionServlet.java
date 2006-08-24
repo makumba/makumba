@@ -83,22 +83,7 @@ static Object errors [][]=
     Throwable t1=null;    
 
     Throwable original=t;
-    while(true)
-      {
-	if(t instanceof LogicException)
-	  t1=((LogicException)t).getReason();
-	else if(t instanceof MakumbaError && !(t instanceof OQLParseError))
-	  t1=((MakumbaError)t).getReason();
-	else if(t instanceof LogicInvocationError)
-	  t1=((LogicInvocationError)t).getReason();
-	else if(t instanceof RuntimeWrappedException)
-	  t1=((RuntimeWrappedException)t).getReason();
-	else 
-	  break;
-	if(t1==null)
-	  break;
-	t=t1;
-      }
+    findRoot(t, t1);
 
     if(t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())){
       knownError("JSP compilation error", t, original, req, wr);
@@ -115,6 +100,24 @@ static Object errors [][]=
     unknownError(original, t, wr,req);
     wr.flush();
   }
+
+    void findRoot(Throwable t, Throwable t1) {
+        while (true) {
+            if (t instanceof LogicException)
+                t1 = ((LogicException) t).getReason();
+            else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
+                t1 = ((MakumbaError) t).getReason();
+            else if (t instanceof LogicInvocationError)
+                t1 = ((LogicInvocationError) t).getReason();
+            else if (t instanceof RuntimeWrappedException)
+                t1 = ((RuntimeWrappedException) t).getReason();
+            else
+                break;
+            if (t1 == null)
+                break;
+            t = t1;
+        }
+    }
     
   void knownError(String title, Throwable t, Throwable original, HttpServletRequest req, PrintWriter wr){
     String trcOrig=trace(t);
@@ -141,11 +144,11 @@ static Object errors [][]=
     String tagExpl="During analysis of the following tag (and possibly tags inside it):";
     JspParseData.TagData tagData=MakumbaTag.getAnalyzedTag();
     if(tagData==null){
-      tagExpl="During running of:";
+      tagExpl="During running of: ";
       tagData= MakumbaTag.getRunningTag();
     }
     if(tagData==null){
-      tagExpl="While executing inside this body tag, but most probably _not_ due to the tag:";
+      tagExpl="While executing inside this body tag, but most probably <b>not</b> due to the tag:";
       tagData= MakumbaTag.getCurrentBodyTag();
     }
     if(tagData==null) return "";
@@ -156,8 +159,13 @@ static Object errors [][]=
       // ignore source code retrieving bugs
       t.printStackTrace();
     }
-    String filePath = "/" + tagData.getStart().getFile().getAbsolutePath().substring(getServletContext().getRealPath("/").length());
-    return tagExpl + "\n" + filePath + ":" + tagData.getStart().getLine() + ":" + tagData.getStart().getColumn() + ":"
+    String filePath;
+    try {
+        filePath = "/" + tagData.getStart().getFile().getAbsolutePath().substring(getServletContext().getRealPath("/").length());
+    } catch (Exception e) { // we might not have a servlet context available
+        filePath = tagData.getStart().getFile().getAbsolutePath();
+    }
+    return tagExpl + filePath + ":" + tagData.getStart().getLine() + ":" + tagData.getStart().getColumn() + ":"
            + tagData.getEnd().getLine() + ":" + tagData.getEnd().getColumn() + "\n" + sb.toString() + "\n\n";
   }
 
@@ -196,6 +204,7 @@ static Object errors [][]=
       }
     return s;
   }
+  
 
 
   void unknownError(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req)
@@ -211,7 +220,7 @@ static Object errors [][]=
     else if(trace(traced).indexOf("org.makumba")!=-1)
       {
 	title="Internal Makumba error";
-	body="Please report to the developers.\n\n";
+	body="Please report to the developers.\n";
 	if(t instanceof ServletException){
 	  traced=((ServletException)t).getRootCause();
 	  // maybe there's no root cause...
@@ -244,5 +253,84 @@ static Object errors [][]=
 
   }
   
+    /**
+     * Return a string describing the error that occured.
+     * @param req
+     * @return
+     */
+    public String getErrorMessage(HttpServletRequest req) {
+        Throwable t = (Throwable) req.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION);
+        Throwable t1 = null;
+        Throwable original = t;
+        
+        findRoot(t, t1);
+
+        if (t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())) {
+            return "JSP compilation error:\n" + formatTagData() + t.getMessage();
+        }
+        for (int i = 0; i < errors.length; i++) {
+            if ((((Class) errors[i][0])).isInstance(t) || t1 != null && (((Class) errors[i][0])).isInstance(t = t1)) {
+                return "Makumba " + errors[i][1] + " error:\n" + formatTagData() + t.getMessage();
+            }
+        }
+        return unknownErrorMessage(original, t);
+    }
+    
+    /**
+     * Return a string describing an unknown error. 
+     * TODO: this code is more or less a copy of unknownError() --> could be optimised
+     * @param original
+     * @param t
+     * @return
+     */
+    String unknownErrorMessage(Throwable original, Throwable t) {
+        System.out.println("unknown message:");
+        Throwable traced = t;
+        String title = "";
+        String body = "";
+        if (original instanceof LogicInvocationError) {
+            title = "Error in business logic code";
+        } else if (trace(traced).indexOf("org.makumba") != -1) {
+            title = "Internal Makumba error";
+            body = "Please report to the developers.\n\n";
+            if (t instanceof ServletException) {
+                traced = ((ServletException) t).getRootCause();
+                // maybe there's no root cause...
+                if (traced == null) {
+                    traced = t;
+                }
+            }
+        } else {
+            title = "Error in JSP Java scriplet or servlet container";
+        }
+        if (traced instanceof java.sql.SQLException) {
+            title = "SQL " + title;
+            body = "The problem is related to SQL:\n" + "   SQLstate: "
+                    + ((java.sql.SQLException) traced).getSQLState() + "\n" + "  ErrorCode: "
+                    + ((java.sql.SQLException) traced).getErrorCode() + "\n" + "    Message: " + traced.getMessage()
+                    + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
+                    + "Please check the configuration of your webapp and SQL server.\n" + body;
+        }
+        return title + ":\n" + formatTagData() + body + shortTrace(trace(traced),10);
+    }
+
+    /**
+     * Cuts down a stack trace to the given number of lines.
+     * @param s a stacktrace as string.
+     * @param lineNumbers the number of lines to be displayed.
+     * @return the cut down stack trace.
+     */
+    String shortTrace(String s, int lineNumbers) {
+        String[] parts = s.split("\n", lineNumbers + 1);
+        String result = "";
+        for (int i = 0; i < parts.length && i < lineNumbers; i++) {
+            result += parts[i] + "\n";
+        }
+        String[] allParts = s.split("\n");
+        if (allParts.length > lineNumbers + 1) {
+            result += "-- Rest of stacktrace cut --\n";
+        }
+        return result;
+    }
 
 }
