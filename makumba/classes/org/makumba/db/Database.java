@@ -335,6 +335,7 @@ public abstract class Database {
 
             config.put("alter#org.makumba.db.Catalog", "true");
             config.put("alter#org.makumba.db.Lock", "true");
+            config.put("alter#org.makumba.controller.MultipleSubmit", "true");
         } catch (Exception e) {
             throw new org.makumba.MakumbaError(e);
         }
