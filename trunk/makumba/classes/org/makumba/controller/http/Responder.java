@@ -57,7 +57,7 @@ public abstract class Responder implements java.io.Serializable
   /** the name of the CGI parameter that passes the responder key, so the responder can be retrieved from the cache, "__makumba__responder__" */
   public final static String responderName="__makumba__responder__";
   
-  /** used to fix the multiple submition bug (#190), it�s basicaliy respoder+sessionID. <br> TODO find a meaningful name :) */ 
+  /** used to fix the multiple submition bug (#190), it's basicaliy respoder+sessionID. <br> TODO find a meaningful name :) */ 
   public final static String formSessionName="__makumba__formSession__";
 
   /** the default label used to store the add and new result, "___mak___edited___"*/
@@ -193,7 +193,7 @@ public abstract class Responder implements java.io.Serializable
   /** a key that should identify this responder among all */
   public String responderKey()
   {
-    return basePointerType+message+resultAttribute+database+operation+controller.getClass().getName()+handler+addField+newType;
+    return basePointerType+message+multipleSubmitMsg+resultAttribute+database+operation+controller.getClass().getName()+handler+addField+newType;
   }
 
   /** get the integer key of this form, and register it if not already registered */
