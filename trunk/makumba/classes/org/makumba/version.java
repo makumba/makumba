@@ -65,9 +65,9 @@ class version {
 	try{
 	    prop.load(org.makumba.util.ClassResource.get(filename).openStream());
 	    buildDate=df.parse(prop.getProperty("buildDate"),new java.text.ParsePosition(0));
-	} catch (Exception e) { 
-	  //some error handling here 
-	  System.out.println(e);
+	} catch (Exception e) {
+	    // TODO: throw an exception (needs to adapt some other classes / methods, as doStartTag in MakumbaInfoTag        
+        MakumbaSystem.getMakumbaLogger("version").severe("There was a problem reading the Makumba 'versionBuildDate.properties'. If you deleted the working directory of your web application, please make sure you reload the web application!");
 	} 
 	return buildDate;
    }
