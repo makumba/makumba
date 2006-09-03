@@ -81,15 +81,15 @@ public class errorViewer extends LineViewer {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
                     String substring = source.substring(indexAfter);
-                    lineNumber = findLineNumber(substring, ":", ")");
+                    lineNumber = findLineNumber(substring);
                     result.append(formatClassLink(javaClass.getName(), token, lineNumber));
                 } else if ((sunClass = findJDKClass(token)) != null) {
                     result.append(sunClass);
                 } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
-                    lineNumber = findLineNumber(source.toString(), ":", ":");
+                    lineNumber = findLineNumber(source.toString());
                     result.append(formatJSPLink(jspPage, token, lineNumber));
                 } else if (searchCompiledJSPClasses && (jspClass = findCompiledJSP(token)) != null) {
-                    lineNumber = findLineNumber(source.toString(), ":", ")");
+                    lineNumber = findLineNumber(source.toString());
                     result.append(formatClassLink(jspClass, token, lineNumber));
                 } else {
                     result.append(token);
@@ -102,17 +102,19 @@ public class errorViewer extends LineViewer {
         return result.append(source).toString();
     }
 
-    private Integer findLineNumber(String s, String beginToken, String endToken) {
+    private Integer findLineNumber(String s) {
+        String beginToken = ":";
         Integer lineNr = null;
         int indexNumberBegin = s.indexOf(beginToken) + 1;
         if (indexNumberBegin != -1) {
-            int indexNumberEnd = s.indexOf(endToken, indexNumberBegin);
-            if (indexNumberEnd != -1) {
-                String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd);
-                try {
-                    lineNr = Integer.valueOf(lineNumberText);
-                } catch (NumberFormatException e) {
-                }
+            int indexNumberEnd = indexNumberBegin;
+            while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {
+                indexNumberEnd++;
+            }
+            String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd);
+            try {
+                lineNr = Integer.valueOf(lineNumberText);
+            } catch (NumberFormatException e) {
             }
         }
         return lineNr;
