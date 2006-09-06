@@ -85,7 +85,7 @@ public abstract class Responder implements java.io.Serializable
   protected String message=defaultMessage;
   
   /** a response message to be shown when multiple submit occur */
-  protected String multipleSubmitMsg;
+  protected String multipleSubmitErrorMsg;
   
   /** new and add responders set their result to a result attribute */
   protected String resultAttribute=anonymousResult;
@@ -129,7 +129,7 @@ public abstract class Responder implements java.io.Serializable
   public void setMessage(String message) { this.message=message; }
   
   /** pass the multiple submit response message */
-  public void setMultipleSubmitMsg(String multipleSubmitMsg) { this.multipleSubmitMsg=multipleSubmitMsg; }
+  public void setMultipleSubmitErrorMsg(String multipleSubmitErrorMsg) { this.multipleSubmitErrorMsg=multipleSubmitErrorMsg; }
   
   /** pass the response handler, if other than the default one */
   public void setHandler(String handler) { this.handler=handler; }
@@ -193,7 +193,7 @@ public abstract class Responder implements java.io.Serializable
   /** a key that should identify this responder among all */
   public String responderKey()
   {
-    return basePointerType+message+multipleSubmitMsg+resultAttribute+database+operation+controller.getClass().getName()+handler+addField+newType;
+    return basePointerType+message+multipleSubmitErrorMsg+resultAttribute+database+operation+controller.getClass().getName()+handler+addField+newType;
   }
 
   /** get the integer key of this form, and register it if not already registered */
@@ -351,7 +351,7 @@ public abstract class Responder implements java.io.Serializable
 			//check for multiple submition of forms
             
 			String reqFormSession = (String)RequestAttributes.getParameters(req).getParameter(formSessionName);
-			if (fr.multipleSubmitMsg != null && !fr.multipleSubmitMsg.equals("") && reqFormSession != null) {
+			if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
                 Transaction db = null;
                 try{
                     db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
@@ -359,7 +359,7 @@ public abstract class Responder implements java.io.Serializable
                     //check to see if the ticket is valid... if it exists in the db
     				Vector v = db.executeQuery("SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1" , reqFormSession);
     				if (v.size() == 0) { // the ticket does not exist... error
-    					throw new LogicException(fr.multipleSubmitMsg);
+    					throw new LogicException(fr.multipleSubmitErrorMsg);
     					
     				} else if (v.size() >= 1) { // the ticket exists... continue
     					//garbage collection of old tickets

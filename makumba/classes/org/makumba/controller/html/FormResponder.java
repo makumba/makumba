@@ -201,7 +201,7 @@ RecordEditor editor;
 	
 	//writes the hidden fields
   	writeInput(sb, responderName, responderValue, "");
-	if (multipleSubmitMsg != null && !multipleSubmitMsg.equals("")) {
+	if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
 		sb.append('\n');
 		writeInput(sb, formSessionName, formSessionValue, "");	
 		
