@@ -33,10 +33,10 @@ public class AddTag extends FormTagBase
 	private static final long serialVersionUID = 1L;
 // for input tags:
   String field = null;
-  String multipleSubmitMsg = null;
+  String multipleSubmitErrorMsg = null;
   
   public void setField(String s) { field=s; }
-  public void setMultipleSubmitMsg(String s) { checkNoParent("multipleSubmitMsg"); multipleSubmitMsg=s; }
+  public void setMultipleSubmitErrorMsg(String s) { checkNoParent("multipleSubmitErrorMsg"); multipleSubmitErrorMsg=s; }
 
   /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
   public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
@@ -47,7 +47,7 @@ public class AddTag extends FormTagBase
 
   public void initialiseState() {
       super.initialiseState();
-	  if (multipleSubmitMsg != null) responder.setMultipleSubmitMsg(multipleSubmitMsg);
+	  if (multipleSubmitErrorMsg != null) responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
       if (field != null) responder.setAddField(field);
       if (!"add".equals(getOperation())) 
 	responder.setNewType(((NewTag)findParentForm()).type);

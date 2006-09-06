@@ -592,7 +592,7 @@
 		</attribute>
 		
 		<attribute>
-			<name>multipleSubmitMsg</name>
+			<name>multipleSubmitErrorMsg</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
