@@ -28,6 +28,8 @@ import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
+import org.makumba.util.wiki.JspWikiFormatter;
+import org.makumba.util.wiki.WikiFormatter;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem 
@@ -330,6 +332,13 @@ The programmer could just as well decide that all makumba logging at or over the
 	    return java.util.TimeZone.getTimeZone(s);
 	return java.util.TimeZone.getDefault();
 
+    }
+  
+    /**
+     * @return the system's default wiki formatter.
+     */
+    public static WikiFormatter getWikiFormatter() {
+        return JspWikiFormatter.getInstance();
     }
 
     /** Returns the makumba system locale */
