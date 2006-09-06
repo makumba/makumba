@@ -83,7 +83,28 @@ static Object errors [][]=
     Throwable t1=null;    
 
     Throwable original=t;
-    findRoot(t, t1);
+
+    while (true) {
+        if (t instanceof LogicException)
+            t1 = ((LogicException) t).getReason();
+        else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
+            t1 = ((MakumbaError) t).getReason();
+        else if (t instanceof LogicInvocationError)
+            t1 = ((LogicInvocationError) t).getReason();
+        else if (t instanceof RuntimeWrappedException)
+            t1 = ((RuntimeWrappedException) t).getReason();
+        else if (t instanceof ServletException && ((ServletException) t).getRootCause() instanceof NullPointerException) {
+            // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and no stacktrace.
+            ServletException e = (ServletException) t;
+            t1 = e.getRootCause();
+            t1.setStackTrace(e.getRootCause().getStackTrace());
+        }
+        else
+            break;
+        if (t1 == null)
+            break;
+        t = t1;            
+    }
 
     if(t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())){
       knownError("JSP compilation error", t, original, req, wr);
@@ -101,31 +122,13 @@ static Object errors [][]=
     wr.flush();
   }
 
-    void findRoot(Throwable t, Throwable t1) {
-        while (true) {
-            if (t instanceof LogicException)
-                t1 = ((LogicException) t).getReason();
-            else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
-                t1 = ((MakumbaError) t).getReason();
-            else if (t instanceof LogicInvocationError)
-                t1 = ((LogicInvocationError) t).getReason();
-            else if (t instanceof RuntimeWrappedException)
-                t1 = ((RuntimeWrappedException) t).getReason();
-            else
-                break;
-            if (t1 == null)
-                break;
-            t = t1;
-        }
-    }
-    
   void knownError(String title, Throwable t, Throwable original, HttpServletRequest req, PrintWriter wr){
     String trcOrig=trace(t);
     String trc= shortTrace(trcOrig);
     String body=t.getMessage();
     String hiddenBody=null;
     
-    body=formatTagData()+ body;
+    body=formatTagData(req)+ body;
     if(original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic")!=-1)
       {
 	body=body+"\n\n"+trc;
@@ -140,7 +143,7 @@ static Object errors [][]=
       } catch (IOException e) {e.printStackTrace(); throw new org.makumba.util.RuntimeWrappedException(e);}
   }
     
-  String formatTagData(){
+  String formatTagData(HttpServletRequest req){
     String tagExpl="During analysis of the following tag (and possibly tags inside it):";
     JspParseData.TagData tagData=MakumbaTag.getAnalyzedTag();
     if(tagData==null){
@@ -151,7 +154,16 @@ static Object errors [][]=
       tagExpl="While executing inside this body tag, but most probably <b>not</b> due to the tag:";
       tagData= MakumbaTag.getCurrentBodyTag();
     }
-    if(tagData==null) return "";
+    if(tagData==null) {
+        String filePath;
+        try {
+            String serverName = req.getLocalName() + ":" + req.getLocalPort() + req.getContextPath();
+            filePath = req.getRequestURL().toString().substring(req.getRequestURL().toString().indexOf(serverName)+serverName.length());
+        } catch (Exception e) { // if some error occurs during the string parsing
+            filePath = req.getRequestURL().toString(); // --> we just present the whole request URL
+        }
+        return tagExpl = "While executing page " + filePath + "\n\n";
+    } 
     StringBuffer sb= new StringBuffer();
     try{
       JspParseData.tagDataLine(tagData, sb);
@@ -167,6 +179,7 @@ static Object errors [][]=
     }
     return tagExpl + filePath + ":" + tagData.getStart().getLine() + ":" + tagData.getStart().getColumn() + ":"
            + tagData.getEnd().getLine() + ":" + tagData.getEnd().getColumn() + "\n" + sb.toString() + "\n\n";
+    
   }
 
   String trace(Throwable t) 
@@ -245,7 +258,7 @@ static Object errors [][]=
 		+body;
       }
 
-    body=formatTagData()+body+shortTrace(trace(traced));
+    body=formatTagData(req)+body+shortTrace(trace(traced));
     try{
        SourceViewer sw=new errorViewer(req,this,title,body,null);
        sw.parseText(wr);
@@ -263,17 +276,37 @@ static Object errors [][]=
         Throwable t1 = null;
         Throwable original = t;
         
-        findRoot(t, t1);
+        while (true) {
+            if (t instanceof LogicException)
+                t1 = ((LogicException) t).getReason();
+            else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
+                t1 = ((MakumbaError) t).getReason();
+            else if (t instanceof LogicInvocationError)
+                t1 = ((LogicInvocationError) t).getReason();
+            else if (t instanceof RuntimeWrappedException)
+                t1 = ((RuntimeWrappedException) t).getReason();
+            else if (t instanceof ServletException && ((ServletException) t).getRootCause() instanceof NullPointerException) {
+                // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and no stacktrace.
+                ServletException e = (ServletException) t;
+                t1 = e.getRootCause();
+                t1.setStackTrace(e.getRootCause().getStackTrace());
+            }
+            else
+                break;
+            if (t1 == null)
+                break;
+            t = t1;            
+        }
 
         if (t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())) {
-            return "JSP compilation error:\n" + formatTagData() + t.getMessage();
+            return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
         }
         for (int i = 0; i < errors.length; i++) {
             if ((((Class) errors[i][0])).isInstance(t) || t1 != null && (((Class) errors[i][0])).isInstance(t = t1)) {
-                return "Makumba " + errors[i][1] + " error:\n" + formatTagData() + t.getMessage();
+                return "Makumba " + errors[i][1] + " error:\n" + formatTagData(req) + t.getMessage();
             }
         }
-        return unknownErrorMessage(original, t);
+        return unknownErrorMessage(original, t, req);
     }
     
     /**
@@ -283,7 +316,7 @@ static Object errors [][]=
      * @param t
      * @return
      */
-    String unknownErrorMessage(Throwable original, Throwable t) {
+    String unknownErrorMessage(Throwable original, Throwable t, HttpServletRequest req) {
         System.out.println("unknown message:");
         Throwable traced = t;
         String title = "";
@@ -311,7 +344,7 @@ static Object errors [][]=
                     + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-        return title + ":\n" + formatTagData() + body + shortTrace(trace(traced),10);
+        return title + ":\n" + formatTagData(req) + body + shortTrace(trace(traced),10);
     }
 
     /**
