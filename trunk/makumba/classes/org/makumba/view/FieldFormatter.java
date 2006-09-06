@@ -183,5 +183,10 @@ public class FieldFormatter {
 		}
 		return s;
 	}
+    
+    public boolean equals(String s1, String s2) {
+        return s1 != null && s1.equals(s2);
+    }
+    
 }
 // end class
