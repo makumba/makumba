@@ -6,10 +6,7 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
-rudi: Improvements in error viewer
-- line numbers are added to the link to JSP-generated class files
-- link to the jsp page with the error works (relative path, not absolute anymore)
-- link to java classes improved (shows metdod name)
+
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
@@ -31,11 +28,22 @@ cristi: default database can also be determined by webapp name
 cristi: makumba indexes are dropped only if a hibernate config file exists
 cristi: support for autoIncrement
 cristi: insertFromQuery, rapid mass inserts
-rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
-rudi: improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
 
 <!-- ============================================================================= -->
 <!-- ============================== RELEASES ===================================== -->
+0.5.16; 07 sep 2006
+rudi: improvements in error viewer
+-- line numbers added to link to JSP-generated class files
+-- link to the jsp page with the error works (relative path, not absolute anymore)
+-- link to java classes improved (shows metdod name)
+- nullpointer exceptions treated better
+
+rudi: wiki formatting added
+rudi: adding format attribute for mak:value, combining html and urlencode
+rudi: renamed multipleSubmitMsg to multipleSubmitErrorMsg for new/addForm, fixed form responder key generation to include multipleSubmitErrorMsg
+rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
+rudi: improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
+
 0.5.15.5; 15 aug 2006
 rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
 improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
