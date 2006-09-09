@@ -106,6 +106,11 @@ public class errorViewer extends LineViewer {
         String beginToken = ":";
         Integer lineNr = null;
         int indexNumberBegin = s.indexOf(beginToken) + 1;
+        
+        if (indexNumberBegin != -1) { // try if we have a line number after a '('
+            indexNumberBegin = s.indexOf("(") + 1;
+        }
+        
         if (indexNumberBegin != -1) {
             int indexNumberEnd = indexNumberBegin;
             while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {

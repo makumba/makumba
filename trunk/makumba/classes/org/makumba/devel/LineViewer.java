@@ -33,6 +33,7 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -55,6 +56,8 @@ import org.makumba.MakumbaSystem;
  */
 public class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
+
+    private static final String PARAM_HIDE_LINES = "hideLines";
 
     protected ServletContext servletContext;
 
@@ -95,6 +98,8 @@ public class LineViewer implements SourceViewer {
     
     protected String codeBackgroundStyle = "";
     
+    protected boolean hideLineNumbers = false;
+    
     //  TODO: temporarily, to be determined by java Anlyzer
     private String[] importedPackages = new String[] { "", "java.lang." };
 
@@ -129,6 +134,7 @@ public class LineViewer implements SourceViewer {
         this.printLineNumbers = printLineNumbers;
         servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
+        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null && request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
 
     /**
@@ -143,7 +149,7 @@ public class LineViewer implements SourceViewer {
         LineNumberReader lr = new LineNumberReader(reader);
         String s = null;
         while ((s = lr.readLine()) != null) {
-            if (printLineNumbers) {
+            if (printLineNumbers && !hideLineNumbers) {
                 int n = lr.getLineNumber();
                 writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
             }
@@ -179,7 +185,7 @@ public class LineViewer implements SourceViewer {
         else if (title == null || title != null && title.equals(""))
             title = "";
         writer.println("<title>" + title + "</title>");
-        if (printLineNumbers) {
+        if (printLineNumbers && !hideLineNumbers) {
             writer.println("<style type=\"text/css\">");
             writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
             writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
@@ -196,6 +202,39 @@ public class LineViewer implements SourceViewer {
         if (realPath != null)
             writer.print("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
 
+        if (printLineNumbers) {
+            String urlParams = "";
+            Enumeration e = request.getParameterNames();
+            while (e.hasMoreElements()) {
+                String key =  (String) e.nextElement();
+                Object value = request.getParameter(key);
+                if (!key.equals(PARAM_HIDE_LINES)) {
+                    if (!urlParams.equals("")) {
+                        urlParams += "&";
+                    }
+                    urlParams += key + "=" + value;
+                }
+            }
+            
+            if (!hideLineNumbers) {
+                if (!urlParams.equals("")) {
+                    urlParams += "&";
+                }
+                urlParams += PARAM_HIDE_LINES + "=true";                
+            }            
+            if (!urlParams.equals("")) {
+                urlParams = "?" + urlParams;
+            }            
+            String link = request.getRequestURI() + urlParams;
+         
+            writer.print("<div style=\"font-size: smaller; vertical-align: bottom;\"><a href=\"" + link + "\">");
+            if (hideLineNumbers) {
+                writer.print("Show");
+            } else {
+                writer.print("Hide");
+            }
+            writer.println(" line numbers</a></div>");
+        }
         writer.print("</td>");
 
         intro(writer);
