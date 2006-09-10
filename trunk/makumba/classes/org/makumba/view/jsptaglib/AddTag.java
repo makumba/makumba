@@ -23,6 +23,8 @@
 
 package org.makumba.view.jsptaglib;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 
 public class AddTag extends FormTagBase 
@@ -57,7 +59,18 @@ public class AddTag extends FormTagBase
   {
     DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject):
       ((NewTag)findParentForm()).type;
-    return base.getFieldDefinition(field).getSubtable();
+    if (base == null) { // we could not find the type
+        String message = "Could not determine type for specified object '" + baseObject + "'";
+        if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..
+            message += " - you cannot specify a sub-pointer in the 'object=' attribute!";
+        }
+        throw new ProgrammerError(message);
+    }    
+    FieldDefinition fieldDefinition = base.getFieldDefinition(field);
+    if (fieldDefinition == null) { // we used an unknow field
+        throw new ProgrammerError("Cannot find field '" + field + " in type " + base + "");
+    }
+    return fieldDefinition.getSubtable();
   }
   
   String getOperation(){
