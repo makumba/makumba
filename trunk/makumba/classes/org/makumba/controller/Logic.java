@@ -52,6 +52,11 @@ public class Logic
   static Properties controllerConfig;
   static java.net.URL controllerURL;
   static HashMap nameToObject = new HashMap();
+
+  private static final String HANDLER_METHOD_HEAD = "public void ";
+  
+  private static final String HANDLER_METHOD_END = " throws LogicException {}";
+  
   static
   {
     controllerConfig= new Properties();
@@ -375,7 +380,7 @@ public class Logic
 	  ProgrammerError("Class "+controller.getClass().getName()+
 			  " ("+getControllerFile(controller)+ ")\n"+
 			   "does not define the method\n"+
-			  opName+"(Dictionary, Attributes, Database)\n"+
+			  HANDLER_METHOD_HEAD + opName+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			  "The method is declared as a makumba form handler, so it has to be defined");
       
       try{
@@ -408,7 +413,7 @@ public class Logic
 	      ProgrammerError("Class "+controller.getClass().getName()+
 			      " ("+getControllerFile(controller)+ ")\n"+
 			      "does not define the method\n"+
-			      "on_edit"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
+                  HANDLER_METHOD_HEAD + "on_edit"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow EDIT operations on the type "+typename +
 			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
@@ -450,7 +455,7 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define the method\n"+
-			      "on_delete"+upper+"(Pointer, Attributes, Database)\n"+
+			      HANDLER_METHOD_HEAD + "on_delete"+upper+"(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow DELETE operations on the type "+typename +
 			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
@@ -496,8 +501,8 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      "on_add"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
-			      "after_add"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
+			      HANDLER_METHOD_HEAD + "on_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+                  HANDLER_METHOD_HEAD + "after_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow ADD operations on the type "+typename +
 			      ", field "+field+
 			      "\nDefine any of the methods (even with an empty body) to allow such operations.");
@@ -544,8 +549,8 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      "on_new"+upper+"(Dictionary, Attributes, Database)\n"+
-			      "after_new"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
+			      HANDLER_METHOD_HEAD + "on_new"+upper+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+                  HANDLER_METHOD_HEAD + "after_new"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow NEW operations on the type "+typename +
 			      ".\nDefine any of the methods (even with an empty body) to allow such operations.");
 	}
