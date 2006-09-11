@@ -200,11 +200,8 @@ public class javaViewer extends LineViewer {
 
             if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we print the line numbers
                 if (printLineNumbers) {
-                    writer.print("\n");
-                    if (!hideLineNumbers) {
-                        writer.print("<a style=\"font-style: normal; \" name=\"" + currentLine + "\" href=\"#"
+                    writer.print("\n<a style=\"font-style: normal; \" name=\"" + currentLine + "\" href=\"#"
                             + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
-                    }
                 }
             } else if (type.equals("TextLine") && !currentSyntaxPoint.isBegin()) { //end of line found
                 writer.print(parseLine(htmlEscape(syntaxPoints.getLineText(currentLine).substring(
