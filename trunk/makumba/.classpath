@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="lib/mssqlserver.jar"/>
 	<classpathentry kind="lib" path="lib/msutil.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/jspwiki.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
