@@ -26,17 +26,15 @@ package org.makumba.view.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
-import org.makumba.MakumbaSystem;
 import org.makumba.view.FieldFormatter;
-import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class textViewer extends FieldViewer {
 	static String[] params = { "default", "empty", "lineSeparator",
-			"longLineLength", "html", "format" };
+			"longLineLength", "html" };
 
 	static String[][] paramValues = { null, null, null, null,
-			{ "true", "false", "auto" },{ "raw", "htmlescape", "urlencode", "wiki", "auto" } };
+			{ "true", "false", "auto" } };
 
 	public String[] getAcceptedParams() {
 		return params;
@@ -62,22 +60,11 @@ public class textViewer extends FieldViewer {
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
 		String txt = o.toString();
-		String html = (String) formatParams.get("html");
-        String format = (String) formatParams.get("format");
-
-        if (html != null && format != null) {
-            throw new InvalidValueException(rf.expr[fieldIndex],
-                    "invalid combination of parameters 'html' and 'format'. 'html' is deprecated, please use only 'format'.");
-        }
-        
-        if (equals(html, "true") || equals(format, "raw") || (equals(html, "auto") && HtmlUtils.detectHtml(txt))
-                || (equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
-            return txt;
-        } else if (equals(html,"wiki") || equals(format,"wiki")) {
-            return MakumbaSystem.getWikiFormatter().wiki2html(txt);
-        } else if (equals(format,"urlencode")) {
-            return java.net.URLEncoder.encode(txt);
-        }
+		String ht = (String) formatParams.get("html");
+		if (ht != null
+				&& (ht.equals("true") || ht.equals("auto")
+						&& HtmlUtils.detectHtml(txt)))
+			return txt;
 
 		String startSeparator = "<p>";
 		String endSeparator = "</p>";

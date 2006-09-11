@@ -35,9 +35,7 @@ import org.makumba.LogicException;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.ComposedQuery;
 import org.makumba.view.Grouper;
-import org.makumba.view.AbstractQueryRunner;
 
 /** This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at every parentIteration, and iterates through the iterationGroupData */
 public class QueryExecution
@@ -103,11 +101,16 @@ public class QueryExecution
        throws LogicException
   {
     currentDataSet=(Stack)pageContext.getAttribute(CURRENT_DATA_SET);
-    ComposedQuery cq=MakumbaTag.getPageCache(pageContext).getQuery(key); 
-    AbstractQueryRunner dbc= AbstractQueryRunner. makeQueryRunner(MakumbaTag.getDatabaseName(pageContext), cq);
-    
+   
+    Transaction dbc= 
+      //      org.makumba.controller.http.RequestAttributes.getConnectionProvider
+      //((javax.servlet.http.HttpServletRequest)pageContext.getRequest()).
+      org.makumba.MakumbaSystem.
+      getConnectionTo(MakumbaTag.getDatabaseName(pageContext));
+
       try{
-      listData=cq.execute(dbc, PageAttributes.getAttributes(pageContext), 
+      listData=MakumbaTag.getPageCache(pageContext).getQuery(key)
+	.execute(dbc, PageAttributes.getAttributes(pageContext), 
 		 new Evaluator(pageContext),
 		 computeLimit(pageContext, offset, 0), 
 		 computeLimit(pageContext, limit,-1));

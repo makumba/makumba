@@ -50,7 +50,6 @@ fax=char[40]                 ;Fax
 email=char[40]               ;E-Mail
 homepage=char[50]            ;Home Page on the Internet
 comment=text                 ;Other comments
-personalContacts= set <b>general.Person</b> ; precise personal contacts at the partner
 </pre>
 
 File <b><tt>dataDefinitions/general/Country.mdd</tt></b> (somewhere in classpath):
@@ -59,13 +58,6 @@ File <b><tt>dataDefinitions/general/Country.mdd</tt></b> (somewhere in classpath
 name=char[60]               ;Country
 iso2letterCode=fixed char[2];2-letter ISO code
 </pre>
-
-File <b><tt>dataDefinitions/general/Person.mdd</tt></b> (somewhere in classpath):
-<pre class="example">
-name=char[60]               ;name
-birthdate=date              ;birthdate
-</pre>
-
 <h3>Changes in the table in the database</h3>
 <p>To be able to change the table in the database you need to add the following 
   line to the database proprieties &lt;server_name&gt;_&lt;database_engine&gt;_&lt;database_name&gt;.properties, 
@@ -91,13 +83,10 @@ Page <code><b>partnerList.jsp</b></code> will be showing the list of all partner
 &lt;h2>Partners:&lt/h2>
 
 &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list from</span><span style="color:#006600;">="<i>organisation.Partner p</i>"</span>>
-   &lt;dt>&lt;a href="partner.jsp?partner=&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span>=<i><span style="color:#006600;">"p"</span></i>/>">
+   &lt;a href="partner.jsp?partner=&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span>=<i><span style="color:#006600;">"p"</span></i>/>">
                 &lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span>="<i>p.name"</i>/>
    &lt;/a>,
-   &lt;i>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">=<i>"p.city"</i></span>/>&lt;/i> &lt;/dt> 
-	&lt;dd>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list from</span><span style="color:#006600;">="<i>p.personalContacts c</i>" </span><span style="color:#000099;">separator</span>="&lt;br>"</span>>
-		&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">=<i>"c.name"</i></span>/> 
-	&lt;/<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list</span>>&lt;/dd>
+   &lt;i>&lt;<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">value expr</span><span style="color:#006600;">=<i>"p.city"</i></span>/>&lt;/i>  &lt;br>
 &lt;/<span style="color:#FF0000;">mak</span>:<span style="color:#000099;">list</span>>
 
 &lt;hr>
@@ -116,16 +105,11 @@ But once we enter some data it will look more like:
 
 <div class="plainStyle">
 <h2>Partners:</h2>
-<dt><a href="partner.jsp?partner=fg526f8">PlasticWing Airlines</a>, <i>Cambridge</i> </dt>
-<dd> John Doe<br> John Smith</dd>
-<dt><a href="partner.jsp?partner=fwet4tw">Pasta al'Dente s.p.a</a>, <i>Turin</i>  </dt>
-<dd>Benny Andersson<br>Bjorn Ulvaeus</dd>
-<dt><a href="partner.jsp?partner=h6e5678">Some Company Ltd.</a>, <i>Somewherewille</i> </dt>
-<dd>Robert Wells</dd>
-<dt><a href="partner.jsp?partner=456gw45">ACME gadgets</a>, <i>Death Walley</i>  </dt>
-<dt><a href="partner.jsp?partner=56gfy67">Protect gamblers</a>, <i>Las Vegas</i>  </dt>
-<dd>Frida<br>Agneta<br>Cher</dd>
-
+<a href="partner.jsp?partner=fg526f8">PlasticWing Airlines</a>, <i>Cambridge</i>  <br>
+<a href="partner.jsp?partner=fwet4tw">Pasta al'Dente s.p.a</a>, <i>Turin</i>   <br>
+<a href="partner.jsp?partner=h6e5678">Some Company Ltd.</a>, <i>Somewherewille</i>  <br>
+<a href="partner.jsp?partner=456gw45">ACME gadgets</a>, <i>Death Walley</i>  <br>
+<a href="partner.jsp?partner=56gfy67">Protect gamblers</a>, <i>Las Vegas</i>  <br>
 <hr>
 [<a href="partnerNew.jsp">New partner entry</a>]
 </div>

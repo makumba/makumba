@@ -281,11 +281,8 @@ public class jspViewer extends LineViewer {
                 // if the current line contained any text to write or we are outside a tag & shall write html
                 if ((!currentText.toString().trim().equals("") || (inTag < 1 && !hideHTML) || (inTag > 0 && shallWrite))
                         && printLineNumbers) {
-                    writer.print("\n");
-                    if (!hideLineNumbers) {
-                        writer.print("<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
+                    writer.print("\n<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
                             + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
-                    }
                 }
                 writer.print(currentText.toString());
                 currentText = new StringBuffer();

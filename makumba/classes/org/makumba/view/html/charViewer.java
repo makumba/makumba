@@ -26,17 +26,15 @@ package org.makumba.view.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
-import org.makumba.MakumbaSystem;
 import org.makumba.view.FieldFormatter;
-import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class charViewer extends FieldViewer {
-	static String[] params = { "default", "empty", "urlEncode", "html", "format",
+	static String[] params = { "default", "empty", "urlEncode", "html",
 			"maxLength", "ellipsis", "ellipsisLength", "addTitle" };
 
 	static String[][] paramValues = { null, null, { "true", "false" },
-            { "true", "false", "auto" }, { "raw", "htmlescape", "urlencode", "wiki", "auto" }, null, null, null,
+			{ "true", "false", "auto" }, null, null, null,
 			{ "true", "false", "auto" } };
 
 	public String[] getAcceptedParams() {
@@ -50,8 +48,6 @@ public class charViewer extends FieldViewer {
 	private static final class SingletonHolder {
 		static final FieldFormatter singleton = new charViewer();
 	}
-    
-    
 
 	private charViewer() {
 	}
@@ -61,25 +57,14 @@ public class charViewer extends FieldViewer {
 	}
 	
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-        String txt = o.toString();
-        String html = (String) formatParams.get("html");
-        String format = (String) formatParams.get("format");
+		String txt = o.toString();
+		String ht = (String) formatParams.get("html");
 
-        if (html != null && format != null) {
-            throw new InvalidValueException(rf.expr[fieldIndex],
-                    "invalid combination of parameters 'html' and 'format'. 'html' is deprecated, please use only 'format'.");
-        }
+		if (ht != null
+				&& (ht.equals("true") || ht.equals("auto")
+						&& HtmlUtils.detectHtml(txt)))
+			return txt;
 
-        if (equals(html, "true") || equals(format, "raw") || (equals(html, "auto") && HtmlUtils.detectHtml(txt))
-                || (equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
-            return txt;
-        } else if (equals(html,"wiki") || equals(format,"wiki")) {
-            return MakumbaSystem.getWikiFormatter().wiki2html(txt);
-        } else if (equals(format,"urlencode")) {
-            return java.net.URLEncoder.encode(txt);
-        } else {
-            return formatMaxLengthEllipsis(rf, fieldIndex, txt, formatParams);
-        }
-    }
-    
+		return formatMaxLengthEllipsis(rf, fieldIndex, txt, formatParams);
+	}
 }

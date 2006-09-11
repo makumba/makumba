@@ -41,6 +41,8 @@ rudi: improvements in error viewer
 rudi: wiki formatting added
 rudi: adding format attribute for mak:value, combining html and urlencode
 rudi: renamed multipleSubmitMsg to multipleSubmitErrorMsg for new/addForm, fixed form responder key generation to include multipleSubmitErrorMsg
+rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
+rudi: improved mdd viewer, enabled java source viewer to browse directories for java files (similar to mdd viewer)
 
 0.5.15.5; 15 aug 2006
 rudi: added removeAttribute, hasAttribute and toString debug info printing to org.makumba.Attributes
