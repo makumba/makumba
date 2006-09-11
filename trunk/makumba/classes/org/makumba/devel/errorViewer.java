@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.MakumbaSystem;
 import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**
@@ -105,13 +106,14 @@ public class errorViewer extends LineViewer {
     private Integer findLineNumber(String s) {
         String beginToken = ":";
         Integer lineNr = null;
-        int indexNumberBegin = s.indexOf(beginToken) + 1;
+        int indexNumberBegin = s.indexOf(beginToken);
         
-        if (indexNumberBegin != -1) { // try if we have a line number after a '('
-            indexNumberBegin = s.indexOf("(") + 1;
+        if (indexNumberBegin == -1) { // try if we have a line number after a '('
+            indexNumberBegin = s.indexOf("(");
         }
         
         if (indexNumberBegin != -1) {
+            indexNumberBegin = indexNumberBegin + 1;
             int indexNumberEnd = indexNumberBegin;
             while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {
                 indexNumberEnd++;
@@ -120,6 +122,8 @@ public class errorViewer extends LineViewer {
             try {
                 lineNr = Integer.valueOf(lineNumberText);
             } catch (NumberFormatException e) {
+                MakumbaSystem.getMakumbaLogger("devel").warning("Error in error viewer: " + e.getMessage());
+                e.printStackTrace();
             }
         }
         return lineNr;
