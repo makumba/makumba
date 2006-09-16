@@ -26,27 +26,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Comparator;
 import java.util.Dictionary;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.GregorianCalendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
-import org.makumba.Transaction;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.Transaction;
 import org.makumba.controller.Logic;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
@@ -330,6 +331,11 @@ public abstract class Responder implements java.io.Serializable
 				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
 				new File(fileName).delete();
 				throw new org.makumba.InvalidValueException("Responder cannot be re-used due to Makumba version change! Please reload this page.");
+            } catch (InvalidClassException e) {
+                // same as above
+                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);        
+                new File(fileName).delete();
+                throw new org.makumba.InvalidValueException("Responder cannot be re-used due to Makumba version change! Please reload this page.");
 			} catch (IOException e) {			
 				MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE, "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);		
 			} catch (ClassNotFoundException e) {
@@ -427,9 +433,6 @@ public abstract class Responder implements java.io.Serializable
   {
     responderOps.put("edit", new ResponderOp()
 		    {
-		      /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			throws LogicException
@@ -447,9 +450,6 @@ public abstract class Responder implements java.io.Serializable
     
     responderOps.put("simple", new ResponderOp()
 		     {
-		       /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
@@ -466,9 +466,6 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("new", new ResponderOp()
 		     {
-		       /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
@@ -486,9 +483,6 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("add", new ResponderOp()
 		     {
-		       /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
@@ -506,9 +500,6 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("addToNew", new ResponderOp()
 		     {
-		       /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
@@ -526,9 +517,6 @@ public abstract class Responder implements java.io.Serializable
 
     responderOps.put("deleteLink", new ResponderOp()
 		     {
-		       /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
@@ -547,7 +535,9 @@ public abstract class Responder implements java.io.Serializable
     
     responderOps.put("deleteForm", new ResponderOp()
 		     {
-		       public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
+                private static final long serialVersionUID = 1L;
+
+            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
 		           return Logic.doDelete(resp.controller,
