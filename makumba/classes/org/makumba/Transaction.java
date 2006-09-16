@@ -37,9 +37,9 @@ public interface Transaction extends Database
     /** Read fields of a record.
      * Database querying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.query.compilation", "db.query.execution", "db.query.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.query.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.
      * @param ptr the pointer to the record
-     * @param fields the fields to read, or null to read all fields. Can be an String[] or a Vector
+     * @param fields the fields to read, or null to read all fields. Can be a String, String[], Enumeration or a Vector
      * @return a Dictionary, containing a name-value pair for each non-null field, or null if the record doesn't exist
-     * @exception ClassCastException if the fields argument is not String[] or Vector
+     * @exception InvalidValueException if the fields argument is not String, String[], Enumeration or Vector
      * @exception org.makumba.DBError if a fatal database error occurs
      * @exception IllegalStateException if the connection was already closed
      */
