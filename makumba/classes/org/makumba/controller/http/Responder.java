@@ -504,13 +504,22 @@ public abstract class Responder implements java.io.Serializable
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
-		           return Logic.doAdd(resp.controller,
-					      resp.newType+"->"+resp.addField,
-					      (Pointer)req.getAttribute(resultNamePrefix+parentSuffix), 
-					      resp.getHttpData(req, suffix), 
-					      new RequestAttributes(resp.controller, req, resp.database),
-					      resp.database, 
-					      RequestAttributes.getConnectionProvider(req));
+                // get result we got from the new form
+                Object resultFromNew = req.getAttribute(resultNamePrefix + parentSuffix);
+
+                // if we got a null response from the new form (possibly from a logic exception thrown by the programmer)
+                if (resultFromNew == org.makumba.Pointer.Null) {
+                    return org.makumba.Pointer.Null; // we return null here too
+                }
+
+                // otherwise, we add to the new object
+                return Logic.doAdd(resp.controller,
+                    resp.newType+"->"+resp.addField,
+                    (Pointer)resultFromNew, 
+                    resp.getHttpData(req, suffix), 
+                    new RequestAttributes(resp.controller, req, resp.database),
+                    resp.database, 
+                    RequestAttributes.getConnectionProvider(req));
 			 }
 		       public String verify(Responder resp){ return null; }
 		     });
