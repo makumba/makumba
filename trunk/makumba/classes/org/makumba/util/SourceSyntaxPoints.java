@@ -25,6 +25,7 @@ package org.makumba.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.makumba.ProgrammerError;
 
 /** 
  * The collection of syntax points in a source file gathered from a source analysis.
@@ -323,18 +326,21 @@ public class SourceSyntaxPoints
   }
 
   /** Return the content of the JSP file in a string. */
-  String readFile()
-  {
-    StringBuffer sb=new StringBuffer();
-    try{
-      BufferedReader rd= new BufferedReader(new FileReader(file));
-      char[] buffer= new char[2048];
-      int n;
-      while((n=rd.read(buffer))!=-1)
-	sb.append(buffer, 0, n);
-    }catch(IOException e) { e.printStackTrace(); }
-    return sb.toString();
-  }
+    String readFile() {
+        StringBuffer sb = new StringBuffer();
+        try {
+            BufferedReader rd = new BufferedReader(new FileReader(file));
+            char[] buffer = new char[2048];
+            int n;
+            while ((n = rd.read(buffer)) != -1)
+                sb.append(buffer, 0, n);
+        } catch (FileNotFoundException e) {
+            throw new ProgrammerError("File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
 
   String getContent(){return content; }
 
