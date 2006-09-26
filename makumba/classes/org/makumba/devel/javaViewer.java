@@ -57,13 +57,16 @@ public class javaViewer extends LineViewer {
 
     public static Properties javaSyntaxProperties = new Properties();
 
-    private static final String DEFAULT_JAVACOMMENT_STYLE = "color: green; font-style: italic; ";
+    // styles are roughly the same as the ECLIPSE standards
+    private static final String DEFAULT_JAVACOMMENT_STYLE = "color: #1BA55F; font-family: monospace; ";
 
-    private static final String DEFAULT_JAVAMODIFIER_STYLE = "color: blue; font-weight: bold; ";
+    private static final String DEFAULT_JAVADOC_STYLE = "color: #3F5FBF; font-family: monospace; ";
 
-    private static final String DEFAULT_JAVARESERVEDWORD_STYLE = "color: purple; font-weight: bold; ";
+    private static final String DEFAULT_JAVAMODIFIER_STYLE = "color: blue; font-weight: bold; font-family: monospace; ";
 
-    private static final String DEFAULT_JAVASTRINGLITERAL_STYLE = "color: red; font-style: italic; ";
+    private static final String DEFAULT_JAVARESERVEDWORD_STYLE = "color: #7F0055; font-weight: bold; font-family: monospace; ";
+
+    private static final String DEFAULT_JAVASTRINGLITERAL_STYLE = "color: #FF0000; font-style: italic; font-family: monospace; ";
 
     private boolean compiledJSP = false;
     
@@ -91,7 +94,7 @@ public class javaViewer extends LineViewer {
             javaSyntaxProperties.put("JavaBlockComment", readProperties.getProperty("JavaBlockComment",
                     DEFAULT_JAVACOMMENT_STYLE));
             javaSyntaxProperties.put("JavaDocComment", readProperties.getProperty("javaDocComment",
-                    DEFAULT_JAVACOMMENT_STYLE));
+                    DEFAULT_JAVADOC_STYLE));
             javaSyntaxProperties.put("JavaLineComment", readProperties.getProperty("javaLineComment",
                     DEFAULT_JAVACOMMENT_STYLE));
             javaSyntaxProperties.put("JavaModifier", readProperties.getProperty("JavaReservedWord",
@@ -108,7 +111,7 @@ public class javaViewer extends LineViewer {
                     "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
             // we use only default values
-            javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVACOMMENT_STYLE);
+            javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVADOC_STYLE);
             javaSyntaxProperties.put("JavaBlockComment", DEFAULT_JAVACOMMENT_STYLE);
             javaSyntaxProperties.put("JavaLineComment", DEFAULT_JAVACOMMENT_STYLE);
             javaSyntaxProperties.put("JavaModifier", DEFAULT_JAVAMODIFIER_STYLE);
@@ -158,10 +161,10 @@ public class javaViewer extends LineViewer {
         }
         
         if (haveFile) { // we actually read a file
-            JavaParseData jspParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
-            jspParseData.getAnalysisResult(null);
-            syntaxPoints = jspParseData.getSyntaxPoints();
-            sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
+            JavaParseData javaParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
+            javaParseData.getAnalysisResult(null);
+            syntaxPoints = javaParseData.getSyntaxPoints();
+            sourceSyntaxPoints = javaParseData.getSyntaxPoints().getSyntaxPoints();
         }
         readFromURL(url);
     }
