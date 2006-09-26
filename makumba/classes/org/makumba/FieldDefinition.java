@@ -229,7 +229,11 @@ public interface FieldDefinition
   
   /** returns the deprecated valmues for intEnum*/
   public Vector getDeprecatedValues();
+  
+  /**
+   * Indicates whether this field can be edited by a simple mak:input, or needs it's own form.
+   * @return
+   */
+  public boolean isEditableBySingleInput();
 
 }
-
-
