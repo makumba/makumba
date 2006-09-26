@@ -57,7 +57,7 @@ import org.makumba.MakumbaSystem;
 public class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
 
-    private static final String PARAM_HIDE_LINES = "hideLines";
+    protected static final String PARAM_HIDE_LINES = "hideLines";
 
     protected ServletContext servletContext;
 
@@ -173,12 +173,12 @@ public class LineViewer implements SourceViewer {
     }
 
     /**
-     * @param writer
-     * @throws IOException
+     * Write the beginning of the page to the given writer.
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
         writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-        writer.println("<html><head>");
+        writer.println("<html>");
+        writer.println("<head>");
         writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
         if (realPath != null && virtualPath != null)
             title = virtualPath + "";
@@ -191,7 +191,11 @@ public class LineViewer implements SourceViewer {
             writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
             writer.println("\n</style>");
         }
-        writer.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
+        writer.println("</head>");
+        writer.println("<body bgcolor=white>");
+        writer.println("<table width=\"100%\" bgcolor=\"lightblue\">");
+        writer.println("<tr>");
+        writer.println("<td rowspan=\"2\">");
 
         if (title != null && !title.equals("") && !title.equals(virtualPath))
             writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
@@ -199,8 +203,10 @@ public class LineViewer implements SourceViewer {
             writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
                     + "</font></a></font>");
 
-        if (realPath != null)
-            writer.print("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
+        if (realPath != null) {
+            writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
+        }
+        printPageBeginAdditional(writer);
 
         if (printLineNumbers) {
             String urlParams = "";
@@ -216,12 +222,10 @@ public class LineViewer implements SourceViewer {
                 }
             }
             
-            if (!hideLineNumbers) {
-                if (!urlParams.equals("")) {
-                    urlParams += "&";
-                }
-                urlParams += PARAM_HIDE_LINES + "=true";                
-            }            
+            if (!urlParams.equals("")) {
+                urlParams += "&";
+            }
+            urlParams += PARAM_HIDE_LINES + "=" + !hideLineNumbers;
             if (!urlParams.equals("")) {
                 urlParams = "?" + urlParams;
             }            
@@ -235,29 +239,30 @@ public class LineViewer implements SourceViewer {
             }
             writer.println(" line numbers</a></div>");
         }
-        writer.print("</td>");
+        writer.println("</td>");
 
         intro(writer);
-        writer.print("</tr></table>\n<pre class=\"code\">");
+        writer.println("</tr>");
+        writer.println("</table>");
+        writer.print("<pre class=\"code\">");
     }
 
     /**
-     *  
+     * Write the page header to the given writer.
      */
     public void intro(PrintWriter printWriter) throws IOException {
     }
 
-    /**
-     *  
-     */
+    public void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
+
+    }
+
+    /** Write the page footer to the given writer. */
     public void footer(PrintWriter printWriter) throws IOException {
         printWriter.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
                 + org.makumba.MakumbaSystem.getVersion() + "</font>");
     }
 
-    /**
-     *  
-     */
     public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {
         String t = getLineTag(s);
         if (t != null)
@@ -268,9 +273,6 @@ public class LineViewer implements SourceViewer {
         printWriter.print("\n");
     }
 
-    /**
-     *  
-     */
     public String getLineTag(String s) {
         return null;
     }
