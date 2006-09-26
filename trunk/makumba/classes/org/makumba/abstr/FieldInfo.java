@@ -1080,7 +1080,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		return value;
 	}
     
-    public boolean isEditableByInput() {
+    public boolean isEditableBySingleInput() {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
     }
 }
