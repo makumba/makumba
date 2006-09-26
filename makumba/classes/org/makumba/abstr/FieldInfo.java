@@ -1053,7 +1053,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	/**
 	 * works only for ptr and set types
 	 * 
-	 * @return wether the definition indicates a titile field
+	 * @return wether the definition indicates a title field
 	 * @exception ClassCastException
 	 *                for other types
 	 */
@@ -1079,4 +1079,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 					value);
 		return value;
 	}
+    
+    public boolean isEditableByInput() {
+        return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
+    }
 }
