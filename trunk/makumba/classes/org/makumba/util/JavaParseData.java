@@ -55,9 +55,6 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /** Cache of all page analyses. */
     static int analyzedPages = NamedResources.makeStaticCache("Java page analyses", new NamedResourceFactory() {
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public Object getHashObject(Object o) {
@@ -84,7 +81,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         try {
             JavaDocCommentPattern = Pattern.compile("/\\*\\*.*?[^\\*]\\*/", Pattern.DOTALL);
 
-            JavaBlockCommentPattern = Pattern.compile("\\/\\*[^\\*][^(\\*\\/)]*\\*\\/", Pattern.DOTALL);
+            JavaBlockCommentPattern = Pattern.compile("/\\*[^\\*]*\\*/", Pattern.DOTALL);
             JavaLineCommentPattern = Pattern.compile("//.*$", Pattern.MULTILINE);
 
             JavaModifierPattern = Pattern.compile("(public )|(private )|(protected )|(transient )|(static )|(void )|(super.)|(super \\()|(super )|(inner.)|(outer.)");
@@ -92,8 +89,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
             JavaImports = Pattern.compile("(package )|(import )");
             JavaStringLiteral = Pattern.compile("\"[^\"]*\"");
 
-            Pattern[] cp = { JavaBlockCommentPattern, JavaDocCommentPattern, JavaLineCommentPattern };
-            JavaCommentPatterns = cp;
+            JavaCommentPatterns = new Pattern[] { JavaBlockCommentPattern, JavaDocCommentPattern, JavaLineCommentPattern };
         } catch (Throwable t) {
             t.printStackTrace();
         }
