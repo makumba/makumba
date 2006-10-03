@@ -90,6 +90,11 @@ static boolean soft_static_caches;
     return (NamedResources)staticCaches.get(n);
   }
   
+    /** Cleans the given cache. Use this for developping purposes. */
+    static void cleanStaticCache(int n) {
+        ((NamedResources) staticCaches.get(n)).values = new HashMap();
+    }
+  
   public static Map getCacheInfo()
   {
     Map m= new HashMap();
