@@ -28,6 +28,7 @@ import javax.servlet.jsp.tagext.IterationTag;
 
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
+import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.html.RecordViewer;
@@ -109,6 +110,12 @@ String[] queryProps=new String[5];
     Define a query, set the types of variables to "int" */
   public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
   {
+      // check whether we have an $.. in the order by (not supported, only #{..} is allowed
+      String orderBy = queryProps[ComposedQuery.ORDERBY];
+      if (orderBy != null && orderBy.indexOf("$") != -1) {
+          throw new ProgrammerError("Illegal use of an $attribute orderBy: '" + orderBy + "' ==> only JSP Expression Language using #{..} is allowed!");
+      }
+      
     // we make ComposedQuery cache our query
     pageCache.cacheQuery(tagKey, queryProps, getParentListKey(pageCache));
 
