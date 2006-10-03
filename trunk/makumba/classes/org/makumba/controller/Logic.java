@@ -89,6 +89,36 @@ public class Logic
 	return nameToObject.get(className);
   }
   
+    /**
+     * Finds the name of the package to be used for the given directory. The method uses the {@link #controllerConfig}
+     * to find a matching package name.
+     * 
+     * @param directory the directory to find the package for.
+     * @return the package name found, or an empty String in case no package was found.
+     */
+    public static String findPackageName(String directory) {
+        String packageName = "";
+        String defaultPackage = "";
+        String longestKey = "";
+
+        if (controllerConfig != null) {
+            for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
+                String k = (String) e.nextElement();
+
+                if (k.equals("default") && longestKey.length() == 0) {
+                    defaultPackage = controllerConfig.getProperty(k);
+                } else if (directory.startsWith(k) && k.length() > longestKey.length()) {
+                    longestKey = k;
+                    packageName = controllerConfig.getProperty(k);
+                }
+            }
+            if (longestKey.length() == 0 && defaultPackage.length() > 0) {
+                packageName = defaultPackage;
+            }
+        }
+        return packageName;
+    }
+
   static int logix= NamedResources.makeStaticCache("Business logic classes", 
 						   new NamedResourceFactory()
    {
