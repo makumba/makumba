@@ -164,7 +164,7 @@
 	<antcall target="makeManifest" />
         <jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
    	<fileset dir="classes" 
-		includes="org/makumba/**/*.mdd,org/**/*.class,org/**/*.properties"
+		includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties"
 		defaultExcludes="no"
 		/>	
    	<fileset dir="." 
