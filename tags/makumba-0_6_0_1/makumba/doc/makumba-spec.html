@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="author" content="makumba-dev group">
+  <title>Makumba Specification</title>
+  <link rel="stylesheet" type="text/css" media="all" href="main.css">
+  <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+<h1>Makumba Specification</h1>
+
+<table>
+  <tr>
+    <td valign="top"> <a href="makumba-spec.html" title="...writing MDDs"><b>[Data Definitions]</b></a>&nbsp; </td>
+    <td valign="top"> <a href="makumba-spec-ql.html" title="...getting data from the database"><b>[Query Languages]</b></a>&nbsp; </td>
+    <td valign="top"> 
+      <b>[<span title="...viewing/editing data thru HTML pages">JSP tag library</span>:</b>
+      <a href="makumba-spec-taglib.html" title="...controller &amp; response"><b>Intro</b></a>
+      | <a href="makumba-spec-taglib-list.html" title="...viewing data thru HTML pages"><b>Listing</b></a>
+      | <a href="makumba-spec-taglib-forms.html" title="...editing data thru HTML pages"><b>Forms</b></a>]
+    </td>     
+    <td valign="top"> <a href="makumba-spec-bl.html" title="...adding logic to basic operations"><b>[Business Logics]</b></a>&nbsp; </td>
+    <td valign="top"> <a href="makumba-spec-summary.html" title="...Presentation and internal representation principles"><b>[Summary]</b></a> </td>
+  </tr>
+</table>
+
+<h2><a name="Data_Description">Data Definition Language</a></h2>
+<table widht=100%>
+<tr>
+  <td valign="top">
+    <div class="navbarPage">
+    <ul class="navbarPage">
+      <li> <a href="#Types_objects_databases">Types, objects, databases</a></li>
+      <br/>
+      <li> <a href="#Fields">Fields</a></li>
+      <br/>
+      <li> <a href="#DefaultFields">Default fields</a></li>
+      <br/>
+      <li> <a href="#SimpleFieldTypes">Simple&nbsp;field&nbsp;types</a>
+        <ul class="navbarPage">
+          <li><a href="#int">int</a></li>
+          <li><a href="#real">real</a></li>
+          <li><a href="#char">char</a></li>
+          <li><a href="#text">text</a></li>
+          <li><a href="#date">date</a></li>
+        </ul>
+      </li>
+      <br/>
+      <li> <a href="#StructuralTypes">Structural (relational) types</a>
+        <ul class="navbarPage">
+          <li><a href="#ptr">ptr</a></li>
+          <li><a href="#set">set</a></li>
+        </ul>
+      </li>
+      <br/>
+      <li> <a href="#MacroTypes">Macro types</a></li>
+      <br/>
+      <li> <a href="#FieldAttributes">Field attributes</a></li>
+      <br/>
+      <li> <a href="#ObjectTitle">Object title</a></li>
+      <br/>
+      <li> <a href="#Include">Include mechanism</a></li>
+    </ul>
+    </div>
+  </td>
+  <td>
+(the Makumba abstract level)
+<h3><a name="Types_objects_databases">Types, objects, databases</a></h3>
+<p>
+Data definitions describe <b>data types (or classes)</b>. They are
+placed
+in files contained in directory hierarchies, and the directory name is
+part of the type name (similar to Java packages). For example <b>the
+file
+best/Student.mdd </b>describes<b> the type best.Student</b>. Type
+names
+can contain letters, digits, underscores and dashes and cannot contain
+slashes and dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 -->
+Usually, the directories are used to separate organisations
+and projects.
+</p>
+<div class="note">
+Current Java implementation finds the data definition
+files as follows:
+<!-- FIXME: is this still correct? Bug 602 -->
+<ul>
+  <li>the designated file extension is <code>.mdd</code> (Makumba Data
+Definition)</li>
+  <li>relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
+  <li>in a directory called "<b>dataDefinitions/</b>" in the CLASSPATH
+(e.g. <code>classes/dataDefinitions/best/Student.mdd</code>)</li>
+  <li class="oldfeat">OLDSTYLE: if no mdd file is present, the
+no-extension file (i.e. best/Student) is looked up</li>
+</ul>
+</div>
+<p>
+<b>Data objects (records)</b> are stored in <b>databases</b>.
+</p>
+<p>
+The actual implementation of the database is not part of this
+specification
+but implementation suggestions will be made. <b>Data can be copied
+and/or replicated
+between different databases</b>, even between different DB engine
+types.
+</p>
+<div class="futfeat note">Replication is not yet implemented,
+but the design is prepared for it. Copying works.
+</div>
+<h3><a name="Fields">Fields</a></h3>
+<p>
+Every data definition file contains <b>field definitions</b>,
+separated
+by newline.
+</p>
+<p>
+A field definition looks like:
+</p>
+<pre class="example"><b>fieldname= [attributes] fieldtype [parameters] [; description]</b>
+</pre>
+<p>&nbsp;</p>
+<div class="note futfeat">
+default values are supported
+internally, but not by the mdd parser
+</div>
+<div class="internals note">
+As an implementation guideline, field names tend to stay approximately
+the same in:
+<ul>
+  <li>http requests</li>
+  <li>Record instances (java.util.Dictionary in the current Java API)</li>
+  <li>database columns</li>
+  <li>etc</li>
+</ul>
+</div>
+<p class="futfeat">(Automatic labeling: The field description might be
+used at interface levels to present that field. It is typically shown
+at the left of, or somewhere near to, the input control (text box,
+radio button, chooser, etc) that allows for data input in that field.
+If a field description is not present, its field name stands for its
+description by default.) </p>
+<p>
+<b>Comment lines</b> can be inserted in the data definition files as
+follows:
+</p>
+<pre class="example"><b>#</b> <i>your comment...</i>
+</pre>
+<h3><a name="DefaultFields">Default fields</a></h3>
+<p>
+Every datatype has some additional fields by default, as follows:
+</p>
+<ul>
+  <li>Primary Key field, consisting of two parts [DBSV with 8 bits |
+UID with 24 bits]:
+    <ul>
+      <li>Database identifier (DBSV). It is unique (within the webapp)
+per database. All objects created thru that webapp and in that database
+get the same value. It is set by property dbsv in the database config
+file.</li>
+      <li>Object identifier (UID): unique id for the object in the
+given database.</li>
+    </ul>
+    <br>
+This combination ensures that no two objects of one type have the same
+primary key field. See <a href="SQL-drivers.html#ConfigProperties">how
+to configure</a> this.<br>
+The name of the primary key field is the same with the last part of the
+type name. If another field by that name is defined by the makumba
+user, this field will be renamed in the database. </li>
+  <li>Object creation time
+    <div class="note">Can be accessed as TS_create.</div>
+  </li>
+  <li>Last modification time. Updates whenever the object is changed.
+The initicial value is TS_create.
+    <div class="note">Can be accessed as TS_modify.</div>
+  </li>
+</ul>
+<h3><a name="SimpleFieldTypes">Simple field types</a></h3>
+<h4><a name="int">int</a></h4>
+<p>
+A 32-bit integer. For example
+</p>
+<pre class="example">shoeSize= int; Shoe size<br></pre>
+<p>
+If the int can have a limited number of values, it can be described as
+follows
+</p>
+<pre class="example">gender= int{ "male"=0, "female"=1 }; Sex<br></pre>
+<p>
+This will help the presentation layer to present a suitable input
+control
+(e.g.
+<select>
+<option value="0">male</option>
+<option value="1">female</option>
+</select>
+)
+</p>
+<div class="note">"deprecated" can be used in this way to denote a deprecated option:<br>
+                  userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}</div>
+<div class="internals note">In the present implementation, this type is
+called "intEnum" internally.<br>
+Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).</div>
+<h4><a name="real" id="real">real</a></h4>
+<!-- http://bugs.best.eu.org/show_bug.cgi?id=430 -->
+<!-- http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Double.html -->
+<p> A read number with double precision with (2-2<sup>-52</sup>)&middot;2<sup>1023</sup>
+as max value and 2<sup>-1074</sup> as min value. For example:</p>
+<pre class="example">high= real; high of a person</pre>
+<h4><a name="char">char</a></h4>
+<p> A char field contains a number of characters. Maximal width must be
+specified and is limited to 255. <span class="futfeat">(Optionally a
+minimal number of characters (lesser than max) can be indicated).</span>
+Both must be positive integers. For example: </p>
+<pre class="example">#<i>fieldName</i>= char[<i>maxWidth</i>]<br>name= unique char[80]; Username<br>#<span
+ class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span><br><span
+ class="futfeat">password= encrypted char[6..10]; Secret password</span>
+</pre>
+<p>
+"<code>unique</code>" and "<code>encrypted</code>" are <a
+ href="#FieldAttributes">field attributes</a>, explained below.
+</p>
+<div class="note">
+Pay close attention to the character set (charset) for encoding the
+characters.
+In Java the charset is Unicode, but the JSP/HTML pages have their own
+encoding settings,
+as well as the database, etc.
+</div>
+<p><b>DEPRECATED (use int{...} instead):</b> If the char can have a
+limited number of value, it can be described
+as follows
+</p>
+<pre class="example">gender= char{ "male", "female" }; Sex<br></pre>
+<p> This will help the presentation layer to present a suitable input
+control (e.g. a HTML SELECT) </p>
+<div class="internals note">in the present implementation, this type is
+called
+"charEnum" internally</div>
+<h4><a name="text">text</a></h4>
+<p>
+An unlimited-length string of bytes or characters. This type was
+designed to accomodate large text or binary content. It is implemented
+with LONGVARBINARY or its counterparts, depending on the underlying DB
+engine.
+</p>
+<pre class="example">application= text ; Application letter<br>description=text  ; Description of object<br>image= text	  ; Picture attachment</pre>
+<h4><a name="date">date</a></h4>
+<p>
+A date and/or time.
+</p>
+<pre class="example">birthdate= date; Date of birth<br>arrivalTime= date; Arrival time<br></pre>
+<!-- FIXME. (fred, 2003-10-13) bug 606
+
+     Should there be a warning about "time".
+
+     Because it really isn't a "time", it would be a "date" where d/m/y fields
+
+     are not set explicitly... but they are filled in with 'random'/'current'
+
+     values. So comparison as "time" < 9am or so is not possible?
+
+ -->
+<h3><a name="StructuralTypes">Structural (relational) types</a></h3>
+<h4><a name="ptr">Pointers (ptr)</a></h4>
+<p>
+Pointers define a reference to an object of a certain type. For example
+</p>
+<pre class="example">citizenship= ptr general.Country; Citizenship<br></pre>
+<div class="note futfeat">the <code>ptr</code> keyword might be
+ommitted in future parsers</div>
+<p>
+The type can be defined on-the-spot for a single usage. For example
+</p>
+<pre class="example">addres= ptr ; Address<br>address-&gt;street= char[80]; Street<br>address-&gt;number= int; Number<br></pre>
+<div class="note">The main difference between sets of external types and internal sets is
+     that when the host object (e.g. Person.mdd that has the above field "address") is 
+     deleted from the database (DB), also all elements of the set (addresses) are deleted 
+     automatically, so there is no orphans (addresses) in the DB. Elements (addresses) of
+     an internal set of some host object (Person X) also can't be used in a set of some
+     other host object (Company Y).</div>
+
+<!-- FIXME. Is there any relevance to this? bug 607 -->
+<div class="note futfeat">future parsers might read this:
+<pre class="example">address= ptr{<br>    street= char[80]; Street<br>    number= int; Number}; address<br></pre>
+</div>
+<div class="note internals">this type is known internally as ptrOne</div>
+<h4><a name="set">Sets (set, bag, list)</a></h4>
+<p>
+Sets define a number of references to multiple objects of a certain
+type.
+For example:
+</p>
+<pre class="example">language= set general.Language; Spoken languages<br></pre>
+<p>
+This type accomodates sets, bags and lists. The set and list
+constraints
+(sets have to contain only one element of a certain value and lists
+have
+to be ordered) have to be cared for by the programmer. Lists are easy
+to
+represent, just having an integer field, for the order.
+</p>
+<p>
+The type which the set is made of can be defined on the spot:
+</p>
+<pre class="example">addresses= set; Addresses<br>  addresses-&gt;street= char[80]; Street<br>  addresses-&gt; number= int; Number<br></pre>
+<div class="note futfeat">the future parser might recognize this form:
+<pre class="example">addresses: set{<br>    street: char[80]; Street<br>    number: int; Number }; Addresses<br></pre>
+</div>
+<div class="internals note">this type is known internally as setComplex</div>
+<p>The set can contain enumerated int values :
+</p>
+<pre class="example">place= set int {"home"=1, "away"=0} ; Home or away<br></pre>
+<div class="internals note">this is currently known
+internally as setintEnum</div>
+<p>
+<b>DEPRECATED:</b> The set can contain enumerated char values :
+</p>
+<pre class="example">place= set char {"home", "away"} ; Home or away<br></pre>
+<div class="note">It means that place is a
+set that can take only the "home" and "away" values.
+</div>
+<div class="note internals">This is currently known internally as
+setcharEnum</div>
+<h3><a name="MacroTypes">Macro types</a></h3>
+<p>
+A name can be defined for a more complex type and it can be reused in
+the
+file. This can be done with a !type directive
+</p>
+<pre class="example">!type.yesno= int{"yes"=1, "no"=0}<br>!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}<br>married=yesno<br>happyInLife=rank<br></pre>
+<h3><a name="FieldAttributes">Field attributes</a></h3>
+<ul>
+  <li> <b>fixed</b> fields can only set during the record's insertion
+in the database. The subsequent updates will not update the field</li>
+  <li> <b>not null</b> fields will produce a exception if an attempt
+is
+made to
+insert/update without them being initialized</li>
+  <li> <b>unique</b> fields have a unique value in the respective
+object,
+for
+the respective type</li>
+  <li class="futfeat"> <b>(encrypted</b> fields are encrypted when
+written to the database and decrypted when read)</li>
+</ul>
+<div class="note futfeat">
+Currently only <b>fixed</b> and <b>not null</b> field attributes are
+working,
+while support for <b>unique</b> is in progress.
+</div>
+<h3><a name="ObjectTitle">Object title</a></h3>
+<div class="note">The object title is used for <i>set</i> and <i>ptr</i> choosers</div>
+<p>
+One of the fields is always the <i>object title</i>, and is normally presented
+differently from other fields in user interface. For example, when you have a
+field that is a set and you use a <i>mak:input</i> on that field, Makumba will
+automatically create a list with all the items in the set and it will use the
+<i>object title</i> to know what field to display.
+The default is the field called "name"
+if that exists, otherwise it is the first non-pointer field in the
+record
+description. If another field needs to be title, it can be specified
+like
+</p>
+<pre class="example">!title=gender</pre>
+<div class="note">
+for the on-the spot types in the current implementation,
+the following notation works:
+<pre class="example">address-&gt;!title= street<br></pre>
+</div>
+<h3><a name="Include">Include mechanism</a></h3>
+<p>
+A record description can include text from one or more files. This is
+declared as
+</p>
+<pre class="example">!include=name_of_included_type<br></pre>
+<p>
+The included file has the idd extension and is found in a similar way
+like the
+data definitions.
+</p>
+<p>The included file is inserted instead of the !include line. There
+can
+be more include lines in a record description file. If a field is
+defined that exists also in the included metadata, the defined field
+takes
+precedence. If
+</p>
+<pre class="example">fieldname=<br></pre>
+<p>
+it means that it does not actually exist. this can be used to cancel an
+included field.
+</p>
+<div class="note futfeat">
+include might be replaced by more advanced concepts
+such as inheritance and type inclusion (rather than reference in
+foreign
+table)
+</div>
+
+  </td>
+</tr>
+</table>
+
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+</body>
+</html>

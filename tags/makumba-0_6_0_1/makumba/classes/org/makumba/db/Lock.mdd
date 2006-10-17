@@ -1,0 +1,2 @@
+# this is the DD for the database lock
+name=fixed unique not null char[255]	;Lock name
