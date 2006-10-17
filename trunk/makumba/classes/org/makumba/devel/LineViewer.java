@@ -108,6 +108,8 @@ public class LineViewer implements SourceViewer {
     
     protected Hashtable importedClasses = new Hashtable();
 
+    protected Error caughtError;
+
     protected void addImportedPackages(Collection newPackages) {
         HashSet packages = new HashSet(newPackages);
         packages.addAll(Arrays.asList(importedPackages));
@@ -155,6 +157,16 @@ public class LineViewer implements SourceViewer {
         long begin = System.currentTimeMillis();
         printPageBegin(writer);
 
+        // display error messages if we have caught an exception
+        
+        if (caughtError != null) {
+            setSearchLevels(true, true, true, true);
+            writer.println(parseLine("There were errors analyzing the page - the page analysis reports an <i>"
+                    + caughtError.getClass().getName() + "</i>") + "\n");
+            writer.println("<span style=\"color: red    ; \">" + caughtError.getMessage() + "</span>");
+            writer.print("<hr color:\"red\" style=\"background-color: red; border-width: 0px;\">");
+        }
+
         // we go line by line as an MDD references cannot span over newlines
         // as a bonus, we print the line numbers as well.
         LineNumberReader lr = new LineNumberReader(reader);
@@ -200,7 +212,7 @@ public class LineViewer implements SourceViewer {
             writer.println("<style type=\"text/css\">");
             writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
             writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
-            writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none}");
+            writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none; color: #000066}");
             writer.println("</style>\n");
         }
         writer.println("</head>");

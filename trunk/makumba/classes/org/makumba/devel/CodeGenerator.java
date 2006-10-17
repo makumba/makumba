@@ -394,16 +394,20 @@ public class CodeGenerator {
 
                         DataDefinition setDd = getDataDefinitionFromType(fd);
 
-                        // sorting out only the normal fields, we don't care about generate sets inside sets.
-                        Vector innerFields = extractInnerFields(setDd);
-                        logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset " + setDd.getName()
+                        if (setDd == null) {
+                            logger.warning("Problem generating code - did not find field definition for set '" + fd.getName() + "' in data definition '" + dd.getName() + "'.");
+                        } else {
+                            // sorting out only the normal fields, we don't care about generate sets inside sets.
+                            Vector innerFields = extractInnerFields(setDd);
+                            logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset " + setDd.getName()
                                 + " is " + innerFields.size());
 
-                        // generate the inner set code
-                        generateSetCode(sb, type, fd, action, template, innerFields, indent, labelName);
-                        if (type == TYPE_EDITFORM) {
-                            // for edit forms we also make add forms of inner sets.
-                            generateSetCode(sb, TYPE_ADDFORM, fd, action, template, innerFields, indent, labelName);
+                            // generate the inner set code
+                            generateSetCode(sb, type, fd, action, template, innerFields, indent, labelName);
+                            if (type == TYPE_EDITFORM) {
+                                // for edit forms we also make add forms of inner sets.
+                                generateSetCode(sb, TYPE_ADDFORM, fd, action, template, innerFields, indent, labelName);
+                            }
                         }
 
                     } // end iterating over the sets
@@ -772,10 +776,12 @@ public class CodeGenerator {
     /** Gathers all fields that are not sets and ptrRel from a given DataDefinition. */
     private Vector extractInnerFields(DataDefinition dd) {
         Vector innerFields = new Vector();
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldDefinition fd = dd.getFieldDefinition(i);
-            if (!fd.isDefaultField() && fd.getIntegerType() != FieldInfo._ptrRel && fd.shouldEditBySingleInput()) {
-                innerFields.add(fd);
+        if (dd != null && dd.getFieldNames() != null) {
+            for (int i = 0; i < dd.getFieldNames().size(); i++) {
+                FieldDefinition fd = dd.getFieldDefinition(i);
+                if (!fd.isDefaultField() && fd.getIntegerType() != FieldInfo._ptrRel && fd.shouldEditBySingleInput()) {
+                    innerFields.add(fd);
+                }
             }
         }
         return innerFields;
