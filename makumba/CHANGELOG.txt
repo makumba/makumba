@@ -19,6 +19,10 @@ stefan: properly handles anchors in deleteLink (#anchor is moved to the back of 
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.6.0.1; 17 oct 2006
+cristi: better logging on indexes
+cristi: fixed a bug, makumba was dropping hibernate indexes
+
 0.6; 14 aug 2006
 rudi, manu, cristi: hibernate database management
 rudi, manu, cristi: HQL in JSPs used via a new taglib URI
