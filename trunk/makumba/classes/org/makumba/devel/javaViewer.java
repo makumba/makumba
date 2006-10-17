@@ -29,7 +29,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -43,7 +42,6 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.ClassResource;
 import org.makumba.util.JavaParseData;
-import org.makumba.util.NamedResources;
 import org.makumba.util.SourceSyntaxPoints;
 import org.makumba.util.StringUtils;
 import org.makumba.util.SyntaxPoint;
@@ -166,7 +164,8 @@ public class javaViewer extends LineViewer {
         }
         
         if (haveFile) { // we actually read a file
-            // NamedResources.cleanStaticCache(JavaParseData.analyzedPages); // uncomment this for testing purposes to clean the analyzer cache.
+            // uncomment this for testing purposes to clean the analyzer cache.
+            // NamedResources.cleanStaticCache(JavaParseData.analyzedPages);
             javaParseData = JavaParseData.getParseData("/", url.getFile(), JavaSourceAnalyzer.getInstance());
             javaParseData.getAnalysisResult(null);
             syntaxPoints = javaParseData.getSyntaxPoints();
@@ -191,8 +190,11 @@ public class javaViewer extends LineViewer {
         Iterator syntax = javaSyntaxProperties.keySet().iterator();
         while (syntax.hasNext()) {
             String keyWord = String.valueOf(syntax.next());
-            result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.getProperty(keyWord)
-                    + "\">" + keyWord + "</span> ");
+            // we highlight the word if we have a style defined for this syntax point typ
+            if (javaSyntaxProperties.getProperty(keyWord) != null) { 
+                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.getProperty(keyWord)
+                        + "\">" + keyWord + "</span> ");
+            }
         }
         return result;
     }
@@ -229,12 +231,11 @@ public class javaViewer extends LineViewer {
                             insideComment++;
                         }
                         writer.print(parseLine(htmlEscape(beforeSyntaxPoint)));
-                        // we treat class imports later
+                        // we treat class imports at the end of the syntax point
                         if (!JavaParseData.isClassUsageSyntaxPoint(currentSyntaxPoint.getType())) {
                             // we don't highlight literals inside comments
                             if (!(insideComment > 0 && currentSyntaxPoint.getType().equals("JavaStringLiteral"))
                                     && javaSyntaxProperties.get(type) != null) {
-
                                 writer.print("<span style=\"" + javaSyntaxProperties.get(type) + "; \">");
                             }
                         }
@@ -307,32 +308,21 @@ public class javaViewer extends LineViewer {
                                         + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
                                         + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
-                                    System.out.print("mdd name: " + mddName);
                                     mddName = findMddNameFromHandler(parts[1], true);
-//                                    mddName = mddName.substring(0, mddName.lastIndexOf(".")) + "." + StringUtils.lowerCaseBeginning(mddName.substring(mddName.lastIndexOf(".")+1));
-                                    System.out.println(" ==> " + mddName);
                                     try {
                                         dd = MakumbaSystem.getDataDefinition(mddName);
-                                        System.out.println("found: " + dd);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
-                                        System.out.println("found: " + dd);
                                         writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + parentDd.getName()
                                             + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
                                             + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
-                                        // do nothing, just don't use thisMDD
+                                        // do nothing, just don't use this possible MDD
                                     } catch (NullPointerException e1) {
-                                        // do nothing, just don't use thisMDD
-                                        System.out.println("tried looking for " + mddName);
+                                        // do nothing, just don't use this possible MDD
                                     }
                                 }
                             }
-                            if (dd == null) { // found the mdd --> make it a link
-//                                writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + dd.getName()
-//                                        + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
-//                                        + "\" class=\"classLink\">" + parts[1] + "</a>");
-//                            } else {
-                                // we just continue without displaying a link
+                            if (dd == null) { // did not find the mdd --> just continue without displaying a link
                                 writer.print(parseLine(htmlEscape(beforeSyntaxPoint)));
                             }
                         } else {
