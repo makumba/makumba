@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import org.makumba.DBError;
 import org.makumba.MakumbaSystem;
@@ -431,7 +432,12 @@ public class Database extends org.makumba.db.Database {
 		logException(e, null);
 	}
 
-	static void logException(SQLException e, DBConnection dbc) {
+    static void logException(SQLException e, DBConnection dbc) {
+        logException(e, dbc, Level.WARNING);
+    }
+	static void logException(SQLException e, DBConnection dbc, Level lev) {
+        if(!MakumbaSystem.getMakumbaLogger("db.exception").isLoggable(lev))
+            return;
 		String log = "";
 		if (dbc != null)
 			log = dbc.toString() + " ";
@@ -440,8 +446,7 @@ public class Database extends org.makumba.db.Database {
 					+ " error code :" + se1.getErrorCode() + "\n";
 		}
 
-		MakumbaSystem.getMakumbaLogger("db.exception").warning("" + log);
-
+		MakumbaSystem.getMakumbaLogger("db.exception").log(lev, "" + log);
 	}
 
 	/** write a date into an OQL query */

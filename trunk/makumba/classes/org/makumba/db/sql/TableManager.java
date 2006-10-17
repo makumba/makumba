@@ -35,6 +35,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import org.makumba.DBError;
 import org.makumba.FieldDefinition;
@@ -260,19 +261,21 @@ public class TableManager extends Table {
 			onStartup(fieldName, config, dbc);
 		}
 
+        if(!this.usesHibernateIndexes)
 		if (alter)
 			for (Enumeration ei = extraIndexes.keys(); ei.hasMoreElements();) {
 				String indexName = (String) ei.nextElement();
+                String syntax= "DROP INDEX " + indexName + " ON "+ getDBName();
 				try {
 					Statement st = dbc.createStatement();
-					st.executeUpdate("DROP INDEX " + indexName + " ON "
-							+ getDBName());
+					st.executeUpdate(syntax);
 					org.makumba.MakumbaSystem.getMakumbaLogger(
 							"db.init.tablechecking").info(
 							"INDEX DROPPED on " + getDataDefinition().getName()
 									+ "#" + indexName);
 					st.close();
 				} catch (SQLException e) {
+                    treatIndexException(e, syntax, dbc);
 				}
 			}
 		else {
@@ -302,7 +305,16 @@ public class TableManager extends Table {
 		indexDBField = getFieldDBName(indexField);
 	}
 
-	protected interface CheckingStrategy {
+	private void treatIndexException(SQLException e, String command, SQLDBConnection dbc) {
+	    Level lev= Level.FINE;
+        if(e.getMessage().indexOf("check that column/key exists")!=-1)
+            lev= Level.FINEST;
+        if(command.indexOf("fk")!=-1) // dropping a hibernate foreign key
+            lev= Level.WARNING;
+        Database.logException(e, dbc, lev);
+    }
+
+    protected interface CheckingStrategy {
 		boolean hasMoreColumns() throws SQLException;
 
 		String columnName() throws SQLException;
@@ -482,12 +494,14 @@ public class TableManager extends Table {
 	boolean alter(SQLDBConnection dbc, String fieldName, String op)
 			throws SQLException {
 		Statement st = dbc.createStatement();
+        String command=null;
         if (!autoIncrementAlter)
             try {
-                String command = "DROP INDEX " + getFieldDBIndexName(fieldName) + " ON " + getDBName();
+                command = "DROP INDEX " + getFieldDBIndexName(fieldName) + " ON " + getDBName();
                 st.executeUpdate(command);
                 MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("SUCCESS: " + command);
             } catch (SQLException e) {
+                treatIndexException(e, command, dbc);
             }
         autoIncrementAlter=false;
         String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
@@ -1462,7 +1476,7 @@ public class TableManager extends Table {
 			SQLDBConnection dbc) throws SQLException {
 		if (alter && shouldIndex(fieldName))
 			manageIndexes(fieldName, dbc);			
-		if (shouldIndex(fieldName))
+		if (shouldIndex(fieldName) )
 			extraIndexes.remove(getFieldDBIndexName(fieldName).toLowerCase());
 
 		checkDuplicate.put(fieldName, "SELECT 1 FROM " + getDBName() + " WHERE "
@@ -1600,13 +1614,15 @@ public class TableManager extends Table {
 	}//method
 
 	private void dropIndex(String fieldName, SQLDBConnection dbc, String message) {
+        String syntax= indexDropSyntax(fieldName);
 		try { //drop the old, wrong index if it exists
 			Statement st = dbc.createStatement();
-			st.executeUpdate(indexDropSyntax(fieldName));
+			st.executeUpdate(syntax);
 			org.makumba.MakumbaSystem.getMakumbaLogger(
 					"db.init.tablechecking").info(message);
 			st.close();
 		} catch (SQLException e) {
+            treatIndexException(e, syntax, dbc);
 		}
 		
 	}
