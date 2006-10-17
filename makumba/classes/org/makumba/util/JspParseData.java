@@ -501,13 +501,5 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient
         return usingHibernate;
     }
 
-    public String[] getLiteralPatternNames() {
-        return null;
-    }
-
-    public Pattern[] getLiteralPatterns() {
-        return null;
-    }
-
 } // end class
 

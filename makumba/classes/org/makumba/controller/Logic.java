@@ -52,11 +52,6 @@ public class Logic
   static Properties controllerConfig;
   static java.net.URL controllerURL;
   static HashMap nameToObject = new HashMap();
-
-  private static final String HANDLER_METHOD_HEAD = "public void ";
-  
-  private static final String HANDLER_METHOD_END = " throws LogicException {}";
-  
   static
   {
     controllerConfig= new Properties();
@@ -89,36 +84,6 @@ public class Logic
 	return nameToObject.get(className);
   }
   
-    /**
-     * Finds the name of the package to be used for the given directory. The method uses the {@link #controllerConfig}
-     * to find a matching package name.
-     * 
-     * @param directory the directory to find the package for.
-     * @return the package name found, or an empty String in case no package was found.
-     */
-    public static String findPackageName(String directory) {
-        String packageName = "";
-        String defaultPackage = "";
-        String longestKey = "";
-
-        if (controllerConfig != null) {
-            for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
-                String k = (String) e.nextElement();
-
-                if (k.equals("default") && longestKey.length() == 0) {
-                    defaultPackage = controllerConfig.getProperty(k);
-                } else if (directory.startsWith(k) && k.length() > longestKey.length()) {
-                    longestKey = k;
-                    packageName = controllerConfig.getProperty(k);
-                }
-            }
-            if (longestKey.length() == 0 && defaultPackage.length() > 0) {
-                packageName = defaultPackage;
-            }
-        }
-        return packageName;
-    }
-
   static int logix= NamedResources.makeStaticCache("Business logic classes", 
 						   new NamedResourceFactory()
    {
@@ -410,7 +375,7 @@ public class Logic
 	  ProgrammerError("Class "+controller.getClass().getName()+
 			  " ("+getControllerFile(controller)+ ")\n"+
 			   "does not define the method\n"+
-			  HANDLER_METHOD_HEAD + opName+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			  opName+"(Dictionary, Attributes, Database)\n"+
 			  "The method is declared as a makumba form handler, so it has to be defined");
       
       try{
@@ -443,7 +408,7 @@ public class Logic
 	      ProgrammerError("Class "+controller.getClass().getName()+
 			      " ("+getControllerFile(controller)+ ")\n"+
 			      "does not define the method\n"+
-                  HANDLER_METHOD_HEAD + "on_edit"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      "on_edit"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow EDIT operations on the type "+typename +
 			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
@@ -485,7 +450,7 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define the method\n"+
-			      HANDLER_METHOD_HEAD + "on_delete"+upper+"(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      "on_delete"+upper+"(Pointer, Attributes, Database)\n"+
 			      "so it does not allow DELETE operations on the type "+typename +
 			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}
@@ -531,8 +496,8 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      HANDLER_METHOD_HEAD + "on_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
-                  HANDLER_METHOD_HEAD + "after_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      "on_add"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
+			      "after_add"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow ADD operations on the type "+typename +
 			      ", field "+field+
 			      "\nDefine any of the methods (even with an empty body) to allow such operations.");
@@ -579,8 +544,8 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      HANDLER_METHOD_HEAD + "on_new"+upper+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
-                  HANDLER_METHOD_HEAD + "after_new"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      "on_new"+upper+"(Dictionary, Attributes, Database)\n"+
+			      "after_new"+upper+"(Pointer, Dictionary, Attributes, Database)\n"+
 			      "so it does not allow NEW operations on the type "+typename +
 			      ".\nDefine any of the methods (even with an empty body) to allow such operations.");
 	}

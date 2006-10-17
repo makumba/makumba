@@ -42,11 +42,6 @@
     <url-pattern>/logic/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>mddLinker</servlet-name>
-    <url-pattern>/codeGenerator/*</url-pattern>
-  </servlet-mapping>
-
   <servlet>
     <servlet-name>invoker</servlet-name>
     <servlet-class>org.apache.catalina.servlets.InvokerServlet</servlet-class>
@@ -61,11 +56,6 @@
     <servlet-name>invoker</servlet-name>
     <url-pattern>/servlet/*</url-pattern>
   </servlet-mapping>
-
-  <servlet>
-    <servlet-name>codeGenerator</servlet-name>
-    <servlet-class>org.makumba.devel.CodeGenerator</servlet-class>
-  </servlet>
 
   <taglib>
   	<taglib-uri>http://www.makumba.org/presentation</taglib-uri>

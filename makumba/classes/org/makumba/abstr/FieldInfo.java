@@ -1053,7 +1053,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	/**
 	 * works only for ptr and set types
 	 * 
-	 * @return wether the definition indicates a title field
+	 * @return wether the definition indicates a titile field
 	 * @exception ClassCastException
 	 *                for other types
 	 */
@@ -1079,13 +1079,4 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 					value);
 		return value;
 	}
-    
-    public boolean isDefaultField() {
-        return getIntegerType() == _ptrIndex || getIntegerType() == _dateCreate || getIntegerType() == _dateModify;
-    }
-    
-    public boolean shouldEditBySingleInput() {
-        return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
-    }    
-    
 }

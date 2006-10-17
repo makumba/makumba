@@ -335,12 +335,7 @@ public class RecordParser {
 			nm = (String) e.nextElement();
 
 			p = nm.indexOf("->");
-            FieldInfo fieldInfo = getFieldInfo(nm.substring(0, p));
-            if (fieldInfo == null) { // we did not find the field info, i.e. accessed unknownField->field.
-                mpe.add(fail("Could not find subfield '" + nm.substring(0, p) + "'", makeLine(subfields, nm)));
-                continue;
-            }
-			String type = (String) fieldInfo.type;
+			String type = (String) getFieldInfo(nm.substring(0, p)).type;
 			if (type == null) {
 				mpe.add(fail("no such field in subfield definition", makeLine(
 						subfields, nm)));

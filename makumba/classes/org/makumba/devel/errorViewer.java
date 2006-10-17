@@ -31,7 +31,6 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**
@@ -60,6 +59,7 @@ public class errorViewer extends LineViewer {
         Class javaClass;
         String jspPage;
         String jspClass;
+        String sunClass;
 
         StringBuffer source = new StringBuffer(s);
         StringBuffer result = new StringBuffer();
@@ -79,12 +79,12 @@ public class errorViewer extends LineViewer {
                 if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
                         || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
-                } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
+                } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
                     String substring = source.substring(indexAfter);
                     lineNumber = findLineNumber(substring);
                     result.append(formatClassLink(javaClass.getName(), token, lineNumber));
-                } else if ((javaClass = findClass(token)) != null) {
-                    result.append(formatClassLink(javaClass, null, token));
+                } else if ((sunClass = findJDKClass(token)) != null) {
+                    result.append(sunClass);
                 } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
                     lineNumber = findLineNumber(source.toString());
                     result.append(formatJSPLink(jspPage, token, lineNumber));
@@ -105,14 +105,8 @@ public class errorViewer extends LineViewer {
     private Integer findLineNumber(String s) {
         String beginToken = ":";
         Integer lineNr = null;
-        int indexNumberBegin = s.indexOf(beginToken);
-        
-        if (indexNumberBegin == -1) { // try if we have a line number after a '('
-            indexNumberBegin = s.indexOf("(");
-        }
-        
+        int indexNumberBegin = s.indexOf(beginToken) + 1;
         if (indexNumberBegin != -1) {
-            indexNumberBegin = indexNumberBegin + 1;
             int indexNumberEnd = indexNumberBegin;
             while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {
                 indexNumberEnd++;
@@ -121,8 +115,6 @@ public class errorViewer extends LineViewer {
             try {
                 lineNr = Integer.valueOf(lineNumberText);
             } catch (NumberFormatException e) {
-                MakumbaSystem.getMakumbaLogger("devel").warning("Error in error viewer: " + e.getMessage());
-                e.printStackTrace();
             }
         }
         return lineNr;
@@ -132,10 +124,12 @@ public class errorViewer extends LineViewer {
      * @param token
      * @return
      */
-    public Class findClassSimple(String token) {
+    public Class findClass(String token) {
+        Class javaClass;
         int index = token.lastIndexOf('.');
         String className = token.substring(0, index);
-        return super.findClassSimple(className);
+        javaClass = super.findClass(className);
+        return javaClass;
     }
 
     public void footer(PrintWriter pw) throws IOException {

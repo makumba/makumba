@@ -33,8 +33,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.MakumbaSystem;
-
 /**
  * invoke the necessary SourceViewer, depending on the type of the source the architecture should change, and be organized in filters. example:
  * <ul>
@@ -58,17 +56,14 @@ public class SourceViewServlet extends HttpServlet {
         SourceViewer sw = null;
         String servletPath = req.getServletPath();
         try {
-            if (servletPath.equals("/dataDefinitions")) {
+            if (servletPath.equals("/dataDefinitions"))
                 sw = new mddViewer(req, this);
-            } else if (servletPath.endsWith(".jspx") || servletPath.endsWith(".jsps") || servletPath.endsWith(".jspxp")) {
+            else if (servletPath.endsWith(".jspx") || servletPath.endsWith(".jsps") || servletPath.endsWith(".jspxp"))
                 sw = new jspViewer(req, this);
-            } else if (servletPath.equals("/classes")) {
+            else if (servletPath.equals("/classes"))
                 sw = new javaViewer(req, this);
-            } else if (servletPath.equals("/logic")) {
+            else if (servletPath.equals("/logic"))
                 sw = new logicViewer(req, this);
-            } else if (servletPath.equals("/codeGenerator")) {
-                sw = new GeneratedCodeViewer(req, this);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             res.sendError(404, e.toString());
@@ -95,10 +90,6 @@ public class SourceViewServlet extends HttpServlet {
                 }
                 if (!req.getPathInfo().endsWith("/")) {
                     res.sendRedirect(servletPath + req.getPathInfo() + "/");
-                    return;
-                }
-                if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) { // redirect browsing of directories to mdd Viewer
-                    res.sendRedirect(req.getContextPath() + "/dataDefinitions" + req.getPathInfo());
                     return;
                 }
 
@@ -157,7 +148,7 @@ public class SourceViewServlet extends HttpServlet {
                         }
                     }
                 } else {
-                    MakumbaSystem.getMakumbaLogger("devel").warning("Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
+                    System.out.println("don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
                 }
                 w.println("</pre>");
                 w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "

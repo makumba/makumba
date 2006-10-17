@@ -32,11 +32,8 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +43,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.MakumbaSystem;
-import org.makumba.util.JavaParseData;
 
 /**
  * a viewer that shows everything per line
@@ -59,8 +55,6 @@ import org.makumba.util.JavaParseData;
  */
 public class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
-
-    protected static final String PARAM_HIDE_LINES = "hideLines";
 
     protected ServletContext servletContext;
 
@@ -101,18 +95,8 @@ public class LineViewer implements SourceViewer {
     
     protected String codeBackgroundStyle = "";
     
-    protected boolean hideLineNumbers = false;
-    
-    /**  Default packages to be known. Use {@link JavaParseData#getImportedPackages()} to add more */
-    protected String[] importedPackages = new String[] { "java.lang." };
-    
-    protected Hashtable importedClasses = new Hashtable();
-
-    protected void addImportedPackages(Collection newPackages) {
-        HashSet packages = new HashSet(newPackages);
-        packages.addAll(Arrays.asList(importedPackages));
-        importedPackages = (String[]) packages.toArray(new String[packages.size()]);
-    }
+    //  TODO: temporarily, to be determined by java Anlyzer
+    private String[] importedPackages = new String[] { "", "java.lang." };
 
     /** if this resource is actually a directory, returns not null */
     public File getDirectory() {
@@ -145,14 +129,13 @@ public class LineViewer implements SourceViewer {
         this.printLineNumbers = printLineNumbers;
         servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
-        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null && request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
 
     /**
      * parse the text and write the output
      */
     public void parseText(PrintWriter writer) throws IOException {
-        long begin = System.currentTimeMillis();
+        GregorianCalendar begin = new GregorianCalendar();
         printPageBegin(writer);
 
         // we go line by line as an MDD references cannot span over newlines
@@ -160,7 +143,7 @@ public class LineViewer implements SourceViewer {
         LineNumberReader lr = new LineNumberReader(reader);
         String s = null;
         while ((s = lr.readLine()) != null) {
-            if (printLineNumbers && !hideLineNumbers) {
+            if (printLineNumbers) {
                 int n = lr.getLineNumber();
                 writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
             }
@@ -168,7 +151,7 @@ public class LineViewer implements SourceViewer {
         }
         printPageEnd(writer);
         reader.close();
-        double timeTaken = System.currentTimeMillis() - begin;
+        double timeTaken = new Date(new GregorianCalendar().getTimeInMillis() - begin.getTimeInMillis()).getTime();
         MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
                 "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
@@ -184,30 +167,25 @@ public class LineViewer implements SourceViewer {
     }
 
     /**
-     * Write the beginning of the page to the given writer.
+     * @param writer
+     * @throws IOException
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
         writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-        writer.println("<html>");
-        writer.println("<head>");
+        writer.println("<html><head>");
         writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
         if (realPath != null && virtualPath != null)
             title = virtualPath + "";
         else if (title == null || title != null && title.equals(""))
             title = "";
         writer.println("<title>" + title + "</title>");
-        if (printLineNumbers && !hideLineNumbers) {
+        if (printLineNumbers) {
             writer.println("<style type=\"text/css\">");
             writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
             writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
-            writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none}");
-            writer.println("</style>\n");
+            writer.println("\n</style>");
         }
-        writer.println("</head>");
-        writer.println("<body bgcolor=white>");
-        writer.println("<table width=\"100%\" bgcolor=\"lightblue\">");
-        writer.println("<tr>");
-        writer.println("<td rowspan=\"2\">");
+        writer.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
 
         if (title != null && !title.equals("") && !title.equals(virtualPath))
             writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
@@ -215,66 +193,32 @@ public class LineViewer implements SourceViewer {
             writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
                     + "</font></a></font>");
 
-        if (realPath != null) {
-            writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
-        }
-        printPageBeginAdditional(writer);
+        if (realPath != null)
+            writer.print("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
 
-        if (printLineNumbers) {
-            String urlParams = "";
-            Enumeration e = request.getParameterNames();
-            while (e.hasMoreElements()) {
-                String key =  (String) e.nextElement();
-                Object value = request.getParameter(key);
-                if (!key.equals(PARAM_HIDE_LINES)) {
-                    if (!urlParams.equals("")) {
-                        urlParams += "&";
-                    }
-                    urlParams += key + "=" + value;
-                }
-            }
-            
-            if (!urlParams.equals("")) {
-                urlParams += "&";
-            }
-            urlParams += PARAM_HIDE_LINES + "=" + !hideLineNumbers;
-            if (!urlParams.equals("")) {
-                urlParams = "?" + urlParams;
-            }            
-            String link = request.getRequestURI() + urlParams;
-         
-            writer.print("<div style=\"font-size: smaller; vertical-align: bottom;\"><a href=\"" + link + "\">");
-            if (hideLineNumbers) {
-                writer.print("Show");
-            } else {
-                writer.print("Hide");
-            }
-            writer.println(" line numbers</a></div>");
-        }
-        writer.println("</td>");
+        writer.print("</td>");
 
         intro(writer);
-        writer.println("</tr>");
-        writer.println("</table>");
-        writer.print("<pre class=\"code\">");
+        writer.print("</tr></table>\n<pre class=\"code\">");
     }
 
     /**
-     * Write the page header to the given writer.
+     *  
      */
     public void intro(PrintWriter printWriter) throws IOException {
     }
 
-    public void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
-
-    }
-
-    /** Write the page footer to the given writer. */
+    /**
+     *  
+     */
     public void footer(PrintWriter printWriter) throws IOException {
         printWriter.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
                 + org.makumba.MakumbaSystem.getVersion() + "</font>");
     }
 
+    /**
+     *  
+     */
     public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {
         String t = getLineTag(s);
         if (t != null)
@@ -285,6 +229,9 @@ public class LineViewer implements SourceViewer {
         printWriter.print("\n");
     }
 
+    /**
+     *  
+     */
     public String getLineTag(String s) {
         return null;
     }
@@ -331,6 +278,7 @@ public class LineViewer implements SourceViewer {
      */
     public String parseLine(String s) {
         Class javaClass;
+        String jdkClass;
         String jspPage;
         String jspClass;
 
@@ -349,14 +297,14 @@ public class LineViewer implements SourceViewer {
             if (token.indexOf("www.makumba.org") != -1) {
                 result.append(formatMakumbaLink(token));
             } else if (token.indexOf("java.sun.com") != -1) {
-                result.append(formatSunTaglibLink(token));
+                result.append(formatSunLink(token));
             } else if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
                     || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
                 result.append(formatMDDLink(token));
-            } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
-                result.append(formatClassLink(javaClass.getName(), token, null));
             } else if (searchJavaClasses && (javaClass = findClass(token)) != null) {
-                result.append(formatClassLink(javaClass, null, token));
+                result.append(formatClassLink(javaClass.getName(), token, null));
+            } else if (searchJavaClasses && (jdkClass = findJDKClass(token)) != null) {
+                result.append(jdkClass);
             } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
                 result.append(formatJSPLink(jspPage, token, null));
             } else if (searchCompiledJSPClasses && (jspClass = findCompiledJSP(token)) != null) {
@@ -392,11 +340,11 @@ public class LineViewer implements SourceViewer {
      * @param token
      * @return
      */
-    public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
+    public String formatClassLink(String className, String token, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "#" + lineNumber + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + "/classes/" + className + "#" + lineNumber + "\">" + token + "</a>";
         } else {
-            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + "/classes/" + className + "\">" + token + "</a>";
 
         }
     }
@@ -405,8 +353,8 @@ public class LineViewer implements SourceViewer {
      * @param token
      * @return
      */
-    public String formatMDDLink(String mddName) {
-        return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath + "/dataDefinitions/" + mddName + "\">" + mddName + "</a>";
+    public String formatMDDLink(String token) {
+        return "<a href=\"" + contextPath + "/dataDefinitions/" + token + "\">" + token + "</a>";
     }
 
     /**
@@ -421,7 +369,7 @@ public class LineViewer implements SourceViewer {
      * @param token
      * @return
      */
-    public String formatSunTaglibLink(String token) {
+    public String formatSunLink(String token) {
         if (token.indexOf("java.sun.com/jstl/") != -1 || token.indexOf("http://java.sun.com/jsp/jstl/") != -1) {
             return "<a href=\"http://java.sun.com/products/jsp/jstl/1.1/docs/tlddocs/\" target=\"_blank\">" + token
                     + "</a>";
@@ -473,13 +421,12 @@ public class LineViewer implements SourceViewer {
 
     /**
      * Searches for Java Classes with the given name
-     *  FIXME: still needed?
-     *
+     * 
      * @param s
      *            The class name to search for
      * @return The class, if found, <code>null</code> otherwise.
      */
-    public Class findClassSimple(String s) {
+    public Class findClass(String s) {
         Class c = null;
         try {
             c = Class.forName(s);
@@ -532,65 +479,40 @@ public class LineViewer implements SourceViewer {
      * @param token
      * @return
      */
-    public Class findClass(String className) {
+    public String findJDKClass(String token) {
         Class c = null;
-        String classNameTrial = (String) importedClasses.get(className);
-        if (classNameTrial != null) {
+        for (int i = 0; i < importedPackages.length; i++) {
             try {
-                c = Class.forName(classNameTrial);
-                return c;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        if (c == null) {
-            for (int i = 0; i < importedPackages.length; i++) {
-                try {
-                    classNameTrial = importedPackages[i] + className;
-                    c = Class.forName(classNameTrial);
-                    return c;
-                } catch (Throwable throwable) {
-                    // we just continue with the next package
-                }
-            }
-        }
-        if (className.indexOf(".") != -1) {
-            // try to split class name and method name
-            classNameTrial = className.substring(0, className.lastIndexOf("."));
-            // methodName = token.substring(methodBegin + 1);
-            try {
-                for (int i = 0; i < importedPackages.length; i++) {
-                    classNameTrial = importedPackages[i] + classNameTrial;
-                    c = Class.forName(classNameTrial);
-                    return c;
-                }
+                c = Class.forName(importedPackages[i] + token);
+                break;
             } catch (Throwable throwable) {
                 // we just continue with the next package
             }
         }
-        return null;
-    }
-    
-    public String formatClassLink(Class c, String methodName, String displayName) {
-        if (c != null) {
-            String s = "<a class=\"classLink\" href=\"";
-            if (c.getName().startsWith("java")) {
-                s += "http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/") + ".html";
-                if (methodName != null) {
-                    s+= "#" + methodName + "()";
-                }
-            } else if (c.getName().startsWith("org.makumba")) {
-                s += "http://www.makumba.org/api/" + c.getName().replaceAll("\\.", "/") + ".html";
-                if (methodName != null) {
-                    s+= "#" + methodName + "()";
-                }
-            } else {
-                s += contextPath + "/classes/" + c.getName().replace('.', '/');
-            }
-            return s + "\" title=\"" + (methodName != null ? "Method in " : "") + c.getName() + "\">" + displayName
-                    + "</a>";
+        if (c != null && c.getName().startsWith("java")) {
+            return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
+                    + ".html\">" + c.getName() + "</a>";
+        } else if (c != null && c.getName().startsWith("org.makumba")) {
+            return "<a href=\"http://www.makumba.org/api/" + c.getName().replaceAll("\\.", "/") + ".html\">"
+                    + c.getName() + "</a>";
         } else {
-            return null;
+
+            String className = token.substring(0, token.lastIndexOf("."));
+            String methodName = token.substring(token.lastIndexOf(".") + 1);
+            try {
+                for (int i = 0; i < importedPackages.length; i++) {
+                    c = Class.forName(importedPackages[i] + className);
+                    break;
+                }
+            } catch (Throwable throwable) {
+                // we just continue with the next package
+            }
+            if (c != null && c.getName().startsWith("java")) {
+                return "<a href=\"http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/")
+                        + ".html#" + methodName + "()\">" + c.getName() + "." + methodName + "()" + "</a>";
+            } else {
+                return null;
+            }
         }
     }
 

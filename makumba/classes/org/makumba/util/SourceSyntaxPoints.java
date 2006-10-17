@@ -25,7 +25,6 @@ package org.makumba.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,8 +33,6 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.makumba.ProgrammerError;
 
 /** 
  * The collection of syntax points in a source file gathered from a source analysis.
@@ -46,8 +43,6 @@ public class SourceSyntaxPoints
     public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host);
     public Pattern[] getCommentPatterns();
     public String[] getCommentPatternNames();
-    public Pattern[] getLiteralPatterns();
-    public String[] getLiteralPatternNames();
     public Pattern getIncludePattern();
     public String getIncludePatternName();
   }
@@ -108,18 +103,9 @@ public class SourceSyntaxPoints
 
     findLineBreaks();
 
-        // ignore literals from the text
-        if (client.getLiteralPatterns() != null) {
-            for (int i = 0; i < client.getLiteralPatterns().length; i++) {
-                treatLiterals(i);
-            }
-        }
     // remove comments from the text
-        if (client.getCommentPatterns() != null) {
-            for (int i = 0; i < client.getCommentPatterns().length; i++) {
-                unComment(i);
-            }
-        }
+    for(int i=0; i<client.getCommentPatterns().length; i++)
+      unComment(i);
 
     if(client.getIncludePattern()!=null)
       include();
@@ -215,40 +201,27 @@ public class SourceSyntaxPoints
     fileBeginnings.add(this);
   }
 
-    /** Treat comments, i.e. create a syntax point for them and then replace their content. */
-    void unComment(int patternIndex) {
-        unComment(client.getCommentPatterns()[patternIndex], client.getCommentPatternNames()[patternIndex]);
-    }
+  /** Replaces comments from a text by blanks, and stores syntax points. Comment is defined by a Pattern. 
+   * @return The text with comments replaced by blanks, of equal length as the input.
+   */
+  void unComment(int patternIndex)
+  {
+    Matcher m= client.getCommentPatterns()[patternIndex].matcher(content);
+    int endOfLast=0;
+    StringBuffer uncommentedContent= new StringBuffer();
+    while(m.find())
+      {
+	uncommentedContent.append(content.substring(endOfLast, m.start()));
+	for(int i=m.start(); i<m.end(); i++)
+	  uncommentedContent.append(' ');
+	endOfLast=m.end();
+	org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine("UNCOMMENT " + client.getCommentPatternNames()[patternIndex]+ " : " +m.group());
+	addSyntaxPoints(m.start()+offset, m.end()+offset, client.getCommentPatternNames()[patternIndex], null);
+      }
+    uncommentedContent.append(content.substring(endOfLast));
+    content= uncommentedContent.toString();
+  }
 
-    /**
-     * Replaces comments or literals from a text by blanks, and stores syntax points. The comment or literal is defined
-     * by the given pattern & pattern name. As a result, the text with comments is replaced by blanks, of equal length
-     * as the input.
-     * 
-     * @param pattern the pattern to match the literal or comment
-     * @param patternName the name of the pattern.
-     */
-    private void unComment(Pattern pattern, String patternName) {
-        Matcher m = pattern.matcher(content);
-        int endOfLast = 0;
-        StringBuffer uncommentedContent = new StringBuffer();
-        while (m.find()) {
-            uncommentedContent.append(content.substring(endOfLast, m.start()));
-            for (int i = m.start(); i < m.end(); i++)
-                uncommentedContent.append(' ');
-            endOfLast = m.end();
-            org.makumba.MakumbaSystem.getMakumbaLogger("syntaxpoint.comment").fine(
-                "UNCOMMENT " + patternName + " : " + m.group());
-            addSyntaxPoints(m.start() + offset, m.end() + offset, patternName, null);
-        }
-        uncommentedContent.append(content.substring(endOfLast));
-        content = uncommentedContent.toString();
-    }
-  
-    /** Treat literals, i.e. create a syntax point for them and then replace their content. */
-    void treatLiterals(int patternIndex) {
-        unComment(client.getLiteralPatterns()[patternIndex], client.getLiteralPatternNames()[patternIndex]);
-    }
 
   /** Creates a beginning and end syntaxPoint for a syntax entity, and adds these to the collection of points.
    * @param start  the starting position
@@ -350,21 +323,18 @@ public class SourceSyntaxPoints
   }
 
   /** Return the content of the JSP file in a string. */
-    String readFile() {
-        StringBuffer sb = new StringBuffer();
-        try {
-            BufferedReader rd = new BufferedReader(new FileReader(file));
-            char[] buffer = new char[2048];
-            int n;
-            while ((n = rd.read(buffer)) != -1)
-                sb.append(buffer, 0, n);
-        } catch (FileNotFoundException e) {
-            throw new ProgrammerError("File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
-    }
+  String readFile()
+  {
+    StringBuffer sb=new StringBuffer();
+    try{
+      BufferedReader rd= new BufferedReader(new FileReader(file));
+      char[] buffer= new char[2048];
+      int n;
+      while((n=rd.read(buffer))!=-1)
+	sb.append(buffer, 0, n);
+    }catch(IOException e) { e.printStackTrace(); }
+    return sb.toString();
+  }
 
   String getContent(){return content; }
 

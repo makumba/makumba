@@ -155,12 +155,10 @@ static Object errors [][]=
       tagData= MakumbaTag.getCurrentBodyTag();
     }
     if(tagData==null) {
-        String filePath = req.getRequestURL().toString();
+        String filePath;
         try {
             String serverName = req.getLocalName() + ":" + req.getLocalPort() + req.getContextPath();
-            if (filePath.indexOf(serverName) != -1) {
-                filePath = filePath.substring(filePath.indexOf(serverName)+serverName.length());
-            }
+            filePath = req.getRequestURL().toString().substring(req.getRequestURL().toString().indexOf(serverName)+serverName.length());
         } catch (Exception e) { // if some error occurs during the string parsing
             filePath = req.getRequestURL().toString(); // --> we just present the whole request URL
         }

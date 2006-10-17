@@ -72,12 +72,8 @@ public class ptrEditor extends choiceEditor {
 		for (Iterator i = v.iterator(); i.hasNext();) {
 			Dictionary d = (Dictionary) i.next();
             Object ttl= d.get("title");
-            if(ttl==null) {
-                Pointer ptr = (Pointer) d.get("choice");
-                // FIXME ? maybe just displayed the field as untitled?
-                // ttl = "untitled [" + ptr.toExternalForm() + "]";
-                throw new org.makumba.ProgrammerError("Object "+ ptr + " (external ID: " + ptr.toExternalForm() + ") has a null value for the title-field (" + ptr.getType() + "." + MakumbaSystem.getDataDefinition(ptr.getType()).getTitleFieldName() + "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
-            }
+            if(ttl==null)
+                throw new org.makumba.ProgrammerError("null set title for "+d.get("choice"));
 			c.add(d.get("choice"), ttl.toString(), false, false);
 		}
 		return c;

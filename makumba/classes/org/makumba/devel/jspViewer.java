@@ -142,9 +142,9 @@ public class jspViewer extends LineViewer {
 
     boolean hasLogic;
 
-    protected SyntaxPoint[] sourceSyntaxPoints;
+    private SyntaxPoint[] sourceSyntaxPoints;
 
-    protected SourceSyntaxPoints syntaxPoints;
+    private SourceSyntaxPoints syntaxPoints;
 
     private boolean hideComments = false;
 
@@ -162,14 +162,6 @@ public class jspViewer extends LineViewer {
         return 1;
     }
 
-    public jspViewer(HttpServletRequest req, HttpServlet sv, boolean printLineNumbers) throws Exception {
-        super(printLineNumbers, req, sv);
-        setSearchLevels(true, false, false, true);
-        this.servlet = sv;
-
-        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) == null || request.getParameter(PARAM_HIDE_LINES).equals("true");
-    }
-    
     public jspViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
         super(true, req, sv);
         setSearchLevels(true, false, false, true);
@@ -209,32 +201,37 @@ public class jspViewer extends LineViewer {
     }
 
     public void intro(PrintWriter w) throws IOException {
-        w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
-        w.println("<a href=\"" + contextPath + virtualPath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
-        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
-        w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
+        w.print("<td>\n"
+                + "<table align=\"right\" cellpading=\"5\" cellspacing=\"5\">\n"
+                + "<tr>\n"
+                + "<td align=\"right\"><a href=\""
+                + contextPath
+                + virtualPath
+                + "\"><font color=\"darkblue\">execute</font></a>&nbsp;&nbsp;&nbsp;</td>\n"
+                + "<td align=\"right\" bgcolor=\"darkblue\"><font color=\"lightblue\">source</font>&nbsp;&nbsp;&nbsp;</td>\n"
+                + "<td align=\"right\"><a href=\"" + logicPath + "\"><font color=\"darkblue\">business logic"
+                + (hasLogic ? "" : " (none)") + "</font></a></td>\n");
 
         String lg = org.makumba.controller.http.ControllerFilter.getLoginPage(virtualPath);
-        if (lg != null) {
-            w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
-        }
+        if (lg != null)
+            w.print("<td align=\"right\">&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg
+                    + "x\"><font color=\"darkblue\">login page</font></a></td>\n");
 
-        w.println("</td>");
-        w.println("</tr>");
-        w.println("<tr>");
-        w.println("<td align=\"right\" style=\" font-size: smaller;\">");
-        w.println("<form method=\"get\" action>");
-        w.println("Hide:" + " <input type=\"checkbox\" name=\"hideComments\" value=\"true\"" + (hideComments ? " checked=\"checked\"" : "")
-                + ">Comments  ");
-        w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\"" + (hideHTML ? " checked=\"checked\"" : "") + ">HML  ");
-        w.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\"" + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\"" + (hideJSTLCore ? " checked=\"checked\"" : "") + ">JSTL Core  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\"" + (hideJSTLFormat ? " checked=\"checked\"" : "")
-                + ">JSTL Format  ");
-        w.println("<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\"" + (hideMakumba ? " checked=\"checked\"" : "") + ">Makumba  ");
-        w.println("<input type=\"submit\" value=\"apply\"> ");
-        w.println("</form>");
-        w.println("</td>");
+        w.print("</tr>\n" + "</table>\n" + "</td>\n" + "</tr>\n" + "<tr>\n" + "<td align=\"right\">"
+                + "<form method=\"get\" action>\n" + "Hide:"
+                + " <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
+                + (hideComments == true ? " checked=\"checked\"" : "") + ">Comments  \n"
+                + "<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
+                + (hideHTML == true ? " checked=\"checked\"" : "") + ">HML  \n"
+                + "<input type=\"checkbox\" name=\"hideJava\" value=\"true\""
+                + (hideJava == true ? " checked=\"checked\"" : "") + ">Java  \n"
+                + "<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\""
+                + (hideJSTLCore == true ? " checked=\"checked\"" : "") + ">JSTL Core  \n"
+                + "<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\""
+                + (hideJSTLFormat == true ? " checked=\"checked\"" : "") + ">JSTL Format  \n"
+                + "<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\""
+                + (hideMakumba == true ? " checked=\"checked\"" : "") + ">Makumba  \n"
+                + "<input type=\"submit\" value=\"apply\"> \n" + "</form>\n" + "</td>\n" + "</tr>\n");
     }
 
     /**
@@ -254,7 +251,7 @@ public class jspViewer extends LineViewer {
 
         StringBuffer currentText = new StringBuffer();
 
-        for (int j = 0; sourceSyntaxPoints != null && j < sourceSyntaxPoints.length; j++) {
+        for (int j = 0; j < sourceSyntaxPoints.length; j++) {
             SyntaxPoint currentSyntaxPoint = sourceSyntaxPoints[j];
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
@@ -284,11 +281,8 @@ public class jspViewer extends LineViewer {
                 // if the current line contained any text to write or we are outside a tag & shall write html
                 if ((!currentText.toString().trim().equals("") || (inTag < 1 && !hideHTML) || (inTag > 0 && shallWrite))
                         && printLineNumbers) {
-                    writer.print("\n");
-                    if (!hideLineNumbers) {
-                        writer.print("<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
+                    writer.print("\n<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
                             + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
-                    }
                 }
                 writer.print(currentText.toString());
                 currentText = new StringBuffer();

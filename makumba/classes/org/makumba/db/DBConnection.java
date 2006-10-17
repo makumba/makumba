@@ -121,14 +121,9 @@ public abstract class DBConnection implements org.makumba.Transaction
             for (int i = 0; i < fl.length; i++)
                 v.addElement(fl[i]);
             e = v.elements();
-        } else if (flds instanceof String) {
-            Vector v = new Vector();
-            v.add(flds);
-            e = v.elements();
-        } else {
-            // FIXME: don't throw an invalid value exception for a programmer error?
-            throw new InvalidValueException("read() argument must be Enumeration, Vector, String[], String or null");
-        }
+        } else
+            throw new InvalidValueException(
+                    "read() argument must be Enumeration, Vector, String[] or null");
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
         String separator = "";

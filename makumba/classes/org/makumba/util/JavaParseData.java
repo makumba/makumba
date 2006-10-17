@@ -23,22 +23,9 @@
 
 package org.makumba.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.makumba.MakumbaSystem;
 
 /**
  * This class performs a rudimentary detection of Java syntax elements in a Java class.
@@ -65,40 +52,12 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
          */
         Object makeStatusHolder(Object initStatus);
     }
-    
-    private class DefinitionPoint implements Comparable {
-        String className;
-
-        int position;
-
-        public DefinitionPoint(String className, int position) {
-            this.className = className;
-            this.position = position;
-        }
-
-        public int compareTo(Object arg0) {
-            return (new Integer(position).compareTo(new Integer(((DefinitionPoint) arg0).position)));
-        }
-        
-        public String toString() {
-            return position + ":" + className;
-        }
-    }
-
-    public static boolean isCommentSyntaxPoint(String type) {
-        return (Arrays.asList(JavaCommentPatternNames).contains(type));
-    }
-
-    public static boolean isClassUsageSyntaxPoint(String type) {
-        return (Arrays.asList(JavaClassUsagePatternNames).contains(type));
-    }
-    
-    public static boolean isPrimitiveType(String type) {
-        return primitiveTypes.contains(type);
-    }
 
     /** Cache of all page analyses. */
     static int analyzedPages = NamedResources.makeStaticCache("Java page analyses", new NamedResourceFactory() {
+        /**
+		 * 
+		 */
 		private static final long serialVersionUID = 1L;
 
 		public Object getHashObject(Object o) {
@@ -116,71 +75,28 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     private static Pattern[] JavaCommentPatterns;
 
-    private static String[] JavaClassUsagePatternNames = { "JavaVariableDefinition", "JavaNewInstance",
-        "JavaParameter", "JavaClassCast", "JavaMethodReturn", "JavaThrows", "JavaCatch", "JavaExtends" };
-
-    private static Pattern[] JavaClassUsagePatterns;
-
     /** The patterns used to parse the page. */
-    private static Pattern JavaDocCommentPattern, JavaBlockCommentPattern, JavaLineCommentPattern;
-
-    private static Pattern JavaModifierPattern, JavaReservedWordPattern;
-
-    private static Pattern JavaStringLiteral;
-
-    private static Pattern JavaVariableDefinition, JavaNewInstance, JavaParameter, JavaClassCast, JavaMethodReturn,  
-            JavaThrows, JavaCatch, JavaExtends;
-
-    private static Pattern JavaImportPackage;
-
-    private static Pattern JavaMethodInvocation;
-
-    private static Pattern MakumbaFormHandler;
-    
-    private static List primitiveTypes = Arrays.asList(new String[] {"char", "byte", "short", "int", "long", "boolean", "float", "double", "void"});
+    static Pattern JavaDocCommentPattern, JavaBlockCommentPattern, JavaLineCommentPattern, JavaModifierPattern,
+            JavaReservedWordPattern, JavaImports, JavaStringLiteral;
 
     /** Initialiser for the class variables. */
     static {
-        initPatterns();
-    }
+        try {
+            JavaDocCommentPattern = Pattern.compile("/\\*\\*.*?[^\\*]\\*/", Pattern.DOTALL);
 
-    private static void initPatterns() {
-        // FIXME: this is not correct, could also start with _, $, ..
-        String identifier = "\\w[\\w|\\d]*";
-        String spaces = "[\\s]*";
-        String minOneSpaces = "\\s" + spaces;
+            JavaBlockCommentPattern = Pattern.compile("\\/\\*[^\\*][^(\\*\\/)]*\\*\\/", Pattern.DOTALL);
+            JavaLineCommentPattern = Pattern.compile("//.*$", Pattern.MULTILINE);
 
-        JavaDocCommentPattern = Pattern.compile("/\\*\\*.*?[^\\*]\\*/", Pattern.DOTALL);
+            JavaModifierPattern = Pattern.compile("(public )|(private )|(protected )|(transient )|(static )|(void )|(super.)|(super \\()|(super )|(inner.)|(outer.)");
+            JavaReservedWordPattern = Pattern.compile("(class )|(int )|(boolean )|(double )|(float )|(short )|(long )|(byte )|(for )|(for\\()|(do )|(do\\{)|(while )|(while\\()|(switch )|(case )|(return )|(if )|(if\\()|(else )|(else\\()");
+            JavaImports = Pattern.compile("(package )|(import )");
+            JavaStringLiteral = Pattern.compile("\"[^\"]*\"");
 
-        JavaBlockCommentPattern = Pattern.compile("/\\*[^\\*]*\\*/", Pattern.DOTALL);
-        JavaLineCommentPattern = Pattern.compile("//.*$", Pattern.MULTILINE);
-
-        JavaModifierPattern = Pattern.compile("(public )|(private )|(protected )|(transient )|(static )|(void )");
-        JavaReservedWordPattern = Pattern.compile("(class )|(int )|(boolean )|(double )|(float )|(short )|(long )|(byte )|(for )|(for\\()|(do )|(do\\{)|(while )|(while\\()|(switch )|(case )|(return )|(if )|(if\\()|(else )|(import\\s)|(package\\s)|(super\\.)|(super \\()|(super )|(inner\\.)|(outer\\.)|(extends )|(throws )");
-        JavaImportPackage = Pattern.compile("(package" + minOneSpaces + "\\w[\\w\\d\\.]*" + spaces + ";)|(import"
-                + minOneSpaces + "\\w[\\w\\d\\.]*" + "[\\.\\*]?" + spaces + ";)");
-        JavaStringLiteral = Pattern.compile("\"[^\"]*\"");
-
-        // find class usage.
-        JavaNewInstance = Pattern.compile("new" + minOneSpaces + identifier + "[(| ]");
-        JavaVariableDefinition = Pattern.compile("[" + identifier + "\\.]*" + identifier + minOneSpaces + identifier
-                + minOneSpaces + "[;|=]");
-        JavaParameter = Pattern.compile("[(|,]" + spaces + identifier + minOneSpaces + identifier);
-        JavaClassCast = Pattern.compile("\\(" + spaces + identifier + spaces + "\\)" + spaces + identifier);
-        // has problems with new|void, should be excluded ?
-        JavaMethodReturn = Pattern.compile(spaces + identifier + minOneSpaces + identifier + spaces + "\\(");
-        JavaThrows = Pattern.compile("throws" + spaces + identifier);
-        JavaCatch = Pattern.compile("catch" + spaces + identifier);
-        JavaExtends = Pattern.compile("extends" + spaces + identifier);
-        
-        JavaMethodInvocation = Pattern.compile(identifier + spaces + "\\." + spaces + identifier + "\\(");
-
-        MakumbaFormHandler = Pattern.compile("on_(new|add|edit|delete)\\w+\\(");
-        
-        JavaCommentPatterns = new Pattern[] { JavaBlockCommentPattern, JavaDocCommentPattern, JavaLineCommentPattern };
-        JavaClassUsagePatterns = new Pattern[] { JavaVariableDefinition, JavaNewInstance, JavaParameter, JavaClassCast,
-                JavaMethodReturn, JavaThrows, JavaCatch, JavaExtends };
-        
+            Pattern[] cp = { JavaBlockCommentPattern, JavaDocCommentPattern, JavaLineCommentPattern };
+            JavaCommentPatterns = cp;
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     /**
@@ -207,20 +123,8 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     /** The Java URI, for debugging purposes. */
     String uri;
 
-    /** The set of in this class imported packages. */
-    HashSet importedPackages = new HashSet();
-
-    private Hashtable importedClasses = new Hashtable();
-
-    private String viewedClass = null;
-    
-    private String superClass = null;
-    
-    private Hashtable definedObjects = new Hashtable();
-
     /** Private constructor, construction can only be made by getParseData(). */
     protected JavaParseData(String path, JavaAnalyzer an, String uri) {
-        // initPatterns(); // uncomment this if you want to test patterns
         this.file = new File(path);
         this.uri = uri;
         this.analyzer = an;
@@ -247,19 +151,6 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         return holder;
     }
 
-    /**
-     * Gets the imported packages found in this java class.
-     * 
-     * @return A collection of Strings denoting package names.
-     */
-    public Collection getImportedPackages() {
-        return importedPackages;
-    }
-
-    public Hashtable getImportedClasses() {
-        return importedClasses;
-    }
-
     public String[] getCommentPatternNames() {
         return JavaCommentPatternNames;
     }
@@ -268,53 +159,12 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         return JavaCommentPatterns;
     }
 
-    public String[] getLiteralPatternNames() {
-        return new String[] { "JavaStringLiteral" };
-    }
-
-    public Pattern[] getLiteralPatterns() {
-        return new Pattern[] { JavaStringLiteral };
-    }
-
     public Pattern getIncludePattern() {
         return null;
     }
 
     public String getIncludePatternName() {
         return null;
-    }
-
-    public String getDefinedObjectClassName(String objectName, int position) {
-        ArrayList points = (ArrayList) definedObjects.get(objectName);
-        DefinitionPoint maxPoint = null;
-        if (points != null) {
-            for (int i = 0; i < points.size(); i++) {
-                DefinitionPoint current = (DefinitionPoint) points.get(i);
-                if (current.position < position) {
-                    maxPoint = current;
-                } else {
-                    break;
-                }
-            }
-            if (maxPoint != null) {
-                return maxPoint.className;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return Returns the superClass.
-     */
-    public String getSuperClass() {
-        return superClass;
-    }
-
-    /**
-     * @return Returns the viewedClass.
-     */
-    public String getViewedClass() {
-        return viewedClass;
     }
 
     /** Gets the collection of syntax points. */
@@ -332,7 +182,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         // 
         treatJavaImports(syntaxPoints.getContent(), analyzer);
 
-        // treat sting literals  
+        // 
         treatJavaStringLiterals(syntaxPoints.getContent(), analyzer);
 
         // treat Java Modifiers
@@ -341,12 +191,6 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         // treat Java Reserved Words
         treatReservedWords(syntaxPoints.getContent(), analyzer);
 
-        treatClassUsage(syntaxPoints.getContent(), analyzer);
-        
-        treatMethodUsage(syntaxPoints.getContent(), analyzer);
-        
-        treatMakumbaHandler(syntaxPoints.getContent(), analyzer);
-        
         holder = analyzer.endPage(holder);
 
         org.makumba.MakumbaSystem.getMakumbaLogger("javaparser.time").info(
@@ -358,128 +202,37 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /** Go thru the java import statments in the class. */
     void treatJavaImports(String content, JavaAnalyzer an) {
-        Matcher m = JavaImportPackage.matcher(content);
+        Matcher m = JavaImports.matcher(content);
         while (m.find()) {
-            syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaImport", null);
-            String sub = content.substring(m.start(), m.end() - 1).trim();
-            String importedPackage = sub.split("\\s")[1];
-            if (sub.endsWith(".*") || content.substring(m.start(), m.end()).trim().startsWith("package")) {
-                if (importedPackage.startsWith("package")) {
-                    importedPackage = importedPackage.substring("package".length()).trim();
-                }
-                if (importedPackage.endsWith(".*")) {
-                    importedPackage = importedPackage.substring(0, importedPackage.length() - 2);
-                }
-                importedPackages.add(importedPackage + ".");
-            } else {
-                String className = sub.substring(sub.lastIndexOf(".") + 1);
-                importedClasses.put(className, importedPackage);
-            }
-        }
-    }
-
-    /** Go thru the reserved words in the class. */
-    void treatReservedWords(String content, JavaAnalyzer an) {
-        Matcher m = JavaReservedWordPattern.matcher(content);
-        while (m.find()) {
-             syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaReservedWord", null);
-            String s = content.substring(m.start(), m.end()).trim();
-            if (s.equals("class") && viewedClass==null) {
-                String c = content.substring(m.start()).trim();                
-                c = c.substring(c.indexOf(" ")).trim();
-                c = c.substring(0, c.indexOf(" "));
-                viewedClass = c;
-            } else if (s.equals("extends") && superClass == null) {
-                String c = content.substring(m.start()).trim();                
-                c = c.substring(c.indexOf(" ")).trim();
-                c = c.substring(0, c.indexOf(" "));
-                superClass = c;
-            }
-        }
-    }
-
-    void treatClassUsage(String content, JavaAnalyzer an) {
-        for (int i = 0; i < JavaClassUsagePatterns.length; i++) {
-            Matcher m = JavaClassUsagePatterns[i].matcher(content);
-            while (m.find()) {
-                String substring = content.substring(m.start(), m.end());
-                if (JavaClassUsagePatterns[i] != JavaMethodReturn || !(substring.trim().startsWith("new"))) {
-                    String className = extractClassName(substring, JavaClassUsagePatterns[i]);
-                    int beginIndex = content.indexOf(className, m.start());
-                    int endIndex = beginIndex + className.length();
-                    String s = content.substring(beginIndex, endIndex);
-                    if (!isPrimitiveType(s)) {
-                        SyntaxPoint end = syntaxPoints.addSyntaxPoints(beginIndex, endIndex,
-                            JavaClassUsagePatternNames[i], null);
-
-                        // add defined objects --> store object name, class name and position in file, to be able to
-                        // retrieve objects with the same name, but from a different class (e.g. "String a" in method
-                        // "b", and "Integer a" in method "c").
-                        if (JavaClassUsagePatterns[i] == JavaVariableDefinition
-                                || JavaClassUsagePatterns[i] == JavaParameter) {
-                            String objectName = substring.trim().substring(
-                                substring.indexOf(className) + className.length()).replace('=', ' ').trim();
-                            ArrayList currentContent = (ArrayList) definedObjects.get(objectName);
-                            if (currentContent == null) {
-                                currentContent = new ArrayList();
-                            }
-                            currentContent.add(new DefinitionPoint(className, end.getPosition()));
-                            Collections.sort(currentContent);
-                            definedObjects.put(objectName, currentContent);
-                            MakumbaSystem.getMakumbaLogger("javaparser").finest(
-                                "Put defined object: " + objectName + ", values: " + currentContent);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static String extractClassName(String code, Pattern pattern) {
-        code = code.replace('(', ' ').trim();
-        code = code.replace(')', ' ').trim();
-        code = code.replace(',', ' ').trim();
-
-        StringTokenizer t = new StringTokenizer(code);
-        ArrayList s = new ArrayList();
-        while (t.hasMoreTokens()) {
-            s.add(t.nextToken());
-        }
-        String[] parts = (String[]) s.toArray(new String[s.size()]);
-
-        if (pattern == JavaVariableDefinition || pattern == JavaParameter || pattern == JavaMethodReturn
-                || pattern == JavaClassCast) {
-            return parts[0];
-        } else if (pattern == JavaNewInstance || pattern == JavaThrows || pattern == JavaCatch
-                || pattern == JavaExtends) {
-            return parts[1];
-        } else {
-            return "";
+            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaImport", null);
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
         }
     }
 
     /** Go thru the java String Literals in the class. */
     void treatJavaStringLiterals(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, JavaStringLiteral, "JavaStringLiteral");
+        Matcher m = JavaStringLiteral.matcher(content);
+        while (m.find()) {
+            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaStringLiteral", null);
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+        }
     }
 
     /** Go thru the java modifiers in the class. */
     void treatJavaModifiers(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, JavaModifierPattern, "JavaModifier");
+        Matcher m = JavaModifierPattern.matcher(content);
+        while (m.find()) {
+            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaModifier", null);
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+        }
     }
 
-    void treatMethodUsage(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, JavaMethodInvocation, "JavaMethodInvocation");
-    }
-    
-    void treatMakumbaHandler(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, MakumbaFormHandler, "MakumbaFormHandler");
-    }
-    
-    private void treatSimplePattern(String content, JavaAnalyzer an, Pattern pattern, String SyntaxPointName) {
-        Matcher m = pattern.matcher(content);
+    /** Go thru the java modifiers in the class. */
+    void treatReservedWords(String content, JavaAnalyzer an) {
+        Matcher m = JavaReservedWordPattern.matcher(content);
         while (m.find()) {
-            syntaxPoints.addSyntaxPoints(m.start(), m.end()-1, SyntaxPointName, null);
+            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaReservedWord", null);
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
         }
     }
 

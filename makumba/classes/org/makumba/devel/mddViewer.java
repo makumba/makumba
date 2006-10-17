@@ -31,7 +31,6 @@ import java.io.StringReader;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -61,25 +60,19 @@ public class mddViewer extends LineViewer {
     }
 
     public void intro(PrintWriter w) {
-        DataDefinition dd = null;
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            MakumbaSystem.getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {
             err = pe;
-            w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
-        }
-        String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
+            w.print("<td align=\"center\"><font color=\"red\">errors!<br><a href=\"#errors\">details</a></font></td>");
 
-        w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
-        w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
-        if (dd != null) {
-            String generatorPath = contextPath + "/codeGenerator/" + virtualPath; //virtualPath.replaceAll("dataDefinitions", "codeGenerator");
-            w.print("<a style=\"color: darkblue;\" href=\"" + generatorPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         }
-        w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
-        w.println("</td>");
+        w.print("<td align=\"center\" bgcolor=\"darkblue\"><font color=\"lightblue\">mdd</font></td>");
+        w.print("<td align=\"center\"><a href=\""
+                + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1)
+                + "\"><font color=\"darkblue\">browse</font></a></td>");
     }
 
     public void footer(PrintWriter pw) throws IOException {
