@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.DataDefinitionParseError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
@@ -266,7 +267,9 @@ public class GeneratedCodeViewer extends jspViewer {
             }
 
         } catch (DataDefinitionNotFoundError e) {
-
+            caughtError = e;
+        } catch (DataDefinitionParseError e) {
+            caughtError = e;
         }
     }
 

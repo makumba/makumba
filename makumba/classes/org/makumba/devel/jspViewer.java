@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.MakumbaSystem;
+import org.makumba.ProgrammerError;
 import org.makumba.util.ClassResource;
 import org.makumba.util.JspParseData;
 import org.makumba.util.SourceSyntaxPoints;
@@ -184,28 +185,32 @@ public class jspViewer extends LineViewer {
         String thisFile = TomcatJsp.getJspURI(req);
         thisFile = thisFile.substring(0, thisFile.length() - 1);
 
-        JspParseData jspParseData = JspParseData.getParseData(sv.getServletContext().getRealPath("/"), thisFile,
-                JspxJspAnalyzer.getInstance());
-        jspParseData.getAnalysisResult(null);
-        
-        // set background colour for hibernate code
-        if (jspParseData.isUsingHibernate()) {
-            codeBackgroundStyle = hibernateCodeBackgroundStyle;
-        }
-
-        syntaxPoints = jspParseData.getSyntaxPoints();
-
-        sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
-
         contextPath = req.getContextPath();
         String _servletPath = req.getServletPath();
         virtualPath = _servletPath.substring(0, _servletPath.length() - extraLength());
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
         realPath = sv.getServletConfig().getServletContext().getRealPath(virtualPath);
-        reader = new FileReader(realPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
         logicPath = contextPath + "/logic" + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
+
+        JspParseData jspParseData = JspParseData.getParseData(sv.getServletContext().getRealPath("/"), thisFile,
+                JspxJspAnalyzer.getInstance());
+        try {
+            jspParseData.getAnalysisResult(null);
+        
+            // set background colour for hibernate code
+            if (jspParseData.isUsingHibernate()) {
+                codeBackgroundStyle = hibernateCodeBackgroundStyle;
+            }
+    
+            syntaxPoints = jspParseData.getSyntaxPoints();
+    
+            sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
+        } catch (ProgrammerError e) {
+            caughtError = e;
+        }
+        reader = new FileReader(realPath);
     }
 
     public void intro(PrintWriter w) throws IOException {
@@ -243,6 +248,11 @@ public class jspViewer extends LineViewer {
      * a tag might not be hidden/shown as expected)
      */
     public void parseText(PrintWriter writer) throws IOException {
+        // if we have no syntaxpoints, maybe due to an exception, we just display the text w/o highlighting
+        if (sourceSyntaxPoints == null) {
+            super.parseText(writer);
+            return;
+        } 
         Date begin = new Date();
         Object[] syntaxElements = syntaxKeys.toArray();
         printPageBegin(writer);
@@ -254,7 +264,7 @@ public class jspViewer extends LineViewer {
 
         StringBuffer currentText = new StringBuffer();
 
-        for (int j = 0; sourceSyntaxPoints != null && j < sourceSyntaxPoints.length; j++) {
+        for (int j = 0; j < sourceSyntaxPoints.length; j++) {
             SyntaxPoint currentSyntaxPoint = sourceSyntaxPoints[j];
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
