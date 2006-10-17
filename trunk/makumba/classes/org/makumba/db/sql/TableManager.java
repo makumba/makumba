@@ -307,10 +307,15 @@ public class TableManager extends Table {
 
 	private void treatIndexException(SQLException e, String command, SQLDBConnection dbc) {
 	    Level lev= Level.FINE;
-        if(e.getMessage().indexOf("check that column/key exists")!=-1)
+        if(e.getMessage().indexOf("check that column/key exists")!=-1) 
+            // dropping an index that doesn't exist, this is expected since we don't check for existence first, maybe we should... 
             lev= Level.FINEST;
-        if(command.indexOf("fk")!=-1) // dropping a hibernate foreign key
+        if(command.indexOf("fk")!=-1) 
+            // dropping a hibernate foreign key, this is serious
             lev= Level.WARNING;
+        if(!MakumbaSystem.getMakumbaLogger("db.exception").isLoggable(lev))
+            return;
+        MakumbaSystem.getMakumbaLogger("db.exception").log(lev, "Unsuccessful: "+command);
         Database.logException(e, dbc, lev);
     }
 
