@@ -89,10 +89,10 @@ public class SourceSyntaxPoints
    * Most syntax colourers need to do specific operations at every line 
    */
   public SourceSyntaxPoints(File f, PreprocessorClient cl){
-    this(f, cl, null, 0);
+    this(f, cl, null, null, 0);
   } 
 
-  public SourceSyntaxPoints(File f, PreprocessorClient cl, SourceSyntaxPoints parent, int offset) 
+  public SourceSyntaxPoints(File f, PreprocessorClient cl, SourceSyntaxPoints parent, String includeDirective, int offset) 
   {
     this.offset=offset;
     this.parent=parent;
@@ -101,7 +101,7 @@ public class SourceSyntaxPoints
 
     lastChanged=file.lastModified();
 
-    content=originalText=readFile();
+    content=originalText=readFile(includeDirective);
 
     fileBeginningIndexes.add(new Integer(0));
     fileBeginnings.add(this);
@@ -178,7 +178,7 @@ public class SourceSyntaxPoints
 
   /** include the given file, at the given position, included by the given directive */
   public void include(File f, int position, String includeDirective){
-    SourceSyntaxPoints sf= new SourceSyntaxPoints(f, client, this, position);
+    SourceSyntaxPoints sf= new SourceSyntaxPoints(f, client, this, includeDirective, position);
     
     // FIXME: add a syntax point for the include
     // record the next position in this file for @include, also the text
@@ -350,7 +350,7 @@ public class SourceSyntaxPoints
   }
 
   /** Return the content of the JSP file in a string. */
-    String readFile() {
+    String readFile(String includeDirective) {
         StringBuffer sb = new StringBuffer();
         try {
             BufferedReader rd = new BufferedReader(new FileReader(file));
@@ -359,7 +359,13 @@ public class SourceSyntaxPoints
             while ((n = rd.read(buffer)) != -1)
                 sb.append(buffer, 0, n);
         } catch (FileNotFoundException e) {
-            throw new ProgrammerError("File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")");
+            String msg = "File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")";
+            if (includeDirective != null) {
+                msg = "Error in include directive:\n\n" + includeDirective + "\n\n" + msg;
+            } else {
+                msg = "Error in reading a file: " + msg;
+            }
+            throw new ProgrammerError(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
