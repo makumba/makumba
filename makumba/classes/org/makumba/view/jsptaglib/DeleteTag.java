@@ -39,7 +39,7 @@ public class DeleteTag extends EditTag
 		if(w.equals("") || w.equals("link")  || w.equals("button")  )
 			widget=w;
 		else
-			throw new ProgrammerError("Wrong mak:delete widget attribute value. Type button or link");
+			throw new ProgrammerError("Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
 
 	
 	}
