@@ -381,6 +381,7 @@ public class ComposedQuery {
         int n = 0;
         int m = 0;
         while (true) {
+            // FIXME: this is a not that good algorithm for finding stuff like a.b.c
             while (n < s.length() && !isMakId(s.charAt(n)))
                 n++;
 
@@ -406,9 +407,15 @@ public class ComposedQuery {
         int dot = s.indexOf(".");
         if (dot == -1)
             return null;
-        DataDefinition dd = getOQLAnalyzer(fromAnalyzerOQL).getLabelType(s.substring(0, dot));
+        String substring = s.substring(0, dot);
+        try { // if the "label" is actually a real number as 3.0
+            Integer.parseInt(substring);
+            return null; // if so, just return
+        } catch (NumberFormatException e) {            
+        }
+        DataDefinition dd = getOQLAnalyzer(fromAnalyzerOQL).getLabelType(substring);
         if (dd == null)
-            throw new org.makumba.InvalidValueException("no such label " + s.substring(0, dot));
+            throw new org.makumba.InvalidValueException("no such label " + substring);
         while (true) {
             int dot1 = s.indexOf(".", dot + 1);
             if (dot1 == -1) {
