@@ -202,7 +202,7 @@ public class TestHibernateTags extends JspTestCase {
     public void testHibernateMakObjectTag() throws ServletException, IOException {
         pageContext.include("testHibernateMakObjectTag.jsp");        
     }
-    public void endMakObjectTag(WebResponse response) {
+    public void endHibernateMakObjectTag(WebResponse response) {
         try {
             output = response.getText();
         } catch (IOException e) {
@@ -217,10 +217,10 @@ public class TestHibernateTags extends JspTestCase {
         pc = (Dictionary) v.elementAt(0);
 
         output = output.substring(output.indexOf("name") + 5);
-        assertEquals(pc.get("name"), output.substring(0, output.indexOf("\r")));
+        assertEquals(pc.get("name"), output.substring(0, output.indexOf("<br>")));
         output = output.substring(output.indexOf("weight") + 7);
         assertEquals(pc.get("weight").toString(), output.substring(0, output
-                .indexOf("\r")));
+                .indexOf("<br>")));
     }
 
     public void testHibernateMakListTag() throws ServletException, IOException {
@@ -370,7 +370,7 @@ public class TestHibernateTags extends JspTestCase {
     public void testHibernateMakValueDouble() throws ServletException, IOException {
         pageContext.include("testHibernateMakValueDouble.jsp");
     }
-    public void endMakValueDouble(WebResponse response) {
+    public void endHibernateMakValueDouble(WebResponse response) {
         try {
             output = response.getText();
         } catch (IOException e) {
@@ -725,5 +725,12 @@ public class TestHibernateTags extends JspTestCase {
         line = line.replaceAll("[0-9]*:[0-9]*", "");
         assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
         
+    }    
+
+    public void testHibernateMakIf() throws ServletException, IOException, SAXException {
+        pageContext.include("testHibernateMakIfTag.jsp");
+    }
+    
+    public void endHibernateMakIf(WebResponse response) {
     }    
 }
