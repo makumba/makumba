@@ -8,11 +8,9 @@
 
 Person:
 <br>
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
-  name:<mak:value expr="p.indiv.name" />
-  <br> 
-  weight:<mak:value expr="p.weight" />
-  <br/>
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
+  name:<mak:value expr="p.indiv.name" /><br> 
+  weight:<mak:value expr="p.weight" /><br>
 </mak:object>
 
 </body>
