@@ -75,10 +75,6 @@ public class TableManager extends Table {
 	String preparedInsertString, preparedInsertAutoIncrementString, preparedDeleteString,
 			preparedDeleteFromString, preparedDeleteFromIgnoreDbsvString;
 	
-	/**
-	 * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself
-	 */
-	boolean usesHibernateIndexes = true; 
 
 	/** The query that searches for duplicates on this field */
 	Hashtable checkDuplicate= new Hashtable();
@@ -118,7 +114,6 @@ public class TableManager extends Table {
 
 	/** the SQL table opening. might call create() or alter() */
 	protected void open(Properties config) {        
-        usesHibernateIndexes= ClassResource.get(getDatabase().getConfiguration()+".cfg.xml")!=null;
 		setTableAndFieldNames(config);
 		if (!getDataDefinition().isTemporary()) {
 			DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase()
@@ -261,7 +256,7 @@ public class TableManager extends Table {
 			onStartup(fieldName, config, dbc);
 		}
 
-        if(!this.usesHibernateIndexes)
+        if(!getDatabase().usesHibernateIndexes())
 		if (alter)
 			for (Enumeration ei = extraIndexes.keys(); ei.hasMoreElements();) {
 				String indexName = (String) ei.nextElement();
@@ -1553,8 +1548,9 @@ public class TableManager extends Table {
 		String brief = getDataDefinition().getName() + "#" + fieldName + " ("
 				+ getFieldDefinition(fieldName).getDescription() + ")";
 
-		if (usesHibernateIndexes) { // if we use hibernate and we are allowed to change the table
-			dropIndex(fieldName, dbc, "RESIDUAL MAKUMBA INDEX DROPPED on " + brief); // we drop the index
+		if (getDatabase().usesHibernateIndexes()) { // if we use hibernate and we are allowed to change the table
+			// FIXME: this will have to be done in another step, before hibernate schema update
+            dropIndex(fieldName, dbc, "RESIDUAL MAKUMBA INDEX DROPPED on " + brief); // we drop the index
 			return;
 		}
 		
@@ -1742,7 +1738,7 @@ public class TableManager extends Table {
     private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector columns, int index) throws SQLException {
         if(!base_unmodified(fieldName, type, size, columns, index))
             return false;
-        if(!getSQLDatabase().isAutoIncrement() && !this.usesHibernateIndexes)
+        if(!getSQLDatabase().isAutoIncrement() && !getDatabase().usesHibernateIndexes())
             return true;
         boolean unmod= unmodifiedAutoIncrement((Hashtable) columns.elementAt(index-1));
         autoIncrementAlter=!unmod;
@@ -1756,7 +1752,8 @@ public class TableManager extends Table {
     }
 
     private String in_primaryKeyCreate(String fieldName, Database d) {
-        if(getSQLDatabase().isAutoIncrement() || this.usesHibernateIndexes)
+        // FIXME: primary keys will have to be made in another step, before hibernate schema update
+        if(getSQLDatabase().isAutoIncrement() || getDatabase().usesHibernateIndexes())
             return base_inCreate(fieldName, d)+" auto_increment primary key";
          else
             return base_inCreate(fieldName, d);

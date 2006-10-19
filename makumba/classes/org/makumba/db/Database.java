@@ -30,9 +30,11 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.hibernate.SessionFactory;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
@@ -206,6 +208,9 @@ public abstract class Database {
                     d.configName = (String) name;
                     d.fullName=origName;
                     d.tables = new NamedResources("Database tables for " + name, d.tableFactory);
+     
+                    // TODO: need to check if hibernate schema update is authorized. If yes, drop/adjust indexes from all tabbles so that hibernate can create its foreign keys at schema update.
+                    
                     return d;
                 } catch (InvocationTargetException ite) {
                     throw new org.makumba.MakumbaError(ite.getTargetException());
@@ -607,5 +612,22 @@ public abstract class Database {
             addTable(((Table) resource).getDataDefinition().getName());
         }
     };
+
+    private SessionFactory sf;
+
+    public synchronized SessionFactory getHibernateSessionFactory() {
+        if(sf==null && ClassResource.get(getConfiguration()+".cfg.xml")!=null){
+            sf= HibernateSFManager.getSF(getConfiguration()+".cfg.xml", false);
+        }
+        return sf;
+    }
+
+    /**
+     * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself
+     */
+    public boolean usesHibernateIndexes() {
+        // TODO: add hibernate schema update authorization
+        return false;
+    }
 
 }
