@@ -110,6 +110,8 @@ public abstract class Database {
         queries.close();
         updates.close();
         closeConnections();
+        if(sf!=null)
+            sf.close();
     }
 
     public DBConnection getDBConnection() {
