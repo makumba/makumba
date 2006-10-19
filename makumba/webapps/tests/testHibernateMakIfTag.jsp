@@ -8,7 +8,7 @@
 
 Person:
 <br>
-<mak:object from="test.Person p, p.indiv i" where="i.name='john'">
+<mak:object from="test.Person p join p.indiv i" where="i.name='john'">
   <mak:if test="p.indiv.name = 'john'"> It's johnny! </mak:if><br>
 </mak:object>
 
