@@ -30,7 +30,7 @@ public abstract class AbstractQueryRunner {
     public static AbstractQueryRunner makeQueryRunner(String db, ComposedQuery cq){
         if(!cq.useHibernate)
             return new MakumbaQueryRunner(db);
-        return new HibernateQueryRunner();
+        return new HibernateQueryRunner(db);
     }
     public abstract Vector execute(String query, Object[] args, int offset, int limit);
     public abstract void close();

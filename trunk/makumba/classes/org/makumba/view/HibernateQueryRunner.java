@@ -37,9 +37,11 @@ import org.hibernate.CacheMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.makumba.Attributes;
 import org.makumba.DataDefinition;
+import org.makumba.Database;
 import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
 import org.makumba.LogicException;
@@ -54,14 +56,19 @@ import org.makumba.util.ArrayMap;
 public class HibernateQueryRunner extends AbstractQueryRunner {
     Session session;
 
+    SessionFactory sf;
     Transaction transaction;
+
+    public HibernateQueryRunner(String db) {
+        sf=org.makumba.db.Database.getDatabase(db).getHibernateSessionFactory();
+    }
 
     public Vector execute(String query, Object[] args, int offset, int limit) {
         return null;
     }
 
     public Vector executeDirect(String query, Attributes a, int offset, int limit) throws LogicException {
-        MakumbaSystem.getLogger("hibernate").info("Executing hibernate query " + query);
+        MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
 
         HqlAnalyzer analyzer = MakumbaSystem.getHqlAnalyzer(query);
         DataDefinition dataDef = analyzer.getProjectionType();
@@ -79,7 +86,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         }
 
         // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
-        session = HibernateSFManager.getSF().openSession();
+        session = sf.openSession();
         session.setCacheMode(CacheMode.IGNORE);
         transaction = session.beginTransaction();
         Query q = session.createQuery(query);
@@ -162,8 +169,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
      * Method for testing the query runner outside a JSP
      */
     public static void main(String[] args) throws LogicException {
-        HibernateSFManager.getSF(); // we use a simple configuration
-        HibernateQueryRunner qr = new HibernateQueryRunner();
+        HibernateQueryRunner qr = new HibernateQueryRunner(MakumbaSystem.getDefaultDatabaseName());
         Vector v = new Vector();
         v.add(new Integer(1));
         v.add(new Integer(2));
