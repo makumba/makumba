@@ -596,6 +596,11 @@ public class LineViewer implements SourceViewer {
                 if (methodName != null) {
                     s+= "#" + methodName + "()";
                 }
+            } else if (c.getName().startsWith("org.hibernate")) {
+                s += "http://www.hibernate.org/hib_docs/v3/api/" + c.getName().replaceAll("\\.", "/") + ".html";
+                if (methodName != null) {
+                    s+= "#" + methodName + "()";
+                }
             } else {
                 s += contextPath + "/classes/" + c.getName().replace('.', '/');
             }
