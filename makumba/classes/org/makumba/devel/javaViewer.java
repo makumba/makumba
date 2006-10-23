@@ -42,6 +42,7 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.ClassResource;
 import org.makumba.util.JavaParseData;
+import org.makumba.util.NamedResources;
 import org.makumba.util.SourceSyntaxPoints;
 import org.makumba.util.StringUtils;
 import org.makumba.util.SyntaxPoint;
@@ -51,7 +52,7 @@ import org.makumba.view.jsptaglib.TomcatJsp;
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the
  * filter architecture
  * 
- * @version $ID $
+ * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
  *  
@@ -287,7 +288,11 @@ public class javaViewer extends LineViewer {
                                 }
                                 if (className != null) {
                                     variableClass = findClass(className);
-                                    classLink = object + "." + formatClassLink(variableClass, method,  method);
+                                    if (variableClass != null) {
+                                        classLink = object + "." + formatClassLink(variableClass, method,  method);
+                                    } else {
+                                        classLink = object + "." + method;
+                                    }
                                 }
                             }
                             if (classLink != null) {
