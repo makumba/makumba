@@ -23,10 +23,7 @@
 
 package org.makumba.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -98,7 +95,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     }
 
     /** Cache of all page analyses. */
-    static int analyzedPages = NamedResources.makeStaticCache("Java page analyses", new NamedResourceFactory() {
+    public static int analyzedPages = NamedResources.makeStaticCache("Java page analyses", new NamedResourceFactory() {
 		private static final long serialVersionUID = 1L;
 
 		public Object getHashObject(Object o) {
@@ -164,7 +161,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         // find class usage.
         JavaNewInstance = Pattern.compile("new" + minOneSpaces + identifier + "[(| ]");
         JavaVariableDefinition = Pattern.compile("[" + identifier + "\\.]*" + identifier + minOneSpaces + identifier
-                + minOneSpaces + "[;|=]");
+                + spaces + "[;|=]");
         JavaParameter = Pattern.compile("[(|,]" + spaces + identifier + minOneSpaces + identifier);
         JavaClassCast = Pattern.compile("\\(" + spaces + identifier + spaces + "\\)" + spaces + identifier);
         // has problems with new|void, should be excluded ?
@@ -415,10 +412,10 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
                         // add defined objects --> store object name, class name and position in file, to be able to
                         // retrieve objects with the same name, but from a different class (e.g. "String a" in method
                         // "b", and "Integer a" in method "c").
-                        if (JavaClassUsagePatterns[i] == JavaVariableDefinition
-                                || JavaClassUsagePatterns[i] == JavaParameter) {
+                        if ((JavaClassUsagePatterns[i] == JavaVariableDefinition || JavaClassUsagePatterns[i] == JavaParameter)
+                                && substring.trim().indexOf("new ") == -1) {
                             String objectName = substring.trim().substring(
-                                substring.indexOf(className) + className.length()).replace('=', ' ').trim();
+                                substring.indexOf(className) + className.length()).replace('=', ' ').replace(';', ' ').trim();
                             ArrayList currentContent = (ArrayList) definedObjects.get(objectName);
                             if (currentContent == null) {
                                 currentContent = new ArrayList();
