@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
   <title>Makumba-Hibernate QL differences</title>
   <link rel="stylesheet" type="text/css" media="all" href="../main.css">
   <script type="text/javascript" src="../main.js"></script>
@@ -111,21 +112,24 @@ NOT sure if the Makumba form should be deprecated (like in other cases)<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">SELECT <span
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT <span
  style="font-weight: bold;">p</span> FROM test.Person p<br>
       </td>
-      <td style="vertical-align: top;">SELECT <span
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT <span
  style="font-weight: bold;">p.id</span> FROM test.Person p<br>
       </td>
-      <td style="vertical-align: top;">primary key projection<br>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">primary
+key projection<br>
       </td>
-      <td style="vertical-align: top;">In Hibernate, p would select the
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">In
+Hibernate, p would select the
 whole test.Person because
 Hibernate is oriented towards selecting whole objects, not just fields.
 The current solution is to use the Hibernate-level field name (id) of
 the Makumba primary key<br>
       </td>
-      <td style="vertical-align: top;">Selecting whole objects <br>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">Selecting
+whole objects <br>
 (&lt;mak:value expr="p" /&gt;) makes little sense at JSP level. <br>
 Accept
 the current makumba form and translate into the Hibernate form BUT but
@@ -164,6 +168,45 @@ label.field is not null<br>
 notations are syntactically correct in HQL, this one is probably not.
 Maybe
 it's easier to change the existing JSPs.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT x
+&gt; y FROM...<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">BUG, HQL
+error<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">selecting
+logical expression<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">HQL
+cannot select logical expressions, so using mak:if is a problem<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">Deal with
+hibernate developers..<br>
+Use c:if instead...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT
+a.b.c FROM A a... <br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">BUG,
+generated SQL misses a comma in the FROM section<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);"><br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">HQL has
+problems with multiple dereferencing<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">Deal with
+hibernate developers.<br>
+      <br>
+Do the join in the FROM like
+      <pre wrap="">join a.b ab <br></pre>
+and <br>
+SELECT ab.c<br>
       </td>
     </tr>
   </tbody>
