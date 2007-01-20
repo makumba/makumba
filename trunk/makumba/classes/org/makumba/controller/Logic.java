@@ -242,7 +242,7 @@ public class Logic
 
   static String[]separators= { ".", "->" };
 
-  static String upperCase(String a) 
+  public static String upperCase(String a) 
   {
     String ret="";
     while(true)
@@ -427,23 +427,24 @@ public class Logic
       }
   }
 
-  public static Pointer doEdit(Object controller, String typename, 
+  public static Pointer doEdit(Object controller,  String handlerName, String typename, 
 			       Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   {
     Transaction db=dbcp.getConnectionTo(dbName);
       Object [] editArg= {p, data, a, db};
       Method edit=null;
-      String upper= upperCase(typename);
       if(!(controller instanceof LogicNotFoundException))
 	{
-	  edit=getMethod("on_edit"+upper, editArgs, controller);
+          String upper= upperCase(typename);
+	  String handlerName2 = "on_edit"+upper;
+    edit=getMethod(handlerName, editArgs, controller);
 	  if(edit==null)
 	    throw new 
 	      ProgrammerError("Class "+controller.getClass().getName()+
 			      " ("+getControllerFile(controller)+ ")\n"+
 			      "does not define the method\n"+
-                  HANDLER_METHOD_HEAD + "on_edit"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+                  HANDLER_METHOD_HEAD + handlerName+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow EDIT operations on the type "+typename +
 			      "\nDefine that method (even with an empty body) to allow such operations.");
 	}

@@ -610,6 +610,12 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
+        <attribute>
+          <name>handler</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    
 		<attribute>
 			<name>action</name>
 			<required>false</required>
