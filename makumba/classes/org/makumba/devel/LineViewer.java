@@ -283,8 +283,7 @@ public class LineViewer implements SourceViewer {
 
     /** Write the page footer to the given writer. */
     public void footer(PrintWriter printWriter) throws IOException {
-        printWriter.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
-                + org.makumba.MakumbaSystem.getVersion() + "</font>");
+        DevelUtils.printDeveloperSupportFooter(printWriter);
     }
 
     public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {
