@@ -168,7 +168,7 @@ public class SourceViewServlet extends HttpServlet {
             w.println("unknown source type: " + servletPath);
     }
 
-    private void processDirectory(PrintWriter w, File dir, String extension) {
+    static void processDirectory(PrintWriter w, File dir, String extension) {
         String[] list = dir.list();
         Arrays.sort(list);
         for (int i = 0; i < list.length; i++) {
@@ -182,7 +182,7 @@ public class SourceViewServlet extends HttpServlet {
         }
     }
 
-    private boolean containsFilesWithExtension(File dir, String extension) {
+    static boolean containsFilesWithExtension(File dir, String extension) {
         String[] list = dir.list();
         // we first process only files, to decrease the amount of sub-directories we search
         for (int i = 0; i < list.length; i++) {
