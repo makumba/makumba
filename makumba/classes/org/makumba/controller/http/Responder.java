@@ -437,7 +437,15 @@ public abstract class Responder implements java.io.Serializable
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			throws LogicException
 			{
+                String handlerName;
+                if (resp.handler != null) {
+                    handlerName = resp.handler;
+                } else {
+                  handlerName = "on_edit"+Logic.upperCase(resp.basePointerType);
+                }
+                
 			  return Logic.doEdit(resp.controller,
+                          handlerName,
 					      resp.basePointerType, 
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
