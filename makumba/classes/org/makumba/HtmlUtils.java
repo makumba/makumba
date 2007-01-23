@@ -32,7 +32,7 @@ public class HtmlUtils {
 
   // special HTML codes
   static public String[] specials={"\"", "quot", "<", "lt", "&", "amp", ">", "gt"};
-  static public String[] tagExamples={"<head>","<title>", "<html", "<meta", "<br>", "<p>", "</p>", "<b>", "</b>", "<font", "</font>", "</a>", "<ol>", "<ul>", "<li>", "<img ", "</table>", "<tr>", "</tr>", "<td>", "</td>"};
+  static public String[] tagExamples={"<head>","<title>", "<html", "<meta", "<br>", "<p>", "</p>", "<b>", "</b>", "<font", "</font>", "</a>", "<ol>", "<ul>", "<li>", "<img ", "</table>", "<tr>", "</tr>", "<td>", "</td>", "<strong>", "<h1>", "<h2>", "<h3>", "<h4>", "<h5>", "<h6>", "<em>", "<div>", "<span>"};
 
   /** Tries to detect whether input string is HTML-formatted; heuristic detection. 
    *  Implementation note: For long input String, checks only first 1024 characters. 
