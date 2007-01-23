@@ -24,6 +24,7 @@
 package org.makumba.abstr;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -199,8 +200,9 @@ public class RecordParser {
 		//must specify a filename, not a directory (or package), see bug 173
 		java.net.URL u = findDataDefinitionOrDirectory(s, ext);
 		if (u != null) {
-			if (u.toString().endsWith("/"))
+			if (u.toString().endsWith("/") || new File(u.getPath()).isDirectory()) {
 				return null;
+            }
 		}
 		return u;
 	}
