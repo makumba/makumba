@@ -117,12 +117,14 @@ public class errorViewer extends LineViewer {
             while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {
                 indexNumberEnd++;
             }
-            String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd);
-            try {
-                lineNr = Integer.valueOf(lineNumberText);
-            } catch (NumberFormatException e) {
-                MakumbaSystem.getMakumbaLogger("devel").warning("Error in error viewer: " + e.getMessage());
-                e.printStackTrace();
+            String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd).trim();
+            if (lineNumberText.length() > 0) {
+                try {
+                    lineNr = Integer.valueOf(lineNumberText);
+                } catch (NumberFormatException e) {
+                    MakumbaSystem.getMakumbaLogger("devel").warning("Error in error viewer: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         }
         return lineNr;
