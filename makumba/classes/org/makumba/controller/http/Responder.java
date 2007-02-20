@@ -478,8 +478,15 @@ public abstract class Responder implements java.io.Serializable
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
-		           return Logic.doNew(resp.controller,
-					      resp.newType,
+                String handlerName;
+                if (resp.handler != null) {
+                    handlerName = resp.handler;
+                } else {
+                  handlerName = "on_new"+Logic.upperCase(resp.newType);
+                }
+                   return Logic.doNew(resp.controller,
+                          handlerName,
+                          resp.newType,
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
 					      resp.database, 
@@ -495,8 +502,15 @@ public abstract class Responder implements java.io.Serializable
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
-		           return Logic.doAdd(resp.controller,
-					      resp.basePointerType+"->"+resp.addField,
+                String handlerName;
+                if (resp.handler != null) {
+                    handlerName = resp.handler;
+                } else {
+                  handlerName = "on_add"+Logic.upperCase(resp.basePointerType+"->"+resp.addField);
+                }
+                   return Logic.doAdd(resp.controller,
+                          handlerName,
+                          resp.basePointerType+"->"+resp.addField,
 					      resp.getHttpBasePointer(req, suffix), 
 					      resp.getHttpData(req, suffix), 
 					      new RequestAttributes(resp.controller, req, resp.database),
@@ -512,6 +526,12 @@ public abstract class Responder implements java.io.Serializable
 			public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix) 
 			 throws LogicException
 			 {
+                String handlerName;
+                if (resp.handler != null) {
+                    handlerName = resp.handler;
+                } else {
+                  handlerName = "on_edit"+Logic.upperCase(resp.basePointerType);
+                }
                 // get result we got from the new form
                 Object resultFromNew = req.getAttribute(resultNamePrefix + parentSuffix);
 
@@ -522,6 +542,7 @@ public abstract class Responder implements java.io.Serializable
 
                 // otherwise, we add to the new object
                 return Logic.doAdd(resp.controller,
+                    handlerName,
                     resp.newType+"->"+resp.addField,
                     (Pointer)resultFromNew, 
                     resp.getHttpData(req, suffix), 

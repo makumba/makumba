@@ -508,7 +508,7 @@ public class Logic
       }
   }
 
-  public static Pointer doAdd(Object controller, String typename, 
+  public static Pointer doAdd(Object controller, String handlerName, String typename, 
 			       Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   {
@@ -523,7 +523,7 @@ public class Logic
       
       if(!(controller instanceof LogicNotFoundException))
 	{
-	  on=getMethod("on_add"+upper, editArgs, controller);
+	  on=getMethod(handlerName, editArgs, controller);
 	  after=getMethod("after_add"+upper, editArgs, controller);
 	  
 	  if(on==null && after==null)
@@ -532,7 +532,7 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      HANDLER_METHOD_HEAD + "on_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      HANDLER_METHOD_HEAD + handlerName+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
                   HANDLER_METHOD_HEAD + "after_add"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow ADD operations on the type "+typename +
 			      ", field "+field+
@@ -560,7 +560,7 @@ public class Logic
 
   static Class[] newArgs= { Dictionary.class, Attributes.class, Database.class };
 
-  public static Pointer doNew(Object controller, String typename, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
+  public static Pointer doNew(Object controller, String handlerName, String typename, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) 
        throws LogicException
   { 
     Transaction db=dbcp.getConnectionTo(dbName);
@@ -572,7 +572,7 @@ public class Logic
       
       if(!(controller instanceof LogicNotFoundException))
 	{
-	  on=getMethod("on_new"+upper, newArgs, controller);
+	  on=getMethod(handlerName, newArgs, controller);
 	  after=getMethod("after_new"+upper, editArgs, controller);
 	  if(on==null && after==null)
 	    throw new 
@@ -580,7 +580,7 @@ public class Logic
 			      " ("+
 			      getControllerFile(controller)+ ")\n"+
 			      "does not define neither of the methods\n"+
-			      HANDLER_METHOD_HEAD + "on_new"+upper+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
+			      HANDLER_METHOD_HEAD + handlerName+"(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
                   HANDLER_METHOD_HEAD + "after_new"+upper+"(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n" +
 			      "so it does not allow NEW operations on the type "+typename +
 			      ".\nDefine any of the methods (even with an empty body) to allow such operations.");
