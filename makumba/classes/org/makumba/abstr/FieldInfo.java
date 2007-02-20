@@ -816,7 +816,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 			return new Pointer(getPointedType().getName(), (String) value);
 		throw new InvalidValueException(
 				this,
-				"Only java.lang.String and org.makumba.Pointer are assignable to makumba pointers, given value <"
+				"Only java.lang.String and org.makumba.Pointer (or a java.util.Vector containing elements of those types) are assignable to makumba pointers, given value <"
 						+ value + "> is of type " + value.getClass().getName());
 	}
 
