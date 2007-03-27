@@ -19,6 +19,9 @@ stefan: properly handles anchors in deleteLink (#anchor is moved to the back of 
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.6.1.1; 28 mar 2007
+cristi: fix for HQL case-when
+
 0.6.1; 18 oct 2006
 cristi: blocked hibernate schema update
 cristi & rudi: fixed a bug with "real" expressions
