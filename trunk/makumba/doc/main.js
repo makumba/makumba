@@ -31,11 +31,11 @@ function makeNavBar(pathToBase)
 	document.write('<a href="'+bDir+'download.html"><b>Download</b></a><br>');
 
 	document.write('<br>');
-	document.write('<a href="http://bugzilla.makumba.org/query.cgi?product=Makumba">Bugzilla</a><br>');
+	document.write('<a href="http://bugzilla.makumba.org/cgi-bin/bugzilla/query.cgi?product=Makumba">Bugzilla</a><br>');
 	document.write('<a href="'+bDir+'documentation.html#devel"><b>Developer</b></a><br>');
 	document.write('- <a href="'+bDir+'hacking/index.html">documentation</a><br>');
 	document.write('- <a href="'+bDir+'issues/index.html">issues</a><br>');
-	document.write('- <a href="http://cvs.sf.net/viewcvs.py/makumba/">CVS repository</a><br>');
+	document.write('- <a href="http://makumba.cvs.sourceforge.net/">CVS repository</a><br>');
 	document.write('<br>');
 	document.write('<FORM method=GET action=http://www.google.com/custom class="search" id="searchForm">');
 	 document.write('<INPUT TYPE=text name=q size=10 maxlength=255 value="Search" onFocus="if(this.value==\'Search\') this.value=queryStr;" onBlur="queryStr=this.value; this.value=\'Search\';" title="Google Search makumba.org" class="search" id="searchBox" accesskey="s" onDblClick="location.href=\''+bDir+'search.html\'">');
