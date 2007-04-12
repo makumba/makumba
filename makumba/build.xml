@@ -224,7 +224,7 @@
 		additionalparam="-breakiterator"
 		access="package"
 		use="true"
-		doctitle="Documentation of Makumba classes for Makumba develpers"
+		doctitle="Documentation of Makumba classes for Makumba developers"
 		stylesheetfile="doc/hacking/javadoc.css"
 	>
             <bottom><![CDATA[
@@ -250,11 +250,11 @@
 			if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
 			{
 				clasUrl=clasUrl.concat('',clas,'.java');
-				cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/*checkout*/makumba/makumba/classes/',clasUrl,'?rev=HEAD>SOURCE</a> in ');
+				cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/makumba/makumba/classes/',clasUrl,'?revision=HEAD&view=markup>SOURCE</a> in ');
 			} else {
 				clasUrl=clas.substring(0, clas.lastIndexOf('/') );
 			}
-                        cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/viewcvs.py/makumba/makumba/classes/',clasUrl,'>CVS</a>');
+                        cvsLink=cvsLink.concat('<a href=http://makumba.cvs.sourceforge.net/makumba/makumba/classes/',clasUrl,'>CVS</a>');
 		   	document.write(cvsLink);
 		   } 
                 </script>
