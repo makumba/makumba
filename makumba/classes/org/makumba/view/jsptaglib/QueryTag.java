@@ -33,216 +33,315 @@ import org.makumba.util.MultipleKey;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.html.RecordViewer;
 
-/** Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the environment can be passed as $attrName to the query 
+/**
+ * Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of
+ * the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate
+ * subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the
+ * environment can be passed as $attrName to the query
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
  * 
  */
-public class QueryTag extends MakumbaTag implements IterationTag
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-String[] queryProps=new String[5];
-  String separator="";
-  String countVar;
-  String maxCountVar;
-  String offset, limit;
-  
-  static String standardCountVar="org_makumba_view_jsptaglib_countVar";
-  static String standardMaxCountVar="org_makumba_view_jsptaglib_maxCountVar";
-  static String standardLastCountVar="org_makumba_view_jsptaglib_lastCountVar";
+public class QueryTag extends MakumbaTag implements IterationTag {
 
-  public void setFrom(String s) { queryProps[ComposedQuery.FROM]=s; }
-  public void setVariableFrom(String s) { queryProps[ComposedQuery.VARFROM]=s; }
-  public void setWhere(String s){ queryProps[ComposedQuery.WHERE]=s; }
-  public void setOrderBy(String s){ queryProps[ComposedQuery.ORDERBY]=s; }
-  public void setGroupBy(String s){ queryProps[ComposedQuery.GROUPBY]=s; }
-  public void setSeparator(String s){ separator=s; }
-  public void setCountVar(String s){ countVar=s; }
-  public void setMaxCountVar(String s){ maxCountVar=s; }
-  public void setOffset(String s) throws JspException
-  { onlyOuterListArgument("offset"); onlyInt("offset", s); offset=s.trim(); }
-  public void setLimit(String s) throws JspException
-  { onlyOuterListArgument("limit"); onlyInt("limit", s); limit=s.trim(); }
+    private static final long serialVersionUID = 1L;
 
-  protected void onlyOuterListArgument(String s) throws JspException
-  {
-    QueryTag t= (QueryTag)findAncestorWithClass(this, QueryTag.class);
-    while(t!=null && t instanceof ObjectTag)
-      t= (QueryTag)findAncestorWithClass(t, QueryTag.class);
-    if(t instanceof QueryTag)
-      treatException(new MakumbaJspException
-		     (this, "the "+s+" parameter can only be set for the outermost mak:list tag"));   
-  }
+    String[] queryProps = new String[5];
 
-  protected void onlyInt(String s, String value) throws JspException{
-    value=value.trim();
-    if(value.startsWith("$"))
-      return;
-    try{
-      Integer.parseInt(value);
-    }catch(NumberFormatException nfe){
-      treatException(new MakumbaJspException
-		     (this, "the "+s+" parameter can only be an $attribute or an int"));   
-      
-    }
-  }
+    String separator = "";
 
-  // runtime stuff
-  QueryExecution execution;
+    String countVar;
 
-  /** Compute and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    tagKey= new MultipleKey(queryProps.length+2);
-    for(int i=0; i<queryProps.length; i++)
-      tagKey.setAt(queryProps[i], i);
+    String maxCountVar;
 
-    // if we have a parent, we append the key of the parent
-    tagKey.setAt(getParentListKey(null), queryProps.length);
-    tagKey.setAt(id, queryProps.length+1);
-  }
+    String offset, limit;
 
-  /** can this tag have the same key as others in the page? */
-  public boolean allowsIdenticalKey() { return false; }
+    static String standardCountVar = "org_makumba_view_jsptaglib_countVar";
 
-  /** Start the analysis of the tag, without knowing what tags follow it in the page. 
-    Define a query, set the types of variables to "int" */
-  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-      // check whether we have an $.. in the order by (not supported, only #{..} is allowed
-      String orderBy = queryProps[ComposedQuery.ORDERBY];
-      if (orderBy != null && orderBy.indexOf("$") != -1) {
-          throw new ProgrammerError("Illegal use of an $attribute orderBy: '" + orderBy + "' ==> only JSP Expression Language using #{..} is allowed!");
-      }
-      
-    // we make ComposedQuery cache our query
-    pageCache.cacheQuery(tagKey, queryProps, getParentListKey(pageCache));
+    static String standardMaxCountVar = "org_makumba_view_jsptaglib_maxCountVar";
 
-    if(countVar!=null)
-      pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"), this);
+    static String standardLastCountVar = "org_makumba_view_jsptaglib_lastCountVar";
 
-    if(maxCountVar!=null)
-      pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"), this);
-  }
-
-  /** End the analysis of the tag, after all tags in the page were visited. 
-    Now that we know all query projections, cache a RecordViewer as formatter for the mak:values nested in this tag */
-  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    ComposedQuery cq= pageCache.getQuery(tagKey);
-    cq.analyze();
-    pageCache.formatters.put(tagKey, new RecordViewer(cq));
-  }
-
-  static final Integer zero= new Integer(0);
-  static final Integer one= new Integer(1);
-
-  Object upperCount=null;
-  Object upperMaxCount=null;
-
-  ValueComputer choiceComputer;
-
-  /** Decide if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if there are any results in this iterationGroup */
-  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
-       throws LogicException, JspException
-  {
-    if(getParentList()==null)
-      QueryExecution.startListGroup(pageContext);
-    else {
-      upperCount= pageContext.getRequest().getAttribute(standardCountVar);
-      upperMaxCount= pageContext.getRequest().getAttribute(standardMaxCountVar);
+    public void setFrom(String s) {
+        queryProps[ComposedQuery.FROM] = s;
     }
 
-    execution= QueryExecution.getFor(tagKey, pageContext, offset, limit);
+    public void setVariableFrom(String s) {
+        queryProps[ComposedQuery.VARFROM] = s;
+    }
 
-    int n= execution.onParentIteration();
+    public void setWhere(String s) {
+        queryProps[ComposedQuery.WHERE] = s;
+    }
 
-    setNumberOfIterations(n);
+    public void setOrderBy(String s) {
+        queryProps[ComposedQuery.ORDERBY] = s;
+    }
 
-    if(n>0)
-      {
-	if(countVar!=null)
-	  pageContext.setAttribute(countVar, one);
-	pageContext.getRequest().setAttribute(standardCountVar, one);
-	return EVAL_BODY_INCLUDE;
-      }
-    if(countVar!=null)
-      pageContext.setAttribute(countVar, zero);
-    pageContext.getRequest().setAttribute(standardCountVar, zero);
-    return SKIP_BODY;
-  }
+    public void setGroupBy(String s) {
+        queryProps[ComposedQuery.GROUPBY] = s;
+    }
 
-  /** Set the number of iterations in this iterationGroup. ObjectTag will redefine this and throw an exception if n>1 */
-  protected void setNumberOfIterations(int n) throws JspException
-  {
-    Integer cnt= new Integer(n);
-    if(maxCountVar!=null)
-      pageContext.setAttribute(maxCountVar, cnt);
-    pageContext.getRequest().setAttribute(standardMaxCountVar, cnt);
-  }
+    public void setSeparator(String s) {
+        separator = s;
+    }
 
+    public void setCountVar(String s) {
+        countVar = s;
+    }
 
-  /** Decide if we do further iterations. Checks if we got to the end of the iterationGroup. */
-  public int doAfterBody() throws JspException
-  {
-    runningTag.set(tagData);
-    try{
+    public void setMaxCountVar(String s) {
+        maxCountVar = s;
+    }
 
-    int n= execution.nextGroupIteration();
+    public void setOffset(String s) throws JspException {
+        onlyOuterListArgument("offset");
+        onlyInt("offset", s);
+        offset = s.trim();
+    }
 
-    if(n!=-1)
-      {
-	// print the separator
-	try{
-	  pageContext.getOut().print(separator);
-	}catch(Exception e){ throw new MakumbaJspException(e); }
+    public void setLimit(String s) throws JspException {
+        onlyOuterListArgument("limit");
+        onlyInt("limit", s);
+        limit = s.trim();
+    }
 
-	Integer cnt= new Integer(n+1);
-	if(countVar!=null)
-	  pageContext.setAttribute(countVar, cnt);
-	pageContext.getRequest().setAttribute(standardCountVar, cnt);
-	return EVAL_BODY_AGAIN;
-      }
-    return SKIP_BODY;
-    }finally{ runningTag.set(null); }
-  }
+    protected void onlyOuterListArgument(String s) throws JspException {
+        QueryTag t = (QueryTag) findAncestorWithClass(this, QueryTag.class);
+        while (t != null && t instanceof ObjectTag)
+            t = (QueryTag) findAncestorWithClass(t, QueryTag.class);
+        if (t instanceof QueryTag)
+            treatException(new MakumbaJspException(this, "the " + s
+                    + " parameter can only be set for the outermost mak:list tag"));
+    }
 
-  /** Cleanup operations, especially for the rootList */
-  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
-       throws JspException
-  {
-    pageContext.getRequest().setAttribute
-      (standardLastCountVar, 
-       pageContext.getRequest().getAttribute(standardMaxCountVar));
-					  
-    pageContext.getRequest().setAttribute(standardCountVar, upperCount);
-    pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
-    execution.endIterationGroup();
+    protected void onlyInt(String s, String value) throws JspException {
+        value = value.trim();
+        if (value.startsWith("$"))
+            return;
+        try {
+            Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            treatException(new MakumbaJspException(this, "the " + s + " parameter can only be an $attribute or an int"));
 
-    if(getParentList()==null)
-      QueryExecution.endListGroup(pageContext);
+        }
+    }
 
-    execution=null;
-    queryProps[0]=queryProps[1]=queryProps[2]=queryProps[3]=null;
-    countVar= maxCountVar= null;
-    separator="";
-    return EVAL_PAGE;
-  }
+    // runtime stuff
+    QueryExecution execution;
 
-  public static int count()
-  {
-    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardCountVar)).intValue();
-  }
+    /**
+     * Computes and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at
+     * runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey.
+     * 
+     * @param pageCache
+     *            The page cache for the current page
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        tagKey = new MultipleKey(queryProps.length + 2);
+        for (int i = 0; i < queryProps.length; i++)
+            tagKey.setAt(queryProps[i], i);
 
-  public static int maxCount()
-  {
-    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardMaxCountVar)).intValue();
-  }
+        // if we have a parent, we append the key of the parent
+        tagKey.setAt(getParentListKey(null), queryProps.length);
+        tagKey.setAt(id, queryProps.length + 1);
+    }
 
-  public static int lastCount()
-  {
-    return ((Integer)org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardLastCountVar)).intValue();
-  }
+    /**
+     * Determines whether the tag can have the same key as others in the page
+     * 
+     * @return <code>true</code> if the tag is allowed to have the same key as others in the page, <code>false</code>
+     *         otherwise
+     */
+    public boolean allowsIdenticalKey() {
+        return false;
+    }
+
+    /**
+     * Starts the analysis of the tag, without knowing what tags follow it in the page. Defines a query, sets the types
+     * of variables to "int".
+     * 
+     * @param pageCache
+     *            The page cache for the current page
+     */
+    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        // check whether we have an $.. in the order by (not supported, only #{..} is allowed
+        String orderBy = queryProps[ComposedQuery.ORDERBY];
+        if (orderBy != null && orderBy.indexOf("$") != -1) {
+            throw new ProgrammerError("Illegal use of an $attribute orderBy: '" + orderBy
+                    + "' ==> only JSP Expression Language using #{..} is allowed!");
+        }
+
+        // we make ComposedQuery cache our query
+        pageCache.cacheQuery(tagKey, queryProps, getParentListKey(pageCache));
+
+        if (countVar != null)
+            pageCache.types.setType(countVar, MakumbaSystem.makeFieldOfType(countVar, "int"), this);
+
+        if (maxCountVar != null)
+            pageCache.types.setType(maxCountVar, MakumbaSystem.makeFieldOfType(maxCountVar, "int"), this);
+    }
+
+    /**
+     * Ends the analysis of the tag, after all tags in the page were visited. As all the query projections are known, a
+     * RecordViewer is cached as formatter for the mak:values nested in this tag.
+     * 
+     * @param pageCache
+     *            The page cache for the current page
+     */
+    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        ComposedQuery cq = pageCache.getQuery(tagKey);
+        cq.analyze();
+        pageCache.formatters.put(tagKey, new RecordViewer(cq));
+    }
+
+    static final Integer zero = new Integer(0);
+
+    static final Integer one = new Integer(1);
+
+    Object upperCount = null;
+
+    Object upperMaxCount = null;
+
+    ValueComputer choiceComputer;
+
+    /**
+     * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
+     * there are any results in the iterationGroup.
+     * 
+     * @param pageCache
+     *            The page cache for the current page
+     * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface
+     * @see QueryExecution
+     */
+    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) throws LogicException, JspException {
+        if (getParentList() == null)
+            QueryExecution.startListGroup(pageContext);
+        else {
+            upperCount = pageContext.getRequest().getAttribute(standardCountVar);
+            upperMaxCount = pageContext.getRequest().getAttribute(standardMaxCountVar);
+        }
+
+        execution = QueryExecution.getFor(tagKey, pageContext, offset, limit);
+
+        int n = execution.onParentIteration();
+
+        setNumberOfIterations(n);
+
+        if (n > 0) {
+            if (countVar != null)
+                pageContext.setAttribute(countVar, one);
+            pageContext.getRequest().setAttribute(standardCountVar, one);
+            return EVAL_BODY_INCLUDE;
+        }
+        if (countVar != null)
+            pageContext.setAttribute(countVar, zero);
+        pageContext.getRequest().setAttribute(standardCountVar, zero);
+        return SKIP_BODY;
+    }
+
+    /**
+     * Sets the number of iterations in the iterationGroup. ObjectTag will redefine this and throw an exception if n>1
+     * 
+     * @param n
+     *            The number of iterations in the iterationGroup
+     * @throws JspException
+     * @see ObjectTag
+     */
+    protected void setNumberOfIterations(int n) throws JspException {
+        Integer cnt = new Integer(n);
+        if (maxCountVar != null)
+            pageContext.setAttribute(maxCountVar, cnt);
+        pageContext.getRequest().setAttribute(standardMaxCountVar, cnt);
+    }
+
+    /**
+     * Decides whether to do further iterations. Checks if we got to the end of the iterationGroup.
+     * 
+     * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface
+     * @throws JspException
+     */
+    public int doAfterBody() throws JspException {
+        runningTag.set(tagData);
+        try {
+
+            int n = execution.nextGroupIteration();
+
+            if (n != -1) {
+                // print the separator
+                try {
+                    pageContext.getOut().print(separator);
+                } catch (Exception e) {
+                    throw new MakumbaJspException(e);
+                }
+
+                Integer cnt = new Integer(n + 1);
+                if (countVar != null)
+                    pageContext.setAttribute(countVar, cnt);
+                pageContext.getRequest().setAttribute(standardCountVar, cnt);
+                return EVAL_BODY_AGAIN;
+            }
+            return SKIP_BODY;
+        } finally {
+            runningTag.set(null);
+        }
+    }
+
+    /**
+     * Cleans up variables, especially for the rootList.
+     * 
+     * @param pageCache
+     *            The page cache for the current page
+     * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface in order to
+     *         continue evaluating the page.
+     * @throws JspException
+     */
+    public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException {
+        pageContext.getRequest().setAttribute(standardLastCountVar,
+                pageContext.getRequest().getAttribute(standardMaxCountVar));
+
+        pageContext.getRequest().setAttribute(standardCountVar, upperCount);
+        pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
+        execution.endIterationGroup();
+
+        if (getParentList() == null)
+            QueryExecution.endListGroup(pageContext);
+
+        execution = null;
+        queryProps[0] = queryProps[1] = queryProps[2] = queryProps[3] = null;
+        countVar = maxCountVar = null;
+        separator = "";
+        return EVAL_PAGE;
+    }
+
+    /**
+     * Gives the value of the iteration in progress
+     * 
+     * @return The current count of iterations
+     */
+    public static int count() {
+        return ((Integer) org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardCountVar))
+                .intValue();
+    }
+
+    /**
+     * Gives the maximum number of iteration of the iterationGroup
+     * 
+     * @return The maximum number of iterations within the current iterationGroup
+     */
+    public static int maxCount() {
+        return ((Integer) org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardMaxCountVar))
+                .intValue();
+    }
+
+    /**
+     * Gives the total number of iterations of the previous iterationGroup
+     * 
+     * @return The total number of iterations performed within the previous iterationGroup
+     */
+    public static int lastCount() {
+        return ((Integer) org.makumba.controller.http.ControllerFilter.getRequest().getAttribute(standardLastCountVar))
+                .intValue();
+    }
 }
-
