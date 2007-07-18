@@ -60,6 +60,11 @@ public class MultipleKey extends Vector {
             elementData[elementCount] = checkNull(v.elementAt(elementCount));
     }
 
+    /**
+     * Extends the Vector v and adds the object
+     * @param v An instance of Vector 
+     * @param o An object to be added
+     */
     public MultipleKey(Vector v, Object o) {
         this(v, v.size() + 1);
         setAt(o, v.size());
