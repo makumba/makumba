@@ -26,15 +26,22 @@ package org.makumba.view;
 import java.util.Enumeration;
 import java.util.Vector;
 
-/** a subquery of a composed query */
+/**
+ * A subquery of a composed query
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
 public class ComposedSubquery extends ComposedQuery {
-    /** the enclosing query */
+
+    /** The enclosing query */
     ComposedQuery superQuery;
 
     /**
-     * make a subquery of the indicated query, from the given sections
+     * Make a subquery of the indicated query, from the given sections.
      * 
      * @param usesHQL
+     *            <code>true</code> if we use Hibernate to execute the query
      */
     public ComposedSubquery(String[] subsections, ComposedQuery cq, boolean usesHQL) {
         super(subsections, usesHQL);
@@ -56,11 +63,17 @@ public class ComposedSubquery extends ComposedQuery {
             derivedSections[ORDERBY] = order;
     }
 
+    /**
+     * Derives the FROM section using the sections of the superQuery
+     * 
+     * @param n
+     *            the index of the section
+     */
     void deriveFrom(int n) {
         derivedSections[n] = superQuery.derivedSections[n];
         if (sections[n] != null)
             if (derivedSections[n] != null)
-                if(sections[n].trim().toLowerCase().startsWith("join"))
+                if (sections[n].trim().toLowerCase().startsWith("join"))
                     // FIXME: this seems to be a dirty fix...maybe the separator should be join in all cases?
                     derivedSections[n] += " " + sections[n];
                 else
@@ -69,7 +82,21 @@ public class ComposedSubquery extends ComposedQuery {
                 derivedSections[n] = sections[n];
     }
 
-    /** concatenate sections on the given index, with the given separator */
+    /**
+     * Concatenates sections on the given index, with the given separator
+     * 
+     * @param result
+     *            the String array containing the result
+     * @param h1
+     *            first array of sections
+     * @param h2
+     *            second array of sections
+     * @param what
+     *            the index at which we should concatenate
+     * @pram sep the separator used for concatenation
+     * @param paran
+     *            do we want parenthesis
+     */
     static void concat(String[] result, String[] h1, String[] h2, int what, String sep, boolean paran) {
         String lp = "";
         String rp = "";
@@ -97,7 +124,9 @@ public class ComposedSubquery extends ComposedQuery {
             result[what] = lp + s1 + rp + sep + lp + s2 + rp;
     }
 
-    /** initialize the keysets by adding the superquery's previousKeyset to its keyset */
+    /**
+     * Initializes the keysets by adding the superquery's previousKeyset to its keyset.
+     */
     protected void initKeysets() {
         previousKeyset = (Vector) superQuery.previousKeyset.clone();
         keyset = (Vector) superQuery.keyset.clone();

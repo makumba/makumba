@@ -45,15 +45,33 @@ import org.makumba.util.NamedResources;
 /**
  * An OQL query composed from various elements found in script pages. It can be enriched when a new element is found. It
  * has a prepared Qyuery correspondent in a makumba database It may be based on a super query.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
  */
 public class ComposedQuery {
+
+    /**
+     * Interface for an Evaluator which can evaluate expressions
+     * 
+     * @author Cristian Bogdan
+     */
     public static interface Evaluator {
+
+        /**
+         * Evaluates the expression
+         * 
+         * @param s
+         *            the expression to evaluate
+         * @return The transformed expression after evaluation
+         */
         String evaluate(String s);
     }
 
     /**
-     * constructor
+     * Default constructor
      * 
+     * @param sections
      * @param usesHQL
      */
     public ComposedQuery(String[] sections, boolean usesHQL) {
@@ -62,32 +80,34 @@ public class ComposedQuery {
         this.useHibernate = usesHQL;
     }
 
-    /** the subqueries of this query */
+    /** The subqueries of this query */
     Vector subqueries = new Vector();
 
-    /** the projections made in this query */
+    /** The projections made in this query */
     Vector projections = new Vector();
 
-    /** the expression associated to each projection */
+    /** The expression associated to each projection */
     Hashtable projectionExpr = new Hashtable();
 
-    /** standard indexes for each query sections, so they can be passed as one single object */
+    /** Standard index for the FROM query section */
     public static final int FROM = 0;
 
+    /** Standard index for the WHERE query section */
     public static final int WHERE = 1;
 
+    /** Standard index for the GROUPBY query section */
     public static final int GROUPBY = 2;
 
+    /** Standard index for the ORDERBY query section */
     public static final int ORDERBY = 3;
 
+    /** Standard index for the VARFROM query section */
     public static final int VARFROM = 4;
 
-    /** section texts, encoded with the standard indexes */
+    /** Section texts, encoded with the standard indexes */
     String[] sections;
 
-    /**
-     * derived section texts, made from the sections of this query and the sections of its superqueries
-     */
+    /** Derived section texts, made from the sections of this query and the sections of its superqueries */
     String[] derivedSections;
 
     String typeAnalyzerOQL;
@@ -95,27 +115,32 @@ public class ComposedQuery {
     String fromAnalyzerOQL;
 
     /**
-     * the keyset defining the primary key for this query. Normally the primary key is made of the keys declared in
+     * The keyset defining the primary key for this query. Normally the primary key is made of the keys declared in
      * FROM, in this query and all the parent queries. Keys are kept as integers (indexes)
      */
     Vector keyset;
 
-    /** the keyset of all the parent queries */
+    /** The keyset of all the parent queries */
     Vector previousKeyset;
 
-    /** the labels of the keyset */
+    /** The labels of the keyset */
     Vector keysetLabels;
 
-    /** do we use hibernate for execution or do we use makumba? */
+    /** Do we use hibernate for execution or do we use makumba? */
     boolean useHibernate;
 
-    /** a Vector containing and empty vector. Used for empty keysets */
+    /** A Vector containing and empty vector. Used for empty keysets */
     static Vector empty;
     static {
         empty = new Vector();
         empty.addElement(new Vector());
     }
 
+    /**
+     * Gets the type of the result
+     * 
+     * @return The DataDefinition corresponding to the type of the result
+     */
     public DataDefinition getResultType() {
         if (typeAnalyzerOQL == null) {
             return null;
@@ -124,6 +149,13 @@ public class ComposedQuery {
         }
     }
 
+    /**
+     * Gets the OQL analyzer used for analysis
+     * 
+     * @param type
+     *            the string we want to analyze
+     * @return An OQLAnalyzer performing the OQL analysis
+     */
     public OQLAnalyzer getOQLAnalyzer(String type) {
         OQLAnalyzer oqa = null;
         if (useHibernate) {
@@ -134,6 +166,13 @@ public class ComposedQuery {
         return oqa;
     }
 
+    /**
+     * Gets the type of a given label
+     * 
+     * @param s
+     *            the name of the label
+     * @return A DataDefinition corresponding to the type of the label
+     */
     public DataDefinition getLabelType(String s) {
         if (typeAnalyzerOQL == null) {
             return null;
@@ -142,7 +181,9 @@ public class ComposedQuery {
         }
     }
 
-    /** initialize the object, template method */
+    /**
+     * Initializes the object. This is a template method
+     */
     public void init() {
         initKeysets();
         fromAnalyzerOQL = "SELECT 1 ";
@@ -150,11 +191,18 @@ public class ComposedQuery {
             fromAnalyzerOQL += "FROM " + getFromSection();
     }
 
+    /**
+     * Gets the FROM section
+     * 
+     * @return A String containing the FROM section of the query
+     */
     public String getFromSection() {
         return derivedSections[FROM];
     }
 
-    /** initialize the keysets. previousKeyset is "empty" */
+    /**
+     * Initializes the keysets. previousKeyset is "empty"
+     */
     protected void initKeysets() {
         previousKeyset = empty;
         keyset = new Vector();
@@ -162,8 +210,11 @@ public class ComposedQuery {
     }
 
     /**
-     * add a subquery to this query. make it aware that it has subqueries at all. make it be able to announce its
-     * subqueries about changes (this will be needed when unique=true will be possible
+     * Adds a subquery to this query. Makes it aware that it has subqueries at all. Makes it be able to announce its
+     * subqueries about changes (this will be needed when unique=true will be possible)
+     * 
+     * @param q
+     *            the subquery
      */
     protected void addSubquery(ComposedSubquery q) {
         if (subqueries.size() == 0)
@@ -172,7 +223,7 @@ public class ComposedQuery {
     }
 
     /**
-     * All keys from the FROM section are added to the keyset, and their labels to the keyLabels. They are all added as
+     * Adds all keys from the FROM section to the keyset, and their labels to the keyLabels. They are all added as
      * projections (this has to change)
      */
     protected void prependFromToKeyset() {
@@ -191,6 +242,8 @@ public class ComposedQuery {
             if (j == -1)
                 throw new RuntimeException("invalid FROM");
             label = label.substring(j + 1).trim();
+
+            // this is specific to Hibernate: we add '.id' in order to get the id as in makumba
             if (this.useHibernate && label.indexOf('.') == -1)
                 label += ".id";
 
@@ -203,11 +256,24 @@ public class ComposedQuery {
             checkProjectionInteger((String) e.nextElement());
     }
 
+    /**
+     * Gets a given projection
+     * 
+     * @param n
+     *            the index of the projection
+     * @return A String containing the projection
+     */
     public String getProjectionAt(int n) {
         return (String) projections.elementAt(n);
     }
 
-    /** add a projection with the given expression */
+    /**
+     * Adds a projection with the given expression
+     * 
+     * @param expr
+     *            the expression to add
+     * @return The index at which the expression was added
+     */
     Integer addProjection(String expr) {
         Integer index = new Integer(projections.size());
         projections.addElement(expr);
@@ -215,7 +281,13 @@ public class ComposedQuery {
         return index;
     }
 
-    /** check if a projection exists, if not, add it. return its index */
+    /**
+     * Checks if a projection exists, and if not, adds it.
+     * 
+     * @param expr
+     *            the expression to add
+     * @return The index of the added projection
+     */
     public Integer checkProjectionInteger(String expr) {
         Integer index = (Integer) projectionExpr.get(expr);
         if (index == null) {
@@ -227,7 +299,13 @@ public class ComposedQuery {
         return index;
     }
 
-    /** check if a projection exists, if not, add it. return its column name */
+    /**
+     * Checks if a projection exists, and if not, adds it.
+     * 
+     * @param expr
+     *            the expression to add
+     * @return The column name of the projection
+     */
     String checkProjection(String expr) {
         Integer i = checkProjectionInteger(expr);
         if (i == null)
@@ -235,14 +313,24 @@ public class ComposedQuery {
         return columnName(i);
     }
 
-    /** return the name of a column indicated by index */
+    /**
+     * Gets the name of a column indicated by index
+     * 
+     * @param n
+     *            the index of the column
+     * @return A String containing the name of the column, of the kind "colN"
+     */
     public static String columnName(Integer n) {
         return "col" + (n.intValue() + 1);
     }
 
     /**
-     * check the orderBy or groupBy expressions to see if they are already selected, if not add a projection. Only group
-     * by and order by labels
+     * Checks the orderBy or groupBy expressions to see if they are already selected, if not adds a projection. Only
+     * group by and order by labels.
+     * 
+     * @param str
+     *            an orderBy or groupBy expression
+     * @return The checked expression, transformed according to the projections
      */
     String checkExpr(String str) {
         if (str == null)
@@ -269,12 +357,20 @@ public class ComposedQuery {
                 p = checkProjection(s);
             ret.append(p).append(rest);
         }
-        if(this.useHibernate)
-            return str;                
+        if (this.useHibernate)
+            return str;
         return ret.toString();
     }
 
-    /** compute the query from its sections */
+    /**
+     * Computes the query from its sections
+     * 
+     * @param derivedSections
+     *            the sections of this query
+     * @param typeAnalysisOnly
+     *            indicates whether this is only a type analysis
+     * @return The computed OQL query
+     */
     protected String computeQuery(String derivedSections[], boolean typeAnalysisOnly) {
         String groups = null;
         String orders = null;
@@ -335,7 +431,21 @@ public class ComposedQuery {
     }
 
     // ------------
-    /** execute the contained query in the given database */
+    /**
+     * Executes the contained query in the given database
+     * 
+     * @param db
+     *            the database where the query should be ran
+     * @param a
+     *            the attributes we may need during the execution
+     * @param v
+     *            the evaluator evaluating the expressions
+     * @param offset
+     *            at which iteration this query should start
+     * @param limit
+     *            how many times should this query be ran
+     * @throws LogicException
+     */
     public Grouper execute(AbstractQueryRunner db, Attributes a, Evaluator v, int offset, int limit)
             throws LogicException {
         analyze();
@@ -345,17 +455,16 @@ public class ComposedQuery {
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
 
         if (useHibernate) {
-            return new Grouper(previousKeyset, ((HibernateQueryRunner) db).executeDirect(computeQuery(vars, false), a, offset, limit).elements());
+            return new Grouper(previousKeyset, ((HibernateQueryRunner) db).executeDirect(computeQuery(vars, false), a,
+                    offset, limit).elements());
         } else {
-            return new Grouper(previousKeyset, ((MultipleAttributeParametrizer) queries.getResource(new MultipleKey(vars)))
-                .execute(db, a, offset, limit).elements());
+            return new Grouper(previousKeyset, ((MultipleAttributeParametrizer) queries.getResource(new MultipleKey(
+                    vars))).execute(db, a, offset, limit).elements());
         }
     }
 
     NamedResources queries = new NamedResources("Composed queries", new NamedResourceFactory() {
-        /**
-         * 
-         */
+
         private static final long serialVersionUID = 1L;
 
         protected Object makeResource(Object nm, Object hashName) {
@@ -376,7 +485,13 @@ public class ComposedQuery {
             typeAnalyzerOQL = computeQuery(derivedSections, true);
     }
 
-    /** check if an expression is valid, nullable or set */
+    /**
+     * Checks if an expression is valid, nullable or set
+     * 
+     * @param s
+     *            the expression
+     * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
+     */
     public Object checkExprSetOrNullable(String s) {
         int n = 0;
         int m = 0;
@@ -398,11 +513,24 @@ public class ComposedQuery {
         }
     }
 
+    /**
+     * Checks if a character can be part of a makumba identifier
+     * 
+     * @param c
+     *            the character to check
+     * @return <code>true</code> if the character can be part of a makumba identifier, <code>false</code> otherwise
+     */
     static boolean isMakId(char c) {
         return Character.isJavaIdentifierPart(c) || c == '.';
     }
 
-    /** check if an id is nullable, and if so, return the path to the null pointer */
+    /**
+     * Checks if an id is nullable, and if so, return the path to the null pointer
+     * 
+     * @param s
+     *            the id
+     * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
+     */
     public Object checkId(String s) {
         int dot = s.indexOf(".");
         if (dot == -1)
@@ -411,7 +539,7 @@ public class ComposedQuery {
         try { // if the "label" is actually a real number as 3.0
             Integer.parseInt(substring);
             return null; // if so, just return
-        } catch (NumberFormatException e) {            
+        } catch (NumberFormatException e) {
         }
         DataDefinition dd = getOQLAnalyzer(fromAnalyzerOQL).getLabelType(substring);
         if (dd == null)
@@ -419,17 +547,16 @@ public class ComposedQuery {
         while (true) {
             int dot1 = s.indexOf(".", dot + 1);
             if (dot1 == -1) {
-                String fn= s.substring(dot + 1);
+                String fn = s.substring(dot + 1);
                 FieldDefinition fd = dd.getFieldDefinition(fn);
-                if (fd == null){
-                    if(!this.useHibernate || !(fn.equals("id") || fn.startsWith("hibernate_")))
+                if (fd == null) {
+                    if (!this.useHibernate || !(fn.equals("id") || fn.startsWith("hibernate_")))
                         throw new org.makumba.NoSuchFieldException(dd, fn);
-                    if(fn.equals("id"))
-                        fd=dd.getFieldDefinition(dd.getIndexPointerFieldName());
-                    else
-                    {
-                        fd= dd.getFieldDefinition(fn.substring("hibernate_".length()));
-                        if(fd==null)
+                    if (fn.equals("id"))
+                        fd = dd.getFieldDefinition(dd.getIndexPointerFieldName());
+                    else {
+                        fd = dd.getFieldDefinition(fn.substring("hibernate_".length()));
+                        if (fd == null)
                             throw new org.makumba.NoSuchFieldException(dd, fn);
                     }
                 }
@@ -449,11 +576,20 @@ public class ComposedQuery {
         }
     }
 
+    /**
+     * Transforms the pointer into a hibernate pointer if we use hibernate
+     * 
+     * @param expr2
+     *            the expression we want to check
+     * @return A modified expression adapted to Hibernate
+     */
     public String transformPointer(String expr2) {
-        if(this.useHibernate && getOQLAnalyzer("SELECT "+expr2+" as gigi FROM "+getFromSection()).getProjectionType().getFieldDefinition("gigi").getType().equals("ptr")){
-              int dot = expr2.lastIndexOf('.')+1;
-              return expr2.substring(0,dot)+"hibernate_"+expr2.substring(dot);
-          }
-          return expr2;
+        if (this.useHibernate
+                && getOQLAnalyzer("SELECT " + expr2 + " as gigi FROM " + getFromSection()).getProjectionType()
+                        .getFieldDefinition("gigi").getType().equals("ptr")) {
+            int dot = expr2.lastIndexOf('.') + 1;
+            return expr2.substring(0, dot) + "hibernate_" + expr2.substring(dot);
+        }
+        return expr2;
     }
 }
