@@ -22,62 +22,92 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import javax.servlet.jsp.JspException;
 
 import org.makumba.MakumbaSystem;
 
-public class ValueTag extends MakumbaTag
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-String expr;
-  String var;
-  String printVar;
-  
-  public void setExpr(String expr){ this.expr=expr; }
-  public void setVar(String var){ this.var=var; }
-  public void setPrintVar(String var){ this.printVar=var; }
-  
-  
-  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    addToParentListKey(expr.trim());
-  }
+/**
+ * mak:value tag
+ * 
+ * @author Cristian Bogdan
+ *
+ */
+public class ValueTag extends MakumbaTag {
 
-  /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
-  }
-  
-  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
-  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-    vc.doEndAnalyze(this, pageCache);
+    private static final long serialVersionUID = 1L;
 
-    if(var!=null)
-      pageCache.types.setType(var, vc.type, this);
+    String expr;
 
-    if(printVar!=null)
-      pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"), this);
-  }
-  
-  /** ask the ValueComputer to present the expression */
-  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
-       throws JspException, org.makumba.LogicException
-  {
-    ((ValueComputer)pageCache.valueComputers.get(tagKey)).print(this, pageCache);
+    String var;
 
-    expr= printVar= var= null;
-    return EVAL_BODY_INCLUDE;
-  }
+    String printVar;
 
-  public String toString() { 
-    return "VALUE expr="+expr+ 
-      " parameters: "+ params; 
-  }
+    public void setExpr(String expr) {
+        this.expr = expr;
+    }
+
+    public void setVar(String var) {
+        this.var = var;
+    }
+
+    public void setPrintVar(String var) {
+        this.printVar = var;
+    }
+
+    /**
+     * Sets tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before
+     * doMakumbaStartTag()
+     * 
+     * @param pageCache
+     *            the page cache of the current page
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        addToParentListKey(expr.trim());
+    }
+
+    /** 
+     * Determines the ValueComputer and associates it with the tagKey
+     * @param pageCache the page cache of the current page
+     */
+    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
+    }
+
+    /** 
+     * Tells the ValueComputer to finish analysis, and sets the types for var and printVar.
+     * @param pageCache the page cache of the current page
+     */
+    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        ValueComputer vc = (ValueComputer) pageCache.valueComputers.get(tagKey);
+        vc.doEndAnalyze(this, pageCache);
+
+        if (var != null)
+            pageCache.types.setType(var, vc.type, this);
+
+        if (printVar != null)
+            pageCache.types.setType(printVar, MakumbaSystem.makeFieldOfType(printVar, "char"), this);
+    }
+
+    /** 
+     * Asks the ValueComputer to present the expression
+     * @param pageCache the page cache of the current page
+     * @throws JspException
+     * @throws LogicException
+     *  */
+    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException,
+            org.makumba.LogicException {
+        ((ValueComputer) pageCache.valueComputers.get(tagKey)).print(this, pageCache);
+
+        expr = printVar = var = null;
+        return EVAL_BODY_INCLUDE;
+    }
+
+    /**
+     * Computes a string
+     * @return A String holding the value in a form useful for debugging
+     */
+    public String toString() {
+        return "VALUE expr=" + expr + " parameters: " + params;
+    }
 }

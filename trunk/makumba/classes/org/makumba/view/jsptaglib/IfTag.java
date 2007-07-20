@@ -22,89 +22,105 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
 
-
 /**
- * If tag will accept test="..." similar to value tag, and will show body only if OQL expression evaluates to true (integer 1).
- * @author fred
+ * If tag will accept test="..." similar to value tag, and will show body only if OQL expression evaluates to true
+ * (integer 1).
+ * 
+ * @author Frederik Habilis
  * @since makumba-0.5.9.11
+ * @version $Id$
  */
 
-public class IfTag extends MakumbaTag implements BodyTag
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-String testExpr;
-  private static final Integer TRUE_INT = new Integer(1);
-  
-  
-  public void setTest(String s) { this.testExpr = s; }
+public class IfTag extends MakumbaTag implements BodyTag {
 
-  // these 2 are required to implement BodyTag, no action needed inside.
-  public void setBodyContent(BodyContent bc) { }        
-  public void doInitBody() { }                          
-  
-  
-  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    addToParentListKey(testExpr.trim());
-  }
+    private static final long serialVersionUID = 1L;
 
-  /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
-  }
-  
-  /** tell the ValueComputer to finish analysis, check for proper test result type */
-  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) 
-  {
-    ValueComputer vc= (ValueComputer)pageCache.valueComputers.get(tagKey);
-    vc.doEndAnalyze(this, pageCache);
-    String type = vc.type.getDataType();
-    if ( !"int".equals(type) ) {
-        throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this + "], type is " + type);
-    }
-  }
-  
-  /** ask the ValueComputer to calculate the expression, and SKIP_BODY if false */
-  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
-       throws JspException, org.makumba.LogicException
-  {
-    Object exprvalue = ((ValueComputer)getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+    String testExpr;
 
+    private static final Integer TRUE_INT = new Integer(1);
 
-    if ( exprvalue instanceof Integer) {
-       int i= ((Integer) exprvalue).intValue();
-       if (i == 1) { 
-           return EVAL_BODY_INCLUDE;
-       } else if (i == 0){
-           return SKIP_BODY;
-       } 
-
-       // integer value other than 1/0
-       throw new MakumbaJspException(this, "test expression in mak:if should result in 0 or 1; result is " + exprvalue);
+    public void setTest(String s) {
+        this.testExpr = s;
     }
 
-    // comparison with null, will return null, equivalent to false 
-    if (exprvalue == null) return SKIP_BODY;
+    // these 2 are required to implement BodyTag, no action needed inside.
+    public void setBodyContent(BodyContent bc) {
+    }
 
-    // return value is another type
-    throw new MakumbaJspException(this, "test expression in mak:if should result in an Integer, result is "+ exprvalue);
-    
-  }
+    public void doInitBody() {
+    }
 
-  /* FIXME: what should this output? */
-  public String toString() { 
-    return "IF test="+testExpr+ 
-      " parameters: "+ params; 
-  }
+    /**
+     * Sets tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before
+     * doMakumbaStartTag()
+     * @param pageCache the page cache of the current page
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        addToParentListKey(testExpr.trim());
+    }
+
+    /** 
+     * Determines the ValueComputer and associates it with the tagKey 
+     * @param pageCache the page cache of the current page
+     */
+    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
+    }
+
+    /** 
+     * Tells the ValueComputer to finish analysis, check for proper test result type
+     * @param pageCache the page cache of the current page
+     */
+    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        ValueComputer vc = (ValueComputer) pageCache.valueComputers.get(tagKey);
+        vc.doEndAnalyze(this, pageCache);
+        String type = vc.type.getDataType();
+        if (!"int".equals(type)) {
+            throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this
+                    + "], type is " + type);
+        }
+    }
+
+    /** Asks the ValueComputer to calculate the expression, and SKIP_BODY if false.
+     * @param pageCache the page cache of the current page
+     * @throws JspException
+     * @throws LogicException
+     */
+    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException,
+            org.makumba.LogicException {
+        Object exprvalue = ((ValueComputer) getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+
+        if (exprvalue instanceof Integer) {
+            int i = ((Integer) exprvalue).intValue();
+            if (i == 1) {
+                return EVAL_BODY_INCLUDE;
+            } else if (i == 0) {
+                return SKIP_BODY;
+            }
+
+            // integer value other than 1/0
+            throw new MakumbaJspException(this, "test expression in mak:if should result in 0 or 1; result is "
+                    + exprvalue);
+        }
+
+        // comparison with null, will return null, equivalent to false
+        if (exprvalue == null)
+            return SKIP_BODY;
+
+        // return value is another type
+        throw new MakumbaJspException(this, "test expression in mak:if should result in an Integer, result is "
+                + exprvalue);
+
+    }
+
+    public String toString() {
+        return "IF test=" + testExpr + " parameters: " + params;
+    }
 }

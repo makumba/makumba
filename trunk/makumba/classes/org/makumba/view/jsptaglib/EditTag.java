@@ -25,19 +25,21 @@ package org.makumba.view.jsptaglib;
 
 import org.makumba.DataDefinition;
 
-public class EditTag extends FormTagBase 
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+/**
+ * mak:editForm tag
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class EditTag extends FormTagBase {
 
-// for input tags:
-  public String getDefaultExpr(String fieldName) 
-  { return baseObject+"."+fieldName; }
+    private static final long serialVersionUID = 1L;
 
-  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    return pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject);
-  }
+    // for input tags:
+    public String getDefaultExpr(String fieldName) {
+        return baseObject + "." + fieldName;
+    }
+
+    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
+        return pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject);
+    }
 }

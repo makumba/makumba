@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
@@ -32,135 +33,202 @@ import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.ComposedQuery;
 
-public class InputTag extends BasicValueTag
-implements javax.servlet.jsp.tagext.BodyTag
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-String name = null;
-  String display=null;
-  String nameVar=null;
+/**
+ * mak:input tag
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
 
-  // input whith body, used only for chosers as yet
-  BodyContent bodyContent=null;
-  org.makumba.util.ChoiceSet choiceSet;
+    private static final long serialVersionUID = 1L;
 
-  // unused for now, set when we know at analysis that this input has 
-  // a body and will generate a choser (because it has <mak:option > inside)
-  boolean isChoser;
+    String name = null;
 
-  public String toString() { return "INPUT name="+name+" value="+valueExprOriginal+" dataType="+dataType+"\n"; }
-  
+    String display = null;
 
-  public void setDataType(String dt) {   this.dataType=dt.trim();  }
-  public void setField(String field)  { setName(field);}
-  public void setName(String field) {   this.name=field.trim(); }
-  public void setDisplay(String d) {   this.display=d; }
-  public void setNameVar(String var){ this.nameVar=var; }
+    String nameVar = null;
 
-  //Extra html formatting parameters
-  public void setAccessKey(String s){ extraFormattingParams.put("accessKey", s); }
-  public void setDisabled(String s) { extraFormattingParams.put("disabled", s); }
-  public void setOnChange(String s) { extraFormattingParams.put("onChange", s); }
-  public void setOnBlur(String s)   { extraFormattingParams.put("onBlur", s); }
-  public void setOnFocus(String s)  { extraFormattingParams.put("onFocus", s); }
-  public void setOnSelect(String s) { extraFormattingParams.put("onSelect", s); }
-  public void setTabIndex(String s) { extraFormattingParams.put("tabIndex", s); }
+    /** input whith body, used only for choosers as yet * */
+    BodyContent bodyContent = null;
 
-  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) 
-  {
-    expr=valueExprOriginal;
-    if(expr==null)
-      expr=getForm().getDefaultExpr(name);
-    Object[] keyComponents= {name, getForm().tagKey};
-    tagKey= new MultipleKey(keyComponents);
-  }
+    org.makumba.util.ChoiceSet choiceSet;
 
-  FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache){
-    return getForm().getInputTypeAtAnalysis(name, pageCache);
-  }
- 
-  /** determine the ValueComputer and associate it with the tagKey */
-  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    if(name==null)
-      throw new ProgrammerError("name attribute is required");
-    super.doStartAnalyze(pageCache);
-  }
-  
-  protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {      
-      MultipleKey parentListKey = getForm().getParentListKey(pageCache);
-      if (parentListKey == null) { // If there is no enclosing mak:list
-          return expr2; 
-      }
-      return pageCache.getQuery(parentListKey).transformPointer(expr2);
-  }
+    // unused for now, set when we know at analysis that this input has
+    // a body and will generate a choser (because it has <mak:option > inside)
+    boolean isChoser;
 
-  /** tell the ValueComputer to finish analysis, and set the types for var and printVar */
-  public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    if(nameVar!=null)
-      pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
+    public String toString() {
+        return "INPUT name=" + name + " value=" + valueExprOriginal + " dataType=" + dataType + "\n";
+    }
 
-    super.doEndAnalyze(pageCache);
-  }
+    public void setDataType(String dt) {
+        this.dataType = dt.trim();
+    }
 
-  /** Reset and initialise the tag's state, to work in a tag pool. See bug 583. 
-   *  If method is overriden in child class, the child's method must call super.initialiseState(). 
-   */
-  public void initialiseState() {
-      super.initialiseState();
+    public void setField(String field) {
+        setName(field);
+    }
 
-      // if type is "file", make the form multipart (should this be here or in doMakumbaStartTag() ?)
-      if ("file".equals(params.get("type"))) {
-          getForm().setMultipart();
-      }
-  }
+    public void setName(String field) {
+        this.name = field.trim();
+    }
 
-  public void setBodyContent(BodyContent bc){ 
-    bodyContent=bc; 
-    // for now, only chosers can have body
-    choiceSet= new org.makumba.util.ChoiceSet();
-  }
+    public void setDisplay(String d) {
+        this.display = d;
+    }
 
-  public void doInitBody() {}
+    public void setNameVar(String var) {
+        this.nameVar = var;
+    }
 
-  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) 
-  {
-    // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
-    return EVAL_BODY_BUFFERED;
-  }
+    // Extra html formatting parameters
+    public void setAccessKey(String s) {
+        extraFormattingParams.put("accessKey", s);
+    }
 
-  /** a value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag() */
-  int computedValue(Object val, FieldDefinition type)
-       throws JspException, LogicException
-  {
-    if(bodyContent!=null && bodyContent.getString().trim().length()>0)
-      throw new ProgrammerError("cannot have non-whitespace content in a choice mak:input");
+    public void setDisabled(String s) {
+        extraFormattingParams.put("disabled", s);
+    }
 
-    if(choiceSet!=null)
-      params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
+    public void setOnChange(String s) {
+        extraFormattingParams.put("onChange", s);
+    }
 
-    if("false".equals(display))
-      params.put("org.makumba.noDisplay", "dummy" );
+    public void setOnBlur(String s) {
+        extraFormattingParams.put("onBlur", s);
+    }
 
-    String formatted=getForm().responder.format(name, type, val, params, extraFormatting.toString());
+    public void setOnFocus(String s) {
+        extraFormattingParams.put("onFocus", s);
+    }
 
-    if(nameVar!=null)
-      getPageContext().setAttribute(nameVar, name+getForm().responder.getSuffix());
+    public void setOnSelect(String s) {
+        extraFormattingParams.put("onSelect", s);
+    }
 
-    if(display==null ||! display.equals("false"))
-      {
-	try{
-	  pageContext.getOut().print(formatted);
-	}catch(java.io.IOException e)	  {throw new JspException(e.toString());}
-      }
+    public void setTabIndex(String s) {
+        extraFormattingParams.put("tabIndex", s);
+    }
 
-    name = valueExprOriginal = dataType = display = expr = nameVar= null;
-    return EVAL_PAGE;
-  } 
+    /**
+     * Inherited
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        expr = valueExprOriginal;
+        if (expr == null)
+            expr = getForm().getDefaultExpr(name);
+        Object[] keyComponents = { name, getForm().tagKey };
+        tagKey = new MultipleKey(keyComponents);
+    }
+
+    FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache) {
+        return getForm().getInputTypeAtAnalysis(name, pageCache);
+    }
+
+    /**
+     * Determines the ValueComputer and associates it with the tagKey
+     * 
+     * @param pageCache
+     *            the page cache of the current page
+     */
+    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        if (name == null)
+            throw new ProgrammerError("name attribute is required");
+        super.doStartAnalyze(pageCache);
+    }
+
+    /**
+     * Checks a pointer expression, used for hibernate pointers
+     * 
+     * @param expr2
+     *            the expression to check
+     * @param pageCache
+     *            the page cache of the current page
+     * @return The original expression if we're not in a mak:list, the transformed pointer otherwise
+     */
+    protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {
+        MultipleKey parentListKey = getForm().getParentListKey(pageCache);
+        if (parentListKey == null) { // If there is no enclosing mak:list
+            return expr2;
+        }
+        return pageCache.getQuery(parentListKey).transformPointer(expr2);
+    }
+
+    /**
+     * Tells the ValueComputer to finish analysis, and sets the types for var and printVar
+     * 
+     * @param pageCache
+     *            the page cache of the current page
+     */
+    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+        if (nameVar != null)
+            pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
+
+        super.doEndAnalyze(pageCache);
+    }
+
+    /**
+     * Inherited
+     */
+    public void initialiseState() {
+        super.initialiseState();
+
+        // if type is "file", make the form multipart (should this be here or in doMakumbaStartTag() ?)
+        if ("file".equals(params.get("type"))) {
+            getForm().setMultipart();
+        }
+    }
+
+    public void setBodyContent(BodyContent bc) {
+        bodyContent = bc;
+        // for now, only chosers can have body
+        choiceSet = new org.makumba.util.ChoiceSet();
+    }
+
+    public void doInitBody() {
+    }
+
+    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) {
+        // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
+        return EVAL_BODY_BUFFERED;
+    }
+
+    /**
+     * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
+     * 
+     * @param val
+     *            the computed value
+     * @param type
+     *            the type of the computed value
+     * @throws JspException
+     * @throws {@link LogicException}
+     */
+    int computedValue(Object val, FieldDefinition type) throws JspException, LogicException {
+        if (bodyContent != null && bodyContent.getString().trim().length() > 0)
+            throw new ProgrammerError("cannot have non-whitespace content in a choice mak:input");
+
+        if (choiceSet != null)
+            params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
+
+        if ("false".equals(display))
+            params.put("org.makumba.noDisplay", "dummy");
+
+        String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
+
+        if (nameVar != null)
+            getPageContext().setAttribute(nameVar, name + getForm().responder.getSuffix());
+
+        if (display == null || !display.equals("false")) {
+            try {
+                pageContext.getOut().print(formatted);
+            } catch (java.io.IOException e) {
+                throw new JspException(e.toString());
+            }
+        }
+
+        name = valueExprOriginal = dataType = display = expr = nameVar = null;
+        return EVAL_PAGE;
+    }
 
 }

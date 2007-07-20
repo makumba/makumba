@@ -306,7 +306,7 @@ public abstract class MakumbaTag extends TagSupport {
 
     /**
      * Resets and initialises the tag's state, to work in a tag pool. See bug 583. If this method is overriden in a
-     * child class, the child's method must call super.resetState().
+     * child class, the child's method must call super.initaliseState().
      */
     public void initialiseState() {
         extraFormatting = new StringBuffer();

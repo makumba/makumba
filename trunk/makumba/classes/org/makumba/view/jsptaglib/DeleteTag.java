@@ -25,30 +25,31 @@ package org.makumba.view.jsptaglib;
 
 import org.makumba.ProgrammerError;
 
-public class DeleteTag extends EditTag
-{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-  // no input tags should be allowed
+/**
+ * mak:delete tag
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class DeleteTag extends EditTag {
 
-	String widget;
-	
-	public void setWidget(String w){ 
-		if(w.equals("") || w.equals("link")  || w.equals("button")  )
-			widget=w;
-		else
-			throw new ProgrammerError("Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
+    private static final long serialVersionUID = 1L;
 
-	
-	}
-	
-	String getOperation() 
-	{
-		//  FIXME 
-		return ( widget==null || widget.equals("") || widget.equals("link"))
-			?"deleteLink":"deleteForm"; 
-	}
+    // no input tags should be allowed
+
+    String widget;
+
+    public void setWidget(String w) {
+        if (w.equals("") || w.equals("link") || w.equals("button"))
+            widget = w;
+        else
+            throw new ProgrammerError(
+                    "Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
+
+    }
+
+    String getOperation() {
+        // FIXME
+        return (widget == null || widget.equals("") || widget.equals("link")) ? "deleteLink" : "deleteForm";
+    }
 
 }
