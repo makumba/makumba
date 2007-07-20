@@ -84,13 +84,17 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
                 }
             }
         }
-
+        
+        // workaround for Hibernate bug HHH-2390
+        // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
+        query = analyzer.getHackedQuery(query);
+        
         // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
         session = sf.openSession();
         session.setCacheMode(CacheMode.IGNORE);
         transaction = session.beginTransaction();
         Query q = session.createQuery(query);
-
+      
         q.setCacheable(false); // we do not cache queries
 
         q.setFirstResult(offset);
@@ -186,8 +190,11 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
         String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date and p.T_shirt in (:someSet) order by p.surname DESC";
         String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :someDouble";
-
-        String[] queries = new String[] { query1, query2, query3 };
+        String query4 = "SELECT case when 1>2 then 1.5 else 2.0 end, i.id FROM test.Individual i";
+        String query5 = "SELECT lbg.id as col0, history.id as col1, history.status as col2, history.event.start as col3 from best.internal.Lbg lbg join lbg.membershipHistory history order by col3 DESC";
+        String query6 = "SELECT lbg.id as col0, lbg.name As col1, lbg.id AS col2, lbg.name aS col3 from best.internal.Lbg lbg order by col3, col2,col1 DESC";
+            
+        String[] queries = new String[] { query6 };
         for (int i = 0; i < queries.length; i++) {
             System.out.println("Query " + queries[i] + " ==> \n"
                     + printQueryResults(qr.executeDirect(queries[i], params, 0, 50)) + "\n\n");
