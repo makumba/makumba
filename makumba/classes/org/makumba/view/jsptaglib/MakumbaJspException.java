@@ -23,17 +23,26 @@
 
 package org.makumba.view.jsptaglib;
 
-/** An exception thrown due to makumba-specific reasons during tag execution */
-public class MakumbaJspException extends javax.servlet.jsp.JspException
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-Exception e;
+/** 
+ * An exception thrown due to makumba-specific reasons during tag execution
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class MakumbaJspException extends javax.servlet.jsp.JspException {
 
-  public MakumbaJspException(Exception e){this.e=e; }
-  public MakumbaJspException(MakumbaTag t, String s){this(new RuntimeException(s+"\nin tag: "+t.toString())); }
+    private static final long serialVersionUID = 1L;
 
-  public String getMessage(){ return e.getMessage(); }
+    Exception e;
+
+    public MakumbaJspException(Exception e) {
+        this.e = e;
+    }
+
+    public MakumbaJspException(MakumbaTag t, String s) {
+        this(new RuntimeException(s + "\nin tag: " + t.toString()));
+    }
+
+    public String getMessage() {
+        return e.getMessage();
+    }
 }

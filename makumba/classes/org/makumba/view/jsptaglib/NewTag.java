@@ -22,40 +22,54 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.util.MultipleKey;
 
-public class NewTag extends FormTagBase
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-// for input tags:
-  DataDefinition type = null;
-  String multipleSubmitErrorMsg = null;
+/**
+ * mak:new tag
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class NewTag extends FormTagBase {
 
-  public void setType(String s) { type=MakumbaSystem.getDataDefinition(s); }
-  public void setMultipleSubmitErrorMsg(String s) { checkNoParent("multipleSubmitErrorMsg"); multipleSubmitErrorMsg=s; }
+    private static final long serialVersionUID = 1L;
 
-  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    Object keyComponents[]= {type.getName(), handler,  getParentListKey(null), getClass()};
-    tagKey=new MultipleKey(keyComponents);
-  }
-  
-  public void initialiseState() {
-      super.initialiseState();
-      if (type != null) responder.setNewType(type);
-	  if (multipleSubmitErrorMsg != null) responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
-  }
+    // for input tags:
+    DataDefinition type = null;
 
+    String multipleSubmitErrorMsg = null;
 
-  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) 
-  {
-    return type;
-  }
+    public void setType(String s) {
+        type = MakumbaSystem.getDataDefinition(s);
+    }
+
+    public void setMultipleSubmitErrorMsg(String s) {
+        checkNoParent("multipleSubmitErrorMsg");
+        multipleSubmitErrorMsg = s;
+    }
+
+    /**
+     * Inherited
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        Object keyComponents[] = { type.getName(), handler, getParentListKey(null), getClass() };
+        tagKey = new MultipleKey(keyComponents);
+    }
+
+    /**
+     * Inherited
+     */
+    public void initialiseState() {
+        super.initialiseState();
+        if (type != null)
+            responder.setNewType(type);
+        if (multipleSubmitErrorMsg != null)
+            responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
+    }
+
+    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
+        return type;
+    }
 }
-

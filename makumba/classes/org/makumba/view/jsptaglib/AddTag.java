@@ -22,65 +22,92 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 
-public class AddTag extends FormTagBase 
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-// for input tags:
-  String field = null;
-  String multipleSubmitErrorMsg = null;
-  
-  public void setField(String s) { field=s; }
-  public void setMultipleSubmitErrorMsg(String s) { checkNoParent("multipleSubmitErrorMsg"); multipleSubmitErrorMsg=s; }
+/**
+ * mak:addForm tag
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class AddTag extends FormTagBase {
 
-  /** Set tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before doMakumbaStartTag() */
-  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    Object[] keyComponents= {baseObject, field, handler, getParentListKey(null), getClass()};
-    tagKey=new MultipleKey(keyComponents);
-  }
+    private static final long serialVersionUID = 1L;
 
-  public void initialiseState() {
-      super.initialiseState();
-	  if (multipleSubmitErrorMsg != null) responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
-      if (field != null) responder.setAddField(field);
-      if (!"add".equals(getOperation())) 
-	responder.setNewType(((NewTag)findParentForm()).type);
-  }
+    // for input tags:
+    String field = null;
 
-  public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache)
-  {
-    DataDefinition base= getOperation().equals("add")?pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject):
-      ((NewTag)findParentForm()).type;
-    if (base == null) { // we could not find the type
-        String message = "Could not determine type for specified object '" + baseObject + "'";
-        if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..
-            message += " - you cannot specify a sub-pointer in the 'object=' attribute!";
-        }
-        throw new ProgrammerError(message);
-    }    
-    FieldDefinition fieldDefinition = base.getFieldDefinition(field);
-    if (fieldDefinition == null) { // we used an unknow field
-        throw new ProgrammerError("Cannot find field '" + field + " in type " + base + "");
+    String multipleSubmitErrorMsg = null;
+
+    public void setField(String s) {
+        field = s;
     }
-    return fieldDefinition.getSubtable();
-  }
-  
-  String getOperation(){
-    FormTagBase parent=findParentForm();
-    if((parent instanceof NewTag) && baseObject.equals(parent.formName))
-       return "addToNew";
-    return "add";
-  }
-  
-  boolean shouldComputeBasePointer(){ return getOperation().equals("add"); }
+
+    public void setMultipleSubmitErrorMsg(String s) {
+        checkNoParent("multipleSubmitErrorMsg");
+        multipleSubmitErrorMsg = s;
+    }
+
+    /**
+     * Sets tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before
+     * doMakumbaStartTag()
+     * @param pageCache the page cache of the current page
+     */
+    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+        Object[] keyComponents = { baseObject, field, handler, getParentListKey(null), getClass() };
+        tagKey = new MultipleKey(keyComponents);
+    }
+
+    /**
+     * Inherited
+     */
+    public void initialiseState() {
+        super.initialiseState();
+        if (multipleSubmitErrorMsg != null)
+            responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
+        if (field != null)
+            responder.setAddField(field);
+        if (!"add".equals(getOperation()))
+            responder.setNewType(((NewTag) findParentForm()).type);
+    }
+
+    /**
+     * Tries to figure out the type of the object to which we want to add some data
+     * @param pageCache the page cache of the current page
+     * @return A DataDefinition corresponding to the type of object to which we want to add something
+     */
+    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
+        DataDefinition base = getOperation().equals("add") ? pageCache.getQuery(getParentListKey(pageCache))
+                .getLabelType(baseObject) : ((NewTag) findParentForm()).type;
+        if (base == null) { // we could not find the type
+            String message = "Could not determine type for specified object '" + baseObject + "'";
+            if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..
+                message += " - you cannot specify a sub-pointer in the 'object=' attribute!";
+            }
+            throw new ProgrammerError(message);
+        }
+        FieldDefinition fieldDefinition = base.getFieldDefinition(field);
+        if (fieldDefinition == null) { // we used an unknow field
+            throw new ProgrammerError("Cannot find field '" + field + " in type " + base + "");
+        }
+        return fieldDefinition.getSubtable();
+    }
+
+    /**
+     * Figures out the operation
+     * @return 'addNew' if we are inside of a newForm, 'add' otherwise
+     */
+    String getOperation() {
+        FormTagBase parent = findParentForm();
+        if ((parent instanceof NewTag) && baseObject.equals(parent.formName))
+            return "addToNew";
+        return "add";
+    }
+
+    boolean shouldComputeBasePointer() {
+        return getOperation().equals("add");
+    }
 }
-
-

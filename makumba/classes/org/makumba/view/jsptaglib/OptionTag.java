@@ -28,14 +28,23 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.FieldDefinition;
+import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 
+/**
+ * mak:option tag
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
 public class OptionTag extends BasicValueTag implements BodyTag {
     private static final long serialVersionUID = 1L;
 
     ValueComputer choiceComputer = null;
 
+    /**
+     * Inherited
+     */
     public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
         expr = valueExprOriginal;
         if (expr == null)
@@ -79,7 +88,13 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return EVAL_BODY_BUFFERED;
     }
 
-    /** a value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag() */
+    /** 
+     * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
+     * @param val the computed value
+     * @param type the type of the value
+     * @throws JspException
+     * @throws {@link LogicException}
+     */
     int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
         if (isNull())
             val = org.makumba.Pointer.Null;

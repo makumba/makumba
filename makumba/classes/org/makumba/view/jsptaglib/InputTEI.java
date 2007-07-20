@@ -22,22 +22,28 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
+
 import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
-public class InputTEI extends TagExtraInfo 
-{
-  public VariableInfo[] getVariableInfo(TagData data) {
-    
-    String var= data.getAttributeString("nameVar");
-    if(var!=null){
-      VariableInfo ret[]= new VariableInfo[1];
-      ret[0]= new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN);
-      return ret;
+/**
+ * Extra information for input
+ * @author Cristian Bogdan
+ * @version $Id$
+ *
+ */
+public class InputTEI extends TagExtraInfo {
+    public VariableInfo[] getVariableInfo(TagData data) {
+
+        String var = data.getAttributeString("nameVar");
+        if (var != null) {
+            VariableInfo ret[] = new VariableInfo[1];
+            ret[0] = new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN);
+            return ret;
+        }
+
+        return null;
     }
-  
-    return null; 
-  }    
 
 }
