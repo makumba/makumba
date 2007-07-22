@@ -194,7 +194,6 @@ public class HqlAnalyzer implements OQLAnalyzer {
             String[] split = st.nextToken().trim().split("\\s[a|A][s|S]\\s");
             String beforeAS = split[0];
             String afterAS = split[1];
-            System.out.println("beforeAS " + beforeAS + " and afterAS "+afterAS);
             translator.put(afterAS, beforeAS);
         }
         
