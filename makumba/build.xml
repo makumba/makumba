@@ -100,7 +100,7 @@
 	<target name="compile" depends="OQLParserGeneration"
 		description="compile all java files"
 	>
-		<javac srcdir="classes" source="1.4" target="1.4">
+		<javac srcdir="classes" source="1.4" target="1.4" debug="on">
 		     <classpath refid="project.class.path" />
 		</javac>
 	</target>
