@@ -29,6 +29,12 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Helper class to work with http parameters
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
 public class HttpParameters {
     HttpServletRequest request;
 
@@ -50,6 +56,13 @@ public class HttpParameters {
             atStart.put(e.nextElement(), dummy);
     }
 
+    /**
+     * Gets a http parameter. If there are more values for the parameter, places them into a Vector
+     * 
+     * @param s
+     *            the name of the parameter
+     * @return A String containing the value of the parameter in case of a unique value, a Vector otherwise
+     */
     public Object getParameter(String s) {
         Object value = null;
         String[] param = request.getParameterValues(s);
