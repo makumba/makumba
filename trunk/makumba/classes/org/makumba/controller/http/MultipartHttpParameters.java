@@ -35,8 +35,22 @@ import org.makumba.Text;
 import org.makumba.util.BoundaryInputStream;
 
 /**
- * Parse the input stream of a http request as a multipart/form-data. Store uploaded files as org.makumba.Text. Normal
+ * Parses the input stream of a http request as a multipart/form-data. Stores uploaded files as org.makumba.Text. Normal
  * http parameters are stored as Text.toString (simple) or Vectors (multiple)
+ * 
+ * data inside the request:
+ * <ul>
+ * <li>1st line: boundary + CR+LF</li>
+ * <li>headers & values + CR+LF (e.g. filename="file.doc" Content-Type: application/octec-stream)</li>
+ * <li>CR+LF (Konqueror 3.2.1 sends CR CR)</li>
+ * <li>content (related to the headers just read)</li>
+ * <li>CR+LF - boundary CR+LF - headers... and so forth ...</li>
+ * <li>and after the last boundary you will have '--' with CR+LF</li>
+ * </ul>
+ * 
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
  */
 public class MultipartHttpParameters extends HttpParameters {
     Hashtable parameters = new Hashtable();
@@ -217,14 +231,26 @@ public class MultipartHttpParameters extends HttpParameters {
     }
 
     /**
-     * we compose what we read from the multipart with what we have in the query string. the assumption is that the
-     * multipart cannot change during execution, while the query string may change due to e.g. forwards
+     * Composes what is read from the multipart with what is in the query string. The assumption is that the multipart
+     * cannot change during execution, while the query string may change due to e.g. forwards
+     * 
+     * @param s
+     *            the query string
+     * @return An Object holding the parameters
      */
     public Object getParameter(String s) {
         return compose(parameters.get(s), super.getParameter(s));
     }
 
-    /** compose two objects, if both are vectors, unite them */
+    /**
+     * TODO this should not be here but in a util class Composes two objects, if both are vectors, unites them
+     * 
+     * @param a1
+     *            the first object
+     * @param a2
+     *            the second object
+     * @return a composed object
+     */
     static Object compose(Object a1, Object a2) {
         if (a1 == null)
             return a2;
@@ -250,13 +276,4 @@ public class MultipartHttpParameters extends HttpParameters {
             return v;
         }
     }
-
 }
-
-/*
- * data inside the request - 1st line: boundary + CR+LF - headers & values + CR+LF (e.g. filename="file.doc"
- * Content-Type: application/octec-stream) - CR+LF (Konqueror 3.2.1 sends CR CR) - content (related to the headers just
- * read) - CR+LF - boundary CR+LF - headers... and so forth ...
- * 
- * and after the last boundary you will have '--' with CR+LF
- */

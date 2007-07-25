@@ -62,6 +62,7 @@ public class ControllerFilter implements Filter {
 
     /**
      * Gets the request
+     * 
      * @return The HTTpServletRequest corresponding to the current access
      */
     public static HttpServletRequest getRequest() {
@@ -104,13 +105,16 @@ public class ControllerFilter implements Filter {
         }
     }
 
-    /** Decides if we filter or not
-     * @param req the request corresponding to the access
+    /**
+     * Decides if we filter or not
+     * 
+     * @param req
+     *            the request corresponding to the access
      * @return <code>true</code> if we should filter, <code>false</code> otherwise
      */
     public boolean shouldFilter(HttpServletRequest req) {
         String uri = req.getRequestURI();
-        
+
         // accesses to the source viewer are not filtered
         if (uri.startsWith("/dataDefinitions") || uri.startsWith("/logic") || uri.startsWith("/classes"))
             return false;
@@ -143,8 +147,17 @@ public class ControllerFilter implements Filter {
     public void destroy() {
     }
 
-    // ------------- treating exceptions ------------------
-    /** treat an exception that occured during the request */
+    /**
+     * Treats an exception that occured during the request. Displays the exception and sets an attribute corresponding
+     * to it.
+     * 
+     * @param t
+     *            the Throwable corresponding to the exception
+     * @param req
+     *            the http request corresponding to the access
+     * @param resp
+     *            the http response corresponding to the access
+     */
     static public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/html");
         req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
@@ -183,18 +196,34 @@ public class ControllerFilter implements Filter {
         req.setAttribute("org.makumba.exceptionTreated", "yes");
     }
 
-    /** signal that there was an exception during the request, so some operations can be skipped */
+    /**
+     * Signals that there was an exception during the request, so some operations can be skipped
+     * 
+     * @param req
+     *            the http request corresponding to the current access
+     */
     public static void setWasException(HttpServletRequest req) {
         req.setAttribute("org.makumba.wasException", "yes");
     }
 
-    /** test if there was an exception during the request */
+    /**
+     * Tests if there was an exception during the request
+     * 
+     * @param req
+     *            the http request corresponding to the current access
+     * @return <code>true</code> if there was an exception, <code>false</code> otherwise
+     */
     public static boolean wasException(HttpServletRequest req) {
         return "yes".equals(req.getAttribute("org.makumba.wasException"));
     }
 
-    // ---------------- login ---------------
-    /** compute the login page from a servletPath */
+    /**
+     * Computes the login page from a servletPath
+     * 
+     * @param servletPath
+     *            the path of the servlet we are in
+     * @return A String containing the path to the login page
+     */
     public static String getLoginPage(String servletPath) {
         String root = conf.getServletContext().getRealPath("/");
         String virtualRoot = "/";
@@ -213,7 +242,14 @@ public class ControllerFilter implements Filter {
         return login;
     }
 
-    /** find the closest login.jsp and forward to it */
+    /**
+     * Finds the closest login.jsp and forwards to it
+     * 
+     * @param req
+     *            the http request corresponding to the current access
+     * @param resp
+     *            the http response corresponding to the current access
+     */
     protected static boolean login(HttpServletRequest req, HttpServletResponse resp) {
         // the request path may be modified by the filter, we take it as is
         String login = getLoginPage(req.getServletPath());
