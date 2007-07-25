@@ -33,6 +33,14 @@ import org.makumba.FieldDefinition;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
+/**
+ * Editor of Makumba data. Each subclass knows how to format HTML <input> and <select> tags for each type of Makumba
+ * data, and how to read their data from HTTP query strings in form responses.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ * 
+ */
 public class RecordEditor extends RecordFormatter {
     String database;
 
