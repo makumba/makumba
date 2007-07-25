@@ -22,55 +22,51 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HttpParameters
-{
-  HttpServletRequest request;
-  Hashtable atStart;
-  
-  public boolean knownAtStart(String s)
-  {
-    return atStart.get(s)!=null;  
-  } 
- 
-  public HttpParameters(HttpServletRequest req)
-  {
-    request=req;
-	computeAtStart();
-  }
-  
-  void computeAtStart()
-  {
-	atStart=new Hashtable();
-	Object dummy=new Object();
-	for(Enumeration e= request.getParameterNames(); e.hasMoreElements(); )
-		atStart.put(e.nextElement(), dummy);
-  }
+public class HttpParameters {
+    HttpServletRequest request;
 
-  public Object getParameter(String s)
-  {
-    Object value=null;
-    String[]param=request.getParameterValues(s);
-    if(param==null)
-      return null;
+    Hashtable atStart;
 
-    if(param.length==1)
-      value=param[0];
-    else
-      {
-	Vector v=new java.util.Vector();
-	value=v;
-	for(int i= 0; i<param.length; i++)
-	  v.addElement(param[i]);
-      }
-    //request.setAttribute(s, value);
+    public boolean knownAtStart(String s) {
+        return atStart.get(s) != null;
+    }
 
-    return value;
-  }
+    public HttpParameters(HttpServletRequest req) {
+        request = req;
+        computeAtStart();
+    }
+
+    void computeAtStart() {
+        atStart = new Hashtable();
+        Object dummy = new Object();
+        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();)
+            atStart.put(e.nextElement(), dummy);
+    }
+
+    public Object getParameter(String s) {
+        Object value = null;
+        String[] param = request.getParameterValues(s);
+        if (param == null)
+            return null;
+
+        if (param.length == 1)
+            value = param[0];
+        else {
+            Vector v = new java.util.Vector();
+            value = v;
+            for (int i = 0; i < param.length; i++)
+                v.addElement(param[i]);
+        }
+        // request.setAttribute(s, value);
+
+        return value;
+    }
 
 }
