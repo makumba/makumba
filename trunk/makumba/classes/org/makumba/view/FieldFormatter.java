@@ -27,6 +27,13 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+/**
+ * Formats a specific field. Subclasses of this class are handling the different kind of fields.
+ * @author Cristian Bogdan
+ * @author Stefan Baebler
+ * @author Frederik Habilis
+ * @author Rudolf Mayer
+ */
 public class FieldFormatter {
     static String[] params = { "default", "empty" };
 
@@ -127,7 +134,7 @@ public class FieldFormatter {
     }
 
     /**
-     * Format the not-null-object to pure text. To be over-ridden by subclasses.
+     * Formats the not-null-object to pure text. To be over-ridden by subclasses.
      */
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         return o.toString();
@@ -188,4 +195,3 @@ public class FieldFormatter {
     }
 
 }
-// end class
