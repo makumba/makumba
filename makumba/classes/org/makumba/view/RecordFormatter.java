@@ -29,6 +29,14 @@ import java.util.Dictionary;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 
+/**
+ * Generic formatter of Makumba data. Depending on the data type, calls specific formatters an applies them for each
+ * field of a record.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+
 public class RecordFormatter implements Serializable {
     public DataDefinition dd;
 
