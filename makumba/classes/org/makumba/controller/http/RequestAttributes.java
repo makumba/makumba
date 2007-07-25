@@ -49,7 +49,12 @@ public class RequestAttributes implements Attributes
   public String getRequestDatabase(){ return MakumbaSystem.getDefaultDatabaseName();} 
   public Object getRequestController(){ return controller; }
 
-
+  /**
+   * Returns the {@link Attributes} of the current page
+   * @param req the http request corresponding to the current access
+   * @return A {@link RequestAttributes} object holding the makumba Attributes
+   * @throws LogicException
+   */
   public static RequestAttributes getAttributes(HttpServletRequest req)
        throws LogicException
   {
@@ -86,6 +91,11 @@ public class RequestAttributes implements Attributes
 
   static final public String PROVIDER_ATTRIBUTE="org.makumba.providerAttribute";
 
+  /**
+   * Gives a provider to get connection to the database
+   * @param req the http request corresponding to the current access
+   * @return A {@link DbConnectionProvider} providing the database connection service
+   */
   public static DbConnectionProvider getConnectionProvider(HttpServletRequest req){
     DbConnectionProvider prov= (DbConnectionProvider)req.getAttribute(PROVIDER_ATTRIBUTE);
     if(prov==null){

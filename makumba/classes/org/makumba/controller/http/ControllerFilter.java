@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
+
 import java.net.URL;
 
 import javax.servlet.Filter;
@@ -43,177 +44,195 @@ import org.makumba.util.DbConnectionProvider;
 /**
  * 
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
- * @version $Id$ * 
+ * 
+ * @author Cristian Bogdan
+ * @author Rudolf Mayer
+ * @version $Id$ *
  */
-public class ControllerFilter implements Filter
-{
-  public static final String ORIGINAL_REQUEST="org.makumba.originalRequest";
+public class ControllerFilter implements Filter {
+    public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
 
-  static FilterConfig conf;
-  public void init(FilterConfig c) { conf=c; }
+    static FilterConfig conf;
 
-  private static ThreadLocal requestThreadLocal = new ThreadLocal();
- 
-  public static HttpServletRequest getRequest(){
-    return (HttpServletRequest)requestThreadLocal.get();
-  }
-
-  public void doFilter(ServletRequest req, ServletResponse resp,
-		       FilterChain chain)
-        throws ServletException, java.io.IOException
-  {
-    org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
-    boolean filter= shouldFilter((HttpServletRequest)req);
-    requestThreadLocal.set(req);
-    
-    DbConnectionProvider prov= RequestAttributes.getConnectionProvider((HttpServletRequest)req);
-
-    if(filter){
-	try{
-	  try{
-	    RequestAttributes.getAttributes((HttpServletRequest)req);
-	  }
-	  catch(Throwable e)
-	    { 
-	      treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
-	      return; 
-	    }
-	
-	  Responder.response((HttpServletRequest)req, (HttpServletResponse)resp);
-	  if(wasException((HttpServletRequest)req))
-	    return;
-	}finally{ prov.close(); } // commit everything after response
-      }
-
-      try{
-	  chain.doFilter(req, resp);
-      }catch(AllowedException e)
-	  { }
-      catch(Throwable e)
-	{ 
-	  treatException(e, (HttpServletRequest)req, (HttpServletResponse)resp);
-	  return; 
-	}
-      finally{ prov.close(); }
-  }
-
-  /** decide if we filter or not */
-  public boolean shouldFilter(HttpServletRequest req)
-  {
-    String uri= req.getRequestURI();   
-    if(uri.startsWith("/dataDefinitions")|| uri.startsWith("/logic") || uri.startsWith("/classes"))
-	return false;
-    String file=null;
-    try{
-      file= new URL(req.getRequestURL().toString()).getFile();
-    }catch(java.net.MalformedURLException e) { } // can't be
-
-    // JSP and HTML are always filtered
-    if(file.endsWith(".jsp") || file.endsWith(".html"))
-	return true;
-
-    // JSPX is never filtered
-    if(file.endsWith(".jspx"))
-	return false;
-
-    // we compute the file that corresponds to the indicated path
-    java.io.File f= new java.io.File(conf.getServletContext().getRealPath(req.getRequestURI()));    
-    
-    // if it's a directory, there will most probably be a redirection, we filter anyway
-    if(f.isDirectory())
-	return true;
-    
-    // if the file does not exist on disk, it means that it's produced dynamically, so we filter
-    // it it exists, it's probably an image or a CSS, we don't filter
-    return !f.exists();
-  }
-
-  public void destroy(){}
-  
-
-  //------------- treating exceptions ------------------
-  /** treat an exception that occured during the request */
-  static public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp) 
-  {
-    resp.setContentType("text/html");
-    req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
-    if(req.getAttribute("org.makumba.exceptionTreated")==null && !((t instanceof UnauthorizedException) && login(req, resp)))
-      {
-	try{
-	  req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp); 
-	}
-	// we only catch the improbable ServletException and IOException
-	// so if something is rotten in the TagExceptionServlet, 
-	// tomcat will deal with it
-	catch(ServletException se){ se.printStackTrace(); throw new MakumbaError(se); }
-	catch(java.io.IOException ioe){ ioe.printStackTrace(); throw new MakumbaError(ioe); }
-    catch(java.lang.IllegalStateException ise) { // we get an java.lang.IllegalStateException
-        // most likely due to not being able to redirect the page to the error page due to already flushed buffers
-        // ==> we display a warning, and display the error message as it would have been on the page
-        MakumbaSystem.getMakumbaLogger("controller").severe("Page execution breaks on page '" + req.getServletPath() + "' but the error page can't be displayed due to too small buffer size.\n" +
-                "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"+
-                "The makumba error message would have been:\n" + new TagExceptionServlet().getErrorMessage(req));
+    public void init(FilterConfig c) {
+        conf = c;
     }
-	finally {
-	  org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
-	}
-      }
-    setWasException(req);
-    req.setAttribute("org.makumba.exceptionTreated", "yes");
-  }
 
-  /** signal that there was an exception during the request, so some operations can be skipped */
-  public static void setWasException(HttpServletRequest req)
-  {
-    req.setAttribute("org.makumba.wasException", "yes");
-  }
+    private static ThreadLocal requestThreadLocal = new ThreadLocal();
 
-  /** test if there was an exception during the request */
-  public static boolean wasException(HttpServletRequest req)
-  {
-    return "yes".equals(req.getAttribute("org.makumba.wasException"));
-  }
+    /**
+     * Gets the request
+     * @return The HTTpServletRequest corresponding to the current access
+     */
+    public static HttpServletRequest getRequest() {
+        return (HttpServletRequest) requestThreadLocal.get();
+    }
 
-  //---------------- login ---------------
-  /** compute the login page from a servletPath */
-  public static String getLoginPage(String servletPath)
-  {
-    String root= conf.getServletContext().getRealPath("/");    
-    String virtualRoot="/";
-    String login="/login.jsp";
-    
-    java.util.StringTokenizer st= new java.util.StringTokenizer(servletPath, "/");
-    while(st.hasMoreElements())
-      {
-        if(new java.io.File(root+"login.jsp").exists())
-	    login=virtualRoot+"login.jsp"; 
-	String s=st.nextToken()+"/";
-	root+=s;
-	virtualRoot+=s;
-      }
-    if(new java.io.File(root+"login.jsp").exists())
-	login=virtualRoot+"login.jsp"; 
-    return login;
-  }
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
+            java.io.IOException {
+        org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
+        boolean filter = shouldFilter((HttpServletRequest) req);
+        requestThreadLocal.set(req);
 
-  /** find the closest login.jsp and forward to it */
-  protected static boolean login(HttpServletRequest req, HttpServletResponse resp)
-  {
-    // the request path may be modified by the filter, we take it as is
-    String login= getLoginPage(req.getServletPath());
+        DbConnectionProvider prov = RequestAttributes.getConnectionProvider((HttpServletRequest) req);
 
-    if(login==null)
-      return false;
+        if (filter) {
+            try {
+                try {
+                    RequestAttributes.getAttributes((HttpServletRequest) req);
+                } catch (Throwable e) {
+                    treatException(e, (HttpServletRequest) req, (HttpServletResponse) resp);
+                    return;
+                }
 
-    // we will forward to the login page using the original request
-    while(req instanceof HttpServletRequestWrapper)
-      req=(HttpServletRequest)((HttpServletRequestWrapper) req).getRequest();
+                Responder.response((HttpServletRequest) req, (HttpServletResponse) resp);
+                if (wasException((HttpServletRequest) req))
+                    return;
+            } finally {
+                prov.close();
+            } // commit everything after response
+        }
 
-    req.setAttribute(ORIGINAL_REQUEST, req);
+        try {
+            chain.doFilter(req, resp);
+        } catch (AllowedException e) {
+        } catch (Throwable e) {
+            treatException(e, (HttpServletRequest) req, (HttpServletResponse) resp);
+            return;
+        } finally {
+            prov.close();
+        }
+    }
 
-    try{
-      req.getRequestDispatcher(login).forward(req, resp);
-    }catch(Throwable q){ q.printStackTrace(); return false; }
-    return true;
-  }
+    /** Decides if we filter or not
+     * @param req the request corresponding to the access
+     * @return <code>true</code> if we should filter, <code>false</code> otherwise
+     */
+    public boolean shouldFilter(HttpServletRequest req) {
+        String uri = req.getRequestURI();
+        
+        // accesses to the source viewer are not filtered
+        if (uri.startsWith("/dataDefinitions") || uri.startsWith("/logic") || uri.startsWith("/classes"))
+            return false;
+        String file = null;
+        try {
+            file = new URL(req.getRequestURL().toString()).getFile();
+        } catch (java.net.MalformedURLException e) {
+        } // can't be
+
+        // JSP and HTML are always filtered
+        if (file.endsWith(".jsp") || file.endsWith(".html"))
+            return true;
+
+        // JSPX is never filtered
+        if (file.endsWith(".jspx"))
+            return false;
+
+        // we compute the file that corresponds to the indicated path
+        java.io.File f = new java.io.File(conf.getServletContext().getRealPath(req.getRequestURI()));
+
+        // if it's a directory, there will most probably be a redirection, we filter anyway
+        if (f.isDirectory())
+            return true;
+
+        // if the file does not exist on disk, it means that it's produced dynamically, so we filter
+        // it it exists, it's probably an image or a CSS, we don't filter
+        return !f.exists();
+    }
+
+    public void destroy() {
+    }
+
+    // ------------- treating exceptions ------------------
+    /** treat an exception that occured during the request */
+    static public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp) {
+        resp.setContentType("text/html");
+        req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
+        if (req.getAttribute("org.makumba.exceptionTreated") == null
+                && !((t instanceof UnauthorizedException) && login(req, resp))) {
+            try {
+                req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
+            }
+            // we only catch the improbable ServletException and IOException
+            // so if something is rotten in the TagExceptionServlet,
+            // tomcat will deal with it
+            catch (ServletException se) {
+                se.printStackTrace();
+                throw new MakumbaError(se);
+            } catch (java.io.IOException ioe) {
+                ioe.printStackTrace();
+                throw new MakumbaError(ioe);
+            } catch (java.lang.IllegalStateException ise) { // we get an java.lang.IllegalStateException
+                // most likely due to not being able to redirect the page to the error page due to already flushed
+                // buffers
+                // ==> we display a warning, and display the error message as it would have been on the page
+                MakumbaSystem
+                        .getMakumbaLogger("controller")
+                        .severe(
+                                "Page execution breaks on page '"
+                                        + req.getServletPath()
+                                        + "' but the error page can't be displayed due to too small buffer size.\n"
+                                        + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
+                                        + "The makumba error message would have been:\n"
+                                        + new TagExceptionServlet().getErrorMessage(req));
+            } finally {
+                org.makumba.view.jsptaglib.MakumbaTag.initializeThread();
+            }
+        }
+        setWasException(req);
+        req.setAttribute("org.makumba.exceptionTreated", "yes");
+    }
+
+    /** signal that there was an exception during the request, so some operations can be skipped */
+    public static void setWasException(HttpServletRequest req) {
+        req.setAttribute("org.makumba.wasException", "yes");
+    }
+
+    /** test if there was an exception during the request */
+    public static boolean wasException(HttpServletRequest req) {
+        return "yes".equals(req.getAttribute("org.makumba.wasException"));
+    }
+
+    // ---------------- login ---------------
+    /** compute the login page from a servletPath */
+    public static String getLoginPage(String servletPath) {
+        String root = conf.getServletContext().getRealPath("/");
+        String virtualRoot = "/";
+        String login = "/login.jsp";
+
+        java.util.StringTokenizer st = new java.util.StringTokenizer(servletPath, "/");
+        while (st.hasMoreElements()) {
+            if (new java.io.File(root + "login.jsp").exists())
+                login = virtualRoot + "login.jsp";
+            String s = st.nextToken() + "/";
+            root += s;
+            virtualRoot += s;
+        }
+        if (new java.io.File(root + "login.jsp").exists())
+            login = virtualRoot + "login.jsp";
+        return login;
+    }
+
+    /** find the closest login.jsp and forward to it */
+    protected static boolean login(HttpServletRequest req, HttpServletResponse resp) {
+        // the request path may be modified by the filter, we take it as is
+        String login = getLoginPage(req.getServletPath());
+
+        if (login == null)
+            return false;
+
+        // we will forward to the login page using the original request
+        while (req instanceof HttpServletRequestWrapper)
+            req = (HttpServletRequest) ((HttpServletRequestWrapper) req).getRequest();
+
+        req.setAttribute(ORIGINAL_REQUEST, req);
+
+        try {
+            req.getRequestDispatcher(login).forward(req, resp);
+        } catch (Throwable q) {
+            q.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
