@@ -34,111 +34,108 @@ import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class RecordEditor extends RecordFormatter {
-	String database;
-	
-	String[] db;
+    String database;
 
-	String[] query;
-	
-	protected RecordEditor() {		
-	}
+    String[] db;
 
-	public RecordEditor(DataDefinition ri, Hashtable h, String database) {
-		super(ri, h);
-		this.database = database;
-        db= new String[ri.getFieldNames().size()];
-        query= new String[ri.getFieldNames().size()];
-	}
+    String[] query;
 
-	public Dictionary readFrom(HttpServletRequest req, String suffix) {
-		Dictionary data = new Hashtable();
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			FieldEditor fe = (FieldEditor) formatterArray[i];
-			if (fe.getInputName(this, i, suffix) == null)
-				continue;
-			Object o = fe.readFrom(this, i,
-					org.makumba.controller.http.RequestAttributes
-							.getParameters(req), suffix);
-			if (o != null)
-				o = dd.getFieldDefinition(i).checkValue(o);
-			else
-				o = dd.getFieldDefinition(i).getNull();
+    protected RecordEditor() {
+    }
 
-			org.makumba.controller.http.RequestAttributes.setAttribute(req, fe
-					.getInputName(this, i, suffix)
-					+ "_type", dd.getFieldDefinition(i));
+    public RecordEditor(DataDefinition ri, Hashtable h, String database) {
+        super(ri, h);
+        this.database = database;
+        db = new String[ri.getFieldNames().size()];
+        query = new String[ri.getFieldNames().size()];
+    }
 
-			if (o != null)
-				// the data is written in the dictionary without the suffix
-				data.put(fe.getInputName(this, i, ""), o);
-			org.makumba.controller.http.RequestAttributes.setAttribute(req, fe
-					.getInputName(this, i, suffix), o);
-		}
-		return data;
-	}
+    public Dictionary readFrom(HttpServletRequest req, String suffix) {
+        Dictionary data = new Hashtable();
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldEditor fe = (FieldEditor) formatterArray[i];
+            if (fe.getInputName(this, i, suffix) == null)
+                continue;
+            Object o = fe.readFrom(this, i, org.makumba.controller.http.RequestAttributes.getParameters(req), suffix);
+            if (o != null)
+                o = dd.getFieldDefinition(i).checkValue(o);
+            else
+                o = dd.getFieldDefinition(i).getNull();
 
-	public void config() {
-		Object a[] = { this };
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			((FieldEditor) formatterArray[i]).onStartup(this, i);
-		}
-	}
+            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix) + "_type",
+                    dd.getFieldDefinition(i));
 
-	protected void initFormatters() {
-		formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			FieldDefinition fd = dd.getFieldDefinition(i);
-			switch (fd.getIntegerType()) {
-			case FieldDefinition._ptr:
-				formatterArray[i] = ptrEditor.getInstance();
-				break;
-			case FieldDefinition._ptrOne:
-			case FieldDefinition._setComplex:
-				formatterArray[i] = FieldEditor.getInstance();
-				break;
-			case FieldDefinition._int:
-				formatterArray[i] = intEditor.getInstance();
-				break;
-			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumEditor.getInstance();
-				break;
-			case FieldDefinition._char:
-				formatterArray[i] = charEditor.getInstance();
-				break;
-			case FieldDefinition._charEnum:
-				formatterArray[i] = charEnumEditor.getInstance();
-				break;
-			case FieldDefinition._text:
-				formatterArray[i] = textEditor.getInstance();
-				break;
-			case FieldDefinition._date:
-				formatterArray[i] = dateEditor.getInstance();
-				break;
-			case FieldDefinition._set:
-				formatterArray[i] = setEditor.getInstance();
-				break;
-			//			case FieldDefinition._nil:
-			//				formatterArray[i] = nilEditor.getInstance();
-			//				break;
-			case FieldDefinition._real:
-				formatterArray[i] = realEditor.getInstance();
-				break;
-			case FieldDefinition._setCharEnum:
-				formatterArray[i] = setcharEnumEditor.getInstance();
-				break;
-			case FieldDefinition._setIntEnum:
-				formatterArray[i] = setintEnumEditor.getInstance();
-				break;
-			case FieldDefinition._dateCreate:
-			case FieldDefinition._dateModify:
-			case FieldDefinition._ptrIndex:
-			case FieldDefinition._ptrRel:
-				formatterArray[i] = errorEditor.getInstance();
-				break;
-			default:
-				throw new RuntimeException("Shouldn't be here");
-			}
-		}
-	}
+            if (o != null)
+                // the data is written in the dictionary without the suffix
+                data.put(fe.getInputName(this, i, ""), o);
+            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
+        }
+        return data;
+    }
+
+    public void config() {
+        Object a[] = { this };
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            ((FieldEditor) formatterArray[i]).onStartup(this, i);
+        }
+    }
+
+    protected void initFormatters() {
+        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldDefinition fd = dd.getFieldDefinition(i);
+            switch (fd.getIntegerType()) {
+            case FieldDefinition._ptr:
+                formatterArray[i] = ptrEditor.getInstance();
+                break;
+            case FieldDefinition._ptrOne:
+            case FieldDefinition._setComplex:
+                formatterArray[i] = FieldEditor.getInstance();
+                break;
+            case FieldDefinition._int:
+                formatterArray[i] = intEditor.getInstance();
+                break;
+            case FieldDefinition._intEnum:
+                formatterArray[i] = intEnumEditor.getInstance();
+                break;
+            case FieldDefinition._char:
+                formatterArray[i] = charEditor.getInstance();
+                break;
+            case FieldDefinition._charEnum:
+                formatterArray[i] = charEnumEditor.getInstance();
+                break;
+            case FieldDefinition._text:
+                formatterArray[i] = textEditor.getInstance();
+                break;
+            case FieldDefinition._date:
+                formatterArray[i] = dateEditor.getInstance();
+                break;
+            case FieldDefinition._set:
+                formatterArray[i] = setEditor.getInstance();
+                break;
+            // case FieldDefinition._nil:
+            // formatterArray[i] = nilEditor.getInstance();
+            // break;
+            case FieldDefinition._real:
+                formatterArray[i] = realEditor.getInstance();
+                break;
+            case FieldDefinition._setCharEnum:
+                formatterArray[i] = setcharEnumEditor.getInstance();
+                break;
+            case FieldDefinition._setIntEnum:
+                formatterArray[i] = setintEnumEditor.getInstance();
+                break;
+            case FieldDefinition._dateCreate:
+            case FieldDefinition._dateModify:
+            case FieldDefinition._ptrIndex:
+            case FieldDefinition._ptrRel:
+                formatterArray[i] = errorEditor.getInstance();
+                break;
+            default:
+                throw new RuntimeException(
+                        "Internal Makumba error: Unknown FieldDefinition type lead to invalid formatter content. Please report to developers.");
+            }
+        }
+    }
 
 }
