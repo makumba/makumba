@@ -30,72 +30,71 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 
 public class RecordFormatter implements Serializable {
-	public DataDefinition dd;
+    public DataDefinition dd;
 
-	public String[] expr;
+    public String[] expr;
 
-	protected transient FieldFormatter[] formatterArray;
-	
-	public RecordFormatter() {}
+    protected transient FieldFormatter[] formatterArray;
 
-	private static final long serialVersionUID = 1L;
+    public RecordFormatter() {
+    }
 
-	public RecordFormatter(ComposedQuery q) {
-		dd = (DataDefinition) q.getResultType();
-		initFormatters();
+    private static final long serialVersionUID = 1L;
 
-		expr = new String[dd.getFieldNames().size()];
+    public RecordFormatter(ComposedQuery q) {
+        dd = (DataDefinition) q.getResultType();
+        initFormatters();
 
-		for (int i = 0; i < dd.getFieldNames().size(); i++)
-			expr[i] = q.getProjectionAt(i);
-	}
+        expr = new String[dd.getFieldNames().size()];
 
-	public RecordFormatter(DataDefinition dd, java.util.Hashtable names) {
-		this.dd = dd;
-		initFormatters();
+        for (int i = 0; i < dd.getFieldNames().size(); i++)
+            expr[i] = q.getProjectionAt(i);
+    }
 
-		expr = new String[dd.getFieldNames().size()];
+    public RecordFormatter(DataDefinition dd, java.util.Hashtable names) {
+        this.dd = dd;
+        initFormatters();
 
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			expr[i] = (String) names.get(dd.getFieldDefinition(i).getName());
-		}
-	}
+        expr = new String[dd.getFieldNames().size()];
 
-	protected String applyParameters(FieldFormatter ff,
-			Dictionary formatParams, String s) {
-		return s;
-	}
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            expr[i] = (String) names.get(dd.getFieldDefinition(i).getName());
+        }
+    }
 
-	public String format(int i, Object value, Dictionary formatParams) {
-		formatterArray[i].checkParams(this, i, formatParams);
-		return applyParameters(formatterArray[i], formatParams,
-				formatterArray[i].format(this, i, value, formatParams));
-	}
+    protected String applyParameters(FieldFormatter ff, Dictionary formatParams, String s) {
+        return s;
+    }
 
-	protected void initFormatters() {
-		formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			FieldDefinition fd = dd.getFieldDefinition(i);
-			switch (fd.getIntegerType()) {
-			case FieldDefinition._ptr:
-			case FieldDefinition._ptrRel:
-			case FieldDefinition._ptrOne:
-			case FieldDefinition._ptrIndex:
-				formatterArray[i] = ptrFormatter.getInstance();
-				break;
-			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumFormatter.getInstance();
-				break;
-			case FieldDefinition._date:
-				formatterArray[i] = dateFormatter.getInstance();
-				break;
-			case FieldDefinition._dateCreate:
-			case FieldDefinition._dateModify:
-				formatterArray[i] = timestampFormatter.getInstance();
-				break;
-			default:
-				formatterArray[i] = FieldFormatter.getInstance();
-			}
-		}
-	}
+    public String format(int i, Object value, Dictionary formatParams) {
+        formatterArray[i].checkParams(this, i, formatParams);
+        return applyParameters(formatterArray[i], formatParams, formatterArray[i].format(this, i, value, formatParams));
+    }
+
+    protected void initFormatters() {
+        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldDefinition fd = dd.getFieldDefinition(i);
+            switch (fd.getIntegerType()) {
+            case FieldDefinition._ptr:
+            case FieldDefinition._ptrRel:
+            case FieldDefinition._ptrOne:
+            case FieldDefinition._ptrIndex:
+                formatterArray[i] = ptrFormatter.getInstance();
+                break;
+            case FieldDefinition._intEnum:
+                formatterArray[i] = intEnumFormatter.getInstance();
+                break;
+            case FieldDefinition._date:
+                formatterArray[i] = dateFormatter.getInstance();
+                break;
+            case FieldDefinition._dateCreate:
+            case FieldDefinition._dateModify:
+                formatterArray[i] = timestampFormatter.getInstance();
+                break;
+            default:
+                formatterArray[i] = FieldFormatter.getInstance();
+            }
+        }
+    }
 }
