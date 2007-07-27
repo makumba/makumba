@@ -162,8 +162,10 @@ public class HqlAnalyzer implements OQLAnalyzer {
     private AST getOrderBy() {
         boolean found = false;
         AST child = parsedHQL.getFirstChild();
+        if(child == null) return null;
         while(!child.getText().equals("order") || !found) {
             child = child.getNextSibling();
+            if(child == null) return null;
             if (child.getText().equals("order")) {
                 found = true;
             }
