@@ -67,11 +67,16 @@ public class IfTag extends MakumbaTag implements BodyTag {
     }
 
     /** 
-     * Determines the ValueComputer and associates it with the tagKey 
+     * Determines the ValueComputer and associates it with the tagKey .
+     * If we use Hibernate we need to adjust the syntax
      * @param pageCache the page cache of the current page
      */
     public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
-        pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
+        if(pageCache.usesHQL) {
+            pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
+        } else {
+            pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
+        }
     }
 
     /** 
