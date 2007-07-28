@@ -145,13 +145,13 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._dateModify:
             case FieldDefinition._dateCreate:
             case FieldDefinition._date:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
                 hd.startElement("", "", "property", atts);
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._char:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 hd.startElement("", "", "property", atts);
                 atts.clear();
                 atts.addAttribute("", "", "name", "", columnName(fd.getName()));
@@ -161,7 +161,7 @@ public class MddToMapping extends HibernateUtils {
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._ptr:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
                 atts.addAttribute("", "", "cascade", "", "all");
                 atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
@@ -179,7 +179,7 @@ public class MddToMapping extends HibernateUtils {
                 mddsToDo.add(fd.getPointedType());
                 break;
             case FieldDefinition._ptrOne:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
                 atts.addAttribute("", "", "cascade", "", "all");
                 atts.addAttribute("", "", "unique", "", "true");
@@ -198,7 +198,7 @@ public class MddToMapping extends HibernateUtils {
                 hd.endElement("", "", "id");
                 break;
             case FieldDefinition._text:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
@@ -209,7 +209,7 @@ public class MddToMapping extends HibernateUtils {
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._set:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "table", "", dd.getName().replaceAll("\\.", "_").replaceAll("->", "__")
                         + "__" + fd.getName() + "_");
                 atts.addAttribute("", "", "cascade", "", "all-delete-orphan");
@@ -232,7 +232,7 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._setComplex:
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "inverse", "", "true");
                 atts.addAttribute("", "", "cascade", "", "none");
                 hd.startElement("", "", "bag", atts);
@@ -252,7 +252,7 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._ptrRel:
                 /* do we need to add a mapping to the parent field? */
                 atts.clear();
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
                 atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "many-to-one", atts);

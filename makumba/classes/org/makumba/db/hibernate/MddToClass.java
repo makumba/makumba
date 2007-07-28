@@ -75,7 +75,7 @@ public class MddToClass extends HibernateUtils {
 				type = "java.util.ArrayList";
 				break;
 		}
-        name=checkJavaReserved(name);
+        name=checkReserved(name);
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
@@ -179,7 +179,7 @@ public class MddToClass extends HibernateUtils {
 	
 	private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
         type= arrowToDoubleUnderscore(type);
-        name= checkJavaReserved(arrowToDoubleUnderscore(name));
+        name= checkReserved(arrowToDoubleUnderscore(name));
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		

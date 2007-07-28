@@ -36,7 +36,12 @@ public class HibernateUtils {
         }
     }
     
-    protected String checkJavaReserved(String name){
+    protected String checkReserved(String name){
+        // if the name is "id" we need to rename it, or it will annoy Hibernate's internal "id"
+        if(name.equals("id"))
+            return arrowToDoubleUnderscore("idField");
+        
+        // check if this is a java reserved keyword, not to annoy the class generator
         if(javaReservedKeywords.contains(name))
             return arrowToDoubleUnderscore(name+"_");
         return arrowToDoubleUnderscore(name);
