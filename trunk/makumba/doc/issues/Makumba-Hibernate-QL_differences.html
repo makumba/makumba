@@ -138,17 +138,17 @@ below).
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT x &gt; y FROM...<br>
+      <td style="vertical-align: top;">SELECT x &gt; y FROM...<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">BUG, HQL error<br>
+      <td style="vertical-align: top;">BUG, HQL error<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">selecting logical expression<br>
+      <td style="vertical-align: top;">selecting logical expression<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">HQL cannot directly select logical expressions, so using
+      <td style="vertical-align: top;">HQL cannot directly select logical expressions, so using
       mak:if is a problem<br><br>
       HQL understands things of the kind "case when (logical expression) then 1 else 0 end".<br><br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">mak:if should adopt this syntax when translating the query
+      <td style="vertical-align: top;">FIXED. mak:if now adopts this syntax when translating the query
       </td>
     </tr>
     <tr>
