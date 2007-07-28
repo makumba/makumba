@@ -79,7 +79,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
             if (fd.getType().equals("ptr")) { // we have a pointer
                 if (!(fd.getDescription().equalsIgnoreCase("ID") || fd.getDescription().startsWith("hibernate_"))) {
                     throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
-                            + fd.getDescription() + "' in the query'" + query + "'!\nYou have to select '"
+                            + fd.getDescription() + "' in the query '" + query + "'!\nYou have to select '"
                             + fd.getDescription() + ".id' instead.");
                 }
             }
@@ -110,6 +110,8 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
                     q.setParameter(queryParams[i], a.getAttribute(queryParams[i]), Hibernate.DATE);
                 } else if (a.getAttribute(queryParams[i]) instanceof Integer) {
                     q.setParameter(queryParams[i], a.getAttribute(queryParams[i]), Hibernate.INTEGER);
+                } else if (a.getAttribute(queryParams[i]) instanceof Pointer) {
+                    q.setParameter(queryParams[i], new Integer((int) ((Pointer) a.getAttribute(queryParams[i])).longValue()), Hibernate.INTEGER);
                 } else { // we have any param type (most likely String)
                     q.setParameter(queryParams[i], a.getAttribute(queryParams[i]));
                 }
@@ -121,6 +123,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         // see also bug
         List list = q.list();
         Vector results = new Vector(list.size());
+        
 
         Object[] projections = dataDef.getFieldNames().toArray();
         Dictionary keyIndex = new java.util.Hashtable(projections.length);
@@ -148,8 +151,12 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
                         // FIXME: once we do not get dummy pointers from hibernate queries, take this out
                         if (resultFields[j] instanceof Pointer) { // we have a dummy pointer
                             resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getUid());
-                        } else { // we have an integer
+                        } else if (resultFields[j] instanceof Integer){ // we have an integer
                             resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
+                        } else {
+                            throw new org.makumba.LogicException("Internal Makumba error: Detected an unknown type returned by a query. " +
+                                "The projection index is "+j+", the result class is "+resultFields[j].getClass()+", it's content " +
+                                "is '"+resultFields[j]+"'and type analysis claims its type is "+fd.getPointedType().getName());
                         }
                     } else {
                         resultFields[j] = resultFields[j];
@@ -184,7 +191,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         params.setAttribute("name", "Cristian");
         params.setAttribute("someInt", new Integer(1));
         params.setAttribute("someSet", v);
-        params.setAttribute("generalPerson", new SQLPointer("general.Person", 151022406));
+        params.setAttribute("testPerson", new SQLPointer("test.Person", 345678));
         params.setAttribute("someDouble", new Double(2.0));
 
         String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
@@ -193,8 +200,11 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
         String query4 = "SELECT case when 1>2 then 1.5 else 2.0 end, i.id FROM test.Individual i";
         String query5 = "SELECT lbg.id as col0, history.id as col1, history.status as col2, history.event.start as col3 from best.internal.Lbg lbg join lbg.membershipHistory history order by col3 DESC";
         String query6 = "SELECT lbg.id as col0, lbg.name As col1, lbg.id AS col2, lbg.name aS col3 from best.internal.Lbg lbg order by col3, col2,col1 DESC";
-            
-        String[] queries = new String[] { query6 };
+        String query7 ="SELECT p.id AS ID ,p AS person, p.driver AS col3, p.birthdate AS col4 FROM test.Person p";
+        String query8= "SELECT 1 from test.Person p join p.indiv i WHERE i.name = 'john'";
+        String query9 = "SELECT 1 from test.Person p WHERE p = :testPerson";
+        
+        String[] queries = new String[] { query9 };
         for (int i = 0; i < queries.length; i++) {
             System.out.println("Query " + queries[i] + " ==> \n"
                     + printQueryResults(qr.executeDirect(queries[i], params, 0, 50)) + "\n\n");
