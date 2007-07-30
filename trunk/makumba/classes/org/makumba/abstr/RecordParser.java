@@ -40,6 +40,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.util.ReservedKeywords;
 
 public class RecordParser {
     OrderedProperties text;
@@ -305,6 +306,11 @@ public class RecordParser {
                         && !Character.isJavaIdentifierPart(nm.charAt(i)))
                     mpe.add(fail("Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm + "\"", nm));
             }
+            
+            if(ReservedKeywords.isReservedKeyword(nm)) {
+                mpe.add(fail("Error: field name cannot be one of the reserved keywords " + ReservedKeywords.getKeywordsAsString(), nm));
+            }
+            
             fi = new FieldInfo((RecordInfo) dd, nm);
             ((RecordInfo) dd).addField1(fi);
             try {
