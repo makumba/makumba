@@ -97,14 +97,15 @@ public class mdd extends TestCase {
 		Vector errors = new Vector();
 		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
 			String mdd = (String) e.nextElement();
+            System.out.println("// "+mdd);
 			try {
-				MakumbaSystem.getDataDefinition(mdd);
+				MakumbaSystem.getDataDefinition("test.validMdds."+mdd);
 			} catch (DataDefinitionParseError ex) {
 				errors
 						.add("\n ." + (errors.size() + 1)
 								+ ") Error reported in valid MDD <" + mdd
 								+ ">:\n" + ex);
-				// ex.printStackTrace();
+				 //ex.printStackTrace();
 			}
 		}
 		if (errors.size() > 0)
@@ -124,7 +125,7 @@ public class mdd extends TestCase {
 			DataDefinitionParseError actual = expected;
 			String mdd = (String) e.nextElement();
 			try {
-				MakumbaSystem.getDataDefinition(mdd);
+				MakumbaSystem.getDataDefinition("test.brokenMdds."+mdd);
 			} catch (DataDefinitionParseError thrown) {
 				actual = thrown;
 			}
