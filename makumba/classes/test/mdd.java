@@ -97,8 +97,7 @@ public class mdd extends TestCase {
 		Vector errors = new Vector();
 		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
 			String mdd = (String) e.nextElement();
-            System.out.println("// "+mdd);
-			try {
+            try {
 				MakumbaSystem.getDataDefinition("test.validMdds."+mdd);
 			} catch (DataDefinitionParseError ex) {
 				errors
