@@ -16,7 +16,7 @@ intEnum=int{"Any"=-400, "ugly"=-666 deprecated, "value"=2147483647, "is"=1, "not
 then=date
 
 #text variants
-this=text
+sometext=text
 
 #ptr variants
 ptrFNU	=fixed  not null unique ptr test.validMdds.Diversity
@@ -31,7 +31,7 @@ ptr___	=		 	ptr test.validMdds.Diversity
 #set variants:
 setSelf=set test.validMdds.Diversity
 setComplex=set
-  setComplex->char=char[111]
+  setComplex->somechar=char[111]
   setComplex->i=int
 
 #some SQL keywords that are not OQL keywords?
