@@ -208,7 +208,7 @@ public class MddToMapping extends HibernateUtils {
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._binary:
-                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
