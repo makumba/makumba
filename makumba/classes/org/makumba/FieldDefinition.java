@@ -50,6 +50,7 @@ public interface FieldDefinition
   public static final int _real = 15;
   public static final int _setCharEnum = 16;
   public static final int _setIntEnum = 17;
+  public static final int _binary = 18;
   
   /** The name of this field, normally the same with the name of the field */
   public String getName();

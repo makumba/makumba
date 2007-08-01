@@ -71,7 +71,12 @@ public abstract class Database {
     int nconn = 0;
 
     int initConnections = 1;
-
+    protected static boolean requestUTF8 = false;
+    
+    static public boolean supportsUTF8() {
+        return requestUTF8;
+    }
+    
     protected ResourcePool connections = new ResourcePool() {
         public Object create() {
             nconn++;

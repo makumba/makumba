@@ -443,7 +443,7 @@ public abstract class Responder implements java.io.Serializable
                 } else {
                   handlerName = "on_edit"+Logic.upperCase(resp.basePointerType);
                 }
-                
+
 			  return Logic.doEdit(resp.controller,
                           handlerName,
 					      resp.basePointerType, 

@@ -264,7 +264,7 @@ public class jspViewer extends LineViewer {
 
         StringBuffer currentText = new StringBuffer();
 
-        for (int j = 0; j < sourceSyntaxPoints.length; j++) {
+        for (int j = 0; sourceSyntaxPoints != null && j < sourceSyntaxPoints.length; j++) {
             SyntaxPoint currentSyntaxPoint = sourceSyntaxPoints[j];
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
