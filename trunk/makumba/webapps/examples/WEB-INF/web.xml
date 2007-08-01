@@ -42,6 +42,44 @@
     <url-pattern>/logic/*</url-pattern>
   </servlet-mapping>
 
+<!-- servlets for data query/view/... -->
+  <servlet>
+    <servlet-name>dataViewer</servlet-name>
+    <servlet-class>org.makumba.devel.DataObjectViewerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dataViewer</servlet-name>
+    <url-pattern>/dataView/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>dataLister</servlet-name>
+    <servlet-class>org.makumba.devel.DataTypeListerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dataLister</servlet-name>
+    <url-pattern>/dataList/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>dataValueConverter</servlet-name>
+    <servlet-class>org.makumba.devel.DataPointerValueConverter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dataValueConverter</servlet-name>
+    <url-pattern>/valueConverter/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>dataQuery</servlet-name>
+    <servlet-class>org.makumba.devel.DataQueryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dataQuery</servlet-name>
+    <url-pattern>/dataQuery/*</url-pattern>
+  </servlet-mapping>
+<!-- end servlets for data query/view/... -->
+
   <servlet>
     <servlet-name>invoker</servlet-name>
     <servlet-class>org.apache.catalina.servlets.InvokerServlet</servlet-class>
