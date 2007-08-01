@@ -4,9 +4,11 @@
 
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
+<%@include file="menu.jsp" %>
+
 <h2>Partners:</h2>
 
-<mak:list from="organisation.Partner p">
+<mak:list from="organisation.Partner p" limit="500">
    <a href="partner.jsp?partner=<mak:value expr="p"/>">
                 <mak:value expr="p.name"/>
    </a>,

@@ -143,6 +143,7 @@ public class MddToClass extends HibernateUtils {
 						type = "int";
 						break;
 					case FieldDefinition._text:
+					case FieldDefinition._binary:
 						type = "org.makumba.Text";
 						break;
 					case FieldDefinition._set:

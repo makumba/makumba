@@ -565,7 +565,7 @@ public class TableManager extends Table {
 	protected void create(SQLDBConnection dbc, String tblname, boolean really)
 			throws SQLException {
 		Statement st = dbc.createStatement();
-		Object[] dbArg = { getSQLDatabase() };
+		// Object[] dbArg = { getSQLDatabase() };
 		if (really && !tblname.startsWith("temp"))
 			try {
 				st.executeUpdate("DROP TABLE " + tblname);
@@ -788,9 +788,11 @@ public class TableManager extends Table {
 				throw new org.makumba.DBError(new Exception("no such field "
 						+ fieldDBName + " in " + this.getDBName()));
 			command.append(s = inPreparedUpdate(fieldName));
+            
 		}
 
 		command.append(" WHERE " + inPreparedUpdate(indexField));
+		//System.out.println("UTFcommand: "+command.toString());
 
 		//    while(true)
 		try {
@@ -799,8 +801,12 @@ public class TableManager extends Table {
 
 			int n = 1;
 			for (Enumeration e = d.keys(); e.hasMoreElements(); n++)
-				setUpdateArgument((String) e.nextElement(), st, n, d);
+            {
+                String ss = (String) e.nextElement();
+				setUpdateArgument(ss/*(String) e.nextElement()*/, st, n, d);
+            }
 
+            
 			setUpdateArgument(getDBName(), st, n, uid);
 
 			if (getSQLDatabase().exec(st) == -1)
@@ -872,6 +878,8 @@ public class TableManager extends Table {
 				return get_char_Value(fieldName, rs, i);
 			case FieldDefinition._text:
 				return get_text_Value(fieldName, rs, i);
+			case FieldDefinition._binary:
+				return get_binary_Value(fieldName, rs, i);
 			case FieldDefinition._date:
 				return get_dateTime_Value(fieldName, rs, i);
 			case FieldDefinition._dateCreate:
@@ -935,6 +943,12 @@ public class TableManager extends Table {
 	public Object get_char_Value(String fieldName, ResultSet rs, int i)
 			throws SQLException {
 		Object o = base_getValue(fieldName, rs, i);
+        
+        if (o instanceof byte[])
+        {
+            String a = new String((byte[]) o);
+        }
+        
 		if (o == null)
 			return o;
 		if (o instanceof byte[])
@@ -950,6 +964,32 @@ public class TableManager extends Table {
 	public Object get_text_Value(String fieldName, ResultSet rs, int i)
 			throws SQLException {
 		Object o = base_getValue(fieldName, rs, i);
+        
+        if (o instanceof byte[])
+        {
+            String a = new String((byte[]) o);
+        }
+        
+		if (o == null)
+			return o;
+		if (o instanceof byte[])
+			return new String((byte[]) o);
+		return o;
+
+		/*
+		 * InputStream is= rs.getBinaryStream(i); if(is==null ) return null;
+		 * return new Text(is);
+		 */
+	}
+
+	/**
+	 * get the java value of the recordSet column corresponding to this field.
+	 * This method should return null if the SQL field is null
+	 */
+	public Object get_binary_Value(String fieldName, ResultSet rs, int i)
+			throws SQLException {
+		Object o = base_getValue(fieldName, rs, i);
+
 		if (o == null)
 			return o;
 		return Text.getText(o);
@@ -959,7 +999,7 @@ public class TableManager extends Table {
 		 * return new Text(is);
 		 */
 	}
-
+	
 	//moved from dateTimeManager
 	/**
 	 * get the java value of the recordSet column corresponding to this field.
@@ -984,10 +1024,6 @@ public class TableManager extends Table {
 		Object o = rs.getTimestamp(i);
 		if (rs.wasNull())
 			return null;
-		//  return getDefaultValue();
-		//        if(o instanceof java.lang.BigDecimal)
-
-		// System.out.println(o.getClass());
 		return o;
 	}
 
@@ -1002,6 +1038,7 @@ public class TableManager extends Table {
 			setNullArgument(fieldName, ps, n);
 		else
 			try {
+//				System.out.println("UTF: setUpdateArgument");
 				setArgument(fieldName, ps, n, o);
 			} catch (SQLException e) {
 				org.makumba.MakumbaSystem.getMakumbaLogger(
@@ -1043,19 +1080,38 @@ public class TableManager extends Table {
 	/** set a non-null argument of this type in a prepared SQL statement */
 	public void setArgument(String fieldName, PreparedStatement ps, int n,
 			Object o) throws SQLException {
-		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text)
+
+		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._binary)
+		{
+            set_binary_Argument(fieldName, ps, n, o);
+		}
+        else if(getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text
+		    || getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._char
+		    || getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._charEnum)
+        {
+//            set_binary_Argument(fieldName, ps, n, o);
 			set_text_Argument(fieldName, ps, n, o);
+        }
 		else
 			ps.setObject(n, toSQLObject(fieldName, o));
 	}
 
 	//moved from textManager
-	public void set_text_Argument(String fieldName, PreparedStatement ps,
+	public void set_binary_Argument(String fieldName, PreparedStatement ps,
 			int n, Object o) throws SQLException {
+        
 		Text t = Text.getText(o);
 		ps.setBinaryStream(n, t.toBinaryStream(), t.length());
-		//ps.setBytes(n, t.getBytes());
+        
 	}
+
+    public void set_text_Argument(String fieldName, PreparedStatement ps,
+            int n, Object o) throws SQLException {
+
+        Text t = Text.getText(o);
+        ps.setString(n, t.toString());
+
+    }
 
 	//moved from FieldManager
 	/** what is the SQL type of this field? */
@@ -1072,9 +1128,10 @@ public class TableManager extends Table {
 			return get_int_SQLType(fieldName);
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
-			return get_char_SQLType(fieldName);
 		case FieldDefinition._text:
-			return get_text_SQLType(fieldName);
+			return get_char_SQLType(fieldName);
+		case FieldDefinition._binary:
+			return get_binary_SQLType(fieldName);
 		case FieldDefinition._date:
 			return get_dateTime_SQLType(fieldName);
 		case FieldDefinition._real:
@@ -1103,7 +1160,7 @@ public class TableManager extends Table {
 	}
 
 	//moved from textManager
-	protected int get_text_SQLType(String fieldName) {
+	protected int get_binary_SQLType(String fieldName) {
 		return java.sql.Types.LONGVARBINARY;
 	}
 
@@ -1244,6 +1301,8 @@ public class TableManager extends Table {
 			return get_char_FieldDBType(fieldName);
 		case FieldDefinition._text:
 			return get_text_FieldDBType(fieldName);
+		case FieldDefinition._binary:
+			return get_binary_FieldDBType(fieldName);
 		case FieldDefinition._date:
 			return get_dateTime_FieldDBType(fieldName);
 		case FieldDefinition._dateCreate:
@@ -1277,9 +1336,14 @@ public class TableManager extends Table {
 	//moved from textManager
 	/** returns text */
 	protected String get_text_FieldDBType(String fieldName) {
-		return "LONG VARBINARY";
+		return "LONGTEXT";
 	}
 
+	//moved from textManager
+	/** returns text */
+	protected String get_binary_FieldDBType(String fieldName) {
+		return "LONG VARBINARY";
+	}
 	//moved from dateTimeManager
 	/** returns datetime */
 	protected String get_dateTime_FieldDBType(String fieldName) {
@@ -1419,6 +1483,8 @@ public class TableManager extends Table {
 			return write_char_Constant(fieldName, o);
 		case FieldDefinition._text:
 			return write_text_Constant(fieldName, o);
+		case FieldDefinition._binary:
+			return write_binary_Constant(fieldName, o);
 		case FieldDefinition._date:
 			return write_dateTime_Constant(fieldName, o);
 		case FieldDefinition._dateCreate:
@@ -1450,6 +1516,12 @@ public class TableManager extends Table {
 		return org.makumba.db.sql.Database.SQLEscape(o.toString());
 	}
 
+	//moved from textManager
+	/** does apostrophe escape */
+	public String write_binary_Constant(String fieldName, Object o) {
+		return org.makumba.db.sql.Database.SQLEscape(o.toString());
+	}
+	
 	//moved from dateTimeManager
 	/** writes the date between apostrophes */
 	public String write_dateTime_Constant(String fieldName, Object o) {
@@ -1544,7 +1616,7 @@ public class TableManager extends Table {
 	 */
 	public void manageIndexes(String fieldName, SQLDBConnection dbc)
 			throws SQLException {
-		String keyName = getFieldDBIndexName(fieldName);
+		// String keyName = getFieldDBIndexName(fieldName);
 		String brief = getDataDefinition().getName() + "#" + fieldName + " ("
 				+ getFieldDefinition(fieldName).getDescription() + ")";
 

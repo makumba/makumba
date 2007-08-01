@@ -151,6 +151,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		integerTypeMap.put("char", new Integer(FieldDefinition._char));
 		integerTypeMap.put("charEnum", new Integer(FieldDefinition._charEnum));
 		integerTypeMap.put("text", new Integer(FieldDefinition._text));
+		integerTypeMap.put("binary", new Integer(FieldDefinition._binary));
 		integerTypeMap.put("date", new Integer(FieldDefinition._date));
 		integerTypeMap.put("dateCreate", new Integer(
 				FieldDefinition._dateCreate));
@@ -338,6 +339,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
 		case FieldDefinition._text:
+		case FieldDefinition._binary:
 			return "";
 		case FieldDefinition._date:
 		case FieldDefinition._dateCreate:
@@ -379,6 +381,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		case FieldDefinition._setIntEnum:
 			return Pointer.NullSet;
 		case FieldDefinition._text:
+		case FieldDefinition._binary:
 			return Pointer.NullText;
 		default:
 			throw new RuntimeException("Shouldn't be here");
@@ -471,6 +474,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 			return "setint";
 		case FieldDefinition._text:
 			return "text";
+		case FieldDefinition._binary:
+			return "binary";
 		default:
 			throw new RuntimeException("Shouldn't be here");
 		}
@@ -503,6 +508,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		case FieldDefinition._setComplex:
 			return null;
 		case FieldDefinition._text:
+		case FieldDefinition._binary:
 			return org.makumba.Text.class;
 		default:
 			throw new RuntimeException("Shouldn't be here");
@@ -670,7 +676,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	}
 
 	/**
-	 * works only for char, text, charEnum, setcharEnum types
+	 * works only for char, text, binary, charEnum, setcharEnum types
 	 *  
 	 */
 	public String getDefaultString() {
@@ -678,6 +684,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
 		case FieldDefinition._text:
+		case FieldDefinition._binary:
 			return (String) getDefaultValue();
 		case FieldDefinition._setCharEnum:
 			return (String) getEnum().defaultValue;
@@ -733,6 +740,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 			return check_setComplex_ValueImpl(value);
 		case FieldDefinition._text:
 			return check_text_ValueImpl(value);
+		case FieldDefinition._binary:
+			return check_binary_ValueImpl(value);
 		default:
 			throw new RuntimeException("Shouldn't be here");
 		}
@@ -903,6 +912,15 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		}
 	}
 
+	//moved from textHandler
+	public Object check_binary_ValueImpl(Object value) {
+		try {
+			return Text.getText(value);
+		} catch (InvalidValueException e) {
+			throw new InvalidValueException(this, e.getMessage());
+		}
+	}
+	
 	//moved from setcharEnumHandler and setintEnumHandler
 	FieldInfo getEnum() {
 		return (FieldInfo) ((DataDefinition) this.extra1)

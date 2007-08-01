@@ -136,7 +136,6 @@ public class MddToMapping extends HibernateUtils {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             atts.clear();
-            // System.out.println(dd.getFieldDefinition(i).getName() + " : " + dd.getFieldDefinition(i).getType());
             switch (fd.getIntegerType()) {
             case FieldDefinition._int:
             case FieldDefinition._real:
@@ -199,6 +198,17 @@ public class MddToMapping extends HibernateUtils {
                 break;
             case FieldDefinition._text:
                 atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
+                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
+                hd.startElement("", "", "property", atts);
+                atts.clear();
+                atts.addAttribute("", "", "name", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "sql-type", "", "longtext");
+                hd.startElement("", "", "column", atts);
+                hd.endElement("", "", "column");
+                hd.endElement("", "", "property");
+                break;
+            case FieldDefinition._binary:
+                atts.addAttribute("", "", "name", "", checkJavaReserved(fd.getName()));
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
