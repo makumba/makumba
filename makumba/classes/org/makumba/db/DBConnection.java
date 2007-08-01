@@ -334,6 +334,11 @@ public abstract class DBConnection implements org.makumba.Transaction {
     public int delete(String from, String where, Object parameters) {
         return executeUpdate(from, null, where, parameters);
     }
+
+    public Query getQuery(String OQL) {
+        Object[] k = { OQL, "" };
+        return ((Query) getHostDatabase().queries.getResource(k));
+    }
 }
 
 class DataHolder {

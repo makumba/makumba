@@ -23,6 +23,8 @@
 
 package org.makumba;
 
+import org.makumba.db.Query;
+
 /** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>
   Stricly speaking this class represents a database connection (later on, transaction). Obtaining more such objects for the same database configurations will result in opening more connections. Connections must be given back to the system using the {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.<p>
  * At the level of this API, data is represented as java.util.Dictionary, both for reading and writing. Most methods throw {@link DBError} if a fatal database error occurs. If the connection to the database is lost, an attempt is made to reconnect before throwing a {@link DBError}.<P>
@@ -47,6 +49,8 @@ public interface Transaction extends Database
 
     /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
     public String getName();
+    
+    public Query getQuery(String OQL);
     
     /** Execute a parametrized OQL query.   
      * Queries are pre-compiled and cached in the database, so they should be parametrized as much as possible.
