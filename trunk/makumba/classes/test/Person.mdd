@@ -17,6 +17,8 @@ weight=real ; weight in kilos
 hobbies=text             ;Hobbies
 comment=text		 ;Comments
 
+picture=binary		;Picture of the person
+
 favouriteToy= ptr test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers  ;Favourite toy in a long tablename
 
 brother= ptr test.Person
