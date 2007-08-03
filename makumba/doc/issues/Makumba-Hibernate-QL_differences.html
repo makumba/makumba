@@ -187,17 +187,40 @@ below).
       <td style="vertical-align: top;">Do nothing.</td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT <span style="font-weight: bold;">p.id</span> FROM test.Person p<br>
+      <td style="vertical-align: top;">SELECT <span style="font-weight: bold;">p.id</span> FROM test.Person p<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT <span style="font-weight: bold;">p.id</span> FROM test.Person p<br>
+      <td style="vertical-align: top;">SELECT <span style="font-weight: bold;">p.id</span> FROM test.Person p<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">Selecting fied with special name<br>
+      <td style="vertical-align: top;">Selecting fied with special name<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">In Hibernate .id is a reserved element, used when declaring the primary key in mappings.<br><br>
+      <td style="vertical-align: top;">In Hibernate .id is a reserved element, used when declaring the primary key in mappings.<br><br>
       In some MDDs, there are however fields called "id" which confuse Hibernate when selected normally.<br>
       </td>
-      <td style="vertical-align: top; color: rgb(153, 0, 0);">Makumba should detect these exceptions and work around them.<br>
-      Renaming the field to "idField" is the solution currently being adopted, it still needs to be fixed in the type analysis.</td>
+      <td style="vertical-align: top;">Don't allow "id" in MDDs</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT p.name FROM test.Person p WHERE <span style="font-weight: bold;">p.hobby = 'sailing'</span><br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">SELECT p.name FROM test.Person p WHERE <span style="font-weight: bold;">p.hobby = 10</span><br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">parameter type<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">In OQL, 'sailing' is translated into its database value. In Hibernate, this is not the case yet, intEnum being specific to Makumba<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(153, 0, 0);">Extend the HQL analyzer and perform the translation when needed.<br><br>
+      Maybe a direct translation in Hibernate could be done while generating the mappings, e.g.<br><br>
+      public enum EventStatus {<br>
+        FINISHED("Finished, whatever else there was", 10),<br>
+        CANCELLED("Cancelled", 20),<br>
+        SOME_OTHER_STATE(....);<br>
+        <br>
+        private String endUserPresentation;<br>
+        private int dbLevelValue;<br>
+        EventStatus(String s, int n)<br>
+            { endUserPresentation=s; dbLevelValue=n; }<br>
+        }<br>
+        <br>
+      </td>
     </tr>
   </tbody>
 </table>
