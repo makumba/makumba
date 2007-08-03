@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry sourcepath="/hibernate/src" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/httpunit.jar"/>
-	<classpathentry sourcepath="C:/utils/javassist-3.0/src/main" kind="lib" path="lib/javassist.jar"/>
+	<classpathentry kind="lib" path="lib/javassist.jar">
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
@@ -30,5 +30,7 @@
 	<classpathentry kind="lib" path="lib/msutil.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jspwiki.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
