@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry sourcepath="/hibernate/src" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/httpunit.jar"/>
-	<classpathentry kind="lib" path="lib/javassist.jar">
+	<classpathentry kind="lib" path="lib/javassist.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
