@@ -1587,7 +1587,7 @@ public class TableManager extends Table {
 	//moved from FieldManager
 	/** Tell whether this type of field should be indexed. */
 	public boolean shouldIndex(String fieldName) {
-		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text)
+		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text || getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._binary)
 			return should_text_Index(fieldName);
 		else
 			return true;
