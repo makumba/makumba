@@ -123,12 +123,12 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisInSet() {
 
-        String q = "SELECT p.id as id, p.age as age FROM test.Person p WHERE p.age IN (0, 1, 3, 2, 5)";
+        String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE p.age IN (0, 1, 3, 2, 5)";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q);
 
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
@@ -138,12 +138,12 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisAllSet() {
 
-        String q = "SELECT p.id as id, p.age as age FROM test.Person p WHERE 3 = all elements(p.intSet)";
+        String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE 3 = all elements(p.intSet)";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q);
 
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
@@ -153,12 +153,12 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisInSetOnSetEnum() {
 
-        String q = "SELECT p.id as id, p.age as age FROM test.Person p WHERE p.age IN p.intSet";
+        String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE p.age IN p.intSet";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q);
 
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
@@ -170,12 +170,12 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisArithmeticOperationOk() {
 
-        String q1 = "SELECT p.id as id, p.age+17 as agePlus17 FROM test.Person p";
+        String q1 = "SELECT p.brother as brother, p.age+17 as agePlus17 FROM test.Person p";
         HqlAnalyzer oA1 = MakumbaSystem.getHqlAnalyzer(q1);
 
-        assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA1.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA1.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA1.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA1.getProjectionType().getFieldDefinition(1).getType());
@@ -183,35 +183,35 @@ public class hqlanalyzer extends TestCase {
         
         
         
-        String q2 = "SELECT p.id as id, p.age+1.2 as agePlus1dot2 FROM test.Person p";
+        String q2 = "SELECT p.brother as brother, p.age+1.2 as agePlus1dot2 FROM test.Person p";
         HqlAnalyzer oA2 = MakumbaSystem.getHqlAnalyzer(q2);
 
-        assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("real", oA2.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getDescription());
         
 
-        String q3 = "SELECT p.id as id, true+false as boolean FROM test.Person p";
+        String q3 = "SELECT p.brother as brother, true+false as boolean FROM test.Person p";
         HqlAnalyzer oA3 = MakumbaSystem.getHqlAnalyzer(q3);
 
-        assertEquals("id", oA3.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA3.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA3.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA3.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA3.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("boolean", oA3.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("setcharEnum", oA3.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("boolean", oA3.getProjectionType().getFieldDefinition(1).getDescription());
         
-        String q4 = "SELECT p.id as id, p.hobbies+p.comment as text FROM test.Person p";
+        String q4 = "SELECT p.brother as brother, p.hobbies+p.comment as text FROM test.Person p";
         HqlAnalyzer oA4 = MakumbaSystem.getHqlAnalyzer(q4);
 
-        assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA4.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA4.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA4.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getType());
@@ -221,12 +221,12 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisArithmeticOperationParameter() {
 
-        String q1 = "SELECT p.id as id, p.age+:name as param FROM test.Person p";
+        String q1 = "SELECT p.brother as brother, p.age+:name as param FROM test.Person p";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
         
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("parameter", oA.getProjectionType().getFieldDefinition(1).getType());
@@ -236,14 +236,14 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisSubQueries() {
 
-        String q1 = "SELECT p.id as id, p.address.streetno as streetno FROM test.Person p WHERE p.uniqInt IN (SELECT p.id as pid FROM test.Person p WHERE p.age = 17)";
+        String q1 = "SELECT p.brother as brother, p.address.streetno as streetno FROM test.Person p WHERE p.uniqInt IN (SELECT p.id as pid FROM test.Person p WHERE p.age = 17)";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
         
         //System.out.println(oA.toString());
         
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
@@ -255,26 +255,26 @@ public class hqlanalyzer extends TestCase {
     
     public void testAnalysisFunctionCalls() {
 
-        String q1 = "SELECT p.id as id, upper(p.address.country) as streetno FROM test.Person p";
+        String q1 = "SELECT p.brother as brother, upper(p.address.country) as streetno FROM test.Person p";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
         
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getDescription());
         
         
-        String q2 = "SELECT p.id as id, now() as currenttime FROM test.Person p";
+        String q2 = "SELECT p.brother as brother, now() as currenttime FROM test.Person p";
         HqlAnalyzer oA2 = MakumbaSystem.getHqlAnalyzer(q2);
         
         //System.out.println(oA2.toString());
         
-        assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getName());
+        assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getDescription());
         
         assertEquals("currenttime", oA2.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("date", oA2.getProjectionType().getFieldDefinition(1).getType());
@@ -306,18 +306,18 @@ public class hqlanalyzer extends TestCase {
     }
     
     public void testAnalysisWholeObjectWithOtherSelections() {
-        String q1 ="SELECT p.id AS col1,p AS col2,p.allergies AS col3,p.birthdate AS col4 FROM general.Person p";
+        String q1 ="SELECT p.brother AS col1,p AS col2, p.hobbies AS col3, p.birthdate AS col4 FROM test.Person p";
         HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
         
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
         assertEquals("col2", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("p", oA.getProjectionType().getFieldDefinition(1).getDescription());
         assertEquals("col3", oA.getProjectionType().getFieldDefinition(2).getName());
         assertEquals("text", oA.getProjectionType().getFieldDefinition(2).getType());
-        assertEquals("allergies", oA.getProjectionType().getFieldDefinition(2).getDescription());
+        assertEquals("hobbies", oA.getProjectionType().getFieldDefinition(2).getDescription());
         assertEquals("col4", oA.getProjectionType().getFieldDefinition(3).getName());
         assertEquals("date", oA.getProjectionType().getFieldDefinition(3).getType());
         assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(3).getDescription());
