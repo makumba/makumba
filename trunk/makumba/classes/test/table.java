@@ -161,7 +161,7 @@ public class table extends TestCase {
         Text comment = new Text("Iñtërnâtiônàlizætiøn");
 
 		p.put("birthdate", birth);
-        	p.put("comment", comment);
+        p.put("comment", comment);
 		p.put("picture", new Text(getExampleData()));
 
 		p.put("weight", new Double(85.7d));
@@ -200,9 +200,9 @@ public class table extends TestCase {
 		assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
 		assertEquals("Birthdate", birth, pc.get("birthdate"));
 		assertEquals("Something else", "else", pc.get("something"));
-		assertEquals("Comment text", pc.get("comment"), comment);
-        	assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
-        	assertNotNull(ptrOne);
+		assertEquals("Comment text", pc.get("comment"), comment.toString());
+        assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
+        assertNotNull(ptrOne);
 
 		v = db.executeQuery(readIntSet, ptr);
 		assertEquals(2, v.size());
