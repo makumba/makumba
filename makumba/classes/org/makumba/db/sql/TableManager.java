@@ -963,17 +963,11 @@ public class TableManager extends Table {
 	 */
 	public Object get_text_Value(String fieldName, ResultSet rs, int i)
 			throws SQLException {
-		Object o = base_getValue(fieldName, rs, i);
-        
-        if (o instanceof byte[])
-        {
-            String a = new String((byte[]) o);
-        }
-        
+        Object o = base_getValue(fieldName, rs, i);
 		if (o == null)
 			return o;
 		if (o instanceof byte[])
-			return new String((byte[]) o);
+			return new Text(new String((byte[]) o));
 		return o;
 
 		/*
