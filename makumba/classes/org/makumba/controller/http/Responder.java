@@ -198,10 +198,8 @@ public abstract class Responder implements java.io.Serializable {
                         objectOut.close();
                     }
                 } catch (IOException e) {
-                    MakumbaSystem.getMakumbaLogger("controller").log(
-                            Level.SEVERE,
-                            "Error while trying to check for responder on the HDD: could not read from file "
-                                    + fileName, e);
+                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 }
             }
             indexedCache.put(new Integer(f.identity), name);
@@ -355,30 +353,24 @@ public abstract class Responder implements java.io.Serializable {
                 } catch (UnsupportedClassVersionError e) {
                     // if we try to read a responder that was written with a different version of the responder class
                     // we delete it, and throw an exception
-                    MakumbaSystem.getMakumbaLogger("controller").log(
-                            Level.SEVERE,
-                            "Error while trying to check for responder on the HDD: could not read from file "
-                                    + fileName, e);
+                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                     new File(fileName).delete();
                     throw new org.makumba.InvalidValueException(
                             "Responder cannot be re-used due to Makumba version change! Please reload this page.");
                 } catch (InvalidClassException e) {
                     // same as above
-                    MakumbaSystem.getMakumbaLogger("controller").log(
-                            Level.SEVERE,
-                            "Error while trying to check for responder on the HDD: could not read from file "
-                                    + fileName, e);
+                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                     new File(fileName).delete();
                     throw new org.makumba.InvalidValueException(
                             "Responder cannot be re-used due to Makumba version change! Please reload this page.");
                 } catch (IOException e) {
-                    MakumbaSystem.getMakumbaLogger("controller").log(
-                            Level.SEVERE,
-                            "Error while trying to check for responder on the HDD: could not read from file "
-                                    + fileName, e);
+                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 } catch (ClassNotFoundException e) {
                     MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
-                            "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
+                        "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
                 } finally {
                     if (objectIn != null) {
                         try {
@@ -406,8 +398,8 @@ public abstract class Responder implements java.io.Serializable {
 
                         // check to see if the ticket is valid... if it exists in the db
                         Vector v = db.executeQuery(
-                                "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1",
-                                reqFormSession);
+                            "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1",
+                            reqFormSession);
                         if (v.size() == 0) { // the ticket does not exist... error
                             throw new LogicException(fr.multipleSubmitErrorMsg);
 
@@ -419,7 +411,7 @@ public abstract class Responder implements java.io.Serializable {
                             Object[] params = { reqFormSession, c.getTime() };
                             // delete the currently used ticked and the expired ones
                             db.delete("org.makumba.controller.MultipleSubmit ms",
-                                    "ms.formSession=$1 OR ms.TS_create<$2", params);
+                                "ms.formSession=$1 OR ms.TS_create<$2", params);
                         }
                     } finally {
                         db.close();
@@ -463,7 +455,7 @@ public abstract class Responder implements java.io.Serializable {
     public Pointer getHttpBasePointer(HttpServletRequest req, String suffix) {
         // for add forms, the result of the enclosing new form may be used
         return new Pointer(basePointerType, (String) RequestAttributes.getParameters(req).getParameter(
-                basePointerName + suffix));
+            basePointerName + suffix));
     }
 
     /**
@@ -487,8 +479,8 @@ public abstract class Responder implements java.io.Serializable {
                 }
 
                 return Logic.doEdit(resp.controller, handlerName, resp.basePointerType, resp.getHttpBasePointer(req,
-                        suffix), resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req,
-                        resp.database), resp.database, RequestAttributes.getConnectionProvider(req));
+                    suffix), resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req, resp.database),
+                    resp.database, RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -502,8 +494,8 @@ public abstract class Responder implements java.io.Serializable {
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                     throws LogicException {
                 return Logic.doOp(resp.controller, resp.handler, resp.getHttpData(req, suffix), new RequestAttributes(
-                        resp.controller, req, resp.database), resp.database, RequestAttributes
-                        .getConnectionProvider(req));
+                        resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -523,8 +515,8 @@ public abstract class Responder implements java.io.Serializable {
                     handlerName = "on_new" + Logic.upperCase(resp.newType);
                 }
                 return Logic.doNew(resp.controller, handlerName, resp.newType, resp.getHttpData(req, suffix),
-                        new RequestAttributes(resp.controller, req, resp.database), resp.database, RequestAttributes
-                                .getConnectionProvider(req));
+                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -543,10 +535,10 @@ public abstract class Responder implements java.io.Serializable {
                 } else {
                     handlerName = "on_add" + Logic.upperCase(resp.basePointerType + "->" + resp.addField);
                 }
-                return Logic.doAdd(resp.controller, handlerName, resp.basePointerType + "->" + resp.addField, resp
-                        .getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
-                        resp.controller, req, resp.database), resp.database, RequestAttributes
-                        .getConnectionProvider(req));
+                return Logic.doAdd(resp.controller, handlerName, resp.basePointerType + "->" + resp.addField,
+                    resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
+                            resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -576,8 +568,8 @@ public abstract class Responder implements java.io.Serializable {
 
                 // otherwise, we add to the new object
                 return Logic.doAdd(resp.controller, handlerName, resp.newType + "->" + resp.addField,
-                        (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.controller,
-                                req, resp.database), resp.database, RequestAttributes.getConnectionProvider(req));
+                    (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req,
+                            resp.database), resp.database, RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -591,8 +583,8 @@ public abstract class Responder implements java.io.Serializable {
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                     throws LogicException {
                 return Logic.doDelete(resp.controller, resp.basePointerType, resp.getHttpBasePointer(req, suffix),
-                        new RequestAttributes(resp.controller, req, resp.database), resp.database, RequestAttributes
-                                .getConnectionProvider(req));
+                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -606,8 +598,8 @@ public abstract class Responder implements java.io.Serializable {
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                     throws LogicException {
                 return Logic.doDelete(resp.controller, resp.basePointerType, resp.getHttpBasePointer(req, suffix),
-                        new RequestAttributes(resp.controller, req, resp.database), resp.database, RequestAttributes
-                                .getConnectionProvider(req));
+                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
