@@ -559,9 +559,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 	 */
 	public Enumeration getNames() {
 		switch (getIntegerType()) {
-
-		default:
-			throw new RuntimeException("Shouldn't be here");
+            case FieldDefinition._charEnum:
+            case FieldDefinition._intEnum:
+                return ((Vector) this.extra2).elements();
+            case FieldDefinition._setCharEnum:
+            case FieldDefinition._setIntEnum:
+                return ((Vector) getEnum().extra2).elements();
+    		default:
+    			throw new RuntimeException("Shouldn't be here");
 		}
 	}
 
