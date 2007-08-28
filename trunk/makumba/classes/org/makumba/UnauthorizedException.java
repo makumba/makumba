@@ -35,10 +35,10 @@ public class UnauthorizedException extends LogicException {
     private static final long serialVersionUID = 1L;
 
     public UnauthorizedException() {
-        super("");
+        super("", false);
     }
 
     public UnauthorizedException(String message) {
-        super(message);
+        super(message, false);
     }
 }

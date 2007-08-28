@@ -242,7 +242,7 @@ public class RequestAttributes implements Attributes {
         if (o != notFound)
             return o;
 
-        throw new AttributeNotFoundException(s);
+        throw new AttributeNotFoundException(s, true);
     }
 
     public Object checkSessionForAttribute(String s) {

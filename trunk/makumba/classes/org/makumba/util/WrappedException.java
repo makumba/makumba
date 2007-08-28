@@ -44,11 +44,13 @@ public class WrappedException extends Exception {
     private static final long serialVersionUID = 1L;
 
     Throwable t;
+    private boolean controllerOriginated = false;
 
     /** wrap the given exception */
-    public WrappedException(Throwable e) {
+    public WrappedException(Throwable e, boolean isControllerOriginated) {
         super(e.toString());
         this.t = e;
+        this.controllerOriginated = isControllerOriginated;
     }
 
     /** wrap the given exception */
@@ -62,13 +64,21 @@ public class WrappedException extends Exception {
     };
 
     /** wrap nothing, store a message */
-    public WrappedException(String s) {
+    public WrappedException(String s, boolean isControllerOriginated) {
         super(s);
+        this.controllerOriginated = isControllerOriginated;
     }
 
     /** return the wrapped exception */
     public Throwable getReason() {
         return t;
+    }
+    
+    /**
+     * checks whether this exception originated in Controller or at the JSP level
+     */
+    public boolean isControllerOriginated() {
+      return controllerOriginated;
     }
 
     /** print the stacktrace of the wrapped exception */
