@@ -42,4 +42,12 @@ public class LogicException extends org.makumba.util.WrappedException {
     public LogicException(String s) {
         super(s, false);
     }
+    
+    public LogicException(Throwable t, boolean isControllerOriginated) {
+        super(t, isControllerOriginated);
+    }
+
+    public LogicException(String s, boolean isControllerOriginated) {
+        super(s, isControllerOriginated);
+    }
 }

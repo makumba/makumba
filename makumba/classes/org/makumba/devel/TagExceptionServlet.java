@@ -46,6 +46,8 @@ import org.makumba.view.jsptaglib.MakumbaTag;
  * helpful stuff during development and not stupid stakctraces (which are shown only in case of unknown exceptions) also
  * indented for intercepting lack of authorization and show login pages
  * 
+ * FIXME the exception hierarchy needs to be reviewed.
+ * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
  * @author Rudolf Mayer
@@ -114,7 +116,7 @@ public class TagExceptionServlet extends HttpServlet {
     }
 
     /**
-     * Displays a knows error
+     * Displays a knows error in the case of an error originating from a tag
      * 
      * @param title
      *            title describing the error
@@ -132,8 +134,26 @@ public class TagExceptionServlet extends HttpServlet {
         String trc = shortTrace(trcOrig);
         String body = t.getMessage();
         String hiddenBody = null;
+        
+        // we check whether this exception was thrown at controller or view level
+        if(t instanceof LogicException) {
+            if(((LogicException) t).isControllerOriginated()) {
+                
+                boolean foundRootCause = false;
+                int i = 0;
+                while(!foundRootCause && i < t.getStackTrace().length) {
+                    if(t.getStackTrace()[i].getClassName().indexOf("org.makumba") == -1) foundRootCause = true;
+                    else i++;
+                }
+                
+                body = "Exception occured at " + t.getStackTrace()[i].getClassName()
+                + "." + t.getStackTrace()[i].getMethodName() + "():" + t.getStackTrace()[i].getLineNumber() + "\n\n" + body;
+            } else {
+                body = formatTagData(req) + body;
+            }
+        }
 
-        body = formatTagData(req) + body;
+        
         if (original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic") != -1) {
             body = body + "\n\n" + trc;
         } else {

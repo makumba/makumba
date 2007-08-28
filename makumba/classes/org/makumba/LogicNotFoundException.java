@@ -23,17 +23,20 @@
 
 package org.makumba;
 
+/**
+ * @author Cristian Bogdan
+ * @author Manuel Gay
+ * @version $Id$
+ */
 public class LogicNotFoundException extends LogicException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	public LogicNotFoundException() {
-		this("");
-	}
+    private static final long serialVersionUID = 1L;
 
-	public LogicNotFoundException(String s) {
-		super(s);
-	}
+    public LogicNotFoundException() {
+        this("");
+    }
+
+    public LogicNotFoundException(String s) {
+        super(s, false);
+    }
 }
