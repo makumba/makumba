@@ -23,13 +23,23 @@
 
 package org.makumba;
 
-/** An exception thrown during the execution of some business logic code */
-public class LogicException extends org.makumba.util.WrappedException
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-public LogicException(Throwable t) { super(t); }
-  public LogicException(String s){ super(s); }
+/**
+ * An exception thrown during the execution of some business logic code
+ * 
+ * @author Cristian Bogdan
+ * @author Manuel Gay
+ * 
+ * @version $Id$
+ * */
+public class LogicException extends org.makumba.util.WrappedException {
+
+    private static final long serialVersionUID = 1L;
+
+    public LogicException(Throwable t) {
+        super(t, false);
+    }
+
+    public LogicException(String s) {
+        super(s, false);
+    }
 }
