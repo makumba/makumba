@@ -16,7 +16,8 @@ rudi, manu, cristi: hibernate database management
 rudi, manu, cristi: HQL in JSPs used via a new taglib URI
 stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
 stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
-
+manu: fixing various bugs with hibernate database management
+manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 0.6.1.1; 28 mar 2007
