@@ -205,7 +205,7 @@ public class MddToClass extends HibernateUtils {
         
         for(int i = 0; i < fd.getEnumeratorSize(); i++) {
             String currentIntEnumName = fd.getNameFor(i);
-            Integer currentIntEnumValue = fd.getIntAt(i);
+            Integer currentIntEnumValue = new Integer(fd.getIntAt(i));
             
             enumCode += "I"+i+ "(\""+currentIntEnumName+"\", "+currentIntEnumValue.intValue() + ")";
             if(i+1 != fd.getEnumeratorSize()) enumCode += ",";
