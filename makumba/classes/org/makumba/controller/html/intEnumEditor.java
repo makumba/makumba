@@ -41,6 +41,13 @@ public class intEnumEditor extends charEnumEditor {
     }
 
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+        if (hasNullOption) {
+            if (i == 0) {
+                return "";
+            } else {
+                i -= 1;
+            }
+        }
         return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
     }
 

@@ -31,7 +31,6 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.ComposedQuery;
 
 /**
  * mak:input tag
@@ -48,6 +47,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     String display = null;
 
     String nameVar = null;
+
+    private String nullOption;
 
     /** input whith body, used only for choosers as yet * */
     BodyContent bodyContent = null;
@@ -80,6 +81,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     public void setNameVar(String var) {
         this.nameVar = var;
+    }
+
+    public void setNullOption(String s) {
+        this.nullOption = s;
     }
 
     // Extra html formatting parameters
@@ -213,6 +218,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if ("false".equals(display))
             params.put("org.makumba.noDisplay", "dummy");
+        
+        if (nullOption != null) {
+            params.put("nullOption", nullOption);
+        }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
 

@@ -36,9 +36,10 @@ import org.makumba.view.RecordFormatter;
 
 public abstract class choiceEditor extends FieldEditor {
 
-    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator" };
+    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator",
+            "nullOption" };
 
-    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null };
+    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null, null };
 
     public String[] getAcceptedParams() {
         return _params;
@@ -87,6 +88,13 @@ public abstract class choiceEditor extends FieldEditor {
         boolean yn_radio = "radio".equals(type);
         boolean yn_checkbox = "checkbox".equals(type);
         boolean yn_tickbox = "tickbox".equals(type);
+
+        // check whether the enum Editor should have a null value option.
+        // doing this from here seems a bit dirty, but the formatParams are not available in the subclass.
+        if (this instanceof charEnumEditor) {
+            ((charEnumEditor) this).setNullOption(formatParams.get("nullOption"));
+        }
+
         if (yn_tickbox) {
             if (isMultiple(rf, fieldIndex))
                 yn_checkbox = true;
