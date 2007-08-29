@@ -26,19 +26,19 @@ package org.makumba.view;
 import java.util.Dictionary;
 
 public class intEnumFormatter extends FieldFormatter {
-	
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new intEnumFormatter();
-	}
 
-	private intEnumFormatter() {
-	}
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new intEnumFormatter();
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    private intEnumFormatter() {
+    }
 
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-		return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
+
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
+    }
 }
