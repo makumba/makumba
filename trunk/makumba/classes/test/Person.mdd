@@ -12,6 +12,9 @@ militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A
 driver=yesNo		 ;Driving Licence
 age=int				;Age
 
+makumbaTillDeath = not null yesNo	; makumbian or not
+designer = yesNo	; are you a designer?
+
 weight=real ; weight in kilos
 
 hobbies=text             ;Hobbies
