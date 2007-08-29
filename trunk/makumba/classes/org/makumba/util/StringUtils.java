@@ -18,4 +18,13 @@ public class StringUtils {
         return String.valueOf(s.charAt(0)).toUpperCase() + s.substring(1);
     }
 
+    /** Checks whether a String is not null and has, after trimming, a length > 0. */
+    public static boolean notEmpty(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    /** Checks whether a String is not null and has, after trimming, a length > 0. */
+    public static boolean notEmpty(Object o) {
+        return o != null && o.toString().length() > 0;
+    }
 }
