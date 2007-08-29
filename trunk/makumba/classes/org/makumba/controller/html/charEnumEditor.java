@@ -27,6 +27,9 @@ import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
 
 public class charEnumEditor extends choiceEditor {
+    protected boolean hasNullOption = false;
+
+    protected String nullOption = null;
 
     private static final class SingletonHolder {
         static final FieldEditor singleton = new charEnumEditor();
@@ -45,10 +48,22 @@ public class charEnumEditor extends choiceEditor {
     }
 
     public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
-        return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
+        int enumeratorSize = rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
+        if (hasNullOption) {
+            return enumeratorSize + 1;
+        } else {
+            return enumeratorSize;
+        }
     }
 
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+        if (hasNullOption) {
+            if (i == 0) {
+                return null;
+            } else {
+                i -= 1;
+            }
+        }
         return rf.dd.getFieldDefinition(fieldIndex).getStringAt(i);
     }
 
@@ -61,6 +76,13 @@ public class charEnumEditor extends choiceEditor {
     }
 
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
+        if (hasNullOption) {
+            if (i == 0) {
+                return nullOption;
+            } else {
+                i -= 1;
+            }
+        }
         return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
     }
 
@@ -74,6 +96,17 @@ public class charEnumEditor extends choiceEditor {
 
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
+    }
+
+    /** Sets the value of the null option from the mak:input tag. */
+    public void setNullOption(Object nullOption) {
+        if (nullOption instanceof String && ((String) nullOption).trim().length() > 0) {
+            this.nullOption = (String) nullOption;
+            this.hasNullOption = true;
+        } else { // if we got no / an empty value, we need to empty the fields due to the re-use of the editors
+            this.nullOption = null;
+            this.hasNullOption = false;
+        }
     }
 
 }

@@ -26,6 +26,9 @@ package org.makumba.view;
 import java.util.Dictionary;
 
 public class intEnumFormatter extends FieldFormatter {
+    static String[] params = { "default", "empty", "nullOption" };
+
+    static String[][] paramValues = { null, null, null };
 
     private static final class SingletonHolder {
         static final FieldFormatter singleton = new intEnumFormatter();
