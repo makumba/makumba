@@ -36,6 +36,7 @@ import org.makumba.util.MultipleKey;
  * mak:input tag
  * 
  * @author Cristian Bogdan
+ * @author Rudolf Mayer
  * @version $Id$
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
@@ -220,6 +221,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             params.put("org.makumba.noDisplay", "dummy");
         
         if (nullOption != null) {
+            // nullOption is only applicable for charEnum and intEnum types
+            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
+            if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
+                throw new ProgrammerError(
+                        "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"
+                                + fd.getName() + "' is of type '" + fd.getType() + "'!");
+            }
             params.put("nullOption", nullOption);
         }
 
