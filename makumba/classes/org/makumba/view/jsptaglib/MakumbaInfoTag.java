@@ -23,6 +23,8 @@
 
 package org.makumba.view.jsptaglib;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -39,6 +41,7 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.MakumbaSystem;
@@ -52,318 +55,291 @@ import org.makumba.util.ReadableFormatter;
  *
  */
 public class MakumbaInfoTag extends TagSupport {
+	private static final long serialVersionUID = 1L;
+    private int line = 0;
+    
+    Object applicationProperties;
+
+    Properties sysprops = System.getProperties();            
+
+	/**
+     * @param applicationProperties The applicationProperties to set.
+     */
+    public void setApplicationProperties(Object applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
     public int doStartTag() throws JspException {
-        try {
-            pageContext.getOut()
-                    .print("<style type=\"text/css\"> h1,h2,h3,h4 {color: blue; margin-bottom:0px}</style>");
-            final String startupProp = "startupTime";
-
-            DateFormat uptime = new SimpleDateFormat("dd MMM yyyy HH:mm");
-            if (System.getProperty(startupProp) == null)
-                System.setProperty(startupProp, uptime.format(MakumbaSystem.loadingTime));
-            // TODO detect initial memory and hotspot property
-
-            int ln;
-            Runtime rt = java.lang.Runtime.getRuntime();
-
-            long maxHeap = rt.maxMemory();
-            // String initialHeap = System.getProperty("tomcat.jvm.initial_memory");
-            String username = System.getProperty("tomcat.manager.user");
-            String password = System.getProperty("tomcat.manager.pass");
-            String port = System.getProperty("http.port");
-            String hotspot = System.getProperty("tomcat.jvm.hotspot");
-            String activeSessions = "?";
-
-            // pageContext.getOut().print(maxHeap+":"+initialHeap+":"+username+":"+password+":"+port+":");
-
-            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-            HttpSession session = request.getSession(true);
-
+		try {
+            Properties projectProperties=new Properties();
             try {
-                HttpURLConnection uc = (HttpURLConnection) (new URL("http://localhost:" + port + "/manager/list"))
-                        .openConnection();
-                uc.setRequestProperty("connection", "close");
-                uc
-                        .setRequestProperty("Authorization", "Basic "
-                                + Base64.encode((username + ":" + password).getBytes()));
-                uc.setUseCaches(false);
-                uc.connect();
-                if (uc.getResponseCode() != 200)
-                    throw new RuntimeException(uc.getResponseMessage());
-                if (uc.getContentLength() == 0)
-                    throw new RuntimeException("content zero");
-                StringWriter sw = new StringWriter();
-                InputStreamReader ir = new InputStreamReader(uc.getInputStream());
-                char[] buf = new char[1024];
-                int n;
-                while ((n = ir.read(buf)) != -1)
-                    sw.write(buf, 0, n);
-                String list = sw.toString();
-                String marker = request.getContextPath();
-                if (marker.length() == 0)
-                    marker = "/";
-                marker = marker + ":running:";
-                int found = list.indexOf(marker) + marker.length();
-                if (found == -1)
-                    throw new RuntimeException("context not found");
-                activeSessions = list.substring(found, list.indexOf(":", found + 1));
-            } catch (Throwable t) {
-                pageContext.getOut().print(" <p>could connect to /manager/list </p>");
+            projectProperties.load(new FileInputStream(applicationProperties.toString()));
+            } catch (IOException e) {
             }
 
-            pageContext
-                    .getOut()
-                    .print(
-                            "<h1>System Information</h1><table border=0 bgcolor=\"white\"><tr><td valign=top><font size=+1><b>Client: <td>Browser:");
-            pageContext.getOut().print(request.getHeader("User-Agent"));
-            pageContext.getOut().print("<br>Host (IP):");
-            pageContext.getOut().print(request.getRemoteHost());
-            pageContext.getOut().print("(");
-            pageContext.getOut().print(request.getRemoteAddr());
-            pageContext.getOut().print(")<br><tr><td valign=top><font size=+1><b>Server:</b></font> JVM mode: <b>-");
-            pageContext.getOut().print("n/a");// hotspot);
-            pageContext
-                    .getOut()
-                    .print(
-                            "<table border=\"0\" cellspacing=0 cellpadding=0><tr><td>Initial heap (-Xms):&nbsp;<td align=right>");
-            pageContext.getOut().print("n/a");// initialHeap);
-            pageContext.getOut().print("B</td></tr><tr bgcolor=\"#eeeeee\"><td>Max heap (-Xmx):&nbsp;<td align=right>");
-            pageContext.getOut().print(ReadableFormatter.readableBytes(maxHeap));
-            ;
-            pageContext.getOut().print("</td></tr><tr><td>Current heap size:&nbsp;<td align=right>");
-            pageContext.getOut().print(ReadableFormatter.readableBytes(rt.totalMemory()));
-            pageContext.getOut().print("</td></tr><tr bgcolor=\"#eeeeee\"><td>Heap in use:&nbsp;<td align=right>");
-            pageContext.getOut().print(ReadableFormatter.readableBytes(rt.totalMemory() - rt.freeMemory()));
-            pageContext.getOut().print("</td></tr><tr><td>Free heap:&nbsp;<td align=right>");
-            pageContext.getOut().print(ReadableFormatter.readableBytes(rt.freeMemory()));
-            pageContext.getOut().print("</td></tr></table><td>Server is up since: <b>");
-            pageContext.getOut().print(System.getProperty(startupProp));
-            pageContext.getOut().print("</b>(");
-            // DateFormat df=new SimpleDateFormat();
-            // try{
-            pageContext.getOut().print(
-                    ReadableFormatter.readableAge((new Date()).getTime()
-                            - new Date(System.getProperty(startupProp)).getTime()));
-            // }catch(ParseException pe){
-            // TODO treat this parse exception
-            // }
-            pageContext.getOut().print(" ago)<br>Last application (re)load:");
-            pageContext.getOut().print(uptime.format(MakumbaSystem.loadingTime));
-            pageContext.getOut().print("(");
-            pageContext.getOut().print(
-                    ReadableFormatter.readableAge((new Date()).getTime() - MakumbaSystem.loadingTime.getTime()));
-            pageContext.getOut().print(" ago)<br>Server time:");
-            pageContext.getOut().print(uptime.format(new Date()));
-            pageContext.getOut().print("<br>Active sessions: <b>");
-            pageContext.getOut().print(activeSessions);
-            pageContext.getOut().print("</b><br>");
+            JspWriter out = pageContext.getOut();
+            out.println("<style type=\"text/css\"> h1,h2,h3,h4 {color: blue; margin-bottom:0px}</style>");
+            out.println("<h1>Makumba System Information (&lt;mak:info /&gt;)</h1>");
 
-            if (port.equals("80")) {
-                port = "";
+            final String startupProp = "startupTime";
+			
+			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm");
+			if (System.getProperty(startupProp) == null) {
+				System.setProperty(startupProp, df.format(MakumbaSystem.loadingTime));
+			}
+
+			Runtime rt = java.lang.Runtime.getRuntime();
+			
+			long maxHeap = rt.maxMemory();
+			String initialHeap = System.getProperty("tomcat.jvm.initial_memory");
+            if (initialHeap == null) { // not in system props? try in application properties
+                initialHeap = projectProperties.getProperty("tomcat.jvm.initial_memory");
+                if (initialHeap == null) {
+                    initialHeap = "N/A";
+                }
+            }
+
+			String username = System.getProperty("tomcat.manager.user");
+            if (username == null) { // not in system props? try in application properties
+                username = projectProperties.getProperty("tomcat.manager.user");
+            }
+
+            String password = System.getProperty("tomcat.manager.pass");
+            if (password == null) { // not in system props? try in application properties
+                password = projectProperties.getProperty("tomcat.manager.pass");
+                if (password != null) { 
+                    projectProperties.remove("tomcat.manager.pass"); // we don't want to display the password to everyone
+                }
+            }
+
+            String hotspot = System.getProperty("tomcat.jvm.hotspot");
+            if (hotspot == null) { // not in system props? try in application properties
+                hotspot = projectProperties.getProperty("tomcat.jvm.hotspot");
+                if (hotspot == null) {
+                    hotspot = "N/A";
+                }
+            }
+            
+			HttpServletRequest request =(HttpServletRequest) pageContext.getRequest();
+			HttpSession session = request.getSession(true);
+			int port = request.getServerPort();
+			
+            // if the manager application is installed, and the .\">Unknown</span>
+            String activeSessions = null;
+            String activeSessionsTitle = null;
+            
+            String serverInfo = session.getServletContext().getServerInfo();
+            
+            if (serverInfo.indexOf("Tomcat") != -1) { // we have a tomcat                
+                if (username != null && password != null) { // we have a user and password
+                    try { // --> connect
+                        HttpURLConnection uc = (HttpURLConnection) (new URL("http://localhost:" + port + "/manager/list")).openConnection();
+                        uc.setRequestProperty("connection", "close");
+                        uc.setRequestProperty("Authorization", "Basic " + Base64.encode((username + ":" + password).getBytes()));
+                        uc.setUseCaches(false);
+                        uc.connect();
+                        if (uc.getResponseCode() != 200)
+                            throw new RuntimeException(uc.getResponseMessage());
+                        if (uc.getContentLength() == 0)
+                            throw new RuntimeException("content zero");
+                        StringWriter sw = new StringWriter();
+                        InputStreamReader ir = new InputStreamReader(uc.getInputStream());
+                        char[] buf = new char[1024];
+                        int n;
+                        while ((n = ir.read(buf)) != -1)
+                            sw.write(buf, 0, n);
+                        String list = sw.toString();
+                        String marker = request.getContextPath();
+                        if (marker.length() == 0)
+                            marker = "/";
+                        marker = marker + ":running:";
+                        int found = list.indexOf(marker) + marker.length();
+                        if (found == -1)
+                            throw new RuntimeException("context not found");
+                        activeSessions = list.substring(found, list.indexOf(":", found + 1));
+                    } catch (Throwable t) {
+                        out.println(" <p>could connect to /manager/list: " + t.getMessage() + " </p>");                        
+                    }
+                } else {
+                    activeSessionsTitle = "Could not authenticate: 'applicationProperties' attribute must specify 'tomcat.manager.user' and 'tomcat.manager.pass' entries!";
+                }
             } else {
-                port = ":" + port;
+                activeSessionsTitle = "This feature is currentely only supported for Apache Tomcat!";
             }
+            
+            if (activeSessions == null) {
+                activeSessions = "<span title=\"" + activeSessionsTitle + "\">Unknwon</span>";
+            }
+            
+            out.println("<table border=\"0\" bgcolor=\"white\" cellspacing=\"3\" cellpadding=\"3\" >");
+            out.println("  <tr>");
+            out.println("    <td valign=\"top\" nowrap=\"nowrap\"><font size=\"+1\"><b>Client:</td>");
 
-            pageContext.getOut().print("Server protocol, name and port: <a href=\"");
-            pageContext.getOut().print(request.getScheme());
-            pageContext.getOut().print("://");
-            pageContext.getOut().print(request.getServerName());
-            pageContext.getOut().print(port);
-            pageContext.getOut().print("\">");
-            pageContext.getOut().print(request.getScheme());
-            pageContext.getOut().print("://");
-            pageContext.getOut().print(request.getServerName());
-            pageContext.getOut().print(port);
-            pageContext.getOut().print("</a><br>");
-            pageContext.getOut().print("Server software:");
-            pageContext.getOut().print(pageContext.getServletContext().getServerInfo());
-            pageContext
-                    .getOut()
-                    .print(
-                            "<br></table><p><h2><a href=\"/makumba-docs/\"> Makumba</a>: </h2><table border=\"0\" cellspacing=0 cellpadding=0><tr bgcolor=\"#cccccc\"><Th>Property<th>Value");
+            out.println("    <td>");
+            out.println("      <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
 
-            int line = 0;
+            printSystemInfoRow(out, "Browser", request.getHeader("User-Agent")); 
+            printSystemInfoRow(out, "Host (IP)", request.getRemoteHost() + "(" + request.getRemoteAddr() + ")"); 
+
+            out.println("      </table>");
+            out.println("    </td>");
+            out.println("  </tr>");
+            out.println("  <tr>");
+            out.println("    <td valign=\"top\"><font size=\"+1\"><b>Server:</b></font> JVM mode: <b>" + hotspot);
+            out.println("    <td>");
+			out.println("      <table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
+
+            String serverUpSince = ReadableFormatter.readableAge((new Date()).getTime() - new Date(System.getProperty(startupProp)).getTime());
+            String serverURL = request.getScheme() + "://" + request.getServerName() + ":" + port;
+
+            line=0;
+            printSystemInfoRow(out, "Initial heap (-Xms)", initialHeap);    
+            printSystemInfoRow(out, "Max heap (-Xmx)", ReadableFormatter.readableBytes(maxHeap)); 
+            printSystemInfoRow(out, "Current heap size", ReadableFormatter.readableBytes(rt.totalMemory())); 
+            printSystemInfoRow(out, "Heap in use", ReadableFormatter.readableBytes(rt.totalMemory() - rt.freeMemory())); 
+            printSystemInfoRow(out, "Free heap", ReadableFormatter.readableBytes(rt.freeMemory())); 
+            printSystemInfoRow(out, "Server is up since", System.getProperty(startupProp) + "</b>(" + serverUpSince +" ago)"); 
+            printSystemInfoRow(out, "Last application (re)load", df.format(MakumbaSystem.loadingTime) + "(" + ReadableFormatter.readableAge((new Date()).getTime()- MakumbaSystem.loadingTime.getTime()) + " ago)"); 
+            printSystemInfoRow(out, "Server time", df.format(new Date())); 
+            printSystemInfoRow(out, "Active sessions", activeSessions); 
+            printSystemInfoRow(out, "Server protocol, name and port", "<a href=\"" + serverURL + "\">" + serverURL + "</a>"); 
+            printSystemInfoRow(out, "Server software", pageContext.getServletContext().getServerInfo()); 
+
+            out.println("      </table>");
+            out.println("    </td>");
+            out.println("  </tr>");
+			out.println("</table>");
+
+            if (applicationProperties != null) {
+                out.println("<h2>Application specific properties <span style=\"font-size:smaller\">(" + applicationProperties + ")</span> </h2>");
+                try{
+                    projectProperties.load(new FileInputStream(applicationProperties.toString()));
+                    printProperties(out, projectProperties);
+                }catch(IOException io) {
+                    out.println("<p style=\"color: red;\">Could not find application specific properties file <i>'" + applicationProperties + "'</i> in the current directory </p>");
+                }
+            }
+            
+            out.println();
+            out.println("<h2><a href=\"/makumba-docs/\"> Makumba</a></h2>");
+            out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
+            out.println("  <tr bgcolor=\"#cccccc\"> <th>Property</th> <th>Value</th> </tr>");
+			
             String dbname = MakumbaSystem.getDefaultDatabaseName();
 
-            pageContext.getOut().print("<tr bgcolor=\"#");
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-
-            pageContext.getOut().print("\"><td><a href=\"/makumba-docs/CHANGELOG.txt\">version</a> &nbsp;<td><code>");
-            pageContext.getOut().print(MakumbaSystem.getVersion());
-            pageContext.getOut().print("</code>");
-            line++;
-            pageContext.getOut().print("<tr bgcolor=\"#");
-
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-            pageContext.getOut().print("\"><td>Default database name &nbsp;<td><code>");
-            pageContext.getOut().print(dbname);
-            pageContext.getOut().print("</code>");
-            line++;
-            pageContext.getOut().print("<tr bgcolor=\"#");
-
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-
-            pageContext.getOut().print("\"><td>DBSV &nbsp;<td><code>");
-            pageContext.getOut().print(MakumbaSystem.getDatabaseProperty(dbname, "dbsv"));
-
-            pageContext.getOut().print("</code>");
-            line++;
-            pageContext.getOut().print("<tr bgcolor=\"#");
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-            pageContext.getOut().print("\"><td>Number of connections open &nbsp;<td><code>");
-            pageContext.getOut().print(MakumbaSystem.getDatabaseProperty(dbname, "jdbc_connections"));
-            pageContext.getOut().print("</code>");
-            line++;
-            pageContext.getOut().print("<tr bgcolor=\"#");
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-            pageContext.getOut().print("\"><td>SQL engine and version &nbsp;<td><code>");
-            pageContext.getOut().print(
-                    MakumbaSystem.getDatabaseProperty(dbname, "sql_engine.name") + " "
-                            + MakumbaSystem.getDatabaseProperty(dbname, "sql_engine.version"));
-            pageContext.getOut().print("</code>");
-            line++;
-            pageContext.getOut().print("<tr bgcolor=\"#");
-            if (line % 2 == 0) {
-                pageContext.getOut().print("eeeeee");
-            } else {
-                pageContext.getOut().print("ffffff");
-            }
-            pageContext.getOut().print("\"><td>JDBC driver and version &nbsp;<td><code>");
-            pageContext.getOut().print(
-                    MakumbaSystem.getDatabaseProperty(dbname, "jdbc_driver.name") + " "
-                            + MakumbaSystem.getDatabaseProperty(dbname, "jdbc_driver.version"));
-            pageContext
-                    .getOut()
-                    .print(
-                            "</code></table><h3>Makumba caches: </h3><table border=\"0\" cellspacing=5 cellpadding=0><tr><th> Name <th>size<th>hits<th>misses</th>");
             line = 0;
-            Map m = MakumbaSystem.getCacheInfo();
-            for (Iterator i = new TreeSet(m.keySet()).iterator(); i.hasNext();) {
-                String nm = (String) i.next();
+            printMakumbaPropertyRow(out, "<a href=\"/makumba-docs/CHANGELOG.txt\">version</a>", MakumbaSystem.getVersion());
+            printMakumbaPropertyRow(out, "Default database name", dbname);
+            printMakumbaPropertyRow(out, "DBSV", MakumbaSystem.getDatabaseProperty(dbname, "dbsv"));;
+            printMakumbaPropertyRow(out, "Number of connections open", MakumbaSystem.getDatabaseProperty(dbname,"jdbc_connections"));
+            printMakumbaPropertyRow(out, "SQL engine and version", MakumbaSystem.getDatabaseProperty(dbname, "sql_engine.name"));
+            printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaSystem.getDatabaseProperty(dbname,"jdbc_driver.name")+ " "+ MakumbaSystem.getDatabaseProperty(dbname,"jdbc_driver.version"));
 
-                pageContext.getOut().print("<tr bgcolor=\"#");
-                if (line % 2 == 0) {
-                    pageContext.getOut().print("eeeeee");
-                } else {
-                    pageContext.getOut().print("ffffff");
-                }
-                pageContext.getOut().print("\"><td>");
-                pageContext.getOut().print(nm);
+            out.println("</table>");
+            
+            out.println("<h3>Makumba caches: </h3>");
+            out.println("<table border=\"0\" cellspacing=\"5\" cellpadding=\"3\">");
+            out.println("  <tr> <th>Name</th> <th>size</th> <th>hits</th> <th>misses</th> </tr>");
 
+            line = 0;
+			Map m = MakumbaSystem.getCacheInfo();
+
+            for (Iterator iterator = new TreeSet(m.keySet()).iterator(); iterator.hasNext();) {
+				String nm = (String) iterator.next();
                 Object o = m.get(nm);
-                if (o instanceof int[]) {
 
-                    pageContext.getOut().print("<td align=right><code>");
-                    pageContext.getOut().print(((int[]) o)[0]);
-                    pageContext.getOut().print("</code><td align=right><code>");
-                    pageContext.getOut().print(((int[]) o)[1]);
-                    pageContext.getOut().print("</code><td align=right><code>");
-                    pageContext.getOut().print(((int[]) o)[2]);
-                    pageContext.getOut().print("</code>");
+                out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0)? "eeeeee" : "ffffff") + "\">");          
+				out.println("    <td>" + nm + "</td");
+
+				if (o instanceof int[]) {
+                    int[] intArray = (int[]) o;
+                    for (int i = 0; i < intArray.length; i++) {
+                        out.println("    <td align=right><code>" + intArray[i] + "</code></td>");
+                    }
+				} else {
+					out.println("    <td align=right><code>" + o + "</code></td>");
+				}
+                out.println("  </tr>");
+			}
+
+			out.println("</table>");
+            
+            out.println("<h2>User Session</h2>");
+            out.print("Created: " + ReadableFormatter.readableAge((new Date()).getTime() - session.getCreationTime()) + " ago ");
+            out.println("(" + session.getCreationTime() + ")<br/>");
+			out.print("Last Accessed: " + ReadableFormatter.readableAge((new Date()).getTime() - session.getLastAccessedTime()) + " ago ");
+            out.println("(" + session.getLastAccessedTime() + ")<br>");
+            out.print("Max inactive interval:" + ReadableFormatter.readableAge(session.getMaxInactiveInterval() * 1000));
+            out.println("(" + session.getMaxInactiveInterval() + ")<br>");
+
+			Enumeration attribs = session.getAttributeNames();
+			out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
+            out.println("  <tr bgcolor=\"#cccccc\"> <th>Attribute</th> <th>Value</th> <th>Class</th> </tr>");
+
+			line = 0;
+			while (attribs.hasMoreElements()) {
+				String key = (String) attribs.nextElement();
+
+                out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0)? "eeeeee" : "ffffff") + "\">");          
+				out.println("    <td valign=\"top\">" + key + ":</td>");
+                out.println("    <td><pre>" + session.getAttribute(key) + "</pre></td>");
+                out.println("    <td>" + session.getAttribute(key).getClass().getName() + "</td>");
+				out.println("  </tr>");
+			}
+			out.println("</table>");
+            
+            out.println("<h2>Java Virtual Machine properties</h2>");
+
+			printProperties(out, sysprops);
+		} catch (java.io.IOException e) {
+			throw new JspException(e.getMessage());
+		}
+		return EVAL_BODY_INCLUDE;
+	}
+
+    private void printProperties(JspWriter out, Properties props) throws IOException {
+        Enumeration enprop = props.propertyNames();
+
+        out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
+        out.println("  <tr bgcolor=\"#cccccc\"> <th>Property</th> <th>Value</th> </tr>");
+
+        line = 0;
+        while (enprop.hasMoreElements()) {
+            String key = (String) enprop.nextElement();
+            out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+            out.println("    <td valign=\"top\">" + key + "</td>");
+            out.print("    <td><pre>");
+            if (key != null) {
+                if (key.endsWith("path")) {
+                    out.print(props.getProperty(key).replace(sysprops.getProperty("path.separator").charAt(0), '\n'));
+                } else if (((String) props.getProperty(key)).startsWith("http://")) {
+                    out.print("<a href=" + props.getProperty(key) + ">" + props.getProperty(key) + "</a>");
                 } else {
-                    pageContext.getOut().print("<td align=right><code>");
-                    pageContext.getOut().print(o);
-                    pageContext.getOut().print("</code>");
+                    out.print(props.getProperty(key));
                 }
-                line++;
             }
-
-            pageContext.getOut().print("</table><h2>User Session</h2>Created:");
-            pageContext.getOut().print(
-                    ReadableFormatter.readableAge((new Date()).getTime() - session.getCreationTime()));
-            pageContext.getOut().print(" ago (");
-            pageContext.getOut().print(session.getCreationTime());
-            pageContext.getOut().print(")<br>Last Accessed:");
-            pageContext.getOut().print(
-                    ReadableFormatter.readableAge((new Date()).getTime() - session.getLastAccessedTime()));
-            pageContext.getOut().print(" ago (");
-            pageContext.getOut().print(session.getLastAccessedTime());
-            pageContext.getOut().print(")<br>Max inactive interval:");
-            pageContext.getOut().print(ReadableFormatter.readableAge(session.getMaxInactiveInterval() * 1000));
-            pageContext.getOut().print("(");
-            pageContext.getOut().print(session.getMaxInactiveInterval());
-            pageContext.getOut().print(")<br>");
-
-            Enumeration attribs = session.getAttributeNames();
-            pageContext
-                    .getOut()
-                    .print(
-                            "<table border=\"0\" cellspacing=0 cellpadding=0><tr bgcolor=\"#cccccc\"><Th>Attribute<th>Value<th>Class");
-
-            line = 0;
-            while (attribs.hasMoreElements()) {
-                String key = (String) attribs.nextElement();
-                line++;
-
-                pageContext.getOut().print("<tr bgcolor=\"#");
-                if (line % 2 == 0) {
-                    pageContext.getOut().print("eeeeee");
-                } else {
-                    pageContext.getOut().print("ffffff");
-                }
-                pageContext.getOut().print("\"><td valign=\"top\">");
-                pageContext.getOut().print(key);
-                pageContext.getOut().print(":&nbsp;<td><pre>");
-                pageContext.getOut().print(session.getAttribute(key));
-                pageContext.getOut().print("<td>&nbsp;");
-                pageContext.getOut().print(session.getAttribute(key).getClass().getName());
-                pageContext.getOut().print("</tr>");
-            }
-            pageContext.getOut().print("</table><h2>Java Virtual Machine properties</h2>");
-
-            Properties sysprops = System.getProperties();
-            Enumeration enprop = sysprops.propertyNames();
-            String str = "";
-
-            pageContext.getOut().print(
-                    "<table border=\"0\" cellspacing=0 cellpadding=0><tr bgcolor=\"#cccccc\"><Th>Property<th>Value");
-
-            line = 0;
-            while (enprop.hasMoreElements()) {
-                String key = (String) enprop.nextElement();
-                line++;
-
-                pageContext.getOut().print("<tr bgcolor=\"#");
-                if (line % 2 == 0) {
-                    pageContext.getOut().print("eeeeee");
-                } else {
-                    pageContext.getOut().print("ffffff");
-                }
-                pageContext.getOut().print("\"><td valign=\"top\">");
-                pageContext.getOut().print(key);
-                pageContext.getOut().print(":&nbsp;<td><pre>");
-                pageContext.getOut().print(
-                        key.endsWith("path") ? sysprops.getProperty(key).replace(
-                                sysprops.getProperty("path.separator").charAt(0), '\n') : (((String) sysprops
-                                .getProperty(key)).startsWith("http://")) ? "<a href=" + sysprops.getProperty(key)
-                                + ">" + sysprops.getProperty(key) + "</a>" : sysprops.getProperty(key));
-                pageContext.getOut().print("</tr>");
-            }
-
-            pageContext.getOut().print("</table>");
-        } catch (java.io.IOException e) {
-            throw new JspException(e.getMessage());
+            out.println("</pre></td>");
+            out.println("  </tr>");
         }
-        return EVAL_BODY_INCLUDE;
+
+        out.println("</table>");
+    }
+    
+    public void printMakumbaPropertyRow(JspWriter out, String key, String value) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        sb.append("  <tr bgcolor=\"#" + ((line++ % 2 == 0)? "eeeeee" : "ffffff") + "\">");          
+        sb.append("    <td>" + key + "</td>");
+        sb.append("    <td><code>" + value + "</code></td>");
+        sb.append("  </tr>");
+        out.println(sb);        
+    }
+
+    public void printSystemInfoRow(JspWriter out, String key, String value) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        sb.append("        <tr bgcolor=\"#" + ((line++ % 2 == 0)? "eeeeee" : "ffffff") + "\">");          
+        sb.append("          <td>" + key + ":&nbsp;&nbsp;&nbsp;</td>");
+        sb.append("          <td>" + value + "</td>");
+        sb.append("        </tr>");
+        out.println(sb);        
     }
 }
