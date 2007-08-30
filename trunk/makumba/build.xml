@@ -473,7 +473,7 @@
 	    <replacetoken><![CDATA[package org.makumba]]></replacetoken>
 	    <replacevalue><![CDATA[///////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
+//  Copyright (C) 2000-2007  http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
