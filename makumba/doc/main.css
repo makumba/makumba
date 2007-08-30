@@ -18,7 +18,7 @@ h1 {
 
 h2 {
 	background: #74c27a;
-	margin-top: 50px;
+	margin-top: 25px;
 	padding-left: 10px;
 	margin-left: -30px;
 }
@@ -27,7 +27,7 @@ h3 {
 	background: #c2fe8d;
 	margin-top: 40px;
 	padding-left: 10px;
-	margin-left: -20px;
+	margin-left: -10px;
 }
 
 h4 {
@@ -132,7 +132,7 @@ div.navbar>form .search {
 	background: #e7e7e7;
 }
 
-#searchbox :hover {
+#searchBox :hover {
 	color: red;
 }
 
@@ -143,27 +143,27 @@ input.search:focus {
 	border: solid 1px #999999;
 }
 
-.pagefooter {
+.pageFooter {
 	color: #666666;
 	background: #eeeeee;
-	font-size: 80%;
+	font-size: 120%;
 	text-align: right;
 	margin-top: 20px;
 	margin-left: -140px;
 }
 
 /* Tables in specification */
-table.tagparamdef {
+table.tagParamDef {
 	margin-left: 20px;
 	border: solid #ddd 1px;
 	border-spacing: 0;
 }
 
-table.tagparamdef th {
+table.tagParamDef th {
 	background: #ddd;
 }
 
-table.tagparamdef td {
+table.tagParamDef td {
 	border: solid #ddd 1px;
 }
 
@@ -206,4 +206,44 @@ div.plainstyle h1,div.plainstyle h2,div.plainstyle h3 {
 	padding: 0;
 	background: transparent;
 	margin: 0;
+}
+
+.icon_expand {
+	background: url(plus.gif) left center no-repeat;
+	padding-left: 8px;
+	height: 16px;
+}
+
+a.tab {
+	font-weight: bold;
+	text-decoration: none;
+	color: #044a2c;
+}
+
+a.tab:hover,a.tab:active {
+	text-decoration: none;
+	background-color: #c2fe8d;
+}
+
+div.menu {
+	margin-left: -30px;
+	margin-top: -10px;
+	margin-bottom: -15px;
+}
+
+.menu_item {
+	padding-right: 8px;
+}
+
+.active_menu_item {
+	font-weight: bold;
+	background-color: #c2fe8d;
+}
+
+li.section {
+	padding-bottom: 20px;
+}
+
+div.navbarPage {
+	margin-left: -50px;
 }
