@@ -27,6 +27,7 @@ import org.makumba.ProgrammerError;
 
 /**
  * mak:delete tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -39,17 +40,21 @@ public class DeleteTag extends EditTag {
     String widget;
 
     public void setWidget(String w) {
-        if (w.equals("") || w.equals("link") || w.equals("button"))
+        if (w.equals("") || w.equals("link") || w.equals("button")) {
             widget = w;
-        else
+        } else {
             throw new ProgrammerError(
                     "Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
-
+        }
     }
 
     String getOperation() {
         // FIXME
-        return (widget == null || widget.equals("") || widget.equals("link")) ? "deleteLink" : "deleteForm";
+        if (widget == null || widget.equals("") || widget.equals("link")) {
+            return "deleteLink";
+        } else {
+            return "deleteForm";
+        }
     }
 
 }
