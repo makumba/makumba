@@ -928,6 +928,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+    
+        <attribute>
+          <name>method</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+        </attribute>
 
 	<!--link specific:-->
 		<attribute>
@@ -1058,6 +1064,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
+        <attribute>
+          <name>method</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+        </attribute>
 
 	<!--link specific:-->
 		<attribute>
