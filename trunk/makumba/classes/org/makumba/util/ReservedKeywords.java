@@ -23,6 +23,11 @@ public class ReservedKeywords {
 
     private static String[] hibernateReserved = { "id" };
 
+    // not sure if this list should be including all SQL keywords, or just such that can cause problems in the SQL
+    // statements.
+    // chose for now to just list those that would cause problems, list is for sure not complete
+    private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum" };
+
     static {
         ReservedKeywords.reservedKeywords = new HashSet();
         for (int i = 0; i < ReservedKeywords.javaReserved.length; i++) {
@@ -30,6 +35,9 @@ public class ReservedKeywords {
         }
         for (int i = 0; i < ReservedKeywords.hibernateReserved.length; i++) {
             ReservedKeywords.reservedKeywords.add(ReservedKeywords.hibernateReserved[i]);
+        }
+        for (int i = 0; i < ReservedKeywords.sqlReserved.length; i++) {
+            ReservedKeywords.reservedKeywords.add(ReservedKeywords.sqlReserved[i]);
         }
     }
 
