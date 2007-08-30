@@ -232,12 +232,13 @@ div.menu {
 }
 
 .menu_item {
-	padding-right: 8px;
+	margin-right: 8px;
 }
 
 .active_menu_item {
 	font-weight: bold;
 	background-color: #c2fe8d;
+	margin-right: 8px;
 }
 
 li.section {
