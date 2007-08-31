@@ -326,7 +326,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
             responder.writeFormPreamble(sb, basePointer);
             bodyContent.getEnclosingWriter().print(sb.toString());
 
-            bodyContent.writeOut(bodyContent.getEnclosingWriter());
+            // for a deleteForm, we want to trim the text on the button unless specified otherwise
+            // not sure if this implementation is the best possible solution
+            if (this instanceof DeleteTag && !((DeleteTag) this).getPreserveWhiteSpace()) {
+                bodyContent.getEnclosingWriter().print(bodyContent.getString().trim());
+            } else {
+                bodyContent.writeOut(bodyContent.getEnclosingWriter());
+            }
 
             sb = new StringBuffer();
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
