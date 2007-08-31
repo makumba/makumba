@@ -403,7 +403,8 @@
     to \', which could be handy for javascript tag attributes, is confusing the Tomcat servlet container.</p>
 
 
-    <!-- ========================================================= --> <!-- ====================== mak:response ===================== -->
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:response ===================== -->
     <h3><a name="response">&lt;mak:response/&gt;</a></h3>
     <p><code>&lt;mak:response/&gt;</code> prints information about the results of the actions that were performed by
     the <a href="#controller">makumba controller</a> (e.g. for a form submit or deleteLink): It either displays the <code>message="..."</code>
@@ -824,7 +825,7 @@
       <li class="section"><a href="#makform">&lt;mak:form&gt;</a></li>
       <li class="section"><a href="#input">&lt;mak:input&gt;</a> and <a href="#choiceDisplay">&lt;mak:option&gt;</a></li>
       <li class="section"><a href="#action">&lt;mak:action&gt;</a></li>
-      <li><a href="#delete">&lt;mak:deleteLink/&gt;</a></li>
+      <li><a href="#delete">&lt;mak:delete/&gt;</a></li>
     </ul>
     </div>
     </td>
@@ -1243,7 +1244,8 @@
     </table>
     <p>The response will call the handler method: (the argument names are adapted to the example)</p>
     <pre class="example">on_editBestStudent(Pointer student, Dictionary fieldsToChange, Attributes pageParams, Database db)<br></pre>
-    <!-- ========================================================= --> <!-- ====================== mak:form ========================= -->
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:form ========================= -->
     <h4><a name="makform">&lt;mak:form&nbsp; ...&gt;....&lt;/mak:form&gt;</a></h4>
     <p>Creates a <b>generic form</b>, that may call a handler method in response. It allows the JSP author to make
     any kind of form. They are suitable for more complex operations than new, add, edit.</p>
@@ -1335,7 +1337,8 @@
         </tr>
       </tbody>
     </table>
-    <!-- ========================================================= --> <!-- ====================== mak:input ======================== -->
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:input ======================== -->
     <h4><a name="input">&lt;mak:input... /&gt;</a></h4>
     <p>An input field to be created, depending on the makumba type of the field. See the <a
       href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</p>
@@ -1565,21 +1568,24 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         </tr>
       </tbody>
     </table>
-    <!-- ========================================================= --> <!-- ====================== mak:action ======================= -->
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:action ======================= -->
     <h4><a name="action">&lt;mak:action&gt;....&lt;/mak:action&gt;</a></h4>
     <p>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action
     parameter of the form tag can be omitted, and the action URI can be indicated in a <code>mak:action</code>, anywhere
     inside the form tag.</p>
     <p>Example:</p>
     <pre class="example">&lt;mak:editForm object="ins" method="post"&gt;<br>  <b>&lt;mak:action&gt;</b>memberView.jsp?person=&lt;mak:value expr="p"/&gt;<b>&lt;/mak:action&gt;</b><br>...<br>&lt;/mak:editForm&gt;<br></pre>
-    <!-- ========================================================= --> <!-- ==================== mak:deleteLink ===================== -->
-    <h3><a name="delete">&lt;mak:deleteLink&gt;...&lt;/mak:deleteLink&gt;</a></h3>
-    <p>Produces a link to the page that will delete the object indicated by any of the labels of the mandatory
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:deleteLink ===================== -->
+    <h3><a name="delete">&lt;mak:delete&gt;...&lt;/mak:delete&gt;</a></h3>
+    <p>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory
     enclosing <code>&lt;mak:object&gt;</code> or <code>&lt;mak:list&gt;</code></p>
     <p>Example:</p>
-    <pre class="example">&lt;mak:object from="best.Student s, s.languages l"<br>      where="s=$student AND l.lang.name=$langname"&gt;<br>  &lt;mak:deleteLink object="l"  action="studentView.jsp"&gt;<br>   Delete &lt;mak:value expr="l.lang.name"/&gt;<br>  &lt;/mak:deleteLink&gt;<br>&lt;/mak:object&gt;<br></pre>
+    <pre class="example">&lt;mak:object from="best.Student s, s.languages l" where="s=$student AND l.lang.name=$langname"&gt;<br>  &lt;mak:delete object="l" action="studentView.jsp"&gt;<br>   Delete &lt;mak:value expr="l.lang.name"/&gt;<br>  &lt;/mak:delete&gt;<br>&lt;/mak:object&gt;<br></pre>
     <br>
-    <p></p>
+    <p><b>DEPRECATED:</b> The usage of <code>&lt;mak:deleteLink&gt;</code> is deprecated, and should be replaced by the equivalent:
+    <pre class="example">&lt;mak:delete widget="link"&gt;</pre> </p>
     <table class="tagParamDef">
       <tbody>
         <tr>
@@ -1591,6 +1597,16 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td><tt>object</tt></td>
           <td>OQL label of the object to delete</td>
           <td>Fixed</td>
+        </tr>
+        <tr>
+          <td><tt>widget</tt></td>
+          <td>UI element of the delete</td>
+          <td>Fixed, can be one of <code>button</code> or <code>link</code>; defaults to <code>link</code>.</td>
+        </tr>
+        <tr>
+          <td><tt>preserveWhitespace</tt></td>
+          <td>All white space inside a &lt;mak:delete&gt; will be trimmed, unless specifically preserved.</td>
+          <td>Fixed, can be one of <code>true</code> or <code>false</code>; defaults to <code>false</code>.</td>
         </tr>
         <tr>
           <td class="futfeat"><tt>(handler)</tt></td>
