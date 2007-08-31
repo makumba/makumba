@@ -39,6 +39,8 @@ public class DeleteTag extends EditTag {
 
     String widget;
 
+    private boolean preserveWhiteSpace = false;
+
     public void setWidget(String w) {
         if (w.equals("") || w.equals("link") || w.equals("button")) {
             widget = w;
@@ -48,6 +50,10 @@ public class DeleteTag extends EditTag {
         }
     }
 
+    public void setPreserveWhitespace(String s) {
+        this.preserveWhiteSpace = (s != null && s.equals("true"));
+    }
+
     String getOperation() {
         // FIXME
         if (widget == null || widget.equals("") || widget.equals("link")) {
@@ -55,6 +61,10 @@ public class DeleteTag extends EditTag {
         } else {
             return "deleteForm";
         }
+    }
+
+    public boolean getPreserveWhiteSpace() {
+        return preserveWhiteSpace;
     }
 
 }

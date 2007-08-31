@@ -935,6 +935,12 @@
           <rtexprvalue>true</rtexprvalue>
         </attribute>
 
+        <attribute>
+          <name>preserveWhitespace</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
 	<!--link specific:-->
 		<attribute>
 			<name>target</name>
@@ -1067,6 +1073,12 @@
 
         <attribute>
           <name>method</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+          <name>preserveWhitespace</name>
           <required>false</required>
           <rtexprvalue>true</rtexprvalue>
         </attribute>
