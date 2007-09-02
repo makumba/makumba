@@ -6,6 +6,7 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
+rudi: fixing bug 958, reserved tomcat keywords
 rudi: fixing bug 784, adding a null-option to charEnum and intEnum
 rudi: finishing bug 16 (mak:delete as form), fixing problems with the form method and trimming white-space
 rudi: added developer support tools "code generator"
