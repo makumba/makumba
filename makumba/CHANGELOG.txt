@@ -8,6 +8,10 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 rudi: fixing bug 784, adding a null-option to charEnum and intEnum
 rudi: finishing bug 16 (mak:delete as form), fixing problems with the form method and trimming white-space
+rudi: added developer support tools "code generator"
+rudi: added developer support for OQL queries
+rudi: added developer support for pointer value conversion (external form <-> DB)
+rudi & stefan: added developer support for data listing (lists all data of a certain MDD)
 
 -----------------------------------------------
 
