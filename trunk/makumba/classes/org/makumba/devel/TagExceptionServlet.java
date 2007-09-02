@@ -40,6 +40,7 @@ import org.makumba.OQLParseError;
 import org.makumba.util.JspParseData;
 import org.makumba.util.RuntimeWrappedException;
 import org.makumba.view.jsptaglib.MakumbaTag;
+import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**
  * The servlet that receives errors in any makumba page and treats them meant to be friendly for developer, so he'll see
@@ -102,7 +103,12 @@ public class TagExceptionServlet extends HttpServlet {
         }
 
         if (t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())) {
-            knownError("JSP compilation error", t, original, req, wr);
+            // see if the exception is servlet container specific
+            // TODO: use the interface once this is a provider after mak:refactoring finished
+            boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this);
+            if (!servletEngineSpecificError) {
+                knownError("JSP compilation error", t, original, req, wr);
+            }
             return;
         }
 
@@ -282,6 +288,10 @@ public class TagExceptionServlet extends HttpServlet {
         String body = "";
         if (original instanceof LogicInvocationError) {
             title = "Error in business logic code";
+        } else if (traced instanceof NullPointerException) {
+            title = "Internal Makumba error";
+            body = "Please report to the Makumba developers.\n";
+            body += formatTagData(req) + body + trace(traced);
         } else if (trace(traced).indexOf("org.makumba") != -1) {
             title = "Internal Makumba error";
             body = "Please report to the developers.\n";
@@ -303,8 +313,9 @@ public class TagExceptionServlet extends HttpServlet {
                     + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-
-        body = formatTagData(req) + body + shortTrace(trace(traced));
+        if (!(traced instanceof NullPointerException)) {
+            body = formatTagData(req) + body + shortTrace(trace(traced));
+        }
         try {
             SourceViewer sw = new errorViewer(req, this, title, body, null);
             sw.parseText(wr);
