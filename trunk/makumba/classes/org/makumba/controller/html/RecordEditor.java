@@ -70,8 +70,10 @@ public class RecordEditor extends RecordFormatter {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             Collection exceptions = e.getExceptions(fe.getInputName(this, i, suffix));
-            for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                unassignedExceptions.remove(iter.next());
+            if (exceptions != null) {
+                for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                    unassignedExceptions.remove(iter.next());
+                }
             }
         }
         return unassignedExceptions;
