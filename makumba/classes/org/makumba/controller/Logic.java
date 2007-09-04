@@ -40,6 +40,7 @@ import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
 import org.makumba.MakumbaSystem;
+import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
@@ -395,6 +396,8 @@ public class Logic {
             Throwable g = f.getTargetException();
             if (g instanceof LogicException)
                 throw (LogicException) g;
+            if (g instanceof CompositeValidationException)
+                throw (CompositeValidationException) g;
             throw new LogicInvocationError(g);
         }
     }
