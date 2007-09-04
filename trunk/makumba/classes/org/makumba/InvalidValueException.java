@@ -23,9 +23,17 @@
 
 package org.makumba;
 
+import org.makumba.util.StringUtils;
+
 /** This exception occurs when an invalid value is passed to a field */
 public class InvalidValueException extends RuntimeException {
     private static final long serialVersionUID = 1L;
+
+    protected String field;
+
+    private FieldDefinition fieldDefinition;
+
+    protected String shortMessage;
 
     public InvalidValueException(String message) {
         super(message);
@@ -33,25 +41,49 @@ public class InvalidValueException extends RuntimeException {
 
     public InvalidValueException(String field, String message) {
         super("Invalid value for " + field + ": " + message);
+        this.field = field;
+        this.shortMessage = message;
     }
 
     public InvalidValueException(FieldDefinition fi, String message) {
         this(fi.getDataDefinition().getName() + "#" + fi.getName(), message);
+        this.fieldDefinition = fi;
+        this.shortMessage = message;
     }
 
     /** form an exception message from the required type and the pointer that doesn't respect it */
     public InvalidValueException(FieldDefinition fi, Class requiredClass, Object value) {
         this(fi, "Required Java type:" + requiredClass.getName() + " ; given value: " + value + " of type "
                 + value.getClass().getName());
+        this.fieldDefinition = fi;
     }
 
     /** form an exception message from the required type and the pointer that doesn't respect it */
     public InvalidValueException(FieldDefinition fi, String requiredType, Pointer wrongPointer) {
         this(fi, "Required poiter type:" + requiredType + " ; given value: " + wrongPointer);
+        this.fieldDefinition = fi;
     }
 
     /** form an exception message from the compared pointer and the pointer that doesn't match its type */
     public InvalidValueException(Pointer comparedPointer, Pointer wrongPointer) {
         super("Compared pointer: " + comparedPointer + " ; given value: " + wrongPointer);
+    }
+
+    public String getFieldName() {
+        if (fieldDefinition != null) {
+            return fieldDefinition.getName();
+        } else if (field != null) {
+            return field;
+        } else {
+            return null;
+        }
+    }
+
+    public String getShortMessage() {
+        if (StringUtils.notEmpty(shortMessage)) {
+            return shortMessage;
+        } else {
+            return getMessage();
+        }
     }
 }
