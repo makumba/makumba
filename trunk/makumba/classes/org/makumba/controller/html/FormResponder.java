@@ -141,28 +141,16 @@ public class FormResponder extends Responder {
         }
 
         else if (operation.equals("deleteForm")) {
-            sb.append("<form action=");
-            sb.append("\"" + actionBase);
-            sb.append(sep);
-            sb.append(basePointerName);
-            sb.append("=");
-            sb.append(basePointer);
-            sb.append('&');
-            sb.append(responderName);
-            sb.append("=");
-            sb.append(getPrototype());
-            sb.append(actionAnchor);
-            sb.append("\"");
+            sb.append("<form action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
 
-            sb.append(" method=");
-            sb.append("\"" + method + "\"");
-            if (multipart)
+            sb.append(" method=").append("\"").append(method).append("\"");
+            if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
+            }
             sb.append(extraFormatting);
             sb.append(">");
 
-            sb.append("<input type=\"submit\" ");
-            sb.append("value=\"");
+            sb.append("<input type=\"submit\" ").append("value=\"");
 
         } else {
             // a root form, translates into an HTML form
