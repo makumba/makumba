@@ -48,6 +48,14 @@ public class StringUtils {
         return s != null && s.equals(s2);
     }
 
+    public static boolean equals(String s, Object o) {
+        return o instanceof String && equals(s, (String) o);
+    }
+
+    public static boolean equals(Object o, String s) {
+        return equals(s, o);
+    }
+
     public static boolean equals(String s, String[] options) {
         if (s == null) {
             return false;
