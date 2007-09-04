@@ -24,6 +24,7 @@
 package org.makumba.view.jsptaglib;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -38,6 +39,7 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.controller.html.FormResponder;
 import org.makumba.util.MultipleKey;
+import org.makumba.util.StringUtils;
 import org.makumba.view.ComposedQuery;
 
 /**
@@ -72,6 +74,14 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     String basePointer = null;
 
     BodyContent bodyContent = null;
+
+    String annotation;
+
+    String[] validAnnotationParams = new String[] { "none", "before", "after", "both" };
+
+    String annotationSeparator;
+
+    boolean reloadFormOnError = true;
 
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
@@ -130,6 +140,29 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     public void setOnSubmit(String s) {
         checkNoParent("onSubmit");
         extraFormattingParams.put("onSubmit", s);
+    }
+
+    public void setAnnotation(String s) {
+        checkNoParent("annotation");
+        if (!Arrays.asList(validAnnotationParams).contains(s)) {
+            throw new ProgrammerError("Invalid value for attribute 'annotation': <" + annotation
+                    + ">. Allowed values are " + StringUtils.toString(validAnnotationParams));
+        }
+        annotation = s;
+    }
+
+    public void setAnnotationSeparator(String s) {
+        checkNoParent("annotationSeparator");
+        annotationSeparator = s;
+    }
+
+    public void setReloadFormOnError(String s) {
+        checkNoParent("reloadFormOnError");
+        if (s != null && s.equals("false")) {
+            reloadFormOnError = false;
+        } else {
+            reloadFormOnError = true;
+        }
     }
 
     /**
@@ -266,6 +299,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
             responder.setMethod(formMethod);
         if (formMessage != null)
             responder.setMessage(formMessage);
+
+        responder.setReloadFormOnError(reloadFormOnError);
+        responder.setShowFormAnnotated(StringUtils.equals(annotation, new String[] { "before", "after", "both" }));
 
         if (findParentForm() != null)
             responder.setParentResponder(findParentForm().responder, findRootForm().responder);
