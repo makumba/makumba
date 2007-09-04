@@ -103,6 +103,11 @@ public class ptrEditor extends choiceEditor {
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
         if (val == Pointer.Null)
             return "";
+        if (val instanceof String) {
+            // for reloaded forms (via ControllerFilter) check needed
+            // val is String when a null option is selected in mak:input (with mak:option)
+            return (String) val;
+        }
         return ((Pointer) val).toExternalForm();
     }
 
