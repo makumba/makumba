@@ -357,6 +357,24 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
+        <attribute>
+            <name>annotation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>annotationSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>reloadFormOnError</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -504,6 +522,24 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
+        <attribute>
+            <name>annotation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>annotationSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>reloadFormOnError</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 
 	<!--form specific:-->
 		<attribute>
@@ -658,6 +694,24 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
+        <attribute>
+            <name>annotation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>annotationSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>reloadFormOnError</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -804,6 +858,24 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
+        <attribute>
+            <name>annotation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>annotationSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>reloadFormOnError</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 
 	<!--form specific:-->
 		<attribute>
