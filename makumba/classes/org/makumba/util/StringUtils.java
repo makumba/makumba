@@ -25,6 +25,39 @@ public class StringUtils {
 
     /** Checks whether a String is not null and has, after trimming, a length > 0. */
     public static boolean notEmpty(Object o) {
-        return o != null && o.toString().length() > 0;
+        return o != null && o instanceof String && o.toString().length() > 0;
     }
+
+    /**
+     * Converts an array to a String represenation, using the toString() method of each array element.
+     */
+    public static String toString(Object[] array) {
+        StringBuffer b = new StringBuffer();
+        b.append('[');
+        for (int i = 0; i < array.length; i++) {
+            b.append(array[i]);
+            if (i < (array.length - 1)) {
+                b.append(", ");
+            }
+        }
+        b.append(']');
+        return b.toString();
+    }
+
+    public static boolean equals(String s, String s2) {
+        return s != null && s.equals(s2);
+    }
+
+    public static boolean equals(String s, String[] options) {
+        if (s == null) {
+            return false;
+        }
+        for (int i = 0; i < options.length; i++) {
+            if (s.equals(options[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
