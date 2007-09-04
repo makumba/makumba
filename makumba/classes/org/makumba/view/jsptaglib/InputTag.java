@@ -23,14 +23,22 @@
 
 package org.makumba.view.jsptaglib;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.makumba.FieldDefinition;
+import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
+import org.makumba.CompositeValidationException;
 import org.makumba.ProgrammerError;
+import org.makumba.controller.http.ControllerFilter;
 import org.makumba.util.MultipleKey;
+import org.makumba.util.StringUtils;
 
 /**
  * mak:input tag
@@ -219,7 +227,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if ("false".equals(display))
             params.put("org.makumba.noDisplay", "dummy");
-        
+
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
             FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
@@ -232,13 +240,33 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
+        String fieldName = name + getForm().responder.getSuffix();
 
-        if (nameVar != null)
-            getPageContext().setAttribute(nameVar, name + getForm().responder.getSuffix());
+        if (nameVar != null) {
+            getPageContext().setAttribute(nameVar, fieldName);
+        }
 
         if (display == null || !display.equals("false")) {
             try {
+                CompositeValidationException errors = (CompositeValidationException) pageContext.getRequest().getAttribute(
+                    ControllerFilter.MAKUMBA_FORM_VALIDATION_ERRORS);
+                Collection exceptions = null;
+                if (errors != null) {
+                    exceptions = errors.getExceptions(fieldName);
+                }
+                if (StringUtils.equals(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
+                    for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                        printAnnotation(fieldName, (InvalidValueException) iter.next());
+                        pageContext.getOut().print(getForm().annotationSeparator);
+                    }
+                }
                 pageContext.getOut().print(formatted);
+                if (StringUtils.equals(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
+                    for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                        pageContext.getOut().print(getForm().annotationSeparator);
+                        printAnnotation(fieldName, (InvalidValueException) iter.next());
+                    }
+                }
             } catch (java.io.IOException e) {
                 throw new JspException(e.toString());
             }
@@ -246,6 +274,12 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         name = valueExprOriginal = dataType = display = expr = nameVar = null;
         return EVAL_PAGE;
+    }
+
+    private void printAnnotation(String fieldName, InvalidValueException e) throws IOException {
+        pageContext.getOut().print("<span class=\"formAnnotation\">");
+        pageContext.getOut().print(e.getShortMessage());
+        pageContext.getOut().print("</span>");
     }
 
 }
