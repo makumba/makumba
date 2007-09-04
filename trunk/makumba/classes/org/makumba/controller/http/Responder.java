@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
@@ -39,6 +40,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,6 +49,7 @@ import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.controller.Logic;
@@ -63,6 +66,9 @@ public abstract class Responder implements java.io.Serializable {
      * "__makumba__responder__"
      */
     public final static String responderName = "__makumba__responder__";
+
+    /** the URI of the page, "__makumba__originatingPage__" */
+    public final static String originatingPageName = "__makumba__originatingPage__";
 
     /**
      * used to fix the multiple submition bug (#190), it's basicaliy respoder+sessionID. <br>
@@ -96,6 +102,18 @@ public abstract class Responder implements java.io.Serializable {
 
     /** a response message to be shown when multiple submit occur */
     protected String multipleSubmitErrorMsg;
+
+    /**
+     * Stores whether we shall reload this form on a validation error or not. Used by {@link ControllerFilter} to decide
+     * on the action.
+     */
+    private boolean reloadFormOnError;
+
+    /**
+     * Stores whether the form shall be annotated with the validation errors, or not. Used by {@link ControllerFilter}
+     * to decide if the error messages shall be shown in the form response or not.
+     */
+    private boolean showFormAnnotated;
 
     /** new and add responders set their result to a result attribute */
     protected String resultAttribute = anonymousResult;
@@ -141,6 +159,22 @@ public abstract class Responder implements java.io.Serializable {
     /** pass the multiple submit response message */
     public void setMultipleSubmitErrorMsg(String multipleSubmitErrorMsg) {
         this.multipleSubmitErrorMsg = multipleSubmitErrorMsg;
+    }
+
+    public void setReloadFormOnError(boolean reloadFormOnError) {
+        this.reloadFormOnError = reloadFormOnError;
+    }
+
+    public boolean getReloadFormOnError() {
+        return reloadFormOnError;
+    }
+
+    public void setShowFormAnnotated(boolean showFormAnnotated) {
+        this.showFormAnnotated = showFormAnnotated;
+    }
+
+    public boolean getShowFormAnnotated() {
+        return showFormAnnotated;
     }
 
     /** pass the response handler, if other than the default one */
@@ -213,7 +247,8 @@ public abstract class Responder implements java.io.Serializable {
     /** a key that should identify this responder among all */
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
-                + controller.getClass().getName() + handler + addField + newType;
+                + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
+                + showFormAnnotated;
     }
 
     /** get the integer key of this form, and register it if not already registered */
@@ -313,23 +348,19 @@ public abstract class Responder implements java.io.Serializable {
         }
     }
 
-    /** respond to a http request */
-    static void response(HttpServletRequest req, HttpServletResponse resp) {
-        setResponderWorkingDir(req);
-
-        if (req.getAttribute(RESPONSE_STRING_NAME) != null)
-            return;
-        req.setAttribute(RESPONSE_STRING_NAME, "");
-        String message = "";
-
-        for (Iterator responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+    /**
+     * This method returns the first responder object found fitting the request. It can be used to retrieve information
+     * about the form which is valid for all nested forms, and is used e.g. in {@link ControllerFilter} to find out the
+     * value of {@link #getReloadFormOnError()}.
+     */
+    static Responder getFirstResponder(ServletRequest req) {
+        Iterator responderCodes = getResponderCodes((HttpServletRequest) req);
+        if (responderCodes.hasNext()) {
             String code = (String) responderCodes.next();
-            String responderCode = code;
             String suffix = "";
             String parentSuffix = null;
             int n = code.indexOf(suffixSeparator);
             if (n != -1) {
-                responderCode = code.substring(0, n);
                 suffix = code.substring(n);
                 parentSuffix = "";
                 n = suffix.indexOf(suffixSeparator, 1);
@@ -338,57 +369,90 @@ public abstract class Responder implements java.io.Serializable {
                     suffix = suffix.substring(0, n);
                 }
             }
-            Integer i = new Integer(Integer.parseInt(responderCode));
-            Responder fr = ((Responder) indexedCache.get(i));
-            String fileName = validResponderFilename(i.intValue());
+            return getResponder(code, suffix, parentSuffix);
+        } else {
+            return null;
+        }
+    }
 
-            // responder check
-            if (fr == null) { // we do not have responder in cache --> try to get it from disk
-                ObjectInputStream objectIn = null;
-                try {
-                    objectIn = new ObjectInputStream(new FileInputStream(fileName));
-                    fr = (Responder) objectIn.readObject();
-                    fr.postDeserializaton();
-                    fr.controller = Logic.getController(fr.controllerClassname);
-                } catch (UnsupportedClassVersionError e) {
-                    // if we try to read a responder that was written with a different version of the responder class
-                    // we delete it, and throw an exception
-                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
-                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
-                    new File(fileName).delete();
-                    throw new org.makumba.InvalidValueException(
-                            "Responder cannot be re-used due to Makumba version change! Please reload this page.");
-                } catch (InvalidClassException e) {
-                    // same as above
-                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
-                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
-                    new File(fileName).delete();
-                    throw new org.makumba.InvalidValueException(
-                            "Responder cannot be re-used due to Makumba version change! Please reload this page.");
-                } catch (IOException e) {
-                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
-                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
-                } catch (ClassNotFoundException e) {
-                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
-                        "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
-                } finally {
-                    if (objectIn != null) {
-                        try {
-                            objectIn.close();
-                        } catch (IOException e1) {
-                        }
+    private static Responder getResponder(String code, String suffix, String parentSuffix) {
+        Integer i = new Integer(Integer.parseInt(code));
+        Responder fr = ((Responder) indexedCache.get(i));
+        String fileName = validResponderFilename(i.intValue());
+
+        // responder check
+        if (fr == null) { // we do not have responder in cache --> try to get it from disk
+            ObjectInputStream objectIn = null;
+            try {
+                objectIn = new ObjectInputStream(new FileInputStream(fileName));
+                fr = (Responder) objectIn.readObject();
+                fr.postDeserializaton();
+                fr.controller = Logic.getController(fr.controllerClassname);
+            } catch (UnsupportedClassVersionError e) {
+                // if we try to read a responder that was written with a different version of the responder class
+                // we delete it, and throw an exception
+                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                new File(fileName).delete();
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be re-used due to Makumba version change! Please reload this page.");
+            } catch (InvalidClassException e) {
+                // same as above
+                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                new File(fileName).delete();
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be re-used due to Makumba version change! Please reload this page.");
+            } catch (IOException e) {
+                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+            } catch (ClassNotFoundException e) {
+                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
+            } finally {
+                if (objectIn != null) {
+                    try {
+                        objectIn.close();
+                    } catch (IOException e1) {
                     }
                 }
-                if (fr == null) { // we did not find the responder on the disk
-                    throw new org.makumba.InvalidValueException(
-                            "Responder cannot be found, probably due to server restart. Please reload this page.");
+            }
+            if (fr == null) { // we did not find the responder on the disk
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be found, probably due to server restart. Please reload this page.");
+            }
+        }
+        // end responder check
+        return fr;
+    }
+
+    /** respond to a http request */
+    static Exception response(HttpServletRequest req, HttpServletResponse resp) {
+        setResponderWorkingDir(req);
+
+        if (req.getAttribute(RESPONSE_STRING_NAME) != null)
+            return null;
+        req.setAttribute(RESPONSE_STRING_NAME, "");
+        String message = "";
+
+        for (Iterator responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+            String code = (String) responderCodes.next();
+            String suffix = "";
+            String parentSuffix = null;
+            int n = code.indexOf(suffixSeparator);
+            if (n != -1) {
+                suffix = code.substring(n);
+                parentSuffix = "";
+                n = suffix.indexOf(suffixSeparator, 1);
+                if (n != -1) {
+                    parentSuffix = suffix.substring(n);
+                    suffix = suffix.substring(0, n);
                 }
             }
-            // end responder check
+            Responder fr = getResponder(code, suffix, parentSuffix);
 
             try {
                 // check for multiple submition of forms
-
                 String reqFormSession = (String) RequestAttributes.getParameters(req).getParameter(formSessionName);
                 if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("")
                         && reqFormSession != null) {
@@ -417,7 +481,6 @@ public abstract class Responder implements java.io.Serializable {
                         db.close();
                     }
                 }
-
                 // end mulitiple submit check
 
                 Object result = fr.op.respondTo(req, fr, suffix, parentSuffix);
@@ -431,6 +494,11 @@ public abstract class Responder implements java.io.Serializable {
                 // attribute not found is a programmer error and is reported
                 ControllerFilter.treatException(anfe, req, resp);
                 continue;
+            } catch (CompositeValidationException e) {
+                req.setAttribute(fr.resultAttribute, Pointer.Null);
+                req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
+                // we do nothing, cause we will treat that from the ControllerFilter.doFilter
+                return e;
             } catch (LogicException e) {
                 MakumbaSystem.getMakumbaLogger("logic.error").log(Level.INFO, "error", e);
                 message = errorMessage(e);
@@ -444,11 +512,17 @@ public abstract class Responder implements java.io.Serializable {
             if (suffix.equals(""))
                 req.setAttribute(RESPONSE_STRING_NAME, message);
         }
+        return null;
     }
 
     /** format an error message */
     public static String errorMessage(Throwable t) {
-        return "<font color=red>" + t.getMessage() + "</font>";
+        return errorMessage(t.getMessage());
+    }
+
+    /** format an error message */
+    public static String errorMessage(String message) {
+        return "<font color=red>" + message + "</font>";
     }
 
     /** reads the HTTP base pointer */
@@ -463,6 +537,30 @@ public abstract class Responder implements java.io.Serializable {
      * provides an implementation
      */
     public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
+
+    public abstract ArrayList getUnassignedExceptions(CompositeValidationException e,
+            ArrayList unassignedExceptions, HttpServletRequest req, String suffix);
+
+    public static ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
+        ArrayList unassignedExceptions = e.getExceptions();
+        for (Iterator responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+            String code = (String) responderCodes.next();
+            String suffix = "";
+            String parentSuffix = null;
+            int n = code.indexOf(suffixSeparator);
+            if (n != -1) {
+                suffix = code.substring(n);
+                parentSuffix = "";
+                n = suffix.indexOf(suffixSeparator, 1);
+                if (n != -1) {
+                    parentSuffix = suffix.substring(n);
+                    suffix = suffix.substring(0, n);
+                }
+            }
+            getResponder(code, suffix, parentSuffix).getUnassignedExceptions(e, unassignedExceptions, req, suffix);
+        }
+        return unassignedExceptions;
+    }
 
     static Hashtable responderOps = new Hashtable();
     static {

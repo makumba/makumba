@@ -24,6 +24,8 @@
 package org.makumba.controller.http;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -34,15 +36,17 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.devel.TagExceptionServlet;
 import org.makumba.util.DbConnectionProvider;
 
 /**
- * 
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
  * 
  * @author Cristian Bogdan
@@ -50,6 +54,10 @@ import org.makumba.util.DbConnectionProvider;
  * @version $Id$ *
  */
 public class ControllerFilter implements Filter {
+    public static final String MAKUMBA_FORM_VALIDATION_ERRORS = "__makumba__formValidationErrors__";
+
+    public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
+
     public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
 
     static FilterConfig conf;
@@ -85,9 +93,89 @@ public class ControllerFilter implements Filter {
                     treatException(e, (HttpServletRequest) req, (HttpServletResponse) resp);
                     return;
                 }
+                Exception e = Responder.response((HttpServletRequest) req, (HttpServletResponse) resp);
+                if (e instanceof CompositeValidationException) {
+                    CompositeValidationException v = (CompositeValidationException) e;
+                    req.setAttribute(MAKUMBA_FORM_VALIDATION_ERRORS, v);
+                    req.setAttribute(MAKUMBA_FORM_RELOAD, "true");
 
-                Responder.response((HttpServletRequest) req, (HttpServletResponse) resp);
-                if (wasException((HttpServletRequest) req))
+                    String message;
+
+                    // Check if we shall reload the form page
+                    Responder firstResponder = Responder.getFirstResponder(req);
+                    if (firstResponder.getReloadFormOnError()) {
+                        final String root = conf.getInitParameter(req.getServerName());
+                        HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
+                        String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
+                        String contextPath = httpServletRequest.getContextPath();
+                        if (originatingPage.startsWith(contextPath)) {
+                            originatingPage = originatingPage.substring(contextPath.length());
+                        }
+                        if (originatingPage.indexOf("?") > 0) {
+                            originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
+                        }
+
+                        // make a request wrapper, using an anonymous inner class
+                        req = new HttpServletRequestWrapper((HttpServletRequest) req) {
+
+                            public String getServletPath() {
+                                HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
+                                String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
+                                String contextPath = httpServletRequest.getContextPath();
+                                if (originatingPage.startsWith(contextPath)) {
+                                    originatingPage = originatingPage.substring(contextPath.length());
+                                }
+                                if (originatingPage.indexOf("?") > 0) {
+                                    originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
+                                }
+                                return originatingPage;
+                            }
+
+                            /**
+                             * We override this method so we can serve the previous request URI. This doesn't have any
+                             * effect on the URI displayed in the browser, but it makes submitting the form twice
+                             * possible...
+                             */
+                            public String getRequestURI() {
+                                return getRequest().getParameter(Responder.originatingPageName);
+                            }
+                        };
+
+                        // make a response wrapper, using an anonymous inner class
+                        resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
+                            public void sendRedirect(String s) throws java.io.IOException {
+                                if (root != null && s.startsWith(root)) {
+                                    s = s.substring(root.length());
+                                }
+                                ((HttpServletResponse) getResponse()).sendRedirect(s);
+                            }
+
+                        };
+
+                        if (firstResponder.getShowFormAnnotated()) {
+                            // if the form shall be annotated, we need to filter which exceptions can be assigned to
+                            // fields, and which not
+                            ArrayList unassignedExceptions = Responder.getUnassignedExceptions(v,
+                                (HttpServletRequest) req);
+
+                            // the messages left unassigned will be shown as the form response
+                            message = "";
+                            for (Iterator iter = unassignedExceptions.iterator(); iter.hasNext();) {
+                                InvalidValueException invEx = (InvalidValueException) iter.next();
+                                message += invEx.getMessage() + "<br>";
+                            }
+                        } else {
+                            message = v.toString();
+                        }
+
+                    } else { // we do not change the target page
+                        message = v.toString();
+                    }
+
+                    message = Responder.errorMessage(message);
+                    req.setAttribute(Responder.RESPONSE_STRING_NAME, message);
+
+                } else if (wasException((HttpServletRequest) req))
                     return;
             } finally {
                 prov.close();
