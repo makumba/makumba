@@ -35,6 +35,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -279,9 +280,9 @@ public abstract class MakumbaTag extends TagSupport {
     public int doStartTag() throws JspException {
         MakumbaJspAnalyzer.PageCache pageCache = null;
         // need to check if this is still needed, it was here only if the tag was root...
-        if (pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) != null)
+        if (pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) != null && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             setWasException();
-        if (wasException())
+        if (wasException() && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             return SKIP_PAGE;
         try {
             if (needPageCache())
