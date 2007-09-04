@@ -30,8 +30,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
+import org.makumba.util.StringUtils;
 import org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache;
 
 /**
@@ -164,6 +166,14 @@ public abstract class BasicValueTag extends MakumbaTag {
     public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException {
         FieldDefinition type = (FieldDefinition) pageCache.inputTypes.get(tagKey);
         Object val = null;
+        
+        // if we are reloading the form page on validation errors, fill form inputs as in the request
+        if (this instanceof InputTag
+                && StringUtils.equals(pageContext.getRequest().getAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD), "true")) {
+            String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
+            val = pageContext.getRequest().getParameter(tagName);
+            return computedValue(val, type);
+        }
 
         if (isValue())
             val = ((ValueComputer) getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
