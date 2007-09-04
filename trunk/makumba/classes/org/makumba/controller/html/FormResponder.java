@@ -23,15 +23,17 @@
 
 package org.makumba.controller.html;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
-import org.makumba.Transaction;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.Transaction;
 import org.makumba.controller.http.Responder;
 
 public class FormResponder extends Responder {
@@ -49,6 +51,14 @@ public class FormResponder extends Responder {
             return editor.readFrom(req, suffix);
         else
             return new Hashtable(1);
+    }
+
+    public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
+            HttpServletRequest req, String suffix) {
+        if (editor != null)
+            return editor.getUnassignedExceptions(e, unassignedExceptions, req, suffix);
+        else
+            return null;
     }
 
     Hashtable indexes = new Hashtable();
@@ -183,6 +193,15 @@ public class FormResponder extends Responder {
         String formSessionValue = responderValue + session; // gets the formSession value
 
         // writes the hidden fields
+        String url = request.getRequestURI();
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
+                queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
+            }
+            url += "?" + queryString;
+        }
+        writeInput(sb, originatingPageName, url, "");
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
             sb.append('\n');
