@@ -522,7 +522,7 @@ public class TestTags extends JspTestCase {
 		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
 		line = removeNewlines(line);
 		line = removeMakumbaResponder(line);
-		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__originatingPage__\" value=\"/tests/JspRedirector?Cactus_TestMethod=testMakNewForm&Cactus_TestClass=test.http.TestTags&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST\"><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
 		
 		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
@@ -586,7 +586,7 @@ public class TestTags extends JspTestCase {
 		line = removeNewlines(line);
 		line = removeMakumbaResponder(line);
 		line = removeMakumbaBase(line);
-		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__base__\" ><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__base__\" ><input type=\"hidden\" name=\"__makumba__originatingPage__\" value=\"/tests/JspRedirector?Cactus_TestMethod=testMakEditForm&Cactus_TestClass=test.http.TestTags&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST\"><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
 		
 		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
@@ -634,7 +634,7 @@ public class TestTags extends JspTestCase {
 		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
 		line = removeNewlines(line);
 		line = removeMakumbaResponder(line);
-		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__originatingPage__\" value=\"/tests/JspRedirector?Cactus_TestMethod=testMakForm&Cactus_TestClass=test.http.TestTags&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST\"><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
 		
 		assertTrue("testMakFormValueStart! not found", output.indexOf("testMakFormValueStart!") > 0 ? true : false);
 		assertTrue("!endMakFormValueStart not found", output.indexOf("!endMakFormValueStart", output.indexOf("testMakFormValueStart")) > 0 ? true : false);
@@ -646,7 +646,7 @@ public class TestTags extends JspTestCase {
 		assertTrue("__makumba__responder__ not found", line.indexOf("__makumba__responder__") > 0 ? true : false);
 		line = removeNewlines(line);
 		line = removeMakumbaResponder(line);
-		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
+		assertEquals("form end incorrect", "<input type=\"hidden\" name=\"__makumba__originatingPage__\" value=\"/tests/JspRedirector?Cactus_TestMethod=testMakForm&Cactus_TestClass=test.http.TestTags&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST\"><input type=\"hidden\" name=\"__makumba__responder__\" ></form>", line);
 		
 		assertTrue("testCharInput! not found", output.indexOf("testCharInput!") > 0 ? true : false);
 		assertTrue("!endCharInput not found", output.indexOf("!endCharInput", output.indexOf("testCharInput")) > 0 ? true : false);
@@ -723,6 +723,7 @@ public class TestTags extends JspTestCase {
         "\t<OPTION value=\"0\">Female</OPTION>\n"+
         "\t<OPTION value=\"1\" SELECTED>Male</OPTION>\n"+
         "</SELECT>\n"+
+        "<input type=\"hidden\" name=\"__makumba__originatingPage__\" value=\"/tests/JspRedirector?Cactus_TestMethod=testBug946&Cactus_TestClass=test.http.TestTags&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST\">\n"+        
         "<input type=\"hidden\" name=\"__makumba__responder__\" value=\"";
         
         assertEquals(expectedResponse, responseText.substring(0, expectedResponse.length()));
