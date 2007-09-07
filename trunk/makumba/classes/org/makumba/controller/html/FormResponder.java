@@ -202,6 +202,7 @@ public class FormResponder extends Responder {
             url += "?" + queryString;
         }
         writeInput(sb, originatingPageName, url, "");
+        sb.append('\n');
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
             sb.append('\n');
