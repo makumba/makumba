@@ -19,6 +19,7 @@ rudi & stefan: added developer support for data listing (lists all data of a cer
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
 - add your changes -
+rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
 manu: fixing various bugs with hibernate database management
 manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
 <!-- ============================================================================= -->
