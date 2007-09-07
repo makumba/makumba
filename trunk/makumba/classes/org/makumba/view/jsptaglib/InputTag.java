@@ -248,22 +248,30 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (display == null || !display.equals("false")) {
             try {
+                // check for a possible composite validation error set, and do form annotation if needed
                 CompositeValidationException errors = (CompositeValidationException) pageContext.getRequest().getAttribute(
                     ControllerFilter.MAKUMBA_FORM_VALIDATION_ERRORS);
                 Collection exceptions = null;
-                if (errors != null) {
+                if (errors != null) { // get the exceptions for this field
                     exceptions = errors.getExceptions(fieldName);
                 }
+                // if requested, do annoation before the field
                 if (StringUtils.equals(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
                     for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
                         printAnnotation(fieldName, (InvalidValueException) iter.next());
-                        pageContext.getOut().print(getForm().annotationSeparator);
+                        if (getForm().annotationSeparator != null) {// print the separator, if existing
+                            pageContext.getOut().print(getForm().annotationSeparator);
+                        }
                     }
                 }
+                // print the actual form value
                 pageContext.getOut().print(formatted);
+                // if requested, do annoation after the field
                 if (StringUtils.equals(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
                     for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                        pageContext.getOut().print(getForm().annotationSeparator);
+                        if (getForm().annotationSeparator != null) {// print the separator, if existing
+                            pageContext.getOut().print(getForm().annotationSeparator);
+                        }
                         printAnnotation(fieldName, (InvalidValueException) iter.next());
                     }
                 }
