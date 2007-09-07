@@ -70,6 +70,8 @@ public class dateEditor extends FieldEditor {
     static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
             Calendar.MINUTE, Calendar.SECOND };
 
+    static String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
+
     String getNullName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
     }
@@ -159,14 +161,14 @@ public class dateEditor extends FieldEditor {
             if (o == null)
                 continue;
             if (o instanceof Vector)
-                throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not allowed for date component "
-                        + name);
+                throw new InvalidValueException(rf.expr[fieldIndex], "Multiple value not allowed for '"
+                        + componentNames[i] + "' component");
             int n = -1;
             try {
                 n = Integer.parseInt((String) o);
             } catch (NumberFormatException e) {
-                throw new InvalidValueException(rf.expr[fieldIndex],
-                        "non-integer value not allowed for date component " + name + " : " + o);
+                throw new InvalidValueException(rf.expr[fieldIndex], "Non-integer value not allowed for '"
+                        + componentNames[i] + "' component: " + o);
             }
             c.set(components[i], n);
         }
