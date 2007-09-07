@@ -30,6 +30,7 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.makumba.controller.http.HttpParameters;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
@@ -184,6 +185,28 @@ public class dateEditor extends FieldEditor {
 			return null;
 		return d;
 	}
+    
+    /**
+     * This method is used to get the date field in case of a form reload due to validation errors, and is used from
+     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache)}. It is basically
+     * i simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
+     */
+    public static Object readFrom(String name, HttpParameters pr) {
+        Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
+        c.clear();
+        for (int i = 0; i < components.length; i++) {
+            Object o = pr.getParameter(name + "_" + i);
+            if (o == null)
+                continue;
+            int n = -1;
+            try {
+                n = Integer.parseInt((String) o);
+            } catch (NumberFormatException e) {
+            }
+            c.set(components[i], n);
+        }
+        return c.getTime();
+    }
 
 	int formatFrom(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String format, int n,
 			boolean hidden, Dictionary formatParams) {
