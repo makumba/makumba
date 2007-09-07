@@ -437,10 +437,12 @@ public abstract class Responder implements java.io.Serializable {
 
         for (Iterator responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
             String code = (String) responderCodes.next();
+            String responderCode = code;
             String suffix = "";
             String parentSuffix = null;
             int n = code.indexOf(suffixSeparator);
             if (n != -1) {
+                responderCode = code.substring(0, n);
                 suffix = code.substring(n);
                 parentSuffix = "";
                 n = suffix.indexOf(suffixSeparator, 1);
@@ -449,7 +451,7 @@ public abstract class Responder implements java.io.Serializable {
                     suffix = suffix.substring(0, n);
                 }
             }
-            Responder fr = getResponder(code, suffix, parentSuffix);
+            Responder fr = getResponder(responderCode, suffix, parentSuffix);
 
             try {
                 // check for multiple submition of forms
@@ -538,8 +540,8 @@ public abstract class Responder implements java.io.Serializable {
      */
     public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
 
-    public abstract ArrayList getUnassignedExceptions(CompositeValidationException e,
-            ArrayList unassignedExceptions, HttpServletRequest req, String suffix);
+    public abstract ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
+            HttpServletRequest req, String suffix);
 
     public static ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
         ArrayList unassignedExceptions = e.getExceptions();
@@ -649,12 +651,6 @@ public abstract class Responder implements java.io.Serializable {
 
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                     throws LogicException {
-                String handlerName;
-                if (resp.handler != null) {
-                    handlerName = resp.handler;
-                } else {
-                    handlerName = "on_edit" + Logic.upperCase(resp.basePointerType);
-                }
                 // get result we got from the new form
                 Object resultFromNew = req.getAttribute(resultNamePrefix + parentSuffix);
 
@@ -664,6 +660,13 @@ public abstract class Responder implements java.io.Serializable {
                     return org.makumba.Pointer.Null; // we return null here too
                 }
 
+                String handlerName;
+                if (resp.handler != null) {
+                    handlerName = resp.handler;
+                } else {
+                    System.out.println("resp.basePointerType:" + resp.basePointerType);
+                    handlerName = "on_edit" + Logic.upperCase(resp.basePointerType);
+                }
                 // otherwise, we add to the new object
                 return Logic.doAdd(resp.controller, handlerName, resp.newType + "->" + resp.addField,
                     (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req,
