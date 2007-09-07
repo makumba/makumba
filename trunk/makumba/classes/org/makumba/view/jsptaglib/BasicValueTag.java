@@ -23,6 +23,8 @@
 
 package org.makumba.view.jsptaglib;
 
+import java.sql.Timestamp;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -171,7 +173,24 @@ public abstract class BasicValueTag extends MakumbaTag {
         if (this instanceof InputTag
                 && StringUtils.equals(pageContext.getRequest().getAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD), "true")) {
             String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
-            val = pageContext.getRequest().getParameter(tagName);
+            if (type.getIntegerType() == FieldDefinition._date) { 
+                // we need a special treatment for date fields, as they do not come in a single input, but several ones
+                // there might be a way to reuse code from DateEditor, but not sure if/how
+                
+                // the order of the values is {day, month, year, hour, minute, second}
+                // year is default to 1900, cause we substract 1900 afterwards
+                int[] values = new int[] { 1, 0, 1900, 0, 0, 0 };
+                for (int i = 0; i < values.length; i++) {
+                    try {
+                        values[i] = Integer.parseInt(pageContext.getRequest().getParameter(tagName + "_" + i));
+                    } catch (NumberFormatException e) {
+                    }
+                }
+                // we substract 1900 from the year value, as this is how the Timestamp constructor works
+                val = new Timestamp(values[2]-1900,values[1],values[0],values[3],values[4],values[5],0);
+            } else { // other types can be handled normally
+                val = pageContext.getRequest().getParameter(tagName);
+            }
             return computedValue(val, type);
         }
 
