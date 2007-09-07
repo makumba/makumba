@@ -30,9 +30,9 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Vector;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
@@ -53,7 +53,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
 	DataDefinition dd;
 
-	static final HashMap integerTypeMap = new HashMap();
+	static final DualHashBidiMap integerTypeMap = new DualHashBidiMap();
 
 	public DataDefinition getDataDefinition() {
 		return dd;
@@ -167,6 +167,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 		integerTypeMap.put("setintEnum", new Integer(
 				FieldDefinition._setIntEnum));
 	}
+    
+    public static String getStringType(int integerType) {
+        return (String) integerTypeMap.getKey(new Integer(integerType));
+    }
 
 	public boolean isAssignableFrom(FieldDefinition fi) {
 		switch (getIntegerType()) {
