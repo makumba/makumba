@@ -23,8 +23,7 @@
 
 package org.makumba.view.jsptaglib;
 
-import java.sql.Timestamp;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -32,7 +31,9 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.controller.html.dateEditor;
 import org.makumba.controller.http.ControllerFilter;
+import org.makumba.controller.http.RequestAttributes;
 import org.makumba.controller.jsp.PageAttributes;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
@@ -175,19 +176,7 @@ public abstract class BasicValueTag extends MakumbaTag {
             String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
             if (type.getIntegerType() == FieldDefinition._date) { 
                 // we need a special treatment for date fields, as they do not come in a single input, but several ones
-                // there might be a way to reuse code from DateEditor, but not sure if/how
-                
-                // the order of the values is {day, month, year, hour, minute, second}
-                // year is default to 1900, cause we substract 1900 afterwards
-                int[] values = new int[] { 1, 0, 1900, 0, 0, 0 };
-                for (int i = 0; i < values.length; i++) {
-                    try {
-                        values[i] = Integer.parseInt(pageContext.getRequest().getParameter(tagName + "_" + i));
-                    } catch (NumberFormatException e) {
-                    }
-                }
-                // we substract 1900 from the year value, as this is how the Timestamp constructor works
-                val = new Timestamp(values[2]-1900,values[1],values[0],values[3],values[4],values[5],0);
+                val = dateEditor.readFrom(tagName, RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest()));
             } else { // other types can be handled normally
                 val = pageContext.getRequest().getParameter(tagName);
             }
