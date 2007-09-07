@@ -95,7 +95,7 @@
     in:
     <ul>
       <li>http requests</li>
-      <li>Record instances (java.util.Dictionary in the current Java API)</li>
+      <li>Record instances (<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary</a> in the current Java API)</li>
       <li>database columns</li>
       <li>etc</li>
     </ul>
@@ -613,7 +613,7 @@
           well as to a page-scope attribute, also by the same name (accessible as <code>$attributename</code>).</td>
           <td>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java
           scope at that point in the JSP. <br>
-          Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector)
+          Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, <a href="api/org/makumba/Pointer.html">Pointer</a>, Vector)
           before using it as such.</td>
         </tr>
         <tr>
@@ -891,7 +891,7 @@
           <td><tt><span class="futfeat">(handler)</span></tt></td>
           <td><span class="futfeat">the Java class.method that handles the response</span></td>
           <td>defaults to on_new+NameOfMakumbaType. Arguments: <br>
-          (Dictionary newData,&nbsp; Attributes a, Database db)</td>
+          (<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
@@ -913,6 +913,24 @@
           <td><tt>message</tt></td>
           <td>the message that is displayed in the response page upon success</td>
           <td>Fixed. Defaults to "changes done".</td>
+        </tr>
+        <tr>
+          <td><tt>reloadFormOnError</tt></td>
+          <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded</td>
+          <td>Fixed. Values are <code>true</code> or <code>false</code>; defaults to <code>false</code>.</td>
+        </tr>
+        <tr>
+          <td><tt>annotation</tt></td>
+          <td>Indicates that validation whether errors should be shown in the form, or be displayed in the <code>&lt;mak:response/&gt;.</td>.
+          <td>Taken into account only if <code>reloadFormOnError</code> is not set to <code>false</code>.<br>
+          Values are <code>none</code> (displayed in the <code>&lt;mak:response/&gt;</code>), <code>before</code> (displayed before the input), <code>after</code> (displayed after the input) or <code>both</code> (displayed both before and after the input).
+          Defaults to <code>none</code>. <br>
+          Additionally, the annotation message will be put inside a <code>&lt;span class="formAnnotation"&gt;</code>; the CSS-class can be used to add custom formatting to the message.
+        </tr>
+        <tr>
+          <td><tt>annotationSeparator</tt></td>
+          <td>Fixed. Prints the given separator between the annotation and the input field.</td>
+          <td>Also HTML can be used, e.g. printing an error icon.</td>
         </tr>
         <!--form specific:-->
         <tr>
@@ -1003,7 +1021,7 @@
         </tr>
         <tr>
           <td><code>data</code></td>
-          <td><code>java.util.Dictionary</code></td>
+          <td><code><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary<a></code></td>
           <td>The new record to create. It is read from the HTTP query string by interpreting the form.</td>
         </tr>
         <tr>
@@ -1026,7 +1044,7 @@
     <p>If the handler class is present but both handler methods are missing (<code>on_new</code> and <code>after_new</code>),
     the action is not allowed.</p>
     <p>At response the following calls are executed (in this order):</p>
-    <pre class="example">PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a><br>handler_obj.<b>checkAttributes(attr, db)</b>;<br>handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;<br>Pointer created= db.insert("general.Person", data);<br>handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;<br></pre>
+    <pre class="example">PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a><br>handler_obj.<b>checkAttributes(attr, db)</b>;<br>handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;<br><a href="api/org/makumba/Pointer.html">Pointer</a> created= db.insert("general.Person", data);<br>handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;<br></pre>
     <h4><a name="makadd">&lt;mak:addForm&nbsp; ...&gt;.... &lt;/mak:addForm&gt;</a></h4>
     <p>Makes a form for creating a sub-object of the mandatory enclosing <code>&lt;mak:object&gt;</code> (e.g. a
     language of a student, an address for a person).</p>
@@ -1054,8 +1072,8 @@
         <tr>
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
-          <td>defaults to <code>on_add+MakumbaType+fieldname</code>. Arguments: <code>(Pointer baseObject,
-          Dictionary newData,&nbsp; Attributes a, Database db)</code></td>
+          <td>defaults to <code>on_add+MakumbaType+fieldname</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a> baseObject,
+          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
         </tr>
         <!-- 
 
@@ -1074,7 +1092,7 @@
   -->
         <tr>
           <td><tt>action</tt></td>
-          <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+          <td colspan="2" rowspan="7">see <a href="#maknew"><code>newForm</code></a></td>
         </tr>
         <tr>
           <td><tt>method</tt></td>
@@ -1084,6 +1102,15 @@
         </tr>
         <tr>
           <td><tt>message</tt></td>
+        </tr>
+        <tr>
+          <td><tt>reloadFormOnError</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotation</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotationSeparator</tt></td>
         </tr>
         <!--form specific:-->
         <tr>
@@ -1145,7 +1172,7 @@
     </table>
     <p>This will call the handler methods: (the argument names are adapted to the example. Note the changed pointer
     argument in the methods.)</p>
-    <pre class="example">on_addBestStudentLang(Pointer student, Dictionary languageData, Attributes pageParams, Database db)<br>after_addBestStudentLang(Pointer address, Dictionary languageData, Attributes pageParams, Database db)<br></pre>
+    <pre class="example">on_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br>after_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> address, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre>
     <h4><a name="makedit">&lt;mak:editForm&nbsp; ...&gt;.... &lt;/mak:editForm&gt;</a></h4>
     <p>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <code>&lt;mak:object&gt;</code>
     or <code>&lt;mak:list&gt;</code>. Also linked objects can be edited through the same form.</p>
@@ -1168,12 +1195,12 @@
         <tr>
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
-          <td>defaults to <code>on_edit+MakumbaTypeOfEditedObject</code>. Arguments: <code>(Pointer object,
-          Dictionary changedFields, Attributes a, Database db)</code></td>
+          <td>defaults to <code>on_edit+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a> object,
+          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> changedFields, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
-          <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+          <td colspan="2" rowspan="7">see <a href="#maknew"><code>newForm</code></a></td>
         </tr>
         <tr>
           <td><tt>method</tt></td>
@@ -1183,6 +1210,15 @@
         </tr>
         <tr>
           <td><tt>message</tt></td>
+        </tr>
+        <tr>
+          <td><tt>reloadFormOnError</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotation</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotationSeparator</tt></td>
         </tr>
         <!--form specific:-->
         <tr>
@@ -1243,7 +1279,7 @@
       </tbody>
     </table>
     <p>The response will call the handler method: (the argument names are adapted to the example)</p>
-    <pre class="example">on_editBestStudent(Pointer student, Dictionary fieldsToChange, Attributes pageParams, Database db)<br></pre>
+    <pre class="example">on_editBestStudent(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> fieldsToChange, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre>
     <!-- ========================================================= --> 
     <!-- ====================== mak:form ========================= -->
     <h4><a name="makform">&lt;mak:form&nbsp; ...&gt;....&lt;/mak:form&gt;</a></h4>
@@ -1263,12 +1299,12 @@
         <tr>
           <td><tt>handler</tt></td>
           <td>the Java method that handles the response</td>
-          <td>Arguments: <code>(Dictionary formFields, Attributes restOfArguments, Database db)</code> <br>
+          <td>Arguments: <code>(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> formFields, <a href="api/org/makumba/Attributes.html">Attributes</a> restOfArguments, <a href="api/org/makumba/Database.html">Database</a> db)</code> <br>
           Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
-          <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+          <td colspan="2" rowspan="7">see <a href="#maknew"><code>newForm</code></a></td>
         </tr>
         <tr>
           <td><tt>method</tt></td>
@@ -1278,6 +1314,15 @@
         </tr>
         <tr>
           <td><tt>message</tt></td>
+        </tr>
+        <tr>
+          <td><tt>reloadFormOnError</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotation</tt></td>
+        </tr>
+        <tr>
+          <td><tt>annotationSeparator</tt></td>
         </tr>
         <!--form specific:-->
         <tr>
@@ -1342,16 +1387,16 @@
     <h4><a name="input">&lt;mak:input... /&gt;</a></h4>
     <p>An input field to be created, depending on the makumba type of the field. See the <a
       href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</p>
-    <p>scripts/makumba-javascript.html</p>
     <p>The difference between <code>&lt;mak:input &gt;</code> and normal HTML <code>&lt;input&gt;</code> in a
     makumba form are:</p>
     <ul>
       <li><code>&lt;mak:input&gt;</code> produces objects prepared for setting/comparing makumba fields (e.g.
-      Pointer, Date, Text).</li>
+      <a href="api/org/makumba/Pointer.html">Pointer</a>, Date, Text).</li>
       <li>the fields produced by <code>&lt;input&gt;</code> will be available as page $attributes but will all be
       of type String</li>
-      <li>the fields produced by <code>&lt;mak:input&gt;</code> are available separately as a Dictionary to the
-      handler method</li>
+      <li>the fields produced by <code>&lt;mak:input&gt;</code> are available separately as a <a
+        href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> to
+      the handler method</li>
     </ul>
     <pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="p" action="studentView.jsp" method="post"&gt;<br>        name      &lt;mak:input name="name"/&gt;<br>        surname   &lt;mak:input name="surname"/&gt;<br>        gender    &lt;mak:input name="gender" type="tickbox" /&gt;<br>        dob       &lt;mak:input name="birthdate" format="yyyy-MM-dd" /&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
     <br>
@@ -1611,8 +1656,8 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         <tr>
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
-          <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(Pointer
-          object, Attributes a, Database db)</code></td>
+          <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a>
+          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
@@ -1675,7 +1720,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
       </tbody>
     </table>
     <p>The response will call the handler method: (the argument names are adapted to the example)</p>
-    <pre class="example">on_deleteBestStudentLang(Pointer lang, Attributes pageParams, Database db)<br></pre></td>
+    <pre class="example">on_deleteBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> lang, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre></td>
   </tr>
 </table>
 </div>
@@ -1783,7 +1828,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     <ol>
       <li><b>find attributes</b> unknown by pages. e.g. <pre class="example">&lt;mak:object from="best.Student stud" where="stud=$student"&gt; ...&lt;/mak:object&gt;<br></pre>
       <p>If the <code>$student</code> attribute is not known in the page (from a http argument) or in the session,
-      the <code>find{AttributeName}(Dictionary existingAttributes, Database d, String expression)</code> method is
+      the <code>find{AttributeName}(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> existingAttributes, <a href="api/org/makumba/Database.html">Database</a> d, String expression)</code> method is
       called for the Handler object. In this case findStudent(). The handler has to compute the attribute, based on
       existing attributes, making DB accesses.</p>
       <div class="note">The find{AttributeName} method's name is constructed literally from the name of the
@@ -1809,7 +1854,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     </ol>
     <h4>Handler Initialization</h4>
     <p>Whenever a handler is used in a new context (i.e. with a different set of attributes, e.g. a new page
-    access), a method called <code>checkAttributes(Attributes a, Database db)</code> is looked for and executed, if it
+    access), a method called <code>checkAttributes(<a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code> is looked for and executed, if it
     is defined.</p>
     <p><b><code>checkAttributes</code></b> can perform sanity checks for attributes used in the respective logic (in
     case of mismatches, <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>
@@ -1892,7 +1937,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td>record</td>
           <td><span class="futfeat">(all fields, as shown below)</span></td>
           <td>record</td>
-          <td>java.util.Dictionary</td>
+          <td><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary</a></td>
         </tr>
         <tr>
           <td>int&nbsp;</td>
@@ -1939,7 +1984,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td>dropdown select of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for
           set/ptr choosers with Makumba.</td>
           <td>preferably a long (foreign index)</td>
-          <td rowspan="3">org.makumba.Pointer</td>
+          <td rowspan="3"><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
         </tr>
         <tr>
           <td>xx=ptr <br>
@@ -1967,7 +2012,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td>multiple choice of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for
           set/ptr choosers with Makumba.</td>
           <td>table with ptrRel to the parent table and ptr to the foreign table</td>
-          <td>java.util.Vector of org.makumba.Pointer</td>
+          <td>java.util.Vector of <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
         </tr>
         <tr>
           <td>xx=set <br>
