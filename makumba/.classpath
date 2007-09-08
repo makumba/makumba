@@ -13,7 +13,11 @@
 	<classpathentry kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar" sourcepath="lib-src/hibernate-3.0.5.zip"/>
-	<classpathentry kind="lib" path="lib/httpunit.jar"/>
+	<classpathentry kind="lib" path="lib/httpunit.jar" sourcepath="lib-src/httpunit-1.6.2.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="http://httpunit.sourceforge.net/doc/api"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/javassist.jar" sourcepath="lib-src/javassist-3.3-1.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="http://www.csg.is.titech.ac.jp/~chiba/javassist/html/"/>
@@ -34,7 +38,6 @@
 			<attribute name="javadoc_location" value="http://java.sun.com/products/servlet/2.4/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/Tidy.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-bootstrap.jar"/>
 	<classpathentry kind="lib" path="lib/msbase.jar"/>
 	<classpathentry kind="lib" path="lib/mssqlserver.jar"/>
@@ -44,5 +47,15 @@
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.jar" sourcepath="lib-src/commons-collections-3.2-src.zip"/>
+	<classpathentry kind="lib" path="lib/jtidy-r8.jar" sourcepath="lib/jtidy-r8.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jtidy.sourceforge.net/apidocs/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jtidyservlet-r8.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jtidy.sourceforge.net/multiproject/jtidyservlet/apidocs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
