@@ -77,13 +77,13 @@ public class DataObjectViewerServlet extends DataServlet {
                 writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
                 writer.println("<br/>");
 
-                Vector[] allFields = CodeGenerator.extractFields(dd);
+                Vector[] allFields = DataServlet.extractFields(dd, false);
                 Vector fields = allFields[0];
 
                 String OQL = "SELECT ";
                 for (int i = 0; i < fields.size(); i++) {
                     FieldDefinition fd = (FieldDefinition) fields.get(i);
-                    if (fd.getIntegerType() != FieldDefinition._set) {
+                    if (!fd.isSimpleSetType()) {
                         OQL += "o." + fd.getName() + " AS " + fd.getName();
                     } else {
                         OQL += "\"<i>&lt;SET&gt;</i>\" AS " + fd.getName();
@@ -109,7 +109,11 @@ public class DataObjectViewerServlet extends DataServlet {
                     for (int i = 0; i < fields.size(); i++) {
                         FieldDefinition fd = (FieldDefinition) fields.get(i);
                         writer.println("  <tr>");
-                        writer.println("    <td class=\"columnHead\">" + fd.getName() + "</td>");
+                        writer.print("    <td class=\"columnHead\">" + fd.getName());
+                        if (fd.isDefaultField()) {
+                            writer.print(" <span style=\"color:grey;font-style:italic;\">(default field)</span>");
+                        }
+                        writer.println("</td>");
                         Object value = values.get(fd.getName());
                         if (value instanceof Pointer) {
                             writer.println("    <td>" + writePointerValueLink((Pointer) value) + "</td>");
