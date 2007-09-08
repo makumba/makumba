@@ -2,12 +2,17 @@ package org.makumba.devel;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 
 /**
@@ -37,6 +42,8 @@ public abstract class DataServlet extends HttpServlet {
     protected String type;
 
     protected String virtualPath;
+
+    static final Logger logger = MakumbaSystem.getMakumbaLogger("devel.codeGenerator");
 
     public DataServlet() {
     }
@@ -84,7 +91,8 @@ public abstract class DataServlet extends HttpServlet {
                 w.println("      <span style=\"font-size: large; color: darkblue;\">Browse to select type for data listing</span>");
             }
             if (dataPointer != null) {
-                w.println(" <i>for Pointer " + dataPointer.toExternalForm() + " (" + dataPointer + ")</i>");
+                w.println(" <i>for Pointer " + dataPointer.toExternalForm()  + " (<span title=\"DBSV:UID\" style=\"border-bottom:thin dotted;\">" + dataPointer
+                        + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">" + dataPointer.longValue() + "</span>)</i>");
             }
             w.println("<br>in Makumba database: " + dataBaseName);
         } else if (mode == MODE_QUERY) {
@@ -168,6 +176,30 @@ public abstract class DataServlet extends HttpServlet {
         w.println("</style>");
         w.println();
 
+    }
+
+    /** Extracts the fields and sets from a given DataDefinition. */
+    public static Vector[] extractFields(DataDefinition dd) {
+        return extractFields(dd, false);
+    }
+
+    public static Vector[] extractFields(DataDefinition dd, boolean skipDefaultFields) {
+        Vector fields = new Vector();
+        Vector sets = new Vector();
+        // iterating over the DataDefinition, extracting normal fields and sets
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldDefinition fd = dd.getFieldDefinition(i);
+            DataServlet.logger.finer("DEBUG INFO: Extracting fields: field name " + fd.getName() + " of type " + fd.getType());
+    
+            if (!skipDefaultFields || !fd.isDefaultField()) { // we skip default fields and index
+                if (fd.shouldEditBySingleInput()) {
+                    fields.add(fd);
+                } else {
+                    sets.add(fd);
+                }
+            }
+        }
+        return new Vector[] { fields, sets };
     }
 
 }
