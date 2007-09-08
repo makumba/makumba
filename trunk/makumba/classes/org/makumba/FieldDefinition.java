@@ -284,4 +284,16 @@ public interface FieldDefinition {
     /** Indicates whether this field should be edited by a simple mak:input, or needs it's own form. */
     public boolean shouldEditBySingleInput();
 
+    /** retuns whether this field is a number type, i.e. date, or the default fields dateCreate and dateModify. */
+    public boolean isDateType();
+
+    /** retuns whether this field is a number type, i.e. int or real. */
+    public boolean isNumberType();
+
+    /** retuns whether this field is a set type, i.e. set, setIntEnum or setCharEnum, but not setComplex. */
+    public boolean isSimpleSetType();
+
+    /** retuns whether this field is a string type, i.e. char or text. */
+    public boolean isStringType();
+
 }
