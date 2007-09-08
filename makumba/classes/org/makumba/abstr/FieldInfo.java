@@ -1054,4 +1054,19 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
     }
 
+    public boolean isDateType() {
+        return getIntegerType() == _date || getIntegerType() == _dateCreate || getIntegerType() == _dateModify;
+    }
+
+    public boolean isNumberType() {
+        return getIntegerType() == _int || getIntegerType() == _real;
+    }
+
+    public boolean isSimpleSetType() {
+        return getIntegerType() == _set || getIntegerType() == _setIntEnum || getIntegerType() == _setCharEnum;
+    }
+
+    public boolean isStringType() {
+        return getIntegerType() == _char || getIntegerType() == _intEnum;
+    }
 }
