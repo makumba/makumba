@@ -67,7 +67,7 @@ public class dateEditor extends FieldEditor {
 
     static int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
 
-    static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
+    public static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
             Calendar.MINUTE, Calendar.SECOND };
 
     static String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
