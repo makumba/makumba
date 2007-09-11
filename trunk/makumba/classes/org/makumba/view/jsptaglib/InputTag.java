@@ -208,6 +208,22 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         return EVAL_BODY_BUFFERED;
     }
 
+    void checkBodyContentForNonWhitespace() throws JspException
+    {
+    	// if we find non-whitespace text between two options, we insert it in the choices, as "text" (no actual choice)
+        if (bodyContent != null && bodyContent.getString().trim().length() > 0){
+            choiceSet.add(null, bodyContent.getString().trim(), false, false);
+            try {
+                bodyContent.clear();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
+    }    
+
+    
     /**
      * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
      * 
@@ -219,9 +235,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @throws {@link LogicException}
      */
     int computedValue(Object val, FieldDefinition type) throws JspException, LogicException {
-        if (bodyContent != null && bodyContent.getString().trim().length() > 0)
-            throw new ProgrammerError("cannot have non-whitespace content in a choice mak:input");
-
+        checkBodyContentForNonWhitespace();
+        
         if (choiceSet != null)
             params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
 

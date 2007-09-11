@@ -134,7 +134,8 @@ public abstract class choiceEditor extends FieldEditor {
 
             for (int i = 0; i < getOptionsLength(rf, fieldIndex, opt); i++) {
                 Object val = getOptionValue(rf, fieldIndex, opt, i);
-                values.add(formatOptionValue(rf, fieldIndex, opt, i, val));
+         
+                values.add(val==null?null:formatOptionValue(rf, fieldIndex, opt, i, val));
                 labels.add(formatOptionTitle(rf, fieldIndex, opt, i));
                 // System.out.println(formatOptionTitle(opt,
                 // i)+"="+formatOptionValue(opt, i, val));

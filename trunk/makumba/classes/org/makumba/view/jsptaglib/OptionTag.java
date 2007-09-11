@@ -96,6 +96,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
      * @throws {@link LogicException}
      */
     int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
+        getInput().checkBodyContentForNonWhitespace();
         if (isNull())
             val = org.makumba.Pointer.Null;
         getInput().choiceSet.add(val, bodyContent.getString(), false, false);
