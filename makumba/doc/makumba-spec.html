@@ -1592,7 +1592,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     or more <code>mak:option</code>. Options can be repeated using <code>mak:list</code>, <code>c:foreach</code>, and in
     general can appear inside any other tag.
     <p>Text inside <code>mak:option</code> will become an option title. The <code>value</code> attribute will become
-    the option. All text produced inside the mak:input that is not inside a mak:option must be blank!</p>
+    the option.  Text  inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.</p>
     <p>If <code>mak:option</code> doesn't have a value indicated, it will produce a nil option. Such nil options
     will be ignored at form submission.</p>
     <p>If an option value appears many times it will only be shown the first time it occurs.</p>
