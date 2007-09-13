@@ -277,8 +277,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /** check if the value can be assigned */
     public void checkInsert(Dictionary d) {
         Object o = d.get(getName());
-        if (isNotNull() && (o == null || o.equals(getNull())))
-            throw new org.makumba.InvalidValueException(this, "A non-null value is needed for notnull fields");
+        checkNotNull(o);
         if (o != null)
             d.put(getName(), checkValue(o));
     }
@@ -1058,8 +1057,16 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return getIntegerType() == _date || getIntegerType() == _dateCreate || getIntegerType() == _dateModify;
     }
 
+    public boolean isIntegerType() {
+        return getIntegerType() == _int;
+    }
+
+    public boolean isRealType() {
+        return getIntegerType() == _real;
+    }
+
     public boolean isNumberType() {
-        return getIntegerType() == _int || getIntegerType() == _real;
+        return isIntegerType() || isRealType();
     }
 
     public boolean isSimpleSetType() {
@@ -1069,4 +1076,5 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public boolean isStringType() {
         return getIntegerType() == _char || getIntegerType() == _intEnum;
     }
+
 }
