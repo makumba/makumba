@@ -290,6 +290,12 @@ public interface FieldDefinition {
     /** retuns whether this field is a number type, i.e. int or real. */
     public boolean isNumberType();
 
+    /** retuns whether this field is an integer type. */
+    public boolean isIntegerType();
+
+    /** retuns whether this field is a real type. */
+    public boolean isRealType();
+
     /** retuns whether this field is a set type, i.e. set, setIntEnum or setCharEnum, but not setComplex. */
     public boolean isSimpleSetType();
 
