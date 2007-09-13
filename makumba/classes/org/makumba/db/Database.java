@@ -116,7 +116,7 @@ public abstract class Database {
         updates.close();
         closeConnections();
         if(sf!=null)
-            sf.close();
+            ((SessionFactory)sf).close();
     }
 
     public DBConnection getDBConnection() {
@@ -620,9 +620,9 @@ public abstract class Database {
         }
     };
 
-    private SessionFactory sf;
+    private Object sf;
 
-    public synchronized SessionFactory getHibernateSessionFactory() {
+    public synchronized Object getHibernateSessionFactory() {
         if(sf==null && ClassResource.get(getConfiguration()+".cfg.xml")!=null){
             sf= HibernateSFManager.getSF(getConfiguration()+".cfg.xml", false);
         }
