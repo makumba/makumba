@@ -24,6 +24,8 @@
 package org.makumba;
 import java.io.StringReader;
 
+import org.makumba.controller.html.CalendarEditorProvider;
+import org.makumba.controller.html.KruseCalendarEditor;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
@@ -471,4 +473,8 @@ The programmer could just as well decide that all makumba logging at or over the
 		}
   	}
   }
+    public static CalendarEditorProvider getCalendarProvider() {
+        return KruseCalendarEditor.getInstance();
+
+    }
 }

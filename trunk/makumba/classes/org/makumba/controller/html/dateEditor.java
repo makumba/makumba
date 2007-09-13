@@ -30,6 +30,7 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.makumba.MakumbaSystem;
 import org.makumba.controller.http.HttpParameters;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
@@ -49,9 +50,9 @@ public class dateEditor extends FieldEditor {
         return SingletonHolder.singleton;
     }
 
-    static String[] _params = { "format" };
+    static String[] _params = { "format", "calendarEditor", "calendarEditorLink" };
 
-    static String[][] _paramValues = { null };
+    static String[][] _paramValues = { null, new String[] { "true", "false" }, null };
 
     public String[] getAcceptedParams() {
         return _params;
@@ -109,6 +110,13 @@ public class dateEditor extends FieldEditor {
             n = formatFrom(rf, fieldIndex, sb, d, format, n, hidden, formatParams);
         }
 
+        String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
+        String calendarEditor = (String) formatParams.get("calendarEditor");
+        if (!calendarEditor.equals("false")) {
+            sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName,
+                (String) formatParams.get("calendarEditorLink")));
+        }
+
         return sb.toString();
     }
 
@@ -122,17 +130,17 @@ public class dateEditor extends FieldEditor {
         if (hidden) {
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
             c.setTime(d);
-            sb.append("<input type=\"hidden\" name=\"").append(name).append("\" value=\"").append(
-                c.get(components[component])).append("\">");
+            sb.append("<input type=\"hidden\" name=\"").append(name).append("\" id=\"").append(name).append(
+                "\" value=\"").append(c.get(components[component])).append("\">");
         } else {
             String val = df.format(d);
 
-            if (lowLimits[component] == -1) // year
-                sb.append("<input type=\"text\" name=\"").append(name).append("\" value=\"").append(val).append(
-                    "\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(fmt.length()).append("\"").append(
-                    getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
-            else {
-                sb.append("<select name=\"").append(name).append("\"").append(
+            if (lowLimits[component] == -1) {// year
+                sb.append("<input type=\"text\" name=\"").append(name).append("\" id=\"").append(name).append(
+                    "\" value=\"").append(val).append("\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(
+                    fmt.length()).append("\"").append(getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
+            } else {
+                sb.append("<select name=\"").append(name).append("\" id=\"").append(name).append("\"").append(
                     getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
                 Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
                 c.clear();
