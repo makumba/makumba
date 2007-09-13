@@ -62,7 +62,7 @@ public class HibernateQueryRunner extends AbstractQueryRunner {
     Transaction transaction;
 
     public HibernateQueryRunner(String db) {
-        sf=org.makumba.db.Database.getDatabase(db).getHibernateSessionFactory();
+        sf=(SessionFactory)org.makumba.db.Database.getDatabase(db).getHibernateSessionFactory();
     }
 
     public Vector execute(String query, Object[] args, int offset, int limit) {
