@@ -146,18 +146,26 @@ public abstract class BasicValueTag extends MakumbaTag {
         if (isAttribute())
             type = (FieldDefinition) pageCache.types.get(expr.substring(1));
 
+        String fieldName = "";
+        if (this instanceof InputTag) {
+            fieldName = "Field <" + ((InputTag) this).name + ">: ";
+        }
+        
         if (type != null && dataTypeInfo != null && !dataTypeInfo.isAssignableFrom(type))
             throw new ProgrammerError(
-                    "computed type for INPUT is different from the indicated dataType. The dataType is indicated to '"
+                    fieldName
+                            + "computed type for INPUT is different from the indicated dataType. The dataType is indicated to '"
                             + dataType + "' type computed is '" + type + "'");
 
         if (type != null && contextType != null && !contextType.isAssignableFrom(type))
             throw new ProgrammerError(
-                    "computed type is different from the type resulting from form analysis. The context type was determined to '"
+                    fieldName
+                            + "computed type is different from the type resulting from form analysis. The context type was determined to '"
                             + contextType + "', type computed is '" + type + "'");
 
         if (type == null && contextType == null && dataTypeInfo == null)
-            throw new ProgrammerError("cannot determine input type. Please specify the type using dataType=...");
+            throw new ProgrammerError(fieldName
+                    + "cannot determine input type. Please specify the type using dataType=...");
 
         // we give priority to the type as computed from the form
         if (contextType == null)
