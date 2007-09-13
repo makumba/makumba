@@ -57,6 +57,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     String nameVar = null;
 
+    private String calendarEditorLink = null;
+
+    private String calendarEditor = "true";
+
     private String nullOption;
 
     /** input whith body, used only for choosers as yet * */
@@ -208,10 +212,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         return EVAL_BODY_BUFFERED;
     }
 
-    void checkBodyContentForNonWhitespace() throws JspException
-    {
-    	// if we find non-whitespace text between two options, we insert it in the choices, as "text" (no actual choice)
-        if (bodyContent != null && bodyContent.getString().trim().length() > 0){
+    void checkBodyContentForNonWhitespace() throws JspException {
+        // if we find non-whitespace text between two options, we insert it in the choices, as "text" (no actual choice)
+        if (bodyContent != null && bodyContent.getString().trim().length() > 0) {
             choiceSet.add(null, bodyContent.getString().trim(), false, false);
             try {
                 bodyContent.clear();
@@ -220,10 +223,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 e.printStackTrace();
             }
         }
-        
-    }    
 
-    
+    }
+
     /**
      * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
      * 
@@ -236,7 +238,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      */
     int computedValue(Object val, FieldDefinition type) throws JspException, LogicException {
         checkBodyContentForNonWhitespace();
-        
+
         if (choiceSet != null)
             params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
 
@@ -252,6 +254,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                                 + fd.getName() + "' is of type '" + fd.getType() + "'!");
             }
             params.put("nullOption", nullOption);
+        }
+        // add info about calendarEditor
+        params.put("calendarEditor", calendarEditor);
+        if (calendarEditorLink != null) {
+            params.put("calendarEditorLink", calendarEditorLink);
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
@@ -303,6 +310,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         pageContext.getOut().print("<span class=\"formAnnotation\">");
         pageContext.getOut().print(e.getShortMessage());
         pageContext.getOut().print("</span>");
+    }
+
+    public void setCalendarEditorLink(String calendarEditorLink) {
+        this.calendarEditorLink = calendarEditorLink;
+    }
+
+    public void setCalendarEditor(String calendarEditor) {
+        this.calendarEditor = calendarEditor;
     }
 
 }
