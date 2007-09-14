@@ -139,6 +139,7 @@ public class FieldCursor
 	    // OLDSUPPORT >>
 	    || c=='/'
 	    // <<
+            || c=='>'  // needed to allow T->f for hibernate type analyzer
 	    )
 	end++;
     } catch(StringIndexOutOfBoundsException siob){}
