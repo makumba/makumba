@@ -13,5 +13,5 @@
 <stringAttribute key="org.eclipse.ant.ui.ATTR_ANT_MANUAL_TARGETS" value="install,"/>
 <stringAttribute key="org.eclipse.ant.ui.ATTR_ANT_AUTO_TARGETS" value="install,"/>
 <stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${project}"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/makumba/build.xml}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc}${project_path}/build.xml"/>
 </launchConfiguration>

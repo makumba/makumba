@@ -7,7 +7,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_INSTALL_NAME" value="jdk"/>
 <booleanAttribute key="editedByExternalToolsMainTab" value="true"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/makumba/build.xml}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc}${project_path}/build.xml}"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
