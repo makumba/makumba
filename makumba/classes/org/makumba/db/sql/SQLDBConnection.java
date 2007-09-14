@@ -53,14 +53,6 @@ public class SQLDBConnection extends DBConnection
       conn.setAutoCommit(false);
     if(conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
       conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
-    
-    if(org.makumba.db.sql.Database.supportsUTF8())
-    {
-//        System.out.println("UTF: SQLDBConenction: supports utf8");
-      Statement st = this.createStatement();
-      st.execute("SET CHARACTER SET utf8");
-      st.close();      
-    }
   }
 
   public void close()

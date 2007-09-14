@@ -452,11 +452,9 @@ arithmeticExpr
 	;
 
 caseExpr
-// the type is taken to be the leftmost expression but should actually be the "widest" of the THEN and ELSE expressions
-	: #(CASE { inCase = true; } (#(WHEN logicalExpr ex1:expr))+ (#(ELSE expr))?) { inCase = false;  #caseExpr=#ex1;}
-	| #(CASE2 { inCase = true; } expr (#(WHEN expr ex2:expr))+ (#(ELSE expr))?) { inCase = false;  #caseExpr=#ex2; }
+	: #(CASE { inCase = true; } (#(WHEN logicalExpr expr))+ (#(ELSE expr))?) { inCase = false; }
+	| #(CASE2 { inCase = true; } expr (#(WHEN expr expr))+ (#(ELSE expr))?) { inCase = false; }
 	;
-
 
 //TODO: I don't think we need this anymore .. how is it different to 
 //      maxelements, etc, which are handled by functionCall

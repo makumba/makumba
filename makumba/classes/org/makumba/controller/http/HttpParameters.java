@@ -22,64 +22,55 @@
 /////////////////////////////////////
 
 package org.makumba.controller.http;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Helper class to work with http parameters
- * 
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class HttpParameters {
-    HttpServletRequest request;
+public class HttpParameters
+{
+  HttpServletRequest request;
+  Hashtable atStart;
+  
+  public boolean knownAtStart(String s)
+  {
+    return atStart.get(s)!=null;  
+  } 
+ 
+  public HttpParameters(HttpServletRequest req)
+  {
+    request=req;
+	computeAtStart();
+  }
+  
+  void computeAtStart()
+  {
+	atStart=new Hashtable();
+	Object dummy=new Object();
+	for(Enumeration e= request.getParameterNames(); e.hasMoreElements(); )
+		atStart.put(e.nextElement(), dummy);
+  }
 
-    Hashtable atStart;
+  public Object getParameter(String s)
+  {
+    Object value=null;
+    String[]param=request.getParameterValues(s);
+    if(param==null)
+      return null;
 
-    public boolean knownAtStart(String s) {
-        return atStart.get(s) != null;
-    }
+    if(param.length==1)
+      value=param[0];
+    else
+      {
+	Vector v=new java.util.Vector();
+	value=v;
+	for(int i= 0; i<param.length; i++)
+	  v.addElement(param[i]);
+      }
+    //request.setAttribute(s, value);
 
-    public HttpParameters(HttpServletRequest req) {
-        request = req;
-        computeAtStart();
-    }
-
-    void computeAtStart() {
-        atStart = new Hashtable();
-        Object dummy = new Object();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();)
-            atStart.put(e.nextElement(), dummy);
-    }
-
-    /**
-     * Gets a http parameter. If there are more values for the parameter, places them into a Vector
-     * 
-     * @param s
-     *            the name of the parameter
-     * @return A String containing the value of the parameter in case of a unique value, a Vector otherwise
-     */
-    public Object getParameter(String s) {
-        Object value = null;
-        String[] param = request.getParameterValues(s);
-        if (param == null)
-            return null;
-
-        if (param.length == 1)
-            value = param[0];
-        else {
-            Vector v = new java.util.Vector();
-            value = v;
-            for (int i = 0; i < param.length; i++)
-                v.addElement(param[i]);
-        }
-        // request.setAttribute(s, value);
-
-        return value;
-    }
+    return value;
+  }
 
 }

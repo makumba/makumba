@@ -18,8 +18,6 @@ public class QedTableManager extends org.makumba.db.sql.TableManager {
 	protected String getfieldDBType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
-			return "TEXT";
-		case FieldDefinition._binary:
 			return "BLOB";
 		default:
 			return super.getFieldDBType(fieldName);
@@ -30,7 +28,6 @@ public class QedTableManager extends org.makumba.db.sql.TableManager {
 	protected boolean unmodified(String fieldName, int type, int size,
 			java.util.Vector columns, int index) throws java.sql.SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._binary:
 		case FieldDefinition._text:
 			System.out.println(type);
 			return super.unmodified(fieldName, type, size, columns, index)

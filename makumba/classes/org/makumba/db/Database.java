@@ -71,12 +71,7 @@ public abstract class Database {
     int nconn = 0;
 
     int initConnections = 1;
-    protected static boolean requestUTF8 = false;
-    
-    static public boolean supportsUTF8() {
-        return requestUTF8;
-    }
-    
+
     protected ResourcePool connections = new ResourcePool() {
         public Object create() {
             nconn++;
@@ -116,7 +111,7 @@ public abstract class Database {
         updates.close();
         closeConnections();
         if(sf!=null)
-            ((SessionFactory)sf).close();
+            sf.close();
     }
 
     public DBConnection getDBConnection() {
@@ -620,9 +615,9 @@ public abstract class Database {
         }
     };
 
-    private Object sf;
+    private SessionFactory sf;
 
-    public synchronized Object getHibernateSessionFactory() {
+    public synchronized SessionFactory getHibernateSessionFactory() {
         if(sf==null && ClassResource.get(getConfiguration()+".cfg.xml")!=null){
             sf= HibernateSFManager.getSF(getConfiguration()+".cfg.xml", false);
         }

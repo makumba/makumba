@@ -357,24 +357,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
-        <attribute>
-            <name>annotation</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>annotationSeparator</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>reloadFormOnError</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -522,24 +504,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-        <attribute>
-            <name>annotation</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>annotationSeparator</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>reloadFormOnError</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
 
 	<!--form specific:-->
 		<attribute>
@@ -694,24 +658,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
-        <attribute>
-            <name>annotation</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>annotationSeparator</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>reloadFormOnError</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -859,24 +805,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
-        <attribute>
-            <name>annotation</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>annotationSeparator</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <name>reloadFormOnError</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -1000,18 +928,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-    
-        <attribute>
-          <name>method</name>
-          <required>false</required>
-          <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-          <name>preserveWhitespace</name>
-          <required>false</required>
-          <rtexprvalue>true</rtexprvalue>
-        </attribute>
 
 	<!--link specific:-->
 		<attribute>
@@ -1142,18 +1058,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-        <attribute>
-          <name>method</name>
-          <required>false</required>
-          <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-          <name>preserveWhitespace</name>
-          <required>false</required>
-          <rtexprvalue>true</rtexprvalue>
-        </attribute>
 
 	<!--link specific:-->
 		<attribute>
@@ -1322,18 +1226,6 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 
-        <attribute>
-          <name>calendarEditor</name>
-          <required>false</required>
-          <rtexprvalue>false</rtexprvalue>
-        </attribute>
-
-        <attribute>
-          <name>calendarEditorLink</name>
-          <required>false</required>
-          <rtexprvalue>false</rtexprvalue>
-        </attribute>
-
 		<attribute>
 			<name>size</name>
 			<required>false</required>
@@ -1363,12 +1255,6 @@
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
-
-        <attribute>
-          <name>nullOption</name>
-          <required>false</required>
-          <rtexprvalue>false</rtexprvalue>
-        </attribute>
 
 		<attribute>
 			<name>styleId</name>

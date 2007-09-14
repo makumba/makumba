@@ -28,39 +28,32 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class intEnumEditor extends charEnumEditor {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new intEnumEditor();
+	}
 
-    private static final class SingletonHolder {
-        static final FieldEditor singleton = new intEnumEditor();
-    }
+	private intEnumEditor() {}
 
-    private intEnumEditor() {
-    }
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
-    public static FieldFormatter getInstance() {
-        return SingletonHolder.singleton;
-    }
+	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
+	}
 
-    public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (hasNullOption) {
-            if (i == 0) {
-                return "";
-            } else {
-                i -= 1;
-            }
-        }
-        return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
-    }
-
-    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
-            String suffix) {
-        Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
-        // DB level should complain in this case:
-        // if(o==null && isNotNull())
-        // { throw new InvalidValueException(this, "null value not allowed for a
-        // not null field"); }
-        if (o instanceof java.util.Vector) {
-            throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not accepted for integer: " + o);
-        }
-        return toInt(rf, fieldIndex, o);
-    }
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
+			String suffix) {
+		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+		// DB level should complain in this case:
+		//  if(o==null && isNotNull())
+		//    { throw new InvalidValueException(this, "null value not allowed for a
+		// not null field"); }
+		if (o instanceof java.util.Vector) {
+			throw new InvalidValueException(rf.expr[fieldIndex],
+					"multiple value not accepted for integer: " + o);
+		}
+		return toInt(rf, fieldIndex, o);
+	}
 }

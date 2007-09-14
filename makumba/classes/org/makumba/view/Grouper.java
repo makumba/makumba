@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.view;
-
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -31,112 +30,93 @@ import java.util.Vector;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
 
-/**
- * This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is
- * defined by a set of keys of the dictionary. Elements of each group come in a Vector that is guaranteed to respect the
- * order in the original enumeration.
- * 
- * @author Cristian Bogdan
- */
-public class Grouper extends Hashtable {
+/** This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is defined by a set of keys of the dictionary. Elements of each group come in a Vector that is guaranteed to respect the order in the original enumeration. */ 
+public class Grouper extends Hashtable
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Vector keyNameSets;
 
-    private static final long serialVersionUID = 1L;
+  /** group the given data according to the given key sets. keyNameSets is a Vector of Vectors of Strings that represent key names */
+  public Grouper(Vector keyNameSets, Enumeration e)
+  {
+    this.keyNameSets= keyNameSets;
+    long l= new Date().getTime();
 
-    Vector keyNameSets;
+    // for all read records
+    while(e.hasMoreElements())
+      {
+	ArrayMap data=(ArrayMap)e.nextElement();
+	Hashtable h= this;
+	Hashtable h1;
+	int i=0;
+	int _max=keyNameSets.size()-1;
+	MultipleKey mk;
 
-    /**
-     * Groups the given data according to the given key sets.
-     * 
-     * @param keyNameSets
-     *            a Vector of Vectors of Strings that represents key names
-     * @param e
-     *            the Enumeration of dictionaries containing the data
-     */
-    public Grouper(Vector keyNameSets, Enumeration e) {
-        this.keyNameSets = keyNameSets;
-        long l = new Date().getTime();
+	// find the subresult where this record has to be inserted
+	for(; i<_max; i++)
+	  {
+	    // make a keyset value
+	    mk= getKey(i, data.data);
+	    
+	    // get the subresult associated with it, make a new one if none exists
+	    h1= (Hashtable)h.get(mk);
+	    if(h1==null)
+	      {
+		h1=new Hashtable();
+		h.put(mk, h1);
+	      }
+	    h=h1;
+	  }
 
-        // for all read records
-        while (e.hasMoreElements()) {
-            ArrayMap data = (ArrayMap) e.nextElement();
-            Hashtable h = this;
-            Hashtable h1;
-            int i = 0;
-            int _max = keyNameSets.size() - 1;
-            MultipleKey mk;
+	// insert the data in the subresult
+	mk= getKey(i, data.data);
+	Vector v= (Vector)h.get(mk);
+	if(v==null)
+	  {
+	    v=new Vector();
+	    h.put(mk, v);
+	  }
+	v.addElement(data);
+      }    
 
-            // find the subresult where this record has to be inserted
-            for (; i < _max; i++) {
-                // make a keyset value
-                mk = getKey(i, data.data);
+    max=keyNameSets.size()-1;
+    stack= new Hashtable[max+1];
+    keyStack= new Object[max];
+    stack[0]=this;
 
-                // get the subresult associated with it, make a new one if none exists
-                h1 = (Hashtable) h.get(mk);
-                if (h1 == null) {
-                    h1 = new Hashtable();
-                    h.put(mk, h1);
-                }
-                h = h1;
-            }
+    long diff=(new Date().getTime()-l);
 
-            // insert the data in the subresult
-            mk = getKey(i, data.data);
-            Vector v = (Vector) h.get(mk);
-            if (v == null) {
-                v = new Vector();
-                h.put(mk, v);
-            }
-            v.addElement(data);
-        }
+    //    if(diff>20)
+    org.makumba.MakumbaSystem.getMakumbaLogger("db.query.performance.grouping").fine("grouping "+diff+" ms");
+  }
 
-        max = keyNameSets.size() - 1;
-        stack = new Hashtable[max + 1];
-        keyStack = new Object[max];
-        stack[0] = this;
+  int max;
+  Hashtable[] stack;
+  Object[] keyStack;
 
-        long diff = (new Date().getTime() - l);
+  /** get the Vector associated with the given keysets. the returned data is deleted from the Grouper. keyData is a Vector of Dictionaries representing a set of key values each */
+  public Vector getData(Vector keyData)
+  {
+    int i=0;
+    for(; i<max; i++)
+      {
+	keyStack[i]=getKey(i, ((ArrayMap)keyData.elementAt(i)).data);
+	stack[i+1]= (Hashtable)stack[i].get(keyStack[i]);
+	if(stack[i+1]==null)
+	  return null;
+      }
+    Vector v=(Vector)stack[i].remove(getKey(i, ((ArrayMap)keyData.elementAt(i)).data));
+    for(;i>0 && stack[i].isEmpty();i--)
+      stack[i-1].remove(keyStack[i-1]);
+    return v;
+  }
 
-        // if(diff>20)
-        org.makumba.MakumbaSystem.getMakumbaLogger("db.query.performance.grouping").fine("grouping " + diff + " ms");
-    }
-
-    int max;
-
-    Hashtable[] stack;
-
-    Object[] keyStack;
-
-    /**
-     * Gets the Vector associated with the given keysets. The returned data is deleted from the Grouper.
-     * 
-     * @param keyData
-     *            a Vector of Dictionaries representing a set of key values each
-     * @return A Vector associated with the given keysets
-     */
-    public Vector getData(Vector keyData) {
-        int i = 0;
-        for (; i < max; i++) {
-            keyStack[i] = getKey(i, ((ArrayMap) keyData.elementAt(i)).data);
-            stack[i + 1] = (Hashtable) stack[i].get(keyStack[i]);
-            if (stack[i + 1] == null)
-                return null;
-        }
-        Vector v = (Vector) stack[i].remove(getKey(i, ((ArrayMap) keyData.elementAt(i)).data));
-        for (; i > 0 && stack[i].isEmpty(); i--)
-            stack[i - 1].remove(keyStack[i - 1]);
-        return v;
-    }
-
-    /**
-     * Get the bunch of values associated with the keyset with the given index
-     * 
-     * @param n
-     *            the index
-     * @param data
-     *            an object array containing the interesting data
-     * @return A MultipleKey holding the values
-     */
-    protected MultipleKey getKey(int n, Object[] data) {
-        return new MultipleKey((Vector) keyNameSets.elementAt(n), data);
-    }
+  /** get the bunch of values associated with the keyset with the given index */
+  protected MultipleKey getKey(int n, Object[] data)
+  {
+    return new MultipleKey((Vector)keyNameSets.elementAt(n), data);
+  }
 }

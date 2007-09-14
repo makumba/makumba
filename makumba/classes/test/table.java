@@ -95,7 +95,7 @@ public class table extends TestCase {
 
 	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
 
-	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
+	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment FROM test.Person p WHERE p= $1";
 
 	String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
@@ -157,12 +157,9 @@ public class table extends TestCase {
 		c.clear();
 		c.set(1977, 2, 5);
 		Date birth = c.getTime();
-        
-        Text comment = new Text("Iñtërnâtiônàlizætiøn");
 
 		p.put("birthdate", birth);
-        p.put("comment", comment);
-		p.put("picture", new Text(getExampleData()));
+		p.put("comment", new Text(getExampleData()));
 
 		p.put("weight", new Double(85.7d));
 
@@ -200,9 +197,9 @@ public class table extends TestCase {
 		assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
 		assertEquals("Birthdate", birth, pc.get("birthdate"));
 		assertEquals("Something else", "else", pc.get("something"));
-		assertEquals("Comment text", pc.get("comment"), comment.toString());
-        assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
-        assertNotNull(ptrOne);
+		assertEquals("Comment text", pc.get("comment"), new Text(
+				getExampleData()));
+		assertNotNull(ptrOne);
 
 		v = db.executeQuery(readIntSet, ptr);
 		assertEquals(2, v.size());

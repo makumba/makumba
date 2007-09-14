@@ -23,78 +23,82 @@
 
 package org.makumba.util;
 
-interface NameValueReturner {
-    Object getRes();
+interface NameValueReturner 
+{
+  Object getRes();
 }
 
-class NameValue implements NameValueReturner, java.io.Serializable {
+class NameValue implements NameValueReturner, java.io.Serializable
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Object value;
+  NameValueReturner returner;
 
-    private static final long serialVersionUID = 1L;
-
-    Object value;
-
-    NameValueReturner returner;
-
-    NameValue(Object name, Object hashName, NamedResourceFactory f) {
-        ProducerReturner pr = new ProducerReturner();
-        pr.nv = this;
-        pr.f = f;
-        pr.name = name;
-        pr.hashName = hashName;
-        returner = pr;
-    }
-
-    public Object getRes() {
-        return value;
-    }
-
-    synchronized Object getResource() {
-        return returner.getRes();
-    }
+  NameValue(Object name, Object hashName, NamedResourceFactory f)
+  {
+    ProducerReturner pr= new ProducerReturner();
+    pr.nv= this;
+    pr.f=f;
+    pr.name= name;
+    pr.hashName= hashName;
+    returner= pr;
+  }
+  
+  public Object getRes()
+  { 
+    return value; 
+  }
+  
+  synchronized Object getResource() { return returner.getRes(); }
 }
 
-class ProducerReturner implements NameValueReturner, java.io.Serializable {
 
-    private static final long serialVersionUID = 1L;
+class ProducerReturner implements NameValueReturner, java.io.Serializable
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+NameValue nv;
+  Object name, hashName;
+  NamedResourceFactory f;
+  
+  public Object getRes()
+  {
+    nv.returner= new ErrorReturner(name);
+    try{
+      nv.value= f.makeResource(name, hashName);
+      // further calls from this thread (during configure) will return 
+      // immediately
+      nv.returner= nv;
+      f.configureResource(name, hashName, nv.value);
+    }catch(RuntimeException e)
+      { 
+	nv.returner= this;
+	throw e; 
+      }
+    catch(Throwable t)
+      {
+	nv.returner= this;
+	throw new RuntimeWrappedException(t); 
+      }
 
-    NameValue nv;
-
-    Object name, hashName;
-
-    NamedResourceFactory f;
-
-    public Object getRes() {
-        nv.returner = new ErrorReturner(name);
-        try {
-            nv.value = f.makeResource(name, hashName);
-            // further calls from this thread (during configure) will return
-            // immediately
-            nv.returner = nv;
-            f.configureResource(name, hashName, nv.value);
-        } catch (RuntimeException e) {
-            nv.returner = this;
-            throw e;
-        } catch (Throwable t) {
-            nv.returner = this;
-            throw new RuntimeWrappedException(t);
-        }
-
-        return nv.value;
-    }
+    return nv.value;
+  } 
 }
 
-class ErrorReturner implements NameValueReturner, java.io.Serializable {
+class ErrorReturner implements NameValueReturner, java.io.Serializable
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+Object name;
 
-    private static final long serialVersionUID = 1L;
+  ErrorReturner(Object n){ name= n; }
 
-    Object name;
-
-    ErrorReturner(Object n) {
-        name = n;
-    }
-
-    public Object getRes() {
-        throw new RuntimeException("Resource attempts to re-make itself: " + name
-                + " . Use the NamedResourceFactory.configure(Object) method");
-    }
+  public Object getRes(){ throw new RuntimeException("Resource attempts to re-make itself: "+name+" . Use the NamedResourceFactory.configure(Object) method"); }
 }

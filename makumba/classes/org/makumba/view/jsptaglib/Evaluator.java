@@ -27,38 +27,33 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.view.ComposedQuery;
 
-/** 
- * An evaluator using the EL engine to evaluate all occurences of #{...} in a string
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class Evaluator implements ComposedQuery.Evaluator {
-    PageContext pc;
-
-    public Evaluator(PageContext pc) {
-        this.pc = pc;
+/** An evaluator using the EL engine to evaluate all occurences of #{...} in a string */
+public class Evaluator implements ComposedQuery.Evaluator{
+  PageContext pc;
+  public Evaluator(PageContext pc){this.pc=pc; }
+  public String evaluate(String s){
+    // FIXME: looking for #{....} may have to be rewritten
+    StringBuffer ret= new StringBuffer();
+    int begin, end;
+    int last=0;
+    while(true){
+      begin= s.indexOf("#{",last);
+      if(begin==-1)
+	return ret.append(s.substring(last)).toString();
+      ret.append(s.substring(last, begin));
+      end= s.indexOf("}", begin+2);
+      if(end==-1)
+	throw new org.makumba.ProgrammerError("unpaired #{ in "+s);
+      try{
+	ret.append(pc.getExpressionEvaluator().evaluate
+		 ("$"+s.substring(begin+1, end+1),
+		  Object.class,
+		  pc.getVariableResolver(),
+		  null)); // a:b() functions not supported yet
+      }catch(javax.servlet.jsp.el.ELException ele){
+	throw new org.makumba.ProgrammerError(ele.toString());
+      }
+      last=end+1;
     }
-    
-    public String evaluate(String s) {
-        // FIXME: looking for #{....} may have to be rewritten
-        StringBuffer ret = new StringBuffer();
-        int begin, end;
-        int last = 0;
-        while (true) {
-            begin = s.indexOf("#{", last);
-            if (begin == -1)
-                return ret.append(s.substring(last)).toString();
-            ret.append(s.substring(last, begin));
-            end = s.indexOf("}", begin + 2);
-            if (end == -1)
-                throw new org.makumba.ProgrammerError("unpaired #{ in " + s);
-            try {
-                ret.append(pc.getExpressionEvaluator().evaluate("$" + s.substring(begin + 1, end + 1), Object.class,
-                        pc.getVariableResolver(), null)); // a:b() functions not supported yet
-            } catch (javax.servlet.jsp.el.ELException ele) {
-                throw new org.makumba.ProgrammerError(ele.toString());
-            }
-            last = end + 1;
-        }
-    }
+  }
 }

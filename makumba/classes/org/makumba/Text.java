@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.makumba.util.LongData;
 import org.makumba.util.RuntimeWrappedException;
@@ -137,19 +136,6 @@ public class Text
     try{
       writeTo(bo);
     }catch(IOException e){ throw new RuntimeWrappedException(e); } 
-   
-    try {
-      if(org.makumba.db.sql.Database.supportsUTF8())
-       {
-    	  /*
-    	  String asd = new String(bo.toByteArray(), "UTF-8");
-    	  System.out.println("UTF1: "+(new String(bo.toByteArray())));
-    	  System.out.println("UTF: "+asd);
-    	  */
-          return new String(bo.toByteArray(), "UTF-8");
-       }
-    } catch(UnsupportedEncodingException e) {}
-
     return new String(bo.toByteArray());
   } 
 

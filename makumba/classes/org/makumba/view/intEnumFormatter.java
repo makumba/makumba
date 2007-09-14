@@ -26,22 +26,19 @@ package org.makumba.view;
 import java.util.Dictionary;
 
 public class intEnumFormatter extends FieldFormatter {
-    static String[] params = { "default", "empty", "nullOption" };
+	
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new intEnumFormatter();
+	}
 
-    static String[][] paramValues = { null, null, null };
+	private intEnumFormatter() {
+	}
 
-    private static final class SingletonHolder {
-        static final FieldFormatter singleton = new intEnumFormatter();
-    }
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
-    private intEnumFormatter() {
-    }
-
-    public static FieldFormatter getInstance() {
-        return SingletonHolder.singleton;
-    }
-
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-        return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
-    }
+	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
+	}
 }

@@ -114,9 +114,6 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
-        // case-when already returns an analyzed expression
-        if(ae instanceof ExprTypeAST)
-            return ae;
         String operator = ae.getText();
         ExprTypeAST firstValue = null;
         ExprTypeAST secondValue = null;

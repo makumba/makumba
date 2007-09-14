@@ -22,61 +22,66 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 
 /** comparison operations have operands of the same type */
-public class ComparisonTree extends AnalysisTree {
-    public ComparisonTree(Object left, int op, Object right) {
-        super(left, op, right);
-    }
+public class ComparisonTree extends AnalysisTree
+{
+  public ComparisonTree(Object left, int op, Object right){ super(left, op, right); }
 
-    public Object guessParameterType(Object otherOperandType) {
-        return otherOperandType;
-    }
+  public Object guessParameterType(Object otherOperandType) 
+  {
+    return otherOperandType;
+  }
 
-    public void negociateOperandTypes(Object t1, Object t2) throws antlr.RecognitionException {
-        if (t1.equals("timestamp") && t2.equals("datetime") || t2.equals("timestamp") && t1.equals("datetime"))
-            return;
+  public void negociateOperandTypes(Object t1, Object t2)
+       throws antlr.RecognitionException
+  { 
+    if(t1.equals("timestamp") && t2.equals("datetime")
+       ||t2.equals("timestamp") && t1.equals("datetime") )
+      return;
 
-        if (t1.equals("int") && t2.equals("real") || t2.equals("int") && t1.equals("real"))
-            return;
+    if(t1.equals("int") && t2.equals("real")
+       ||t2.equals("int") && t1.equals("real") )
+      return;
 
-        if (right.makumbaType != null && right.makumbaType.equals("nil"))
-            return;
-        if (checkAssign(left, right) || checkAssign(right, left))
-            return;
-        super.negociateOperandTypes(t1, t2);
-    }
+    if(right.makumbaType!=null && right.makumbaType.equals("nil"))
+      return;
+    if(checkAssign(left, right) || checkAssign(right, left))
+      return;
+    super.negociateOperandTypes(t1, t2);
+  }
 
-    /** assume that a2 is a constant and check if it's compatible with a1 */
-    boolean checkAssign(AnalysisTree a1, AnalysisTree a2) throws antlr.RecognitionException {
-        if (!(a1.makumbaType instanceof FieldDefinition))
-            return false;
+  /** assume that a2 is a constant and check if it's compatible with a1 */
+  boolean checkAssign(AnalysisTree a1, AnalysisTree a2)
+       throws antlr.RecognitionException
+  {
+    if(!(a1.makumbaType instanceof FieldDefinition))
+      return false;
 
-        if (a2.leaf == null)
-            return false;
+    if(a2.leaf==null )
+      return false;
 
-        String s = a2.leaf.getText();
+    String s= a2.leaf.getText();
 
-        if (a2.leaf.makumbaType.equals("char") || a2.leaf.makumbaType.equals("date"))
-            s = s.substring(1, s.length() - 1);
+    if(a2.leaf.makumbaType.equals("char") || a2.leaf.makumbaType.equals("date"))
+      s=s.substring(1, s.length()-1);
 
-        Object o = null;
-        try {
-            o = ((FieldDefinition) a1.makumbaType).checkValue(s);
-        } catch (org.makumba.InvalidValueException e) {
-            throw new antlr.SemanticException(e.getMessage());
-        }
-        if (o instanceof Pointer) {
-            o = new Long(((Pointer) o).longValue());
-        }
-        if (o instanceof Number) {
-            a2.leaf.setText(o.toString());
-            a2.leaf.makumbaType = "int";
-        } else
-            a2.leaf.setText("\"" + o + "\"");
-        return true;
-    }
+    Object o= null;
+    try{
+      o= ((FieldDefinition)a1.makumbaType).checkValue(s);
+    }catch(org.makumba.InvalidValueException e)
+      { throw new antlr.SemanticException(e.getMessage());}
+    if(o instanceof Pointer)
+      { o= new Long(((Pointer)o).longValue()); }
+    if(o instanceof Number)
+      {
+	a2.leaf.setText(o.toString());   
+	a2.leaf.makumbaType="int";
+      }
+    else
+      a2.leaf.setText("\""+o+"\"");
+    return true;
+  }
 }
