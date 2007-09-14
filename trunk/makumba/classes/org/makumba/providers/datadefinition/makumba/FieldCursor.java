@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.abstr;
+package org.makumba.providers.datadefinition.makumba;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
