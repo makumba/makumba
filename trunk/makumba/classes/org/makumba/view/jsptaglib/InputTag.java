@@ -255,10 +255,15 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
             params.put("nullOption", nullOption);
         }
-        // add info about calendarEditor
-        params.put("calendarEditor", calendarEditor);
-        if (calendarEditorLink != null) {
-            params.put("calendarEditorLink", calendarEditorLink);
+        // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
+        // and we don't do it for dates, cause there we need to do it differently (a date is 3 inputs, need _0, _1 & _2)
+        if (!type.isDateType()) {
+            extraFormatting.append(" id=\"").append(name).append("\" ");
+        } else { // but for dates we add info about calendarEditor
+            params.put("calendarEditor", calendarEditor);
+            if (calendarEditorLink != null) {
+                params.put("calendarEditorLink", calendarEditorLink);
+            }
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
