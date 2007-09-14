@@ -37,7 +37,8 @@ import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
-import org.makumba.util.JspParseData;
+import org.makumba.analyser.JspParseData;
+import org.makumba.analyser.TagData;
 import org.makumba.util.RuntimeWrappedException;
 import org.makumba.view.jsptaglib.MakumbaTag;
 import org.makumba.view.jsptaglib.TomcatJsp;
@@ -183,7 +184,7 @@ public class TagExceptionServlet extends HttpServlet {
      */
     String formatTagData(HttpServletRequest req) {
         String tagExpl = "During analysis of the following tag (and possibly tags inside it):";
-        JspParseData.TagData tagData = MakumbaTag.getAnalyzedTag();
+        TagData tagData = MakumbaTag.getAnalyzedTag();
         if (tagData == null) {
             tagExpl = "During running of: ";
             tagData = MakumbaTag.getRunningTag();

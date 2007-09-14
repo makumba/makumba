@@ -40,12 +40,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaSystem;
+import org.makumba.analyser.JavaParseData;
+import org.makumba.analyser.SourceSyntaxPoints;
+import org.makumba.analyser.SyntaxPoint;
 import org.makumba.util.ClassResource;
-import org.makumba.util.JavaParseData;
 import org.makumba.util.NamedResources;
-import org.makumba.util.SourceSyntaxPoints;
 import org.makumba.util.StringUtils;
-import org.makumba.util.SyntaxPoint;
 import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**

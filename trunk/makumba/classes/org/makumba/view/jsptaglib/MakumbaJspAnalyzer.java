@@ -34,7 +34,9 @@ import javax.servlet.jsp.tagext.BodyTag;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
-import org.makumba.util.JspParseData;
+import org.makumba.analyser.JspParseData;
+import org.makumba.analyser.TagData;
+import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.ComposedQuery;
 import org.makumba.view.ComposedSubquery;
@@ -45,7 +47,7 @@ import org.makumba.view.ComposedSubquery;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
+public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] tags = { "value", "org.makumba.view.jsptaglib.ValueTag", "list",
             "org.makumba.view.jsptaglib.QueryTag", "object", "org.makumba.view.jsptaglib.ObjectTag", "form",
             "org.makumba.view.jsptaglib.FormTagBase", "newForm", "org.makumba.view.jsptaglib.NewTag", "addForm",
@@ -195,7 +197,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
          * @param td
          *            the TagData where to which the tag should be added
          */
-        void addTag(MakumbaTag t, JspParseData.TagData td) {
+        void addTag(MakumbaTag t, TagData td) {
             if (!parents.isEmpty())
                 t.setParent((MakumbaTag) parents.get(parents.size() - 1));
             else
@@ -243,7 +245,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
          * @param td
          *            the TagData containing the information collected for the tag
          */
-        public void end(JspParseData.TagData td) {
+        public void end(TagData td) {
             String tagName = td.name;
             if (!tagName.startsWith(makumbaPrefix))
                 return;
@@ -293,13 +295,13 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
      * @author Cristian Bogdan
      */
     private static final class SingletonHolder {
-        static final JspParseData.JspAnalyzer singleton = new MakumbaJspAnalyzer();
+        static final JspAnalyzer singleton = new MakumbaJspAnalyzer();
     }
 
     private MakumbaJspAnalyzer() {
     }
 
-    public static JspParseData.JspAnalyzer getInstance() {
+    public static JspAnalyzer getInstance() {
         return SingletonHolder.singleton;
     }
 
@@ -311,7 +313,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
-    public void systemTag(JspParseData.TagData td, Object status) {
+    public void systemTag(TagData td, Object status) {
         if (td.name.equals("taglib")) {
             // JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
             if (td.attributes.get("uri") != null
@@ -335,7 +337,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
-    public void simpleTag(JspParseData.TagData td, Object status) {
+    public void simpleTag(TagData td, Object status) {
         String prefix = ((ParseStatus) status).makumbaPrefix + ":";
         if (!td.name.startsWith(prefix))
             return;
@@ -363,7 +365,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
-    public void startTag(JspParseData.TagData td, Object status) {
+    public void startTag(TagData td, Object status) {
         simpleTag(td, status);
         ((ParseStatus) status).start((MakumbaTag) td.tagObject);
     }
@@ -376,7 +378,7 @@ public class MakumbaJspAnalyzer implements JspParseData.JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
-    public void endTag(JspParseData.TagData td, Object status) {
+    public void endTag(TagData td, Object status) {
         MakumbaTag.analyzedTag.set(td);
         ((ParseStatus) status).end(td);
         MakumbaTag.analyzedTag.set(null);

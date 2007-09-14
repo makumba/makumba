@@ -36,10 +36,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.JspParseData;
+import org.makumba.analyser.SourceSyntaxPoints;
+import org.makumba.analyser.SyntaxPoint;
 import org.makumba.util.ClassResource;
-import org.makumba.util.JspParseData;
-import org.makumba.util.SourceSyntaxPoints;
-import org.makumba.util.SyntaxPoint;
 import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**

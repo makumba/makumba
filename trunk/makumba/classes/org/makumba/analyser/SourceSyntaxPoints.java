@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.util;
+package org.makumba.analyser;
 
 import java.io.BufferedReader;
 import java.io.File;

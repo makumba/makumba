@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.util;
+package org.makumba.analyser;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -36,6 +36,10 @@ import java.util.regex.Pattern;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.makumba.MakumbaSystem;
+import org.makumba.analyser.interfaces.JspAnalyzer;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
+import org.makumba.util.RuntimeWrappedException;
 
 /**
  * This class performs a rudimentary detection of JSP-relevant tags in a JSP page.
@@ -458,7 +462,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param sb
      *            the StringBuffer used to print out
      */
-    public static void tagDataLine(JspParseData.TagData td, StringBuffer sb) {
+    public static void tagDataLine(TagData td, StringBuffer sb) {
         sb.append("\n").append(td.start.sourceFile.getLineText(td.start.getLine())).append('\n');
         for (int i = 1; i < td.start.getColumn(); i++)
             sb.append(' ');
@@ -503,99 +507,6 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     // THIS CLASS ALSO HAS AN INNER INTERFACE, AND INNER CLASS DEFINITION:
     // 
     // ==========================================================================================
-
-    /** The interface of a JSP analyzer. */
-    public interface JspAnalyzer {
-        /**
-         * Makes a status holder, which is passed to all other methods
-         * 
-         * @param initStatus
-         *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an
-         *            example-based analyzer
-         */
-        Object makeStatusHolder(Object initStatus);
-
-        /**
-         * Start of a body tag
-         * 
-         * @param td
-         *            the TagData holding the parsed data
-         * @param status
-         *            the status of the parsing
-         * @see #endTag(JspParseData.TagData, Object)
-         */
-        void startTag(TagData td, Object status);
-
-        /**
-         * End of a body tag, like </...>
-         * 
-         * @param td
-         *            the TagData holdking the parsed data
-         * @param status
-         *            the status of the parsing
-         */
-        void endTag(TagData td, Object status);
-
-        /**
-         * A simple tag, like <... />
-         * 
-         * @param td
-         *            the TagData holdking the parsed data
-         * @param status
-         *            the status of the parsing
-         */
-        void simpleTag(TagData td, Object status);
-
-        /**
-         * A system tag, like <%@ ...%>
-         * 
-         * @param td
-         *            the TagData holdking the parsed data
-         * @param status
-         *            the status of the parsing
-         */
-        void systemTag(TagData td, Object status);
-
-        /**
-         * The end of the page
-         * 
-         * @param status
-         *            the status of the parsing
-         * @return The result of the analysis
-         */
-        Object endPage(Object status);
-    }
-
-    /**
-     * A composite object passed to the analyzers.
-     * 
-     * @author Cristian Bogdan
-     */
-    public static class TagData {
-        /** The parse data where this TagData was produced */
-        JspParseData parseData;
-
-        /** Name of the tag */
-        public String name;
-
-        /** Tag attributes */
-        public Map attributes;
-
-        /** Tag object, if one is created by the analyzer */
-        public Object tagObject;
-
-        /** The syntax points where the whole thing begins and ends */
-        SyntaxPoint start, end;
-
-        public SyntaxPoint getStart() {
-            return start;
-        }
-
-        public SyntaxPoint getEnd() {
-            return end;
-        }
-
-    }
 
     public boolean isUsingHibernate() {
         return usingHibernate;

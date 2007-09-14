@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.MakumbaSystem;
-import org.makumba.util.JavaParseData;
+import org.makumba.analyser.JavaParseData;
 
 /**
  * a viewer that shows everything per line
