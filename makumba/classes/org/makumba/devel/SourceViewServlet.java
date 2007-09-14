@@ -160,12 +160,17 @@ public class SourceViewServlet extends HttpServlet {
                     MakumbaSystem.getMakumbaLogger("devel").warning("Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
                 }
                 w.println("</pre>");
-                w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
-                                + org.makumba.MakumbaSystem.getVersion() + "</font>");
+                DevelUtils.printDeveloperSupportFooter(w);
                 w.println("</body></html>");
             }
-        } else
-            w.println("unknown source type: " + servletPath);
+        } else{
+            res.setContentType("text/html");
+            w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+            w.println("<html><head><title>Error in source viewer</title><body>");            
+            w.println("Error in source viewer servlet '"+ getClass().getName() + "' - unknown source type: " + servletPath);
+            DevelUtils.printDeveloperSupportFooter(w);
+            w.println("</body></html>");
+        }
     }
 
     static void processDirectory(PrintWriter w, File dir, String extension) {
