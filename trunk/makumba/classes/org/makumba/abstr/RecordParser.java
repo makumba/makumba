@@ -306,11 +306,12 @@ public class RecordParser {
                         && !Character.isJavaIdentifierPart(nm.charAt(i)))
                     mpe.add(fail("Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm + "\"", nm));
             }
-            
-            if(ReservedKeywords.isReservedKeyword(nm)) {
-                mpe.add(fail("Error: field name cannot be one of the reserved keywords " + ReservedKeywords.getKeywordsAsString(), nm));
+
+            if (ReservedKeywords.isReservedKeyword(nm)) {
+                mpe.add(fail("Error: field name cannot be one of the reserved keywords "
+                        + ReservedKeywords.getKeywordsAsString(), nm));
             }
-            
+
             fi = new FieldInfo((RecordInfo) dd, nm);
             ((RecordInfo) dd).addField1(fi);
             try {
@@ -343,8 +344,8 @@ public class RecordParser {
             }
 
             String s;
-            if ((s = addText(nm.substring(0, p), nm.substring(p + 2), subfields.getOriginal(nm), subfields
-                    .getProperty(nm))) != null)
+            if ((s = addText(nm.substring(0, p), nm.substring(p + 2), subfields.getOriginal(nm),
+                subfields.getProperty(nm))) != null)
                 mpe.add(fail(s, makeLine(subfields, nm)));
         }
     }
@@ -454,15 +455,15 @@ public class RecordParser {
     // moved from FieldParser
     public void parseSubfields(String fieldName) {
         switch (getFieldInfo(fieldName).getIntegerType()) {
-        case FieldDefinition._setComplex:
-        case FieldDefinition._ptrOne:
-            parse_ptrOne_Subfields(fieldName);
-            break;
-        case FieldDefinition._set:
-            parse_set_Subfields(fieldName);
-            break;
-        default:
-            ;
+            case FieldDefinition._setComplex:
+            case FieldDefinition._ptrOne:
+                parse_ptrOne_Subfields(fieldName);
+                break;
+            case FieldDefinition._set:
+                parse_set_Subfields(fieldName);
+                break;
+            default:
+                ;
         }
     }
 
@@ -475,8 +476,7 @@ public class RecordParser {
     // moved from setParser
     public void parse_set_Subfields(String fieldName) {
         if (getFieldInfo(fieldName).extra2 == null) {
-            getFieldInfo(fieldName).extra2 = ((RecordInfo) subtableParser_subtables.get(fieldName)).title = ((DataDefinition) setParser_settbls
-                    .get(fieldName)).getTitleFieldName();
+            getFieldInfo(fieldName).extra2 = ((RecordInfo) subtableParser_subtables.get(fieldName)).title = ((DataDefinition) setParser_settbls.get(fieldName)).getTitleFieldName();
         }
     }
 
@@ -496,16 +496,16 @@ public class RecordParser {
     // moved from FieldParser
     String addText(String fieldName, String nm, String origNm, String val) {
         switch (getFieldInfo(fieldName).getIntegerType()) {
-        case FieldDefinition._ptr:
-        case FieldDefinition._ptrRel:
-            return add_ptr_Text(fieldName, nm, origNm, val);
-        case FieldDefinition._ptrOne:
-        case FieldDefinition._setComplex:
-            return add_ptrOne_Text(fieldName, nm, origNm, val);
-        case FieldDefinition._set:
-            return add_set_Text(fieldName, nm, origNm, val);
-        default:
-            return base_addText(fieldName, nm, origNm, val);
+            case FieldDefinition._ptr:
+            case FieldDefinition._ptrRel:
+                return add_ptr_Text(fieldName, nm, origNm, val);
+            case FieldDefinition._ptrOne:
+            case FieldDefinition._setComplex:
+                return add_ptrOne_Text(fieldName, nm, origNm, val);
+            case FieldDefinition._set:
+                return add_set_Text(fieldName, nm, origNm, val);
+            default:
+                return base_addText(fieldName, nm, origNm, val);
         }
     }
 
@@ -601,49 +601,49 @@ public class RecordParser {
      */
     void parse1(String fieldName, FieldCursor fc) {
         switch (getFieldInfo(fieldName).getIntegerType()) {
-        case FieldDefinition._charEnum:
-            charEnum_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._char:
-            char_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._intEnum:
-            intEnum_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._int:
-            int_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._ptrOne:
-            ptrOne_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._ptrRel:
-        case FieldDefinition._ptr:
-            ptr_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._setCharEnum:
-            setCharEnum_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._setComplex:
-            setComplex_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._setIntEnum:
-            setIntEnum_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._set:
-            set_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._text:
-            text_parse1(fieldName, fc);
-            return;
-        case FieldDefinition._date:
-        case FieldDefinition._real:
-        case FieldDefinition._ptrIndex:
-        case FieldDefinition._dateCreate:
-        case FieldDefinition._dateModify:
-            simple_parse1(fieldName, fc);
-            return;
-        default:
-            ;
+            case FieldDefinition._charEnum:
+                charEnum_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._char:
+                char_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._intEnum:
+                intEnum_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._int:
+                int_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._ptrOne:
+                ptrOne_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._ptrRel:
+            case FieldDefinition._ptr:
+                ptr_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._setCharEnum:
+                setCharEnum_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._setComplex:
+                setComplex_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._setIntEnum:
+                setIntEnum_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._set:
+                set_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._text:
+                text_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._date:
+            case FieldDefinition._real:
+            case FieldDefinition._ptrIndex:
+            case FieldDefinition._dateCreate:
+            case FieldDefinition._dateModify:
+                simple_parse1(fieldName, fc);
+                return;
+            default:
+                ;
         }
     }
 
@@ -725,8 +725,8 @@ public class RecordParser {
         _enum.type = "charEnum";
         fc.expectCharEnum(_enum);
         getFieldInfo(fieldName).description = fc.lookupDescription();
-        _enum.description = getFieldInfo(fieldName).getDescription() == null ? _enum.name : getFieldInfo(fieldName)
-                .getDescription();
+        _enum.description = getFieldInfo(fieldName).getDescription() == null ? _enum.name
+                : getFieldInfo(fieldName).getDescription();
         return;
     }
 
@@ -741,8 +741,8 @@ public class RecordParser {
         _enum.type = "intEnum";
         fc.expectIntEnum(_enum);
         getFieldInfo(fieldName).description = fc.lookupDescription();
-        _enum.description = getFieldInfo(fieldName).getDescription() == null ? _enum.name : getFieldInfo(fieldName)
-                .getDescription();
+        _enum.description = getFieldInfo(fieldName).getDescription() == null ? _enum.name
+                : getFieldInfo(fieldName).getDescription();
         return;
     }
 
@@ -808,7 +808,7 @@ public class RecordParser {
 
         setParser_settbls.put(fieldName, ori);
         ((RecordInfo) subtableParser_subtables.get(fieldName)).setField = addPtr(fieldName,
-                ((RecordInfo) setParser_settbls.get(fieldName)).getBaseName(), ori);
+            ((RecordInfo) setParser_settbls.get(fieldName)).getBaseName(), ori);
         return;
     }
 
@@ -829,10 +829,9 @@ public class RecordParser {
     void makeSubtable(String fieldName, FieldCursor fc) {
         subtableParser_here.put(fieldName, dd);
 
-        subtableParser_subtables.put(fieldName, ((RecordInfo) subtableParser_here.get(fieldName))
-                .makeSubtable(getFieldInfo(fieldName).name));
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).addStandardFields(((RecordInfo) subtableParser_subtables
-                .get(fieldName)).subfield);
+        subtableParser_subtables.put(fieldName,
+            ((RecordInfo) subtableParser_here.get(fieldName)).makeSubtable(getFieldInfo(fieldName).name));
+        ((RecordInfo) subtableParser_subtables.get(fieldName)).addStandardFields(((RecordInfo) subtableParser_subtables.get(fieldName)).subfield);
         getFieldInfo(fieldName).extra1 = ((RecordInfo) subtableParser_subtables.get(fieldName));
     }
 
@@ -861,10 +860,10 @@ public class RecordParser {
         ((RecordInfo) subtableParser_subtables.get(fieldName)).relations = 1;
         if (((RecordInfo) subtableParser_here.get(fieldName)).getParentField() != null)
             return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).subfield,
-                    ((RecordInfo) subtableParser_here.get(fieldName)));
+                ((RecordInfo) subtableParser_here.get(fieldName)));
         else
             return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).name,
-                    ((RecordInfo) subtableParser_here.get(fieldName)));
+                ((RecordInfo) subtableParser_here.get(fieldName)));
     }
 }
 
