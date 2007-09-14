@@ -17,7 +17,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.abstr.RecordParser;
+import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
  * This class lists data for a specific MDD, resp. displays an MDD broswer if no MDD is passed as parameter.
@@ -181,6 +181,7 @@ public class DataTypeListerServlet extends DataServlet {
             response.sendRedirect(contextPath + request.getServletPath() + pathInfo + "/");
             return;
         }
+        //FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");

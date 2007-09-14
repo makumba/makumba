@@ -42,7 +42,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.FieldInfo;
+import org.makumba.providers.datadefinition.makumba.FieldInfo;
 import org.makumba.util.StringUtils;
 
 /**
@@ -779,7 +779,7 @@ public class CodeGenerator {
         if (dd != null && dd.getFieldNames() != null) {
             for (int i = 0; i < dd.getFieldNames().size(); i++) {
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                if (!fd.isDefaultField() && fd.getIntegerType() != FieldInfo._ptrRel && fd.shouldEditBySingleInput()) {
+                if (!fd.isDefaultField() && fd.getIntegerType() != FieldDefinition._ptrRel && fd.shouldEditBySingleInput()) {
                     innerFields.add(fd);
                 }
             }
@@ -792,7 +792,7 @@ public class CodeGenerator {
         Vector sets = new Vector();
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
-            if (fd.getIntegerType() == FieldInfo._setComplex) {
+            if (fd.getIntegerType() == FieldDefinition._setComplex) {
                 sets.add(fd);
             }
         }

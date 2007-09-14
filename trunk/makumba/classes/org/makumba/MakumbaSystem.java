@@ -27,6 +27,8 @@ import java.io.StringReader;
 import org.makumba.controller.html.CalendarEditorProvider;
 import org.makumba.controller.html.KruseCalendarEditor;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -36,6 +38,9 @@ import org.makumba.util.wiki.WikiFormatter;
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem 
 {
+  /** DataDefinition provider **/
+  private static DataDefinitionProvider MDDFactory = MakumbaDataDefinitionFactory.getInstance();
+  
   /** The date at which makumba is loaded */
   static public final java.util.Date loadingTime=new java.util.Date();
 
@@ -133,40 +138,40 @@ public class MakumbaSystem
 
   /** Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd */
   public static DataDefinition getDataDefinition(String typeName) 
-  { return org.makumba.abstr.RecordInfo.getRecordInfo(typeName); }
+  { return MDDFactory.getDataDefinition(typeName); }
 
   public static DataDefinition getTemporaryDataDefinition(String name){
-      	return new org.makumba.abstr.RecordInfo(name);
+      	return MDDFactory.getVirtualDataDefinition(name);
   }
 
   /** Make a field definition from the indicated string */
   public static FieldDefinition makeFieldDefinition(String name, String definition)
   {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, definition, true);
+    return MDDFactory.makeFieldDefinition(name, definition);
   }
 
   /** Make a field definition with the elementary type*/
   public static FieldDefinition makeFieldOfType(String name, String type)
   {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+    return MDDFactory.makeFieldOfType(name, type);
   }
 
   /** Make a field definition identical with the given one, except for the name*/
   public static FieldDefinition makeFieldWithName(String name, FieldDefinition type)
   {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false);
+    return MDDFactory.makeFieldWithName(name, type);
   }
 
   /** Make a field definition with the elementary type*/
   public static FieldDefinition makeFieldOfType(String name, String type, String description)
   {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
+    return MDDFactory.makeFieldOfType(name, type, description);
   }
 
   /** Make a field definition identical with the given one, except for the name*/
   public static FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description)
   {
-    return org.makumba.abstr.FieldInfo.getFieldInfo(name, type, false, description);
+    return MDDFactory.makeFieldWithName(name, type, description);
   }
   /** Get the DataDefinition of the records returned by the given OQL query 
    *@deprecated use {@link #getOQLAnalyzer} for better OQL functionality
