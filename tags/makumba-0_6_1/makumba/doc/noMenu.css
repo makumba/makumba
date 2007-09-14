@@ -1,0 +1,157 @@
+/* $Id$ */
+BODY {	font-family: Arial, Helvetica, sans-serif;
+	color:black; 
+	background-color:white; 
+	margin-right:0px;
+	margin-top:0px;
+	margin-left:5px; ; margin-bottom: 0px; font-size: 12px}
+
+
+  H1 {	background: #044a2c; 
+	color:white;
+	margin-top: 5px;
+	padding-left: 10px;
+	margin-left:0px; ; font-size: 18px}
+  H2 { background: #74C27A; margin-top: 5px; padding-left: 10px; margin-left:5px;; font-size: 16px}
+  H3 { background: #C2FE8D; margin-top: 5px; padding-left: 10px; margin-left:5px;; font-size: 14px}
+  H4 { background: #DAD3B8; margin-top: 5px; margin-bottom:5px; padding-left:10px; margin-left:15px;; font-size: 13px}
+  H5 { background: #E0D9CF; color: #666666 ; margin-top: 5px; padding-left: 10px;; font-size: 13px}
+  
+  H1 a {color:white;}
+
+/* for fixed page title (h1), might result in non-smooth scrolling: 
+HTML>BODY { margin-top:50px; }
+BODY>H1 {position:fixed; top:0; margin-top:0; right:10px; left:150px; white-space:nowrap;}
+H2 a[name], H3 a[name], H4 a[name] {color:black; position:relative; top:-60px}
+*/
+a:hover {color:red;}
+
+
+.simplelink
+{
+	color:#044a2c;
+}
+.simplelink:hover
+{
+	color:#74C27A;
+}
+
+/*
+  H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
+*/
+
+  /* old and future feature */
+  .oldfeat { color: #000099 }
+  .futfeat { color: #990000 }
+  /*  .unusedcolor (#74C27A #CBBE1D) */
+
+  .exampleBlock { background: #e7e7e7; padding-left: 10px; padding-right:10px; padding-top:10px; padding-bottom:2px ; }
+ol {margin-top:0}
+a {color:#044a2c;}
+
+div.navbar { 
+	background: #e7e7e7; 
+	padding:5px;
+	margin:0;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100px;
+	font-size:80%;
+	border-right:solid 1px #999999;
+	border-bottom:solid 1px #999999;
+}
+
+/* trick IE with child selector */
+body>div.navbar { position: fixed }
+
+form.search{
+	margin:0px;
+}
+
+input.search{
+	border:solid 1px #e7e7e7;
+	background:#f5f5f5;
+	width:100%;
+	color:#044a2c;
+	padding:0px;
+	text-decoration:underline;
+	margin-left:-2px;
+	padding-left:2px;
+}
+
+/*IE will ignore this:*/
+div.navbar>form .search{
+	background:#e7e7e7;
+}
+
+#searchBox:hover{
+	color:red;
+}
+input.search:focus{
+	background:white !important;
+	color:black;
+	text-decoration:none;
+	border:solid 1px #999999;
+}
+
+
+.pageFooter {color: #666666; background: #eeeeee; font-size:80%; text-align:right; margin-top:20px; margin-left:-140px;}
+
+/* Tables in specification */
+table.tagParamDef {
+	margin-left:20px;
+	border:solid #ddd 1px ;
+	border-spacing:0;
+}
+
+table.tagParamDef th {background:#ddd;}
+table.tagParamDef td {border: solid #ddd 1px;}
+
+pre.example { 
+	border-left: solid green 1px ; 
+	margin-left: 20px;
+	padding-left: 5px;
+	background: #F5F5FF;
+	margin-top:0.5em;
+}
+
+
+.note{
+	font-size:0.9em;
+	font-style:italic;
+	margin-left: 50px;
+	padding:0.2em;
+	background: white url("note.gif") no-repeat;
+	padding-left:25px;
+	padding-bottom:5px;
+}
+
+.internals{
+	background: white url("gears.gif") no-repeat;
+	color:#666666;
+	padding:0.2em;
+	padding-left:32px;
+	padding-bottom:5px;
+
+}
+
+div.plainStyle {
+	background:#DDDDDD;
+	margin-left:20px;
+	font-family:serif;
+	padding:5px;
+	width:50%;
+}
+
+div.plainStyle H1, div.plainStyle H2, div.plainStyle H3 {
+	color:black;
+	padding:0;
+	background:transparent;
+	margin:0;
+}
+
+
+ul { margin-bottom: 5px; margin-right: 0px}
+
+ul { margin-top:0px} 

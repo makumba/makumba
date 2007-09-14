@@ -1,0 +1,1053 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="author" content="makumba-dev group">
+  <title>Makumba Specification</title>
+  <link rel="stylesheet" type="text/css" media="all" href="main.css">
+  <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+<h1>Makumba Specification</h1>
+
+<table>
+  <tr>
+    <td valign="top"> <a href="makumba-spec.html" title="...writing MDDs"><b>[Data Definitions]</b></a>&nbsp; </td>
+    <td valign="top"> <a href="makumba-spec-ql.html" title="...getting data from the database"><b>[Query Languages]</b></a>&nbsp; </td>
+    <td valign="top"> 
+      <b>[<span title="...viewing/editing data thru HTML pages">JSP tag library</span>:</b>
+      <a href="makumba-spec-taglib.html" title="...controller &amp; response"><b>Intro</b></a>
+      | <a href="makumba-spec-taglib-list.html" title="...viewing data thru HTML pages"><b>Listing</b></a>
+      | <a href="makumba-spec-taglib-forms.html" title="...editing data thru HTML pages"><b>Forms</b></a>]
+    </td>     
+    <td valign="top"> <a href="makumba-spec-bl.html" title="...adding logic to basic operations"><b>[Business Logics]</b></a>&nbsp; </td>
+    <td valign="top"> <a href="makumba-spec-summary.html" title="...Presentation and internal representation principles"><b>[Summary]</b></a> </td>
+  </tr>
+</table>
+
+
+<h2><a name="Presentation">JSP taglib - Forms</a></h2>
+
+<table widht=100%>
+<tr>
+  <td valign="top">
+    <div class="navbarPage">
+    <ul class="navbarPage">
+      <li><a href="#maknew">&lt;mak:newForm&gt;</a></li>
+      <br>
+      <li><a href="#makadd">&lt;mak:addForm&gt;</a></li>
+      <br>
+      <li><a href="#makedit">&lt;mak:editForm&gt;</a></li>
+      <br>
+      <li><a href="#makform">&lt;mak:form&gt;</a></li>
+      <br>
+      <li><a href="#input">&lt;mak:input&gt;</a> and <a href="#choiceDisplay">&lt;mak:option&gt;</a></li>
+      <br>
+      <li><a href="#action">&lt;mak:action&gt;</a></li>
+      <br>
+      <li><a href="#delete">&lt;mak:deleteLink/&gt;</a></li>
+    </ul>
+    </div>
+  </td>
+  <td>
+
+<p>
+Makumba can produce four types of forms: new, add, edit and generic
+forms.
+</p>
+<p>
+All forms have a number of common features:
+They can include <code>&lt;mak:input &gt;</code> tags.
+They all can have "<code>action</code>", "<code>method</code>", "<code>handler</code>",
+"<code>name</code>" and "<code>message</code>"
+arguments.
+</p>
+<p>
+Handler methods (if they exist) are executed by the
+<a href="#controller">makumba controller</a>, when
+the form is submitted to another makumba page.
+</p>
+<p><b>Non-generic (type specific) forms</b>
+<br>
+New, edit and add forms are type specific. Their fields must be named
+after the fields in the respective type (and related fields).
+</p>
+<p>If there is a <a href="#Business">business logic
+class</a>, the engine will look (once after each page compilation) for
+the corresponding <b>handler method</b>. The handler methods are
+executed
+before the default action and may prevent the action from being
+executed
+by throwing an exception. Some forms also have an after-action handler
+method.
+</p>
+<p>If the handler class exists but no handler method can be found, an
+error is thrown (the site is not allowed to do the operation, e.g.
+StudentHandler will never have a on_newLibraryBook() method). If the
+handler class wishes to allow the action, it can define an empty
+handler method. </p>
+<p><strong>Multiple forms</strong><!-- http://bugs.best.eu.org/show_bug.cgi?id=37 -->
+<br>
+- addForms can add to the subsets of object produced by the enclosing
+newForm.<br>
+- any number of levels of form inclusion is possible but only the
+outermost form can have an action, onSubmit, and method and other
+attributes specific to HTML forms.<br>
+- all form actions take place in a single transaction, which is rolled
+back by the controller filter if there is an error. <br>
+- after_ methods are not executed in correct order (<a
+ href="http://bugs.best.eu.org/show_bug.cgi?id=689">bug 689</a>)
+</p>
+<pre class="example">&lt;mak:form action="blabla"&gt;<br>&lt;%-- the topmost form, will result in a HTML form, may or may not have logic, <br>     or it can be a specialized form (new, edit, add...)<br>--%&gt;<br><br>  &lt;mak:input name="first" /&gt; &lt;%-- the topmost form can have fields of its own --%&gt;<br><br>&lt;mak:list .... &gt; <br>&nbsp; &lt;mak:addForm object="bla" field="bla" &gt;<br>  &lt;%-- note that there is no action indicated here, it's the action of the <br>       topmost form a normal on_add BL method will be called <br>   --%&gt;<br>&nbsp;&nbsp;   &lt;mak:input name="second" /&gt;&lt;%-- the topmost form can have fields of its own, <br>                                     even repeated in loops <br>                                --%&gt;<br>     ...<br>  &lt;/mak:addForm&gt;<br>&lt;/mak:list&gt;<br><br>&lt;mak:list .... &gt; &lt;%-- there can be more than one loop in a root form -- %&gt;<br>...<br>&lt;/mak:list&gt;<br>&lt;input type=submit&gt; &lt;%-- it's easy to add a submit button anywhere --%&gt;<br>&lt;/mak:form&gt;<!-- bug: the after_ BL method should be invoked after the subform responders : http://bugs.best.eu.org/show_bug.cgi?id=689 --></pre>
+<p class="futfeat">(Later, new and edit forms that have no body, will
+build default forms. )</p>
+<h4><a name="maknew">&lt;mak:newForm&nbsp; ...&gt;....
+&lt;/mak:newForm&gt;</a></h4>
+<p>
+Makes a form for creating a new object of the indicated type.
+<!-- FIXME (fred 2003-10-18) should include description of
+
+ how also related object can be created at the same time
+
+
+
+   ptr.externalpointer (needs be fixed, notnull, ... ????)
+
+   ptr.internalpointer ????
+
+
+
+--></p>
+<p>
+Example (personNew.jsp):
+</p>
+<pre class="example">&lt;mak:newForm type="general.Person" action="personList.jsp" method="post"&gt;<br>        &lt;mak:input name="name"/&gt;<br>        &lt;mak:input name="surname"/&gt;<br>        &lt;input type="submit"&gt;<br>&lt;/mak:newForm&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>type</tt></td>
+      <td>Makumba type for record creation, or OQL label for subrecord
+creation</td>
+      <td>Fixed, mandatory.</td>
+    </tr>
+    <tr>
+      <td><tt><span class="futfeat">(handler)</span></tt></td>
+      <td><span class="futfeat">the Java class.method that handles the
+response</span></td>
+      <td>defaults to on_new+NameOfMakumbaType. Arguments: <br>
+(Dictionary newData,&nbsp; Attributes a, Database
+db)</td>
+    </tr>
+    <tr>
+      <td><tt>action</tt></td>
+      <td>the response page of the form</td>
+      <td>Mandatory if a <a href="#action">&lt;mak:action&gt;</a> is
+absent</td>
+    </tr>
+    <tr>
+      <td><tt>method</tt></td>
+      <td>the HTTP method (<code>get</code> or <code>post</code>)</td>
+      <td>Defaults to <code>get</code></td>
+    </tr>
+    <tr>
+      <td><tt>name</tt></td>
+      <td>the name of the created object in the response page</td>
+      <td>Fixed. Defaults to __mak__edited__. If set, it is also used
+for the name of the html form (<code>&lt;form name="..." ...&gt;</code>)</td>
+    </tr>
+    <tr>
+      <td><tt>message</tt></td>
+      <td>the message that is displayed in the response page upon
+success</td>
+      <td>Fixed. Defaults to "changes done".</td>
+    </tr>
+<!--form specific:--> <tr>
+      <td><tt>target</tt></td>
+      <td rowspan="3">Form-specific html tag attributes</td>
+      <td rowspan="3">The content is copied to the resulting <code>&lt;form...&gt;</code>
+tag.
+Careful with (escaping) <a href="#tagparameters">quotes</a>. </td>
+    </tr>
+    <tr>
+      <td><tt>onReset</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onSubmit</tt></td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14">Generic HTML tag attributes. </td>
+      <td>results in <code>id="..."</code></td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+      <td>results in <code>class="..."</code></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+      <td rowspan="12">The content is copied to the resulting html
+tags.
+Careful with (escaping) <a href="#tagparameters">quotes</a>. </td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<p> <a name="handler_methods"></a>At form response, makumba
+(controller) invokes the following methods: </p>
+<ol>
+  <li>
+    <p>By defining <code>on_new*</code>, the handler class gets the
+opportunity
+to validate/change the data.
+If the data is not correct, the handler can throw an exception to
+prevent insertion in database. </p>
+    <pre class="example">handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;<br></pre>
+  </li>
+  <li>
+    <p>The standard Database call for insertion:</p>
+    <pre class="example">Pointer created= <a
+ href="api/org/makumba/Database.html#insert%28java.lang.String,%20java.util.Dictionary%29">db.insert(type, data)</a>;<br></pre>
+  </li>
+  <li>
+    <p>By defining <tt>after_new*</tt>, the handler class gets the
+opportunity
+to do supplementary operations with the inserted record. </p>
+    <pre class="example">handler.<b>after_new<i>TypeName</i>(created, data, attr, db)</b>;<br></pre>
+  </li>
+</ol>
+<br>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>argument</th>
+      <th>Java type</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><code>data</code></td>
+      <td><code>java.util.Dictionary</code></td>
+      <td>The new record to create. It is read from the HTTP query
+string by
+interpreting the form.</td>
+    </tr>
+    <tr>
+      <td><code>attr</code></td>
+      <td><a href="api/org/makumba/Attributes.html"><code>org.makumba.Attributes</code></a></td>
+      <td>Other attributes in the page (sent as HTTP arguments or
+present in
+the HTTP session).</td>
+    </tr>
+    <tr>
+      <td><code>db</code></td>
+      <td><a href="api/org/makumba/Database.html"><code>org.makumba.Database</code></a></td>
+      <td>The database where the record will be inserted</td>
+    </tr>
+    <tr>
+      <td><code>created</code></td>
+      <td><a href="api/org/makumba/Pointer.html"><code>org.makumba.Pointer</code></a></td>
+      <td>The pointer to the created record. Only for <code>after_new</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+If the handler class is present but both handler methods are missing (<code>on_new</code>
+and <code>after_new</code>), the action is not allowed.
+</p>
+<p>
+At response the following calls are executed (in this order):
+</p>
+<pre class="example">PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a><br>handler_obj.<b>checkAttributes(attr, db)</b>;<br>handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;<br>Pointer created= db.insert("general.Person", data);<br>handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;<br></pre>
+<h4><a name="makadd">&lt;mak:addForm&nbsp; ...&gt;....
+&lt;/mak:addForm&gt;</a></h4>
+<p>
+Makes a form for creating a sub-object of the mandatory enclosing <code>&lt;mak:object&gt;</code>
+(e.g. a language of a student, an address for a person).
+</p>
+<p>
+Example:
+</p>
+<pre class="example">&lt;mak:object from="best.Student s" where="s=$student"&gt;<br>    &lt;mak:addForm object="s" field="languages"<br>    		 action="studentView.jsp" method="post"&gt;<br>        &lt;mak:value expr="s.name"/&gt;<br>        &lt;mak:input name="level"/&gt;<br>        &lt;mak:input name="comments"/&gt;<br>    &lt;/mak:addForm&gt;<br>&lt;/mak:object&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>object</tt></td>
+      <td>The label of the object whose sub-object will be created</td>
+      <td>Fixed, mandatory</td>
+    </tr>
+    <tr>
+      <td><tt>field</tt></td>
+      <td>The field name that denotes the sub-object.</td>
+      <td>Fixed, mandatory.</td>
+    </tr>
+    <tr>
+      <td class="futfeat"><tt>(handler)</tt></td>
+      <td class="futfeat">the Java class.method that handles the
+response</td>
+      <td>defaults to <code>on_add+MakumbaType+fieldname</code>.
+Arguments: <code>(Pointer baseObject, Dictionary newData,&nbsp;
+Attributes a, Database db)</code></td>
+    </tr>
+<!-- 
+
+  <tr> 
+
+    <td>multiple</td>
+
+    <td>true ???</td>
+
+    <td>II didn't find this in makumba taglib but it's in the changelog
+
+	<br>http://bugs.best.eu.org/show_bug.cgi?id=37</td>
+
+  </tr>
+
+  -->
+    <tr>
+      <td><tt>action</tt></td>
+      <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>method</tt></td>
+    </tr>
+    <tr>
+      <td><tt>name</tt></td>
+    </tr>
+    <tr>
+      <td><tt>message</tt></td>
+    </tr>
+<!--form specific:--> <tr>
+      <td><tt>target</tt></td>
+      <td rowspan="3" colspan="2">Form-specific html tag attributes,
+see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>onReset</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onSubmit</tt></td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14" colspan="2"> Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+This will call the handler methods: (the argument names are adapted
+to the example. Note the changed pointer argument in the methods.)
+</p>
+<pre class="example">on_addBestStudentLang(Pointer student, Dictionary languageData, Attributes pageParams, Database db)<br>after_addBestStudentLang(Pointer address, Dictionary languageData, Attributes pageParams, Database db)<br></pre>
+<h4><a name="makedit">&lt;mak:editForm&nbsp; ...&gt;....
+&lt;/mak:editForm&gt;</a></h4>
+<p>
+Makes a form for editing the object indicated by any of the labels of
+the
+mandatory enclosing <code>&lt;mak:object&gt;</code> or <code>&lt;mak:list&gt;</code>.
+Also linked objects can be edited through the same form.
+</p>
+<p>
+Example:
+</p>
+<pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="s" action="studentView.jsp" method="post"&gt;<br>        &lt;mak:input name="person.name"/&gt;<br>        &lt;mak:input name="person.surname"/&gt;<br>        &lt;mak:input name="graduated"/&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>object</tt></td>
+      <td>The label of the OQL object to edit</td>
+      <td>Fixed, mandatory.</td>
+    </tr>
+    <tr>
+      <td class="futfeat"><tt>(handler)</tt></td>
+      <td class="futfeat">the Java class.method that handles the
+response</td>
+      <td>defaults to <code>on_edit+MakumbaTypeOfEditedObject</code>.
+Arguments: <code>(Pointer object, Dictionary changedFields, Attributes
+a, Database db)</code></td>
+    </tr>
+    <tr>
+      <td><tt>action</tt></td>
+      <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>method</tt></td>
+    </tr>
+    <tr>
+      <td><tt>name</tt></td>
+    </tr>
+    <tr>
+      <td><tt>message</tt></td>
+    </tr>
+<!--form specific:--> <tr>
+      <td><tt>target</tt></td>
+      <td rowspan="3" colspan="2">Form-specific html tag attributes,
+see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>onReset</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onSubmit</tt></td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+The response will call the handler method: (the argument names are
+adapted
+to the example)
+</p>
+<pre class="example">on_editBestStudent(Pointer student, Dictionary fieldsToChange, Attributes pageParams, Database db)<br></pre>
+<!-- ========================================================= -->
+<!-- ====================== mak:form ========================= -->
+<h4><a name="makform">&lt;mak:form&nbsp; ...&gt;....&lt;/mak:form&gt;</a></h4>
+<p>
+Creates a <b>generic form</b>, that may call a handler
+method in response. It allows the JSP author to make any kind of form.
+They
+are suitable for more complex operations than new, add, edit.
+</p>
+<p>
+Example:
+</p>
+<pre class="example">&lt;mak:object from="best.Student s" where="s=$student"&gt;<br>    &lt;mak:form handler="doSomething" action="studentView.jsp" method="post"&gt;<br>        &lt;mak:input name="xxx" value="s.person.name"/&gt;<br>        &lt;input type=submit&gt;<br>    &lt;/mak:form&gt;<br>&lt;/mak:object&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>handler</tt></td>
+      <td>the Java method that handles the response</td>
+      <td>Arguments: <code>(Dictionary formFields, Attributes
+restOfArguments, Database db)</code> <br>
+Not mandatory. A form without handler will simply
+set attributes (as makumba objects) for the next page</td>
+    </tr>
+    <tr>
+      <td><tt>action</tt></td>
+      <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>method</tt></td>
+    </tr>
+    <tr>
+      <td><tt>name</tt></td>
+    </tr>
+    <tr>
+      <td><tt>message</tt></td>
+    </tr>
+<!--form specific:--> <tr>
+      <td><tt>target</tt></td>
+      <td rowspan="3" colspan="2">Form-specific html tag attributes,
+see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>onReset</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onSubmit</tt></td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<!-- ========================================================= -->
+<!-- ====================== mak:input ======================== -->
+<h4><a name="input">&lt;mak:input... /&gt;</a></h4>
+<p>
+An input field to be created, depending on the makumba type of the
+field.
+See the <a href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</p>
+<p>scripts/makumba-javascript.html</p>
+<p>
+The difference between <code>&lt;mak:input &gt;</code> and normal
+HTML <code>&lt;input&gt;</code> in a makumba form are:
+</p>
+<ul>
+  <li> <code>&lt;mak:input&gt;</code> produces objects prepared for
+setting/comparing
+makumba fields (e.g. Pointer, Date, Text).</li>
+  <li>the fields produced by <code>&lt;input&gt;</code> will be
+available
+as page $attributes but will all be of type String</li>
+  <li>the fields produced by <code>&lt;mak:input&gt;</code> are
+available
+separately as a Dictionary to the handler method</li>
+</ul>
+<pre class="example">&lt;mak:object from="best.Student s, s.person p" where="s=$student"&gt;<br>    &lt;mak:editForm object="p" action="studentView.jsp" method="post"&gt;<br>        name      &lt;mak:input name="name"/&gt;<br>        surname   &lt;mak:input name="surname"/&gt;<br>        gender    &lt;mak:input name="gender" type="tickbox" /&gt;<br>        dob       &lt;mak:input name="birthdate" format="yyyy-MM-dd" /&gt;<br>    &lt;/mak:editForm&gt;<br>&lt;/mak:object&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>name</tt> <br>
+      <tt class="oldfeat">(or field)</tt></td>
+      <td>Makumba field (from the edited record or via base pointers or
+sub-record
+pointers)</td>
+      <td>Fixed, mandatory</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><tt>nameVar</tt> </td>
+      <td style="vertical-align: top;">The name of the java variable in
+which to store the name of the HTML input. In multiple forms,&nbsp;
+there may be more HTML inputs generated by one mak:input, so a suffix
+is added by makumba to the name to generate unique names for each.<br>
+      </td>
+      <td style="vertical-align: top;">Fixed<br>
+      </td>
+    </tr>
+    <tr>
+      <td><tt>value</tt></td>
+<!-- FIXME (fred 2003-10-19): can also be a constant, i think ? --> <td>OQL
+expression relative to enclosing query tags or a <code>$attribute</code>
+computed
+previously in the page (with <code>&lt;mak:value var=.../&gt;</code>
+or <code>pageContext.setAttribute(...)</code>),
+or read by in the previous page by an <code>&lt;mak:input /&gt;</code></td>
+      <td>Fixed</td>
+    </tr>
+    <tr>
+      <td><tt>type</tt></td>
+      <td>HTML INPUT type to be used
+      <ul>
+        <li>"<code>hidden</code>" works for all fields</li>
+        <li>for <code>char[]</code> , type can be "<code>text</code>"
+or "<code>password</code>",
+default is "<code>text</code>"</li>
+        <li>default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>,
+          <code>ptr</code> and <code>set</code>
+is "<code>select</code>" (dropdown or scroll list depending on <code>size</code>).
+Alternative is "<code>tickbox</code>" (checkboxes or radio buttons)</li>
+        <li> <code>date</code> is splitted in 3 inputs, <code>&lt;fieldname&gt;_0</code>
+(day), <code>_1</code> (month), <code>_2</code> (year), and likewise
+for <code>time</code>
+elements</li>
+        <li>for <code>text</code>, default is "<code>textarea</code>";
+"<code>file</code>"
+will create file upload box, and
+will create supplementary attributes <code>&lt;fieldname&gt;_filename</code>,
+          <code>&lt;fieldname&gt;_contentType</code> and <code>&lt;fieldname&gt;_contentLength</code>
+that have to be handled separately by the handler method</li>
+      </ul>
+      </td>
+      <td>Fixed</td>
+    </tr>
+    <tr>
+      <td><tt>display</tt></td>
+      <td>If "<code>false</code>", it will not show the &lt;input&gt;
+but it will expect to read
+it in the next page. This allows the page designer to format the input
+control manually</td>
+      <td>Rtexpr.</td>
+    </tr>
+    <tr>
+      <td><tt>dataType</tt></td>
+      <td>The makumba type of the data (needed if there
+is no value, no default expression for the value, or no makumba type
+associated
+with an attribute)</td>
+      <td>Fixed. Can be <code>char, char[xx], int, date, text, ptr
+Type, set Type</code></td>
+    </tr>
+    <tr>
+      <td><tt>format</tt></td>
+      <td>Format string, according to java.text.SimpleDateFormat <br>
+Can only countain <code>d, M, y, H, m, s</code> formatting chars, and
+any kind of
+separators. Ex: <br>
+      <code>'the day' dd 'of the month' MMMM 'in the year' yyyy</code>.
+      <br>
+Default is "<code>dd MMMM yyyy</code>"</td>
+      <td>Rtexpr. Only for date.</td>
+    </tr>
+    <tr>
+      <td><tt>size</tt></td>
+      <td>Size of the input control</td>
+      <td>Rtexpr. Only for <code>char[]</code>, <code>int</code>
+(size of the textbox)
+and <code>set</code>, <code>ptr</code> (height of the select)</td>
+    </tr>
+    <tr>
+      <td><tt>maxLength</tt></td>
+      <td>Max length of a text control</td>
+      <td>Rtexpr. Only for <code>char[]</code> and <code>int</code>.
+Defaults to makumba width of the <code>char[]</code></td>
+    </tr>
+    <tr>
+      <td><tt>labelSeparator</tt></td>
+      <td>The string that separates the tickbox (radio/check) from the
+label. Default is <code>" "</code> (space). <br>
+The output will be <code>&lt; tick &gt;&lt; labelSeparator &gt;&lt;
+label &gt;</code></td>
+      <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
+    </tr>
+    <tr>
+      <td><tt>elementSeparator</tt></td>
+      <td>The string that separates the different options. Default is <code>"
+"</code> (space). <br>
+The output will be <code>&lt; [x] label &gt;&lt; elementSeparator
+&gt;&lt; [x] label &gt;</code></td>
+      <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
+    </tr>
+    <tr class="futfeat">
+      <td><tt>(elementSeparatorList)</tt></td>
+      <td>The list of strings that separates the different options. Not
+active by default.
+The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any
+character
+(not appearing inside the separators) can be used as delimiter, e.g.
+'!'. <br>
+The output will be <br>
+      <code>&lt; [x] label &gt;&lt; sep[1] &gt;&lt; [x] label &gt;&lt;
+sep[2] &gt; ... &lt; [x] label &gt;&lt; sep[n] &gt;&lt; [x] label
+&gt;&lt; sep[1] &gt; ...</code></td>
+      <td>Rtexpr. Only for <code>type="tickbox"</code>. Overrides <code>elementSeparator</code>
+if it exists.</td>
+    </tr>
+    <tr>
+      <td><tt>rows, cols</tt></td>
+      <td>Number of textarea rows and columns</td>
+      <td>only for <code>text</code></td>
+    </tr>
+    <tr>
+      <td><tt>default</tt></td>
+      <td><!--
+
+The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)
+
+-->FIXME
+      </td>
+      <td>Rtexpr</td>
+    </tr>
+    <tr>
+      <td><tt>empty</tt></td>
+      <td><!--
+
+The character string to print if the normal printed output would be empty (i.e. zero-length string).
+
+Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.
+
+-->FIXME
+      </td>
+      <td>Rtexpr<br>
+      </td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+Fields of related records can be reference and edited as well, via
+pointers.
+In this (somewhat strange) example, one can edit the name of the
+capital city
+of the country of which person is a citizen, through the person edit
+form :
+</p>
+<pre class="example">&lt;mak:input name="person.citizenship.capital.name" /&gt;<br></pre>
+<p>Restrictions for different field types:
+</p>
+<ul>
+  <li>fixed fields: cannot be edited</li>
+  <li>relational and index pointer: cannot be edited</li>
+  <li>timestamps (create and modify): cannot be edited</li>
+  <li>subset, subpointer: cannot be edited as a field,
+only as a separate object</li>
+</ul>
+<h5><a name="choiceDisplay"></a>&lt;mak:option....&gt;...&lt;/mak:option&gt;</h5>
+By default, for pointer and set fields, <code>mak:input</code> will
+show a choser (selector) that includes the title of all possible
+options, ordered by that title. To change that behavior, the <code>mak:input</code>
+can include one or more <code>mak:option</code>. Options can be
+repeated using <code>mak:list</code>, <code>c:foreach</code>, and in
+general can appear inside any other tag.
+<p>Text inside <code>mak:option</code> will become an option title.
+The <code>value</code> attribute will become the option. All text
+produced inside the mak:input that is not inside a mak:option must be
+blank!</p>
+<p>If <code>mak:option</code> doesn't have a value indicated, it will
+produce a nil option. Such nil options will be ignored at form
+submission.</p>
+<p> If an option value appears many times it will only be shown the
+first time it occurs.</p>
+<p></p>
+<pre class="example">&lt;mak:input name="some" dataType="ptr T"&gt;<br>&lt;mak:option&gt;Please choose:&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someCondition" &gt;<br>    &lt;mak:option value="choice"&gt;&lt;mak:value expr="choice.someField" /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;mak:option&gt; -------- separator----------&lt;/mak:option&gt;<br>&lt;mak:list from="T choice" where="someOtherCondition" &gt;<br>   &lt;mak:option value="choice"&gt; &lt;mak:value expr="choice.someField /&gt;&lt;/mak:option&gt;<br>&lt;/mak:list&gt;<br>&lt;/mak:input&gt;<br><br></pre>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>value</tt> <br>
+      </td>
+      <td>Value of the option, can be an OQL expression or a $attribute
+      </td>
+      <td>Fixed, if not indicated, nil (null option) is default</td>
+    </tr>
+  </tbody>
+</table>
+<!-- ========================================================= -->
+<!-- ====================== mak:action ======================= -->
+<h4><a name="action">&lt;mak:action&gt;....&lt;/mak:action&gt;</a></h4>
+<p>
+If the action URI of a form or deleteLink is more complex, possibly
+including other makumba tags,
+the action parameter of the form tag can be omitted, and the action URI
+can be indicated in a <code>mak:action</code>, anywhere inside the
+form tag.
+</p>
+<p>
+Example:
+</p>
+<pre class="example">&lt;mak:editForm object="ins" method="post"&gt;<br>  <b>&lt;mak:action&gt;</b>memberView.jsp?person=&lt;mak:value expr="p"/&gt;<b>&lt;/mak:action&gt;</b><br>...<br>&lt;/mak:editForm&gt;<br></pre>
+<!-- ========================================================= -->
+<!-- ==================== mak:deleteLink ===================== -->
+<h3><a name="delete">&lt;mak:deleteLink&gt;...&lt;/mak:deleteLink&gt;</a></h3>
+<p>
+Produces a link to the page that will delete the object indicated by
+any of the labels of the mandatory enclosing <code>&lt;mak:object&gt;</code>
+or <code>&lt;mak:list&gt;</code>
+</p>
+<p>
+Example:
+</p>
+<pre class="example">&lt;mak:object from="best.Student s, s.languages l"<br>	    where="s=$student AND l.lang.name=$langname"&gt;<br>	&lt;mak:deleteLink object="l"  action="studentView.jsp"&gt;<br>		Delete &lt;mak:value expr="l.lang.name"/&gt;<br>	&lt;/mak:deleteLink&gt;<br>&lt;/mak:object&gt;<br></pre>
+<br>
+<p>
+</p>
+<table class="tagParamDef">
+  <tbody>
+    <tr>
+      <th>tag parameter</th>
+      <th>description</th>
+      <th>comments</th>
+    </tr>
+    <tr>
+      <td><tt>object</tt></td>
+      <td>OQL label of the object to delete</td>
+      <td>Fixed</td>
+    </tr>
+    <tr>
+      <td class="futfeat"><tt>(handler)</tt></td>
+      <td class="futfeat">the Java class.method that handles the
+response</td>
+      <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>.
+Arguments: <code>(Pointer object, Attributes a, Database db)</code></td>
+    </tr>
+    <tr>
+      <td><tt>action</tt></td>
+      <td colspan="2" rowspan="4">see <a href="#maknew"><code>newForm</code></a></td>
+    </tr>
+    <tr>
+      <td><tt>message</tt></td>
+    </tr>
+    <tr>
+      <td><tt>target</tt></td>
+    </tr>
+    <tr>
+      <td><tt>name</tt></td>
+    </tr>
+<!-- generic: --> <tr>
+      <td><tt>styleId</tt></td>
+      <td rowspan="14" colspan="2">Generic html tag attributes, see <a
+ href="#maknew"><code>newForm</code></a> </td>
+    </tr>
+    <tr>
+      <td><tt>styleClass</tt></td>
+    </tr>
+    <tr>
+      <td><tt>style</tt></td>
+    </tr>
+    <tr>
+      <td><tt>title</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onDblClick</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onKeyPress</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseDown</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseUp</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseMove</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOut</tt></td>
+    </tr>
+    <tr>
+      <td><tt>onMouseOver</tt></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+The response will call the handler method: (the argument names are
+adapted
+to the example)
+</p>
+<pre class="example">on_deleteBestStudentLang(Pointer lang, Attributes pageParams, Database db)<br></pre>
+
+  </td>
+</tr>
+</table>
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+</body>
+</html>
+
+
