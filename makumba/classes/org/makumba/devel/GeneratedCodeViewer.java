@@ -25,9 +25,9 @@ import org.makumba.DataDefinitionParseError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.analyser.JspParseData;
 import org.makumba.controller.Logic;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
-import org.makumba.util.JspParseData;
 
 /**
  * Implements servlet-based an interface to {@link CodeGenerator}, and displays the generated JSP code.

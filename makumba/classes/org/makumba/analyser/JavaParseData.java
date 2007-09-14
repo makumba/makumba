@@ -21,7 +21,7 @@
 //$Name$
 /////////////////////////////////////
 
-package org.makumba.util;
+package org.makumba.analyser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,6 +36,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.MakumbaSystem;
+import org.makumba.analyser.interfaces.JavaAnalyzer;
+import org.makumba.util.NamedResourceFactory;
+import org.makumba.util.NamedResources;
 
 /**
  * This class performs a rudimentary detection of Java syntax elements in a Java class.
@@ -44,25 +47,6 @@ import org.makumba.MakumbaSystem;
  */
 public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
-    /** The interface of a Java analyzer. */
-    public interface JavaAnalyzer {
-
-        /**
-         * the end of the page
-         * 
-         * @return the result of the analysis
-         */
-        Object endPage(Object status);
-
-        /**
-         * make a status holder, which is passed to all other methods
-         * 
-         * @param initStatus
-         *            an initial status to be passed to the JavaAnalyzer. for example, the pageContext for an example-based analyzer
-         */
-        Object makeStatusHolder(Object initStatus);
-    }
-    
     private class DefinitionPoint implements Comparable {
         String className;
 

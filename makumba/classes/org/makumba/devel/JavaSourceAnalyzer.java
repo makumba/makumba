@@ -23,7 +23,7 @@
 
 package org.makumba.devel;
 
-import org.makumba.util.JavaParseData.JavaAnalyzer;
+import org.makumba.analyser.interfaces.JavaAnalyzer;
 
 /**
  * @author Rudolf Mayer

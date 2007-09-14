@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.util;
+package org.makumba.analyser;
 
 /**
  * Keeps track of important points in a file. Syntax points are typically stored in a sorted set, and used for syntax

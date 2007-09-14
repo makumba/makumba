@@ -39,7 +39,8 @@ import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
-import org.makumba.util.JspParseData;
+import org.makumba.analyser.JspParseData;
+import org.makumba.analyser.TagData;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -53,6 +54,9 @@ import org.makumba.util.MultipleKey;
  * <li>links to the JspParseData$TagData, representing the tag as parsed</li>
  * </ul>
  * 
+ * TODO this should be refactored so that the analysis-specific things get refactored to a superclass which
+ * would be part of the analyser
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -63,18 +67,18 @@ public abstract class MakumbaTag extends TagSupport {
 
     static ThreadLocal tagStack = new ThreadLocal();
 
-    static public JspParseData.TagData getRunningTag() {
-        return (JspParseData.TagData) runningTag.get();
+    static public TagData getRunningTag() {
+        return (TagData) runningTag.get();
     }
 
-    static public JspParseData.TagData getAnalyzedTag() {
-        return (JspParseData.TagData) analyzedTag.get();
+    static public TagData getAnalyzedTag() {
+        return (TagData) analyzedTag.get();
     }
 
-    static public JspParseData.TagData getCurrentBodyTag() {
+    static public TagData getCurrentBodyTag() {
         if (getThreadTagStack().isEmpty())
             return null;
-        return (JspParseData.TagData) getThreadTagStack().peek();
+        return (TagData) getThreadTagStack().peek();
     }
 
     static public void initializeThread() {
@@ -94,9 +98,9 @@ public abstract class MakumbaTag extends TagSupport {
      * The TagData object holding the composite data collected by the analysis. It is set by the tag parser at analysis
      * time. It is set at runtime after the key is computed
      */
-    protected JspParseData.TagData tagData;
+    protected TagData tagData;
 
-    void setTagDataAtAnalysis(JspParseData.TagData tagData) {
+    void setTagDataAtAnalysis(TagData tagData) {
         this.tagData = tagData;
     }
 
@@ -289,7 +293,7 @@ public abstract class MakumbaTag extends TagSupport {
                 pageCache = getPageCache(pageContext);
             setTagKey(pageCache);
             if (pageCache != null) {
-                tagData = (JspParseData.TagData) pageCache.tagData.get(tagKey);
+                tagData = (TagData) pageCache.tagData.get(tagKey);
                 runningTag.set(tagData);
             }
             initialiseState();
