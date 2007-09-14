@@ -32,15 +32,39 @@ public class StringUtils {
      * Converts an array to a String represenation, using the toString() method of each array element.
      */
     public static String toString(Object[] array) {
+        return toString(array, true);
+    }
+
+    public static String toString(Object[] array, boolean frame) {
         StringBuffer b = new StringBuffer();
-        b.append('[');
+        if (frame) {
+            b.append('[');
+        }
         for (int i = 0; i < array.length; i++) {
             b.append(array[i]);
             if (i < (array.length - 1)) {
                 b.append(", ");
             }
         }
-        b.append(']');
+        if (frame) {
+            b.append(']');
+        }
+        return b.toString();
+    }
+
+    public static String concatAsString(Object[] array) {
+        return concatAsString(array, "_");
+
+    }
+
+    public static String concatAsString(Object[] array, String delim) {
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; i < array.length; i++) {
+            b.append(array[i]);
+            if (i < (array.length - 1)) {
+                b.append(delim);
+            }
+        }
         return b.toString();
     }
 
