@@ -211,11 +211,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
       selectStatement.append("<SELECT NAME=\"" + _name + "\" SIZE=" + _size + " " + _literalHtml + ">\n");
 
       for( ; itv.hasNext() && itl.hasNext() ; ) {
-          Object val=itv.next();
+          String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if(val==null)
-              throw new ProgrammerError("Non-option text "+label+ " found. Non-otion text cannot break simple SELECTs. Use type=\"tickbox\" instead");
-          String value = val.toString();
           boolean yn_selected = value.equals(selectedValue);
           // show option if selected or not-deprecated
           if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0)
@@ -244,25 +241,11 @@ public class HtmlChoiceWriter extends HtmlUtils {
       Iterator itl = _labels;
           
       StringBuffer selectStatement = new StringBuffer(512);
-      String selectString= "<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=" + _size + " " + _literalHtml + ">\n";
-      boolean selectStarted= false;
+      selectStatement.append("<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=" + _size + " " + _literalHtml + ">\n");
       
       for( ; itv.hasNext() && itl.hasNext() ; ) {
-          Object val=itv.next();
+          String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          if(val==null){
-              selectStatement.append(label);
-              if(selectStarted){
-                  selectStatement.append("</SELECT>");
-              }
-              selectStarted=false;
-              continue;
-          }
-          if(!selectStarted)
-              selectStatement.append(selectString);
-          selectStarted=true;
-          String value = val.toString();
-
           boolean yn_selected = Arrays.binarySearch(_selectedValues, value) >= 0; 
           // show option if selected or not-deprecated
           if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0 )
@@ -293,16 +276,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
   
       StringBuffer inputStatement = new StringBuffer(512);
       int j = -1; // j cycles through optionSeparator[]
-      String sep="";
+  
       for( ; itv.hasNext() && itl.hasNext() ; ) {
-          inputStatement.append(sep);
+          String value = (String)itv.next().toString();
           String label = (String)itl.next();
-          Object val= itv.next();
-          if(val==null){
-              inputStatement.append(label);
-              continue;
-          }
-          String value = (String)val.toString();
           boolean yn_selected = Arrays.binarySearch(_selectedValues, value) >= 0; 
           // show option if selected or not-deprecated
           if ( yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0 )
@@ -313,15 +290,15 @@ public class HtmlChoiceWriter extends HtmlUtils {
             }
             String selected = yn_selected ? " CHECKED " : " " ;
             j = (j+1) % _optionSeparator.length;
-            sep=_optionSeparator[j];
                     
 	    String id="AutoLabel_"+java.lang.Long.toString(java.lang.Math.round(java.lang.Math.random()*100000000));
             inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
-            inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\""+id+"\">" + _tickLabelSeparator + "<LABEL for=\""+id+"\">" + label + "</LABEL>");
+            inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\""+id+"\">" + _tickLabelSeparator + "<LABEL for=\""+id+"\">" + label + "</LABEL>" + _optionSeparator[j]);
           }
       }
   
-      return inputStatement.toString();
+      // cut of the last optionSeparator and return
+      return inputStatement.substring(0, inputStatement.length() - _optionSeparator[j].length());
   }
 
   

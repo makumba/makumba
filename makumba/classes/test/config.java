@@ -64,11 +64,7 @@ public class config extends TestCase
         } catch (ConfigFileError e) { }
   }
 
-  /**
-   * http://bugzilla.makumba.org/cgi-bin/bugzilla/show_bug.cgi?id=527
-   * but wasn not discussed since then
-   */
-  public void DISABLED_testDBDiscovery()
+  public void testDBDiscovery()
   {
     String preferredDB=MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties");
 //	TODO change Database to Transaction

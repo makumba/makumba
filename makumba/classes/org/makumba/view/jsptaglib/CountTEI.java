@@ -22,50 +22,43 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-
 import java.util.Vector;
 
 import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
-/**
- * Extra information for count, to be more specific countVar, maxCountVar, ...
- * @author Cristian Bogdan
- */
-public class CountTEI extends TagExtraInfo {
+
+
+public class CountTEI extends TagExtraInfo 
+{
+  public VariableInfo[] getVariableInfo(TagData data) {
+    Vector v= new Vector();
     
-    public VariableInfo[] getVariableInfo(TagData data) {
-        Vector v = new Vector();
+    String var= data.getAttributeString("countVar");
+    if(var!=null)
+      v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
 
-        String var = data.getAttributeString("countVar");
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
+    if(var!=null)
+      v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
 
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
+    var= data.getAttributeString("maxCountVar");
+    if(var!=null)
+      v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
 
-        var = data.getAttributeString("maxCountVar");
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
+    if(var!=null)
+      v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
+    
+    return vector2VarInfo(v);
+  }
 
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
-
-        return vector2VarInfo(v);
-    }
-
-    /**
-     * Converts a Vector into a VariableInfo[]
-     * @param v the vector to be converted
-     * @return the VariableInfo[] filled in with values from the vector
-     */
-    public static VariableInfo[] vector2VarInfo(Vector v) {
-        if (v.size() == 0)
-            return null;
-        VariableInfo vi[] = new VariableInfo[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            vi[i] = (VariableInfo) v.elementAt(i);
-        return vi;
-    }
+  public static VariableInfo[] vector2VarInfo(Vector v)
+  {
+    if(v.size()==0)
+      return null;
+    VariableInfo vi[] = new VariableInfo[v.size()];
+    for(int i=0; i<v.size(); i++)
+      vi[i]=(VariableInfo)v.elementAt(i);
+    return vi;
+  }
 }

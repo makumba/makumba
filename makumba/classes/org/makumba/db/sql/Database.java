@@ -48,7 +48,7 @@ public class Database extends org.makumba.db.Database {
 
 	String url;
 
-	protected static String eng; //
+	String eng; //
 
 	Properties types = new Properties();
 
@@ -59,7 +59,6 @@ public class Database extends org.makumba.db.Database {
 	static final int DESIRED_TRANSACTION_LEVEL = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
 	static Properties sqlDrivers;
-	//static boolean requestUTF8 = false;
 
 	public String getEngine() {
 		return eng;
@@ -67,13 +66,6 @@ public class Database extends org.makumba.db.Database {
 
 	public static String getEngineProperty(String s) {
 		return sqlDrivers.getProperty(s);
-	}
-	
-	static public boolean supportsUTF8() {
-	    if(requestUTF8 == false) return false;
-	    if(sqlDrivers.getProperty(eng+".utf8") == null) return false;
-	    if(sqlDrivers.getProperty(eng+".utf8").equals("true")) return requestUTF8;
-	    return false;
 	}
 
 	protected DBConnection makeDBConnection() {
@@ -131,9 +123,6 @@ public class Database extends org.makumba.db.Database {
 	 * <dt>typename#field
 	 * <dd>can specify the name of the SQL field corresponding to the indicated
 	 * field
-	 * <dt>encoding
-	 * <dd>if "utf8" the outputted html will be in the utf8 charset and the
-	 * connection with mysql will also be made in utf8
 	 * </dl>
 	 */
 	public Database(Properties p) {
@@ -161,9 +150,6 @@ public class Database extends org.makumba.db.Database {
 			if (s != null)
 				addUnderscore = s.equals("true");
 
-			if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
-                requestUTF8 = true;
-			
 			if (driver == null)
 				driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));
 

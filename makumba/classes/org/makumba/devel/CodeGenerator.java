@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
@@ -96,6 +97,8 @@ public class CodeGenerator {
 
     /** Default used access keys for Add, Save changes, Cancel & Reset */
     private static final List DEFAULTUSED_ACCESS_KEYS = Arrays.asList(new String[] { "a", "s", "c", "r" });
+
+    private static final Logger logger = MakumbaSystem.getMakumbaLogger("devel.codeGenerator");
 
     static {
         allCodeTypes = new String[] { TYPE_NEWFORM, TYPE_ADDFORM, TYPE_EDITFORM, TYPE_LIST, TYPE_OBJECT, TYPE_DELETE,
@@ -179,7 +182,7 @@ public class CodeGenerator {
     /** Starts the code generation for the given code type and DataDefinition. */
     public void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
             CodeGeneratorTemplate template) {
-        generateCode(sb, type, dd, action, DataServlet.extractFields(dd), template, 0);
+        generateCode(sb, type, dd, action, extractFields(dd), template, 0);
     }
 
     /** Starts the business logic code generation for the given DataDefinition. */
@@ -406,20 +409,20 @@ public class CodeGenerator {
                     appendEmptyLine(sb);
                     appendJSPLine(sb, indent, "<%-- Makumba Generator - START OF SETS --%>");
 
-                    DataServlet.logger.finer("DEBUG INFO: Number of sets of MDD " + dd + " is " + sets.size());
+                    logger.finer("DEBUG INFO: Number of sets of MDD " + dd + " is " + sets.size());
                     for (int i = 0; i < sets.size(); i++) {
                         FieldDefinition fd = (FieldDefinition) sets.get(i);
-                        DataServlet.logger.finest("DEBUG INFO: Currently processing set with fieldname " + fd.getName()
+                        logger.finest("DEBUG INFO: Currently processing set with fieldname " + fd.getName()
                                 + " and type " + fd.getType());
 
                         DataDefinition setDd = getDataDefinitionFromType(fd);
 
                         if (setDd == null) {
-                            DataServlet.logger.warning("Problem generating code - did not find field definition for set '" + fd.getName() + "' in data definition '" + dd.getName() + "'.");
+                            logger.warning("Problem generating code - did not find field definition for set '" + fd.getName() + "' in data definition '" + dd.getName() + "'.");
                         } else {
                             // sorting out only the normal fields, we don't care about generate sets inside sets.
                             Vector innerFields = extractInnerFields(setDd);
-                            DataServlet.logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset " + setDd.getName()
+                            logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset " + setDd.getName()
                                 + " is " + innerFields.size());
 
                             // generate the inner set code
@@ -461,7 +464,7 @@ public class CodeGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        DataServlet.logger.info("Generation of " + getFileNameFromObject(dd, type) + " took "
+        logger.info("Generation of " + getFileNameFromObject(dd, type) + " took "
                 + (System.currentTimeMillis() - beginTime) + " ms");
     }
 
@@ -771,6 +774,26 @@ public class CodeGenerator {
 
     private boolean isSet(FieldDefinition fd) {
         return fd.getType().equals("set");
+    }
+
+    /** Extracts the fields and sets from a given DataDefinition. */
+    public static Vector[] extractFields(DataDefinition dd) {
+        Vector fields = new Vector();
+        Vector sets = new Vector();
+        // iterating over the DataDefinition, extracting normal fields and sets
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldDefinition fd = dd.getFieldDefinition(i);
+            logger.finer("DEBUG INFO: Extracting fields: field name " + fd.getName() + " of type " + fd.getType());
+
+            if (!fd.isDefaultField()) { // we skip default fields and index
+                if (fd.shouldEditBySingleInput()) {
+                    fields.add(fd);
+                } else {
+                    sets.add(fd);
+                }
+            }
+        }
+        return new Vector[] { fields, sets };
     }
 
     /** Gathers all fields that are not sets and ptrRel from a given DataDefinition. */

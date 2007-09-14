@@ -1,12 +1,5 @@
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<%@include file="menu.jsp" %>
-
-<%-- --%>
-<%
- // glglgla
- 
-%>
 <mak:object from="organisation.Partner p" where="p=$partner">
     <h2><mak:value expr="p.name"/></h2>
 

@@ -1,7 +1,5 @@
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<%@include file="menu.jsp" %>
-
 <mak:object from="organisation.Partner p" where="p=$partner">
    <h2>Edit <mak:value expr="p.name"/></h2>
    <mak:editForm object="p" action="partnerList.jsp">

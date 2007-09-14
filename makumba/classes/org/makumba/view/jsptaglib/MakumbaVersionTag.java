@@ -22,25 +22,21 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-/**
- * mak:version tag
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class MakumbaVersionTag extends TagSupport {
+public class MakumbaVersionTag extends TagSupport
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1L;
-
-    public int doStartTag() throws JspException {
-        try {
-            pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
-        } catch (java.io.IOException e) {
-            throw new JspException(e.getMessage());
-        }
-        return EVAL_BODY_INCLUDE;
-    }
+public int doStartTag() throws JspException 
+  {
+    try{
+	  pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
+    }catch(java.io.IOException e) { throw new JspException(e.getMessage()); }
+    return EVAL_BODY_INCLUDE;
+  }
 }

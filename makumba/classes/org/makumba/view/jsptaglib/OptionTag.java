@@ -28,79 +28,65 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.util.MultipleKey;
 
-/**
- * mak:option tag
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class OptionTag extends BasicValueTag implements BodyTag {
-    private static final long serialVersionUID = 1L;
+public class OptionTag extends BasicValueTag implements BodyTag
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+ValueComputer choiceComputer=null;
 
-    ValueComputer choiceComputer = null;
+  public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) 
+  {
+    expr=valueExprOriginal;
+    if(expr==null)
+      expr="nil";
+    // a pretty long key but i can't come with a better idea
+    Object[] keyComponents= {expr.trim(), getInput().tagKey, getParentListKey(pageCache)};
+    tagKey= new MultipleKey(keyComponents);
+  }
 
-    /**
-     * Inherited
-     */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
-        expr = valueExprOriginal;
-        if (expr == null)
-            expr = "nil";
-        // a pretty long key but i can't come with a better idea
-        Object[] keyComponents = { expr.trim(), getInput().tagKey, getParentListKey(pageCache) };
-        tagKey = new MultipleKey(keyComponents);
-    }
+  InputTag getInput(){
+     return (InputTag)findAncestorWithClass(this, InputTag.class);
+  }
 
-    InputTag getInput() {
-        return (InputTag) findAncestorWithClass(this, InputTag.class);
-    }
+  FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache){
+    FieldDefinition t= (FieldDefinition)pageCache.inputTypes.get(getInput().tagKey);
+    
+    // for now, only sets and pointers are accepted
+    if(!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
+      throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
 
-    FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache) {
-        FieldDefinition t = (FieldDefinition) pageCache.inputTypes.get(getInput().tagKey);
+    return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr "+t.getForeignTable().getName());
+  }
 
-        // for now, only sets and pointers are accepted
-        if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
-            throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    if(getInput()==null)
+      throw new ProgrammerError("\'option\' tag must be enclosed in a 'input' tag");
+    getInput().isChoser=true;
+    super.doStartAnalyze(pageCache);
+  }
 
-        return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
-    }
+  public void doInitBody(){}
 
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
-        if (getInput() == null)
-            throw new ProgrammerError("\'option\' tag must be enclosed in a 'input' tag");
-        getInput().isChoser = true;
-        super.doStartAnalyze(pageCache);
-    }
+  BodyContent bodyContent;
+  public void setBodyContent(BodyContent bc){ bodyContent=bc; }
 
-    public void doInitBody() {
-    }
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    return EVAL_BODY_BUFFERED;
+  }
 
-    BodyContent bodyContent;
-
-    public void setBodyContent(BodyContent bc) {
-        bodyContent = bc;
-    }
-
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) {
-        return EVAL_BODY_BUFFERED;
-    }
-
-    /** 
-     * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
-     * @param val the computed value
-     * @param type the type of the value
-     * @throws JspException
-     * @throws {@link LogicException}
-     */
-    int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
-        getInput().checkBodyContentForNonWhitespace();
-        if (isNull())
-            val = org.makumba.Pointer.Null;
-        getInput().choiceSet.add(val, bodyContent.getString(), false, false);
-        valueExprOriginal = dataType = expr = null;
-        return EVAL_PAGE;
-    }
+  /** a value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag() */
+  int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException{
+    if(isNull())
+      val=org.makumba.Pointer.Null;
+    getInput().choiceSet.add(val, bodyContent.getString(), false, false);
+    valueExprOriginal = dataType = expr = null;
+    return EVAL_PAGE;
+  }
 }

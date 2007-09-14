@@ -22,22 +22,19 @@
 /////////////////////////////////////
 
 package org.makumba.view.jsptaglib;
-
 import javax.servlet.jsp.JspException;
 
-/**
- * mak:object tag
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class ObjectTag extends QueryTag {
+public class ObjectTag extends QueryTag
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-
-    private static final long serialVersionUID = 1L;
-
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
-    }
+protected void setNumberOfIterations(int max) throws JspException
+  {
+    if(max>1)
+      throw new MakumbaJspException(this, "Object tag should have only one result");
+    super.setNumberOfIterations(max);
+  }
 }

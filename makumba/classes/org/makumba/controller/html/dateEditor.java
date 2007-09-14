@@ -30,231 +30,210 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import org.makumba.MakumbaSystem;
-import org.makumba.controller.http.HttpParameters;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 import org.makumba.view.dateFormatter;
 
 public class dateEditor extends FieldEditor {
+	
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new dateEditor();
+	}
 
-    private static final class SingletonHolder {
-        static final FieldEditor singleton = new dateEditor();
-    }
+	private dateEditor() {}
 
-    private dateEditor() {
-    }
+	public static FieldFormatter getInstance() {
+		return SingletonHolder.singleton;
+	}
 
-    public static FieldFormatter getInstance() {
-        return SingletonHolder.singleton;
-    }
+	static String[] _params = { "format" };
 
-    static String[] _params = { "format", "calendarEditor", "calendarEditorLink" };
+	static String[][] _paramValues = { null };
 
-    static String[][] _paramValues = { null, new String[] { "true", "false" }, null };
+	public String[] getAcceptedParams() {
+		return _params;
+	}
 
-    public String[] getAcceptedParams() {
-        return _params;
-    }
+	public String[][] getAcceptedValue() {
+		return _paramValues;
+	}
 
-    public String[][] getAcceptedValue() {
-        return _paramValues;
-    }
+	static final String recognized = "dMyHms";
 
-    static final String recognized = "dMyHms";
+	static int[] lowLimits = { 1, 0, -1, 0, 0, 0 };
 
-    static int[] lowLimits = { 1, 0, -1, 0, 0, 0 };
+	static int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
 
-    static int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
+	static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH,
+			Calendar.YEAR, Calendar.HOUR_OF_DAY, Calendar.MINUTE,
+			Calendar.SECOND };
 
-    public static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
-            Calendar.MINUTE, Calendar.SECOND };
+	String getNullName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+		return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
+	}
 
-    static String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
+	String getNullName(RecordFormatter rf, int fieldIndex, String suffix) {
+		return getInputName(rf, fieldIndex, suffix) + "_null";
+	}
 
-    String getNullName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
-        return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
-    }
+	String getComponentName(RecordFormatter rf, int fieldIndex, int i, String suffix) {
+		return getInputName(rf, fieldIndex, suffix) + "_" + i;
+	}
 
-    String getNullName(RecordFormatter rf, int fieldIndex, String suffix) {
-        return getInputName(rf, fieldIndex, suffix) + "_null";
-    }
+	String getComponentName(RecordFormatter rf, int fieldIndex, int i, Dictionary formatParams) {
+		return getComponentName(rf, fieldIndex, i, getSuffix(rf, fieldIndex, formatParams));
+	}
 
-    String getComponentName(RecordFormatter rf, int fieldIndex, int i, String suffix) {
-        return getInputName(rf, fieldIndex, suffix) + "_" + i;
-    }
+	public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+		String format = (String) formatParams.get("format");
+		if (format == null)
+			format = "dd MMMMM yyyy";
+		if (o == org.makumba.Pointer.NullDate)
+			o = null;
+		Date d = (Date) o;
+		StringBuffer sb = new StringBuffer();
+		boolean hidden = "hidden".equals(formatParams.get("type"));
+		if (d == null) {
+			d = (Date) rf.dd.getFieldDefinition(fieldIndex).getDefaultValue();
+			sb.append("<input type=\"hidden\" name=\"").append(
+					getNullName(rf, fieldIndex, formatParams)).append("\">");
+		}
+		int n = 0;
+		while (true) {
+			n = findNextFormatter(rf, fieldIndex, sb, format, n, hidden);
+			if (n == -1)
+				break;
+			n = formatFrom(rf, fieldIndex, sb, d, format, n, hidden, formatParams);
+		}
 
-    String getComponentName(RecordFormatter rf, int fieldIndex, int i, Dictionary formatParams) {
-        return getComponentName(rf, fieldIndex, i, getSuffix(rf, fieldIndex, formatParams));
-    }
+		return sb.toString();
+	}
 
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-        String format = (String) formatParams.get("format");
-        if (format == null)
-            format = "dd MMMMM yyyy";
-        if (o == org.makumba.Pointer.NullDate)
-            o = null;
-        Date d = (Date) o;
-        StringBuffer sb = new StringBuffer();
-        boolean hidden = "hidden".equals(formatParams.get("type"));
-        if (d == null) {
-            d = (Date) rf.dd.getFieldDefinition(fieldIndex).getDefaultValue();
-            sb.append("<input type=\"hidden\" name=\"").append(getNullName(rf, fieldIndex, formatParams)).append("\">");
-        }
-        int n = 0;
-        while (true) {
-            n = findNextFormatter(rf, fieldIndex, sb, format, n, hidden);
-            if (n == -1)
-                break;
-            n = formatFrom(rf, fieldIndex, sb, d, format, n, hidden, formatParams);
-        }
+	void formatComponent(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String fmt, int component,
+			boolean hidden, Dictionary formatParams) {
+		SimpleDateFormat df = new SimpleDateFormat(fmt,
+				org.makumba.MakumbaSystem.getLocale());
+		df.setCalendar(dateFormatter.calendar);
 
-        String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
-        String calendarEditor = (String) formatParams.get("calendarEditor");
-        if (!calendarEditor.equals("false")) {
-            sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName,
-                (String) formatParams.get("calendarEditorLink")));
-        }
+		String name = getComponentName(rf, fieldIndex, component, formatParams);
 
-        return sb.toString();
-    }
+		if (hidden) {
+			Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem
+					.getTimeZone());
+			c.setTime(d);
+			sb.append("<input type=\"hidden\" name=\"").append(name).append(
+					"\" value=\"").append(c.get(components[component])).append(
+					"\">");
+		} else {
+			String val = df.format(d);
 
-    void formatComponent(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String fmt, int component,
-            boolean hidden, Dictionary formatParams) {
-        SimpleDateFormat df = new SimpleDateFormat(fmt, org.makumba.MakumbaSystem.getLocale());
-        df.setCalendar(dateFormatter.calendar);
+			if (lowLimits[component] == -1) // year
+				sb.append("<input type=\"text\" name=\"").append(name).append(
+						"\" value=\"").append(val).append("\" maxlength=\"")
+						.append(fmt.length()).append("\" size=\"").append(
+								fmt.length()).append("\"").append(
+								getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
+			else {
+				sb.append("<select name=\"").append(name).append("\"").append(
+						getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
+				Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem
+						.getTimeZone());
+				c.clear();
+				c.set(1900, 0, 1); //set 1900,Jan,1st as the date to start
+								   // building interface from
+				for (int i = lowLimits[component]; i <= hiLimits[component]; i++) {
+					c.set(components[component], i);
+					String opt = df.format(c.getTime());
+					sb.append("<option value=\"").append(i).append("\"");
+					if (opt.equals(val))
+						sb.append(" selected");
+					sb.append(">").append(opt).append("</option>");
+				}
+				sb.append("</select>");
+			}
+		}
+	}
 
-        String name = getComponentName(rf, fieldIndex, component, formatParams);
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters pr,
+			String suffix) {
+		Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem
+				.getTimeZone());
+		c.clear();
+		for (int i = 0; i < components.length; i++) {
+			String name = getComponentName(rf, fieldIndex, i, suffix);
+			Object o = pr.getParameter(name);
+			if (o == null)
+				continue;
+			if (o instanceof Vector)
+				throw new InvalidValueException(rf.expr[fieldIndex],
+						"multiple value not allowed for date component " + name);
+			int n = -1;
+			try {
+				n = Integer.parseInt((String) o);
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException(rf.expr[fieldIndex],
+						"non-integer value not allowed for date component "
+								+ name + " : " + o);
+			}
+			c.set(components[i], n);
+		}
+		Date d = c.getTime();
+		if (d.equals(rf.dd.getFieldDefinition(fieldIndex).getDefaultValue())
+				&& pr.getParameter(getNullName(rf, fieldIndex, suffix)) != null)
+			return null;
+		return d;
+	}
 
-        if (hidden) {
-            Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
-            c.setTime(d);
-            sb.append("<input type=\"hidden\" name=\"").append(name).append("\" id=\"").append(name).append(
-                "\" value=\"").append(c.get(components[component])).append("\">");
-        } else {
-            String val = df.format(d);
+	int formatFrom(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String format, int n,
+			boolean hidden, Dictionary formatParams) {
+		int m = n;
+		char c = format.charAt(n);
+		while (++n < format.length() && format.charAt(n) == c)
+			;
+		formatComponent(rf, fieldIndex, sb, d, format.substring(m, n), recognized.indexOf(c),
+				hidden, formatParams);
+		return n;
+	}
 
-            if (lowLimits[component] == -1) {// year
-                sb.append("<input type=\"text\" name=\"").append(name).append("\" id=\"").append(name).append(
-                    "\" value=\"").append(val).append("\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(
-                    fmt.length()).append("\"").append(getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
-            } else {
-                sb.append("<select name=\"").append(name).append("\" id=\"").append(name).append("\"").append(
-                    getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
-                Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
-                c.clear();
-                c.set(1900, 0, 1); // set 1900,Jan,1st as the date to start
-                // building interface from
-                for (int i = lowLimits[component]; i <= hiLimits[component]; i++) {
-                    c.set(components[component], i);
-                    String opt = df.format(c.getTime());
-                    sb.append("<option value=\"").append(i).append("\"");
-                    if (opt.equals(val))
-                        sb.append(" selected");
-                    sb.append(">").append(opt).append("</option>");
-                }
-                sb.append("</select>");
-            }
-        }
-    }
-
-    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters pr,
-            String suffix) {
-        Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
-        c.clear();
-        for (int i = 0; i < components.length; i++) {
-            String name = getComponentName(rf, fieldIndex, i, suffix);
-            Object o = pr.getParameter(name);
-            if (o == null)
-                continue;
-            if (o instanceof Vector)
-                throw new InvalidValueException(rf.expr[fieldIndex], "Multiple value not allowed for '"
-                        + componentNames[i] + "' component");
-            int n = -1;
-            try {
-                n = Integer.parseInt((String) o);
-            } catch (NumberFormatException e) {
-                throw new InvalidValueException(rf.expr[fieldIndex], "Non-integer value not allowed for '"
-                        + componentNames[i] + "' component: " + o);
-            }
-            c.set(components[i], n);
-        }
-        Date d = c.getTime();
-        if (d.equals(rf.dd.getFieldDefinition(fieldIndex).getDefaultValue())
-                && pr.getParameter(getNullName(rf, fieldIndex, suffix)) != null)
-            return null;
-        return d;
-    }
-
-    /**
-     * This method is used to get the date field in case of a form reload due to validation errors, and is used from
-     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache)}. It is basically
-     * i simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
-     */
-    public static Object readFrom(String name, HttpParameters pr) {
-        Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
-        c.clear();
-        for (int i = 0; i < components.length; i++) {
-            Object o = pr.getParameter(name + "_" + i);
-            if (o == null)
-                continue;
-            int n = -1;
-            try {
-                n = Integer.parseInt((String) o);
-            } catch (NumberFormatException e) {
-            }
-            c.set(components[i], n);
-        }
-        return c.getTime();
-    }
-
-    int formatFrom(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String format, int n, boolean hidden,
-            Dictionary formatParams) {
-        int m = n;
-        char c = format.charAt(n);
-        while (++n < format.length() && format.charAt(n) == c)
-            ;
-        formatComponent(rf, fieldIndex, sb, d, format.substring(m, n), recognized.indexOf(c), hidden, formatParams);
-        return n;
-    }
-
-    int findNextFormatter(RecordFormatter rf, int fieldIndex, StringBuffer sb, String format, int n, boolean hidden) {
-        StringBuffer quoted = null;
-        for (; n < format.length(); n++) {
-            char c = format.charAt(n);
-            if (c == '\'')
-                if (quoted != null) // existing quote
-                    if (quoted.length() == 0) // double quote
-                    {
-                        if (!hidden)
-                            sb.append('\'');
-                        quoted = null;
-                    } else // closed quote
-                    {
-                        if (!hidden)
-                            sb.append(quoted.toString());
-                        quoted = null;
-                    }
-                else
-                    // new quote
-                    quoted = new StringBuffer();
-            else if (quoted != null) {
-                quoted.append(c);
-            } else // we're outside quotes
-            if (!Character.isLetter(c)) // non-letters don't need quotes
-            {
-                if (!hidden)
-                    sb.append(c);
-            } else if (recognized.indexOf(c) == -1)
-                throw new InvalidValueException(rf.expr[fieldIndex], "unrecognized formatting letter \'" + c
-                        + "\' in date format string <" + format + ">");
-            else
-                return n;
-        }
-        if (quoted != null)
-            throw new InvalidValueException(rf.expr[fieldIndex], "unterminated single quote in date format string <"
-                    + format + ">");
-        return -1;
-    }
+	int findNextFormatter(RecordFormatter rf, int fieldIndex, StringBuffer sb, String format, int n, boolean hidden) {
+		StringBuffer quoted = null;
+		for (; n < format.length(); n++) {
+			char c = format.charAt(n);
+			if (c == '\'')
+				if (quoted != null) // existing quote
+					if (quoted.length() == 0) // double quote
+					{
+						if (!hidden)
+							sb.append('\'');
+						quoted = null;
+					} else // closed quote
+					{
+						if (!hidden)
+							sb.append(quoted.toString());
+						quoted = null;
+					}
+				else
+					// new quote
+					quoted = new StringBuffer();
+			else if (quoted != null) {
+				quoted.append(c);
+			} else // we're outside quotes
+			if (!Character.isLetter(c)) // non-letters don't need quotes
+			{
+				if (!hidden)
+					sb.append(c);
+			} else if (recognized.indexOf(c) == -1)
+				throw new InvalidValueException(rf.expr[fieldIndex],
+						"unrecognized formatting letter \'" + c
+								+ "\' in date format string <" + format + ">");
+			else
+				return n;
+		}
+		if (quoted != null)
+			throw new InvalidValueException(rf.expr[fieldIndex],
+					"unterminated single quote in date format string <"
+							+ format + ">");
+		return -1;
+	}
 }

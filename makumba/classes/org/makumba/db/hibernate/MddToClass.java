@@ -19,12 +19,9 @@ import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.annotation.EnumMemberValue;
 
 public class MddToClass extends HibernateUtils {
     //public static final String generatedClassPath="work/generated-hibernate-classes";
@@ -78,7 +75,7 @@ public class MddToClass extends HibernateUtils {
 				type = "java.util.ArrayList";
 				break;
 		}
-        name=checkReserved(name);
+        name=checkJavaReserved(name);
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
@@ -115,8 +112,6 @@ public class MddToClass extends HibernateUtils {
 				name = arrowToDoubleUnderscore(fd.getName());
 				switch (fd.getIntegerType()) {
 					case FieldDefinition._intEnum:
-                        //type="enum";
-                        //break;
 					case FieldDefinition._int:
 						type = "Integer";
 						break;
@@ -148,7 +143,6 @@ public class MddToClass extends HibernateUtils {
 						type = "int";
 						break;
 					case FieldDefinition._text:
-					case FieldDefinition._binary:
 						type = "org.makumba.Text";
 						break;
 					case FieldDefinition._set:
@@ -168,12 +162,7 @@ public class MddToClass extends HibernateUtils {
 							e.printStackTrace();
 						}
 				}
-                //if(type.equals("enum")) {
-                    //generateIntEnum(cc, name, dd.getFieldDefinition(name));
-                //} else {
-                    addFields(cc, type, name);
-                //}
-		
+				addFields(cc, type, name);
 			}
             String nm= dd.getName();
             int lst= nm.lastIndexOf("->");
@@ -188,44 +177,11 @@ public class MddToClass extends HibernateUtils {
 		}
 	}
 	
-    /**
-     * Generates the code for a java enum from a Makumba intEnum.
-     * TODO once javassist supports generation of enum bytecode, use the method
-     * @param cc the CtClass to which the enum should be added
-     * @param name the name of the enum
-     * @param fd the field definition corresponding to the enum
-     * @throws CannotCompileException
-     */
-    
-	private void generateIntEnum(CtClass cc, String name, FieldDefinition fd) throws CannotCompileException {
-        
-        String enumName = name.substring(0,1).toUpperCase() + name.substring(1, name.length());
-        
-        String enumCode = "public enum "+enumName+" {";
-        
-        for(int i = 0; i < fd.getEnumeratorSize(); i++) {
-            String currentIntEnumName = fd.getNameFor(i);
-            Integer currentIntEnumValue = new Integer(fd.getIntAt(i));
-            
-            enumCode += "I"+i+ "(\""+currentIntEnumName+"\", "+currentIntEnumValue.intValue() + ")";
-            if(i+1 != fd.getEnumeratorSize()) enumCode += ",";
-        }
-        enumCode +=";";
-        
-        enumCode +="private String endUserPresentation;";
-        enumCode +="private int dbLevelValue;";
-        enumCode +=enumName+"(String s, int n) {endUserPresentation=s; dbLevelValue=n;}";
-        enumCode += "}";
-        
-        cc.addMethod(CtNewMethod.make(enumCode, cc));
-       
-
-    }
-    private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
+	private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
         type= arrowToDoubleUnderscore(type);
-        name= checkReserved(arrowToDoubleUnderscore(name));
+        name= checkJavaReserved(arrowToDoubleUnderscore(name));
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
-	}    
+	}
 }

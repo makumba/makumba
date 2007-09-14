@@ -144,7 +144,7 @@ public class PageAttributes implements Attributes
     if(o!=RequestAttributes.notFound)
       return o;
 
-    throw new AttributeNotFoundException(s, false);
+    throw new AttributeNotFoundException(s);
 
   }
 

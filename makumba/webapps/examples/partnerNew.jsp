@@ -1,7 +1,5 @@
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<%@include file="menu.jsp" %>
-
 <h2>New partner</h2>
 
 <mak:newForm type="organisation.Partner" action="partnerList.jsp">
@@ -13,5 +11,5 @@
 </mak:newForm>
 
 <hr>
-[<a href="partnerList.jsp">Back to partner list</a>]
+[<a href="partnerList.jsp">Back to list</a>]
 

@@ -1,18 +1,15 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 <html>
-<head>
-  <title>Makumba example web-app</title>
-  <link rel="stylesheet" type="text/css" media="all" href="main.css">
-</head>
-
+<head><title>Person list</title></head>
 <body>
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<h1>Welcome to the <a href="http://www.makumba.org">Makumba</a> example web application!</h1>
-
-<%@include file="menu.jsp" %>
+<Persons:>
+<mak:list from="Person p">
+  <mak:value expr="p.name"/>, <mak:value expr="p.age"/> <br/>
+</mak:list>
 
 </body>
 </html>

@@ -29,51 +29,41 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
 
-/**
- * mak:action tag
- * @author Cristian Bogdan
- * @version $Id$
- */
-public class ActionTag extends MakumbaTag implements BodyTag {
+public class ActionTag extends MakumbaTag implements BodyTag
+{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+BodyContent bodyContent;
+  public void setBodyContent(BodyContent bc){ bodyContent=bc; }
 
-    private static final long serialVersionUID = 1L;
+  /** does this tag need the page cache? */
+  protected boolean needPageCache(){ return false; }
 
-    BodyContent bodyContent;
+  /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called */
+  public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    return EVAL_BODY_BUFFERED;
+  }
 
-    public void setBodyContent(BodyContent bc) {
-        bodyContent = bc;
-    }
+  public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache)
+  {
+    FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
+    if(form==null)
+      throw new ProgrammerError("\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag");
+    form.setAction("dummy");
+  }
 
-    /** 
-     * Indicates if the tag needs the page cache
-     */
-    protected boolean needPageCache() {
-        return false;
-    }
-
-    /** 
-     * This always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called
-     * @param pageCache the page cache of the current page
-     */
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) {
-        return EVAL_BODY_BUFFERED;
-    }
-
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
-        FormTagBase form = (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
-        if (form == null)
-            throw new ProgrammerError(
-                    "\'action\' tag must be enclosed in any kind of 'form' tag or in 'deleteLink' tag");
-        form.setAction("dummy");
-    }
-
-    public void doInitBody() {
-    }
-
-    public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException {
-        FormTagBase form = (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
-        form.responder.setAction(bodyContent.getString());
-        return EVAL_PAGE;
-    }
+  public void doInitBody(){}
+  
+  public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) 
+       throws JspException
+  {
+    FormTagBase form=(FormTagBase)findAncestorWithClass(this, FormTagBase.class);
+    form.responder.setAction(bodyContent.getString());
+    return EVAL_PAGE;
+  }
 
 }
+

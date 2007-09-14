@@ -90,21 +90,21 @@ public class mdd extends TestCase {
 
 	public void testAllValidMdds() {
 		String base = "test/validMdds/";
-		Vector mdds = MakumbaSystem.mddsInDirectory(base);
+		Vector mdds = mddsInDirectory(base);
 
 		// we have to collect all errors if we want to run tests on all
 		// MDDs in directory instead of stoping at first fail()ure.
 		Vector errors = new Vector();
 		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
 			String mdd = (String) e.nextElement();
-            try {
-				MakumbaSystem.getDataDefinition("test.validMdds."+mdd);
+			try {
+				MakumbaSystem.getDataDefinition(mdd);
 			} catch (DataDefinitionParseError ex) {
 				errors
 						.add("\n ." + (errors.size() + 1)
 								+ ") Error reported in valid MDD <" + mdd
 								+ ">:\n" + ex);
-				 //ex.printStackTrace();
+				// ex.printStackTrace();
 			}
 		}
 		if (errors.size() > 0)
@@ -114,7 +114,7 @@ public class mdd extends TestCase {
 
 	public void testIfAllBrokenMddsThrowErrors() {
 		String base = "test/brokenMdds/";
-		Vector mdds = MakumbaSystem.mddsInDirectory(base);
+		Vector mdds = mddsInDirectory(base);
 
 		// we have to collect all errors if we want to run tests on all
 		// MDDs in directory instead of stoping at first fail()ure.
@@ -124,7 +124,7 @@ public class mdd extends TestCase {
 			DataDefinitionParseError actual = expected;
 			String mdd = (String) e.nextElement();
 			try {
-				MakumbaSystem.getDataDefinition("test.brokenMdds."+mdd);
+				MakumbaSystem.getDataDefinition(mdd);
 			} catch (DataDefinitionParseError thrown) {
 				actual = thrown;
 			}
@@ -146,5 +146,26 @@ public class mdd extends TestCase {
 					+ errors.toString());
 	}
 
+	/**
+	 * Discover mdds in a directory in classpath.
+	 * 
+	 * @return filenames (with .mdd extension) as Vector of Strings.
+	 */
+	Vector mddsInDirectory(String dirInClasspath) {
+		java.net.URL u = org.makumba.util.ClassResource.get(dirInClasspath);
+		File dir = new File(u.getFile());
+		String[] list = dir.list();
+		Vector mdds = new Vector();
+		for (int i = 0; i < list.length; i++) {
+			String s = list[i];
+			if (s.endsWith(".mdd")) {
+				s = s.substring(0, s.length() - 4); // cut off the ".mdd"
+				s = dirInClasspath + s;
+				s = s.replace(File.separatorChar, '.');
+				mdds.add(s);
+			}
+		}
+		return mdds;
+	}
 
 }

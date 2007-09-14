@@ -6,22 +6,17 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
-rudi: fixing bug 958, reserved tomcat keywords
-rudi: fixing bug 784, adding a null-option to charEnum and intEnum
-rudi: finishing bug 16 (mak:delete as form), fixing problems with the form method and trimming white-space
-rudi: added developer support tools "code generator"
-rudi: added developer support for OQL queries
-rudi: added developer support for pointer value conversion (external form <-> DB)
-rudi & stefan: added developer support for data listing (lists all data of a certain MDD)
 
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
 - add your changes -
-rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
-manu: fixing various bugs with hibernate database management
-manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
+rudi, manu, cristi: hibernate database management
+rudi, manu, cristi: HQL in JSPs used via a new taglib URI
+stefan: made it not fail with possible JSP 2.0 taglib directive: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %> which has no uri attribute
+stefan: properly handles anchors in deleteLink (#anchor is moved to the back of target url, after all the generated parameters)
+
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 0.6.1.1; 28 mar 2007
