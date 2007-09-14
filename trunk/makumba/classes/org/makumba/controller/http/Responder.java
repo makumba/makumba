@@ -270,7 +270,7 @@ public abstract class Responder implements java.io.Serializable {
 
     protected transient String storedParentSuffix = "";
 
-    static final char suffixSeparator = '_';
+    protected static final char suffixSeparator = '_';
 
     /** pass the parent responder */
     public void setParentResponder(Responder resp, Responder root) {
@@ -546,22 +546,28 @@ public abstract class Responder implements java.io.Serializable {
     public static ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
         ArrayList unassignedExceptions = e.getExceptions();
         for (Iterator responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
-            String code = (String) responderCodes.next();
-            String suffix = "";
-            String parentSuffix = null;
-            int n = code.indexOf(suffixSeparator);
-            if (n != -1) {
-                suffix = code.substring(n);
-                parentSuffix = "";
-                n = suffix.indexOf(suffixSeparator, 1);
-                if (n != -1) {
-                    parentSuffix = suffix.substring(n);
-                    suffix = suffix.substring(0, n);
-                }
-            }
-            getResponder(code, suffix, parentSuffix).getUnassignedExceptions(e, unassignedExceptions, req, suffix);
+            String responderCode = (String) responderCodes.next();
+            String[] suffixes = getSuffixes(responderCode);
+            getResponder(responderCode, suffixes[0], suffixes[1]).getUnassignedExceptions(e, unassignedExceptions, req,
+                suffixes[0]);
         }
         return unassignedExceptions;
+    }
+
+    public static String[] getSuffixes(String responderCode) {
+        String suffix = "";
+        String parentSuffix = null;
+        int n = responderCode.indexOf(suffixSeparator);
+        if (n != -1) {
+            suffix = responderCode.substring(n);
+            parentSuffix = "";
+            n = suffix.indexOf(suffixSeparator, 1);
+            if (n != -1) {
+                parentSuffix = suffix.substring(n);
+                suffix = suffix.substring(0, n);
+            }
+        }
+        return new String[] { suffix, parentSuffix };
     }
 
     static Hashtable responderOps = new Hashtable();
