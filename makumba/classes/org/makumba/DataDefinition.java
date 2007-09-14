@@ -74,6 +74,9 @@ public interface DataDefinition
   /**Checks whether all fieldnames exist in the database */
   public void checkFieldNames(Dictionary d);
   
+  /**Indicates when the data definition was modified the last time */
+  public long lastModified();
+  
   /**Checks whether all fields to be inserted exist in the database */
   //public void checkInsert(Dictionary d, Dictionary except);
   

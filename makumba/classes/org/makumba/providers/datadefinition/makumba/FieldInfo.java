@@ -23,7 +23,7 @@
 
 //TODO extra comments about changes from refactoring
 
-package org.makumba.abstr;
+package org.makumba.providers.datadefinition.makumba;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -277,7 +277,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /** check if the value can be assigned */
     public void checkInsert(Dictionary d) {
         Object o = d.get(getName());
-        checkNotNull(o);
+        if (isNotNull() && (o == null || o.equals(getNull())))
+            throw new org.makumba.InvalidValueException(this, "A non-null value is needed for notnull fields");
         if (o != null)
             d.put(getName(), checkValue(o));
     }

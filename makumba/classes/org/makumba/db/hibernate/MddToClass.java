@@ -11,7 +11,7 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.makumba.util.ClassResource;
 
 import javassist.CannotCompileException;
@@ -93,11 +93,9 @@ public class MddToClass extends HibernateUtils {
             
 			//checks if the class has to be generated
             File checkFile = new File(arrowToDoubleUnderscore(dd.getName()));
-            File mddFile = new File(((RecordInfo) dd).getOrigin().getFile());
-            
             if(checkFile.exists()) {
                 
-                if(mddFile.lastModified() < checkFile.lastModified())
+                if(dd.lastModified() < checkFile.lastModified())
                     return;
             }
             

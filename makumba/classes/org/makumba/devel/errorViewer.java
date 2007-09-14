@@ -76,8 +76,9 @@ public class errorViewer extends LineViewer {
             if (token.indexOf(".") != -1) {
                 Integer lineNumber = null;
 
-                if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
-                        || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
+                //FIXME should not depend directly on RecordParser
+                if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
+                        || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
                     String substring = source.substring(indexAfter);

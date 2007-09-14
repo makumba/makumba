@@ -361,8 +361,9 @@ public class LineViewer implements SourceViewer {
                 result.append(formatMakumbaLink(token));
             } else if (token.indexOf("java.sun.com") != -1) {
                 result.append(formatSunTaglibLink(token));
-            } else if (searchMDD && org.makumba.abstr.RecordParser.findDataDefinition(token, "mdd") != null
-                    || org.makumba.abstr.RecordParser.findDataDefinition(token, "idd") != null) {
+            //FIXME should not depend directly on RecordParser
+            } else if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
+                    || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                 result.append(formatMDDLink(token));
             } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
                 result.append(formatClassLink(javaClass.getName(), token, null));

@@ -25,7 +25,7 @@ import org.hibernate.cfg.Configuration;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordInfo;
+import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 

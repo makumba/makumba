@@ -25,8 +25,8 @@ import org.makumba.DataDefinitionParseError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.abstr.RecordParser;
 import org.makumba.controller.Logic;
+import org.makumba.providers.datadefinition.makumba.RecordParser;
 import org.makumba.util.JspParseData;
 
 /**
@@ -138,6 +138,7 @@ public class GeneratedCodeViewer extends jspViewer {
         if (virtualPath == null) {
             virtualPath = "/";
         }
+        //FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");

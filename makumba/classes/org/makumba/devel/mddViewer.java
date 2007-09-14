@@ -35,7 +35,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
-import org.makumba.abstr.RecordParser;
+import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
  * 
@@ -53,6 +53,7 @@ public class mddViewer extends LineViewer {
         contextPath = req.getContextPath();
         if (virtualPath == null)
             virtualPath = "/";
+        //FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null)
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
