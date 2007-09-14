@@ -23,7 +23,7 @@
 
 //TODO extra comments about changes from refactoring
 
-package org.makumba.abstr;
+package org.makumba.providers.datadefinition.makumba;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
