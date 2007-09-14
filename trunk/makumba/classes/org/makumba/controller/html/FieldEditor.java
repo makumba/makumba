@@ -31,6 +31,10 @@ import org.makumba.view.InvalidValueException;
 import org.makumba.view.RecordFormatter;
 
 public class FieldEditor extends org.makumba.view.FieldFormatter {
+
+    public static final String ERROR_NO_INT = "invalid integer";
+
+    public static final String ERROR_NO_REAL = "invalid real";
 	
 	/* see http://c2.com/cgi/wiki?JavaSingleton */
 	private static final class SingletonHolder {
@@ -142,7 +146,7 @@ public class FieldEditor extends org.makumba.view.FieldFormatter {
 		try {
 			return new Integer(Integer.parseInt(s));
 		} catch (NumberFormatException e) {
-			throw new InvalidValueException(rf.expr[fieldIndex], "invalid integer: " + o);
+            throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_INT+": " + o);
 		}
 	}
 
@@ -161,7 +165,7 @@ public class FieldEditor extends org.makumba.view.FieldFormatter {
 				try {
 					return new Double(Double.parseDouble(s.replace('.', ',')));
 				} catch (NumberFormatException e3) {
-					throw new InvalidValueException(rf.expr[fieldIndex], "invalid real: " + o);
+                    throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_REAL+": " + o);
 				}
 			}
 		}
