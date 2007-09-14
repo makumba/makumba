@@ -33,8 +33,10 @@ class version {
    /** @see MakumbaSystem#getVersion() */
    static String getVersion()
    {
+        //FIXME get this to work with SVN
         String vs="$Name$";
-        String version= vs.substring(7,vs.length()-2);
+        String version="1";
+        //String version= vs.substring(7,vs.length()-2);
 	if(version.indexOf('-')>0) version=version.substring(version.indexOf('-')+1);
 	if(version.length()>2) version=version.replace('_','.');
 	else 
