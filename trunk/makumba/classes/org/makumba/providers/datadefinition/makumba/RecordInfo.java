@@ -92,6 +92,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition {
 
     RecordInfo papa;
 
+    private Hashtable multiFieldUniqueList = new Hashtable();
+
     void addStandardFields(String name) {
         FieldInfo fi;
 
@@ -384,6 +386,19 @@ public class RecordInfo implements java.io.Serializable, DataDefinition {
 
     public long lastModified() {
         return new java.io.File(this.getOrigin().getFile()).lastModified();
+    }
+
+    public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys() {
+        return (MultipleUniqueKeyDefinition[]) multiFieldUniqueList.values().toArray(
+            new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
+    }
+
+    public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition) {
+        multiFieldUniqueList.put(definition.getFields(), definition);
+    }
+
+    public boolean hasMultiUniqueKey(String[] fieldNames) {
+        return multiFieldUniqueList.get(fieldNames) != null;
     }
 
 }
