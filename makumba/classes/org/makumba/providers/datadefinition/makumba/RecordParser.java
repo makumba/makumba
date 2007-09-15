@@ -29,20 +29,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
+import org.makumba.util.RegExpUtils;
 import org.makumba.util.ReservedKeywords;
 
 public class RecordParser {
+
+    public static final String multiUniqueRegExpElement = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
+            + ")" + RegExpUtils.LineWhitespaces;
+
+    public static final String multiUniqueRegExpElementRepeatment = "(?:" + RegExpUtils.LineWhitespaces + "," + "(?:"
+            + multiUniqueRegExpElement + "))*";
+
+    public static final String multiUniqueRegExp = "!unique" + RegExpUtils.LineWhitespaces + "\\((?:"
+            + multiUniqueRegExpElement + ")" + multiUniqueRegExpElementRepeatment + RegExpUtils.LineWhitespaces + "\\)";
+
+    public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
+
     OrderedProperties text;
 
     OrderedProperties fields = new OrderedProperties();
@@ -155,6 +172,21 @@ public class RecordParser {
 
         // call solveAll() on all subfields
         treatSubfields();
+
+        // after all fields are processed, process the multi field indices & check for field existance
+        checkMultipleUnique();
+    }
+
+    private void checkMultipleUnique() {
+        for (int i = 0; i < dd.getMultiFieldUniqueKeys().length; i++) {
+            DataDefinition.MultipleUniqueKeyDefinition multiUniqueKeyDefinition = (DataDefinition.MultipleUniqueKeyDefinition) dd.getMultiFieldUniqueKeys()[i];
+            for (int j = 0; j < multiUniqueKeyDefinition.getFields().length; j++) {
+                if (dd.getFieldDefinition(multiUniqueKeyDefinition.getFields()[j]) == null) {
+                    mpe.add(new DataDefinitionParseError(dd.getName(), "Unique index contains an unknown field: "
+                            + multiUniqueKeyDefinition.getFields()[j], multiUniqueKeyDefinition.getLine()));
+                }
+            }
+        }
     }
 
     void separateFields() {
@@ -422,6 +454,20 @@ public class RecordParser {
             int l = s.indexOf('=');
             if (st.length() == 0 || st.charAt(0) == '#')
                 continue;
+            Matcher multiUniqueMatcher = multiUniquePattern.matcher(st);
+            if (l == -1 && multiUniqueMatcher.matches()) { // if we do have a multiple key def, parse & store it
+                // we will analyse if the fields are correct later
+                ArrayList groupList = new ArrayList();
+                for (int j = 1; j <= multiUniqueMatcher.groupCount(); j++) {
+                    if (multiUniqueMatcher.group(j) != null) {
+                        groupList.add(multiUniqueMatcher.group(j));
+                    }
+                }
+                String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
+                dd.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, s));
+                continue;
+            }
+
             if (l == -1) {
                 mpe.add(fail("non-empty, non-comment line without =", s));
                 continue;
@@ -947,4 +993,11 @@ class OrderedProperties extends Dictionary {
     public boolean isEmpty() {
         return content.isEmpty();
     }
+
+    public static void main(String[] args) {
+        RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
+                "!unique( abc )", "!unique(abc , def )" });
+        DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
+    }
+
 }
