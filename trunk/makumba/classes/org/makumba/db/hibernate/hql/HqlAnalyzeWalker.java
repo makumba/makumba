@@ -153,8 +153,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     
     void beforeStatement(String statementName, int statementType) {
         super.beforeStatement(statementName, statementType);
+        HashMap aliasTypes1=(HashMap)((HashMap)aliasTypes).clone();
         stackAliases.push(aliasTypes);
-        aliasTypes= new java.util.HashMap();
+        aliasTypes= aliasTypes1;
     }
     
     void afterStatementCompletion(String statementName) {
