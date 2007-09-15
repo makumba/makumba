@@ -72,6 +72,8 @@ public interface FieldDefinition {
 
     public static final int _binary = 18;
 
+    public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
+
     /** The name of this field, normally the same with the name of the field */
     public String getName();
 
