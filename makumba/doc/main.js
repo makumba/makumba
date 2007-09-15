@@ -35,7 +35,7 @@ function makeNavBar(pathToBase)
 	document.write('<a href="'+bDir+'documentation.html#devel"><b>Developer</b></a><br>');
 	document.write('- <a href="'+bDir+'hacking/index.html">documentation</a><br>');
 	document.write('- <a href="'+bDir+'issues/index.html">issues</a><br>');
-	document.write('- <a href="http://makumba.cvs.sourceforge.net/">CVS repository</a><br>');
+	document.write('- <a href="http://makumba.svn.sourceforge.net/">SVN repository</a><br>');
 	document.write('<br>');
 	document.write('<FORM method=GET action=http://www.google.com/custom class="search" id="searchForm">');
 	 document.write('<INPUT TYPE=text name=q size=10 maxlength=255 value="Search" onFocus="if(this.value==\'Search\') this.value=queryStr;" onBlur="queryStr=this.value; this.value=\'Search\';" title="Google Search makumba.org" class="search" id="searchBox" accesskey="s" onDblClick="location.href=\''+bDir+'search.html\'">');
@@ -49,30 +49,30 @@ function makeNavBar(pathToBase)
 }
 
 
-/* Takes cvs "$Id$" */
+/* Takes svn "$Id$" */
 /*   or "$Header$" */
 /*   tag and breaks it down to basic parts */
-function getPageInfo(cvsID)
+function getPageInfo(svnID)
 {
 	//trim it
-	cvsID=cvsID.substring(cvsID.indexOf(": ")+2,cvsID.lastIndexOf(" $"));
+	svnID=svnID.substring(svnID.indexOf(": ")+2,svnID.lastIndexOf(" $"));
 	//split it at spaces
-	var cvsIds=cvsID.split(" ");
+	var svnIds=svnID.split(" ");
 	//take needed parts
-	var filename=cvsIds[0].substring(0,cvsIds[0].indexOf(","));
-	var revision=cvsIds[1];
-	var date=cvsIds[2].replace("/","-").replace("/","-");
-	var time=cvsIds[3];
-	var author=cvsIds[4];
+	var filename=svnIds[0];
+	var revision=svnIds[1];
+	var date=svnIds[2].replace("/","-").replace("/","-");
+	var time=svnIds[3];
+	var author=svnIds[4];
 
 	return(''+filename+', revision '+revision+', last modified on '+date+' at '+time+' by '+author);
 
 }
 
-function makeFooter(cvsID)
+function makeFooter(svnID)
 {
 	document.write('<div class="pageFooter">');
-	document.write(getPageInfo(cvsID));
+	document.write(getPageInfo(svnID));
 	document.write('</div>');
 
 }
