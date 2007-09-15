@@ -34,6 +34,11 @@ class version {
    static String getVersion()
    {
         //FIXME get this to work with SVN
+        //try get also laterst svn repository revision number (globally, not per this file!)
+        //test svn expansions:
+        //$Id:$
+        //$Name:$
+        //$Revision:$
         String vs="$Name$";
         String version="1";
         //String version= vs.substring(7,vs.length()-2);
