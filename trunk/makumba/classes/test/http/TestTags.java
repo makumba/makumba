@@ -526,7 +526,7 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
-		assertEquals("problem with input field ", "<input name=\"indiv.name\" type=\"text\" value=\"\" maxlength=\"40\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));		
+		assertEquals("problem with input field ", "<input name=\"indiv.name\" type=\"text\" value=\"\" maxlength=\"40\" id=\"indiv.name\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));		
 		
 		assertTrue("testSubmit! not found", output.indexOf("testSubmit!") > 0 ? true : false);
 		assertTrue("!endSubmit not found", output.indexOf("!endSubmit", output.indexOf("testSubmit!")) > 0 ? true : false);
@@ -590,27 +590,27 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testName! not found", output.indexOf("testName!") > 0 ? true : false);
 		assertTrue("!endName not found", output.indexOf("!endName", output.indexOf("testName!")) > 0 ? true : false);
-		assertEquals("char edit field not correct", "<input name=\"indiv.name\" type=\"text\" value=\"john\" maxlength=\"40\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
+		assertEquals("char edit field not correct", "<input name=\"indiv.name\" type=\"text\" value=\"john\" maxlength=\"40\" id=\"indiv.name\" >", output.substring(output.indexOf("testName!")+9, output.indexOf("!endName")));
 		
 		assertTrue("testSurname! not found", output.indexOf("testSurname!") > 0 ? true : false);
 		assertTrue("!endSurname not found", output.indexOf("!endSurname", output.indexOf("testSurname!")) > 0 ? true : false);
-		assertEquals("options for input field not parsed", "<input name=\"indiv.surname\" type=\"password\" value=\"\" maxlength=\"5\" >", output.substring(output.indexOf("testSurname!")+12, output.indexOf("!endSurname")));
+		assertEquals("options for input field not parsed", "<input name=\"indiv.surname\" type=\"password\" value=\"\" maxlength=\"5\" id=\"indiv.surname\" >", output.substring(output.indexOf("testSurname!")+12, output.indexOf("!endSurname")));
 		
 		assertTrue("testGender! not found", output.indexOf("testGender!") > 0 ? true : false);
 		assertTrue("!endGender not found", output.indexOf("!endGender", output.indexOf("testGender!")) > 0 ? true : false);				
-		assertEquals("problem with int", "<INPUT TYPE=RADIO NAME=\"gender\"  VALUE=\"0\"  > Female <INPUT TYPE=RADIO NAME=\"gender\"  VALUE=\"1\" CHECKED  > Male", removeLabelStuff(output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender"))));
+		assertEquals("problem with int", "<INPUT TYPE=RADIO NAME=\"gender\" id=\"gender\"  VALUE=\"0\"  > Female <INPUT TYPE=RADIO NAME=\"gender\" id=\"gender\"  VALUE=\"1\" CHECKED  > Male", removeLabelStuff(output.substring(output.indexOf("testGender!")+11, output.indexOf("!endGender"))));
 
 		assertTrue("testBirthdate! not found", output.indexOf("testBirthdate!") > 0 ? true : false);
 		assertTrue("!endBirthdate not found", output.indexOf("!endBirthdate", output.indexOf("testBirthdate!")) > 0 ? true : false);
-		assertEquals("problem with date", "<input type=\"text\" name=\"birthdate_2\" value=\"1977\" maxlength=\"4\" size=\"4\">-<select name=\"birthdate_1\"><option value=\"0\">01</option><option value=\"1\">02</option><option value=\"2\" selected>03</option><option value=\"3\">04</option><option value=\"4\">05</option><option value=\"5\">06</option><option value=\"6\">07</option><option value=\"7\">08</option><option value=\"8\">09</option><option value=\"9\">10</option><option value=\"10\">11</option><option value=\"11\">12</option></select>-<select name=\"birthdate_0\"><option value=\"1\">01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\" selected>05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>", output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
+		assertEquals("problem with date", "<input type=\"text\" name=\"birthdate_2\" id=\"birthdate_2\" value=\"1977\" maxlength=\"4\" size=\"4\">-<select name=\"birthdate_1\" id=\"birthdate_1\"><option value=\"0\">01</option><option value=\"1\">02</option><option value=\"2\" selected>03</option><option value=\"3\">04</option><option value=\"4\">05</option><option value=\"5\">06</option><option value=\"6\">07</option><option value=\"7\">08</option><option value=\"8\">09</option><option value=\"9\">10</option><option value=\"10\">11</option><option value=\"11\">12</option></select>-<select name=\"birthdate_0\" id=\"birthdate_0\"><option value=\"1\">01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\" selected>05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>", output.substring(output.indexOf("testBirthdate!")+14, output.indexOf("!endBirthdate")));
 		
 		assertTrue("testComment! not found", output.indexOf("testComment!") > 0 ? true : false);
 		assertTrue("!endComment not found", output.indexOf("!endComment", output.indexOf("testComment!")) > 0 ? true : false);
-		assertEquals("problem with text", "<TEXTAREA name=\"comment\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
+		assertEquals("problem with text", "<TEXTAREA name=\"comment\" id=\"comment\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("testComment!")+12, output.indexOf("!endComment")));
 		
 		assertTrue("testWeight! not found", output.indexOf("testWeight!") > 0 ? true : false);
 		assertTrue("!endWeight not found", output.indexOf("!endWeight", output.indexOf("testWeight!")) > 0 ? true : false);
-		assertEquals("problem with real", "<input name=\"weight\" type=\"text\" value=\"85.7\" maxlength=\"10\" >", output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
+		assertEquals("problem with real", "<input name=\"weight\" type=\"text\" value=\"85.7\" maxlength=\"10\" id=\"weight\" >", output.substring(output.indexOf("testWeight!")+11, output.indexOf("!endWeight")));
 				
 	}
 	
@@ -650,42 +650,42 @@ public class TestTags extends JspTestCase {
 		
 		assertTrue("testCharInput! not found", output.indexOf("testCharInput!") > 0 ? true : false);
 		assertTrue("!endCharInput not found", output.indexOf("!endCharInput", output.indexOf("testCharInput")) > 0 ? true : false);
-		assertEquals("failure in char", "<input name=\"name\" type=\"text\" value=\"\" maxlength=\"255\" >", output.substring(output.indexOf("testCharInput!")+14, output.indexOf("!endCharInput")));
+		assertEquals("failure in char", "<input name=\"name\" type=\"text\" value=\"\" maxlength=\"255\" id=\"name\" >", output.substring(output.indexOf("testCharInput!")+14, output.indexOf("!endCharInput")));
 		
 		assertTrue("testChar[]InputValue! not found", output.indexOf("testChar[]InputValue!") > 0 ? true : false);
 		assertTrue("!endChar[]InputValue not found", output.indexOf("!endChar[]InputValue", output.indexOf("testChar[]InputValue")) > 0 ? true : false);
-		assertEquals("failure in char[] or value", "<input name=\"nameValue\" type=\"text\" value=\"john\" maxlength=\"40\" >", output.substring(output.indexOf("testChar[]InputValue!")+21, output.indexOf("!endChar[]InputValue")));
+		assertEquals("failure in char[] or value", "<input name=\"nameValue\" type=\"text\" value=\"john\" maxlength=\"40\" id=\"nameValue\" >", output.substring(output.indexOf("testChar[]InputValue!")+21, output.indexOf("!endChar[]InputValue")));
 		
 		assertTrue("testIntInput! not found", output.indexOf("testIntInput!") > 0 ? true : false);
 		assertTrue("!endIntInput not found", output.indexOf("!endIntInput", output.indexOf("testIntInput")) > 0 ? true : false);
-		assertEquals("failure in int", "<input name=\"uniqInt\" type=\"text\" value=\"\" maxlength=\"10\" >", output.substring(output.indexOf("testIntInput!")+13, output.indexOf("!endIntInput")));
+		assertEquals("failure in int", "<input name=\"uniqInt\" type=\"text\" value=\"\" maxlength=\"10\" id=\"uniqInt\" >", output.substring(output.indexOf("testIntInput!")+13, output.indexOf("!endIntInput")));
 		
 		assertTrue("testIntInputValue! not found", output.indexOf("testIntInputValue!") > 0 ? true : false);
 		assertTrue("!endIntInputValue not found", output.indexOf("!endIntInputValue", output.indexOf("testIntInputValue")) > 0 ? true : false);
-		assertEquals("failure in int value", "<input name=\"uniqIntValue\" type=\"text\" value=\"255\" maxlength=\"10\" >", output.substring(output.indexOf("testIntInputValue!")+18, output.indexOf("!endIntInputValue")));
+		assertEquals("failure in int value", "<input name=\"uniqIntValue\" type=\"text\" value=\"255\" maxlength=\"10\" id=\"uniqIntValue\" >", output.substring(output.indexOf("testIntInputValue!")+18, output.indexOf("!endIntInputValue")));
 		
 		assertTrue("testDateInput! not found", output.indexOf("testDateInput!") > 0 ? true : false);
 		assertTrue("!endDateInput not found", output.indexOf("!endDateInput", output.indexOf("testDateInput")) > 0 ? true : false);
-		assertEquals("failure in date", "<input type=\"hidden\" name=\"birthdate_null\"><select name=\"birthdate_0\"><option value=\"1\" selected>01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\">05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select> <select name=\"birthdate_1\"><option value=\"0\" selected>January</option><option value=\"1\">February</option><option value=\"2\">March</option><option value=\"3\">April</option><option value=\"4\">May</option><option value=\"5\">June</option><option value=\"6\">July</option><option value=\"7\">August</option><option value=\"8\">September</option><option value=\"9\">October</option><option value=\"10\">November</option><option value=\"11\">December</option></select> <input type=\"text\" name=\"birthdate_2\" value=\"1900\" maxlength=\"4\" size=\"4\">", output.substring(output.indexOf("testDateInput!")+14, output.indexOf("!endDateInput")));
+		assertEquals("failure in date", "<input type=\"hidden\" name=\"birthdate_null\"><select name=\"birthdate_0\" id=\"birthdate_0\"><option value=\"1\" selected>01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\">05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select> <select name=\"birthdate_1\" id=\"birthdate_1\"><option value=\"0\" selected>January</option><option value=\"1\">February</option><option value=\"2\">March</option><option value=\"3\">April</option><option value=\"4\">May</option><option value=\"5\">June</option><option value=\"6\">July</option><option value=\"7\">August</option><option value=\"8\">September</option><option value=\"9\">October</option><option value=\"10\">November</option><option value=\"11\">December</option></select> <input type=\"text\" name=\"birthdate_2\" id=\"birthdate_2\" value=\"1900\" maxlength=\"4\" size=\"4\">", output.substring(output.indexOf("testDateInput!")+14, output.indexOf("!endDateInput")));
 		
 		assertTrue("testDateInputValue! not found", output.indexOf("testDateInputValue!") > 0 ? true : false);
 		assertTrue("!endDateInputValue not found", output.indexOf("!endDateInputValue", output.indexOf("testDateInputValue")) > 0 ? true : false);
-		assertEquals("failure in date value", "<select name=\"birthdateValue_0\"><option value=\"1\">01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\" selected>05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select> <select name=\"birthdateValue_1\"><option value=\"0\">January</option><option value=\"1\">February</option><option value=\"2\" selected>March</option><option value=\"3\">April</option><option value=\"4\">May</option><option value=\"5\">June</option><option value=\"6\">July</option><option value=\"7\">August</option><option value=\"8\">September</option><option value=\"9\">October</option><option value=\"10\">November</option><option value=\"11\">December</option></select> <input type=\"text\" name=\"birthdateValue_2\" value=\"1977\" maxlength=\"4\" size=\"4\">", output.substring(output.indexOf("testDateInputValue!")+19, output.indexOf("!endDateInputValue")));
+		assertEquals("failure in date value", "<select name=\"birthdateValue_0\" id=\"birthdateValue_0\"><option value=\"1\">01</option><option value=\"2\">02</option><option value=\"3\">03</option><option value=\"4\">04</option><option value=\"5\" selected>05</option><option value=\"6\">06</option><option value=\"7\">07</option><option value=\"8\">08</option><option value=\"9\">09</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select> <select name=\"birthdateValue_1\" id=\"birthdateValue_1\"><option value=\"0\">January</option><option value=\"1\">February</option><option value=\"2\" selected>March</option><option value=\"3\">April</option><option value=\"4\">May</option><option value=\"5\">June</option><option value=\"6\">July</option><option value=\"7\">August</option><option value=\"8\">September</option><option value=\"9\">October</option><option value=\"10\">November</option><option value=\"11\">December</option></select> <input type=\"text\" name=\"birthdateValue_2\" id=\"birthdateValue_2\" value=\"1977\" maxlength=\"4\" size=\"4\">", output.substring(output.indexOf("testDateInputValue!")+19, output.indexOf("!endDateInputValue")));
 		
 		assertTrue("testTextInput! not found", output.indexOf("testTextInput!") > 0 ? true : false);
 		assertTrue("!endTextInput not found", output.indexOf("!endTextInput", output.indexOf("testTextInput")) > 0 ? true : false);
-		assertEquals("failure in text", "<TEXTAREA name=\"comment\"  ></TEXTAREA>", output.substring(output.indexOf("testTextInput!")+14, output.indexOf("!endTextInput")));
+		assertEquals("failure in text", "<TEXTAREA name=\"comment\" id=\"comment\"  ></TEXTAREA>", output.substring(output.indexOf("testTextInput!")+14, output.indexOf("!endTextInput")));
 		
 		assertTrue("testTextInputValue! not found", output.indexOf("testTextInputValue!") > 0 ? true : false);
 		assertTrue("!endTextInputValue not found", output.indexOf("!endTextInputValue", output.indexOf("testTextInputValue")) > 0 ? true : false);
-		assertEquals("failure in text value", "<TEXTAREA name=\"commentValue\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("testTextInputValue!")+19, output.indexOf("!endTextInputValue")));
+		assertEquals("failure in text value", "<TEXTAREA name=\"commentValue\" id=\"commentValue\"  >This is a text field. It's a comment about this person.</TEXTAREA>", output.substring(output.indexOf("testTextInputValue!")+19, output.indexOf("!endTextInputValue")));
 		
 		assertTrue("testSetInput! not found", output.indexOf("testSetInput!") > 0 ? true : false);
 		assertTrue("!endSetInput not found", output.indexOf("!endSetInput", output.indexOf("testSetInput")) > 0 ? true : false);
 		line = output.substring(output.indexOf("testSetInput!")+13, output.indexOf("!endSetInput"));
 		line = removeNewlines(line);
 		line = removeTabs(line);
-		assertEquals("failure in set", "<SELECT MULTIPLE NAME=\"language\" SIZE=10 ><OPTION VALUE=\""+((Pointer)languages.get(0)).toExternalForm()+"\">English</OPTION><OPTION VALUE=\""+((Pointer)languages.get(1)).toExternalForm()+"\">French</OPTION><OPTION VALUE=\""+((Pointer)languages.get(2)).toExternalForm()+"\">German</OPTION><OPTION VALUE=\""+((Pointer)languages.get(3)).toExternalForm()+"\">Italian</OPTION><OPTION VALUE=\""+((Pointer)languages.get(4)).toExternalForm()+"\">Spanish</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT MULTIPLE NAME=\"language\" SIZE=10 id=\"language\" ><OPTION VALUE=\""+((Pointer)languages.get(0)).toExternalForm()+"\">English</OPTION><OPTION VALUE=\""+((Pointer)languages.get(1)).toExternalForm()+"\">French</OPTION><OPTION VALUE=\""+((Pointer)languages.get(2)).toExternalForm()+"\">German</OPTION><OPTION VALUE=\""+((Pointer)languages.get(3)).toExternalForm()+"\">Italian</OPTION><OPTION VALUE=\""+((Pointer)languages.get(4)).toExternalForm()+"\">Spanish</OPTION></SELECT>", line);
 		
 		assertTrue("testPtrInput! not found", output.indexOf("testPtrInput!") > 0 ? true : false);
 		assertTrue("!endPtrInput not found", output.indexOf("!endPtrInput", output.indexOf("testPtrInput")) > 0 ? true : false);
@@ -693,7 +693,7 @@ public class TestTags extends JspTestCase {
 		line = removeNewlines(line);
 		line = removeTabs(line);
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
-		assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\">test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 id=\"brother\" ><OPTION value=\""+brother.toExternalForm()+"\">test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 		assertTrue("testPtrInputValue! not found", output.indexOf("testPtrInputValue!") > 0 ? true : false);
 		assertTrue("!endPtrInputValue not found", output.indexOf("!endPtrInputValue", output.indexOf("testPtrInputValue")) > 0 ? true : false);
@@ -701,7 +701,7 @@ public class TestTags extends JspTestCase {
 		line = removeNewlines(line);
 		line = removeTabs(line);
 		line = line.replaceAll("[0-9]*:[0-9]*", "");
-		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
+		assertEquals("failure in set", "<SELECT NAME=\"brotherValue\" SIZE=1 id=\"brotherValue\" ><OPTION value=\""+brother.toExternalForm()+"\" SELECTED>test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
 		
 	}
 
@@ -719,7 +719,7 @@ public class TestTags extends JspTestCase {
         "\n"+
         "\n"+
         "<form action=\"\" method=\"GET\">\n"+
-        "  Gender: <SELECT NAME=\"gender\" SIZE=1 >\n"+
+        "  Gender: <SELECT NAME=\"gender\" SIZE=1 id=\"gender\" >\n"+
         "\t<OPTION value=\"0\">Female</OPTION>\n"+
         "\t<OPTION value=\"1\" SELECTED>Male</OPTION>\n"+
         "</SELECT>\n"+
