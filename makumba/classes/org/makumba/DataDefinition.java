@@ -77,6 +77,32 @@ public interface DataDefinition
   /**Indicates when the data definition was modified the last time */
   public long lastModified();
   
+    public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
+
+    public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition);
+
+    class MultipleUniqueKeyDefinition {
+        String[] fields;
+
+        String line;
+
+        public MultipleUniqueKeyDefinition(String[] fields, String line) {
+            this.fields = fields;
+            this.line = line;
+        }
+
+        public String[] getFields() {
+            return fields;
+        }
+
+        public String getLine() {
+            return line;
+        }
+
+    }
+
+    public boolean hasMultiUniqueKey(String[] fieldNames);
+  
   /**Checks whether all fields to be inserted exist in the database */
   //public void checkInsert(Dictionary d, Dictionary except);
   
