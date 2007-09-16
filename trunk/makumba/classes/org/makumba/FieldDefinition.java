@@ -25,6 +25,7 @@
 
 package org.makumba;
 
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Vector;
 
@@ -303,5 +304,14 @@ public interface FieldDefinition {
 
     /** retuns whether this field is a string type, i.e. char or text. */
     public boolean isStringType();
+
+    /** Returns all the validation rules connected to this field. */
+    public Collection getValidationRules();
+
+    /** Adds a new validation rule to this field. */
+    public void addValidationRule(ValidationRule rule);
+
+    /** adds several new validation rules to this field. */
+    public void addValidationRule(Collection rules);
 
 }
