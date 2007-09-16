@@ -27,85 +27,65 @@ package org.makumba;
 
 import java.util.Dictionary;
 
-/** Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
- * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is not needed usually, as the application programmer knows the makumba data structure.
+/**
+ * Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
+ * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is
+ * not needed usually, as the application programmer knows the makumba data structure.
  */
-public interface DataDefinition
-{
-  /** name of this data definition */
-  public String getName();
+public interface DataDefinition {
+    /** name of this data definition */
+    public String getName();
 
-  /** the names of the fields declared in this data definition, in the order of declaration */
-  public java.util.Vector getFieldNames();
-  
-  /** the field with the respective name, null if such a field doesn't exist */
-  public FieldDefinition getFieldDefinition(String name);
+    /** the names of the fields declared in this data definition, in the order of declaration */
+    public java.util.Vector getFieldNames();
 
-  /** the field with the respective index, null if such a field doesn't exist */
-  public FieldDefinition getFieldDefinition(int n);
-  
-  /** tells whether this data definition was generated temporarily to depict a query result as opposed to being read from an MDD file */
-  public boolean isTemporary();
+    /** the field with the respective name, null if such a field doesn't exist */
+    public FieldDefinition getFieldDefinition(String name);
 
-  /** The title field indicated, or the default one */
-  public String getTitleFieldName();
+    /** the field with the respective index, null if such a field doesn't exist */
+    public FieldDefinition getFieldDefinition(int n);
 
-  /** The name of the index field (primary key), if any? */
-  public String getIndexPointerFieldName();
+    /**
+     * tells whether this data definition was generated temporarily to depict a query result as opposed to being read
+     * from an MDD file
+     */
+    public boolean isTemporary();
 
-  /** The name of the creation timestamp field, if any? */
-  public String getCreationDateFieldName();
+    /** The title field indicated, or the default one */
+    public String getTitleFieldName();
 
-  /** The name of the modification timestamp field, if any? */
-  public String getLastModificationDateFieldName();
+    /** The name of the index field (primary key), if any? */
+    public String getIndexPointerFieldName();
 
-  /** If this type is the data pointed to by a 1-1 pointer or subset, return the field definition in the main record, otherwise return null */
-  public FieldDefinition getParentField();
+    /** The name of the creation timestamp field, if any? */
+    public String getCreationDateFieldName();
 
-  /** The name of the set member (Pointer, Character or Integer), for set subtypes */
-  public String getSetMemberFieldName() ;
+    /** The name of the modification timestamp field, if any? */
+    public String getLastModificationDateFieldName();
 
-  /** The name of the pointer to the main table, for set and internal set subtypes*/
-  public String getSetOwnerFieldName();
+    /**
+     * If this type is the data pointed to by a 1-1 pointer or subset, return the field definition in the main record,
+     * otherwise return null
+     */
+    public FieldDefinition getParentField();
 
-  /** Add a new field definition. Works only for temporary data definitions */
-  public void addField(FieldDefinition fd);
-  
-  /**Checks whether all fieldnames exist in the database */
-  public void checkFieldNames(Dictionary d);
-  
-  /**Indicates when the data definition was modified the last time */
-  public long lastModified();
-  
-    public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
+    /** The name of the set member (Pointer, Character or Integer), for set subtypes */
+    public String getSetMemberFieldName();
 
-    public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition);
+    /** The name of the pointer to the main table, for set and internal set subtypes */
+    public String getSetOwnerFieldName();
 
-    class MultipleUniqueKeyDefinition {
-        String[] fields;
+    /** Add a new field definition. Works only for temporary data definitions */
+    public void addField(FieldDefinition fd);
 
-        String line;
+    /** Checks whether all fieldnames exist in the database */
+    public void checkFieldNames(Dictionary d);
 
-        public MultipleUniqueKeyDefinition(String[] fields, String line) {
-            this.fields = fields;
-            this.line = line;
-        }
+    /** Indicates when the data definition was modified the last time */
+    public long lastModified();
 
-        public String[] getFields() {
-            return fields;
-        }
-
-        public String getLine() {
-            return line;
-        }
-
-    }
-
-    public boolean hasMultiUniqueKey(String[] fieldNames);
-  
-  /**Checks whether all fields to be inserted exist in the database */
-  //public void checkInsert(Dictionary d, Dictionary except);
-  
-  /**Checks whether all fields to be updated exist in the database */
-  //public void checkUpdate(Dictionary d, Dictionary except);
+    /** Checks whether all fields to be inserted exist in the database */
+    // public void checkInsert(Dictionary d, Dictionary except);
+    /** Checks whether all fields to be updated exist in the database */
+    // public void checkUpdate(Dictionary d, Dictionary except);
 }
