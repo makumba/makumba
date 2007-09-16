@@ -26,10 +26,13 @@
 package org.makumba.providers.datadefinition.makumba;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
@@ -38,6 +41,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.ValidationRule;
 
 /**
  * This is a structure containing the elementary data about a field: name, type, attributes, description, and other
@@ -108,6 +112,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             type = "ptr";
             extra1 = fi.getDataDefinition();
         }
+        validationRules = fi.validationRules;
     }
 
     public FieldInfo(String name, String t) {
@@ -233,6 +238,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // those fields are only used by some types
     Object extra1, extra2, extra3;
 
+    private Hashtable validationRules = new Hashtable();
+
     /** check if the value can be assigned */
     public Object checkValue(Object value) {
         switch (getIntegerType()) {
@@ -278,7 +285,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public void checkInsert(Dictionary d) {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull())))
-            throw new org.makumba.InvalidValueException(this, "A non-null value is needed for notnull fields");
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_NULL);
         if (o != null)
             d.put(getName(), checkValue(o));
     }
@@ -1078,4 +1085,19 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return getIntegerType() == _char || getIntegerType() == _intEnum;
     }
 
+    public void addValidationRule(Collection rules) {
+        if (rules != null) {
+            for (Iterator iter = rules.iterator(); iter.hasNext();) {
+                addValidationRule((ValidationRule) iter.next());
+            }
+        }
+    }
+
+    public void addValidationRule(ValidationRule rule) {
+        validationRules.put(rule.getRuleName(), rule);
+    }
+
+    public Collection getValidationRules() {
+        return validationRules.values();
+    }
 }
