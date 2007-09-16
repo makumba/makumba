@@ -35,6 +35,8 @@ import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
+import org.makumba.view.validation.ClientsideValidationProvider;
+import org.makumba.view.validation.LiveValidationProvider;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
@@ -523,8 +525,13 @@ public class MakumbaSystem {
         }
     }
 
+    /** Get the default calendar editor. FIXME: read this from some config, or so. */
     public static CalendarEditorProvider getCalendarProvider() {
         return KruseCalendarEditor.getInstance();
+    }
 
+    /** Get the default client-side validation provider. FIXME: read this from some config, or so. */
+    public static ClientsideValidationProvider getClientsideValidationProvider() {
+        return new LiveValidationProvider();
     }
 }
