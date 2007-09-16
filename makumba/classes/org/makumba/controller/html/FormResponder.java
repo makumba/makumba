@@ -35,6 +35,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
 import org.makumba.controller.http.Responder;
+import org.makumba.util.StringUtils;
+import org.makumba.view.validation.ClientsideValidationProvider;
 
 public class FormResponder extends Responder {
 
@@ -90,6 +92,7 @@ public class FormResponder extends Responder {
         dd.addField(MakumbaSystem.makeFieldWithName(colName, ftype));
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
+        provider.initField(fname, ftype, clientSideValidation.equals("live"));
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
     }
@@ -105,6 +108,8 @@ public class FormResponder extends Responder {
     protected boolean multipart;
 
     StringBuffer extraFormatting;
+
+    private ClientsideValidationProvider provider = MakumbaSystem.getClientsideValidationProvider();
 
     public void setAction(String action) {
         this.action = action;
@@ -170,6 +175,12 @@ public class FormResponder extends Responder {
             sb.append("\"" + method + "\"");
             if (multipart)
                 sb.append(" enctype=\"multipart/form-data\" ");
+            // if we do client side validation, we need to put an extra formattting parameter for onSubmit
+            if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+                sb.append(" onsubmit=\"");
+                sb.append(provider.getOnSubmitValidation(StringUtils.equals(clientSideValidation, "live")));
+                sb.append("\"");
+            }
             sb.append(extraFormatting);
             sb.append(">");
         }
@@ -233,6 +244,18 @@ public class FormResponder extends Responder {
         if (editor != null) {
             editor.initFormatters();
         }
+    }
+
+    public void initClientSideValidation(boolean validateLive) {
+        if (editor != null) { // if there are no fields, there is nothing to validate...
+            String responderCode = getPrototype() + storedSuffix + storedParentSuffix;
+            String[] suffixes = getSuffixes(responderCode);
+            editor.initClientSideValidation(provider, validateLive, suffixes[0]);
+        }
+    }
+
+    public void writeClientsideValidation(StringBuffer sb) {
+        sb.append(provider.getClientValidation(clientSideValidation.equals("live")));
     }
 
 }
