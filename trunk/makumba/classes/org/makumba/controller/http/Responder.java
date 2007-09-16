@@ -53,6 +53,7 @@ import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.controller.Logic;
+import org.makumba.controller.html.FormResponder;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 
@@ -102,6 +103,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** a response message to be shown when multiple submit occur */
     protected String multipleSubmitErrorMsg;
+
+    /** Stores whether we shall do client-side validation, i.e. with javascript for a {@link FormResponder} */
+    protected String clientSideValidation;
 
     /**
      * Stores whether we shall reload this form on a validation error or not. Used by {@link ControllerFilter} to decide
@@ -177,6 +181,10 @@ public abstract class Responder implements java.io.Serializable {
         return showFormAnnotated;
     }
 
+    public void setClientSideValidation(String clientSideValidation) {
+        this.clientSideValidation = clientSideValidation;
+    }
+
     /** pass the response handler, if other than the default one */
     public void setHandler(String handler) {
         this.handler = handler;
@@ -248,7 +256,7 @@ public abstract class Responder implements java.io.Serializable {
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + showFormAnnotated;
+                + showFormAnnotated + clientSideValidation;
     }
 
     /** get the integer key of this form, and register it if not already registered */

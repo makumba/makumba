@@ -48,7 +48,6 @@ import org.makumba.view.ComposedQuery;
  * @author Cristian Bogdan
  * @author Rudolf Mayery
  * @version $Id$
- * 
  */
 public class FormTagBase extends MakumbaTag implements BodyTag {
 
@@ -77,11 +76,15 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
 
     String annotation;
 
-    String[] validAnnotationParams = new String[] { "none", "before", "after", "both" };
+    private static final String[] validAnnotationParams = new String[] { "none", "before", "after", "both" };
+
+    private static final String[] validClientSideValidationParams = new String[] { "true", "false", "live" };
 
     String annotationSeparator;
 
     boolean reloadFormOnError = true;
+
+    private String clientSideValidation = "live";
 
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
@@ -139,7 +142,23 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
 
     public void setOnSubmit(String s) {
         checkNoParent("onSubmit");
+        if (clientSideValidation != null) {
+            throw new ProgrammerError(
+                    "Forms specifying a 'clientSideValidation' attribute cannot provide an 'onSubmit' attribute");
+        }
         extraFormattingParams.put("onSubmit", s);
+    }
+
+    public void setClientSideValidation(String clientSideValidation) {
+        if (!StringUtils.equals(clientSideValidation, validClientSideValidationParams)) {
+            throw new ProgrammerError("Invalid value for attribute 'clientSideValidation': <" + clientSideValidation
+                    + ">. Allowed values are " + StringUtils.toString(validClientSideValidationParams));
+        }
+        if (extraFormattingParams.get("onSubmit") != null) {
+            throw new ProgrammerError(
+                    "Forms specifying a 'clientSideValidation' attribute cannot provide an 'onSubmit' attribute");
+        }
+        this.clientSideValidation = clientSideValidation;
     }
 
     public void setAnnotation(String s) {
@@ -302,6 +321,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
 
         responder.setReloadFormOnError(reloadFormOnError);
         responder.setShowFormAnnotated(StringUtils.equals(annotation, new String[] { "before", "after", "both" }));
+        responder.setClientSideValidation(clientSideValidation);
 
         if (findParentForm() != null)
             responder.setParentResponder(findParentForm().responder, findRootForm().responder);
@@ -370,13 +390,19 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
                 bodyContent.writeOut(bodyContent.getEnclosingWriter());
             }
 
+            if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+                sb = new StringBuffer();
+                responder.writeClientsideValidation(sb);
+                bodyContent.getEnclosingWriter().print(sb.toString());
+            }
+
             sb = new StringBuffer();
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
 
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null)
                 MakumbaSystem.getMakumbaLogger("taglib.performance").fine(
-                        "form time: " + ((new java.util.Date().getTime() - starttime)));
+                    "form time: " + ((new java.util.Date().getTime() - starttime)));
         } catch (IOException e) {
             throw new JspException(e.toString());
         } finally {
