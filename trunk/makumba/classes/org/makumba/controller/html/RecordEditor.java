@@ -25,6 +25,7 @@ package org.makumba.controller.html;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -32,12 +33,15 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
-import org.makumba.CompositeValidationException;
+import org.makumba.ValidationRule;
+import org.makumba.controller.validation.ComparisonValidationRule;
 import org.makumba.view.FieldFormatter;
 import org.makumba.view.RecordFormatter;
+import org.makumba.view.validation.ClientsideValidationProvider;
 
 /**
  * Editor of Makumba data. Each subclass knows how to format HTML <input> and <select> tags for each type of Makumba
@@ -79,37 +83,95 @@ public class RecordEditor extends RecordFormatter {
         return unassignedExceptions;
     }
 
+    public void initClientSideValidation(ClientsideValidationProvider provider, boolean liveValidation, String suffix) {
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldEditor fe = (FieldEditor) formatterArray[i];
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
+            String inputName = fe.getInputName(this, i, suffix);
+            if (inputName == null) {
+                continue;
+            }
+            provider.initField(inputName, fieldDefinition, /* validationDefinition, */liveValidation);
+        }
+    }
+
     public Dictionary readFrom(HttpServletRequest req, String suffix) {
         Dictionary data = new Hashtable();
         Vector exceptions = new Vector(); // will collect all exceptions from the field validity checks
+
+        Hashtable validatedFields = new Hashtable();
+        Hashtable validatedFieldsNameCache = new Hashtable();
+
+        // we validate all fields in two passes - first we validate data type integrity, i.e. we let makumba check if
+        // the declared types in the MDD match with what we have in the form
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
+            String inputName = fe.getInputName(this, i, suffix);
+            if (inputName == null) {
+                continue;
+            }
+            Object o = null;
             try {
-                if (fe.getInputName(this, i, suffix) == null) {
-                    continue;
-                }
-                Object o = fe.readFrom(this, i, org.makumba.controller.http.RequestAttributes.getParameters(req),
-                    suffix);
+                o = fe.readFrom(this, i, org.makumba.controller.http.RequestAttributes.getParameters(req), suffix);
                 if (o != null) {
                     o = dd.getFieldDefinition(i).checkValue(o);
                 } else {
                     o = dd.getFieldDefinition(i).getNull();
                 }
 
-                org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix)
-                        + "_type", dd.getFieldDefinition(i));
+                validatedFields.put(new Integer(i), o);
+                validatedFieldsNameCache.put(inputName, o);
 
-                if (o != null) {
-                    // the data is written in the dictionary without the suffix
-                    data.put(fe.getInputName(this, i, ""), o);
-                }
-                org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
             } catch (InvalidValueException e) {
                 // if there is an exception in this field
                 // we store it in the hash, together with the field definition where it occured
                 exceptions.add(e);
             }
         }
+
+        ArrayList validatedFieldsOrdered = new ArrayList(validatedFields.keySet());
+        Collections.sort(validatedFieldsOrdered);
+
+        // in the second validation pass, we only validate those fields that passed the first check
+        // on those, we apply the user-defined checks from the validation definition
+        for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
+            int i = ((Integer) validatedFieldsOrdered.get(index)).intValue();
+            FieldEditor fe = (FieldEditor) formatterArray[i];
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
+            Object o = validatedFields.get(validatedFieldsOrdered.get(index));
+            Collection validationRules = fieldDefinition.getValidationRules();// validationDefinition.getValidationRules(fe.getInputName(this,
+                                                                                // i, ""));
+            if (validationRules != null) {
+                for (Iterator iter = validationRules.iterator(); iter.hasNext();) {
+                    ValidationRule rule = (ValidationRule) iter.next();
+                    try { // evaluate each rule separately
+                        if (rule instanceof ComparisonValidationRule
+                                && !((ComparisonValidationRule) rule).isCompareToExpression()) {
+                            FieldDefinition otherFd = ((ComparisonValidationRule) rule).getOtherFd();
+                            Object otherValue = validatedFieldsNameCache.get(otherFd.getName());
+                            if (otherValue != null) {
+                                rule.validate(new Object[] { o, otherValue });
+                            }
+                        } else {
+                            rule.validate(o);
+                        }
+                    } catch (InvalidValueException e) {
+                        exceptions.add(e);
+                    }
+                }
+            }
+
+            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix) + "_type",
+                fieldDefinition);
+
+            if (o != null) {
+                // the data is written in the dictionary without the suffix
+                data.put(fe.getInputName(this, i, ""), o);
+            }
+            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
+        }
+
         if (exceptions.size() > 0) {
             throw new CompositeValidationException(exceptions);
         }
@@ -117,7 +179,6 @@ public class RecordEditor extends RecordFormatter {
     }
 
     public void config() {
-        Object a[] = { this };
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             ((FieldEditor) formatterArray[i]).onStartup(this, i);
         }
