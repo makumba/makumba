@@ -375,6 +375,12 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 
+        <attribute>
+            <name>clientSideValidation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -540,6 +546,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+
+        <attribute>
+            <name>clientSideValidation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
 
 	<!--form specific:-->
 		<attribute>
@@ -712,6 +724,12 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 
+        <attribute>
+            <name>clientSideValidation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+
 	<!--form specific:-->
 		<attribute>
 			<name>target</name>
@@ -876,6 +894,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+
+        <attribute>
+            <name>clientSideValidation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
 
 	<!--form specific:-->
 		<attribute>
