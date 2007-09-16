@@ -4,6 +4,8 @@
 indiv= unique fixed not null ptr test.Individual
 
 birthdate=date		 ;Birthdate
+firstSex = date
+beginDate = date;
 gender=genTyp		 ;Gender
 all=char[25]             ;test a reserved word
 field=char[80]           ;another reserved word
@@ -40,6 +42,8 @@ speaks=set test.Language
 intSet= set int {"a"=0, "b"=1, "c"=2 }
 charSet=set char{ "d", "e", "f" }
 
+email = char[40]
+
 address=set			 ;Addresses
   address->!title=description
   address->description=char[30]	;Description (home address, study-time address, ...)
@@ -57,3 +61,4 @@ address=set			 ;Addresses
 
 uniqPtr=unique ptr test.Language	;test ptr uniqness
   
+!unique(age, email)
