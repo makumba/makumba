@@ -25,6 +25,7 @@
 
 package org.makumba;
 
+import java.io.Serializable;
 import java.util.Dictionary;
 
 /**
@@ -33,6 +34,7 @@ import java.util.Dictionary;
  * not needed usually, as the application programmer knows the makumba data structure.
  */
 public interface DataDefinition {
+
     /** name of this data definition */
     public String getName();
 
@@ -84,8 +86,36 @@ public interface DataDefinition {
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
-    /** Checks whether all fields to be inserted exist in the database */
-    // public void checkInsert(Dictionary d, Dictionary except);
-    /** Checks whether all fields to be updated exist in the database */
-    // public void checkUpdate(Dictionary d, Dictionary except);
+    /** Get all multiple-feld uniqueness definition. */
+    public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
+
+    /** Add a multiple-feld uniqueness definition. */
+    public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition);
+
+    /** Check whether this data definition has a multi-field uniqe key defined with the given fields. */
+    public boolean hasMultiUniqueKey(String[] fieldNames);
+
+    /** Data structure holding the definition of a mult-field unique key. */
+    class MultipleUniqueKeyDefinition implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        String[] fields;
+
+        String line;
+
+        public MultipleUniqueKeyDefinition(String[] fields, String line) {
+            this.fields = fields;
+            this.line = line;
+        }
+
+        public String[] getFields() {
+            return fields;
+        }
+
+        public String getLine() {
+            return line;
+        }
+
+    }
+
 }
