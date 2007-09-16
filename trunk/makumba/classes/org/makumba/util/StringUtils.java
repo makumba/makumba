@@ -1,5 +1,7 @@
 package org.makumba.util;
 
+import java.util.Collection;
+
 /**
  * This class provides utility methods for String manipulation.
  * 
@@ -50,6 +52,10 @@ public class StringUtils {
             b.append(']');
         }
         return b.toString();
+    }
+
+    public static String toString(Collection collection) {
+        return toString((Object[]) collection.toArray(new Object[collection.size()]));
     }
 
     public static String concatAsString(Object[] array) {
