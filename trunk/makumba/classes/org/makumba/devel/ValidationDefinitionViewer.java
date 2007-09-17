@@ -44,7 +44,9 @@ import org.makumba.providers.datadefinition.makumba.RecordParser;
  */
 public class ValidationDefinitionViewer extends DefinitionViewer {
 
-    private ValidationDefinition validationDefinition;
+    private DataDefinition dd = null;
+
+    private ValidationDefinition vd = null;
 
     public ValidationDefinitionViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
         super(true, req, sv);
@@ -54,22 +56,24 @@ public class ValidationDefinitionViewer extends DefinitionViewer {
     }
 
     public void intro(PrintWriter w) {
-        DataDefinition dd = null;
+        String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
+        String mddViewerPath = contextPath + "/dataDefinitions/" + virtualPath;
+
         try {
             dd = MakumbaSystem.getDataDefinition(virtualPath);
+            try {
+                vd = dd.getValidationDefinition();
+            } catch (MakumbaError pe) {
+                err = pe;
+                w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
+            }
+
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {
+            w.print("<td align=\"center\" style=\"color: red;\">Errors in the MDD!<br><a href=\"" + mddViewerPath
+                    + "\">details</a></td>");
         }
-        try {
-            validationDefinition = dd.getValidationDefinition();
-        } catch (MakumbaError e) {
-            err = e;
-            w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
-        }
-
-        String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
-        String mddViewerPath = contextPath + "/dataDefinitions/" + virtualPath;
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
         w.println("<a style=\"color: darkblue;\" href=\"" + mddViewerPath + "\">mdd</a>&nbsp;&nbsp;&nbsp;");
@@ -77,6 +81,8 @@ public class ValidationDefinitionViewer extends DefinitionViewer {
         if (dd != null) {
             String generatorPath = contextPath + "/codeGenerator/" + virtualPath;
             w.print("<a style=\"color: darkblue;\" href=\"" + generatorPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+        } else {
+            w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         }
         w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
         w.println("</td>");
@@ -99,7 +105,7 @@ public class ValidationDefinitionViewer extends DefinitionViewer {
         StringTokenizer tokenizer = new StringTokenizer(s, " ", true);
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
-            if (validationDefinition.getRulesSyntax().contains(token.trim())) {
+            if (vd != null && vd.getRulesSyntax().contains(token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {
                 endsWithComment = true;
@@ -109,8 +115,8 @@ public class ValidationDefinitionViewer extends DefinitionViewer {
                 if (token.trim().startsWith(ComparisonValidationRule.now)
                         || token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
                     Object value = "Error retrieving value!";
-                    if (ruleName != null && validationDefinition != null) {
-                        ValidationRule rule = validationDefinition.getValidationRule(ruleName);
+                    if (ruleName != null && dd != null && vd != null) {
+                        ValidationRule rule = vd.getValidationRule(ruleName);
                         if (rule != null && rule instanceof ComparisonValidationRule
                                 && ((ComparisonValidationRule) rule).isCompareToExpression()) {
                             value = (((ComparisonValidationRule) rule).evaluateExpression());

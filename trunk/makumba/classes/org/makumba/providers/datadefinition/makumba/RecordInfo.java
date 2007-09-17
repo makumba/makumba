@@ -110,6 +110,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     private Hashtable multiFieldUniqueList = new Hashtable();
 
+    private boolean alreadyParsed = false;
+
     void addStandardFields(String name) {
         FieldInfo fi;
 
@@ -430,7 +432,13 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     public ValidationDefinition getValidationDefinition() {
-        // FIXME: need to think if we still need this..
+        // now parse the validation definition
+        // TODO: parse only once, use a boolean flag to discover
+        if (!alreadyParsed) {
+            RecordParser recordParser = new RecordParser(this, new RecordParser());
+            recordParser.parseValidationDefinition();
+            alreadyParsed = true;
+        }
         return this;
     }
 
