@@ -57,7 +57,7 @@ import org.makumba.analyser.JavaParseData;
  * @author Rudolf Mayer
  *  
  */
-public class LineViewer implements SourceViewer {
+public abstract class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
 
     protected static final String PARAM_HIDE_LINES = "hideLines";
@@ -176,7 +176,11 @@ public class LineViewer implements SourceViewer {
                 int n = lr.getLineNumber();
                 writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
             }
-            printLine(writer, s, parseLine(htmlEscape(s)));
+            if (this instanceof ValidationDefinitionViewer) {
+                printLine(writer, s, parseLine(s));
+            } else {
+                printLine(writer, s, parseLine(htmlEscape(s)));
+            }
         }
         printPageEnd(writer);
         reader.close();

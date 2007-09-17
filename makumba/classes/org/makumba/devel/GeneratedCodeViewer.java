@@ -279,8 +279,13 @@ public class GeneratedCodeViewer extends jspViewer {
         String browsePath = contextPath + "/dataDefinitions/"
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
         String mddViewerPath = contextPath + "/dataDefinitions/" + virtualPath;
+        // link to validation definition, if existing
+
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
         w.println("<a style=\"color: darkblue;\" href=\"" + mddViewerPath + "\">mdd</a>&nbsp;&nbsp;&nbsp;");
+        if (dd.getValidationDefinition() != null) {
+            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/validationDefinitions/" + virtualPath) + "\">validation definition</a>&nbsp;&nbsp;&nbsp;");
+        }
         w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">code generator</span>&nbsp;&nbsp;&nbsp;");
         w.println("<a style=\"color: darkblue;\"href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
         w.println("</td>");
