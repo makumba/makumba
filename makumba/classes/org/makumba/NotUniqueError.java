@@ -26,6 +26,8 @@ package org.makumba;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
+import org.makumba.util.StringUtils;
+
 /** An insert in a certain type has violated a unique constraint */
 public class NotUniqueError extends DBError {
     private static final long serialVersionUID = 1L;
@@ -51,8 +53,17 @@ public class NotUniqueError extends DBError {
         for (Enumeration e = duplicates.keys(); e.hasMoreElements();) {
             Object field = e.nextElement();
             sb.append(separator);
-            sb.append("There is already a ").append(type).append(" that has <").append(field).append("> set to '").append(
-                duplicates.get(field)).append("'.");
+            if (field instanceof String[]) { // multi-field uniquness error
+                sb.append("The field-combination ").append(StringUtils.toString((String[]) field)).append(
+                    " in the record ").append(type).append(
+                    " only accepts unique values. There is however already an entry that has its values set to ").append(
+                    StringUtils.toString((Object[]) duplicates.get(field))).append("!");
+            } else { // other errors (should be all single fields
+                sb.append("The field <").append(field).append("> in the record ").append(type).append(
+                    " only accepts unique values. There is however already an entry that has its value set to '").append(
+                    duplicates.get(field)).append("'!");
+            }
+            sb.append("\nPlease go back and correct the values in the form!");
             separator = "\n";
         }
         return sb.toString();
