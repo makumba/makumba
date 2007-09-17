@@ -39,7 +39,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * Gathers all the names of the validation variables defined. this is needed to make mass validation in
      * {@link #getOnSubmitValidation(boolean)}.
      */
-    private HashSet definitionVarNames = new HashSet();
+    private HashSet<String> definitionVarNames = new HashSet<String>();
 
     /** initialises a field, basically does create the variables and calls for this field. */
     public void initField(String inputName, FieldDefinition fieldDefinition, boolean validateLive) {
@@ -109,9 +109,14 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * <code>function(e) { return LiveValidation.massValidate( [emailValidation, weightValidation, hobbiesValidation, ageValidation] );</code>
      */
     public StringBuffer getOnSubmitValidation(boolean validateLive) {
-        StringBuffer sb = new StringBuffer("validateForm_").append(
-            StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()]))).append("();");
-        return sb;
+        if (definitionVarNames.size() > 0) {
+            StringBuffer sb = new StringBuffer("validateForm_");
+            sb.append(StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()])));
+            sb.append("();");
+            return sb;
+        } else {
+            return null;
+        }
     }
 
     public String[] getNeededJavaScriptFileNames() {

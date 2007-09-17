@@ -63,15 +63,15 @@ public class FormResponder extends Responder {
             return null;
     }
 
-    Hashtable indexes = new Hashtable();
+    Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
 
     DataDefinition dd = MakumbaSystem.getTemporaryDataDefinition("Form responder"); // TODO: more precise name
 
     int max = 0;
 
-    Hashtable fieldParameters = new Hashtable();
+    Hashtable<String, Dictionary> fieldParameters = new Hashtable<String, Dictionary>();
 
-    Hashtable fieldNames = new Hashtable();
+    Hashtable<String, String> fieldNames = new Hashtable<String, String>();
 
     /** Format a field using the editor, and grow the editor as needed */
     public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams,
@@ -177,9 +177,14 @@ public class FormResponder extends Responder {
                 sb.append(" enctype=\"multipart/form-data\" ");
             // if we do client side validation, we need to put an extra formattting parameter for onSubmit
             if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
-                sb.append(" onsubmit=\"");
-                sb.append(provider.getOnSubmitValidation(StringUtils.equals(clientSideValidation, "live")));
-                sb.append("\"");
+                StringBuffer onSubmitValidation = provider.getOnSubmitValidation(StringUtils.equals(
+                    clientSideValidation, "live"));
+                // we append it only if we actually have data
+                if (onSubmitValidation != null && onSubmitValidation.length() > 0) {
+                    sb.append(" onsubmit=\"");
+                    sb.append(onSubmitValidation);
+                    sb.append("\"");
+                }
             }
             sb.append(extraFormatting);
             sb.append(">");
@@ -222,7 +227,7 @@ public class FormResponder extends Responder {
             // insert the formSession into the database
             Transaction db = MakumbaSystem.getConnectionTo(database);
             try {
-                Dictionary p = new Hashtable();
+                Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);
                 db.insert("org.makumba.controller.MultipleSubmit", p);
             } finally {
