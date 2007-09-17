@@ -22,50 +22,54 @@
 /////////////////////////////////////
 
 package org.makumba;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 
 /** An insert in a certain type has violated a unique constraint */
-public class NotUniqueError extends DBError
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-String type;
-  Dictionary duplicates;
+public class NotUniqueError extends DBError {
+    private static final long serialVersionUID = 1L;
 
-  public NotUniqueError(java.sql.SQLException se){
-    super("Not unique exception. "+se.getMessage());
-  }
-       
+    String type;
 
-  /** Build a NotUniqueError for the given type, with the duplicated field names and values indicated as a Dictionary */
-  public NotUniqueError(String type, Dictionary duplicates)
-  {
-    super(makeMessage(type, duplicates));
-    this.type=type;
-    this.duplicates=duplicates;
-  }
-  
-  static String makeMessage(String type, Dictionary duplicates){
-    StringBuffer sb= new StringBuffer();
-    String separator="";
-    for(Enumeration e= duplicates.keys(); e.hasMoreElements(); ){
-      Object field= e.nextElement();
-      sb.append(separator);
-      sb.append("There is already a ").append(type).append(" that has <")
-	.append(field).append("> set to '")
-	.append(duplicates.get(field)).append("'.");
-      separator="\n";
+    Dictionary duplicates;
+
+    public NotUniqueError(java.sql.SQLException se) {
+        super("Not unique exception. " + se.getMessage());
     }
-    return sb.toString();
-  }
-  
-  /** return the type where the duplicate was attempted */
-  public String getType(){ return type;} 
-  /** return the list of fields that were attempted be duplicated */
-  public Enumeration getDuplicateFieldNames(){ return duplicates.keys(); }
-  /** return the value that was attempted be duplicated for the given field*/
-  public Object getDuplicateForField(String field){ return duplicates.get(field); }
+
+    /** Build a NotUniqueError for the given type, with the duplicated field names and values indicated as a Dictionary */
+    public NotUniqueError(String type, Dictionary duplicates) {
+        super(makeMessage(type, duplicates));
+        this.type = type;
+        this.duplicates = duplicates;
+    }
+
+    static String makeMessage(String type, Dictionary duplicates) {
+        StringBuffer sb = new StringBuffer();
+        String separator = "";
+        for (Enumeration e = duplicates.keys(); e.hasMoreElements();) {
+            Object field = e.nextElement();
+            sb.append(separator);
+            sb.append("There is already a ").append(type).append(" that has <").append(field).append("> set to '").append(
+                duplicates.get(field)).append("'.");
+            separator = "\n";
+        }
+        return sb.toString();
+    }
+
+    /** return the type where the duplicate was attempted */
+    public String getType() {
+        return type;
+    }
+
+    /** return the list of fields that were attempted be duplicated */
+    public Enumeration getDuplicateFieldNames() {
+        return duplicates.keys();
+    }
+
+    /** return the value that was attempted be duplicated for the given field */
+    public Object getDuplicateForField(String field) {
+        return duplicates.get(field);
+    }
 }
