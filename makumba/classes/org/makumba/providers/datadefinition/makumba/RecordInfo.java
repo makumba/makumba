@@ -25,6 +25,8 @@
 
 package org.makumba.providers.datadefinition.makumba;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -37,6 +39,12 @@ import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.ValidationDefinition;
+import org.makumba.ValidationRule;
+import org.makumba.controller.validation.ComparisonValidationRule;
+import org.makumba.controller.validation.NumberRangeValidationRule;
+import org.makumba.controller.validation.RegExpValidationRule;
+import org.makumba.controller.validation.StringLengthValidationRule;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -45,11 +53,17 @@ import org.makumba.util.RuntimeWrappedException;
  * This is the internal representation of the org.makumba. One can make RecordHandlers based on an instance of this
  * class and do useful things with it (generate sql tables, html code, etc)
  */
-public class RecordInfo implements java.io.Serializable, DataDefinition {
-    /**
-     * 
-     */
+public class RecordInfo implements java.io.Serializable, DataDefinition, ValidationDefinition {
     private static final long serialVersionUID = 1L;
+
+    static ArrayList operators = new ArrayList();
+
+    static {
+        operators.add(RegExpValidationRule.getOperator());
+        operators.add(NumberRangeValidationRule.getOperator());
+        operators.add(StringLengthValidationRule.getOperator());
+        operators.addAll(ComparisonValidationRule.getOperators());
+    }
 
     java.net.URL origin;
 
@@ -91,6 +105,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition {
     String subfieldPtr = "";
 
     RecordInfo papa;
+
+    private Hashtable validationRuleNames = new Hashtable();
 
     private Hashtable multiFieldUniqueList = new Hashtable();
 
@@ -388,6 +404,41 @@ public class RecordInfo implements java.io.Serializable, DataDefinition {
         return new java.io.File(this.getOrigin().getFile()).lastModified();
     }
 
+    // Validation definition specific methods //
+    public DataDefinition getDataDefinition() {
+        return this;
+    }
+
+    public void addValidationRule(ValidationRule rule) {
+        validationRuleNames.put(rule.getRuleName(), rule);
+    }
+
+    public ValidationRule getValidationRule(String ruleName) {
+        return (ValidationRule) validationRuleNames.get(ruleName);
+    }
+
+    public void addRule(String fieldName, Collection rules) {
+        getFieldDefinition(fieldName).addValidationRule(rules);
+    }
+
+    public void addRule(String fieldName, ValidationRule rule) {
+        getFieldDefinition(fieldName).addValidationRule(rule);
+    }
+
+    public Collection getValidationRules(String fieldName) {
+        return getFieldDefinition(fieldName).getValidationRules();
+    }
+
+    public ValidationDefinition getValidationDefinition() {
+        // FIXME: need to think if we still need this..
+        return this;
+    }
+
+    public ArrayList getRulesSyntax() {
+        return operators;
+    }
+
+    // Mutliple unique keys methods
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys() {
         return (MultipleUniqueKeyDefinition[]) multiFieldUniqueList.values().toArray(
             new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
