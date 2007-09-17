@@ -25,10 +25,12 @@ package org.makumba.providers.datadefinition.makumba;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -44,10 +46,19 @@ import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.ValidationDefinitionParseError;
+import org.makumba.ValidationRule;
+import org.makumba.controller.validation.BasicValidationRule;
+import org.makumba.controller.validation.ComparisonValidationRule;
+import org.makumba.controller.validation.NumberRangeValidationRule;
+import org.makumba.controller.validation.RegExpValidationRule;
+import org.makumba.controller.validation.StringLengthValidationRule;
+import org.makumba.util.ClassResource;
 import org.makumba.util.RegExpUtils;
 import org.makumba.util.ReservedKeywords;
 
 public class RecordParser {
+    public static final String FILE_EXTENSION_VALIDATION = ".vd";
 
     public static final String multiUniqueRegExpElement = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces;
@@ -175,6 +186,9 @@ public class RecordParser {
 
         // after all fields are processed, process the multi field indices & check for field existance
         checkMultipleUnique();
+
+        // now parse the field definition
+        parseValidationDefinition();
     }
 
     private void checkMultipleUnique() {
@@ -254,6 +268,19 @@ public class RecordParser {
             }
         }
         return u;
+    }
+
+    /** Find the URL to the validation definition with the given name. */
+    static public java.net.URL findValidationDefinition(String s) {
+        String definitionFileName = s.replace('.', '/') + FILE_EXTENSION_VALIDATION;
+        URL url = ClassResource.get(definitionFileName);
+        if (url == null) {
+            url = ClassResource.get("dataDefinitions/" + definitionFileName);
+            if (url == null) {
+                url = ClassResource.get("validationDefinitions/" + definitionFileName);
+            }
+        }
+        return url;
     }
 
     void solveIncludes() {
@@ -911,6 +938,141 @@ public class RecordParser {
             return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).name,
                 ((RecordInfo) subtableParser_here.get(fieldName)));
     }
+
+    public void parseValidationDefinition() throws ValidationDefinitionParseError {
+        URL url = findValidationDefinition(dd.getName());
+        if (url == null) {
+            System.out.println("No validation definition found for " + dd.getName() + ", no parsing. mdd:" + this);
+            return;
+        }
+        // System.out.println("Started parsing validation definition '" + name + "'.");
+        ValidationDefinitionParseError mpe = new ValidationDefinitionParseError();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) url.getContent()));
+            // new BufferedReader(new FileReader(url.getFile()));
+            String line = null;
+            while ((line = rd.readLine()) != null) {
+                try {
+                    line = line.trim();
+                    if (line.equals("") || line.startsWith("#")) {
+                        continue; // skip empty lins & comment lines
+                    }
+                    if (line.indexOf(";") != -1) { // cut off end-of-line comments
+                        line = line.substring(0, line.indexOf(";")).trim();
+                    }
+                    String[] definitionParts = line.split(":");
+                    if (definitionParts.length < 3) {
+                        throw new ValidationDefinitionParseError(dd.getName(),
+                                "Rule does not consist of the three parts 'identifier':'message':'rule'!", line);
+                    }
+
+                    String ruleName = definitionParts[0].trim();
+                    String errorMessage = definitionParts[1].trim();
+                    String ruleDef = definitionParts[2].trim();
+                    ValidationRule rule = null;
+                    String fieldName = null;
+                    Matcher matcher;
+                    // check all possible validation types
+                    if ((matcher = RegExpValidationRule.getMatcher(ruleDef)).matches()) {
+                        // regexp validation
+                        fieldName = matcher.group(1);
+                        FieldDefinition fd = getFieldDefinition(line, fieldName);
+                        rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(3));
+
+                    } else if ((matcher = NumberRangeValidationRule.getMatcher(ruleDef)).matches()) {
+                        // number (int or real) validation
+                        fieldName = matcher.group(1);
+                        FieldDefinition fd = getFieldDefinition(line, fieldName);
+                        rule = new NumberRangeValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(2),
+                                matcher.group(3));
+
+                    } else if ((matcher = StringLengthValidationRule.getMatcher(ruleDef)).matches()) {
+                        // string lenght (char or text) validation
+                        fieldName = matcher.group(1);
+                        FieldDefinition fd = getFieldDefinition(line, fieldName);
+                        rule = new StringLengthValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(2),
+                                matcher.group(3));
+
+                    } else if ((matcher = ComparisonValidationRule.getMatcher(ruleDef)).matches()) {
+                        // comparison validation, compares two fields or a field with a constant
+                        fieldName = matcher.group(1);
+                        String functionName = null;
+                        if (BasicValidationRule.isValidFunctionCall(fieldName)) {
+                            functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
+                            fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
+                        }
+                        FieldDefinition fd = getFieldDefinition(line, fieldName);
+                        String operator = matcher.group(2);
+                        String compareTo = matcher.group(3);
+                        if (fd.getIntegerType() == FieldDefinition._date
+                                && ComparisonValidationRule.matchesDateExpression(compareTo)) {
+                            // we have a comparison to a date constant / expression
+                            rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage,
+                                    operator);
+                        } else {
+                            FieldDefinition otherFd = getFieldDefinition(line, compareTo);
+                            rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo,
+                                    ruleName, errorMessage, operator);
+                        }
+                    } else {
+                        // no recognised rule
+                        throw new ValidationDefinitionParseError("", "Rule type not recognised!", line);
+                    }
+
+                    rule.getFieldDefinition().addValidationRule(rule);
+                    // validationRules.put(fieldName, rule);
+                    ((RecordInfo) dd).addValidationRule(rule);
+                    System.out.println("Added new validation rule: " + rule);
+                } catch (ValidationDefinitionParseError e) {
+                    mpe.add(e);
+                }
+
+            }
+            rd.close();
+            if (!mpe.isSingle()) {
+                throw mpe;
+            }
+        }
+
+        catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (!mpe.isSingle()) {
+            throw mpe;
+        }
+        // System.out.println("Finished parsing validation definition '" + name + "'.");
+    }
+
+    protected FieldDefinition getFieldDefinition(String line, String fieldName) throws ValidationDefinitionParseError {
+        DataDefinition checkedDataDef = dd;
+
+        // treat sub-fields
+        int indexOf = -1;
+        while ((indexOf = fieldName.indexOf(".")) != -1) {
+            // we have a sub-record-field
+            String subFieldName = fieldName.substring(0, indexOf);
+            fieldName = fieldName.substring(indexOf + 1);
+            checkedDataDef = checkedDataDef.getFieldDefinition(subFieldName).getPointedType();
+        }
+
+        FieldDefinition fd = checkedDataDef.getFieldDefinition(fieldName);
+        if (fd == null) {
+            throw new ValidationDefinitionParseError(checkedDataDef.getName(), "Field &lt;" + fieldName
+                    + "&gt; not defined in type " + dd.getName() + "!", line);
+        }
+        return fd;
+    }
+
+    public static void main(String[] args) {
+        RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
+                "!unique( abc )", "!unique(abc , def )" });
+        DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
+    }
+
 }
 
 class OrderedProperties extends Dictionary {
@@ -992,12 +1154,6 @@ class OrderedProperties extends Dictionary {
 
     public boolean isEmpty() {
         return content.isEmpty();
-    }
-
-    public static void main(String[] args) {
-        RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
-                "!unique( abc )", "!unique(abc , def )" });
-        DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
     }
 
 }
