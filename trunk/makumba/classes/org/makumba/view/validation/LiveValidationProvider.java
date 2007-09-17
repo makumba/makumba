@@ -109,11 +109,13 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * <code>function(e) { return LiveValidation.massValidate( [emailValidation, weightValidation, hobbiesValidation, ageValidation] );</code>
      */
     public StringBuffer getOnSubmitValidation(boolean validateLive) {
-        StringBuffer sb = new StringBuffer("function(e) {\n alter('haha'); return LiveValidation.massValidate( ");
-        sb.append(StringUtils.toString(definitionVarNames)).append(" ); \n} ");
-        sb = new StringBuffer("validateForm"
-                + StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()])) + "();");
+        StringBuffer sb = new StringBuffer("validateForm_").append(
+            StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()]))).append("();");
         return sb;
+    }
+
+    public String[] getNeededJavaScriptFileNames() {
+        return new String[] { "livevalidation_1.0_standalone.js" };
     }
 
     private String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {

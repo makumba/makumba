@@ -17,9 +17,8 @@ public interface CalendarEditorProvider {
     public StringBuffer formatEditorCode(String inputName, String calendarLinkFormatting);
 
     /**
-     * Return an array of file names & paths, starting from the context-path, to libraries that shall be included.
-     * Makumba will check via page analysis {@link MakumbaJspAnalyzer} if the libraries are already included by the
-     * programmer, and add them if needed.
+     * Return an array of file names to libraries that shall be included. Makumba could check via page analysis
+     * {@link MakumbaJspAnalyzer} if the libraries are already included by the programmer, and add them if needed.
      */
     public String[] getNeededJavaScriptFileNames();
 
