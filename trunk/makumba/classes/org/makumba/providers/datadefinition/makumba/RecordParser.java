@@ -186,6 +186,9 @@ public class RecordParser {
 
         // after all fields are processed, process the multi field indices & check for field existance
         checkMultipleUnique();
+        
+        //parse validation definition
+        parseValidationDefinition();
 
     }
 
