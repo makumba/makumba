@@ -60,7 +60,7 @@ public class RegExpValidationRule extends SingleFieldValidationRule {
     }
 
     public String toString() {
-        return "'" + fieldName + "' " + getOperator() + " '" + regExp + "'";
+        return fieldName + " " + getOperator() + " " + regExp;
     }
 
     public static String getAcceptedRules() {
