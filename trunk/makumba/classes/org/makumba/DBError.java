@@ -24,16 +24,18 @@
 package org.makumba;
 
 /** A database error */
-public class DBError extends MakumbaError
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-public DBError(Throwable reason){ super(reason); }
-  public DBError(Throwable reason, String command)
-  {
-    super(reason, command!=null?"\nin db command "+command:""); 
-  }
-  public DBError(String explanation){ super(explanation); }
+public class DBError extends MakumbaError {
+    private static final long serialVersionUID = 1L;
+
+    public DBError(Throwable reason) {
+        super(reason);
+    }
+
+    public DBError(Throwable reason, String command) {
+        super(reason, command != null ? "\nin db command " + command : "");
+    }
+
+    public DBError(String explanation) {
+        super(explanation);
+    }
 }
