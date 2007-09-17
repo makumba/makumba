@@ -40,13 +40,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaSystem;
-import org.makumba.analyser.JavaParseData;
-import org.makumba.analyser.SourceSyntaxPoints;
-import org.makumba.analyser.SyntaxPoint;
+import org.makumba.analyser.engine.JavaParseData;
+import org.makumba.analyser.engine.SourceSyntaxPoints;
+import org.makumba.analyser.engine.SyntaxPoint;
+import org.makumba.list.tags.TomcatJsp;
 import org.makumba.util.ClassResource;
 import org.makumba.util.NamedResources;
 import org.makumba.util.StringUtils;
-import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the

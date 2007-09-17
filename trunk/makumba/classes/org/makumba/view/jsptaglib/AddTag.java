@@ -26,6 +26,8 @@ package org.makumba.view.jsptaglib;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -56,7 +58,7 @@ public class AddTag extends FormTagBase {
      * doMakumbaStartTag()
      * @param pageCache the page cache of the current page
      */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void setTagKey(PageCache pageCache) {
         Object[] keyComponents = { baseObject, field, handler, getParentListKey(null), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
@@ -79,8 +81,8 @@ public class AddTag extends FormTagBase {
      * @param pageCache the page cache of the current page
      * @return A DataDefinition corresponding to the type of object to which we want to add something
      */
-    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
-        DataDefinition base = getOperation().equals("add") ? pageCache.getQuery(getParentListKey(pageCache))
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
+        DataDefinition base = getOperation().equals("add") ? QueryTag.getQuery(pageCache, getParentListKey(pageCache))
                 .getLabelType(baseObject) : ((NewTag) findParentForm()).type;
         if (base == null) { // we could not find the type
             String message = "Could not determine type for specified object '" + baseObject + "'";

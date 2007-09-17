@@ -37,10 +37,15 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
 import org.makumba.controller.html.FormResponder;
+import org.makumba.list.engine.ComposedQuery;
+import org.makumba.list.engine.QueryExecution;
+import org.makumba.list.engine.valuecomputer.ValueComputer;
+import org.makumba.list.tags.MakumbaTag;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
-import org.makumba.view.ComposedQuery;
 
 /**
  * mak:form base tag
@@ -48,6 +53,7 @@ import org.makumba.view.ComposedQuery;
  * @author Cristian Bogdan
  * @author Rudolf Mayery
  * @version $Id$
+ * 
  */
 public class FormTagBase extends MakumbaTag implements BodyTag {
 
@@ -213,12 +219,14 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * @param pageCache
      *            the page cache of the current page
      */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void setTagKey(PageCache pageCache) {
         Object[] keyComponents = { baseObject, handler, getParentListKey(null), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
     static final String[] dummyQuerySections = { null, null, null, null, null };
+
+    private static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
 
     /**
      * Caches a dummy query when there is no mak:list around us
@@ -226,24 +234,27 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * @param pageCache
      *            the page cache of the current page
      */
-    public void cacheDummyQueryAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
-        pageCache.cacheQuery(tagKey, dummyQuerySections, null);
+    public void cacheDummyQueryAtAnalysis(PageCache pageCache) {
+        QueryTag.cacheQuery(pageCache, tagKey, dummyQuerySections, null);
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
+     * 
+     * FIXME QueryExecutionProvider should tell us the syntax for the primary key name
+     *
      */
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doStartAnalyze(PageCache pageCache) {
         if (!shouldComputeBasePointer()) {
             return;
         }
         ValueComputer vc;
-        if (pageCache.usesHQL) { // if we use hibernate, we have to select object.id, not the whole object
+        if ((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) { // if we use hibernate, we have to select object.id, not the whole object
             vc = ValueComputer.getValueComputerAtAnalysis(this, baseObject + ".id", pageCache);
         } else {
             vc = ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);
         }
-        pageCache.valueComputers.put(tagKey, vc);
+        pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, vc);
     }
 
     /**
@@ -280,10 +291,10 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
-    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
-        ComposedQuery dummy = (ComposedQuery) pageCache.queries.get(tagKey);
+    public void doEndAnalyze(PageCache pageCache) {
+        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(QUERY, tagKey);
         if (dummy != null)
             dummy.analyze();
         if (formAction == null && findParentForm() == null)
@@ -296,13 +307,13 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
         }
         if (!shouldComputeBasePointer())
             return;
-        ValueComputer vc = (ValueComputer) pageCache.valueComputers.get(tagKey);
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(this, pageCache);
-        pageCache.basePointerTypes.put(tagKey, vc.type.getPointedType().getName());
+        pageCache.cache(BASE_POINTER_TYPES, tagKey, vc.getType().getPointedType().getName());
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void initialiseState() {
         super.initialiseState();
@@ -335,22 +346,22 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * @throws JspException
      * @throws LogicException
      */
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException {
+    public int doMakumbaStartTag(PageCache pageCache) throws JspException, LogicException {
         // if we have a dummy query, we simulate an iteration
-        if (pageCache.queries.get(tagKey) != null) {
+        if (pageCache.retrieve(QUERY, tagKey) != null) {
             QueryExecution.startListGroup(pageContext);
             QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
         }
 
         responder.setOperation(getOperation());
         responder.setExtraFormatting(extraFormatting);
-        responder.setBasePointerType((String) pageCache.basePointerTypes.get(tagKey));
+        responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
 
         starttime = new java.util.Date().getTime();
 
         /** we compute the base pointer */
         if (shouldComputeBasePointer()) {
-            Object o = ((ValueComputer) getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+            Object o = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
 
             if (!(o instanceof Pointer))
                 throw new RuntimeException("Pointer expected");
@@ -373,9 +384,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      *            the page cache of the current page
      * @throws JspException
      */
-    public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException {
+    public int doMakumbaEndTag(PageCache pageCache) throws JspException {
         // if we have a dummy query, we simulate end iteration
-        if (pageCache.queries.get(tagKey) != null)
+        if (pageCache.retrieve(QUERY, tagKey) != null)
             QueryExecution.endListGroup(pageContext);
         try {
             StringBuffer sb = new StringBuffer();
@@ -419,7 +430,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     }
 
     /** The basic data type inside the form. null for generic forms */
-    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return null;
     }
 
@@ -432,7 +443,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      *            the page cache of the current page
      * @return A FieldDefinition corresponding to the type of the input field
      */
-    public FieldDefinition getInputTypeAtAnalysis(String fieldName, MakumbaJspAnalyzer.PageCache pageCache) {
+    public FieldDefinition getInputTypeAtAnalysis(String fieldName, PageCache pageCache) {
         DataDefinition dd = getDataTypeAtAnalysis(pageCache);
         if (dd == null)
             return null;

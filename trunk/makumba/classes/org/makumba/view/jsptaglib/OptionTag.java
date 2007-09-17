@@ -30,6 +30,8 @@ import javax.servlet.jsp.tagext.BodyTag;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
+import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -45,7 +47,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     /**
      * Inherited
      */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
         if (expr == null)
             expr = "nil";
@@ -58,8 +60,8 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return (InputTag) findAncestorWithClass(this, InputTag.class);
     }
 
-    FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache) {
-        FieldDefinition t = (FieldDefinition) pageCache.inputTypes.get(getInput().tagKey);
+    FieldDefinition getTypeFromContext(PageCache pageCache) {
+        FieldDefinition t = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, getInput().tagKey);
 
         // for now, only sets and pointers are accepted
         if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
@@ -68,7 +70,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
     }
 
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doStartAnalyze(PageCache pageCache) {
         if (getInput() == null)
             throw new ProgrammerError("\'option\' tag must be enclosed in a 'input' tag");
         getInput().isChoser = true;
@@ -84,7 +86,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         bodyContent = bc;
     }
 
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) {
+    public int doMakumbaStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;
     }
 

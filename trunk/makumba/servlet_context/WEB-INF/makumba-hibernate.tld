@@ -16,8 +16,8 @@
 
 	<tag>
 		<name>list</name>
-		<tag-class>org.makumba.view.jsptaglib.QueryTag</tag-class>
-		<tei-class>org.makumba.view.jsptaglib.CountTEI</tei-class>
+		<tag-class>org.makumba.list.tags.QueryTag</tag-class>
+		<tei-class>org.makumba.list.tags.CountTEI</tei-class>
 		<body-content>JSP</body-content>
 		<description>manipulate lists</description>
 
@@ -97,8 +97,8 @@
 	</tag>
 	<tag>
 		<name>object</name>
-		<tag-class>org.makumba.view.jsptaglib.ObjectTag</tag-class>
-		<tei-class>org.makumba.view.jsptaglib.CountTEI</tei-class>
+		<tag-class>org.makumba.list.tags.ObjectTag</tag-class>
+		<tei-class>org.makumba.list.tags.CountTEI</tei-class>
 		<body-content>JSP</body-content>
 		<description>manipulate record</description>
 
@@ -165,8 +165,8 @@
 
 	<tag>
 		<name>value</name>
-		<tag-class>org.makumba.view.jsptaglib.ValueTag</tag-class>
-		<tei-class>org.makumba.view.jsptaglib.VarTEI</tei-class>
+		<tag-class>org.makumba.list.tags.ValueTag</tag-class>
+		<tei-class>org.makumba.list.tags.VarTEI</tei-class>
 		<body-content>empty</body-content>
 		<description>Value of an expression</description>
 
@@ -257,7 +257,7 @@
 	
         <tag>
 		<name>if</name>
-		<tag-class>org.makumba.view.jsptaglib.IfTag</tag-class>
+		<tag-class>org.makumba.list.tags.IfTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Evaluates a test-expression and shows body only if true</description>
 
@@ -1463,21 +1463,21 @@
 	<function>
 		<name>count</name>
 		<description>the count of the enclosing mak:list</description>
-		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-class>org.makumba.list.tags.QueryTag</function-class>
 		<function-signature>int count()</function-signature>
 	</function>
 
 	<function>
 		<name>maxCount</name>
 		<description>the maximum count of the enclosing mak:list</description>
-		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-class>org.makumba.list.tags.QueryTag</function-class>
 		<function-signature>int maxCount()</function-signature>
 	</function>
 
 	<function>
 		<name>lastCount</name>
 		<description>the maximum count of the previous mak:list</description>
-		<function-class>org.makumba.view.jsptaglib.QueryTag</function-class>
+		<function-class>org.makumba.list.tags.QueryTag</function-class>
 		<function-signature>int lastCount()</function-signature>
 	</function>
 

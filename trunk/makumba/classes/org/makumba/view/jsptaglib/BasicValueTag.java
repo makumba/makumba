@@ -31,13 +31,15 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
+import org.makumba.commons.PageAttributes;
 import org.makumba.controller.html.dateEditor;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.http.RequestAttributes;
-import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.list.engine.valuecomputer.ValueComputer;
+import org.makumba.list.tags.MakumbaTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in
@@ -48,6 +50,8 @@ import org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache;
  */
 public abstract class BasicValueTag extends MakumbaTag {
     
+    protected static final String INPUT_TYPES = "org.makumba.inputtypes";
+
     String valueExprOriginal = null;
 
     /* Cannot be set here, subclasses who need it will set it */
@@ -92,7 +96,7 @@ public abstract class BasicValueTag extends MakumbaTag {
      * @param pageCache the page cache of the current page
      * @return The MultipleKey that identifies the parent list, <code>null</code> if there's no parent list
      */
-    public MultipleKey getParentListKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public MultipleKey getParentListKey(PageCache pageCache) {
         MultipleKey k = super.getParentListKey(pageCache);
         if (k != null)
             return k;
@@ -108,9 +112,9 @@ public abstract class BasicValueTag extends MakumbaTag {
      * Determines the ValueComputer and associates it with the tagKey
      * @param pageCache the page cache of the current page
      */
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doStartAnalyze(PageCache pageCache) {
         if (isValue()) {
-            pageCache.valueComputers.put(tagKey, ValueComputer.getValueComputerAtAnalysis(this, checkPtrExpr(expr,
+            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, checkPtrExpr(expr,
                     pageCache), pageCache));
         }
     }
@@ -119,13 +123,13 @@ public abstract class BasicValueTag extends MakumbaTag {
         return expr2;
     }
 
-    abstract FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache);
+    abstract FieldDefinition getTypeFromContext(PageCache pageCache);
 
     /** 
      * Tells the ValueComputer to finish analysis, and sets the types for var and printVar.
      * @param pageCache the page cache of the current page
      */
-    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         FieldDefinition contextType = getTypeFromContext(pageCache);
 
         FieldDefinition dataTypeInfo = null;
@@ -139,12 +143,12 @@ public abstract class BasicValueTag extends MakumbaTag {
         }
 
         if (isValue()) {
-            ValueComputer vc = (ValueComputer) pageCache.valueComputers.get(tagKey);
+            ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
             vc.doEndAnalyze(this, pageCache);
-            type = vc.type;
+            type = vc.getType();
         }
         if (isAttribute())
-            type = (FieldDefinition) pageCache.types.get(expr.substring(1));
+            type = (FieldDefinition) pageCache.retrieve(MakumbaTag.TYPES, expr.substring(1));
 
         String fieldName = "";
         if (this instanceof InputTag) {
@@ -171,11 +175,11 @@ public abstract class BasicValueTag extends MakumbaTag {
         if (contextType == null)
             contextType = dataTypeInfo != null ? dataTypeInfo : type;
 
-        pageCache.inputTypes.put(tagKey, contextType);
+        pageCache.cache(INPUT_TYPES, tagKey, contextType);
     }
 
-    public int doMakumbaEndTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException, LogicException {
-        FieldDefinition type = (FieldDefinition) pageCache.inputTypes.get(tagKey);
+    public int doMakumbaEndTag(PageCache pageCache) throws JspException, LogicException {
+        FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
         Object val = null;
         
         // if we are reloading the form page on validation errors, fill form inputs as in the request
@@ -192,7 +196,7 @@ public abstract class BasicValueTag extends MakumbaTag {
         }
 
         if (isValue())
-            val = ((ValueComputer) getPageCache(pageContext).valueComputers.get(tagKey)).getValue(this);
+            val = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
 
         if (isAttribute()) {
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));

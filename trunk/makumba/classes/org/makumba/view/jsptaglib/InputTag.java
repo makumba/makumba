@@ -36,7 +36,10 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
 import org.makumba.controller.http.ControllerFilter;
+import org.makumba.list.tags.MakumbaTag;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
@@ -132,7 +135,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     /**
      * Inherited
      */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
         if (expr == null)
             expr = getForm().getDefaultExpr(name);
@@ -140,7 +143,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         tagKey = new MultipleKey(keyComponents);
     }
 
-    FieldDefinition getTypeFromContext(MakumbaJspAnalyzer.PageCache pageCache) {
+    FieldDefinition getTypeFromContext(PageCache pageCache) {
         return getForm().getInputTypeAtAnalysis(name, pageCache);
     }
 
@@ -150,7 +153,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @param pageCache
      *            the page cache of the current page
      */
-    public void doStartAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doStartAnalyze(PageCache pageCache) {
         if (name == null)
             throw new ProgrammerError("name attribute is required");
         super.doStartAnalyze(pageCache);
@@ -165,12 +168,12 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      *            the page cache of the current page
      * @return The original expression if we're not in a mak:list, the transformed pointer otherwise
      */
-    protected String checkPtrExpr(String expr2, MakumbaJspAnalyzer.PageCache pageCache) {
+    protected String checkPtrExpr(String expr2, PageCache pageCache) {
         MultipleKey parentListKey = getForm().getParentListKey(pageCache);
         if (parentListKey == null) { // If there is no enclosing mak:list
             return expr2;
         }
-        return pageCache.getQuery(parentListKey).transformPointer(expr2);
+        return QueryTag.getQuery(pageCache, parentListKey).transformPointer(expr2);
     }
 
     /**
@@ -179,15 +182,16 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @param pageCache
      *            the page cache of the current page
      */
-    public void doEndAnalyze(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         if (nameVar != null)
-            pageCache.types.setType(nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"), this);
+            setType(pageCache, nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"));
 
         super.doEndAnalyze(pageCache);
     }
 
+
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void initialiseState() {
         super.initialiseState();
@@ -207,7 +211,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doInitBody() {
     }
 
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) {
+    public int doMakumbaStartTag(PageCache pageCache) {
         // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
         return EVAL_BODY_BUFFERED;
     }
@@ -247,7 +251,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
+            FieldDefinition fd = getTypeFromContext(MakumbaTag.getPageCache(pageContext));
             if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"

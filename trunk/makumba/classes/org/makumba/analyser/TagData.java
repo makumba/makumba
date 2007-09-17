@@ -2,6 +2,9 @@ package org.makumba.analyser;
 
 import java.util.Map;
 
+import org.makumba.analyser.engine.JspParseData;
+import org.makumba.analyser.engine.SyntaxPoint;
+
 /**
  * A composite object passed to the analyzers.
  * 
@@ -9,7 +12,7 @@ import java.util.Map;
  */
 public class TagData {
     /** The parse data where this TagData was produced */
-    JspParseData parseData;
+    public JspParseData parseData;
 
     /** Name of the tag */
     public String name;
@@ -21,7 +24,7 @@ public class TagData {
     public Object tagObject;
 
     /** The syntax points where the whole thing begins and ends */
-    SyntaxPoint start, end;
+    public SyntaxPoint start, end;
 
     public SyntaxPoint getStart() {
         return start;
