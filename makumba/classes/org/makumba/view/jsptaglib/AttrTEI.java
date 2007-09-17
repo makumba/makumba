@@ -29,6 +29,8 @@ import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
+import org.makumba.list.tags.CountTEI;
+
 /**
  * Extra information for the attributes
  * @author Cristian Bogdan

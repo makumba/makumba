@@ -25,6 +25,7 @@ package org.makumba.view.jsptaglib;
 
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.analyser.PageCache;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -53,7 +54,7 @@ public class NewTag extends FormTagBase {
     /**
      * Inherited
      */
-    public void setTagKey(MakumbaJspAnalyzer.PageCache pageCache) {
+    public void setTagKey(PageCache pageCache) {
         Object keyComponents[] = { type.getName(), handler, getParentListKey(null), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
@@ -69,7 +70,7 @@ public class NewTag extends FormTagBase {
             responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
     }
 
-    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return type;
     }
 }

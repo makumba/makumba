@@ -31,30 +31,34 @@ import java.util.Map;
 
 import javax.servlet.jsp.tagext.BodyTag;
 
-import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
-import org.makumba.analyser.JspParseData;
+import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
+import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
+import org.makumba.list.engine.ComposedQuery;
+import org.makumba.list.engine.ComposedSubquery;
+import org.makumba.list.tags.MakumbaTag;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.ComposedQuery;
-import org.makumba.view.ComposedSubquery;
 
 /**
  * This class analyzes a JSP taking into account the specifics of Makumba tags.
+ * 
+ * TODO maybe extract some commonly used methods and add them to a generic analyser
  * 
  * @author Cristian Bogdan
  * @version $Id$
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
-    static String[] tags = { "value", "org.makumba.view.jsptaglib.ValueTag", "list",
-            "org.makumba.view.jsptaglib.QueryTag", "object", "org.makumba.view.jsptaglib.ObjectTag", "form",
+    static String[] tags = { "value", "org.makumba.list.tags.ValueTag", "list",
+            "org.makumba.list.tags.QueryTag", "object", "org.makumba.list.tags.ObjectTag", "form",
             "org.makumba.view.jsptaglib.FormTagBase", "newForm", "org.makumba.view.jsptaglib.NewTag", "addForm",
             "org.makumba.view.jsptaglib.AddTag", "editForm", "org.makumba.view.jsptaglib.EditTag", "deleteLink",
             "org.makumba.view.jsptaglib.DeleteTag", "delete", "org.makumba.view.jsptaglib.DeleteTag", "input",
             "org.makumba.view.jsptaglib.InputTag", "action", "org.makumba.view.jsptaglib.ActionTag", "option",
-            "org.makumba.view.jsptaglib.OptionTag", "if", "org.makumba.view.jsptaglib.IfTag" };
+            "org.makumba.view.jsptaglib.OptionTag", "if", "org.makumba.list.tags.IfTag" };
 
     static final Map tagClasses = new HashMap();
 
@@ -69,109 +73,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 t.printStackTrace();
             }
     }
+    
+    public static final String TAG_CACHE = "org.makumba.tags";
+    
+    public static final String TAG_DATA_CACHE = "org.makumba.tagData";
 
-    /**
-     * Class used to store the types included in Makumba tags detected during analysis of a page
-     * 
-     * @author Cristian Bogdan
-     */
-    class Types extends HashMap {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Sets the type identified by the key of a tag
-         * 
-         * @param key
-         *            the key of the tag
-         * @param value
-         *            the field definition containing the type
-         * @param t
-         *            the MakumbaTag
-         */
-        public void setType(String key, FieldDefinition value, MakumbaTag t) {
-            Object[] val1 = (Object[]) get(key);
-            FieldDefinition fd = null;
-
-            if (val1 != null)
-                fd = (FieldDefinition) val1[0];
-            // if we get nil here, we keep the previous, richer type information
-            if (fd != null && value.getType().equals("nil"))
-                return;
-
-            MakumbaTag.analyzedTag.set(t.tagData);
-            if (fd != null && !value.isAssignableFrom(fd))
-                throw new ProgrammerError("Attribute type changing within the page: in tag\n"
-                        + ((MakumbaTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type "
-                        + fd + " and the from this tag results the incompatible type " + value);
-            MakumbaTag.analyzedTag.set(null);
-
-            Object[] val2 = { value, t };
-            put(key, val2);
-        }
-    }
-
-    /**
-     * Cache for the page analysis
-     * 
-     * @author Cristian Bogdan
-     * 
-     */
-    public class PageCache {
-        HashMap formatters = new HashMap();
-
-        HashMap valueComputers = new HashMap();
-
-        Types types = new Types();
-
-        HashMap queries = new HashMap();
-
-        HashMap inputTypes = new HashMap();
-
-        HashMap basePointerTypes = new HashMap();
-
-        HashMap tags = new HashMap();
-
-        HashMap tagData = new HashMap();
-
-        boolean usesHQL = false;
-
-        /**
-         * Gets the query for a given key
-         * 
-         * @param key
-         *            the key of the tag for which we want to get a query
-         * @return The OQL query corresponding to this tag
-         */
-        public ComposedQuery getQuery(MultipleKey key) {
-            ComposedQuery ret = (ComposedQuery) queries.get(key);
-            if (ret == null)
-                throw new MakumbaError("unknown query for key " + key);
-            return ret;
-        }
-
-        /**
-         * Gets a composed query from the cache, and if none is found, creates one and caches it.
-         * 
-         * @param key
-         *            the key of the tag
-         * @param sections
-         *            the sections needed to compose a query
-         * @param parentKey
-         *            the key of the parent tag, if any
-         */
-        public ComposedQuery cacheQuery(MultipleKey key, String[] sections, MultipleKey parentKey) {
-            ComposedQuery ret = (ComposedQuery) queries.get(key);
-            if (ret != null)
-                return ret;
-            ret = parentKey == null ? new ComposedQuery(sections, usesHQL) : new ComposedSubquery(sections,
-                    getQuery(parentKey), usesHQL);
-
-            ret.init();
-            queries.put(key, ret);
-            return ret;
-        }
-
-    }
 
     /**
      * Class used to store the status of the parser
@@ -179,6 +85,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @author Cristian Bogdan
      */
     class ParseStatus {
+
         String makumbaPrefix;
 
         String makumbaURI;
@@ -206,7 +113,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             JspParseData.fill(t, td.attributes);
             t.setTagKey(pageCache);
             if (t.getTagKey() != null && !t.allowsIdenticalKey()) {
-                MakumbaTag sameKey = (MakumbaTag) pageCache.tags.get(t.getTagKey());
+                MakumbaTag sameKey = (MakumbaTag) pageCache.retrieve(TAG_CACHE, t.getTagKey());
                 if (sameKey != null) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("Due to limitations of the JSP standard, Makumba cannot make\n").append(
@@ -218,9 +125,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                             .append("\nTo address this, add an id= attribute to one of the tags, and make sure that id is unique within the page.");
                     throw new ProgrammerError(sb.toString());
                 }
-                pageCache.tags.put(t.getTagKey(), t);
+                pageCache.cache(TAG_CACHE, t.getTagKey(), t);
             }
-            pageCache.tagData.put(t.getTagKey(), td);
+            pageCache.cache(TAG_DATA_CACHE, t.getTagKey(), td);
             t.doStartAnalyze(pageCache);
             tags.add(t);
         }
@@ -321,9 +228,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 ((ParseStatus) status).makumbaPrefix = (String) td.attributes.get("prefix");
                 ((ParseStatus) status).makumbaURI = (String) td.attributes.get("uri");
                 if (((ParseStatus) status).makumbaURI.equals("http://www.makumba.org/presentation")) {
-                    ((ParseStatus) status).pageCache.usesHQL = false;
+                    ((ParseStatus) status).pageCache.cache(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE, "oql");
                 } else { // every other makumba.org tag-lib is treated to be hibernate
-                    ((ParseStatus) status).pageCache.usesHQL = true;
+                    ((ParseStatus) status).pageCache.cache(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE, "hql");
                 }
             }
         }

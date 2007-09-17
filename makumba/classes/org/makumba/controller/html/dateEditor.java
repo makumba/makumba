@@ -189,7 +189,7 @@ public class dateEditor extends FieldEditor {
 
     /**
      * This method is used to get the date field in case of a form reload due to validation errors, and is used from
-     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.view.jsptaglib.MakumbaJspAnalyzer.PageCache)}. It is basically
+     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.view.jsptaglib.PageCache)}. It is basically
      * i simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
      */
     public static Object readFrom(String name, HttpParameters pr) {

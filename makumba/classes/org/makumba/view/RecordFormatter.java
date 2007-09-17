@@ -28,6 +28,7 @@ import java.util.Dictionary;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.list.engine.ComposedQuery;
 
 /**
  * Generic formatter of Makumba data. Depending on the data type, calls specific formatters an applies them for each
@@ -38,6 +39,9 @@ import org.makumba.FieldDefinition;
  */
 
 public class RecordFormatter implements Serializable {
+    
+    public static final String FORMATTERS = "org.makumba.formatters";
+    
     public DataDefinition dd;
 
     public String[] expr;
@@ -48,16 +52,6 @@ public class RecordFormatter implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
-
-    public RecordFormatter(ComposedQuery q) {
-        dd = (DataDefinition) q.getResultType();
-        initFormatters();
-
-        expr = new String[dd.getFieldNames().size()];
-
-        for (int i = 0; i < dd.getFieldNames().size(); i++)
-            expr[i] = q.getProjectionAt(i);
-    }
 
     public RecordFormatter(DataDefinition dd, java.util.Hashtable names) {
         this.dd = dd;

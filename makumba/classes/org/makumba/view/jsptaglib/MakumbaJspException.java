@@ -23,6 +23,8 @@
 
 package org.makumba.view.jsptaglib;
 
+import org.makumba.list.tags.MakumbaTag;
+
 /** 
  * An exception thrown due to makumba-specific reasons during tag execution
  * @author Cristian Bogdan

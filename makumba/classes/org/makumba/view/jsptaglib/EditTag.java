@@ -24,6 +24,8 @@
 package org.makumba.view.jsptaglib;
 
 import org.makumba.DataDefinition;
+import org.makumba.analyser.PageCache;
+import org.makumba.list.tags.QueryTag;
 
 /**
  * mak:editForm tag
@@ -39,7 +41,7 @@ public class EditTag extends FormTagBase {
         return baseObject + "." + fieldName;
     }
 
-    public DataDefinition getDataTypeAtAnalysis(MakumbaJspAnalyzer.PageCache pageCache) {
-        return pageCache.getQuery(getParentListKey(pageCache)).getLabelType(baseObject);
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
+        return QueryTag.getQuery(pageCache, getParentListKey(pageCache)).getLabelType(baseObject);
     }
 }

@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.MakumbaSystem;
-import org.makumba.view.jsptaglib.TomcatJsp;
+import org.makumba.list.tags.TomcatJsp;
 
 /**
  * the error viewer. To be used from TagExceptionServlet.

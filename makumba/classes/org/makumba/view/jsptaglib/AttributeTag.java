@@ -26,7 +26,9 @@ package org.makumba.view.jsptaglib;
 import javax.servlet.jsp.JspException;
 
 import org.makumba.AttributeNotFoundException;
-import org.makumba.controller.jsp.PageAttributes;
+import org.makumba.analyser.PageCache;
+import org.makumba.commons.PageAttributes;
+import org.makumba.list.tags.MakumbaTag;
 
 /**
  * mak:attribute tag
@@ -66,7 +68,7 @@ public class AttributeTag extends MakumbaTag {
      * Asks the enclosing query to present the expression
      * @param pageCache the page cache of the current page
      */
-    public int doMakumbaStartTag(MakumbaJspAnalyzer.PageCache pageCache) throws JspException {
+    public int doMakumbaStartTag(PageCache pageCache) throws JspException {
         Object o = null;
         Throwable t = null;
         try {

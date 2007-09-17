@@ -37,11 +37,11 @@ import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
-import org.makumba.analyser.JspParseData;
 import org.makumba.analyser.TagData;
+import org.makumba.analyser.engine.JspParseData;
+import org.makumba.list.tags.MakumbaTag;
+import org.makumba.list.tags.TomcatJsp;
 import org.makumba.util.RuntimeWrappedException;
-import org.makumba.view.jsptaglib.MakumbaTag;
-import org.makumba.view.jsptaglib.TomcatJsp;
 
 /**
  * The servlet that receives errors in any makumba page and treats them meant to be friendly for developer, so he'll see
@@ -104,7 +104,7 @@ public class TagExceptionServlet extends HttpServlet {
             t = t1;
         }
 
-        if (t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())) {
+        if (t.getClass().getName().startsWith(org.makumba.list.tags.TomcatJsp.getJspCompilerPackage())) {
             // see if the exception is servlet container specific
             // TODO: use the interface once this is a provider after mak:refactoring finished
             boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this);
@@ -362,7 +362,7 @@ public class TagExceptionServlet extends HttpServlet {
             t = t1;
         }
 
-        if (t.getClass().getName().startsWith(org.makumba.view.jsptaglib.TomcatJsp.getJspCompilerPackage())) {
+        if (t.getClass().getName().startsWith(org.makumba.list.tags.TomcatJsp.getJspCompilerPackage())) {
             return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
         }
         for (int i = 0; i < errors.length; i++) {
