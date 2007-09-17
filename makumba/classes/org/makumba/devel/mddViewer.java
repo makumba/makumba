@@ -64,7 +64,7 @@ public class mddViewer extends DefinitionViewer {
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
 
         // link to validation definition, if existing
-        if (dd.getValidationDefinition() != null) {
+        if (RecordParser.findValidationDefinition(virtualPath) != null) {
             w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/validationDefinitions/" + virtualPath)
                     + "\">validation definition</a>&nbsp;&nbsp;&nbsp;");
         }
@@ -73,6 +73,8 @@ public class mddViewer extends DefinitionViewer {
         if (dd != null) {
             w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/codeGenerator/" + virtualPath)
                     + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+        } else {
+            w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         }
         w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
         w.println("</td>");
@@ -112,4 +114,3 @@ public class mddViewer extends DefinitionViewer {
     }
 
 }
-

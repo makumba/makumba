@@ -187,8 +187,6 @@ public class RecordParser {
         // after all fields are processed, process the multi field indices & check for field existance
         checkMultipleUnique();
 
-        // now parse the field definition
-        parseValidationDefinition();
     }
 
     private void checkMultipleUnique() {
@@ -940,6 +938,7 @@ public class RecordParser {
     }
 
     public void parseValidationDefinition() throws ValidationDefinitionParseError {
+        System.out.println("*** parsing!");
         URL url = findValidationDefinition(dd.getName());
         if (url == null) {
             System.out.println("No validation definition found for " + dd.getName() + ", no parsing. mdd:" + this);
