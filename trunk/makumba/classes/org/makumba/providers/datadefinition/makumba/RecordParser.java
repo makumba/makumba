@@ -941,10 +941,8 @@ public class RecordParser {
     }
 
     public void parseValidationDefinition() throws ValidationDefinitionParseError {
-        System.out.println("*** parsing!");
         URL url = findValidationDefinition(dd.getName());
         if (url == null) {
-            System.out.println("No validation definition found for " + dd.getName() + ", no parsing. mdd:" + this);
             return;
         }
         // System.out.println("Started parsing validation definition '" + name + "'.");
@@ -1024,7 +1022,6 @@ public class RecordParser {
                     rule.getFieldDefinition().addValidationRule(rule);
                     // validationRules.put(fieldName, rule);
                     ((RecordInfo) dd).addValidationRule(rule);
-                    System.out.println("Added new validation rule: " + rule);
                 } catch (ValidationDefinitionParseError e) {
                     mpe.add(e);
                 }
