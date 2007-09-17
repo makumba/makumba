@@ -86,6 +86,9 @@ public interface DataDefinition {
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
+    /** Get the validation definition associated with this data definition. */
+    public ValidationDefinition getValidationDefinition();
+
     /** Get all multiple-feld uniqueness definition. */
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
 
