@@ -44,9 +44,11 @@ import org.makumba.MakumbaSystem;
 import org.makumba.NotUniqueError;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Table;
+import org.makumba.util.StringUtils;
 
 public class TableManager extends Table {
     protected String tbname;
@@ -239,6 +241,29 @@ public class TableManager extends Table {
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             onStartup(fieldName, config, dbc);
+        }
+
+        // now process multi-field indices
+        MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
+        for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
+            String[] fieldNames = multiFieldUniqueKeys[i].getFields();
+            if (!isIndexOk(fieldNames)) {
+                String briefMulti = getDataDefinition().getName() + "#"
+                        + StringUtils.toString(fieldNames).toLowerCase();
+                try {
+                    Statement st = dbc.createStatement();
+                    st.executeUpdate(indexCreateUniqueSyntax(fieldNames));
+                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                        "INDEX ADDED on " + briefMulti);
+                    st.close();
+                    indexCreated(dbc);
+                } catch (SQLException e) {
+                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                        "Problem adding multi-field INDEX on " + briefMulti + ": " + e.getMessage() + " [ErrorCode: "
+                                + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
+                }
+            }
+            extraIndexes.remove(StringUtils.concatAsString(fieldNames).toLowerCase());
         }
 
         if (!getDatabase().usesHibernateIndexes())
@@ -678,6 +703,8 @@ public class TableManager extends Table {
 
     protected NotUniqueError findDuplicates(SQLDBConnection dbc, Dictionary d) {
         Dictionary duplicates = new Hashtable();
+
+        // first we check all fields of the data definition
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             Object val = d.get(fieldName);
@@ -685,6 +712,19 @@ public class TableManager extends Table {
                 continue;
             if (checkDuplicate(fieldName, dbc, d))
                 duplicates.put(fieldName, val == null ? "null" : val);
+        }
+
+        // now we check all mult-field indices
+        MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
+        for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
+            String[] fields = multiFieldUniqueKeys[i].getFields();
+            Object[] values = new Object[fields.length];
+            for (int j = 0; j < fields.length; j++) {
+                values[j] = d.get(fields[j]);
+            }
+            if (checkDuplicate(fields, values, dbc)) {
+                duplicates.put(fields, values);
+            }
         }
         return new NotUniqueError(getDataDefinition().getName(), duplicates);
     }
@@ -1486,6 +1526,13 @@ public class TableManager extends Table {
         return false;
     } // end isIndexOk()
 
+    public boolean isIndexOk(String[] fieldNames) {
+        Boolean b = (Boolean) indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
+        if (b != null)
+            return (getDataDefinition().hasMultiUniqueKey(fieldNames));
+        return false;
+    }
+
     // moved from FieldManager
     /**
      * Ask this field to add/remove indexes as needed, normally called from onStartup().
@@ -1578,6 +1625,17 @@ public class TableManager extends Table {
                 + getFieldDBName(fieldName) + ")";
     }
 
+    /** Syntax for multi-field index */
+    public String indexCreateUniqueSyntax(String[] fieldNames) {
+        String[] dbs = new String[fieldNames.length];
+        for (int i = 0; i < dbs.length; i++) {
+            dbs[i] = getFieldDBName(fieldNames[i]);
+        }
+        String dbFieldNames = StringUtils.toString(dbs, false);
+        return "CREATE UNIQUE INDEX " + StringUtils.concatAsString(fieldNames) + " ON " + getDBName() + " ("
+                + dbFieldNames + ")";
+    }
+
     // moved from FieldManager
     /** Syntax for dropping index. */
     public String indexDropSyntax(String fieldName) {
@@ -1632,6 +1690,33 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, (String) checkDuplicate.get(fieldName));
+        }
+    }
+
+    /**
+     * return whether there was a duplicate entry for this multi-field combination when inserting the given data
+     */
+    public boolean checkDuplicate(String[] fields, Object values[], SQLDBConnection dbc) {
+        String query = "SELECT 1 FROM " + getDBName() + " WHERE ";
+        for (int j = 0; j < fields.length; j++) {
+            query += getFieldDBName(fields[j]) + "=?";
+            if (j + 1 < fields.length) {
+                query += " AND ";
+            }
+        }
+
+        PreparedStatement ps = dbc.getPreparedStatement(query);
+        try {
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] != null) {
+                    setUpdateArgument(fields[i], ps, (i + 1), values[i]);
+                }
+            }
+            // System.out.println("*** " + ps.toString());
+            return ps.executeQuery().next();
+        } catch (SQLException se) {
+            Database.logException(se, dbc);
+            throw new org.makumba.DBError(se, StringUtils.toString(fields));
         }
 
     }
