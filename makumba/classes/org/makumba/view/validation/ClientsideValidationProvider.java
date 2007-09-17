@@ -3,6 +3,7 @@ package org.makumba.view.validation;
 import org.makumba.FieldDefinition;
 import org.makumba.controller.html.FormResponder;
 import org.makumba.controller.html.RecordEditor;
+import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * Provides an interface to a client-side validation mechanism. For HTML forms, this can e.g. be javascript validation.
@@ -25,4 +26,10 @@ public interface ClientsideValidationProvider {
 
     /** Shall return all calls needed for cleint side validation, e.g. providing some javascript code. */
     public StringBuffer getClientValidation(boolean validateLive);
+
+    /**
+     * Return an array of file names to libraries that shall be included. Makumba could check via page analysis
+     * {@link MakumbaJspAnalyzer} if the libraries are already included by the programmer, and add them if needed.
+     */
+    public String[] getNeededJavaScriptFileNames();
 }
