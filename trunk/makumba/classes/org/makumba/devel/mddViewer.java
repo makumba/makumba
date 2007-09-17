@@ -23,10 +23,7 @@
 
 package org.makumba.devel;
 
-import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.PrintWriter;
-import java.io.StringReader;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,22 +35,12 @@ import org.makumba.MakumbaSystem;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
- * 
  * This class implements a viewer for MDD syntax highlighting.
- * 
- *  
  */
-public class mddViewer extends LineViewer {
-    private MakumbaError err;
+public class mddViewer extends DefinitionViewer {
 
     public mddViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
         super(true, req, sv);
-        setSearchLevels(false, false, false, true);
-        virtualPath = req.getPathInfo();
-        contextPath = req.getContextPath();
-        if (virtualPath == null)
-            virtualPath = "/";
-        //FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null)
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
@@ -75,50 +62,20 @@ public class mddViewer extends LineViewer {
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
+
+        // link to validation definition, if existing
+        if (dd.getValidationDefinition() != null) {
+            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/validationDefinitions/" + virtualPath)
+                    + "\">validation definition</a>&nbsp;&nbsp;&nbsp;");
+        }
+
+        // link to code generator
         if (dd != null) {
-            String generatorPath = contextPath + "/codeGenerator/" + virtualPath; //virtualPath.replaceAll("dataDefinitions", "codeGenerator");
-            w.print("<a style=\"color: darkblue;\" href=\"" + generatorPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/codeGenerator/" + virtualPath)
+                    + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         }
         w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
         w.println("</td>");
-    }
-
-    public void footer(PrintWriter pw) throws IOException {
-        if (err != null)
-            pw.println("<hr><a name=\"errors\"></a><pre>" + err.getMessage() + "</pre>");
-        super.footer(pw);
-    }
-
-    public String getLineTag(String s) {
-        String ln = s.trim();
-        int eq;
-        if (!ln.startsWith("#") && !ln.startsWith("!") && !ln.startsWith("=") && (eq = ln.indexOf('=')) != -1)
-            return ln.substring(0, eq).trim();
-        return null;
-    }
-
-    public void printLine(PrintWriter w, String s, String toPrint) throws IOException {
-        if (err != null) {
-            // we go thru the error text, if we find this particular line, we display its error message
-            // this is a hack, it should rather go thru the multiple exceptions
-            LineNumberReader lr = new LineNumberReader(new StringReader(err.getMessage()));
-            String e = null;
-            String before = null;
-            while (true) {
-                before = e;
-                e = lr.readLine();
-                if (e == null)
-                    break;
-                if (e.length() > 0 && e.equals(s)) {
-                    w.print("<span style=\"background-color: pink;\">");
-                    super.printLine(w, s, e);
-                    w.print("</span>\t<span style=\"color:red;\">" + lr.readLine() + " "
-                            + before.substring(before.indexOf(':') + 1) + "</span>\r\n");
-                    return;
-                }
-            }
-        }
-        super.printLine(w, s, toPrint);
     }
 
     public String parseLine(String s) {
@@ -128,26 +85,26 @@ public class mddViewer extends LineViewer {
         String subFieldSeperator = "-&gt;";
         while (current < s.length()) {
             switch (s.charAt(current)) {
-            case '=':
-                result.append("<span style=\"color:black\">=</span><span style=\"color:#0000AA\">");
-                closeLine = "</span>" + closeLine;
-                break;
-            case '#':
-                result.append("<span style=\"background:#eeeeee; color:#777777\">#");
-                closeLine = "</span>" + closeLine;
-                break;
-            case ';':
-                // check whether we have a simple ';' or have '->' (which gets translated to -gt;)
-                String substring = s.substring(current-subFieldSeperator.length()+1, current+1);
-                if (current > subFieldSeperator.length() && substring.equals(subFieldSeperator)) {
-                    result.append(";<span style=\"color:red\">");
-                } else {
-                    result.append(";<span style=\"color:green\">");
-                }
-                closeLine = "</span>" + closeLine;
-                break;
-            default:
-                result.append(s.charAt(current));
+                case '=':
+                    result.append("<span style=\"color:black\">=</span><span style=\"color:#0000AA\">");
+                    closeLine = "</span>" + closeLine;
+                    break;
+                case '#':
+                    result.append("<span style=\"background:#eeeeee; color:#777777\">#");
+                    closeLine = "</span>" + closeLine;
+                    break;
+                case ';':
+                    // check whether we have a simple ';' or have '->' (which gets translated to -gt;)
+                    String substring = s.substring(current - subFieldSeperator.length() + 1, current + 1);
+                    if (current > subFieldSeperator.length() && substring.equals(subFieldSeperator)) {
+                        result.append(";<span style=\"color:red\">");
+                    } else {
+                        result.append(";<span style=\"color:green\">");
+                    }
+                    closeLine = "</span>" + closeLine;
+                    break;
+                default:
+                    result.append(s.charAt(current));
             }
             current++;
         }
