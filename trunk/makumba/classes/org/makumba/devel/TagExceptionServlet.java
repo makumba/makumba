@@ -62,6 +62,7 @@ public class TagExceptionServlet extends HttpServlet {
     static Object errors[][] = { { org.makumba.OQLParseError.class, "query" },
             { org.makumba.DataDefinitionNotFoundError.class, "data definition not found" },
             { org.makumba.DataDefinitionParseError.class, "data definition parse" },
+            { org.makumba.ValidationDefinitionParseError.class, "validation definition parse" },
             { org.makumba.DBError.class, "database" }, { org.makumba.ConfigFileError.class, "configuration" },
             { org.makumba.ProgrammerError.class, "programmer" },
             { org.makumba.view.jsptaglib.MakumbaJspException.class, "page" },
