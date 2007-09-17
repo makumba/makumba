@@ -1,7 +1,7 @@
 # This is a sample validation definition
 validEmail : Email address is not valid! : email matches .+@.+\.[a-z]+
-validAge : Age must be between 12 and 99! : age range [12..99]
-validHobbies : Hobbies must not be empty! : hobbies length [1..?]
+validAge : Age must be between 12 and 99! : age in range [12..99]
+validHobbies : Hobbies must not be empty! : hobbies length in [1..?]
 ageWeight : You should not be more heavy than you're old! : weight < age
 firstSex : Can't have sex before you'are born! : firstSex >= birthdate
 beginDate1 : Begin date can't be in the past! : beginDate >= $now
