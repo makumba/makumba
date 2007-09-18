@@ -7,7 +7,16 @@
 <head>
   <title>Playground</title>
   <link rel="StyleSheet" href="../style/style.css" type="text/css" media="all"/>
-  <script type="text/javascript" src="../scripts/livevalidation_1.0_standalone.js"></script>
+<% String[] neededJS = org.makumba.MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames(); 
+   for (int i=0; i<neededJS.length; i++) { %>
+      <script type="text/javascript" src="../scripts/<%= neededJS[i] %>"></script><%
+   }
+
+   neededJS = org.makumba.MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames();
+   for (int i=0; i<neededJS.length; i++) { %>
+      <script type="text/javascript" src="../scripts/<%= neededJS[i] %>"></script><%
+   }
+%>
 </head>
 
 <body>

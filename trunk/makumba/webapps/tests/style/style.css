@@ -1,5 +1,15 @@
 @CHARSET "ISO-8859-1";
 
+th {
+  background-color: #ddddff;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+td {
+  background-color: #f5f5ff; 
+}
+
 .formAnnotation {
   font-weight: bold;
   color: red;
@@ -13,7 +23,7 @@
 .cpYearNavigation,.cpMonthNavigation {
   background-color: #6677DD;
   text-align: center;
-  vertical-align: center;
+  vertical-align: middle;
   text-decoration: none;
   color: #FFFFFF;
   font-weight: bold;
@@ -27,7 +37,7 @@
 TD.cpDayColumnHeader {
   text-align: right;
   border: solid thin #6677DD;
-  border-width: 0 0 1 0;
+  border-width: 0px 0px 1px 0px; 
 }
 
 .cpCurrentMonthDate,.cpOtherMonthDate,.cpCurrentDate {
@@ -58,18 +68,18 @@ TD.cpDayColumnHeader {
 TD.cpCurrentDate {
   color: #FFFFFF;
   background-color: #6677DD;
-  border-width: 1;
+  border-width: 1px;
   border: solid thin #000000;
 }
 
 TD.cpCurrentDateDisabled {
-  border-width: 1;
+  border-width: 1px;
   border: solid thin #FFAAAA;
 }
 
 TD.cpTodayText,TD.cpTodayTextDisabled {
   border: solid thin #6677DD;
-  border-width: 1 0 0 0;
+  border-width: 1px 0px 0px 0px;
 }
 
 A.cpTodayText,SPAN.cpTodayTextDisabled {
@@ -91,8 +101,8 @@ SPAN.cpTodayTextDisabled {
 
 .calendarEditor {
   background: url(/tests/style/calendar.gif) left center no-repeat;
-  padding-left: 16;
-  height: 16;
+  padding-left: 16px;
+  height: 16px;
 }
 
 .LV_validation_message {
