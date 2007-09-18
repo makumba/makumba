@@ -212,33 +212,67 @@ public class TestTags extends JspTestCase {
 				.indexOf("\r")));
 	}
 
-	public void testMakListTag() throws ServletException, IOException {
-		pageContext.include("testMakListTag.jsp");
-	}
-	public void endMakListTag(WebResponse response) {
-		try {
-			output = response.getText();
-		} catch (IOException e) {
-			fail("JSP output error: " + response.getResponseMessage());
-		}
-		int i = 0, begin, end;
+    public void testMakListTag() throws ServletException, IOException {
+        pageContext.include("testMakListTag.jsp");
+    }
+    public void endMakListTag(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        int i = 0, begin, end;
 
-		while ((begin = output.indexOf("name")) != -1) {
-			output = output.substring(begin + 5);
-			assertEquals(languageData[i][0], output.substring(0, output
-					.indexOf("<br>")));
-			output = output.substring(output.indexOf("isoCode") + 8);
-			assertEquals(languageData[i][1], output.substring(0, output
-					.indexOf("<br>")));
-			i++;
-		}
-		try {
-			assertEquals(true, response.getText().indexOf("English") != -1);
-		} catch (IOException e) {
-			fail("JSP output error: " + response.getResponseMessage());
-		}
-		return;
-	}
+        while ((begin = output.indexOf("name")) != -1) {
+            output = output.substring(begin + 5);
+            assertEquals(languageData[i][0], output.substring(0, output
+                    .indexOf("<br>")));
+            output = output.substring(output.indexOf("isoCode") + 8);
+            assertEquals(languageData[i][1], output.substring(0, output
+                    .indexOf("<br>")));
+            i++;
+        }
+        try {
+            assertEquals(true, response.getText().indexOf("English") != -1);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        return;
+    }
+
+    public void testMakListCount() throws ServletException, IOException {
+        pageContext.include("testMakListCount.jsp");
+    }
+    public void endMakListCount(WebResponse response) {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        int i = 0, begin, end;
+
+        while ((begin = output.indexOf("count")) != -1) {
+            output = output.substring(begin + 6);
+            assertEquals(new Integer(i+1).toString(), output.substring(0, output
+                    .indexOf("<br>")));
+            output = output.substring(output.indexOf("maxCount:"));
+            String maxCount = output.substring(9, output.indexOf("<br>"));
+            assertEquals(new Integer(5).toString(), maxCount);
+            i++;
+        }
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        output = output.substring(output.indexOf("lastCount:"));
+        String lastCount = output.substring(10, output.indexOf("<br>"));
+        assertEquals(new Integer(5).toString(), lastCount);
+        return;
+    }
+ 
+    
+    
 
 	public void testMakValueChar() throws ServletException, IOException {
 		pageContext.include("testMakValueChar.jsp");		
