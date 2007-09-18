@@ -54,7 +54,7 @@ public class HsqldbDatabase extends org.makumba.db.sql.Database
 		return p;
 	}
 
-	protected boolean isDuplicateException(SQLException e) {
+	public boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
 	}
 

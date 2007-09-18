@@ -438,7 +438,7 @@ public class Database extends org.makumba.db.Database {
 	 * return whether the exception indicates a duplicate. may need to be
 	 * specified differently for certain database engines
 	 */
-	protected boolean isDuplicateException(SQLException e) {
+	public boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
 	}
 
