@@ -84,15 +84,15 @@ public class RecordParser {
     DataDefinition dd;
 
     // moved from ptrOneParser
-    HashMap ptrOne_RecordParsers = new HashMap();
+    HashMap<String, RecordParser> ptrOne_RecordParsers = new HashMap<String, RecordParser>();
 
     // moved from setParser
-    HashMap setParser_settbls = new HashMap();
+    HashMap<String, DataDefinition> setParser_settbls = new HashMap<String, DataDefinition>();
 
     // moved from subtableParser
-    HashMap subtableParser_subtables = new HashMap();
+    HashMap<String, DataDefinition> subtableParser_subtables = new HashMap<String, DataDefinition>();
 
-    HashMap subtableParser_here = new HashMap();
+    HashMap<String, DataDefinition> subtableParser_here = new HashMap<String, DataDefinition>();
 
     RecordParser() {
         definedTypes = new Properties();
@@ -185,14 +185,15 @@ public class RecordParser {
         treatSubfields();
 
         // after all fields are processed, process the multi field indices & check for field existance
-        checkMultipleUnique();
-        
-        //parse validation definition
+        checkMultipleUniqueFields();
+
+        // parse validation definition
         parseValidationDefinition();
 
     }
 
-    private void checkMultipleUnique() {
+    /** Check whether all fields used in multiple uniqueness checks are defined in the data definition. */
+    private void checkMultipleUniqueFields() {
         for (int i = 0; i < dd.getMultiFieldUniqueKeys().length; i++) {
             DataDefinition.MultipleUniqueKeyDefinition multiUniqueKeyDefinition = (DataDefinition.MultipleUniqueKeyDefinition) dd.getMultiFieldUniqueKeys()[i];
             for (int j = 0; j < multiUniqueKeyDefinition.getFields().length; j++) {
@@ -252,7 +253,6 @@ public class RecordParser {
     }
 
     static public java.net.URL findDataDefinitionOrDirectory(String s, String ext) {
-        String s1 = null;
         java.net.URL u = null;
         if (s.startsWith("/"))
             s = s.substring(1);
@@ -262,9 +262,9 @@ public class RecordParser {
         if (u == null) {
             u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
             if (u == null) {
-                u = getResource(s1 = "dataDefinitions/" + s.replace('.', '/'));
+                u = getResource("dataDefinitions/" + s.replace('.', '/'));
                 if (u == null) {
-                    u = getResource(s1 = s.replace('.', '/'));
+                    u = getResource(s.replace('.', '/'));
                 }
             }
         }
@@ -287,7 +287,7 @@ public class RecordParser {
     void solveIncludes() {
         int line = 0;
         OrderedProperties inclText;
-        Vector overridenFields = new Vector();
+        Vector<String> overridenFields = new Vector<String>();
 
         for (Enumeration e = text.keys(); e.hasMoreElements(); line++) {
             String st = (String) e.nextElement();
@@ -298,7 +298,7 @@ public class RecordParser {
                 line--;
                 String s = incl.trim();
                 java.net.URL u = findDataDefinition(s, "idd");
-                String n = "." + dd.getName();
+                // String n = "." + dd.getName();
                 // if(u==null && s.indexOf('.')==-1)
                 // u=findTable(n.substring(1, n.lastIndexOf('.')+1));
 
@@ -425,25 +425,6 @@ public class RecordParser {
         return p.getOriginal(k) + "=" + p.getProperty(k);
     }
 
-    public static Vector commaString2Vector(String s) {
-        Vector v = new Vector();
-
-        while (true) {
-            int p = s.indexOf(',');
-            if (p == -1) {
-                String toAdd = s.trim();
-                if (toAdd.length() > 0)
-                    v.addElement(toAdd);
-                return v;
-            } else {
-                String toAdd = s.substring(0, p).trim();
-                if (toAdd.length() > 0)
-                    v.addElement(toAdd);
-                s = s.substring(p + 1);
-            }
-        }
-    }
-
     static String listArguments(Vector v) {
         StringBuffer sb = new StringBuffer();
         if (v != null && v.size() > 0) {
@@ -485,7 +466,7 @@ public class RecordParser {
             Matcher multiUniqueMatcher = multiUniquePattern.matcher(st);
             if (l == -1 && multiUniqueMatcher.matches()) { // if we do have a multiple key def, parse & store it
                 // we will analyse if the fields are correct later
-                ArrayList groupList = new ArrayList();
+                ArrayList<String> groupList = new ArrayList<String>();
                 for (int j = 1; j <= multiUniqueMatcher.groupCount(); j++) {
                     if (multiUniqueMatcher.group(j) != null) {
                         groupList.add(multiUniqueMatcher.group(j));
@@ -543,7 +524,7 @@ public class RecordParser {
 
     // moved from ptrOneParser
     public void parse_ptrOne_Subfields(String fieldName) {
-        ((RecordParser) ptrOne_RecordParsers.get(fieldName)).parse();
+        ptrOne_RecordParsers.get(fieldName).parse();
         getFieldInfo(fieldName).extra2 = ((RecordParser) ptrOne_RecordParsers.get(fieldName)).dd.getTitleFieldName();
     }
 
@@ -595,7 +576,7 @@ public class RecordParser {
 
     // moved from ptrOneParser
     String add_ptrOne_Text(String fieldName, String nm, String origNm, String val) {
-        if (((RecordParser) ptrOne_RecordParsers.get(fieldName)).text.putLast(nm, origNm, val) != null)
+        if (ptrOne_RecordParsers.get(fieldName).text.putLast(nm, origNm, val) != null)
             return "field already exists";
         return null;
     }
@@ -1069,17 +1050,18 @@ public class RecordParser {
     public static void main(String[] args) {
         RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
                 "!unique( abc )", "!unique(abc , def )" });
-        DataDefinition dd = MakumbaSystem.getDataDefinition("test.Person");
+        MakumbaSystem.getDataDefinition("test.Person");
     }
 
 }
 
 class OrderedProperties extends Dictionary {
-    Vector ks = new Vector();
+    // FIXME: can this be replaced by some collection from java.util or apache-commons-collections?
+    Vector<Object> ks = new Vector<Object>();
 
-    Hashtable orig = new Hashtable();
+    Hashtable<Object, Object> orig = new Hashtable<Object, Object>();
 
-    Hashtable content = new Hashtable();
+    Hashtable<Object, Object> content = new Hashtable<Object, Object>();
 
     OrderedProperties() {
     }
