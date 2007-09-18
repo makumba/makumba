@@ -94,7 +94,7 @@ public abstract class Table // extends RecordHandler
         return dd;
     }
 
-    Hashtable relatedTables = new Hashtable();
+    Hashtable<String, DataDefinition> relatedTables = new Hashtable<String, DataDefinition>();
 
     public FieldDefinition getFieldDefinition(String fieldName) {
         return dd.getFieldDefinition(fieldName);
@@ -181,7 +181,7 @@ public abstract class Table // extends RecordHandler
             selectAllWithDbsv = "SELECT " + list + " FROM " + nm + " t " + dbsvLimitation;
         }
 
-        Vector v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
+        Vector<Object> v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
         if (v.size() == 0) {
             MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm + ": no records to copy");
             return;
@@ -197,8 +197,8 @@ public abstract class Table // extends RecordHandler
         float step = ((float) v.size() / BAR);
 
         int stars = 0;
-        Hashtable data = new Hashtable(23);
-        Hashtable nameKey = new Hashtable(23);
+        Hashtable<String, Object> data = new Hashtable<String, Object>(23);
+        Hashtable<Object, String> nameKey = new Hashtable<Object, String>(23);
 
         int f = 0;
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
