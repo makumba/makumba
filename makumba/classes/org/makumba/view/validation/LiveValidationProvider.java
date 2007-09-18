@@ -8,6 +8,7 @@ import java.util.Iterator;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.controller.html.FieldEditor;
+import org.makumba.controller.validation.ComparisonValidationRule;
 import org.makumba.controller.validation.NumberRangeValidationRule;
 import org.makumba.controller.validation.RangeValidationRule;
 import org.makumba.controller.validation.RegExpValidationRule;
@@ -65,14 +66,35 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 ValidationRule rule = (ValidationRule) iter.next();
                 if (rule instanceof StringLengthValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Length", rule, getRangeLimits(rule)));
-                }
-                if (rule instanceof NumberRangeValidationRule) {
+                } else if (rule instanceof NumberRangeValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
                         getRangeLimits(rule)));
-                }
-                if (rule instanceof RegExpValidationRule) {
+                } else if (rule instanceof RegExpValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
                             + ((RegExpValidationRule) rule).getRegExp() + "$/i, "));
+                } else if (rule instanceof ComparisonValidationRule) {
+                    ComparisonValidationRule c = (ComparisonValidationRule) rule;
+
+                    // FIXME: need to implement date comparisions
+                    if (c.getFieldDefinition().isDateType()) {
+                        continue;
+                    }
+
+                    String arguments = "element1: \"" + c.getFieldName() + "\", element2: \"" + c.getOtherFieldName()
+                            + "\", comparisonOperator: \"" + c.getCompareOperator() + "\", ";
+
+                    if (c.getFieldDefinition().isNumberType()) {
+                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
+                            arguments));
+                    } else if (c.getFieldDefinition().isDateType()) {
+                        // todo: implement!
+                    } else if (c.getFieldDefinition().isStringType()) {
+                        if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
+                            arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";
+                            validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
+                                rule, arguments));
+                        }
+                    }
                 }
             }
         }
@@ -120,7 +142,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     }
 
     public String[] getNeededJavaScriptFileNames() {
-        return new String[] { "livevalidation_1.0_standalone.js" };
+        return new String[] { "livevalidation_1.0_standalone.js", "makumba-livevalidation.js" };
     }
 
     private String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {
