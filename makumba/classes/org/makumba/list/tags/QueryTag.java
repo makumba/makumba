@@ -371,8 +371,9 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The current count of iterations
      */
     public static int count() {
-        return ((Integer)servletRequestThreadLocal.get().getAttribute(standardCountVar))
-                .intValue();
+        Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
+        if(countAttr == null) return -1;
+        return ((Integer) countAttr).intValue();
     }
 
     /**
@@ -381,8 +382,9 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The maximum number of iterations within the current iterationGroup
      */
     public static int maxCount() {
-        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardMaxCountVar))
-                .intValue();
+        Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
+        if(maxAttr == null) return -1;
+        return ((Integer) maxAttr).intValue();
     }
 
     /**
