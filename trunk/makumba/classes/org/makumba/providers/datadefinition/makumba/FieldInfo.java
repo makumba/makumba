@@ -25,8 +25,10 @@
 
 package org.makumba.providers.datadefinition.makumba;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -238,7 +240,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // those fields are only used by some types
     Object extra1, extra2, extra3;
 
-    private Hashtable validationRules = new Hashtable();
+    private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
 
     /** check if the value can be assigned */
     public Object checkValue(Object value) {
@@ -263,7 +265,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         try {
             // may be just an Integer
             Object o = getEnum().checkValue(value);
-            Vector v = new Vector();
+            Vector<Object> v = new Vector<Object>();
             if (o != null && o instanceof Integer)
                 v.addElement(o);
             return v;
@@ -271,7 +273,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         }
 
         normalCheck(value);
-        Vector v = (Vector) value;
+        Vector<Object> v = (Vector) value;
 
         for (int i = 0; i < v.size(); i++) {
             if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullInteger))
@@ -811,7 +813,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         try {
             // may be just a pointer
             Object o = check_ptrIndex_ValueImpl(value);
-            Vector v = new Vector();
+            Vector<Object> v = new Vector<Object>();
             if (o != null && o instanceof Pointer)
                 v.addElement(o);
             return v;
@@ -820,7 +822,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
         normalCheck(value);
 
-        Vector v = (Vector) value;
+        Vector<Object> v = (Vector) value;
 
         FieldDefinition ptr = getForeignTable().getFieldDefinition(getForeignTable().getIndexPointerFieldName());
 
@@ -841,7 +843,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public Object check_setcharEnum_ValueImpl(Object value) {
         try {
             Object o = getEnum().checkValue(value);
-            Vector v = new Vector();
+            Vector<Object> v = new Vector<Object>();
             if (o != null && o instanceof String)
                 v.addElement(o);
             return v;
@@ -850,7 +852,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
         normalCheck(value);
 
-        Vector v = (Vector) value;
+        Vector<Object> v = (Vector) value;
 
         for (int i = 0; i < v.size(); i++) {
             if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString))
@@ -1098,6 +1100,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     public Collection getValidationRules() {
-        return validationRules.values();
+        // we sort the rules, so that comparison rules come in the end
+        ArrayList arrayList = new ArrayList(validationRules.values());
+        Collections.sort(arrayList);
+        return arrayList;
     }
 }
