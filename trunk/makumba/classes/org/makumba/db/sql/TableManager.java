@@ -69,9 +69,9 @@ public class TableManager extends Table {
 
     boolean exists_;
 
-    Hashtable handlerExist = new Hashtable();
+    Hashtable<String, Object> handlerExist = new Hashtable<String, Object>();
 
-    Dictionary keyIndex;
+    Dictionary<String, Integer> keyIndex;
 
     String preparedInsertString, preparedInsertAutoIncrementString, preparedDeleteString, preparedDeleteFromString,
             preparedDeleteFromIgnoreDbsvString;
@@ -103,7 +103,7 @@ public class TableManager extends Table {
 
     void makeKeyIndex() {
         if (keyIndex == null) {
-            keyIndex = new Hashtable();
+            keyIndex = new Hashtable<String, Integer>();
 
             for (int i = 0; i < getDataDefinition().getFieldNames().size(); i++) {
                 FieldDefinition fi = getDataDefinition().getFieldDefinition(i);
@@ -209,7 +209,7 @@ public class TableManager extends Table {
         }
     }
 
-    Hashtable indexes = new Hashtable();
+    Hashtable<String, Boolean> indexes = new Hashtable<String, Boolean>();
 
     Hashtable extraIndexes;
 
@@ -248,8 +248,8 @@ public class TableManager extends Table {
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             String[] fieldNames = multiFieldUniqueKeys[i].getFields();
             if (!isIndexOk(fieldNames)) {
-                String briefMulti = getDataDefinition().getName() + "#"
-                        + StringUtils.toString(fieldNames).toLowerCase();
+                String fields = StringUtils.toString(fieldNames);
+                String briefMulti = getDataDefinition().getName() + "#" + fields.toLowerCase();
                 try {
                     Statement st = dbc.createStatement();
                     st.executeUpdate(indexCreateUniqueSyntax(fieldNames));
@@ -261,6 +261,10 @@ public class TableManager extends Table {
                     org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
                         "Problem adding multi-field INDEX on " + briefMulti + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
+                    if (getDatabase().isDuplicateException(e)) {
+                        throw new DBError("Error adding unique key for " + getDataDefinition().getName()
+                                + " on fields " + fields + ": " + e.getMessage());
+                    }
                 }
             }
             extraIndexes.remove(StringUtils.concatAsString(fieldNames).toLowerCase());
@@ -419,10 +423,10 @@ public class TableManager extends Table {
 
     /** checks if an alteration is needed, and calls doAlter if so */
     protected void alter(SQLDBConnection dbc, CheckingStrategy cs) throws SQLException {
-        Vector present = new Vector();
-        Vector add = new Vector();
-        Vector modify = new Vector();
-        Vector drop = new Vector();
+        Vector<String> present = new Vector<String>();
+        Vector<String> add = new Vector<String>();
+        Vector<String> modify = new Vector<String>();
+        Vector<String> drop = new Vector<String>();
         Object withness = new Object();
 
         while (cs.hasMoreColumns()) {
@@ -454,8 +458,8 @@ public class TableManager extends Table {
                 "extra field: " + cs.columnName() + " " + cs.columnType() + " " + cs.columnTypeName());
         }
 
-        Vector v = new Vector();
-        keyIndex = new Hashtable();
+        Vector<String> v = new Vector<String>();
+        keyIndex = new Hashtable<String, Integer>();
 
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
