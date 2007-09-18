@@ -24,6 +24,7 @@
 package org.makumba.db;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -128,6 +129,8 @@ public abstract class Database {
     }
 
     protected abstract DBConnection makeDBConnection();
+    
+    public abstract boolean isDuplicateException(SQLException e);
 
     // ---------------------------------------------------
 
