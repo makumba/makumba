@@ -23,6 +23,7 @@
 
 package org.makumba.list.tags;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.IterationTag;
@@ -215,7 +216,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
 
     ValueComputer choiceComputer;
 
-    private static ThreadLocal<PageContext> pageContextThreadLocal = new ThreadLocal<PageContext>();
+    private static ThreadLocal<ServletRequest> servletRequestThreadLocal = new ThreadLocal<ServletRequest>();
     
     /**
      * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
@@ -227,7 +228,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @see QueryExecution
      */
     public int doMakumbaStartTag(PageCache pageCache) throws LogicException, JspException {
-        pageContextThreadLocal.set(pageContext);
+        servletRequestThreadLocal.set(pageContext.getRequest());
         if (getParentList() == null)
             QueryExecution.startListGroup(pageContext);
         else {
@@ -370,7 +371,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The current count of iterations
      */
     public static int count() {
-        return ((Integer)pageContextThreadLocal.get().getAttribute(standardCountVar))
+        return ((Integer)servletRequestThreadLocal.get().getAttribute(standardCountVar))
                 .intValue();
     }
 
@@ -380,7 +381,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The maximum number of iterations within the current iterationGroup
      */
     public static int maxCount() {
-        return ((Integer) pageContextThreadLocal.get().getAttribute(standardMaxCountVar))
+        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardMaxCountVar))
                 .intValue();
     }
 
@@ -390,7 +391,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
-        return ((Integer) pageContextThreadLocal.get().getAttribute(standardLastCountVar))
+        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar))
                 .intValue();
     }
 }
