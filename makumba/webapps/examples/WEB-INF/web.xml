@@ -98,14 +98,14 @@
   <taglib>
   	<taglib-uri>http://www.makumba.org/presentation</taglib-uri>
   	<taglib-location>
-  		../../../servlet_context/WEB-INF/makumba.tld
+  		../../../classes/META-INF/taglib.tld
   	</taglib-location>
   </taglib>
 
   <taglib>
   	<taglib-uri>http://www.makumba.org/hibernate</taglib-uri>
   	<taglib-location>
-  		../../../servlet_context/WEB-INF/makumba-hibernate.tld
+  		../../../classes/META-INF/taglib-hibernate.tld
   	</taglib-location>
   </taglib>
   
