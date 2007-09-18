@@ -160,10 +160,12 @@
 
          <!-- Copy the manifest in order to replace the version token filter -->
          <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
+         <!-- We don't do this copying anymore since the TLDs are in classes/META-INF with the right name
          <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
          <copy file="servlet_context/WEB-INF/makumba-hibernate.tld" todir="META-INF" filtering="on" overwrite="true"/>
          <copy file="META-INF/makumba.tld" tofile="META-INF/taglib.tld" filtering="off" overwrite="true"/>
          <copy file="META-INF/makumba-hibernate.tld" tofile="META-INF/taglib-hibernate.tld" filtering="off" overwrite="true"/>
+         -->
        </target>
 
 
@@ -179,7 +181,7 @@
 		includes="COPYING.txt"
 		defaultExcludes="no"
 		/>	
-   	<metainf dir="META-INF" 
+   	<metainf dir="classes/META-INF" 
 		includes="**/*.tld"
 		defaultExcludes="no"
 		/>	
@@ -295,7 +297,9 @@
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<cvs command="export -r ${tag} makumba" cvsroot=":pserver:anonymous@makumba.cvs.sourceforge.net:/cvsroot/makumba" dest="work/makumba.distrib/"/>
+	<svn>
+		<export srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/" destPath="work/makumba.distrib/" revision="${tag}"/>
+	</svn>
 	<mkdir dir="${jar.place}/lib" />
 
 	<!-- make the source tarball: -->
