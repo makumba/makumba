@@ -39,7 +39,7 @@ public class ComparisonValidationRule extends BasicValidationRule {
             + RegExpUtils.whitespace + "(\\+" + RegExpUtils.whitespace + "\\d+|-" + RegExpUtils.whitespace
             + "\\d+)?|\\d+)" + RegExpUtils.whitespace;
 
-    /** the full date function {@link #dateFunctionExpression                                     */
+    /** the full date function {@value #dateFunctionExpression}. */
     public static final String dateFunctionExpression = "date\\((" + dateFunctionParamExpression + ",){0,5}("
             + dateFunctionParamExpression + ")?\\)";
 
@@ -161,6 +161,14 @@ public class ComparisonValidationRule extends BasicValidationRule {
 
     public FieldDefinition getOtherFd() {
         return otherFd;
+    }
+
+    public String getCompareOperator() {
+        return compareOperator;
+    }
+
+    public String getFunctionName() {
+        return functionName;
     }
 
     protected boolean throwException(boolean b) throws InvalidValueException {

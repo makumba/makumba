@@ -103,6 +103,11 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
         }
     }
 
+    /** return the (first) field name the rule operates on. */
+    public String getFieldName() {
+        return fieldName;
+    }
+
     /**
      * Extract the function argument from the rule definition statement. I.e. for 'lower(name)', 'name' will be
      * returned.
@@ -154,6 +159,20 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
         for (int i = 0; i < rules.length; i++) {
             Matcher matcher = p.matcher(rules[i]);
             System.out.println(rules[i] + ":" + matcher.matches());
+        }
+    }
+
+    /**
+     * We order the rules such that comparison rules come last. This is important for live validation, where first the
+     * validity of each field by itself should be checked.
+     */
+    public int compareTo(Object o) {
+        if (this instanceof ComparisonValidationRule) {
+            return 1;
+        } else if (o instanceof ComparisonValidationRule) {
+            return -1;
+        } else {
+            return 0;
         }
     }
 

@@ -31,11 +31,6 @@ public abstract class SingleFieldValidationRule extends BasicValidationRule {
                 + getAllowedTypes() + " types, &lt;" + fd.getName() + "&gt; is of type '" + fd.getType() + "'!", "");
     }
 
-    /** return the field name the rule operatos on. */
-    public String getFieldName() {
-        return fieldName;
-    }
-
     /** Throw a default exception. */
     protected void throwException() throws InvalidValueException {
         throw new InvalidValueException(getFieldName(), getErrorMessage());
