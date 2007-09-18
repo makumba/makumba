@@ -36,6 +36,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
+import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 
@@ -236,7 +237,9 @@ public abstract class DBConnection implements org.makumba.Transaction {
      */
     public Pointer insert(Pointer base, String field, java.util.Dictionary data) {
         FieldDefinition fi = MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
-
+        if(fi==null){
+            throw new NoSuchFieldException(MakumbaSystem.getDataDefinition(base.getType()), field);  
+        }
         if (fi.getType().equals("setComplex")) {
             data.put(fi.getSubtable().getSetOwnerFieldName(), base);
             return insert(fi.getSubtable().getName(), data);
