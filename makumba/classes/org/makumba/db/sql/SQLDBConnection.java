@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -32,120 +33,106 @@ import java.sql.Statement;
 import org.makumba.DBError;
 import org.makumba.db.DBConnection;
 
-public class SQLDBConnection extends DBConnection
-{
-  static int nconn=0;
-  int n;
+public class SQLDBConnection extends DBConnection {
+    static int nconn = 0;
 
-  private Connection conn;
+    int n;
 
-  SQLDBConnection(org.makumba.db.Database db) throws SQLException
-  { 
-    super(db);
-    n=nconn++;
-    makeConnection();
-  }
-  
-  private void makeConnection() throws SQLException
-  {
-    conn=DriverManager.getConnection(((org.makumba.db.sql.Database)db).url, ((org.makumba.db.sql.Database)db).connectionConfig);
-    if(conn.getMetaData().supportsTransactions())
-      conn.setAutoCommit(false);
-    if(conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
-      conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
-    
-    if(org.makumba.db.sql.Database.supportsUTF8())
-    {
-//        System.out.println("UTF: SQLDBConenction: supports utf8");
-      Statement st = this.createStatement();
-      st.execute("SET CHARACTER SET utf8");
-      st.close();      
+    private Connection conn;
+
+    SQLDBConnection(org.makumba.db.Database db) throws SQLException {
+        super(db);
+        n = nconn++;
+        makeConnection();
     }
-  }
 
-  public void close()
-  {
-    try{
-      conn.close();
-    }catch(SQLException e) 
-      {
-	Database.logException(e, this);
-	throw new DBError(e);
-      } 
-  }
+    private void makeConnection() throws SQLException {
+        conn = DriverManager.getConnection(((org.makumba.db.sql.Database) db).url,
+            ((org.makumba.db.sql.Database) db).connectionConfig);
+        if (conn.getMetaData().supportsTransactions())
+            conn.setAutoCommit(false);
+        if (conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
+            conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
 
-  public void commit()
-  {
-    try{
-      conn.commit();
-    }catch(SQLException e) 
-      {
-	Database.logException(e, this);
-	throw new DBError(e);
-      } 
-  }
+        if (org.makumba.db.sql.Database.supportsUTF8()) {
+            // System.out.println("UTF: SQLDBConenction: supports utf8");
+            Statement st = this.createStatement();
+            st.execute("SET CHARACTER SET utf8");
+            st.close();
+        }
+    }
 
+    public void close() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            Database.logException(e, this);
+            throw new DBError(e);
+        }
+    }
 
-  public void rollback()
-  {
-    try{
-      conn.rollback();
-    }catch(SQLException e) 
-      {
-	Database.logException(e, this);
-	throw new DBError(e);
-      } 
-  }
+    public void commit() {
+        try {
+            conn.commit();
+        } catch (SQLException e) {
+            Database.logException(e, this);
+            throw new DBError(e);
+        }
+    }
 
-  private Connection getConnection() throws SQLException
-  {
-      /* if(conn.isClosed())
-      {
-	MakumbaSystem.getMakumbaLogger("db.exception").warning("reconnecting connection "+n);
-	makeConnection();
-	}*/
+    public void rollback() {
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            Database.logException(e, this);
+            throw new DBError(e);
+        }
+    }
 
-    return conn;
-  }
-  public String toString(){ return "connection "+n; }
+    private Connection getConnection() throws SQLException {
+        // if(conn.isClosed()) { MakumbaSystem.getMakumbaLogger("db.exception").warning("reconnecting connection "+n);
+        // makeConnection(); }
+        return conn;
+    }
 
-  public DatabaseMetaData getMetaData()throws SQLException
-  {return getConnection().getMetaData(); }
+    public String toString() {
+        return "connection " + n;
+    }
 
-  public Statement createStatement()throws SQLException 
-  { return getConnection().createStatement(); }
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return getConnection().getMetaData();
+    }
 
-  PreparedStatement getPreparedStatement(String s)
-  {
-    try{
-       return getConnection().prepareStatement(s);      
-    }catch(SQLException e) 
-      {
-	org.makumba.db.sql.Database.logException(e);
-	throw new DBError(e); 
-      }
-  }
+    public Statement createStatement() throws SQLException {
+        return getConnection().createStatement();
+    }
 
-    /*
-    try{
-      return (PreparedStatement)preparedStatements.getResource(s);
-    }catch(RuntimeWrappedException e)
-      {
-	if(e.getReason() instanceof SQLException)
-	  {
-	    org.makumba.db.sql.Database.logException((SQLException)e.getReason());
-	    throw new DBError(e.getReason()); 
-	  }
-	throw e;
-      }
-  }
-  
-  NamedResources preparedStatements= new NamedResources(new NamedResourceFactory()
-   {
-     protected Object makeResource(Object nm) throws SQLException {
-       return conn.prepareStatement((String)nm);
-     }
-  });
-  */
+    PreparedStatement getPreparedStatement(String s) {
+        try {
+            return getConnection().prepareStatement(s);
+        } catch (SQLException e) {
+            org.makumba.db.sql.Database.logException(e);
+            throw new DBError(e);
+        }
+    }
+
+    // try{
+    // return (PreparedStatement)preparedStatements.getResource(s);
+    // }catch(RuntimeWrappedException e)
+    // {
+    // if(e.getReason() instanceof SQLException)
+    // {
+    // org.makumba.db.sql.Database.logException((SQLException)e.getReason());
+    // throw new DBError(e.getReason());
+    // }
+    // throw e;
+    // }
+    // }
+    //  
+    // NamedResources preparedStatements= new NamedResources(new NamedResourceFactory()
+    // {
+    // protected Object makeResource(Object nm) throws SQLException {
+    // return conn.prepareStatement((String)nm);
+    // }
+    // });
 }
-
