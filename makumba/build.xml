@@ -195,6 +195,12 @@
                 <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm"/>
         </tstamp>
 
+		<echo>- copying scripts /doc/scripts</echo>
+		<copy file="${jar.place}/webapps/tests/scripts/kruseAnchorPosition.js" tofile="${jar.place}/doc/scripts/kruseAnchorPosition.js"/>
+		<copy file="${jar.place}/webapps/tests/scripts/kruseCalendarPopup.js" tofile="${jar.place}/doc/scripts/kruseCalendarPopup.js"/>
+		<copy file="${jar.place}/webapps/tests/scripts/kruseDateFunctions.js" tofile="${jar.place}/doc/scripts/kruseDateFunctions.js"/>
+		<copy file="${jar.place}/webapps/tests/scripts/krusePopupWindow.js" tofile="${jar.place}/doc/scripts/krusePopupWindow.js"/>
+		<copy file="${jar.place}/webapps/tests/scripts/makumbaDateFunctions.js" tofile="${jar.place}/doc/scripts/makumbaDateFunctions.js"/>
 	<echo>- generating doc/api</echo>
 	<javadoc 
 		destdir="doc/api" 
