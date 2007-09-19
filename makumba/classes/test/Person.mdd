@@ -61,4 +61,5 @@ address=set			 ;Addresses
 
 uniqPtr=unique ptr test.Language	;test ptr uniqness
   
-!unique(age, email)
+#!unique(age, email)
+#!unique(indiv.name, indiv.surname)
