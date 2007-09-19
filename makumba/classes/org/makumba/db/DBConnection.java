@@ -34,7 +34,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
-import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
@@ -65,9 +64,9 @@ public abstract class DBConnection implements org.makumba.Transaction {
 
     public abstract void rollback();
 
-    Map locks = new HashMap(13);
+    Map<String, Pointer> locks = new HashMap<String, Pointer>(13);
 
-    Hashtable lockRecord = new Hashtable(5);
+    Hashtable<String, String> lockRecord = new Hashtable<String, String>(5);
 
     public void lock(String symbol) {
         lockRecord.clear();
@@ -106,7 +105,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
         Enumeration e = null;
         if (flds == null) {
             DataDefinition ri = MakumbaSystem.getDataDefinition(p.getType());
-            Vector v = new Vector();
+            Vector<String> v = new Vector<String>();
             for (Enumeration f = ri.getFieldNames().elements(); f.hasMoreElements();) {
                 String s = (String) f.nextElement();
                 if (!ri.getFieldDefinition(s).getType().startsWith("set"))
@@ -118,18 +117,17 @@ public abstract class DBConnection implements org.makumba.Transaction {
         else if (flds instanceof Enumeration)
             e = (Enumeration) flds;
         else if (flds instanceof String[]) {
-            Vector v = new Vector();
+            Vector<String> v = new Vector<String>();
             String[] fl = (String[]) flds;
             for (int i = 0; i < fl.length; i++)
                 v.addElement(fl[i]);
             e = v.elements();
         } else if (flds instanceof String) {
-            Vector v = new Vector();
-            v.add(flds);
+            Vector<String> v = new Vector<String>();
+            v.add((String) flds);
             e = v.elements();
         } else {
-            // FIXME: don't throw an invalid value exception for a programmer error?
-            throw new InvalidValueException("read() argument must be Enumeration, Vector, String[], String or null");
+            throw new ProgrammerError("read() argument must be Enumeration, Vector, String[], String or null");
         }
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
@@ -155,7 +153,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
         if (v.size() > 1)
             throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: " + p);
         Dictionary d = (Dictionary) v.elementAt(0);
-        Hashtable h = new Hashtable(13);
+        Hashtable<Object, Object> h = new Hashtable<Object, Object>(13);
         for (Enumeration en = d.keys(); en.hasMoreElements();) {
             Object o = en.nextElement();
             h.put(o, d.get(o));
@@ -169,7 +167,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
         t.computeInsertHook();
 
         if (t.insertHook != null) {
-            Hashtable h = new Hashtable();
+            Hashtable<Object, Object> h = new Hashtable<Object, Object>();
             for (Enumeration e = data.keys(); e.hasMoreElements();) {
                 Object k = e.nextElement();
                 h.put(k, data.get(k));
@@ -237,8 +235,8 @@ public abstract class DBConnection implements org.makumba.Transaction {
      */
     public Pointer insert(Pointer base, String field, java.util.Dictionary data) {
         FieldDefinition fi = MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
-        if(fi==null){
-            throw new NoSuchFieldException(MakumbaSystem.getDataDefinition(base.getType()), field);  
+        if (fi == null) {
+            throw new NoSuchFieldException(MakumbaSystem.getDataDefinition(base.getType()), field);
         }
         if (fi.getType().equals("setComplex")) {
             data.put(fi.getSubtable().getSetOwnerFieldName(), base);
@@ -314,7 +312,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
             return;
         Vector values = (Vector) val;
 
-        Dictionary data = new Hashtable(10);
+        Dictionary<String, Object> data = new Hashtable<String, Object>(10);
         data.put(fi.getSubtable().getSetOwnerFieldName(), base);
         for (Enumeration e = values.elements(); e.hasMoreElements();) {
             data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
@@ -349,14 +347,17 @@ class DataHolder {
 
     Table t;
 
-    Dictionary dt = new Hashtable();
+    Dictionary<Object, Object> dt = new Hashtable<Object, Object>();
 
-    Dictionary others = new Hashtable(); // contains data holders
+    Dictionary<String, Object> others = new Hashtable<String, Object>(); // contains data holders
 
-    Dictionary sets = new Hashtable(); // contains vectors
+    Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
+
+    private Dictionary fullData;
 
     DataHolder(DBConnection d, Dictionary data, String type) {
         this.d = d;
+        this.fullData = data;
         t = d.db.getTable(MakumbaSystem.getDataDefinition(type).getName());
 
         for (Enumeration e = data.keys(); e.hasMoreElements();) {
@@ -391,7 +392,7 @@ class DataHolder {
             }
         }
         Dictionary others1 = others;
-        others = new Hashtable();
+        others = new Hashtable<String, Object>();
         for (Enumeration e = others1.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fd = t.getDataDefinition().getFieldDefinition(fld);
@@ -443,7 +444,7 @@ class DataHolder {
 
     void update(Pointer p) {
         // see if we have to read some pointers
-        Vector ptrsx = new Vector();
+        Vector<Object> ptrsx = new Vector<Object>();
         // we have to read the "other" pointers
         for (Enumeration e = others.keys(); e.hasMoreElements();)
             ptrsx.addElement(e.nextElement());
