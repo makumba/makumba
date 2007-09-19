@@ -46,15 +46,18 @@ public class SQLUpdate implements Update {
         debugString = (set == null ? "delete" : "update") + " on type: <" + from + ">"
                 + (set == null ? " " : " setting: <" + set + ">") + " where: <" + where + ">";
 
-        if (set != null && set.trim().length() == 0)
+        if (set != null && set.trim().length() == 0) {
             throw new org.makumba.OQLParseError("Invalid empty update 'set' section in " + debugString);
+        }
 
-        if (where != null && where.trim().length() == 0)
+        if (where != null && where.trim().length() == 0) {
             where = null;
+        }
 
         // a primitive check, better one needs to be done after OQLAnalyzer's job
-        if (from != null && from.indexOf(',') >= 0)
+        if (from != null && from.indexOf(',') >= 0) {
             throw new org.makumba.OQLParseError("Only 1 table can be involved in " + debugString);
+        }
 
         // make sure whitespace only consists of spaces
         from = from.replace('\t', ' ');
@@ -69,8 +72,9 @@ public class SQLUpdate implements Update {
 
         // to get the right SQL, we compil an imaginary OQL command made as follows:
         String OQLQuery = "SELECT " + (set == null ? label : set) + " FROM " + from;
-        if (where != null)
+        if (where != null) {
             OQLQuery += " WHERE " + where;
+        }
 
         OQLAnalyzer tree;
         try {
@@ -106,8 +110,9 @@ public class SQLUpdate implements Update {
 
         // we remove the last instance of " label" from the FROM part of command
         lastN = fakeCommand.indexOf(" WHERE ");
-        if (lastN < 0) // no where part, search to end
+        if (lastN < 0) {
             lastN = fakeCommand.length();
+        }
         n = fakeCommand.lastIndexOf(" " + label, lastN);
         replaceLabel.append(fakeCommand.substring(maxN, n));
 
@@ -137,8 +142,9 @@ public class SQLUpdate implements Update {
                 n = setString.indexOf("is null", n);
                 if (n == -1) {
                     n = setString.indexOf("is  null", n);
-                    if (n == -1)
+                    if (n == -1) {
                         break;
+                    }
                     setString = setString.substring(0, n) + " = null" + setString.substring(n + 8);
                     continue;
                 }
@@ -146,8 +152,9 @@ public class SQLUpdate implements Update {
             }
             command.append(" SET ").append(setString);
         }
-        if (where != null)
+        if (where != null) {
             command.append(fakeCommand.substring(fakeCommand.indexOf(" WHERE ")));
+        }
 
         debugString += "\n generated SQL: " + command;
         updateCommand = command.toString();
@@ -157,9 +164,10 @@ public class SQLUpdate implements Update {
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
         try {
             String s = assigner.assignParameters(ps, args);
-            if (s != null)
+            if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to update:\n" + debugString
                         + "\n" + s);
+            }
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
@@ -169,10 +177,10 @@ public class SQLUpdate implements Update {
             try {
                 rez = ps.executeUpdate();
             } catch (SQLException se) {
-                if (((Database) dbc.getHostDatabase()).isDuplicateException(se))
+                if (((Database) dbc.getHostDatabase()).isDuplicateException(se)) {
                     // FIXME: need to determine the field that produced the error
                     throw new org.makumba.NotUniqueError(se);
-
+                }
                 org.makumba.db.sql.Database.logException(se);
                 throw new DBError(se, debugString);
             }
