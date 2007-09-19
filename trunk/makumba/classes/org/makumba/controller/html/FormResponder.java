@@ -181,7 +181,7 @@ public class FormResponder extends Responder {
                     clientSideValidation, "live"));
                 // we append it only if we actually have data
                 if (onSubmitValidation != null && onSubmitValidation.length() > 0) {
-                    sb.append(" onsubmit=\"");
+                    sb.append(" onsubmit=\"return ");
                     sb.append(onSubmitValidation);
                     sb.append("\"");
                 }
