@@ -416,7 +416,7 @@ class DataHolder {
     void checkInsert() {
         for (Enumeration e = others.elements(); e.hasMoreElements();)
             ((DataHolder) e.nextElement()).checkInsert();
-        t.checkInsert(dt, others);
+        t.checkInsert(dt, others, fullData);
     }
 
     void checkUpdate() {

@@ -38,6 +38,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import org.makumba.DBError;
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
@@ -77,7 +78,7 @@ public class TableManager extends Table {
             preparedDeleteFromIgnoreDbsvString;
 
     /** The query that searches for duplicates on this field */
-    Hashtable checkDuplicate = new Hashtable();
+    Hashtable<String, Object> checkDuplicate = new Hashtable<String, Object>();
 
     Hashtable checkNullDuplicate = new Hashtable();
 
@@ -247,7 +248,7 @@ public class TableManager extends Table {
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             String[] fieldNames = multiFieldUniqueKeys[i].getFields();
-            if (!isIndexOk(fieldNames)) {
+            if (!multiFieldUniqueKeys[i].isKeyOverSubfield() && !isIndexOk(fieldNames)) {
                 String fields = StringUtils.toString(fieldNames);
                 String briefMulti = getDataDefinition().getName() + "#" + fields.toLowerCase();
                 try {
@@ -264,6 +265,8 @@ public class TableManager extends Table {
                     if (getDatabase().isDuplicateException(e)) {
                         throw new DBError("Error adding unique key for " + getDataDefinition().getName()
                                 + " on fields " + fields + ": " + e.getMessage());
+                    } else {
+                        throw new DBError(e);
                     }
                 }
             }
@@ -685,7 +688,6 @@ public class TableManager extends Table {
             }
 
             Pointer ret = (Pointer) d.get(indexField);
-            ;
 
             if (!wasIndex)
                 d.remove(indexField);
@@ -706,7 +708,7 @@ public class TableManager extends Table {
     }
 
     protected NotUniqueError findDuplicates(SQLDBConnection dbc, Dictionary d) {
-        Dictionary duplicates = new Hashtable();
+        Dictionary<Object, Object> duplicates = new Hashtable<Object, Object>();
 
         // first we check all fields of the data definition
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
@@ -721,13 +723,19 @@ public class TableManager extends Table {
         // now we check all mult-field indices
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
-            String[] fields = multiFieldUniqueKeys[i].getFields();
-            Object[] values = new Object[fields.length];
-            for (int j = 0; j < fields.length; j++) {
-                values[j] = d.get(fields[j]);
-            }
-            if (checkDuplicate(fields, values, dbc)) {
-                duplicates.put(fields, values);
+            // we only need to check unique keys within the same data definition now
+            // multi-field unique keys spanning over several data definitions are checked in
+            // checkDuplicate(DataDefinition.MultipleUniqueKeyDefinition, Object[], SQLDBConnection)
+            // and other keys would not cause an error here, as they are not mapped to the data base
+            if (!multiFieldUniqueKeys[i].isKeyOverSubfield()) {
+                String[] fields = multiFieldUniqueKeys[i].getFields();
+                Object[] values = new Object[fields.length];
+                for (int j = 0; j < fields.length; j++) {
+                    values[j] = d.get(fields[j]);
+                }
+                if (checkDuplicate(fields, values, dbc)) {
+                    duplicates.put(fields, values);
+                }
             }
         }
         return new NotUniqueError(getDataDefinition().getName(), duplicates);
@@ -1716,7 +1724,73 @@ public class TableManager extends Table {
                     setUpdateArgument(fields[i], ps, (i + 1), values[i]);
                 }
             }
-            // System.out.println("*** " + ps.toString());
+            return ps.executeQuery().next();
+        } catch (SQLException se) {
+            Database.logException(se, dbc);
+            throw new org.makumba.DBError(se, StringUtils.toString(fields));
+        }
+
+    }
+
+    /**
+     * Checks for potential duplicates for multi-field unique keys that span over more than one data definition. There
+     * is no equivalent for this on the database level, so we need to check this before we insert, in
+     * {@link #checkInsert(Dictionary, Dictionary, Dictionary)}.
+     * 
+     * @return true if an entry for the given key already exists with these values
+     */
+    public boolean checkMultiDataDefinitionDuplicate(DataDefinition.MultipleUniqueKeyDefinition definition,
+            Object values[], SQLDBConnection dbc) {
+        String[] fields = definition.getFields();
+        String from = getDBName();
+        String where = "";
+
+        // for unique keys that go over subfields, we need to construct a query with joins
+        String projection = dd.getName().replace('.', '_'); // label of this table
+        from += " " + projection; // we need to use the labels, as we might have fields with the same name
+        Vector<String> alreadyAdded = new Vector<String>(); // we store what tables we already added to the projection
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].indexOf(".") != -1) { // FIXME: we go only one level of "." here, there might be more
+                // do the projection
+                String subField = fields[i].substring(0, fields[i].indexOf("."));
+                String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
+                DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
+                TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
+                String otherProjection = pointedType.getName().replace('.', '_');
+
+                if (!alreadyAdded.contains(subField)) { // if this is a new table
+                    // we add the projection & make the join
+                    from += ", " + otherTable.getDBName() + " " + otherProjection;
+                    where += projection + "." + getFieldDBName(subField) + "=" + otherProjection + "."
+                            + otherTable.getFieldDBName(pointedType.getIndexPointerFieldName()) + " AND ";
+                    alreadyAdded.add(subField);
+                }
+                // in any case, we match the tables on the fields.
+                where += otherProjection + "." + otherTable.getFieldDBName(fieldName) + "=?";
+                if (i + 1 < fields.length) {
+                    where += " AND ";
+                }
+            }
+        }
+
+        String query = "SELECT 1 FROM " + from + " WHERE " + where;// put it all together
+        PreparedStatement ps = dbc.getPreparedStatement(query);
+        try {
+            // now we need to set the parameters for the query
+            for (int i = 0; i < fields.length; i++) {
+                if (values[i] != null) {
+                    if (fields[i].indexOf(".") != -1) { // is it a field in a different table
+                        String subField = fields[i].substring(0, fields[i].indexOf("."));
+                        String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
+                        DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
+                        // then we use the table manager of that table to set the value
+                        TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
+                        otherTable.setUpdateArgument(fieldName, ps, (i + 1), values[i]);
+                    } else { // otherwise we use this table manager
+                        setUpdateArgument(fields[i], ps, (i + 1), values[i]);
+                    }
+                }
+            }
             return ps.executeQuery().next();
         } catch (SQLException se) {
             Database.logException(se, dbc);
@@ -1866,7 +1940,7 @@ public class TableManager extends Table {
     }
 
     // moved from RecordHandler
-    public void checkInsert(Dictionary d, Dictionary except) {
+    public void checkInsert(Dictionary d, Dictionary except, Dictionary fullData) {
         dd.checkFieldNames(d);
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
@@ -1874,6 +1948,31 @@ public class TableManager extends Table {
                 checkInsert(name, d);
             }
         }
+
+        // now we check all mult-field indices
+        MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
+        Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
+        for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
+            MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
+            String[] fields = key.getFields();
+            Object[] values = new Object[fields.length];
+            if (key.isKeyOverSubfield()) {
+                for (int j = 0; j < fields.length; j++) {
+                    values[j] = fullData.get(fields[j]);
+                }
+                DBConnection connection = getDatabase().getDBConnection();
+                if (connection instanceof DBConnectionWrapper) {
+                    connection = ((DBConnectionWrapper) connection).getWrapped();
+                }
+                if (checkMultiDataDefinitionDuplicate(key, values, (SQLDBConnection) connection)) {
+                    duplicates.put(fields, values);
+                }
+            }
+        }
+        if (duplicates.size() > 0) {
+            throw new NotUniqueError(getDataDefinition().getName(), duplicates);
+        }
+
     }
 
     // moved from dateCreateJavaManager, dateModifyJavaManager and

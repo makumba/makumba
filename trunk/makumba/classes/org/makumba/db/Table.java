@@ -264,7 +264,7 @@ public abstract class Table // extends RecordHandler
 
     public abstract Pointer insertRecordImpl(DBConnection c, Dictionary d);
 
-    public abstract void checkInsert(Dictionary data, Dictionary d);
+    public abstract void checkInsert(Dictionary data, Dictionary d, Dictionary fullData);
 
     public abstract void checkUpdate(Dictionary data, Dictionary d);
 }
