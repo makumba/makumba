@@ -197,9 +197,22 @@ public class RecordParser {
         for (int i = 0; i < dd.getMultiFieldUniqueKeys().length; i++) {
             DataDefinition.MultipleUniqueKeyDefinition multiUniqueKeyDefinition = (DataDefinition.MultipleUniqueKeyDefinition) dd.getMultiFieldUniqueKeys()[i];
             for (int j = 0; j < multiUniqueKeyDefinition.getFields().length; j++) {
-                if (dd.getFieldDefinition(multiUniqueKeyDefinition.getFields()[j]) == null) {
+                String fieldName = multiUniqueKeyDefinition.getFields()[j];
+
+                // check for potential sub-fields
+                DataDefinition checkedDataDef = dd;
+                int indexOf = -1;
+                while ((indexOf = fieldName.indexOf(".")) != -1) {
+                    // we have a sub-record-field
+                    String subFieldName = fieldName.substring(0, indexOf);
+                    fieldName = fieldName.substring(indexOf + 1);
+                    checkedDataDef = checkedDataDef.getFieldDefinition(subFieldName).getPointedType();
+                }
+                if (checkedDataDef.getFieldDefinition(fieldName) == null) {
                     mpe.add(new DataDefinitionParseError(dd.getName(), "Unique index contains an unknown field: "
-                            + multiUniqueKeyDefinition.getFields()[j], multiUniqueKeyDefinition.getLine()));
+                            + fieldName, multiUniqueKeyDefinition.getLine()));
+                } else if (checkedDataDef != dd) {
+                    multiUniqueKeyDefinition.setKeyOverSubfield(true);
                 }
             }
         }
