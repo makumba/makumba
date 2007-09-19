@@ -114,10 +114,12 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             b.append("<script type=\"text/javascript\">\n");
             b.append(validationObjects);
 
-            String functionName = StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()]));
-            b.append("function validateForm" + functionName + "() {\n");
+            b.append("function " + getValidationFunction() + " {\n");
             b.append("  valid = LiveValidation.massValidate( ").append(StringUtils.toString(definitionVarNames)).append(
                 " );\n");
+            b.append("  if (!valid) {");
+            b.append("    alert('Please correct all form errors first!');");
+            b.append("  }\n");
             b.append("  return valid;\n");
             b.append("}\n");
             b.append("</script>\n");
@@ -126,15 +128,18 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         return b;
     }
 
+    private StringBuffer getValidationFunction() {
+        return new StringBuffer("validateForm_").append(
+            StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()]))).append("()");
+    }
+
     /**
      * returns the call for the onSubmit validation, e.g.:<br>
      * <code>function(e) { return LiveValidation.massValidate( [emailValidation, weightValidation, hobbiesValidation, ageValidation] );</code>
      */
     public StringBuffer getOnSubmitValidation(boolean validateLive) {
         if (definitionVarNames.size() > 0) {
-            StringBuffer sb = new StringBuffer("validateForm_");
-            sb.append(StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()])));
-            sb.append("();");
+            StringBuffer sb = new StringBuffer(getValidationFunction()).append(";");
             return sb;
         } else {
             return null;
