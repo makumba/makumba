@@ -97,7 +97,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
     public void update(Pointer ptr, java.util.Dictionary fieldsToChange) {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
-        dh.checkUpdate();
+        dh.checkUpdate(ptr);
         dh.update(ptr);
     }
 
@@ -414,15 +414,17 @@ class DataHolder {
     }
 
     void checkInsert() {
-        for (Enumeration e = others.elements(); e.hasMoreElements();)
+        for (Enumeration e = others.elements(); e.hasMoreElements();) {
             ((DataHolder) e.nextElement()).checkInsert();
+        }
         t.checkInsert(dt, others, fullData);
     }
 
-    void checkUpdate() {
-        for (Enumeration e = others.elements(); e.hasMoreElements();)
-            ((DataHolder) e.nextElement()).checkUpdate();
-        t.checkUpdate(dt, others);
+    void checkUpdate(Pointer pointer) {
+        for (Enumeration e = others.elements(); e.hasMoreElements();) {
+            ((DataHolder) e.nextElement()).checkUpdate(pointer);
+        }
+        t.checkUpdate(pointer, dt, others, fullData);
     }
 
     Pointer insert() {
