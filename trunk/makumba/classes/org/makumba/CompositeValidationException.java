@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.map.MultiValueMap;
 
 /**
  * This class holds several {@link InvalidValueException} of the same form together.
@@ -39,7 +39,7 @@ import org.apache.commons.collections.MultiHashMap;
 public class CompositeValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    private MultiHashMap exceptionsHash = new MultiHashMap();
+    private MultiValueMap exceptionsHash = new MultiValueMap();
 
     /** Creates an empty instance */
     public CompositeValidationException() {
