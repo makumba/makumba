@@ -56,7 +56,7 @@ import org.makumba.util.RuntimeWrappedException;
 public class RecordInfo implements java.io.Serializable, DataDefinition, ValidationDefinition {
     private static final long serialVersionUID = 1L;
 
-    static ArrayList operators = new ArrayList();
+    static ArrayList<String> operators = new ArrayList<String>();
 
     static {
         operators.add(RegExpValidationRule.getOperator());
@@ -73,7 +73,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     // Vector templateArgumentNames;
 
-    Vector fieldOrder = new Vector();
+    Vector<String> fieldOrder = new Vector<String>();
 
     String title;
 
@@ -93,7 +93,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     // nr of relations, 0= none, 1= 1:n, 2= m:n
     int relations = 0;
 
-    Hashtable fields = new Hashtable();
+    Hashtable<String, FieldDefinition> fields = new Hashtable<String, FieldDefinition>();
 
     // Hashtable fieldIndexes=null;
 
@@ -106,9 +106,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     RecordInfo papa;
 
-    private Hashtable validationRuleNames = new Hashtable();
+    private Hashtable<String, ValidationRule> validationRuleNames = new Hashtable<String, ValidationRule>();
 
-    private Hashtable multiFieldUniqueList = new Hashtable();
+    private Hashtable<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new Hashtable<Object, MultipleUniqueKeyDefinition>();
 
     private boolean alreadyParsed = false;
 
@@ -390,7 +390,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
                                 + "> is of type " + o.getClass() + getName());
             if (this.getFieldDefinition((String) o) == null)
                 throw new org.makumba.NoSuchFieldException(this, (String) o);
-            String checkFieldName = (String) o;
         }
     }
 
@@ -416,7 +415,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     public ValidationRule getValidationRule(String ruleName) {
-        return (ValidationRule) validationRuleNames.get(ruleName);
+        return validationRuleNames.get(ruleName);
     }
 
     public void addRule(String fieldName, Collection rules) {
