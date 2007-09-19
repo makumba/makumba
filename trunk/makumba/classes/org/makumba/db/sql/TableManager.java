@@ -37,12 +37,13 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
-import org.makumba.NotUniqueError;
+import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
@@ -701,14 +702,20 @@ public class TableManager extends Table {
              */
         // catch(SQLException e) { throw new org.makumba.DBError (e); }
         catch (Throwable t) {
-            if (!(t instanceof DBError))
-                t = new org.makumba.DBError(t);
-            throw (DBError) t;
+            // we wrap errors into a DB error, except CompositeValidationException, which will be handled separately
+            if (t instanceof CompositeValidationException) {
+                throw (CompositeValidationException) t;
+            } else {
+                if (!(t instanceof DBError)) {
+                    t = new org.makumba.DBError(t);
+                }
+                throw (DBError) t;
+            }
         }
     }
 
-    protected NotUniqueError findDuplicates(SQLDBConnection dbc, Dictionary d) {
-        Dictionary<Object, Object> duplicates = new Hashtable<Object, Object>();
+    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary d) {
+        CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
@@ -716,8 +723,9 @@ public class TableManager extends Table {
             Object val = d.get(fieldName);
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
-            if (checkDuplicate(fieldName, dbc, d))
-                duplicates.put(fieldName, val == null ? "null" : val);
+            if (checkDuplicate(fieldName, dbc, d)) {
+                notUnique.addException(new NotUniqueException(getFieldDefinition(fieldName), val));
+            }
         }
 
         // now we check all mult-field indices
@@ -734,11 +742,12 @@ public class TableManager extends Table {
                     values[j] = d.get(fields[j]);
                 }
                 if (checkDuplicate(fields, values, dbc)) {
-                    duplicates.put(fields, values);
+                    notUnique.addException(new NotUniqueException(getDataDefinition().getName(),
+                            multiFieldUniqueKeys[i].getFields(), values));
                 }
             }
         }
-        return new NotUniqueError(getDataDefinition().getName(), duplicates);
+        return notUnique;
     }
 
     protected String prepareDelete() {
@@ -1739,8 +1748,8 @@ public class TableManager extends Table {
      * 
      * @return true if an entry for the given key already exists with these values
      */
-    public boolean checkMultiDataDefinitionDuplicate(DataDefinition.MultipleUniqueKeyDefinition definition,
-            Object values[], SQLDBConnection dbc) {
+    public boolean findMultiFieldMultiTableDuplicates(Pointer pointer,
+            DataDefinition.MultipleUniqueKeyDefinition definition, Object values[], SQLDBConnection dbc) {
         String[] fields = definition.getFields();
         String from = getDBName();
         String where = "";
@@ -1771,6 +1780,12 @@ public class TableManager extends Table {
                     where += " AND ";
                 }
             }
+        }
+
+        // if we have a pointer, we are in editing mode --> we make the query to not consider our record
+        if (pointer != null) {
+            where += " AND " + projection + "." + getFieldDBName(dd.getIndexPointerFieldName()) + "<>"
+                    + pointer.getUid();
         }
 
         String query = "SELECT 1 FROM " + from + " WHERE " + where;// put it all together
@@ -1948,10 +1963,23 @@ public class TableManager extends Table {
                 checkInsert(name, d);
             }
         }
+        // check multi-field multi-table uniqueness
+        checkMultiFieldMultiTableUniqueness(null, fullData);
+    }
 
-        // now we check all mult-field indices
+    /**
+     * Checks all mult-field unique indices that span over more than one table. Other unique indices will be checked by
+     * the database, and we just need to find them if something fails
+     * {@link #findDuplicates(SQLDBConnection, Dictionary)}.
+     */
+    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData) throws CompositeValidationException {
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
-        Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
+        // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
+        DBConnection connection = getDatabase().getDBConnection();
+        if (connection instanceof DBConnectionWrapper) {
+            connection = ((DBConnectionWrapper) connection).getWrapped();
+        }
+        CompositeValidationException notUnique = new CompositeValidationException();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
             String[] fields = key.getFields();
@@ -1960,19 +1988,14 @@ public class TableManager extends Table {
                 for (int j = 0; j < fields.length; j++) {
                     values[j] = fullData.get(fields[j]);
                 }
-                DBConnection connection = getDatabase().getDBConnection();
-                if (connection instanceof DBConnectionWrapper) {
-                    connection = ((DBConnectionWrapper) connection).getWrapped();
-                }
-                if (checkMultiDataDefinitionDuplicate(key, values, (SQLDBConnection) connection)) {
-                    duplicates.put(fields, values);
+                if (findMultiFieldMultiTableDuplicates(pointer, key, values, (SQLDBConnection) connection)) {
+                    notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
+                            values));
+                    // duplicates.put(fields, values);
                 }
             }
         }
-        if (duplicates.size() > 0) {
-            throw new NotUniqueError(getDataDefinition().getName(), duplicates);
-        }
-
+        notUnique.throwCheck();
     }
 
     // moved from dateCreateJavaManager, dateModifyJavaManager and
@@ -2000,7 +2023,7 @@ public class TableManager extends Table {
     }
 
     // moved from RecordHandler
-    public void checkUpdate(Dictionary d, Dictionary except) {
+    public void checkUpdate(Pointer pointer, Dictionary d, Dictionary except, Dictionary fullDatat) {
         dd.checkFieldNames(d);
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
@@ -2008,6 +2031,8 @@ public class TableManager extends Table {
                 checkUpdate(name, d);
             }
         }
+        // check multi-field key uniqueness that span over more than one table
+        checkMultiFieldMultiTableUniqueness(pointer, fullDatat);
     }
 
     // moved from timeStampManager
