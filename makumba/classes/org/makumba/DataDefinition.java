@@ -106,6 +106,9 @@ public interface DataDefinition {
 
         String line;
 
+        /** indicates whether this key spans over subfields (internal or external sets, or pointer). */
+        private boolean keyOverSubfield = false;
+
         public MultipleUniqueKeyDefinition(String[] fields, String line) {
             this.fields = fields;
             this.line = line;
@@ -117,6 +120,14 @@ public interface DataDefinition {
 
         public String getLine() {
             return line;
+        }
+
+        public void setKeyOverSubfield(boolean keyOverSubfield) {
+            this.keyOverSubfield = keyOverSubfield;
+        }
+
+        public boolean isKeyOverSubfield() {
+            return keyOverSubfield;
         }
 
     }
