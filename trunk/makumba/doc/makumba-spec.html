@@ -1385,8 +1385,12 @@
     <!-- ========================================================= --> 
     <!-- ====================== mak:input ======================== -->
     <h4><a name="input">&lt;mak:input... /&gt;</a></h4>
-    <p>An input field to be created, depending on the makumba type of the field. See the <a
-      href="scripts/makumba-javascript.html">example</a> for set/ptr choosers with Makumba.</p>
+    <p>An input field to be created, depending on the makumba type of the field.</p>
+    <p><b>Set and pointer</b> inputs will render as <code>select</code> boxes. Sometimes you may need to use two select boxes whereby the
+    user can move items from one box to the other, which is illustrated in this <a href="scripts/makumba-JavaScriptChooser.html">example</a>.</p>
+    <p><b>Date inputs</b> are slightly different than normal inputs, as they are rendered with several input fields (for the
+    day, month, year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar
+    widget can be used, as shown in an <a href="scripts/makumba-JavaScriptCalendar.html">example</a>.</p>
     <p>The difference between <code>&lt;mak:input &gt;</code> and normal HTML <code>&lt;input&gt;</code> in a
     makumba form are:</p>
     <ul>
@@ -1492,6 +1496,18 @@
           <td>The string that separates the different options. Default is <code>" "</code> (space). <br>
           The output will be <code>&lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</code></td>
           <td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
+        </tr>
+        <tr>
+          <td><tt>calendarEditor</tt></td>
+          <td>Whether to generate code for a calendar editor, defaults to <code>true</code>.<br>
+          See the <a href="scripts/makumba-JavaScriptCalendar.html">detailed example</a> for more information.
+          <td>Fixed, values are <code>true</code> and <code>false</code>. Only for <code>date</code>.</td>
+        </tr>
+        <tr>
+          <td><tt>calendarEditorLink</tt></td>
+          <td>The formatting that appears on the link to the calendar date-choser. <br>
+          See the <a href="scripts/makumba-JavaScriptCalendar.html">detailed example</a> for more information.
+          <td>Fixed. Only for <code>date</code>.</td>
         </tr>
         <tr class="futfeat">
           <td><tt>(elementSeparatorList)</tt></td>
