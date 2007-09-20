@@ -10,7 +10,7 @@
 testMakFormStart!<mak:form action="testHibernateMakAddForm.jsp" method="post" clientSideValidation="false">!endMakFormStart
 	testCharInput!<mak:input name="name" dataType="char"/>!endCharInput
 	testIntInput!<mak:input name="uniqInt" dataType="int"/>!endIntInput
-	testDateInput!<mak:input name="birthdate" dataType="date"/>!endDateInput
+	testDateInput!<mak:input name="birthdate" dataType="date" calendarEditor="false" />!endDateInput
 	testTextInput!<mak:input name="comment" dataType="text"/>!endTextInput
     testSetInput!<mak:input name="language" dataType="set test.Language"/>!endSetInput
     testPtrInput!<mak:input name="brother" dataType="ptr test.Person"/>!endPtrInput
@@ -22,7 +22,7 @@ testMakFormEnd!</mak:form>!endMakFormEnd
     testMakFormValueStart!<mak:form action="testHibernateMakAddForm.jsp" method="post" clientSideValidation="false">!endMakFormValueStart
         testChar[]InputValue!<mak:input name="nameValue" value="p.indiv.name" dataType="char[40]" />!endChar[]InputValue
         testIntInputValue!<mak:input name="uniqIntValue" value="p.uniqInt" dataType="int"/>!endIntInputValue
-        testDateInputValue!<mak:input name="birthdateValue" value="p.birthdate" dataType="date"/>!endDateInputValue
+        testDateInputValue!<mak:input name="birthdateValue" value="p.birthdate" dataType="date" calendarEditor="false" />!endDateInputValue
         testTextInputValue!<mak:input name="commentValue" value="p.comment" dataType="text"/>!endTextInputValue
         testPtrInputValue!<mak:input name="brotherValue" value="p.brother" dataType="ptr test.Person"/>!endPtrInputValue
     testMakFormValueEnd!</mak:form>!endMakFormValueEnd
