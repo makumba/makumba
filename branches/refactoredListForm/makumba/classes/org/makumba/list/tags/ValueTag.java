@@ -95,7 +95,7 @@ public class ValueTag extends MakumbaTag {
      */
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
-        vc.doEndAnalyze(this, pageCache);
+        vc.doEndAnalyze(pageCache);
 
         if (var != null)
             setType(pageCache, var, vc.getType());

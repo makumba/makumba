@@ -129,7 +129,7 @@ public abstract class BasicValueTag extends FormTag {
         // FIXME shouldn't this be in FormDataProvider - and should this class know about Values and Attributes?
         
         if (isValue()) {
-            type = fdp.onBasicValueEndAnalyze(this, pageCache);
+            type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);
         }
         if (isAttribute())
             type = (FieldDefinition) pageCache.retrieve(MakumbaTag.TYPES, expr.substring(1));

@@ -92,7 +92,7 @@ public class IfTag extends MakumbaTag implements BodyTag {
      */
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
-        vc.doEndAnalyze(this, pageCache);
+        vc.doEndAnalyze(pageCache);
         String type = vc.getType().getDataType();
         if (!"int".equals(type)) {
             throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this
