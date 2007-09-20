@@ -1,5 +1,7 @@
 package org.makumba.list.engine.valuecomputer;
 
+import javax.servlet.jsp.PageContext;
+
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
@@ -33,11 +35,12 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    public void makeQueryAtAnalysis(AnalysableTag analyzed, String keyDifference, String[] queryProps, String expr,
+    public void makeQueryAtAnalysis(MultipleKey parentListKey, String keyDifference, String[] queryProps, String expr,
             PageCache pageCache) {
         this.expr = expr;
-        parentKey = QueryTag.getParentListKey(analyzed, pageCache);
-
+        
+        parentKey = parentListKey;
+        
         queryKey = new MultipleKey(parentKey, keyDifference);
 
         QueryTag.cacheQuery(pageCache, queryKey, queryProps, parentKey).checkProjectionInteger(expr);
@@ -72,10 +75,10 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @throws LogicException
      * @return The QueryExecution that will give us the data
      */
-    QueryExecution runQuery(MakumbaTag running) throws LogicException {
-        QueryExecution ex = QueryExecution.getFor(queryKey, running.getPageContext(), null, null);
+    QueryExecution runQuery(PageContext pageContext) throws LogicException {
+        QueryExecution ex = QueryExecution.getFor(queryKey, pageContext, null, null);
 
-        QueryExecution parentEx = QueryExecution.getFor(parentKey, running.getPageContext(), null, null);
+        QueryExecution parentEx = QueryExecution.getFor(parentKey, pageContext, null, null);
 
         // if the valueQuery's iterationGroup for this parentIteration was not computed, do it now...
         if (parentEx.valueQueryData.get(queryKey) == null) {

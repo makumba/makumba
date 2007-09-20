@@ -55,15 +55,16 @@ public class ValueComputer {
      * 
      * @param analyzed
      *            the analyzed tag
+     * @param parentListKey TODO
      * @param expr
      *            the expression passed in the tag
      * @param pageCache
      *            the page cache of the page
      */
-    public static ValueComputer getValueComputerAtAnalysis(AnalysableTag analyzed, String expr,
-            PageCache pageCache) {
+    public static ValueComputer getValueComputerAtAnalysis(AnalysableTag analyzed, MultipleKey parentListKey,
+            String expr, PageCache pageCache) {
         expr = expr.trim();
-        Object check = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(analyzed, pageCache)).checkExprSetOrNullable(expr);
+        Object check = QueryTag.getQuery(pageCache, parentListKey).checkExprSetOrNullable(expr);
 
         FieldDefinition set = null;
         String nullableExpr = null;
@@ -75,11 +76,11 @@ public class ValueComputer {
             set = (FieldDefinition) check;
 
         if (nullableExpr == null && set == null)
-            return new ValueComputer(analyzed, expr, pageCache);
+            return new ValueComputer(analyzed, parentListKey, expr, pageCache);
 
         if (set == null)
-            return new NullableValueComputer(analyzed, nullableExpr, expr, pageCache);
-        return new SetValueComputer(analyzed, set, expr, pageCache);
+            return new NullableValueComputer(analyzed, parentListKey, nullableExpr, expr, pageCache);
+        return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
     }
 
     /** The key of the parentList */
@@ -102,6 +103,7 @@ public class ValueComputer {
      * 
      * @param listKey
      *            the key of the list
+     * @param parentListKey TODO
      * @param expr
      *            the extra expression
      * @param pageCache
@@ -124,8 +126,8 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache
      */
-    ValueComputer(AnalysableTag analyzed, String expr, PageCache pageCache) {
-        this(QueryTag.getParentListKey(analyzed, pageCache), expr, pageCache);
+    ValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String expr, PageCache pageCache) {
+        this(parentListKey, expr, pageCache);
     }
 
     /**
@@ -151,17 +153,6 @@ public class ValueComputer {
     }
 
     /**
-     * Gets the value of the queryProjection from the currentListData of the enclosing query. Used mostly by InputTag
-     * 
-     * @param running
-     *            the tag that is currently running
-     * @throws LogicException
-     */
-    public Object getValue(MakumbaTag running) throws LogicException {
-        return getValue(running.getPageContext());
-    }
-
-    /**
      * Gets the value of from the QueryExecution based on the projectionIndex
      * 
      * @param pc
@@ -169,7 +160,7 @@ public class ValueComputer {
      * @return the computed value
      * @throws LogicException
      */
-    Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException {
+    public Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException {
         return QueryExecution.getFor(getQueryKey(), pc, null, null).currentListData().data[projectionIndex];
     }
 
@@ -185,7 +176,7 @@ public class ValueComputer {
      * @throws LogicException
      */
     public void print(ValueTag running, PageCache pageCache) throws JspException, LogicException {
-        Object o = getValue(running);
+        Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
             s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex, o, running.getParams());

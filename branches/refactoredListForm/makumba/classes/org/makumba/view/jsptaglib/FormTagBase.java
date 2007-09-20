@@ -338,7 +338,7 @@ public class FormTagBase extends FormTag implements BodyTag {
 
         /** we compute the base pointer */
         if (shouldComputeBasePointer()) {
-            basePointer = fdp.computeBasePointer(this, pageContext);
+            basePointer = fdp.computeBasePointer(getTagKey(), pageContext);
         }
         try {
             responder.setHttpRequest((HttpServletRequest) pageContext.getRequest());

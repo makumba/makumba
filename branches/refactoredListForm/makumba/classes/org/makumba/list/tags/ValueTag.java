@@ -86,7 +86,7 @@ public class ValueTag extends MakumbaTag {
      * @param pageCache the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
-        pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, expr, pageCache));
+        pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
     }
 
     /** 

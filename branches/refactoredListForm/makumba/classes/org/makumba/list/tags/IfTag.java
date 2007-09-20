@@ -80,9 +80,9 @@ public class IfTag extends MakumbaTag implements BodyTag {
      */
     public void doStartAnalyze(PageCache pageCache) {
         if((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) {
-            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
+            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
         } else {
-            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, testExpr, pageCache));
+            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), testExpr, pageCache));
         }
     }
 
@@ -107,7 +107,7 @@ public class IfTag extends MakumbaTag implements BodyTag {
      */
     public int doMakumbaStartTag(PageCache pageCache) throws JspException,
             org.makumba.LogicException {
-        Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
+        Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
 
         if (exprvalue instanceof Integer) {
             int i = ((Integer) exprvalue).intValue();

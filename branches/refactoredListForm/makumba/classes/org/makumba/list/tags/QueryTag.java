@@ -25,7 +25,6 @@ package org.makumba.list.tags;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.IterationTag;
 
 import org.makumba.LogicException;
@@ -41,9 +40,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
-import org.makumba.view.jsptaglib.BasicValueTag;
-import org.makumba.view.jsptaglib.FormTagBase;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
@@ -341,7 +337,6 @@ public class QueryTag extends MakumbaTag implements IterationTag {
         return (AnalysableTag) findAncestorWithClass(tag, QueryTag.class);
     }
 
-    public static final String[] dummyQuerySections = { null, null, null, null, null };
     
     /**
      * Finds the key of the parentList of the Tag
@@ -351,25 +346,6 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The MultipleKey identifying the parentList
      */
     public static MultipleKey getParentListKey(AnalysableTag tag, PageCache pageCache) {
-        
-        if(tag instanceof BasicValueTag) {
-            BasicValueTag dirtyHack = (BasicValueTag)tag;
-            MultipleKey k = getParentListKeySimple(tag);
-            if (k != null)
-                return k;
-            if (dirtyHack.isNull())
-                return null;
-
-            /* we don't have a query around us, so we must make a dummy query for computing the value via the database */
-            QueryTag.cacheQuery(pageCache, dirtyHack.getForm().getTagKey(), dummyQuerySections, null);
-            return dirtyHack.getForm().getTagKey();
-        } else {
-            return getParentListKeySimple(tag);
-        }
-        
-    }
-    
-    private static MultipleKey getParentListKeySimple(AnalysableTag tag) {
         AnalysableTag parentList = getParentList(tag);
         return parentList == null ? null : parentList.getTagKey();
     }
