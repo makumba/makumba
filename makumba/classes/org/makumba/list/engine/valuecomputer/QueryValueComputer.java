@@ -50,19 +50,16 @@ public abstract class QueryValueComputer extends ValueComputer {
 
     /**
      * If other ValueComputers sharing the same valueQuery did not analyze it yet, we analyze it here.
-     * 
-     * @param analyzed
-     *            the analyzed tag
      * @param pageCache
      *            the page cache of the current page
      */
-    public void doEndAnalyze(MakumbaTag analyzed, PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         if (pageCache.retrieve(RecordFormatter.FORMATTERS, queryKey) == null) {
             ComposedQuery myQuery = QueryTag.getQuery(pageCache, queryKey);
             myQuery.analyze();
             pageCache.cache(RecordFormatter.FORMATTERS, queryKey, new RecordViewer(myQuery));
         }
-        super.doEndAnalyze(analyzed, pageCache);
+        super.doEndAnalyze(pageCache);
     }
 
     static final Object dummy = new Object();

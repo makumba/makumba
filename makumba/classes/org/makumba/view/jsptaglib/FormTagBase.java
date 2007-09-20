@@ -275,7 +275,7 @@ public class FormTagBase extends FormTag implements BodyTag {
      * {@inheritDoc}
      */
     public void doEndAnalyze(PageCache pageCache) {
-        fdp.onFormEndAnalyze(this, pageCache);
+        fdp.onFormEndAnalyze(getTagKey(), pageCache);
         
         if (formAction == null && findParentForm() == null)
             throw new ProgrammerError(
@@ -289,7 +289,7 @@ public class FormTagBase extends FormTag implements BodyTag {
         if (!shouldComputeBasePointer())
             return;
         
-        pageCache.cache(BASE_POINTER_TYPES, tagKey, fdp.getTypeOnEndAnalyze(this, pageCache).getPointedType().getName());
+        pageCache.cache(BASE_POINTER_TYPES, tagKey, fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
     }
 
     /**
@@ -328,7 +328,7 @@ public class FormTagBase extends FormTag implements BodyTag {
      */
     public int doMakumbaStartTag(PageCache pageCache) throws JspException, LogicException {
         
-        fdp.onFormStartTag(this, pageCache, pageContext);
+        fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
         
         responder.setOperation(getOperation());
         responder.setExtraFormatting(extraFormatting);
@@ -359,7 +359,7 @@ public class FormTagBase extends FormTag implements BodyTag {
      */
     public int doMakumbaEndTag(PageCache pageCache) throws JspException {
                 
-        fdp.onFormEndTag(this, pageCache, pageContext);
+        fdp.onFormEndTag(getTagKey(), pageCache, pageContext);
         
         try {
             StringBuffer sb = new StringBuffer();

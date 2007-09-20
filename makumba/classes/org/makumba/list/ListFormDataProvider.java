@@ -39,7 +39,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @param ptrExpr
      *            the base pointer expression
      */
-    public void onFormStartAnalyze(FormTagBase tag, PageCache pageCache, String ptrExpr) {
+    public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
         ValueComputer vc;
         if ((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) {
             // if we use hibernate, we have to use select object.id, not the whole object
@@ -60,7 +60,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @param ptrExpr
      *            the epxression of the base pointer
      */
-    public void onBasicValueStartAnalyze(BasicValueTag tag, PageCache pageCache, String ptrExpr) {
+    public void onBasicValueStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
 
         pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
             checkPointerExpression(tag, pageCache, ptrExpr), pageCache));
@@ -75,7 +75,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @param pageCache
      * @param expr
      */
-    public void onNonQueryStartAnalyze(BasicValueTag tag, PageCache pageCache, String expr) {
+    public void onNonQueryStartAnalyze(AnalysableTag tag, PageCache pageCache, String expr) {
         pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
             expr, pageCache));
     }
@@ -89,8 +89,8 @@ public class ListFormDataProvider implements FormDataProvider {
      *            the pageCache of the current page
      * @return the {@link FieldDefinition} corresponding to the object the tag is based on
      */
-    public void onFormEndAnalyze(FormTagBase tag, PageCache pageCache) {
-        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(MakumbaTag.QUERY, tag.getTagKey());
+    public void onFormEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
+        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(MakumbaTag.QUERY, tagKey);
         if (dummy != null)
             dummy.analyze();
     }
@@ -104,8 +104,8 @@ public class ListFormDataProvider implements FormDataProvider {
      *            the pageCache of the current page
      * @return the {@link FieldDefinition} corresponding to the object the tag is based on
      */
-    public FieldDefinition onBasicValueEndAnalyze(BasicValueTag tag, PageCache pageCache) {
-        return getTypeOnEndAnalyze(tag, pageCache);
+    public FieldDefinition onBasicValueEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
+        return getTypeOnEndAnalyze(tagKey, pageCache);
     }
 
     /**
@@ -117,18 +117,18 @@ public class ListFormDataProvider implements FormDataProvider {
      * @return the base pointer expression corresponding to the current tag
      * @throws LogicException
      */
-    public void onFormStartTag(FormTagBase tag, PageCache pageCache, PageContext pageContext) throws LogicException {
+    public void onFormStartTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) throws LogicException {
         // if we have a dummy query, we simulate an iteration
-        if (pageCache.retrieve(MakumbaTag.QUERY, tag.tagKey) != null) {
+        if (pageCache.retrieve(MakumbaTag.QUERY, tagKey) != null) {
             QueryExecution.startListGroup(pageContext);
-            QueryExecution.getFor(tag.tagKey, pageContext, null, null).onParentIteration();
+            QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
         }
 
     }
 
-    public void onFormEndTag(FormTagBase base, PageCache pageCache, PageContext pageContext) {
+    public void onFormEndTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) {
         // if we have a dummy query, we simulate end iteration
-        if (pageCache.retrieve(MakumbaTag.QUERY, base.tagKey) != null)
+        if (pageCache.retrieve(MakumbaTag.QUERY, tagKey) != null)
             QueryExecution.endListGroup(pageContext);
 
     }
@@ -142,9 +142,9 @@ public class ListFormDataProvider implements FormDataProvider {
      *            the pageCache of the current page
      * @return a {@link FieldDefinition} indicating the type of what we are interested in
      */
-    public FieldDefinition getTypeOnEndAnalyze(MakumbaTag tag, PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey());
-        vc.doEndAnalyze(tag, pageCache);
+    public FieldDefinition getTypeOnEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
+        vc.doEndAnalyze(pageCache);
         return vc.getType();
     }
 

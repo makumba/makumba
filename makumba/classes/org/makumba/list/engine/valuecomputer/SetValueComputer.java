@@ -40,7 +40,7 @@ public class SetValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    SetValueComputer(MakumbaTag analyzed, FieldDefinition set, String setExpr, PageCache pageCache) {
+    SetValueComputer(AnalysableTag analyzed, FieldDefinition set, String setExpr, PageCache pageCache) {
         type = set;
         String label = setExpr.replace('.', '_');
         String queryProps[] = new String[5];
@@ -59,14 +59,12 @@ public class SetValueComputer extends QueryValueComputer {
 
     /**
      * Computes nameIndex
-     * 
-     * @param analyzed
-     *            the analyzed tag
      * @param pageCache
      *            the page cache of the current page
      */
-    public void doEndAnalyze(MakumbaTag analyzed, PageCache pageCache) {
-        super.doEndAnalyze(analyzed, pageCache);
+    @Override
+    public void doEndAnalyze(PageCache pageCache) {
+        super.doEndAnalyze(pageCache);
         if (name != null)
             nameIndex = QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name).intValue();
     }

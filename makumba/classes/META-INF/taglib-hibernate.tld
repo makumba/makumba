@@ -1327,6 +1327,18 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		
+		<attribute>
+          <name>calendarEditor</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+        </attribute>
+
+        <attribute>
+          <name>calendarEditorLink</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+        </attribute>
 
 		<attribute>
 			<name>maxlength</name>

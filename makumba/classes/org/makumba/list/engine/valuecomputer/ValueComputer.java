@@ -29,6 +29,7 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
@@ -59,7 +60,7 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache of the page
      */
-    public static ValueComputer getValueComputerAtAnalysis(MakumbaTag analyzed, String expr,
+    public static ValueComputer getValueComputerAtAnalysis(AnalysableTag analyzed, String expr,
             PageCache pageCache) {
         expr = expr.trim();
         Object check = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(analyzed, pageCache)).checkExprSetOrNullable(expr);
@@ -123,7 +124,7 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache
      */
-    ValueComputer(MakumbaTag analyzed, String expr, PageCache pageCache) {
+    ValueComputer(AnalysableTag analyzed, String expr, PageCache pageCache) {
         this(QueryTag.getParentListKey(analyzed, pageCache), expr, pageCache);
     }
 
@@ -138,13 +139,10 @@ public class ValueComputer {
 
     /**
      * Computes the queryProjection index in the currentListData, and the queryProjection type.
-     * 
-     * @param analyzed
-     *            the analyzed tag
      * @param pageCache
      *            the page cache
      */
-    public void doEndAnalyze(MakumbaTag analyzed, PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         ComposedQuery q = QueryTag.getQuery(pageCache, getQueryKey());
         projectionIndex = q.checkProjectionInteger(expr).intValue();
 

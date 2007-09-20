@@ -27,7 +27,7 @@ class NullableValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    NullableValueComputer(MakumbaTag analyzed, String nullableExpr, String expr, PageCache pageCache) {
+    NullableValueComputer(AnalysableTag analyzed, String nullableExpr, String expr, PageCache pageCache) {
         makeQueryAtAnalysis(analyzed, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
     }
 
