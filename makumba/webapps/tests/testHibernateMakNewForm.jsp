@@ -6,7 +6,7 @@
 
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
-testNewFormStart!<mak:newForm type="test.Person" action="testHibernateMakNewForm.jsp" method="post">!endNewFormStart
+testNewFormStart!<mak:newForm type="test.Person" action="testHibernateMakNewForm.jsp" method="post" clientSideValidation="false">!endNewFormStart
         testName!<mak:input name="indiv.name"/>!endName
         testSubmit!<input type="submit">!endSubmit
 testNewFormEnd!</mak:newForm>!endNewFormEnd
