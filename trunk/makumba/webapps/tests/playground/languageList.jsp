@@ -20,7 +20,7 @@
       <td><mak:value expr="language.name" /></td>
       <td><mak:value expr="language.TS_create" format="yyyy-MM-dd hh:mm:ss" /></td>
       <td><mak:value expr="language.TS_modify" format="yyyy-MM-dd hh:mm:ss" /></td>
-      <td><a href="languageView.jsp?language=<mak:value expr="language" />">[View]</a> <a href="languageEdit.jsp?language=<mak:value expr="language" />">[Edit]</a> <a href="languageDelete.jsp?language=<mak:value expr="language" />">[Delete]</a> </td>    
+      <td><a href="languageEdit.jsp?language=<mak:value expr="language" />">[Edit]</a> <a href="languageDelete.jsp?language=<mak:value expr="language" />">[Delete]</a> </td>    
     </tr>
   </mak:list>
 </table>

@@ -20,7 +20,8 @@
   <tr><th>uniqInt</th><td><mak:input name="uniqInt" /></td></tr> 
   <tr><th>uniqChar</th><td><mak:input name="uniqChar" /></td></tr> 
   <tr>
-    <td colspan="2" align="center"><input type="submit" /> </td></tr>
+    <td colspan="2" align="center"><input type="submit" /> </td>
+  </tr>
 </table>  
 </mak:newForm>
 
