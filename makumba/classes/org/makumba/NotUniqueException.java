@@ -27,7 +27,7 @@ public class NotUniqueException extends InvalidValueException {
     }
 
     private static Object getValueForMessage(FieldDefinition fd, Object value) {
-        if (value.equals("")) {
+        if (value!= null && value.equals("")) {
             return "empty";
         }
         return "'" + value + "'";
