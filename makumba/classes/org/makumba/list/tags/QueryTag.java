@@ -40,6 +40,7 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
+import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
@@ -52,7 +53,7 @@ import org.makumba.view.jsptaglib.MakumbaJspException;
  * @version $Id$
  * 
  */
-public class QueryTag extends MakumbaTag implements IterationTag {
+public class QueryTag extends GenericListTag implements IterationTag {
 
     private static final long serialVersionUID = 1L;
 
@@ -226,7 +227,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface
      * @see QueryExecution
      */
-    public int doMakumbaStartTag(PageCache pageCache) throws LogicException, JspException {
+    public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         servletRequestThreadLocal.set(pageContext.getRequest());
         if (getParentList(this) == null)
             QueryExecution.startListGroup(pageContext);
@@ -309,7 +310,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      *         continue evaluating the page.
      * @throws JspException
      */
-    public int doMakumbaEndTag(PageCache pageCache) throws JspException {
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         pageContext.getRequest().setAttribute(standardLastCountVar,
                 pageContext.getRequest().getAttribute(standardMaxCountVar));
 
@@ -358,7 +359,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      * @return The OQL query corresponding to this tag
      */
     public static ComposedQuery getQuery(PageCache pc, MultipleKey key) {
-        ComposedQuery ret = (ComposedQuery) pc.retrieve(MakumbaTag.QUERY, key);
+        ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
         if (ret == null)
             throw new MakumbaError("unknown query for key " + key);
         return ret;
@@ -375,15 +376,15 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      *            the key of the parent tag, if any
      */
     public static ComposedQuery cacheQuery(PageCache pc, MultipleKey key, String[] sections, MultipleKey parentKey) {
-        ComposedQuery ret = (ComposedQuery) pc.retrieve(MakumbaTag.QUERY, key);
+        ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
         if (ret != null)
             return ret;
-        boolean hql=  pc.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql");
+        boolean hql=  pc.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE).equals("hql");
         ret = parentKey == null ? new ComposedQuery(sections, hql) : new ComposedSubquery(sections,
                 QueryTag.getQuery(pc, parentKey), hql);
     
         ret.init();
-        pc.cache(MakumbaTag.QUERY, key, ret);
+        pc.cache(GenericListTag.QUERY, key, ret);
         return ret;
     }
 
@@ -421,5 +422,10 @@ public class QueryTag extends MakumbaTag implements IterationTag {
     public static int lastCount() {
         return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar))
                 .intValue();
+    }
+    
+    @Override
+    public boolean canHaveBody() {
+        return true;
     }
 }

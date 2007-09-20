@@ -1,6 +1,5 @@
 package org.makumba.analyser;
 
-import java.util.HashMap;
 
 
 /**

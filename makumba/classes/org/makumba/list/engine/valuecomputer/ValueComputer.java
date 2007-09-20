@@ -23,8 +23,6 @@
 
 package org.makumba.list.engine.valuecomputer;
 
-import java.util.Vector;
-
 import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
@@ -35,12 +33,10 @@ import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running

@@ -12,7 +12,6 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
 import org.makumba.util.MultipleKey;

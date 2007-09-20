@@ -29,14 +29,14 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.list.tags.MakumbaTag;
+import org.makumba.commons.GenericMakumbaTag;
 
 /**
  * mak:action tag
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ActionTag extends MakumbaTag implements BodyTag {
+public class ActionTag extends GenericMakumbaTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +57,7 @@ public class ActionTag extends MakumbaTag implements BodyTag {
      * This always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called
      * @param pageCache the page cache of the current page
      */
-    public int doMakumbaStartTag(PageCache pageCache) {
+    public int doAnalyzedStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;
     }
 
@@ -72,7 +72,7 @@ public class ActionTag extends MakumbaTag implements BodyTag {
     public void doInitBody() {
     }
 
-    public int doMakumbaEndTag(PageCache pageCache) throws JspException {
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         FormTagBase form = (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
         form.responder.setAction(bodyContent.getString());
         return EVAL_PAGE;

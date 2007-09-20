@@ -30,16 +30,14 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import org.makumba.DataDefinition;
+import org.makumba.CompositeValidationException;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
-import org.makumba.CompositeValidationException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
@@ -195,7 +193,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doInitBody() {
     }
 
-    public int doMakumbaStartTag(PageCache pageCache) {
+    public int doAnalyzedStartTag(PageCache pageCache) {
         // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
         return EVAL_BODY_BUFFERED;
     }
@@ -235,7 +233,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(MakumbaTag.getPageCache(pageContext));
+            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
             if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"

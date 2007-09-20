@@ -25,10 +25,10 @@ package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
 
+import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * mak:value tag
@@ -36,7 +36,7 @@ import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
  * @author Cristian Bogdan
  *
  */
-public class ValueTag extends MakumbaTag {
+public class ValueTag extends GenericListTag {
 
     private static final long serialVersionUID = 1L;
 
@@ -82,11 +82,11 @@ public class ValueTag extends MakumbaTag {
     }
 
     /** 
-     * Determines the ValueComputer and associates it with the tagKey
+     * Determines the ValueComputer and caches it with the tagKey
      * @param pageCache the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
-        pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
+        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
     }
 
     /** 
@@ -94,7 +94,7 @@ public class ValueTag extends MakumbaTag {
      * @param pageCache the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
 
         if (var != null)
@@ -110,9 +110,9 @@ public class ValueTag extends MakumbaTag {
      * @throws JspException
      * @throws LogicException
      *  */
-    public int doMakumbaStartTag(PageCache pageCache) throws JspException,
+    public int doAnalyzedStartTag(PageCache pageCache) throws JspException,
             org.makumba.LogicException {
-        ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).print(this, pageCache);
+        ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).print(this, pageCache);
 
         expr = printVar = var = null;
         return EVAL_BODY_INCLUDE;

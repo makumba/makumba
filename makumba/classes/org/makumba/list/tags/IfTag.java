@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
+import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
@@ -42,7 +43,7 @@ import org.makumba.view.jsptaglib.MakumbaJspException;
  * @version $Id$
  */
 
-public class IfTag extends MakumbaTag implements BodyTag {
+public class IfTag extends GenericListTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,10 +80,10 @@ public class IfTag extends MakumbaTag implements BodyTag {
      * 
      */
     public void doStartAnalyze(PageCache pageCache) {
-        if((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) {
-            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
+        if((Boolean) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE).equals("hql")) {
+            pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
         } else {
-            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), testExpr, pageCache));
+            pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), testExpr, pageCache));
         }
     }
 
@@ -91,7 +92,7 @@ public class IfTag extends MakumbaTag implements BodyTag {
      * @param pageCache the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
         String type = vc.getType().getDataType();
         if (!"int".equals(type)) {
@@ -105,9 +106,9 @@ public class IfTag extends MakumbaTag implements BodyTag {
      * @throws JspException
      * @throws LogicException
      */
-    public int doMakumbaStartTag(PageCache pageCache) throws JspException,
+    public int doAnalyzedStartTag(PageCache pageCache) throws JspException,
             org.makumba.LogicException {
-        Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
+        Object exprvalue = ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
 
         if (exprvalue instanceof Integer) {
             int i = ((Integer) exprvalue).intValue();

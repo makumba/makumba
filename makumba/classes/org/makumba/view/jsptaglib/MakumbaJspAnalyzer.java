@@ -31,18 +31,12 @@ import java.util.Map;
 
 import javax.servlet.jsp.tagext.BodyTag;
 
-import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
-import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.engine.ComposedSubquery;
-import org.makumba.list.tags.MakumbaTag;
-import org.makumba.list.tags.QueryTag;
-import org.makumba.util.MultipleKey;
 
 /**
  * This class analyzes a JSP taking into account the specifics of Makumba tags.
@@ -77,9 +71,6 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     
     public static final String TAG_CACHE = "org.makumba.tags";
     
-    public static final String TAG_DATA_CACHE = "org.makumba.tagData";
-
-
     /**
      * Class used to store the status of the parser
      * 
@@ -105,7 +96,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
          * @param td
          *            the TagData where to which the tag should be added
          */
-        void addTag(MakumbaTag t, TagData td) {
+        void addTag(AnalysableTag t, TagData td) {
             if (!parents.isEmpty())
                 t.setParent((AnalysableTag) parents.get(parents.size() - 1));
             else
@@ -128,7 +119,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 }
                 pageCache.cache(TAG_CACHE, t.getTagKey(), t);
             }
-            pageCache.cache(TAG_DATA_CACHE, t.getTagKey(), td);
+            pageCache.cache(TagData.TAG_DATA_CACHE, t.getTagKey(), td);
             t.doStartAnalyze(pageCache);
             tags.add(t);
         }
@@ -142,7 +133,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         public void start(AnalysableTag t) {
             if (t == null)
                 return;
-            if (!(t instanceof BodyTag) && !(t instanceof QueryTag))
+            if (!(t instanceof BodyTag) && !t.canHaveBody())
                 throw new ProgrammerError("This type of tag cannot have a body:\n " + t.getTagText());
             parents.add(t);
         }
@@ -206,6 +197,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         static final JspAnalyzer singleton = new MakumbaJspAnalyzer();
     }
 
+    public static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
+
     private MakumbaJspAnalyzer() {
     }
 
@@ -229,9 +222,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 ((ParseStatus) status).makumbaPrefix = (String) td.attributes.get("prefix");
                 ((ParseStatus) status).makumbaURI = (String) td.attributes.get("uri");
                 if (((ParseStatus) status).makumbaURI.equals("http://www.makumba.org/presentation")) {
-                    ((ParseStatus) status).pageCache.cache(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE, "oql");
+                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
                 } else { // every other makumba.org tag-lib is treated to be hibernate
-                    ((ParseStatus) status).pageCache.cache(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE, "hql");
+                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "hql");
                 }
             }
         }
@@ -253,9 +246,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         if (c == null)
             return;
         AnalysableTag.analyzedTag.set(td);
-        MakumbaTag t = null;
+        AnalysableTag t = null;
         try {
-            t = (MakumbaTag) c.newInstance();
+            t = (AnalysableTag) c.newInstance();
         } catch (Throwable thr) {
             thr.printStackTrace();
         }
