@@ -6,7 +6,7 @@
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<mak:newForm type="test.Person" action="">
+<mak:newForm type="test.Person" action="" clientSideValidation="false">
   Gender: <mak:input field="gender" value="1" />
 </mak:newForm>
 

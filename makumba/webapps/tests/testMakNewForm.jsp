@@ -6,7 +6,7 @@
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-testNewFormStart!<mak:newForm type="test.Person" action="testMakNewForm.jsp" method="post">!endNewFormStart
+testNewFormStart!<mak:newForm type="test.Person" action="testMakNewForm.jsp" method="post" clientSideValidation="false">!endNewFormStart
         testName!<mak:input name="indiv.name"/>!endName
         testSubmit!<input type="submit">!endSubmit
 testNewFormEnd!</mak:newForm>!endNewFormEnd
