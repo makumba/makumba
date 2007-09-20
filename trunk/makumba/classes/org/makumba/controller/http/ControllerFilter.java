@@ -26,6 +26,7 @@ package org.makumba.controller.http;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -45,6 +46,7 @@ import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.devel.TagExceptionServlet;
 import org.makumba.util.DbConnectionProvider;
+import org.makumba.util.StringUtils;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
@@ -103,6 +105,9 @@ public class ControllerFilter implements Filter {
 
                     // Check if we shall reload the form page
                     Responder firstResponder = Responder.getFirstResponder(req);
+                    MakumbaSystem.getMakumbaLogger("controller").fine(
+                        "Caught a CompositeValidationException, reloading form page: "
+                                + firstResponder.getReloadFormOnError());
                     if (firstResponder.getReloadFormOnError()) {
                         final String root = conf.getInitParameter(req.getServerName());
                         HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
@@ -152,11 +157,17 @@ public class ControllerFilter implements Filter {
 
                         };
 
+                        MakumbaSystem.getMakumbaLogger("controller").fine(
+                            "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
                         if (firstResponder.getShowFormAnnotated()) {
+                            MakumbaSystem.getMakumbaLogger("controller").finer(
+                                "Processing CompositeValidationException for annotation:\n" + v.toString());
                             // if the form shall be annotated, we need to filter which exceptions can be assigned to
                             // fields, and which not
                             ArrayList unassignedExceptions = Responder.getUnassignedExceptions(v,
                                 (HttpServletRequest) req);
+                            MakumbaSystem.getMakumbaLogger("controller").finer(
+                                "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
 
                             // the messages left unassigned will be shown as the form response
                             message = "";
@@ -267,15 +278,13 @@ public class ControllerFilter implements Filter {
                 // most likely due to not being able to redirect the page to the error page due to already flushed
                 // buffers
                 // ==> we display a warning, and display the error message as it would have been on the page
-                MakumbaSystem
-                        .getMakumbaLogger("controller")
-                        .severe(
-                                "Page execution breaks on page '"
-                                        + req.getServletPath()
-                                        + "' but the error page can't be displayed due to too small buffer size.\n"
-                                        + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
-                                        + "The makumba error message would have been:\n"
-                                        + new TagExceptionServlet().getErrorMessage(req));
+                MakumbaSystem.getMakumbaLogger("controller").severe(
+                    "Page execution breaks on page '"
+                            + req.getServletPath()
+                            + "' but the error page can't be displayed due to too small buffer size.\n"
+                            + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
+                            + "The makumba error message would have been:\n"
+                            + new TagExceptionServlet().getErrorMessage(req));
             } finally {
                 org.makumba.list.tags.MakumbaTag.initializeThread();
             }
