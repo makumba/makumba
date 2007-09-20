@@ -139,8 +139,8 @@
        <mkdir dir="META-INF"/>
        <condition property="meta-inf.ok">
        <and>
-       <uptodate srcfile="servlet_context/WEB-INF/makumba.tld" targetfile="META-INF/makumba.tld" />
-       <uptodate srcfile="servlet_context/WEB-INF/makumba-hibernate.tld" targetfile="META-INF/makumba-hibernate.tld" />
+       <uptodate srcfile="classes/META-INF/taglib.tld" targetfile="META-INF/makumba.tld" />
+       <uptodate srcfile="classes/META-INF/taglib-hibernate.tld" targetfile="META-INF/taglib-hibernate.tld" />
        <uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
        </and>
        </condition>
@@ -513,10 +513,10 @@ package org.makumba]]></replacevalue>
 	</target>
 
 	<target name="make12tld" >
-	  <copy 	file  ="servlet_context/WEB-INF/makumba.tld" 
-			tofile="servlet_context/WEB-INF/makumba.tld-1_2" 
+	  <copy 	file  ="classes/META-INF/taglib.tld" 
+			tofile="classes/META-INF/taglib.tld-1_2" 
 			overwrite="true"/>
-	  <replace file="servlet_context/WEB-INF/makumba.tld-1_2" summary="true">
+	  <replace file="classes/META-INF/taglib.tld-1_2" summary="true">
 	     <replacefilter
 	  	token="DTD JSP Tag Library 1.1"
 		value="DTD JSP Tag Library 1.2"/>
