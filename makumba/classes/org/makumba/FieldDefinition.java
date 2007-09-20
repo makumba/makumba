@@ -302,6 +302,18 @@ public interface FieldDefinition {
     /** retuns whether this field is a set type, i.e. set, setIntEnum or setCharEnum, but not setComplex. */
     public boolean isSimpleSetType();
 
+    /**
+     * retuns whether this field is any kind of internal set type, i.e. set, setIntEnum, setCharEnum and setComplex, but
+     * not set.
+     */
+    public boolean isInternalSet();
+
+    /** retuns whether this field is an external set, i.e. set ptr, but not setIntEnum, not setCharEnum nor setComplex. */
+    public boolean isExternalSet();
+
+    /** retuns whether this field is a pointer. */
+    public boolean isPointer();
+
     /** retuns whether this field is a string type, i.e. char or text. */
     public boolean isStringType();
 

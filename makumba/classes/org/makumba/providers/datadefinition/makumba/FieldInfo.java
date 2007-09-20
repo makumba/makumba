@@ -1087,6 +1087,18 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return getIntegerType() == _char || getIntegerType() == _intEnum;
     }
 
+    public boolean isInternalSet() {
+        return getIntegerType() == _setComplex || getIntegerType() == _setIntEnum || getIntegerType() == _setCharEnum;
+    }
+
+    public boolean isPointer() {
+        return getIntegerType() == _ptr;
+    }
+
+    public boolean isExternalSet() {
+        return getIntegerType() == _set;
+    }
+
     public void addValidationRule(Collection rules) {
         if (rules != null) {
             for (Iterator iter = rules.iterator(); iter.hasNext();) {
