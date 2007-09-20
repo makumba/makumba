@@ -211,7 +211,7 @@ public abstract class Responder implements java.io.Serializable {
     }
 
     // --------------- responder caching section ------------------------
-    static Hashtable indexedCache = new Hashtable();
+    static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();
 
     public static String makumbaResponderBaseDirectory;
 
@@ -578,7 +578,7 @@ public abstract class Responder implements java.io.Serializable {
         return new String[] { suffix, parentSuffix };
     }
 
-    static Hashtable responderOps = new Hashtable();
+    static Hashtable<String, ResponderOp> responderOps = new Hashtable<String, ResponderOp>();
     static {
         responderOps.put("edit", new ResponderOp() {
             private static final long serialVersionUID = 1L;
