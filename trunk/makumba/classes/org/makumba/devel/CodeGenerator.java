@@ -42,7 +42,6 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.providers.datadefinition.makumba.FieldInfo;
 import org.makumba.util.StringUtils;
 
 /**
@@ -72,7 +71,7 @@ public class CodeGenerator {
     }
 
     /** Mapping from a action name to the action code */
-    public static Hashtable nameToTypeMapping = new Hashtable();
+    public static Hashtable<String, String> nameToTypeMapping = new Hashtable<String, String>();
 
     public static final String TYPE_ADDFORM = "Add";
 
@@ -95,7 +94,7 @@ public class CodeGenerator {
     private static final String[] allCodeTypes;
 
     /** Default used access keys for Add, Save changes, Cancel & Reset */
-    private static final List DEFAULTUSED_ACCESS_KEYS = Arrays.asList(new String[] { "a", "s", "c", "r" });
+    private static final List<String> DEFAULTUSED_ACCESS_KEYS = Arrays.asList(new String[] { "a", "s", "c", "r" });
 
     static {
         allCodeTypes = new String[] { TYPE_NEWFORM, TYPE_ADDFORM, TYPE_EDITFORM, TYPE_LIST, TYPE_OBJECT, TYPE_DELETE,
@@ -174,12 +173,12 @@ public class CodeGenerator {
     }
 
     /** Contains lists of already used accessKeys for each DataDefinition. */
-    private Hashtable accessKeys = new Hashtable();
+    private Hashtable<DataDefinition, ArrayList<String>> accessKeys = new Hashtable<DataDefinition, ArrayList<String>>();
 
     /** Starts the code generation for the given code type and DataDefinition. */
     public void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
             CodeGeneratorTemplate template) {
-        generateCode(sb, type, dd, action, DataServlet.extractFields(dd), template, 0);
+        generateCode(sb, type, dd, action, DataServlet.extractFields(dd, true), template, 0);
     }
 
     /** Starts the business logic code generation for the given DataDefinition. */
@@ -415,12 +414,13 @@ public class CodeGenerator {
                         DataDefinition setDd = getDataDefinitionFromType(fd);
 
                         if (setDd == null) {
-                            DataServlet.logger.warning("Problem generating code - did not find field definition for set '" + fd.getName() + "' in data definition '" + dd.getName() + "'.");
+                            DataServlet.logger.warning("Problem generating code - did not find field definition for set '"
+                                    + fd.getName() + "' in data definition '" + dd.getName() + "'.");
                         } else {
                             // sorting out only the normal fields, we don't care about generate sets inside sets.
                             Vector innerFields = extractInnerFields(setDd);
-                            DataServlet.logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset " + setDd.getName()
-                                + " is " + innerFields.size());
+                            DataServlet.logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset "
+                                    + setDd.getName() + " is " + innerFields.size());
 
                             // generate the inner set code
                             generateSetCode(sb, type, fd, action, template, innerFields, indent, labelName);
@@ -649,9 +649,9 @@ public class CodeGenerator {
 
     /** Returns a valid, not-yet used access key for a field name. */
     private char getAccessKey(DataDefinition dd, String fieldName) {
-        ArrayList usedKeys = (ArrayList) accessKeys.get(dd);
+        ArrayList<String> usedKeys = accessKeys.get(dd);
         if (usedKeys == null) {
-            usedKeys = new ArrayList(DEFAULTUSED_ACCESS_KEYS);
+            usedKeys = new ArrayList<String>(DEFAULTUSED_ACCESS_KEYS);
             accessKeys.put(dd, usedKeys);
         }
         fieldName = fieldName.toLowerCase();
@@ -758,28 +758,14 @@ public class CodeGenerator {
                 + "\" />");
     }
 
-    // FIXME: the methods below should become part of FieldInfo or DataDefinition
-
-    private boolean isInternalSet(FieldDefinition fd) {
-        return fd.getType().equals("setComplex") || fd.getType().equals("setintEnum")
-                || fd.getType().equals("setcharEnum");
-    }
-
-    private boolean isPtr(FieldDefinition fd) {
-        return fd.getType().equals("ptr");
-    }
-
-    private boolean isSet(FieldDefinition fd) {
-        return fd.getType().equals("set");
-    }
-
     /** Gathers all fields that are not sets and ptrRel from a given DataDefinition. */
     private Vector extractInnerFields(DataDefinition dd) {
-        Vector innerFields = new Vector();
+        Vector<FieldDefinition> innerFields = new Vector<FieldDefinition>();
         if (dd != null && dd.getFieldNames() != null) {
             for (int i = 0; i < dd.getFieldNames().size(); i++) {
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                if (!fd.isDefaultField() && fd.getIntegerType() != FieldDefinition._ptrRel && fd.shouldEditBySingleInput()) {
+                if (!fd.isDefaultField() && fd.getIntegerType() != FieldDefinition._ptrRel
+                        && fd.shouldEditBySingleInput()) {
                     innerFields.add(fd);
                 }
             }
@@ -789,7 +775,7 @@ public class CodeGenerator {
 
     /** Extracts all complex sets from a given DataDefinition. */
     private Vector extractSetComplex(DataDefinition dd) {
-        Vector sets = new Vector();
+        Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             if (fd.getIntegerType() == FieldDefinition._setComplex) {
@@ -799,14 +785,15 @@ public class CodeGenerator {
         return sets;
     }
 
+    // FIXME: this should probably become part of FieldDefinition
     private DataDefinition getDataDefinitionFromType(FieldDefinition fd) {
-        if (isInternalSet(fd)) {
+        if (fd.isInternalSet()) {
             return fd.getSubtable();
         }
-        if (isSet(fd)) {
+        if (fd.isExternalSet()) {
             return fd.getDataDefinition();
         }
-        if (isPtr(fd)) {
+        if (fd.isPointer()) {
             return fd.getForeignTable();
         }
         return null;
