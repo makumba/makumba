@@ -1,0 +1,13 @@
+# This is a sample validation definition
+validEmail : Email address is not valid! : email matches .+@.+\.[a-z]+
+validAge : Age must be between 12 and 99! : age in range [12..99]
+validHobbies : Hobbies must not be empty! : hobbies length in [1..?]
+ageWeight : You should not be more heavy than you're old! : weight < age
+firstSex : Can't have sex before you'are born! : firstSex >= birthdate
+beginDate1 : Begin date can't be in the past! : beginDate >= $now
+beginDate2 : Begin date can't be longer than 5 years ago! : beginDate >= date($now,$now,$now - 5)
+minAge : You have to be at least 15 years old! : birthdate <= date($now, $now, $now - 15, 0, 0, 0)
+maxAge : Maximum age is 105! : birthdate >= date($now, $now, $now - 105, 0, 0, 0)
+lowerMail : Your email can't be all lower cases! : lower(email) != email
+lowerName : Your name can't be all lower cases! : lower(indiv.name) != indiv.name
+

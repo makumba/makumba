@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="A taglib that helps rapidly develop data driven web applications. It offers both JSP tag library and a Java API for data manipulation. Works with various DB engines. Open source, under LGPL.">
+   <meta name="Author" content="Stefan Baebler">
+   <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>Makumba</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+
+<br>
+<center>
+<a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0" style="border: 0px solid ; width: 329px; height: 100px;"></a></center>
+<p>
+<b>Makumba</b> is a technology designed by <a href="http://www.BEST.eu.org" title="Board of European Students of Technology">BEST</a>
+that helps you to rapidly develop web applications that keep their data in a database   (i.e. data driven web
+	applications). It is implemented in Java and offers a Java <abbr title="Application Programmer's Interface">API</abbr> and a <abbr title="Java Server Pages">JSP</abbr>
+tag library to the web app developer. The technology   has been in use since
+late 2001, and is being further developed, based on users'
+experience and requests.
+</p>
+
+<p>
+If you are interested in Makumba you might want to take a look to <a href="http://sourceforge.net/projects/parade"><b>ParaDe</b></a>, a Parallel Development
+environment. <i>The only thing you need is an internet connection and a browser to develop your application!</i>
+</p>
+
+<p>
+<b>Makumba</b> is open source and the product of the volunteer work
+of individuals who have a background in the IT Committee of BEST. Everyone is
+welcome to use and contribute to Makumba.
+</p>
+
+<table BORDER="0" CELLSPACING="0" CELLPADDING="5" WIDTH="90%" BGCOLOR="#e0ffe0" align=center>
+<tr>
+<td>
+<div align=left><big><b>Description of Makumba around a short example</b></big></div>
+<p>
+First you <b>describe the data</b> in a text file, called
+<a href="makumba-spec.html#Data_Description">data
+definition</a>. It contains lines like:
+</p>
+
+<pre class="example">
+name= char[30] ;Name
+dob= date      ;Date of birth
+</pre>
+
+<p>
+Say you call the above record a "Person". Makumba
+can use this information to perform the right action when
+manipulating the database or generating HTML output.
+Of course, complex applications have more types of data, with pointers from one to the other.
+</p>
+<p>Makumba can <b>generate SQL</b> statements that create the needed tables and
+do read/write operations in a <a href="SQL-drivers.html">database</a>
+of your choice. It currently supports MySQL, Informix, DB2, PostgreSQL and ODBC but many
+other database engines can be easily supported if needed.
+What's more, you can copy data from one
+database to another (this is very important in BEST, we port data a lot,
+we develop on Windows with ODBC or MySQL and run on Linux with Postgres,
+etc).
+</p>
+
+<p>At the interface level, Makumba can <b>generate html</b>
+for inserting, editing, viewing and deleting data from the
+database. You don't have to care about details of HTML forms, parsing
+the CGI arguments, composing SQL statements etc.
+All this routine work is done for you, but you can freely build upon it.<br>
+</p>
+<p>For instance, following code will show a selected person. You mix HTML
+  and Makumba jsp tags to get the desired view.</p>
+
+<pre class="example">
+&lt;mak:object from="general.Person p" where="<i>uniqueCondition</i>"&gt;
+           &lt;b&gt;&lt;mak:value expr="p.name"/&gt;&lt;/b&gt;
+           was born on &lt;mak:value expr="p.dob"/&gt;
+&lt;/mak:object&gt;
+</pre>
+
+            <p>If you wish to add a new Person to your database, you can just
+write the following code. It takes care of creating an input form in HTML,
+and arranges for all necessary database commands to be performed after submit.
+            </p>
+
+<pre class="example">
+&lt;mak:newForm type="general.Person" ... &gt;
+        Name : &lt;mak:input name="name"/&gt; &lt;br&gt;
+        Date of birth : &lt;mak:input name="dob"/&gt;
+&lt;/mak:newForm&gt;
+</pre>
+
+            <p>Makumba will choose appropriate input controls for each datatype,
+as indicated by the data definition  above. </p>
+
+            <p>Behind the HTML pages, developers can optionally write "business
+logic" in Java that adds certain operations to the basic actions (insert,
+edit, delete). For this, the full power of Java, enhanced with the <a href="api/org/makumba/package-summary.html">Makumba
+API</a> for e.g. database handling, is available.</p>
+
+<p>
+You can see more in a slightly more detailed <a href="makumba-example.html">example</a>.
+</td>
+</tr>
+</table>
+
+ <p>So more or less this is it. Lotus Notes does the same but we found
+  it impossible to use it because of visual programming (rather than plain
+ text files) and other problems. Other tools (say MS Access) have similar
+problems, plus we don't want to be dependent on one technology. We want to
+work with plain text files because it's easy to cooperate at a distance using
+them. We want everything to be simple for the web app developer.
+That's why all routine actions are handled by Makumba.</p>
+
+<div class="note">These webpages might be a bit out-of-date,
+as most our efforts are going to using, developing and designing future enhancements
+of Makumba. We apologize for that.</div>
+
+
+<h4>Worldwide mirrors</h4>
+
+<a href="http://ee.makumba.org" title="Estonia">EE</a>,
+<a href="http://ro.makumba.org" title="Romania">RO</a>,
+<a href="http://si.makumba.org" title="Slovenia">SI</a>,
+<a href="http://us.makumba.org" title="United States">US</a><br>
+<A href="http://sourceforge.net/projects/makumba"><IMG src="http://sourceforge.net/sflogo.php?group_id=25704" width="88" height="31" border="0" alt="SourceForge Logo"></A>
+
+<br>
+<div align="right"><font size="1">2001-2005</font></div>
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+</body>
+</html>
