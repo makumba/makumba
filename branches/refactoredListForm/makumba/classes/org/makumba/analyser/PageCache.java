@@ -2,11 +2,6 @@ package org.makumba.analyser;
 
 import java.util.HashMap;
 
-import org.makumba.MakumbaError;
-import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.engine.ComposedSubquery;
-import org.makumba.util.MultipleKey;
-
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
  * methods to add/retrieve caches throughout the analysis process.

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-/** The Tag class used for <mak:login>. This class is a normal {@link javax.servlet.jsp.tagext.BodyTag} not a {@link org.makumba.list.tags.MakumbaTag }
+/** The Tag class used for <mak:login>. This class is a normal {@link javax.servlet.jsp.tagext.BodyTag} not a {@link org.makumba.list.tags.GenericListTag }
 */
 public class LoginTag extends BodyTagSupport
 {

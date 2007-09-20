@@ -32,11 +32,11 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
-
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.controller.html.FormResponder;
 import org.makumba.list.ListFormDataProvider;
 import org.makumba.util.MultipleKey;
@@ -50,7 +50,7 @@ import org.makumba.util.StringUtils;
  * @version $Id$
  * 
  */
-public class FormTagBase extends FormTag implements BodyTag {
+public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
@@ -326,7 +326,7 @@ public class FormTagBase extends FormTag implements BodyTag {
      * @throws JspException
      * @throws LogicException
      */
-    public int doMakumbaStartTag(PageCache pageCache) throws JspException, LogicException {
+    public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
         
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
         
@@ -357,7 +357,7 @@ public class FormTagBase extends FormTag implements BodyTag {
      *            the page cache of the current page
      * @throws JspException
      */
-    public int doMakumbaEndTag(PageCache pageCache) throws JspException {
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
                 
         fdp.onFormEndTag(getTagKey(), pageCache, pageContext);
         

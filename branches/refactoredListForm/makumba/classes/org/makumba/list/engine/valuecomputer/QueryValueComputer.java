@@ -3,12 +3,10 @@ package org.makumba.list.engine.valuecomputer;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;

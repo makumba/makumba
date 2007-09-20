@@ -31,14 +31,14 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.PageAttributes;
 import org.makumba.controller.html.dateEditor;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.http.RequestAttributes;
 import org.makumba.list.ListFormDataProvider;
-import org.makumba.list.tags.MakumbaTag;
-import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
 /**
@@ -48,7 +48,7 @@ import org.makumba.util.StringUtils;
  * @author Cristian Bogdan
  * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
-public abstract class BasicValueTag extends FormTag {
+public abstract class BasicValueTag extends GenericMakumbaTag {
     
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
@@ -132,7 +132,7 @@ public abstract class BasicValueTag extends FormTag {
             type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);
         }
         if (isAttribute())
-            type = (FieldDefinition) pageCache.retrieve(MakumbaTag.TYPES, expr.substring(1));
+            type = (FieldDefinition) pageCache.retrieve(AnalysableTag.TYPES, expr.substring(1));
 
         String fieldName = "";
         if (this instanceof InputTag) {
@@ -162,7 +162,7 @@ public abstract class BasicValueTag extends FormTag {
         pageCache.cache(INPUT_TYPES, tagKey, contextType);
     }
 
-    public int doMakumbaEndTag(PageCache pageCache) throws JspException, LogicException {
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
         Object val = null;
         

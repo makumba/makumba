@@ -28,7 +28,6 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.util.MultipleKey;
@@ -83,7 +82,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         bodyContent = bc;
     }
 
-    public int doMakumbaStartTag(PageCache pageCache) {
+    public int doAnalyzedStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;
     }
 
