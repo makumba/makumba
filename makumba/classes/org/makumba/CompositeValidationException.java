@@ -80,7 +80,10 @@ public class CompositeValidationException extends RuntimeException {
         String message = "";
         for (Iterator iter = exceptionsHash.values().iterator(); iter.hasNext();) {
             InvalidValueException e = (InvalidValueException) iter.next();
-            message += e.getMessage() + "<br>";
+            message += e.getMessage();
+            if (iter.hasNext()) {
+                message += "\n";
+            }
         }
         return message;
     }
