@@ -1,10 +1,13 @@
 package org.makumba.list.engine.valuecomputer;
 
+import javax.servlet.jsp.PageContext;
+
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.tags.MakumbaTag;
+import org.makumba.util.MultipleKey;
 
 /**
  * The manager of a nullableValueQuery
@@ -20,6 +23,7 @@ class NullableValueComputer extends QueryValueComputer {
      * 
      * @param analyzed
      *            the tag that is analyzed
+     * @param parentListKey TODO
      * @param nullableExpr
      *            the nullable expression
      * @param expr
@@ -27,8 +31,8 @@ class NullableValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    NullableValueComputer(AnalysableTag analyzed, String nullableExpr, String expr, PageCache pageCache) {
-        makeQueryAtAnalysis(analyzed, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
+    NullableValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String nullableExpr, String expr, PageCache pageCache) {
+        makeQueryAtAnalysis(parentListKey, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
     }
 
     /**
@@ -39,8 +43,9 @@ class NullableValueComputer extends QueryValueComputer {
      *            the tag that is currently running
      * @throws LogicException
      */
-    public Object getValue(MakumbaTag running) throws LogicException {
-        QueryExecution ex = runQuery(running);
+    @Override
+    public Object getValue(PageContext pageContext) throws LogicException {
+        QueryExecution ex = runQuery(pageContext);
         int n = ex.dataSize();
         if (n > 1)
             throw new RuntimeException("nullable query with more than one result ??? " + n);

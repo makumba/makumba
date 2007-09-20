@@ -30,6 +30,7 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -143,7 +144,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     FieldDefinition getTypeFromContext(PageCache pageCache) {
-        return fdp.getInputTypeAtAnalysis(getForm(), name, pageCache);
+        return fdp.getInputTypeAtAnalysis(getForm().getDataTypeAtAnalysis(pageCache), name, pageCache);
     }
 
     /**
@@ -156,7 +157,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (name == null)
             throw new ProgrammerError("name attribute is required");
         if(isValue())
-            fdp.onNonQueryStartAnalyze(this, pageCache, expr);
+            fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
     }
 
     /**

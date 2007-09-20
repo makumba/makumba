@@ -3,6 +3,7 @@ package org.makumba.list.engine.valuecomputer;
 import java.util.Vector;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
@@ -14,6 +15,7 @@ import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
+import org.makumba.util.MultipleKey;
 
 /**
  * The manager of a setValueQuery.
@@ -33,6 +35,7 @@ public class SetValueComputer extends QueryValueComputer {
      * 
      * @param analyzed
      *            the tag that is analyzed
+     * @param parentListKey TODO
      * @param set
      *            the FieldDefinition of the set we want to compute a value of
      * @param setExpr
@@ -40,7 +43,7 @@ public class SetValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    SetValueComputer(AnalysableTag analyzed, FieldDefinition set, String setExpr, PageCache pageCache) {
+    SetValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, FieldDefinition set, String setExpr, PageCache pageCache) {
         type = set;
         String label = setExpr.replace('.', '_');
         String queryProps[] = new String[5];
@@ -51,7 +54,7 @@ public class SetValueComputer extends QueryValueComputer {
             queryProps[ComposedQuery.ORDERBY] = name;
         }
 
-        makeQueryAtAnalysis(analyzed, set.getName(), queryProps, label, pageCache);
+        makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label, pageCache);
 
         if (analyzed instanceof ValueTag)
             QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name);
@@ -76,8 +79,9 @@ public class SetValueComputer extends QueryValueComputer {
      *            the tag that is currently running
      * @throws LogicException
      */
-    public Object getValue(MakumbaTag running) throws LogicException {
-        QueryExecution ex = runQuery(running);
+    @Override
+    public Object getValue(PageContext pageContext) throws LogicException {
+        QueryExecution ex = runQuery(pageContext);
         int n = ex.dataSize();
         Vector v = new Vector();
 
@@ -97,9 +101,10 @@ public class SetValueComputer extends QueryValueComputer {
      * @throws JspException
      * @throws LogicException
      */
+    @Override
     // FIXME (fred) shouldn't the formatting be in view.html package, instead of here?
     public void print(ValueTag running, PageCache pageCache) throws JspException, LogicException {
-        QueryExecution ex = runQuery(running);
+        QueryExecution ex = runQuery(running.getPageContext());
         int n = ex.dataSize();
         Vector v = null;
 

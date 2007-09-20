@@ -15,9 +15,7 @@ import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.FormDataProvider;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.jsptaglib.AddTag;
-import org.makumba.view.jsptaglib.BasicValueTag;
-import org.makumba.view.jsptaglib.FormTagBase;
+
 
 /**
  * Native implementation of the FormDataProvider by the list. We pass on an AnalysableTag to all our methods in order to
@@ -28,6 +26,9 @@ import org.makumba.view.jsptaglib.FormTagBase;
  * @version $Id: ListFormDataProvider.java,v 1.1 18.09.2007 18:31:07 Manuel Exp $
  */
 public class ListFormDataProvider implements FormDataProvider {
+    
+    private static final String[] dummyQuerySections = { null, null, null, null, null };
+    
 
     /**
      * Computes data at the beginning of form analysis.
@@ -43,9 +44,9 @@ public class ListFormDataProvider implements FormDataProvider {
         ValueComputer vc;
         if ((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) {
             // if we use hibernate, we have to use select object.id, not the whole object
-            vc = ValueComputer.getValueComputerAtAnalysis(tag, ptrExpr + ".id", pageCache);
+            vc = ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr + ".id", pageCache);
         } else {
-            vc = ValueComputer.getValueComputerAtAnalysis(tag, ptrExpr, pageCache);
+            vc = ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr, pageCache);
         }
         pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey(), vc);
     }
@@ -60,10 +61,33 @@ public class ListFormDataProvider implements FormDataProvider {
      * @param ptrExpr
      *            the epxression of the base pointer
      */
-    public void onBasicValueStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
+    public void onBasicValueStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String ptrExpr) {
+            MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
+        
+        //we first compute the pointer expression, which depends on the QueryProvider
+        String ptrExpression = new String();
 
+        if (parentListKey == null) { // If there is no enclosing mak:list
+            ptrExpression = ptrExpr;
+        } else {
+            // FIXME this should be provided by the QueryProvider
+            ptrExpression = QueryTag.getQuery(pageCache, parentListKey).transformPointer(ptrExpr);
+        }
         pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
-            checkPointerExpression(tag, pageCache, ptrExpr), pageCache));
+            parentListKey, ptrExpression, pageCache));
+    }
+
+    private MultipleKey getBasicValueParentListKey(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache) {
+        MultipleKey k = QueryTag.getParentListKey(tag, pageCache);
+        if (k != null) {
+            return k;
+        } else if (isNull) {
+            return null;
+        } else {
+        /* we don't have a query around us, so we must make a dummy query for computing the value via the database */
+            QueryTag.cacheQuery(pageCache, parentFormKey, dummyQuerySections, null);
+            return parentFormKey;
+        }
     }
 
     /**
@@ -75,9 +99,9 @@ public class ListFormDataProvider implements FormDataProvider {
      * @param pageCache
      * @param expr
      */
-    public void onNonQueryStartAnalyze(AnalysableTag tag, PageCache pageCache, String expr) {
+    public void onNonQueryStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String expr) {
         pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
-            expr, pageCache));
+            getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache), expr, pageCache));
     }
 
     /**
@@ -148,36 +172,10 @@ public class ListFormDataProvider implements FormDataProvider {
         return vc.getType();
     }
 
-    /**
-     * Computes the expression of the pointer, depending on context and QueryProvider.
-     * 
-     * @param tag
-     *            the AnalysableTag for which the expression should be checked
-     * @param pageCache
-     *            pageCache of the current page
-     * @param expr
-     *            the expression to check
-     * @return a transformed expression depending on the QueryProvider FIXME this mechanism should be provided by the
-     *         QueryProvider
-     */
-    private String checkPointerExpression(AnalysableTag tag, PageCache pageCache, String expr) {
-        // we first compute the pointer expression, which depends on the QueryProvider
-        String ptrExpression = new String();
-
-        MultipleKey parentListKey = QueryTag.getParentListKey(tag, pageCache);
-        if (parentListKey == null) { // If there is no enclosing mak:list
-            ptrExpression = expr;
-        } else {
-            // FIXME this should be provided by the QueryProvider
-            ptrExpression = QueryTag.getQuery(pageCache, parentListKey).transformPointer(expr);
-        }
-        return ptrExpression;
-    }
-
-    public String computeBasePointer(FormTagBase base, PageContext pageContext) throws LogicException {
+    public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
 
         Object o = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS,
-            base.tagKey)).getValue(base);
+            tagKey)).getValue(pageContext);
         if (!(o instanceof Pointer))
             throw new RuntimeException("Pointer expected");
         return ((Pointer) o).toExternalForm();
@@ -193,11 +191,11 @@ public class ListFormDataProvider implements FormDataProvider {
      * @return the value corresponding to the tag.
      * @throws LogicException
      */
-    public Object getValue(BasicValueTag tag, PageCache pageCache) throws LogicException {
-        return ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tag.tagKey)).getValue(tag);
+    public Object getValue(MultipleKey tagKey, PageContext pageContext, PageCache pageCache) throws LogicException {
+        return ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
     }
 
-    public DataDefinition getBasePointerType(AddTag tag, String baseObject) {
+    public DataDefinition getBasePointerType(AnalysableTag tag, String baseObject) {
         PageContext pageContext = tag.getPageContext();
         return QueryTag.getQuery(MakumbaTag.getPageCache(pageContext), QueryTag.getParentListKey(tag, null)).getLabelType(
             baseObject);
@@ -214,8 +212,7 @@ public class ListFormDataProvider implements FormDataProvider {
      *            the page cache of the current page
      * @return A FieldDefinition corresponding to the type of the input field
      */
-    public FieldDefinition getInputTypeAtAnalysis(FormTagBase base, String fieldName, PageCache pageCache) {
-        DataDefinition dd = base.getDataTypeAtAnalysis(pageCache);
+    public FieldDefinition getInputTypeAtAnalysis(DataDefinition dd, String fieldName, PageCache pageCache) {
         if (dd == null)
             return null;
         int dot = -1;

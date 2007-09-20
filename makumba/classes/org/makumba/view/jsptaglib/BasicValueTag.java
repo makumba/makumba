@@ -99,7 +99,7 @@ public abstract class BasicValueTag extends FormTag {
      */
     public void doStartAnalyze(PageCache pageCache) {
         if (isValue()) {
-            fdp.onBasicValueStartAnalyze(this, pageCache, expr);
+            fdp.onBasicValueStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
         }
     }
 
@@ -180,7 +180,7 @@ public abstract class BasicValueTag extends FormTag {
         }
 
         if (isValue())
-            val = fdp.getValue(this, pageCache);
+            val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
             
         if (isAttribute()) {
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
