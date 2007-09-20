@@ -19,18 +19,18 @@ import org.makumba.util.MultipleKey;
 
 public abstract class AnalysableTag extends TagSupport {
     
-    public static ThreadLocal analyzedTag = new ThreadLocal();
+    public static ThreadLocal<TagData> analyzedTag = new ThreadLocal<TagData>();
 
-    public static ThreadLocal runningTag = new ThreadLocal();
+    public static ThreadLocal<TagData> runningTag = new ThreadLocal<TagData>();
 
-    static ThreadLocal tagStack = new ThreadLocal();
+    static ThreadLocal<Stack<TagData>> tagStack = new ThreadLocal<Stack<TagData>>();
 
     static public TagData getRunningTag() {
-        return (TagData) runningTag.get();
+        return runningTag.get();
     }
 
     static public TagData getAnalyzedTag() {
-        return (TagData) analyzedTag.get();
+        return analyzedTag.get();
     }
 
     static public TagData getCurrentBodyTag() {
@@ -45,10 +45,10 @@ public abstract class AnalysableTag extends TagSupport {
         analyzedTag.set(null);
     }
 
-    public static Stack getThreadTagStack() {
-        Stack s = (Stack) tagStack.get();
+    public static Stack<TagData> getThreadTagStack() {
+        Stack<TagData> s = tagStack.get();
         if (s == null)
-            tagStack.set(s = new Stack());
+            tagStack.set(s = new Stack<TagData>());
         return s;
     }
 
@@ -136,6 +136,15 @@ public abstract class AnalysableTag extends TagSupport {
         } catch (java.io.IOException e) {
             throw new MakumbaError(e.toString());
         }
+    }
+
+    /**
+     * Gets the key that identifies this makumba tag
+     * 
+     * @return The MultipleKey used to identify the Makumba tag
+     */
+    public MultipleKey getTagKey() {
+        return tagKey;
     }
 
 }

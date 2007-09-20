@@ -107,7 +107,7 @@ public class IfTag extends MakumbaTag implements BodyTag {
      */
     public int doMakumbaStartTag(PageCache pageCache) throws JspException,
             org.makumba.LogicException {
-        Object exprvalue = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
+        Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
 
         if (exprvalue instanceof Integer) {
             int i = ((Integer) exprvalue).intValue();

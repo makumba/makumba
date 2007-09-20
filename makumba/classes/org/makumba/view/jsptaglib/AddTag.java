@@ -59,7 +59,7 @@ public class AddTag extends FormTagBase {
      * @param pageCache the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
-        Object[] keyComponents = { baseObject, field, handler, getParentListKey(null), getClass() };
+        Object[] keyComponents = { baseObject, field, handler, fdp.getParentListKey(this), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
@@ -82,7 +82,7 @@ public class AddTag extends FormTagBase {
      * @return A DataDefinition corresponding to the type of object to which we want to add something
      */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        DataDefinition base = getOperation().equals("add") ? QueryTag.getQuery(pageCache, getParentListKey(pageCache))
+        DataDefinition base = getOperation().equals("add") ? QueryTag.getQuery(pageCache, fdp.getParentListKey(this))
                 .getLabelType(baseObject) : ((NewTag) findParentForm()).type;
         if (base == null) { // we could not find the type
             String message = "Could not determine type for specified object '" + baseObject + "'";
@@ -109,7 +109,7 @@ public class AddTag extends FormTagBase {
         return "add";
     }
 
-    boolean shouldComputeBasePointer() {
+    public boolean shouldComputeBasePointer() {
         return getOperation().equals("add");
     }
 }

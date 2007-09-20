@@ -31,7 +31,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -41,18 +40,16 @@ import org.makumba.util.MultipleKey;
  */
 public class OptionTag extends BasicValueTag implements BodyTag {
     private static final long serialVersionUID = 1L;
-
-    ValueComputer choiceComputer = null;
-
+    
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
         if (expr == null)
             expr = "nil";
         // a pretty long key but i can't come with a better idea
-        Object[] keyComponents = { expr.trim(), getInput().tagKey, getParentListKey(pageCache) };
+        Object[] keyComponents = { expr.trim(), getInput().tagKey, fdp.getParentListKey(this) };
         tagKey = new MultipleKey(keyComponents);
     }
 

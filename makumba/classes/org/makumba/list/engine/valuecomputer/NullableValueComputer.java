@@ -1,6 +1,7 @@
 package org.makumba.list.engine.valuecomputer;
 
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.tags.MakumbaTag;

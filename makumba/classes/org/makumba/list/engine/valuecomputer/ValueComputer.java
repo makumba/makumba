@@ -62,7 +62,7 @@ public class ValueComputer {
     public static ValueComputer getValueComputerAtAnalysis(MakumbaTag analyzed, String expr,
             PageCache pageCache) {
         expr = expr.trim();
-        Object check = QueryTag.getQuery(pageCache, analyzed.getParentListKey(pageCache)).checkExprSetOrNullable(expr);
+        Object check = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(analyzed, pageCache)).checkExprSetOrNullable(expr);
 
         FieldDefinition set = null;
         String nullableExpr = null;
@@ -124,7 +124,7 @@ public class ValueComputer {
      *            the page cache
      */
     ValueComputer(MakumbaTag analyzed, String expr, PageCache pageCache) {
-        this(analyzed.getParentListKey(pageCache), expr, pageCache);
+        this(QueryTag.getParentListKey(analyzed, pageCache), expr, pageCache);
     }
 
     /**

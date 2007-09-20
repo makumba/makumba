@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 
@@ -36,7 +36,7 @@ import org.makumba.commons.PageAttributes;
 import org.makumba.controller.html.dateEditor;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.http.RequestAttributes;
-import org.makumba.list.engine.valuecomputer.ValueComputer;
+import org.makumba.list.ListFormDataProvider;
 import org.makumba.list.tags.MakumbaTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
@@ -46,9 +46,9 @@ import org.makumba.util.StringUtils;
  * similar manner (value="$attribute" or value="OQL expr").
  * 
  * @author Cristian Bogdan
- * @version $Id$
+ * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
-public abstract class BasicValueTag extends MakumbaTag {
+public abstract class BasicValueTag extends FormTag {
     
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
@@ -57,13 +57,15 @@ public abstract class BasicValueTag extends MakumbaTag {
     /* Cannot be set here, subclasses who need it will set it */
     String dataType = null;
 
-    String expr = null;
+    public String expr = null;
+    
+    protected ListFormDataProvider fdp = new ListFormDataProvider();
 
     public void setValue(String value) {
         this.valueExprOriginal = value.trim();
     }
 
-    FormTagBase getForm() {
+    public FormTagBase getForm() {
         return (FormTagBase) TagSupport.findAncestorWithClass(this, FormTagBase.class);
     }
 
@@ -71,7 +73,7 @@ public abstract class BasicValueTag extends MakumbaTag {
      * Indicates if the expression is null
      * @return <code>true</code> if the expression is null, <code>false</code> otherwise
      */
-    boolean isNull() {
+    public boolean isNull() {
         return expr == null || expr.trim().length() == 0 || expr.trim().equals("nil");
     }
 
@@ -91,35 +93,17 @@ public abstract class BasicValueTag extends MakumbaTag {
         return expr != null && expr.startsWith("$");
     }
 
-    /**
-     * Gets the key of the parentList
-     * @param pageCache the page cache of the current page
-     * @return The MultipleKey that identifies the parent list, <code>null</code> if there's no parent list
-     */
-    public MultipleKey getParentListKey(PageCache pageCache) {
-        MultipleKey k = super.getParentListKey(pageCache);
-        if (k != null)
-            return k;
-        if (isNull())
-            return null;
-
-        /* we don't have a query around us, so we must make a dummy query for computing the value via the database */
-        getForm().cacheDummyQueryAtAnalysis(pageCache);
-        return getForm().tagKey;
-    }
-
     /** 
      * Determines the ValueComputer and associates it with the tagKey
      * @param pageCache the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
         if (isValue()) {
-            pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, checkPtrExpr(expr,
-                    pageCache), pageCache));
+            fdp.onBasicValueStartAnalyze(this, pageCache, expr);
         }
     }
 
-    protected String checkPtrExpr(String expr2, PageCache pageCache) {
+    public String checkPtrExpr(String expr2, PageCache pageCache) {
         return expr2;
     }
 
@@ -142,10 +126,10 @@ public abstract class BasicValueTag extends MakumbaTag {
                         + "' not compatible with the type computed from context '" + contextType + "'");
         }
 
+        // FIXME shouldn't this be in FormDataProvider - and should this class know about Values and Attributes?
+        
         if (isValue()) {
-            ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
-            vc.doEndAnalyze(this, pageCache);
-            type = vc.getType();
+            type = fdp.onBasicValueEndAnalyze(this, pageCache);
         }
         if (isAttribute())
             type = (FieldDefinition) pageCache.retrieve(MakumbaTag.TYPES, expr.substring(1));
@@ -196,8 +180,8 @@ public abstract class BasicValueTag extends MakumbaTag {
         }
 
         if (isValue())
-            val = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
-
+            val = fdp.getValue(this, pageCache);
+            
         if (isAttribute()) {
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
         }

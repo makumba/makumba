@@ -454,7 +454,6 @@ public class ComposedQuery {
         for (int i = 1; i < 5; i++)
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
 
-
        return new Grouper(previousKeyset,  qep.execute(
                 computeQuery(vars, false), a, offset, limit).elements());
     }
@@ -559,6 +558,8 @@ public class ComposedQuery {
 
     /**
      * Transforms the pointer into a hibernate pointer if we use hibernate
+     * 
+     * FIXME this should be provide by the QueryProvider!!
      * 
      * @param expr2
      *            the expression we want to check

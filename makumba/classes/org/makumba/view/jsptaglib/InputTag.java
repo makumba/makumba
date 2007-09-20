@@ -39,7 +39,6 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.list.tags.MakumbaTag;
-import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
@@ -133,7 +132,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
@@ -144,7 +143,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     FieldDefinition getTypeFromContext(PageCache pageCache) {
-        return getForm().getInputTypeAtAnalysis(name, pageCache);
+        return fdp.getInputTypeAtAnalysis(getForm(), name, pageCache);
     }
 
     /**
@@ -156,24 +155,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doStartAnalyze(PageCache pageCache) {
         if (name == null)
             throw new ProgrammerError("name attribute is required");
-        super.doStartAnalyze(pageCache);
-    }
-
-    /**
-     * Checks a pointer expression, used for hibernate pointers
-     * 
-     * @param expr2
-     *            the expression to check
-     * @param pageCache
-     *            the page cache of the current page
-     * @return The original expression if we're not in a mak:list, the transformed pointer otherwise
-     */
-    protected String checkPtrExpr(String expr2, PageCache pageCache) {
-        MultipleKey parentListKey = getForm().getParentListKey(pageCache);
-        if (parentListKey == null) { // If there is no enclosing mak:list
-            return expr2;
-        }
-        return QueryTag.getQuery(pageCache, parentListKey).transformPointer(expr2);
+        if(isValue())
+            fdp.onNonQueryStartAnalyze(this, pageCache, expr);
     }
 
     /**

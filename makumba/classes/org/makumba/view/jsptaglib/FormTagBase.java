@@ -32,18 +32,13 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
+
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
-import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.controller.html.FormResponder;
-import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.engine.QueryExecution;
-import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.list.tags.MakumbaTag;
-import org.makumba.list.tags.QueryTag;
+import org.makumba.list.ListFormDataProvider;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
@@ -55,18 +50,18 @@ import org.makumba.util.StringUtils;
  * @version $Id$
  * 
  */
-public class FormTagBase extends MakumbaTag implements BodyTag {
+public class FormTagBase extends FormTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
     // the tag attributes
-    String baseObject = null;
+    public String baseObject = null;
 
     String handler = null;
 
     String formMethod = null;
 
-    String formAction = null;
+    public String formAction = null;
 
     String formName = null;
 
@@ -91,6 +86,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     boolean reloadFormOnError = true;
 
     private String clientSideValidation = "live";
+    
+    protected ListFormDataProvider fdp = new ListFormDataProvider();
+
 
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
@@ -208,7 +206,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
         return classname.substring(m + 1).toLowerCase();
     }
 
-    boolean shouldComputeBasePointer() {
+    public boolean shouldComputeBasePointer() {
         return baseObject != null;
     }
 
@@ -220,23 +218,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
-        Object[] keyComponents = { baseObject, handler, getParentListKey(null), getClass() };
+        Object[] keyComponents = { baseObject, handler, fdp.getParentListKey(this), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
-    static final String[] dummyQuerySections = { null, null, null, null, null };
-
-    private static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
-
-    /**
-     * Caches a dummy query when there is no mak:list around us
-     * 
-     * @param pageCache
-     *            the page cache of the current page
-     */
-    public void cacheDummyQueryAtAnalysis(PageCache pageCache) {
-        QueryTag.cacheQuery(pageCache, tagKey, dummyQuerySections, null);
-    }
+    public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
 
     /**
      * {@inheritDoc}
@@ -248,13 +234,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
         if (!shouldComputeBasePointer()) {
             return;
         }
-        ValueComputer vc;
-        if ((Boolean) pageCache.retrieve(MakumbaTag.QUERY_LANGUAGE, MakumbaTag.QUERY_LANGUAGE).equals("hql")) { // if we use hibernate, we have to select object.id, not the whole object
-            vc = ValueComputer.getValueComputerAtAnalysis(this, baseObject + ".id", pageCache);
-        } else {
-            vc = ValueComputer.getValueComputerAtAnalysis(this, baseObject, pageCache);
-        }
-        pageCache.cache(MakumbaTag.VALUE_COMPUTERS, tagKey, vc);
+        
+        fdp.onFormStartAnalyze(this, pageCache, baseObject);
     }
 
     /**
@@ -262,7 +243,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * 
      * @return The parent form class of this tag
      */
-    FormTagBase findParentForm() {
+    public FormTagBase findParentForm() {
         return (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
     }
 
@@ -294,9 +275,8 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * {@inheritDoc}
      */
     public void doEndAnalyze(PageCache pageCache) {
-        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(QUERY, tagKey);
-        if (dummy != null)
-            dummy.analyze();
+        fdp.onFormEndAnalyze(this, pageCache);
+        
         if (formAction == null && findParentForm() == null)
             throw new ProgrammerError(
                     "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
@@ -305,11 +285,11 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
                 throw new ProgrammerError(
                         "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
         }
+        
         if (!shouldComputeBasePointer())
             return;
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey);
-        vc.doEndAnalyze(this, pageCache);
-        pageCache.cache(BASE_POINTER_TYPES, tagKey, vc.getType().getPointedType().getName());
+        
+        pageCache.cache(BASE_POINTER_TYPES, tagKey, fdp.getTypeOnEndAnalyze(this, pageCache).getPointedType().getName());
     }
 
     /**
@@ -347,12 +327,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * @throws LogicException
      */
     public int doMakumbaStartTag(PageCache pageCache) throws JspException, LogicException {
-        // if we have a dummy query, we simulate an iteration
-        if (pageCache.retrieve(QUERY, tagKey) != null) {
-            QueryExecution.startListGroup(pageContext);
-            QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
-        }
-
+        
+        fdp.onFormStartTag(this, pageCache, pageContext);
+        
         responder.setOperation(getOperation());
         responder.setExtraFormatting(extraFormatting);
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
@@ -361,11 +338,7 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
 
         /** we compute the base pointer */
         if (shouldComputeBasePointer()) {
-            Object o = ((ValueComputer) MakumbaTag.getPageCache(pageContext).retrieve(MakumbaTag.VALUE_COMPUTERS, tagKey)).getValue(this);
-
-            if (!(o instanceof Pointer))
-                throw new RuntimeException("Pointer expected");
-            basePointer = ((Pointer) o).toExternalForm();
+            basePointer = fdp.computeBasePointer(this, pageContext);
         }
         try {
             responder.setHttpRequest((HttpServletRequest) pageContext.getRequest());
@@ -385,9 +358,9 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
      * @throws JspException
      */
     public int doMakumbaEndTag(PageCache pageCache) throws JspException {
-        // if we have a dummy query, we simulate end iteration
-        if (pageCache.retrieve(QUERY, tagKey) != null)
-            QueryExecution.endListGroup(pageContext);
+                
+        fdp.onFormEndTag(this, pageCache, pageContext);
+        
         try {
             StringBuffer sb = new StringBuffer();
             responder.writeFormPreamble(sb, basePointer);
@@ -432,36 +405,6 @@ public class FormTagBase extends MakumbaTag implements BodyTag {
     /** The basic data type inside the form. null for generic forms */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return null;
-    }
-
-    /**
-     * Gets the type of an input tag
-     * 
-     * @param fieldName
-     *            the name of the field of which the type should be returned
-     * @param pageCache
-     *            the page cache of the current page
-     * @return A FieldDefinition corresponding to the type of the input field
-     */
-    public FieldDefinition getInputTypeAtAnalysis(String fieldName, PageCache pageCache) {
-        DataDefinition dd = getDataTypeAtAnalysis(pageCache);
-        if (dd == null)
-            return null;
-        int dot = -1;
-        while (true) {
-            int dot1 = fieldName.indexOf(".", dot + 1);
-            if (dot1 == -1)
-                return dd.getFieldDefinition(fieldName.substring(dot + 1));
-            String fname = fieldName.substring(dot + 1, dot1);
-            FieldDefinition fd = dd.getFieldDefinition(fname);
-            if (fd == null)
-                throw new org.makumba.NoSuchFieldException(dd, fname);
-            if (!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
-                throw new org.makumba.InvalidFieldTypeException(fieldName + " must be linked via not null pointers, "
-                        + fd.getDataDefinition().getName() + "->" + fd.getName() + " is not");
-            dd = fd.getPointedType();
-            dot = dot1;
-        }
     }
 
 }

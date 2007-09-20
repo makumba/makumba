@@ -24,7 +24,7 @@ testMakFormEnd!</mak:form>!endMakFormEnd
         testIntInputValue!<mak:input name="uniqIntValue" value="p.uniqInt" dataType="int"/>!endIntInputValue
         testDateInputValue!<mak:input name="birthdateValue" value="p.birthdate" dataType="date"/>!endDateInputValue
         testTextInputValue!<mak:input name="commentValue" value="p.comment" dataType="text"/>!endTextInputValue
-        testPtrInputValue!<mak:input name="brotherValue" value="p.brother" dataType="ptr test.Person"/>!endPtrInputValue
+        testPtrInputValue!<mak:input name="brotherValue" value="p.brother.id" dataType="ptr test.Person"/>!endPtrInputValue
     testMakFormValueEnd!</mak:form>!endMakFormValueEnd
 </mak:object>
 

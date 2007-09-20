@@ -23,7 +23,7 @@
 
 package org.makumba.view.jsptaglib;
 
-import org.makumba.list.tags.MakumbaTag;
+import org.makumba.analyser.AnalysableTag;
 
 /** 
  * An exception thrown due to makumba-specific reasons during tag execution
@@ -40,7 +40,7 @@ public class MakumbaJspException extends javax.servlet.jsp.JspException {
         this.e = e;
     }
 
-    public MakumbaJspException(MakumbaTag t, String s) {
+    public MakumbaJspException(AnalysableTag t, String s) {
         this(new RuntimeException(s + "\nin tag: " + t.toString()));
     }
 

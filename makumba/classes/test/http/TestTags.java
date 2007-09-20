@@ -583,7 +583,11 @@ public class TestTags extends JspTestCase {
 		pageContext.include("testMakAddForm.jsp");
 	}
 	public void endMakAddForm(WebResponse response) {
+        
+        
+        
 		try {
+            System.out.println("*** "+response.getText());
 			output = response.getText();
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());

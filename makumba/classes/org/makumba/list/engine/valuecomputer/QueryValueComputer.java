@@ -1,6 +1,7 @@
 package org.makumba.list.engine.valuecomputer;
 
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
@@ -32,10 +33,10 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    public void makeQueryAtAnalysis(MakumbaTag analyzed, String keyDifference, String[] queryProps, String expr,
+    public void makeQueryAtAnalysis(AnalysableTag analyzed, String keyDifference, String[] queryProps, String expr,
             PageCache pageCache) {
         this.expr = expr;
-        parentKey = analyzed.getParentListKey(pageCache);
+        parentKey = QueryTag.getParentListKey(analyzed, pageCache);
 
         queryKey = new MultipleKey(parentKey, keyDifference);
 

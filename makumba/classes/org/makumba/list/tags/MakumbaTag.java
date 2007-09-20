@@ -27,13 +27,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.FieldDefinition;
@@ -45,6 +43,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.list.ListFormDataProvider;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 import org.makumba.view.jsptaglib.MakumbaJspException;
@@ -67,9 +66,9 @@ import org.makumba.view.jsptaglib.MakumbaJspException;
 public abstract class MakumbaTag extends AnalysableTag {
 
     /** Tag parameters */
-    protected Hashtable params = new Hashtable(7); // holds certain 'normal' tag attributes
+    protected Hashtable<String, Object> params = new Hashtable<String, Object>(7); // holds certain 'normal' tag attributes
 
-    protected Map extraFormattingParams = new HashMap(7); // container for html formatting params
+    protected Map<String, String> extraFormattingParams = new HashMap<String, String>(7); // container for html formatting params
 
     /** Extra html formatting, copied verbatim to the output */
     protected StringBuffer extraFormatting;
@@ -81,30 +80,11 @@ public abstract class MakumbaTag extends AnalysableTag {
 
     public static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
 
-    protected static final String QUERY = "org.makumba.query";
+    public static final String QUERY = "org.makumba.query";
 
     static final String DB_ATTR = "org.makumba.database";
-
-    /**
-     * Finds the parentList of a list
-     * 
-     * @return The parent QueryTag of the Tag
-     */
-    public QueryTag getParentList() {
-        return (QueryTag) findAncestorWithClass(this, QueryTag.class);
-    }
-
-    /**
-     * Finds the key of the parentList of the Tag
-     * 
-     * @param pageCache
-     *            The page cache for the current page
-     * @return The MultipleKey identifying the parentList
-     */
-    public MultipleKey getParentListKey(PageCache pageCache) {
-        QueryTag parentList = getParentList();
-        return parentList == null ? null : parentList.getTagKey();
-    }
+    
+    protected ListFormDataProvider fdp = new ListFormDataProvider();
 
     /**
      * Adds a key to the parentList, verifies if the tag has a parent.
@@ -113,20 +93,11 @@ public abstract class MakumbaTag extends AnalysableTag {
      *            The key to be added
      */
     public void addToParentListKey(Object o) {
-        QueryTag parentList = getParentList();
+        AnalysableTag parentList = QueryTag.getParentList(this);
         if (parentList == null)
             throw new org.makumba.ProgrammerError(
                     "VALUE tags, INPUT, FORM or OPTION tags that compute a value should always be enclosed in a LIST or OBJECT tag");
         tagKey = new MultipleKey(parentList.getTagKey(), o);
-    }
-
-    /**
-     * Gets the key that identifies this makumba tag
-     * 
-     * @return The MultipleKey used to identify the Makumba tag
-     */
-    public MultipleKey getTagKey() {
-        return tagKey;
     }
 
     /**
@@ -474,12 +445,12 @@ public abstract class MakumbaTag extends AnalysableTag {
         if (fd != null && value.getType().equals("nil"))
             return;
 
-        MakumbaTag.analyzedTag.set(tagData);
+        AnalysableTag.analyzedTag.set(tagData);
         if (fd != null && !value.isAssignableFrom(fd))
             throw new ProgrammerError("Attribute type changing within the page: in tag\n"
-                    + ((MakumbaTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type " + fd
+                    + ((AnalysableTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type " + fd
                     + " and the from this tag results the incompatible type " + value);
-        MakumbaTag.analyzedTag.set(null);
+        AnalysableTag.analyzedTag.set(null);
 
         Object[] val2 = { value, this };
         pc.cache(MakumbaTag.TYPES, key, val2);
@@ -487,7 +458,7 @@ public abstract class MakumbaTag extends AnalysableTag {
 
     /**
      * Static method to get the PageCache object for the current page. Constructs a new one if none found. We put this
-     * as static, as we may have to export it to pacakges like org.makumba.controller.jsp
+     * as static, as we may have to export it to packages like org.makumba.controller.jsp
      * 
      * @param pageContext
      *            The PageContext object of the current page

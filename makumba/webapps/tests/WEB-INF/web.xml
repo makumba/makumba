@@ -121,7 +121,7 @@
   </taglib>
 
   <taglib>
-  	<taglib-uri>http://www.makumba.org/hibernate</taglib-uri>
+  	<taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
   	<taglib-location>
   		../../../classes/META-INF/taglib-hibernate.tld
   	</taglib-location>

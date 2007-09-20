@@ -32,6 +32,7 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -40,6 +41,8 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
+import org.makumba.view.jsptaglib.BasicValueTag;
+import org.makumba.view.jsptaglib.FormTagBase;
 import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 import org.makumba.view.jsptaglib.MakumbaJspException;
 
@@ -154,7 +157,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
             tagKey.setAt(queryProps[i], i);
 
         // if we have a parent, we append the key of the parent
-        tagKey.setAt(getParentListKey(null), queryProps.length);
+        tagKey.setAt(getParentListKey(this, pageCache), queryProps.length);
         tagKey.setAt(id, queryProps.length + 1);
     }
 
@@ -184,7 +187,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
         }
 
         // we make ComposedQuery cache our query
-        QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(pageCache));
+        QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache));
 
         if (countVar != null)
             setType(pageCache, countVar, MakumbaSystem.makeFieldOfType(countVar, "int"));
@@ -229,7 +232,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      */
     public int doMakumbaStartTag(PageCache pageCache) throws LogicException, JspException {
         servletRequestThreadLocal.set(pageContext.getRequest());
-        if (getParentList() == null)
+        if (getParentList(this) == null)
             QueryExecution.startListGroup(pageContext);
         else {
             upperCount = pageContext.getRequest().getAttribute(standardCountVar);
@@ -318,7 +321,7 @@ public class QueryTag extends MakumbaTag implements IterationTag {
         pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
         execution.endIterationGroup();
 
-        if (getParentList() == null)
+        if (getParentList(this) == null)
             QueryExecution.endListGroup(pageContext);
 
         execution = null;
@@ -326,6 +329,49 @@ public class QueryTag extends MakumbaTag implements IterationTag {
         countVar = maxCountVar = null;
         separator = "";
         return EVAL_PAGE;
+    }
+
+    /**
+     * Finds the parentList of a list
+     * 
+     * @param tag TODO
+     * @return The parent QueryTag of the Tag
+     */
+    public static AnalysableTag getParentList(AnalysableTag tag) {
+        return (AnalysableTag) findAncestorWithClass(tag, QueryTag.class);
+    }
+
+    public static final String[] dummyQuerySections = { null, null, null, null, null };
+    
+    /**
+     * Finds the key of the parentList of the Tag
+     * 
+     * @param tag TODO
+     * @param pageCache TODO
+     * @return The MultipleKey identifying the parentList
+     */
+    public static MultipleKey getParentListKey(AnalysableTag tag, PageCache pageCache) {
+        
+        if(tag instanceof BasicValueTag) {
+            BasicValueTag dirtyHack = (BasicValueTag)tag;
+            MultipleKey k = getParentListKeySimple(tag);
+            if (k != null)
+                return k;
+            if (dirtyHack.isNull())
+                return null;
+
+            /* we don't have a query around us, so we must make a dummy query for computing the value via the database */
+            QueryTag.cacheQuery(pageCache, dirtyHack.getForm().getTagKey(), dummyQuerySections, null);
+            return dirtyHack.getForm().getTagKey();
+        } else {
+            return getParentListKeySimple(tag);
+        }
+        
+    }
+    
+    private static MultipleKey getParentListKeySimple(AnalysableTag tag) {
+        AnalysableTag parentList = getParentList(tag);
+        return parentList == null ? null : parentList.getTagKey();
     }
 
     /**
@@ -372,7 +418,9 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      */
     public static int count() {
         Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
-        if(countAttr == null) return -1;
+        if(countAttr == null) {
+            throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
+        }
         return ((Integer) countAttr).intValue();
     }
 
@@ -383,7 +431,9 @@ public class QueryTag extends MakumbaTag implements IterationTag {
      */
     public static int maxCount() {
         Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
-        if(maxAttr == null) return -1;
+        if(maxAttr == null) {
+            throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
+        }
         return ((Integer) maxAttr).intValue();
     }
 

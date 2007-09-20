@@ -42,6 +42,6 @@ public class EditTag extends FormTagBase {
     }
 
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        return QueryTag.getQuery(pageCache, getParentListKey(pageCache)).getLabelType(baseObject);
+        return QueryTag.getQuery(pageCache, fdp.getParentListKey(this)).getLabelType(baseObject);
     }
 }

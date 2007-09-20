@@ -33,6 +33,7 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
@@ -106,14 +107,14 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
          */
         void addTag(MakumbaTag t, TagData td) {
             if (!parents.isEmpty())
-                t.setParent((MakumbaTag) parents.get(parents.size() - 1));
+                t.setParent((AnalysableTag) parents.get(parents.size() - 1));
             else
                 t.setParent(null);
 
             JspParseData.fill(t, td.attributes);
             t.setTagKey(pageCache);
             if (t.getTagKey() != null && !t.allowsIdenticalKey()) {
-                MakumbaTag sameKey = (MakumbaTag) pageCache.retrieve(TAG_CACHE, t.getTagKey());
+                AnalysableTag sameKey = (AnalysableTag) pageCache.retrieve(TAG_CACHE, t.getTagKey());
                 if (sameKey != null) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("Due to limitations of the JSP standard, Makumba cannot make\n").append(
@@ -138,7 +139,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
          * @param t
          *            the tag to be added
          */
-        public void start(MakumbaTag t) {
+        public void start(AnalysableTag t) {
             if (t == null)
                 return;
             if (!(t instanceof BodyTag) && !(t instanceof QueryTag))
@@ -166,7 +167,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             }
 
             tagName = tagName.substring(makumbaPrefix.length() + 1);
-            MakumbaTag t = (MakumbaTag) parents.get(parents.size() - 1);
+            AnalysableTag t = (AnalysableTag) parents.get(parents.size() - 1);
 
             // if the end and start of the tag are not the same kind of tag
             if (!t.getClass().equals(tagClasses.get(tagName))) {
@@ -188,10 +189,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
          */
         public void endPage() {
             for (Iterator i = tags.iterator(); i.hasNext();) {
-                MakumbaTag t = (MakumbaTag) i.next();
-                MakumbaTag.analyzedTag.set(t.tagData);
+                AnalysableTag t = (AnalysableTag) i.next();
+                AnalysableTag.analyzedTag.set(t.tagData);
                 t.doEndAnalyze(pageCache);
-                MakumbaTag.analyzedTag.set(null);
+                AnalysableTag.analyzedTag.set(null);
             }
         }
     }
@@ -251,7 +252,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         Class c = (Class) tagClasses.get(td.name.substring(prefix.length()));
         if (c == null)
             return;
-        MakumbaTag.analyzedTag.set(td);
+        AnalysableTag.analyzedTag.set(td);
         MakumbaTag t = null;
         try {
             t = (MakumbaTag) c.newInstance();
@@ -261,7 +262,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         td.tagObject = t;
         t.setTagDataAtAnalysis(td);
         ((ParseStatus) status).addTag(t, td);
-        MakumbaTag.analyzedTag.set(null);
+        AnalysableTag.analyzedTag.set(null);
     }
 
     /**
@@ -274,7 +275,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      */
     public void startTag(TagData td, Object status) {
         simpleTag(td, status);
-        ((ParseStatus) status).start((MakumbaTag) td.tagObject);
+        ((ParseStatus) status).start((AnalysableTag) td.tagObject);
     }
 
     /**
@@ -286,9 +287,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      *            the status of the parsing
      */
     public void endTag(TagData td, Object status) {
-        MakumbaTag.analyzedTag.set(td);
+        AnalysableTag.analyzedTag.set(td);
         ((ParseStatus) status).end(td);
-        MakumbaTag.analyzedTag.set(null);
+        AnalysableTag.analyzedTag.set(null);
     }
 
     public Object makeStatusHolder(Object initialStatus) {

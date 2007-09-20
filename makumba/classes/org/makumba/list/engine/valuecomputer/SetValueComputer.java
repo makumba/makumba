@@ -6,6 +6,7 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
