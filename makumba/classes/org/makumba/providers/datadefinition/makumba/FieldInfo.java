@@ -1099,6 +1099,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return getIntegerType() == _set;
     }
 
+    public boolean isComplexSet() {
+        return getIntegerType() == _setComplex;
+    }
+
     public void addValidationRule(Collection rules) {
         if (rules != null) {
             for (Iterator iter = rules.iterator(); iter.hasNext();) {
