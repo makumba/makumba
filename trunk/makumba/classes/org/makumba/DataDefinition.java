@@ -27,6 +27,7 @@ package org.makumba;
 
 import java.io.Serializable;
 import java.util.Dictionary;
+import java.util.Vector;
 
 /**
  * Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
@@ -97,6 +98,9 @@ public interface DataDefinition {
 
     /** Check whether this data definition has a multi-field uniqe key defined with the given fields. */
     public boolean hasMultiUniqueKey(String[] fieldNames);
+
+    /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
+    public Vector getReferenceFields();
 
     /** Data structure holding the definition of a mult-field unique key. */
     class MultipleUniqueKeyDefinition implements Serializable {

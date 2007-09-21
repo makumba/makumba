@@ -501,12 +501,12 @@ public class MakumbaSystem {
     public static java.util.Vector mddsInDirectory(String dirInClasspath) {
         java.net.URL u = org.makumba.util.ClassResource.get(dirInClasspath);
         java.io.File dir = new java.io.File(u.getFile());
-        java.util.Vector mdds = new java.util.Vector();
+        java.util.Vector<String> mdds = new java.util.Vector<String>();
         fillMdds(dir.toString().length() + 1, dir, mdds);
         return mdds;
     }
 
-    static void fillMdds(int baselength, java.io.File dir, java.util.Vector mdds) {
+    static void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
         if (dir.isDirectory()) {
             String[] list = dir.list();
             for (int i = 0; i < list.length; i++) {

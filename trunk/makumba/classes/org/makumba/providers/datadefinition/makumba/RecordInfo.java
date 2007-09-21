@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -296,6 +297,17 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     /** returns all the field names */
     public Vector getFieldNames() {
         return (Vector) fieldOrder.clone();
+    }
+
+    public Vector<FieldDefinition> getReferenceFields() {
+        Vector<FieldDefinition> v = new Vector<FieldDefinition>();
+        for (Iterator iter = fields.values().iterator(); iter.hasNext();) {
+            FieldDefinition fd = (FieldDefinition) iter.next();
+            if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
+                v.add(fd);
+            }
+        }
+        return v;
     }
 
     /** returns the field info associated with a name */
