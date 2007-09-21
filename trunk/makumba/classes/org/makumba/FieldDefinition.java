@@ -310,6 +310,9 @@ public interface FieldDefinition {
 
     /** retuns whether this field is an external set, i.e. set ptr, but not setIntEnum, not setCharEnum nor setComplex. */
     public boolean isExternalSet();
+    
+    /** retuns whether this field is a setComplex. */
+    public boolean isComplexSet();
 
     /** retuns whether this field is a pointer. */
     public boolean isPointer();
