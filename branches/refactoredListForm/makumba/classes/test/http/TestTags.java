@@ -31,7 +31,7 @@ import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.view.jsptaglib.MakumbaVersionTag;
+import org.makumba.commons.tags.MakumbaVersionTag;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;

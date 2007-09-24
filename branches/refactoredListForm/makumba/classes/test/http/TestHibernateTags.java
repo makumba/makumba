@@ -30,7 +30,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
-import org.makumba.view.jsptaglib.MakumbaVersionTag;
+import org.makumba.commons.tags.MakumbaInfoTag;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -186,7 +186,7 @@ public class TestHibernateTags extends JspTestCase {
     }
 
     public void testVersionTag() throws JspException, IOException {
-        MakumbaVersionTag versionTag = new MakumbaVersionTag();
+        MakumbaInfoTag versionTag = new MakumbaInfoTag();
         versionTag.setPageContext(pageContext);
         versionTag.doStartTag();
         session.setAttribute("version", "0.0");
