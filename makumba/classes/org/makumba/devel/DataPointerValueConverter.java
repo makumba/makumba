@@ -73,7 +73,7 @@ public class DataPointerValueConverter extends DataServlet {
         writeScripts(writer);
         writeHeaderEnd(writer, "Value Converter");
 
-        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDatabaseName(), MODE_CONVERTOR);
+        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDataSourceName(), MODE_CONVERTOR);
 
         writer.println("<form>");
         writer.println("<table>");

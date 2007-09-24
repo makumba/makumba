@@ -1,22 +1,13 @@
 package org.makumba.db.hibernate;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
-
-import javassist.CannotCompileException;
-import javassist.NotFoundException;
-
-import javax.xml.transform.TransformerConfigurationException;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.makumba.HibernateSFManager;
-import org.xml.sax.SAXException;
 
 public class HibernateTest  {
     

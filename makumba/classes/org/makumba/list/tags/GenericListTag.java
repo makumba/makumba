@@ -31,7 +31,6 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.list.ListFormDataProvider;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
  * This class provides utility methods for all makumba tags, such as
@@ -54,7 +53,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
 
     public static final String QUERY = "org.makumba.query";
 
-    public static final String DB_ATTR = "org.makumba.database";
+    public static final String DS_ATTR = "org.makumba.database";
     
     protected ListFormDataProvider fdp = new ListFormDataProvider();
 
@@ -64,7 +63,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
             return super.doEndTag();
         } finally {
             if (findAncestorWithClass(this, GenericListTag.class) == null)
-                pageContext.removeAttribute(DB_ATTR);
+                pageContext.removeAttribute(DS_ATTR);
             
         }
     }
@@ -89,7 +88,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      * @return A String containing the name of the database
      */
     public String getDatabaseName() {
-        return getDatabaseName(pageContext);
+        return getDataSourceName(pageContext);
     }
 
     /**
@@ -99,11 +98,11 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      *            The PageContext object of this page
      * @return A String containing the name of the database
      */
-    public static String getDatabaseName(PageContext pc) {
-        String db = (String) pc.getAttribute(DB_ATTR);
-        if (db == null)
-            return MakumbaSystem.getDefaultDatabaseName();
-        return db;
+    public static String getDataSourceName(PageContext pc) {
+        String ds = (String) pc.getAttribute(DS_ATTR);
+        if (ds == null)
+            return MakumbaSystem.getDefaultDataSourceName();
+        return ds;
     }
 
     /**
@@ -130,6 +129,6 @@ public abstract class GenericListTag extends GenericMakumbaTag {
     public void setDb(String db) throws JspException {
         onlyRootArgument("db");
         if (pageContext != null)
-            pageContext.setAttribute(DB_ATTR, db);
+            pageContext.setAttribute(DS_ATTR, db);
     }
 }

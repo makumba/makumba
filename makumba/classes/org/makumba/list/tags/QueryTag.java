@@ -33,6 +33,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.QueryExecution;
@@ -40,8 +41,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
-import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
  * Display of OQL query results in nested loops. The Query FROM, WHERE, GROUPBY and ORDERBY are indicated in the head of
@@ -51,7 +50,6 @@ import org.makumba.view.jsptaglib.MakumbaJspException;
  * 
  * @author Cristian Bogdan
  * @version $Id$
- * 
  */
 public class QueryTag extends GenericListTag implements IterationTag {
 
@@ -217,7 +215,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     ValueComputer choiceComputer;
 
     private static ThreadLocal<ServletRequest> servletRequestThreadLocal = new ThreadLocal<ServletRequest>();
-    
+
     /**
      * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
      * there are any results in the iterationGroup.
@@ -312,7 +310,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         pageContext.getRequest().setAttribute(standardLastCountVar,
-                pageContext.getRequest().getAttribute(standardMaxCountVar));
+            pageContext.getRequest().getAttribute(standardMaxCountVar));
 
         pageContext.getRequest().setAttribute(standardCountVar, upperCount);
         pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
@@ -331,19 +329,21 @@ public class QueryTag extends GenericListTag implements IterationTag {
     /**
      * Finds the parentList of a list
      * 
-     * @param tag TODO
-     * @return The parent QueryTag of the Tag
+     * @param tag
+     *            the tag we want to discover the parent of
+     * @return the parent QueryTag of the Tag
      */
     public static AnalysableTag getParentList(AnalysableTag tag) {
         return (AnalysableTag) findAncestorWithClass(tag, QueryTag.class);
     }
 
-    
     /**
      * Finds the key of the parentList of the Tag
      * 
-     * @param tag TODO
-     * @param pageCache TODO
+     * @param tag
+     *            the tag we want to discover the parent of
+     * @param pageCache
+     *            the pageCache of the current page
      * @return The MultipleKey identifying the parentList
      */
     public static MultipleKey getParentListKey(AnalysableTag tag, PageCache pageCache) {
@@ -379,10 +379,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
         ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
         if (ret != null)
             return ret;
-        boolean hql=  pc.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE).equals("hql");
-        ret = parentKey == null ? new ComposedQuery(sections, hql) : new ComposedSubquery(sections,
-                QueryTag.getQuery(pc, parentKey), hql);
-    
+        String ql = (String) pc.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE);
+        ret = parentKey == null ? 
+                new ComposedQuery(sections, ql) : 
+                    new ComposedSubquery(sections, QueryTag.getQuery(pc, parentKey), ql);
+
         ret.init();
         pc.cache(GenericListTag.QUERY, key, ret);
         return ret;
@@ -395,7 +396,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     public static int count() {
         Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
-        if(countAttr == null) {
+        if (countAttr == null) {
             throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
         }
         return ((Integer) countAttr).intValue();
@@ -408,7 +409,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     public static int maxCount() {
         Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
-        if(maxAttr == null) {
+        if (maxAttr == null) {
             throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
         }
         return ((Integer) maxAttr).intValue();
@@ -420,10 +421,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
-        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar))
-                .intValue();
+        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar)).intValue();
     }
-    
+
     @Override
     public boolean canHaveBody() {
         return true;

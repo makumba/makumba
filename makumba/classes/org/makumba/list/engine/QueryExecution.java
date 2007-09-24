@@ -30,14 +30,15 @@ import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
 
+import org.makumba.Attributes;
 import org.makumba.LogicException;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
-import org.makumba.providers.QueryExecutionProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.util.ArrayMap;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at
@@ -138,10 +139,11 @@ public class QueryExecution {
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
         currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
         ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext), key);
-        QueryExecutionProvider qep = QueryExecutionProvider.makeQueryRunner(GenericListTag.getDatabaseName(pageContext), (String) GenericListTag.getPageCache(pageContext).retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), (String) GenericListTag.getPageCache(pageContext).retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
         
         try {
-            listData = cq.execute(qep, PageAttributes.getAttributes(pageContext), new Evaluator(pageContext),
+            Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
+            listData = cq.execute(qep, args, new Evaluator(pageContext),
                     computeLimit(pageContext, offset, 0), computeLimit(pageContext, limit, -1));
         } finally {
             qep.close();

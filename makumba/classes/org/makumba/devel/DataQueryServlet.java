@@ -104,7 +104,7 @@ public class DataQueryServlet extends DataServlet {
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
+            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
 
             try {
                 Vector results = t.executeQuery(query, null, 0, limit);

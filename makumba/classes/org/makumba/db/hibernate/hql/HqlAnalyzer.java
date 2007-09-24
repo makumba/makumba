@@ -12,15 +12,18 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLAnalyzer;
 import org.makumba.OQLParseError;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.query.hql.HQLQueryProvider;
+
 import antlr.SemanticException;
 import antlr.collections.AST;
 import antlr.debug.misc.ASTFrame;
 
-public class HqlAnalyzer implements OQLAnalyzer {
+public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
 
     private DataDefinition result;
 
-    private final static Map integerTypeMap = new HashMap();
+    private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
     static {
         integerTypeMap.put(new Integer(FieldDefinition._ptr), "ptr");
         integerTypeMap.put(new Integer(FieldDefinition._ptrRel), "ptrRel");
@@ -190,7 +193,7 @@ public class HqlAnalyzer implements OQLAnalyzer {
         // col2|p.name
         // etc...
         
-        Hashtable translator = new Hashtable();
+        Hashtable<String, String> translator = new Hashtable<String, String>();
         StringTokenizer st = new StringTokenizer(selectFrom, ",");
         while(st.hasMoreTokens()) {
             String[] split = st.nextToken().trim().split("\\s[a|A][s|S]\\s");
@@ -228,9 +231,13 @@ public class HqlAnalyzer implements OQLAnalyzer {
     
     public static void main(String[] args) {
         String q1 = "SELECT p as bullshit FROM test.Person p)";
-        HqlAnalyzer oA = MakumbaSystem.getHqlAnalyzer(q1);
+        HqlAnalyzer oA = HQLQueryProvider.getHqlAnalyzer(q1);
         
         System.out.println(oA.toString());
+    }
+
+    public String getQuery() {
+        return getOQL();
     }
 
 }

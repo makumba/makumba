@@ -1,6 +1,6 @@
 package org.makumba.controller.html;
 
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
+import org.makumba.commons.MakumbaJspAnalyzer;
 
 /**
  * This interface shall be implemented by classes providing a calendar-choser/popup using java script.<br>

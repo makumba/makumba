@@ -23,22 +23,30 @@
 
 package org.makumba.list.tags;
 
-import javax.servlet.jsp.JspException;
+import java.util.Vector;
+
+import javax.servlet.jsp.tagext.TagData;
+import javax.servlet.jsp.tagext.TagExtraInfo;
+import javax.servlet.jsp.tagext.VariableInfo;
 
 
 /**
- * mak:object tag
+ * Extra information for the attributes
  * @author Cristian Bogdan
- * @version $Id$
+ *
  */
-public class ObjectTag extends QueryTag {
+public class AttrTEI extends TagExtraInfo {
+    public VariableInfo[] getVariableInfo(TagData data) {
+        Vector v = new Vector();
 
+        String var = data.getAttributeString("var");
+        if (var != null)
+            v.addElement(new VariableInfo(var, "java.lang.Object", true, VariableInfo.AT_BEGIN));
 
-    private static final long serialVersionUID = 1L;
+        var = data.getAttributeString("exceptionVar");
+        if (var != null)
+            v.addElement(new VariableInfo(var, "java.lang.Throwable", true, VariableInfo.AT_BEGIN));
 
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+        return CountTEI.vector2VarInfo(v);
     }
 }

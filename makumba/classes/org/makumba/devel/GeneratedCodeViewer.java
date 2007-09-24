@@ -342,7 +342,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     || currentType == CodeGenerator.TYPE_DELETE && cgiParams.equals("")) {
                 String labelName = CodeGenerator.getLabelNameFromDataDefinition(dd);
                 // we need to find an object to edit
-                Transaction db = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
+                Transaction db = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
                 try {
                     String query = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;

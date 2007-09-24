@@ -22,7 +22,9 @@
 /////////////////////////////////////
 
 package org.makumba.commons;
+
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -32,42 +34,35 @@ import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.controller.http.RequestAttributes;
 
-public class PageAttributes implements Attributes
-{
-  public static PageAttributes getAttributes(PageContext pc)
-  {
-    if(pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME)==null)
-      pc.setAttribute(RequestAttributes.ATTRIBUTES_NAME, new PageAttributes(pc));
-    return (PageAttributes)pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME);
-  }
-  
-  PageContext pageContext;
+public class PageAttributes implements Attributes {
+    public static PageAttributes getAttributes(PageContext pc) {
+        if (pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME) == null)
+            pc.setAttribute(RequestAttributes.ATTRIBUTES_NAME, new PageAttributes(pc));
+        return (PageAttributes) pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME);
+    }
 
-  PageAttributes(PageContext pageContext) 
-  {
-    this.pageContext=pageContext;
-  }
+    PageContext pageContext;
 
-  static public void setAttribute(PageContext pc, String var, Object o)
-  {
-    if(o!=null)
-      {
-	pc.setAttribute(var, o);
-	pc.removeAttribute(var+"_null");
-      }
-    else
-      {
-	pc.removeAttribute(var);
-	pc.setAttribute(var+"_null", "null");
-      }
-  }
+    PageAttributes(PageContext pageContext) {
+        this.pageContext = pageContext;
+    }
 
-  /**
-   * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
-   */
-  public Object setAttribute(String s, Object o) throws LogicException{
-    return RequestAttributes.getAttributes((HttpServletRequest)pageContext.getRequest()).setAttribute(s, o);
-  }
+    static public void setAttribute(PageContext pc, String var, Object o) {
+        if (o != null) {
+            pc.setAttribute(var, o);
+            pc.removeAttribute(var + "_null");
+        } else {
+            pc.removeAttribute(var);
+            pc.setAttribute(var + "_null", "null");
+        }
+    }
+
+    /**
+     * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
+     */
+    public Object setAttribute(String s, Object o) throws LogicException {
+        return RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).setAttribute(s, o);
+    }
 
     /**
      * @see org.makumba.Attributes#removeAttribute(java.lang.String)
@@ -86,7 +81,7 @@ public class PageAttributes implements Attributes
             return false;
         }
     }
-  
+
     /**
      * @see java.lang.Object#toString()
      */
@@ -115,50 +110,45 @@ public class PageAttributes implements Attributes
         }
         return s;
     }
-  
-  /**
-   * @see org.makumba.Attributes#getAttribute(java.lang.String)
-   */  
-  public Object getAttribute(String s) 
-       throws LogicException
-  {
-    RequestAttributes reqAttrs= RequestAttributes.getAttributes((HttpServletRequest)pageContext.getRequest());
 
-    Object o= reqAttrs.checkSessionForAttribute(s);
-    if(o!=RequestAttributes.notFound)
-      return o;
+    /**
+     * @see org.makumba.Attributes#getAttribute(java.lang.String)
+     */
+    public Object getAttribute(String s) throws LogicException {
+        RequestAttributes reqAttrs = RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest());
 
-    o= reqAttrs.checkServletLoginForAttribute(s);
-    if(o!=RequestAttributes.notFound)
-      return o;
-    
-    o=checkPageForAttribute(s);
-    if(o!=RequestAttributes.notFound)
-      return o;
-    
-    o= reqAttrs.checkLogicForAttribute(s);
-    if(o!=RequestAttributes.notFound)
-      return o;
+        Object o = reqAttrs.checkSessionForAttribute(s);
+        if (o != RequestAttributes.notFound)
+            return o;
 
-    o=reqAttrs.checkParameterForAttribute(s);
-    if(o!=RequestAttributes.notFound)
-      return o;
+        o = reqAttrs.checkServletLoginForAttribute(s);
+        if (o != RequestAttributes.notFound)
+            return o;
 
-    throw new AttributeNotFoundException(s, false);
+        o = checkPageForAttribute(s);
+        if (o != RequestAttributes.notFound)
+            return o;
 
-  }
+        o = reqAttrs.checkLogicForAttribute(s);
+        if (o != RequestAttributes.notFound)
+            return o;
 
-  public Object checkPageForAttribute(String s)
-  {
-    String snull=s+"_null";
-    
-    Object value= pageContext.getAttribute(s);
-    if(value!=null)
-      return value;
-    if(pageContext.getAttribute(snull)!=null)
-      return null;
-    return RequestAttributes.notFound;
-  }
+        o = reqAttrs.checkParameterForAttribute(s);
+        if (o != RequestAttributes.notFound)
+            return o;
 
+        throw new AttributeNotFoundException(s, false);
 
+    }
+
+    public Object checkPageForAttribute(String s) {
+        String snull = s + "_null";
+
+        Object value = pageContext.getAttribute(s);
+        if (value != null)
+            return value;
+        if (pageContext.getAttribute(snull) != null)
+            return null;
+        return RequestAttributes.notFound;
+    }
 }

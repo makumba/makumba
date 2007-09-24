@@ -34,7 +34,8 @@ public class SetValueComputer extends QueryValueComputer {
      * 
      * @param analyzed
      *            the tag that is analyzed
-     * @param parentListKey TODO
+     * @param parentListKey
+     *            the key of the parent list
      * @param set
      *            the FieldDefinition of the set we want to compute a value of
      * @param setExpr
