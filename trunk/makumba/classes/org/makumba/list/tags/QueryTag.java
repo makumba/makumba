@@ -397,7 +397,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public static int count() {
         Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
         if (countAttr == null) {
-            throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
+            //throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
+            return -1;
         }
         return ((Integer) countAttr).intValue();
     }
@@ -410,7 +411,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public static int maxCount() {
         Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
         if (maxAttr == null) {
-            throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
+            //throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
+            return -1;
         }
         return ((Integer) maxAttr).intValue();
     }
@@ -421,6 +423,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
+        if(servletRequestThreadLocal.get() == null) return -1;
         return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar)).intValue();
     }
 
