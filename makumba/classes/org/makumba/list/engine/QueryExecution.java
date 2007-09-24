@@ -177,9 +177,9 @@ public class QueryExecution {
                 throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s);
             }
         }
-        if (!(o instanceof Integer))
+        if (!(o instanceof Integer || o instanceof Long))
             throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s);
-        return ((Integer) o).intValue();
+        return ((Number) o).intValue();
     }
 
     /**
