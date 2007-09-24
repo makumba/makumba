@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.AttributeNotFoundException;
+import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.LogicException;
 import org.makumba.commons.ArgumentReplacer;
@@ -138,9 +139,7 @@ public class MultipleAttributeParametrizer {
         for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             Object o = args.get(name);
-            // FIXME this should not be thrown at such a late stage, but earlier
-            // OR we could throw something here, but it should then be another kind of exception
-            if(o == null) throw new AttributeNotFoundException(name);
+            if(o == null) throw new ProgrammerError("The argument '"+name+"' should not be null");
             if (o instanceof Vector) {
                 Vector v = (Vector) o;
                 for (int i = 1; i <= v.size(); i++)
