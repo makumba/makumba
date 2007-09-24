@@ -70,7 +70,7 @@ public class DataObjectViewerServlet extends DataServlet {
         if (dd == null) {
 
         } else {
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
+            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
 
             try {
                 String dataBaseName = t.getName();

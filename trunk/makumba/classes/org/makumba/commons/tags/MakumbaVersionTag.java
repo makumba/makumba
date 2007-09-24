@@ -21,33 +21,26 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.commons.tags;
 
-import java.util.Vector;
-
-import javax.servlet.jsp.tagext.TagData;
-import javax.servlet.jsp.tagext.TagExtraInfo;
-import javax.servlet.jsp.tagext.VariableInfo;
-
-import org.makumba.list.tags.CountTEI;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * Extra information for the attributes
+ * mak:version tag
  * @author Cristian Bogdan
- *
+ * @version $Id$
  */
-public class AttrTEI extends TagExtraInfo {
-    public VariableInfo[] getVariableInfo(TagData data) {
-        Vector v = new Vector();
+public class MakumbaVersionTag extends TagSupport {
 
-        String var = data.getAttributeString("var");
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Object", true, VariableInfo.AT_BEGIN));
+    private static final long serialVersionUID = 1L;
 
-        var = data.getAttributeString("exceptionVar");
-        if (var != null)
-            v.addElement(new VariableInfo(var, "java.lang.Throwable", true, VariableInfo.AT_BEGIN));
-
-        return CountTEI.vector2VarInfo(v);
+    public int doStartTag() throws JspException {
+        try {
+            pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
+        } catch (java.io.IOException e) {
+            throw new JspException(e.getMessage());
+        }
+        return EVAL_BODY_INCLUDE;
     }
 }

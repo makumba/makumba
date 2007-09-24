@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.forms.tags;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -30,16 +30,14 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
-import org.makumba.CompositeValidationException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.list.tags.MakumbaTag;
-import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.util.StringUtils;
 
@@ -133,7 +131,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
@@ -144,7 +142,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     FieldDefinition getTypeFromContext(PageCache pageCache) {
-        return getForm().getInputTypeAtAnalysis(name, pageCache);
+        return fdp.getInputTypeAtAnalysis(getForm().getDataTypeAtAnalysis(pageCache), name, pageCache);
     }
 
     /**
@@ -156,24 +154,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doStartAnalyze(PageCache pageCache) {
         if (name == null)
             throw new ProgrammerError("name attribute is required");
-        super.doStartAnalyze(pageCache);
-    }
-
-    /**
-     * Checks a pointer expression, used for hibernate pointers
-     * 
-     * @param expr2
-     *            the expression to check
-     * @param pageCache
-     *            the page cache of the current page
-     * @return The original expression if we're not in a mak:list, the transformed pointer otherwise
-     */
-    protected String checkPtrExpr(String expr2, PageCache pageCache) {
-        MultipleKey parentListKey = getForm().getParentListKey(pageCache);
-        if (parentListKey == null) { // If there is no enclosing mak:list
-            return expr2;
-        }
-        return QueryTag.getQuery(pageCache, parentListKey).transformPointer(expr2);
+        if(isValue())
+            fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
     }
 
     /**
@@ -211,7 +193,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doInitBody() {
     }
 
-    public int doMakumbaStartTag(PageCache pageCache) {
+    public int doAnalyzedStartTag(PageCache pageCache) {
         // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
         return EVAL_BODY_BUFFERED;
     }
@@ -251,7 +233,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(MakumbaTag.getPageCache(pageContext));
+            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
             if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"

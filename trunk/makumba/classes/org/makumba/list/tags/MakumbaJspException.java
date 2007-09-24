@@ -21,26 +21,30 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.list.tags;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import org.makumba.analyser.AnalysableTag;
 
-/**
- * mak:version tag
+/** 
+ * An exception thrown due to makumba-specific reasons during tag execution
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class MakumbaVersionTag extends TagSupport {
+public class MakumbaJspException extends javax.servlet.jsp.JspException {
 
     private static final long serialVersionUID = 1L;
 
-    public int doStartTag() throws JspException {
-        try {
-            pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
-        } catch (java.io.IOException e) {
-            throw new JspException(e.getMessage());
-        }
-        return EVAL_BODY_INCLUDE;
+    Exception e;
+
+    public MakumbaJspException(Exception e) {
+        this.e = e;
+    }
+
+    public MakumbaJspException(AnalysableTag t, String s) {
+        this(new RuntimeException(s + "\nin tag: " + t.toString()));
+    }
+
+    public String getMessage() {
+        return e.getMessage();
     }
 }

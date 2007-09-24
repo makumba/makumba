@@ -30,7 +30,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
-import org.makumba.view.jsptaglib.MakumbaVersionTag;
+import org.makumba.commons.tags.MakumbaVersionTag;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -184,7 +184,6 @@ public class TestHibernateTags extends JspTestCase {
 
     public void testTomcat() {
     }
-
     public void testVersionTag() throws JspException, IOException {
         MakumbaVersionTag versionTag = new MakumbaVersionTag();
         versionTag.setPageContext(pageContext);
@@ -198,7 +197,6 @@ public class TestHibernateTags extends JspTestCase {
         versionTag.doEndTag();
         pageContext.popBody();
     }
-
     public void testHibernateMakObjectTag() throws ServletException, IOException {
         pageContext.include("testHibernateMakObjectTag.jsp");        
     }
@@ -715,7 +713,7 @@ public class TestHibernateTags extends JspTestCase {
         line = removeNewlines(line);
         line = removeTabs(line);
         line = line.replaceAll("[0-9]*:[0-9]*", "");
-        assertEquals("failure in set", "<SELECT NAME=\"brother\" SIZE=1 id=\"brother\" ><OPTION value=\""+brother.toExternalForm()+"\">test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
+        assertEquals("failure in set", "<SELECT NAME=\"brother.id\" SIZE=1 id=\"brother.id\" ><OPTION value=\""+brother.toExternalForm()+"\">test.Individual[]</OPTION><OPTION value=\""+person.toExternalForm()+"\">test.Individual[]</OPTION></SELECT>", line);
         
         assertTrue("testPtrInputValue! not found", output.indexOf("testPtrInputValue!") > 0 ? true : false);
         assertTrue("!endPtrInputValue not found", output.indexOf("!endPtrInputValue", output.indexOf("testPtrInputValue")) > 0 ? true : false);

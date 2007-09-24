@@ -23,9 +23,12 @@
 
 package org.makumba;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * The attributes provided by a makumba environment (for example a http session). Attributes can be referred and assigned to in
- * business logic code.
+ * The attributes provided by a makumba environment (for example a http session). Attributes can be referred and
+ * assigned to in business logic code.
  * 
  * @author Cristian Bogdan
  * @version $Id$
@@ -76,5 +79,29 @@ public interface Attributes {
      * @return true if the attribute exists, false otherwise.
      */
     public boolean hasAttribute(String name);
+    
+    /**
+     * Helper class to use Attributes as a Map, for more generic usage
+     * @author Manuel Gay
+     * @version $Id$
+     */
+    class MA extends HashMap implements Map {
+        
+        private static final long serialVersionUID = 1L;
+        private Attributes a;
+        
+        public MA(Attributes a) {
+            this.a = a;
+        }
 
+        public Object get(Object key) {
+            Object o = null;
+            try {
+                o = a.getAttribute((String)key);
+            } catch (LogicException e) {
+                e.printStackTrace();
+            }
+            return o;
+        }
+    }
 }

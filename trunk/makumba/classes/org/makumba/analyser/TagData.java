@@ -26,6 +26,8 @@ public class TagData {
     /** The syntax points where the whole thing begins and ends */
     public SyntaxPoint start, end;
 
+    public static final String TAG_DATA_CACHE = "org.makumba.tagData";
+
     public SyntaxPoint getStart() {
         return start;
     }

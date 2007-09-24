@@ -30,17 +30,22 @@ import org.makumba.DBError;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
 import org.makumba.OQLParseError;
 import org.makumba.db.Update;
 import org.makumba.db.sql.oql.QueryAST;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.oql.OQLQueryProvider;
 
 public class SQLUpdate implements Update {
+    
     ParameterAssigner assigner;
 
     String debugString;
 
     String updateCommand;
+    
+    QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
 
     SQLUpdate(org.makumba.db.Database db, String from, String set, String where) {
         debugString = (set == null ? "delete" : "update") + " on type: <" + from + ">"
@@ -75,18 +80,18 @@ public class SQLUpdate implements Update {
         if (where != null) {
             OQLQuery += " WHERE " + where;
         }
-
-        OQLAnalyzer tree;
+        
+        QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
         try {
             // FIXME: we should make sure here that the tree contains one single type!
-            assigner = new ParameterAssigner(db, tree = MakumbaSystem.getOQLAnalyzer(OQLQuery));
+            assigner = new ParameterAssigner(db, qA);
         } catch (OQLParseError e) {
             throw new org.makumba.OQLParseError(e.getMessage() + "\r\nin " + debugString + "\n" + OQLQuery, e);
         }
 
         String fakeCommand;
         try {
-            fakeCommand = ((QueryAST) tree).writeInSQLQuery(db);
+            fakeCommand = ((QueryAST) qA).writeInSQLQuery(db);
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }

@@ -81,7 +81,7 @@ public class ControllerFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
-        org.makumba.list.tags.MakumbaTag.initializeThread();
+        org.makumba.list.tags.GenericListTag.initializeThread();
         boolean filter = shouldFilter((HttpServletRequest) req);
         requestThreadLocal.set(req);
 
@@ -286,7 +286,7 @@ public class ControllerFilter implements Filter {
                             + "The makumba error message would have been:\n"
                             + new TagExceptionServlet().getErrorMessage(req));
             } finally {
-                org.makumba.list.tags.MakumbaTag.initializeThread();
+                org.makumba.list.tags.GenericListTag.initializeThread();
             }
         }
         setWasException(req);

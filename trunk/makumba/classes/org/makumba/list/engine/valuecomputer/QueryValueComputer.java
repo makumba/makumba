@@ -1,11 +1,12 @@
 package org.makumba.list.engine.valuecomputer;
 
+import javax.servlet.jsp.PageContext;
+
 import org.makumba.LogicException;
 import org.makumba.analyser.PageCache;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
@@ -32,11 +33,12 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    public void makeQueryAtAnalysis(MakumbaTag analyzed, String keyDifference, String[] queryProps, String expr,
+    public void makeQueryAtAnalysis(MultipleKey parentListKey, String keyDifference, String[] queryProps, String expr,
             PageCache pageCache) {
         this.expr = expr;
-        parentKey = analyzed.getParentListKey(pageCache);
-
+        
+        parentKey = parentListKey;
+        
         queryKey = new MultipleKey(parentKey, keyDifference);
 
         QueryTag.cacheQuery(pageCache, queryKey, queryProps, parentKey).checkProjectionInteger(expr);
@@ -49,19 +51,16 @@ public abstract class QueryValueComputer extends ValueComputer {
 
     /**
      * If other ValueComputers sharing the same valueQuery did not analyze it yet, we analyze it here.
-     * 
-     * @param analyzed
-     *            the analyzed tag
      * @param pageCache
      *            the page cache of the current page
      */
-    public void doEndAnalyze(MakumbaTag analyzed, PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         if (pageCache.retrieve(RecordFormatter.FORMATTERS, queryKey) == null) {
             ComposedQuery myQuery = QueryTag.getQuery(pageCache, queryKey);
             myQuery.analyze();
             pageCache.cache(RecordFormatter.FORMATTERS, queryKey, new RecordViewer(myQuery));
         }
-        super.doEndAnalyze(analyzed, pageCache);
+        super.doEndAnalyze(pageCache);
     }
 
     static final Object dummy = new Object();
@@ -74,10 +73,10 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @throws LogicException
      * @return The QueryExecution that will give us the data
      */
-    QueryExecution runQuery(MakumbaTag running) throws LogicException {
-        QueryExecution ex = QueryExecution.getFor(queryKey, running.getPageContext(), null, null);
+    QueryExecution runQuery(PageContext pageContext) throws LogicException {
+        QueryExecution ex = QueryExecution.getFor(queryKey, pageContext, null, null);
 
-        QueryExecution parentEx = QueryExecution.getFor(parentKey, running.getPageContext(), null, null);
+        QueryExecution parentEx = QueryExecution.getFor(parentKey, pageContext, null, null);
 
         // if the valueQuery's iterationGroup for this parentIteration was not computed, do it now...
         if (parentEx.valueQueryData.get(queryKey) == null) {
