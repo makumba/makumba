@@ -26,6 +26,8 @@ package org.makumba;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.makumba.util.RuntimeWrappedException;
+
 /**
  * The attributes provided by a makumba environment (for example a http session). Attributes can be referred and
  * assigned to in business logic code.
@@ -94,12 +96,12 @@ public interface Attributes {
             this.a = a;
         }
 
-        public Object get(Object key) {
+        public Object get(Object key) throws RuntimeException {
             Object o = null;
             try {
                 o = a.getAttribute((String)key);
             } catch (LogicException e) {
-                e.printStackTrace();
+                throw new RuntimeWrappedException(e);
             }
             return o;
         }
