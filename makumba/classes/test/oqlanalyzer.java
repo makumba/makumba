@@ -1,7 +1,7 @@
 package test;
 
-import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryProvider;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -26,11 +26,13 @@ public class oqlanalyzer extends TestCase {
             t.printStackTrace();
         }
     }
+    
+    private QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
 
     public void testDateParameterType() {
         String q1 = "SELECT p as id FROM test.Person p WHERE $1<p.TS_create";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q1);
-        
+        QueryAnalysis oA = qP.getQueryAnalysis(q1);
+
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
 //        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
@@ -42,7 +44,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisComplexSet() {
 
         String q1 = "SELECT p AS pointer, i.surname as surname, a.description as addressdescription FROM test.Person p, p.indiv i, p.address a";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q1);
+        QueryAnalysis oA = qP.getQueryAnalysis(q1);
 
         assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -61,7 +63,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisSimpleFields() {
 
         String q2 = "SELECT p AS pointer, p AS key, p.birthdate AS birthdate, p.uniqInt, p.hobbies AS text FROM test.Person p";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q2);
+        QueryAnalysis oA = qP.getQueryAnalysis(q2);
 
         assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -87,7 +89,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisExtenalSetSimple() {
 
         String q3 = "SELECT l.name as n FROM test.Person p, p.speaks as l";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q3);
+        QueryAnalysis oA = qP.getQueryAnalysis(q3);
 
         assertEquals("n", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -98,7 +100,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisExtenalSetSelectSetPointer() {
 
         String q3 = "SELECT l FROM test.Person p, p.speaks l";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q3);
+        QueryAnalysis oA = qP.getQueryAnalysis(q3);
 
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -109,7 +111,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisSelectPointer() {
 
         String q3 = "SELECT p FROM test.Person p";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q3);
+        QueryAnalysis oA = qP.getQueryAnalysis(q3);
 
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -120,7 +122,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisSetIntEnum() {
 
         String q = "SELECT q.enum as intset FROM test.Person p, p.intSet q";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q);
+        QueryAnalysis oA = qP.getQueryAnalysis(q);
 
         assertEquals("intset", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("intEnum", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -131,7 +133,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisInSet() {
 
         String q = "SELECT p as id, p.age as age FROM test.Person p WHERE p.age IN SET($1)";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q);
+        QueryAnalysis oA = qP.getQueryAnalysis(q);
 
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
@@ -148,7 +150,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisArithmeticOperationOk() {
 
         String q1 = "SELECT p as id, p.age+17 as agePlus17 FROM test.Person p";
-        OQLAnalyzer oA1 = MakumbaSystem.getOQLAnalyzer(q1);
+        QueryAnalysis oA1 = qP.getQueryAnalysis(q1);
 
         assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA1.getProjectionType().getFieldDefinition(0).getType());
@@ -161,7 +163,7 @@ public class oqlanalyzer extends TestCase {
         
         
         String q2 = "SELECT p as id, p.age+1.2 as agePlus1dot2 FROM test.Person p";
-        OQLAnalyzer oA2 = MakumbaSystem.getOQLAnalyzer(q2);
+        QueryAnalysis oA2 = qP.getQueryAnalysis(q2);
 
         assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
@@ -172,7 +174,7 @@ public class oqlanalyzer extends TestCase {
  //       assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getDescription());      
        
         String q4 = "SELECT p as id, p.hobbies+p.comment as text FROM test.Person p";
-        OQLAnalyzer oA4 = MakumbaSystem.getOQLAnalyzer(q4);
+        QueryAnalysis oA4 = qP.getQueryAnalysis(q4);
 
         assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA4.getProjectionType().getFieldDefinition(0).getType());
@@ -187,7 +189,7 @@ public class oqlanalyzer extends TestCase {
     public void testAnalysisArithmeticOperationParameter() {
 
         String q1 = "SELECT p as id, p.age+$1 as param FROM test.Person p";
-        OQLAnalyzer oA = MakumbaSystem.getOQLAnalyzer(q1);
+        QueryAnalysis oA = qP.getQueryAnalysis(q1);
         
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());

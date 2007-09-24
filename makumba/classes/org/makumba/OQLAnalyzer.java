@@ -23,9 +23,11 @@
 
 package org.makumba;
 
+import org.makumba.providers.query.oql.OQLQueryProvider;
+
 /**
  * This class is a facade for the internal OQL analyzer. To obtain an instance of this class, use
- * {@link MakumbaSystem#getOQLAnalyzer(java.lang.String)}
+ * {@link OQLQueryProvider#getOQLAnalyzer(java.lang.String)}
  * 
  * @author Cristian Bogdan
  * @since 0.5.5.10

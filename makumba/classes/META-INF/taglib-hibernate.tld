@@ -272,8 +272,8 @@
 
 	<tag>
 		<name>attribute</name>
-		<tag-class>org.makumba.view.jsptaglib.AttributeTag</tag-class>
-		<tei-class>org.makumba.view.jsptaglib.AttrTEI</tei-class>
+		<tag-class>org.makumba.list.tags.AttributeTag</tag-class>
+		<tei-class>org.makumba.list.tags.AttrTEI</tei-class>
 		<body-content>empty</body-content>
 		<description>Value of an expression</description>
 
@@ -304,7 +304,7 @@
 
 	<tag>
 		<name>form</name>
-		<tag-class>org.makumba.view.jsptaglib.FormTagBase</tag-class>
+		<tag-class>org.makumba.forms.tags.FormTagBase</tag-class>
 		<body-content>JSP</body-content>
 		<description>Forms to create new data</description>
 
@@ -471,7 +471,7 @@
 
 	<tag>
 		<name>newForm</name>
-		<tag-class>org.makumba.view.jsptaglib.NewTag</tag-class>
+		<tag-class>org.makumba.forms.tags.NewTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Forms to create new data</description>
 		<attribute>
@@ -649,7 +649,7 @@
 
 	<tag>
 		<name>editForm</name>
-		<tag-class>org.makumba.view.jsptaglib.EditTag</tag-class>
+		<tag-class>org.makumba.forms.tags.EditTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Forms to create new data</description>
 		<attribute>
@@ -820,7 +820,7 @@
 
 	<tag>
 		<name>addForm</name>
-		<tag-class>org.makumba.view.jsptaglib.AddTag</tag-class>
+		<tag-class>org.makumba.forms.tags.AddTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Forms to create new data</description>
 		<attribute>
@@ -996,7 +996,7 @@
 
 	<tag>
 		<name>delete</name>
-		<tag-class>org.makumba.view.jsptaglib.DeleteTag</tag-class>
+		<tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Links to delete data</description>
 		<attribute>
@@ -1126,7 +1126,7 @@
 	
 	<tag>
 		<name>deleteLink</name>
-		<tag-class>org.makumba.view.jsptaglib.DeleteTag</tag-class>
+		<tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Links to delete data</description>
 		<attribute>
@@ -1257,8 +1257,8 @@
 
 	<tag>
 		<name>input</name>
-		<tag-class>org.makumba.view.jsptaglib.InputTag</tag-class>
-		<tei-class>org.makumba.view.jsptaglib.InputTEI</tei-class>
+		<tag-class>org.makumba.forms.tags.InputTag</tag-class>
+		<tei-class>org.makumba.forms.tags.InputTEI</tei-class>
 		<body-content>JSP</body-content>
 		<description>Input control for a field</description>
 
@@ -1327,6 +1327,18 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		
+		<attribute>
+          <name>calendarEditor</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+        </attribute>
+
+        <attribute>
+          <name>calendarEditorLink</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+        </attribute>
 
 		<attribute>
 			<name>maxlength</name>
@@ -1494,14 +1506,14 @@
 
 	<tag>
 		<name>action</name>
-		<tag-class>org.makumba.view.jsptaglib.ActionTag</tag-class>
+		<tag-class>org.makumba.forms.tags.ActionTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>set an "action" for a form or deleteLink</description>
 	</tag>
 
 	<tag>
 		<name>option</name>
-		<tag-class>org.makumba.view.jsptaglib.OptionTag</tag-class>
+		<tag-class>org.makumba.forms.tags.OptionTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>Option to describe option lists in an input</description>
 
@@ -1544,14 +1556,14 @@
 
 	<tag>
 		<name>version</name>
-		<tag-class>org.makumba.view.jsptaglib.MakumbaVersionTag</tag-class>
+		<tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
 		<body-content>empty</body-content>
 		<description>prints Makumba version (a CVS tag)</description>
 	</tag>
 	
 	<tag>
 		<name>info</name>
-		<tag-class>org.makumba.view.jsptaglib.MakumbaInfoTag</tag-class>
+		<tag-class>org.makumba.commons.tags.MakumbaInfoTag</tag-class>
 		<body-content>empty</body-content>
 		<description>prints Makumba and environment information</description>
 	</tag>

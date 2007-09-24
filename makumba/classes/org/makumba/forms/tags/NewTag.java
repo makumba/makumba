@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.forms.tags;
 
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
@@ -52,15 +52,15 @@ public class NewTag extends FormTagBase {
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
-        Object keyComponents[] = { type.getName(), handler, getParentListKey(null), getClass() };
+        Object keyComponents[] = { type.getName(), handler, fdp.getParentListKey(this), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
     /**
-     * Inherited
+     * {@inheritDoc}
      */
     public void initialiseState() {
         super.initialiseState();

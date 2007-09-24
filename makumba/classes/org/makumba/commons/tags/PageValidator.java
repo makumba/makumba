@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.commons.tags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

@@ -25,7 +25,6 @@ package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
 
-import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
  * mak:object tag

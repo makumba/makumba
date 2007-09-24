@@ -55,7 +55,7 @@ public class DataTypeListerServlet extends DataServlet {
         if (dd == null) { // make a directory listing
             doDirectoryListing(request, response, writer);
         } else { // display data from that MDD
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
+            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
 
             try {
                 String dataBaseName = t.getName();
@@ -195,7 +195,7 @@ public class DataTypeListerServlet extends DataServlet {
             relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
         }
 
-        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDatabaseName(), MODE_LIST);
+        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDataSourceName(), MODE_LIST);
 
         writer.print("<pre style=\"margin-top:0\">");
         if (!relativeDirectory.equals("dataDefinitions")) {

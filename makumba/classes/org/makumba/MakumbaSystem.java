@@ -23,16 +23,13 @@
 
 package org.makumba;
 
-import java.io.StringReader;
 
 import org.makumba.controller.html.CalendarEditorProvider;
 import org.makumba.controller.html.KruseCalendarEditor;
-import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
-import org.makumba.util.NamedResourceFactory;
+import org.makumba.providers.query.oql.OQLQueryProvider;
 import org.makumba.util.NamedResources;
-import org.makumba.util.RuntimeWrappedException;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
 import org.makumba.view.validation.ClientsideValidationProvider;
@@ -66,8 +63,19 @@ public class MakumbaSystem {
      * The name of the default database according to the lookup file "MakumbaDatabase.properties"
      * 
      * @since makumba-0.5.4
+     * @deprecated Use {@link #getDefaultDataSourceName()} instead
      */
     public static String getDefaultDatabaseName() {
+        return getDefaultDataSourceName();
+    }
+
+    /**
+     * The name of the default datasource according to the Makumba configuration
+     * 
+     * TODO use DataSource provider
+     * 
+     */
+    public static String getDefaultDataSourceName() {
         return org.makumba.db.Database.findDatabaseName("MakumbaDatabase.properties");
     }
 
@@ -108,7 +116,7 @@ public class MakumbaSystem {
      *             getConnectionTo(getDefaultDatabaseName()) instead
      */
     public static Transaction findDatabase() {
-        return getConnectionTo(getDefaultDatabaseName());
+        return getConnectionTo(getDefaultDataSourceName());
     }
 
     /**
@@ -206,11 +214,12 @@ public class MakumbaSystem {
     /**
      * Get the DataDefinition of the records returned by the given OQL query
      * 
-     * @deprecated use {@link #getOQLAnalyzer} for better OQL functionality
-     */
+     * @deprecated use {@link OQLQueryProvider#getOQLAnalyzer} for better OQL functionality
+     
     public static DataDefinition getResultDataDefinition(String OQL) {
-        return getOQLAnalyzer(OQL).getProjectionType();
+        return OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType();
     }
+    */
 
     /**
      * Deletes the records of certain types that originate from a certain database. Useful for failed imports or copies.
@@ -418,80 +427,6 @@ public class MakumbaSystem {
     public static java.util.Locale getLocale() {
         return java.util.Locale.UK;
     }
-
-    /** Get the OQL analyzer for the indicated query */
-    static public OQLAnalyzer getOQLAnalyzer(String oqlQuery) {
-        try {
-            /*
-             * return parseQueryFundamental(oqlQuery); }catch(antlr.RecognitionException f){
-             */
-            return (OQLAnalyzer) NamedResources.getStaticCache(parsedQueries).getResource(oqlQuery);
-        } catch (RuntimeWrappedException e) {
-            if (e.getReason() instanceof antlr.RecognitionException) {
-                Exception f = (antlr.RecognitionException) e.getReason();
-                String s = f.getMessage();
-                if (s.startsWith("line"))
-                    s = s.substring(s.indexOf(':') + 1);
-                throw new OQLParseError("\r\nin query:\r\n" + oqlQuery, f);
-            }
-            throw e;
-        }
-    }
-
-    static int parsedQueries = NamedResources.makeStaticCache("OQL parsed queries", new NamedResourceFactory() {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-
-        protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return parseQueryFundamental((String) nm);
-        }
-    }, true);
-
-    static OQLAnalyzer parseQueryFundamental(String oqlQuery) throws antlr.RecognitionException {
-        java.util.Date d = new java.util.Date();
-        org.makumba.db.sql.oql.OQLLexer lexer = new org.makumba.db.sql.oql.OQLLexer(new StringReader(oqlQuery));
-        org.makumba.db.sql.oql.OQLParser parser = new org.makumba.db.sql.oql.OQLParser(lexer);
-        // Parse the input expression
-        org.makumba.db.sql.oql.QueryAST t = null;
-        try {
-
-            parser.setASTNodeClass("org.makumba.db.sql.oql.OQLAST");
-            parser.queryProgram();
-            t = (org.makumba.db.sql.oql.QueryAST) parser.getAST();
-            t.setOQL(oqlQuery);
-            // Print the resulting tree out in LISP notation
-            // MakumbaSystem.getLogger("debug.db").severe(t.toStringTree());
-
-            // see the tree in a window
-            /*
-             * if(t!=null) { ASTFrame frame = new ASTFrame("AST JTree Example", t); frame.setVisible(true); }
-             */
-        } catch (antlr.TokenStreamException f) {
-            MakumbaSystem.getMakumbaLogger("db.query.compilation").warning(f + ": " + oqlQuery);
-            throw new org.makumba.MakumbaError(f, oqlQuery);
-        }
-        long diff = new java.util.Date().getTime() - d.getTime();
-        MakumbaSystem.getMakumbaLogger("db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
-        return t;
-    }
-
-    /**
-     * Get the Hibernate HQL analyzer for the indicated query
-     */
-    static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
-        return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
-    }
-
-    static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
-        new NamedResourceFactory() {
-            private static final long serialVersionUID = 1L;
-
-            protected Object makeResource(Object nm, Object hashName) throws Exception {
-                return new HqlAnalyzer((String) nm);
-            }
-        }, true);
 
     /**
      * Discover mdds in a directory in classpath.

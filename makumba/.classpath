@@ -57,5 +57,6 @@
 			<attribute name="javadoc_location" value="http://jtidy.sourceforge.net/multiproject/jtidyservlet/apidocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="var" path="ANTLR_HOME/antlr.jar" sourcepath="ANTLR_HOME/antlrsrc.zip"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -21,50 +21,27 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.forms.tags;
 
-import org.makumba.ProgrammerError;
+import org.makumba.DataDefinition;
+import org.makumba.analyser.PageCache;
+import org.makumba.list.tags.QueryTag;
 
 /**
- * mak:delete tag
- * 
+ * mak:editForm tag
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class DeleteTag extends EditTag {
+public class EditTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
 
-    // no input tags should be allowed
-
-    String widget;
-
-    private boolean preserveWhiteSpace = false;
-
-    public void setWidget(String w) {
-        if (w.equals("") || w.equals("link") || w.equals("button")) {
-            widget = w;
-        } else {
-            throw new ProgrammerError(
-                    "Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
-        }
+    // for input tags:
+    public String getDefaultExpr(String fieldName) {
+        return baseObject + "." + fieldName;
     }
 
-    public void setPreserveWhitespace(String s) {
-        this.preserveWhiteSpace = (s != null && s.equals("true"));
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
+        return QueryTag.getQuery(pageCache, fdp.getParentListKey(this)).getLabelType(baseObject);
     }
-
-    String getOperation() {
-        // FIXME
-        if (widget == null || widget.equals("") || widget.equals("link")) {
-            return "deleteLink";
-        } else {
-            return "deleteForm";
-        }
-    }
-
-    public boolean getPreserveWhiteSpace() {
-        return preserveWhiteSpace;
-    }
-
 }

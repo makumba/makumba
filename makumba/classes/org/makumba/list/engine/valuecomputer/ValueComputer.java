@@ -23,23 +23,20 @@
 
 package org.makumba.list.engine.valuecomputer;
 
-import java.util.Vector;
-
 import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
-import org.makumba.list.tags.MakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
 import org.makumba.util.MultipleKey;
 import org.makumba.view.RecordFormatter;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running
@@ -54,15 +51,17 @@ public class ValueComputer {
      * 
      * @param analyzed
      *            the analyzed tag
+     * @param parentListKey
+     *            the key of the parent list
      * @param expr
      *            the expression passed in the tag
      * @param pageCache
      *            the page cache of the page
      */
-    public static ValueComputer getValueComputerAtAnalysis(MakumbaTag analyzed, String expr,
-            PageCache pageCache) {
+    public static ValueComputer getValueComputerAtAnalysis(AnalysableTag analyzed, MultipleKey parentListKey,
+            String expr, PageCache pageCache) {
         expr = expr.trim();
-        Object check = QueryTag.getQuery(pageCache, analyzed.getParentListKey(pageCache)).checkExprSetOrNullable(expr);
+        Object check = QueryTag.getQuery(pageCache, parentListKey).checkExprSetOrNullable(expr);
 
         FieldDefinition set = null;
         String nullableExpr = null;
@@ -74,11 +73,11 @@ public class ValueComputer {
             set = (FieldDefinition) check;
 
         if (nullableExpr == null && set == null)
-            return new ValueComputer(analyzed, expr, pageCache);
+            return new ValueComputer(analyzed, parentListKey, expr, pageCache);
 
         if (set == null)
-            return new NullableValueComputer(analyzed, nullableExpr, expr, pageCache);
-        return new SetValueComputer(analyzed, set, expr, pageCache);
+            return new NullableValueComputer(analyzed, parentListKey, nullableExpr, expr, pageCache);
+        return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
     }
 
     /** The key of the parentList */
@@ -101,6 +100,8 @@ public class ValueComputer {
      * 
      * @param listKey
      *            the key of the list
+     * @param parentListKey
+     *            the key of the parent list
      * @param expr
      *            the extra expression
      * @param pageCache
@@ -123,8 +124,8 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache
      */
-    ValueComputer(MakumbaTag analyzed, String expr, PageCache pageCache) {
-        this(analyzed.getParentListKey(pageCache), expr, pageCache);
+    ValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String expr, PageCache pageCache) {
+        this(parentListKey, expr, pageCache);
     }
 
     /**
@@ -139,28 +140,15 @@ public class ValueComputer {
     /**
      * Computes the queryProjection index in the currentListData, and the queryProjection type.
      * 
-     * @param analyzed
-     *            the analyzed tag
      * @param pageCache
      *            the page cache
      */
-    public void doEndAnalyze(MakumbaTag analyzed, PageCache pageCache) {
+    public void doEndAnalyze(PageCache pageCache) {
         ComposedQuery q = QueryTag.getQuery(pageCache, getQueryKey());
         projectionIndex = q.checkProjectionInteger(expr).intValue();
 
         if (type == null) // if type is not set in the constructor
             type = q.getResultType().getFieldDefinition(projectionIndex);
-    }
-
-    /**
-     * Gets the value of the queryProjection from the currentListData of the enclosing query. Used mostly by InputTag
-     * 
-     * @param running
-     *            the tag that is currently running
-     * @throws LogicException
-     */
-    public Object getValue(MakumbaTag running) throws LogicException {
-        return getValue(running.getPageContext());
     }
 
     /**
@@ -171,7 +159,7 @@ public class ValueComputer {
      * @return the computed value
      * @throws LogicException
      */
-    Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException {
+    public Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException {
         return QueryExecution.getFor(getQueryKey(), pc, null, null).currentListData().data[projectionIndex];
     }
 
@@ -187,10 +175,11 @@ public class ValueComputer {
      * @throws LogicException
      */
     public void print(ValueTag running, PageCache pageCache) throws JspException, LogicException {
-        Object o = getValue(running);
+        Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex, o, running.getParams());
+            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex,
+                o, running.getParams());
         }
 
         if (running.getVar() != null)

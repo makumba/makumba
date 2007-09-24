@@ -21,7 +21,7 @@
 //$Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.commons.tags;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -225,7 +225,7 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
             out.println("  <tr bgcolor=\"#cccccc\"> <th>Property</th> <th>Value</th> </tr>");
 			
-            String dbname = MakumbaSystem.getDefaultDatabaseName();
+            String dbname = MakumbaSystem.getDefaultDataSourceName();
 
             line = 0;
             printMakumbaPropertyRow(out, "<a href=\"/makumba-docs/CHANGELOG.txt\">version</a>", MakumbaSystem.getVersion());

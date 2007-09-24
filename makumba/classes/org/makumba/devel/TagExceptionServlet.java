@@ -39,7 +39,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.list.tags.MakumbaTag;
+import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.TomcatJsp;
 import org.makumba.util.RuntimeWrappedException;
 
@@ -65,7 +65,7 @@ public class TagExceptionServlet extends HttpServlet {
             { org.makumba.ValidationDefinitionParseError.class, "validation definition parse" },
             { org.makumba.DBError.class, "database" }, { org.makumba.ConfigFileError.class, "configuration" },
             { org.makumba.ProgrammerError.class, "programmer" },
-            { org.makumba.view.jsptaglib.MakumbaJspException.class, "page" },
+            { org.makumba.list.tags.MakumbaJspException.class, "page" },
             { org.makumba.AttributeNotFoundException.class, "attribute not set" },
             { org.makumba.UnauthorizedException.class, "authorization" },
             { org.makumba.InvalidValueException.class, "invalid value" },
@@ -185,14 +185,14 @@ public class TagExceptionServlet extends HttpServlet {
      */
     String formatTagData(HttpServletRequest req) {
         String tagExpl = "During analysis of the following tag (and possibly tags inside it):";
-        TagData tagData = MakumbaTag.getAnalyzedTag();
+        TagData tagData = GenericListTag.getAnalyzedTag();
         if (tagData == null) {
             tagExpl = "During running of: ";
-            tagData = MakumbaTag.getRunningTag();
+            tagData = GenericListTag.getRunningTag();
         }
         if (tagData == null) {
             tagExpl = "While executing inside this body tag, but most probably <b>not</b> due to the tag:";
-            tagData = MakumbaTag.getCurrentBodyTag();
+            tagData = GenericListTag.getCurrentBodyTag();
         }
         if (tagData == null) {
             String filePath = req.getRequestURL().toString();

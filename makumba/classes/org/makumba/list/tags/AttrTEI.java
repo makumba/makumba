@@ -21,30 +21,32 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.view.jsptaglib;
+package org.makumba.list.tags;
 
-import org.makumba.list.tags.MakumbaTag;
+import java.util.Vector;
 
-/** 
- * An exception thrown due to makumba-specific reasons during tag execution
+import javax.servlet.jsp.tagext.TagData;
+import javax.servlet.jsp.tagext.TagExtraInfo;
+import javax.servlet.jsp.tagext.VariableInfo;
+
+
+/**
+ * Extra information for the attributes
  * @author Cristian Bogdan
- * @version $Id$
+ *
  */
-public class MakumbaJspException extends javax.servlet.jsp.JspException {
+public class AttrTEI extends TagExtraInfo {
+    public VariableInfo[] getVariableInfo(TagData data) {
+        Vector v = new Vector();
 
-    private static final long serialVersionUID = 1L;
+        String var = data.getAttributeString("var");
+        if (var != null)
+            v.addElement(new VariableInfo(var, "java.lang.Object", true, VariableInfo.AT_BEGIN));
 
-    Exception e;
+        var = data.getAttributeString("exceptionVar");
+        if (var != null)
+            v.addElement(new VariableInfo(var, "java.lang.Throwable", true, VariableInfo.AT_BEGIN));
 
-    public MakumbaJspException(Exception e) {
-        this.e = e;
-    }
-
-    public MakumbaJspException(MakumbaTag t, String s) {
-        this(new RuntimeException(s + "\nin tag: " + t.toString()));
-    }
-
-    public String getMessage() {
-        return e.getMessage();
+        return CountTEI.vector2VarInfo(v);
     }
 }

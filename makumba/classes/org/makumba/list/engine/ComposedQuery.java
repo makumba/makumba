@@ -26,21 +26,16 @@ package org.makumba.list.engine;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
-import org.makumba.db.hibernate.hql.HqlAnalyzer;
-import org.makumba.providers.QueryExecutionProvider;
-import org.makumba.util.MultipleKey;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
+import org.makumba.commons.ArgumentReplacer;
+import org.makumba.providers.QueryProvider;
 
 /**
  * An OQL query composed from various elements found in script pages. It can be enriched when a new element is found. It
@@ -68,16 +63,18 @@ public class ComposedQuery {
         String evaluate(String s);
     }
 
+    public QueryProvider qep = null;
+
     /**
      * Default constructor
      * 
      * @param sections
      * @param usesHQL
      */
-    public ComposedQuery(String[] sections, boolean usesHQL) {
+    public ComposedQuery(String[] sections, String queryLanguage) {
         this.sections = sections;
         this.derivedSections = sections;
-        this.useHibernate = usesHQL;
+        this.qep = QueryProvider.makeQueryAnalzyer(queryLanguage);
     }
 
     /** The subqueries of this query */
@@ -126,9 +123,6 @@ public class ComposedQuery {
     /** The labels of the keyset */
     Vector keysetLabels;
 
-    /** Do we use hibernate for execution or do we use makumba? */
-    boolean useHibernate;
-
     /** A Vector containing and empty vector. Used for empty keysets */
     static Vector empty;
     static {
@@ -145,25 +139,8 @@ public class ComposedQuery {
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            return getOQLAnalyzer(typeAnalyzerOQL).getProjectionType();
+            return qep.getQueryAnalysis(typeAnalyzerOQL).getProjectionType();
         }
-    }
-
-    /**
-     * Gets the OQL analyzer used for analysis
-     * 
-     * @param type
-     *            the string we want to analyze
-     * @return An OQLAnalyzer performing the OQL analysis
-     */
-    public OQLAnalyzer getOQLAnalyzer(String type) {
-        OQLAnalyzer oqa = null;
-        if (useHibernate) {
-            oqa = MakumbaSystem.getHqlAnalyzer(type);
-        } else {
-            oqa = MakumbaSystem.getOQLAnalyzer(type);
-        }
-        return oqa;
     }
 
     /**
@@ -177,7 +154,7 @@ public class ComposedQuery {
         if (typeAnalyzerOQL == null) {
             return null;
         } else {
-            return getOQLAnalyzer(typeAnalyzerOQL).getLabelType(s);
+            return qep.getQueryAnalysis(typeAnalyzerOQL).getLabelType(s);
         }
     }
 
@@ -235,17 +212,14 @@ public class ComposedQuery {
         for (int i = 0; i < keyset.size(); i++)
             checkProjectionInteger((String) e.nextElement());
 
-        for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st
-                .hasMoreTokens();) {
+        for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
             String label = st.nextToken().trim();
             int j = label.lastIndexOf(" ");
             if (j == -1)
                 throw new RuntimeException("invalid FROM");
             label = label.substring(j + 1).trim();
 
-            // this is specific to Hibernate: we add '.id' in order to get the id as in makumba
-            if (this.useHibernate && label.indexOf('.') == -1)
-                label += ".id";
+            label = qep.getPrimaryKeyNotation(label);
 
             keysetLabels.addElement(label);
 
@@ -333,6 +307,8 @@ public class ComposedQuery {
      * @return The checked expression, transformed according to the projections
      */
     String checkExpr(String str) {
+        if (!qep.selectGroupOrOrderAsLabels())
+            return str;
         if (str == null)
             return null;
         if (str.trim().length() == 0)
@@ -352,13 +328,13 @@ public class ComposedQuery {
                 rest = s.substring(i);
                 s = s.substring(0, i);
             }
+            // if the projection doesnt exist, this returns null, but it adds a new projection
             String p = checkProjection(s);
             if (p == null)
+                // and the second time this doesn#t return null, but the projection name
                 p = checkProjection(s);
             ret.append(p).append(rest);
         }
-        if (this.useHibernate)
-            return str;
         return ret.toString();
     }
 
@@ -446,19 +422,16 @@ public class ComposedQuery {
      *            how many times should this query be ran
      * @throws LogicException
      */
-    public Grouper execute(QueryExecutionProvider qep, Attributes a, Evaluator v, int offset, int limit)
-            throws LogicException {
+    public Grouper execute(QueryProvider qep, Map args, Evaluator v, int offset, int limit) throws LogicException {
         analyze();
         String[] vars = new String[5];
         vars[0] = getFromSection();
         for (int i = 1; i < 5; i++)
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
 
-
-       return new Grouper(previousKeyset,  qep.execute(
-                computeQuery(vars, false), a, offset, limit).elements());
+        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).elements());
     }
-  
+
     public synchronized void analyze() {
         if (projections.isEmpty())
             prependFromToKeyset();
@@ -469,27 +442,27 @@ public class ComposedQuery {
     /**
      * Checks if an expression is valid, nullable or set
      * 
-     * @param s
+     * @param expr
      *            the expression
      * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
      */
-    public Object checkExprSetOrNullable(String s) {
+    public Object checkExprSetOrNullable(String expr) {
         int n = 0;
         int m = 0;
         while (true) {
-            // FIXME: this is a not that good algorithm for finding stuff like a.b.c
-            while (n < s.length() && !isMakId(s.charAt(n)))
+            // FIXME: this is a not that good algorithm for finding label.field1.fiel2.field3
+            while (n < expr.length() && !isMakId(expr.charAt(n)))
                 n++;
 
-            if (n == s.length())
+            if (n == expr.length())
                 return null;
             m = n;
-            while (n < s.length() && isMakId(s.charAt(n)))
+            while (n < expr.length() && isMakId(expr.charAt(n)))
                 n++;
-            Object nl = checkId(s.substring(m, n));
+            Object nl = checkLabelSetOrNullable(expr.substring(m, n));
             if (nl != null)
                 return nl;
-            if (n == s.length())
+            if (n == expr.length())
                 return null;
         }
     }
@@ -508,69 +481,44 @@ public class ComposedQuery {
     /**
      * Checks if an id is nullable, and if so, return the path to the null pointer
      * 
-     * @param s
-     *            the id
+     * @param referenceSequence
+     *            a sequence like field1.field2.field3
      * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
      */
-    public Object checkId(String s) {
-        int dot = s.indexOf(".");
+    public Object checkLabelSetOrNullable(String referenceSequence) {
+        int dot = referenceSequence.indexOf(".");
         if (dot == -1)
             return null;
-        String substring = s.substring(0, dot);
+        String substring = referenceSequence.substring(0, dot);
         try { // if the "label" is actually a real number as 3.0
             Integer.parseInt(substring);
             return null; // if so, just return
         } catch (NumberFormatException e) {
         }
-        DataDefinition dd = getOQLAnalyzer(fromAnalyzerOQL).getLabelType(substring);
+        DataDefinition dd = qep.getQueryAnalysis(fromAnalyzerOQL).getLabelType(substring);
         if (dd == null)
             throw new org.makumba.InvalidValueException("no such label " + substring);
         while (true) {
-            int dot1 = s.indexOf(".", dot + 1);
+            int dot1 = referenceSequence.indexOf(".", dot + 1);
             if (dot1 == -1) {
-                String fn = s.substring(dot + 1);
+                String fn = referenceSequence.substring(dot + 1);
                 FieldDefinition fd = dd.getFieldDefinition(fn);
-                if (fd == null) {
-                    if (!this.useHibernate || !(fn.equals("id") || fn.startsWith("hibernate_")))
-                        throw new org.makumba.NoSuchFieldException(dd, fn);
-                    if (fn.equals("id"))
-                        fd = dd.getFieldDefinition(dd.getIndexPointerFieldName());
-                    else {
-                        fd = dd.getFieldDefinition(fn.substring("hibernate_".length()));
-                        if (fd == null)
-                            throw new org.makumba.NoSuchFieldException(dd, fn);
-                    }
-                }
+                if (fd == null && (fd = qep.getAlternativeField(dd, fn)) == null)
+                    throw new org.makumba.NoSuchFieldException(dd, fn);
+
                 if (fd.getType().equals("set"))
                     return fd;
                 return null;
             }
-            FieldDefinition fd = dd.getFieldDefinition(s.substring(dot + 1, dot1));
+            FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
             if (fd == null)
-                throw new org.makumba.NoSuchFieldException(dd, s.substring(dot + 1, dot1));
+                throw new org.makumba.NoSuchFieldException(dd, referenceSequence.substring(dot + 1, dot1));
             if (!fd.getType().startsWith("ptr"))
                 throw new InvalidFieldTypeException(fd, "pointer");
             if (!fd.isNotNull())
-                return s.substring(0, dot1);
+                return referenceSequence.substring(0, dot1);
             dd = fd.getPointedType();
             dot = dot1;
         }
-    }
-
-    /**
-     * Transforms the pointer into a hibernate pointer if we use hibernate
-     * 
-     * @param expr2
-     *            the expression we want to check
-     * @return A modified expression adapted to Hibernate
-     */
-    public String transformPointer(String expr2) {
-        if (this.useHibernate
-                && getOQLAnalyzer("SELECT " + expr2 + " as gigi FROM " + getFromSection()).getProjectionType()
-                        .getFieldDefinition("gigi").getType().equals("ptr")) {
-            int dot = expr2.lastIndexOf('.') + 1;
-            return expr2.substring(0, dot) + "hibernate_" + expr2.substring(dot);
-        }
-        return expr2;
     }
 }
