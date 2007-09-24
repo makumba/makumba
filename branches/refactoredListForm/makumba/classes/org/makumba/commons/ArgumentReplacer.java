@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.engine;
+package org.makumba.commons;
 
 import java.util.Dictionary;
 import java.util.Enumeration;

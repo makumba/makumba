@@ -22,7 +22,8 @@ class NullableValueComputer extends QueryValueComputer {
      * 
      * @param analyzed
      *            the tag that is analyzed
-     * @param parentListKey TODO
+     * @param parentListKey
+     *            the key of the parent list
      * @param nullableExpr
      *            the nullable expression
      * @param expr
@@ -30,7 +31,8 @@ class NullableValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    NullableValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String nullableExpr, String expr, PageCache pageCache) {
+    NullableValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String nullableExpr, String expr,
+            PageCache pageCache) {
         makeQueryAtAnalysis(parentListKey, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
     }
 

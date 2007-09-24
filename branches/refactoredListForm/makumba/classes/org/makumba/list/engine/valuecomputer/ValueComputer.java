@@ -51,7 +51,8 @@ public class ValueComputer {
      * 
      * @param analyzed
      *            the analyzed tag
-     * @param parentListKey TODO
+     * @param parentListKey
+     *            the key of the parent list
      * @param expr
      *            the expression passed in the tag
      * @param pageCache
@@ -99,7 +100,8 @@ public class ValueComputer {
      * 
      * @param listKey
      *            the key of the list
-     * @param parentListKey TODO
+     * @param parentListKey
+     *            the key of the parent list
      * @param expr
      *            the extra expression
      * @param pageCache
@@ -137,6 +139,7 @@ public class ValueComputer {
 
     /**
      * Computes the queryProjection index in the currentListData, and the queryProjection type.
+     * 
      * @param pageCache
      *            the page cache
      */
@@ -175,7 +178,8 @@ public class ValueComputer {
         Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex, o, running.getParams());
+            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex,
+                o, running.getParams());
         }
 
         if (running.getVar() != null)

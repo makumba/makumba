@@ -21,24 +21,29 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.tags;
+package org.makumba.forms.tags;
 
-import javax.servlet.jsp.JspException;
-
+import javax.servlet.jsp.tagext.TagData;
+import javax.servlet.jsp.tagext.TagExtraInfo;
+import javax.servlet.jsp.tagext.VariableInfo;
 
 /**
- * mak:object tag
+ * Extra information for input
  * @author Cristian Bogdan
  * @version $Id$
+ *
  */
-public class ObjectTag extends QueryTag {
+public class InputTEI extends TagExtraInfo {
+    public VariableInfo[] getVariableInfo(TagData data) {
 
+        String var = data.getAttributeString("nameVar");
+        if (var != null) {
+            VariableInfo ret[] = new VariableInfo[1];
+            ret[0] = new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN);
+            return ret;
+        }
 
-    private static final long serialVersionUID = 1L;
-
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+        return null;
     }
+
 }

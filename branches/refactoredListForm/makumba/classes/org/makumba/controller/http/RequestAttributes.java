@@ -24,6 +24,8 @@
 package org.makumba.controller.http;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,7 +58,7 @@ public class RequestAttributes implements Attributes {
     Object controller;
 
     public String getRequestDatabase() {
-        return MakumbaSystem.getDefaultDatabaseName();
+        return MakumbaSystem.getDefaultDataSourceName();
     }
 
     public Object getRequestController() {
@@ -302,5 +304,33 @@ public class RequestAttributes implements Attributes {
         if (value != null)
             return value;
         return notFound;
+    }
+
+    /**
+     * Computes a Map that holds all Attributes (meaning, session attributes, request attributes and parameters)
+     * 
+     * FIXME should also take into account all the rest (BL, login, ...)
+     */
+    public Map toMap() {
+        HttpSession ss = request.getSession(true);
+        Enumeration<String> enumSession = ss.getAttributeNames();
+        Enumeration<String> enumRequest = request.getAttributeNames();
+        Enumeration<String> enumParams = request.getParameterNames();
+        
+        Map<String, Object> allAttributes = new HashMap<String, Object>();
+        while(enumSession.hasMoreElements()) {
+            String attrName = enumSession.nextElement();
+            allAttributes.put(attrName, ss.getAttribute(attrName));
+        }
+        while(enumRequest.hasMoreElements()) {
+            String attrName = enumRequest.nextElement();
+            allAttributes.put(attrName, ss.getAttribute(attrName));
+        }
+        while(enumParams.hasMoreElements()) {
+            String attrName = enumParams.nextElement();
+            allAttributes.put(attrName, ss.getAttribute(attrName));
+        }
+        
+        return allAttributes;
     }
 }

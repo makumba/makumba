@@ -30,9 +30,8 @@ import javax.servlet.jsp.tagext.BodyTag;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
-import org.makumba.view.jsptaglib.MakumbaJspException;
 
 /**
  * If tag will accept test="..." similar to value tag, and will show body only if OQL expression evaluates to true

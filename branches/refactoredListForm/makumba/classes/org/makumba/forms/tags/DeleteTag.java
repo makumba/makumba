@@ -21,24 +21,50 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.tags;
+package org.makumba.forms.tags;
 
-import javax.servlet.jsp.JspException;
-
+import org.makumba.ProgrammerError;
 
 /**
- * mak:object tag
+ * mak:delete tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ObjectTag extends QueryTag {
-
+public class DeleteTag extends EditTag {
 
     private static final long serialVersionUID = 1L;
 
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+    // no input tags should be allowed
+
+    String widget;
+
+    private boolean preserveWhiteSpace = false;
+
+    public void setWidget(String w) {
+        if (w.equals("") || w.equals("link") || w.equals("button")) {
+            widget = w;
+        } else {
+            throw new ProgrammerError(
+                    "Wrong 'widget' attribute value for mak:delete. Valid options are 'button' and 'link'.");
+        }
     }
+
+    public void setPreserveWhitespace(String s) {
+        this.preserveWhiteSpace = (s != null && s.equals("true"));
+    }
+
+    String getOperation() {
+        // FIXME
+        if (widget == null || widget.equals("") || widget.equals("link")) {
+            return "deleteLink";
+        } else {
+            return "deleteForm";
+        }
+    }
+
+    public boolean getPreserveWhiteSpace() {
+        return preserveWhiteSpace;
+    }
+
 }

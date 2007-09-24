@@ -21,24 +21,27 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.tags;
+package org.makumba.forms.tags;
 
-import javax.servlet.jsp.JspException;
-
+import org.makumba.DataDefinition;
+import org.makumba.analyser.PageCache;
+import org.makumba.list.tags.QueryTag;
 
 /**
- * mak:object tag
+ * mak:editForm tag
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ObjectTag extends QueryTag {
-
+public class EditTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
 
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+    // for input tags:
+    public String getDefaultExpr(String fieldName) {
+        return baseObject + "." + fieldName;
+    }
+
+    public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
+        return QueryTag.getQuery(pageCache, fdp.getParentListKey(this)).getLabelType(baseObject);
     }
 }

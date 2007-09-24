@@ -65,7 +65,7 @@ public class TagExceptionServlet extends HttpServlet {
             { org.makumba.ValidationDefinitionParseError.class, "validation definition parse" },
             { org.makumba.DBError.class, "database" }, { org.makumba.ConfigFileError.class, "configuration" },
             { org.makumba.ProgrammerError.class, "programmer" },
-            { org.makumba.view.jsptaglib.MakumbaJspException.class, "page" },
+            { org.makumba.list.tags.MakumbaJspException.class, "page" },
             { org.makumba.AttributeNotFoundException.class, "attribute not set" },
             { org.makumba.UnauthorizedException.class, "authorization" },
             { org.makumba.InvalidValueException.class, "invalid value" },

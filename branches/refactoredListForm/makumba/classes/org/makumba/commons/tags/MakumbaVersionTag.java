@@ -21,24 +21,26 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.tags;
+package org.makumba.commons.tags;
 
 import javax.servlet.jsp.JspException;
-
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * mak:object tag
+ * mak:version tag
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ObjectTag extends QueryTag {
-
+public class MakumbaVersionTag extends TagSupport {
 
     private static final long serialVersionUID = 1L;
 
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+    public int doStartTag() throws JspException {
+        try {
+            pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());
+        } catch (java.io.IOException e) {
+            throw new JspException(e.getMessage());
+        }
+        return EVAL_BODY_INCLUDE;
     }
 }

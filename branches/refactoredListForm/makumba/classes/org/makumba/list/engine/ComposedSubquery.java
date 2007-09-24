@@ -43,8 +43,8 @@ public class ComposedSubquery extends ComposedQuery {
      * @param usesHQL
      *            <code>true</code> if we use Hibernate to execute the query
      */
-    public ComposedSubquery(String[] subsections, ComposedQuery cq, boolean usesHQL) {
-        super(subsections, usesHQL);
+    public ComposedSubquery(String[] subsections, ComposedQuery cq, String queryLanguage) {
+        super(subsections, queryLanguage);
         superQuery = cq;
         superQuery.addSubquery(this);
         derivedSections = new String[5];

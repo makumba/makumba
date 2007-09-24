@@ -115,10 +115,10 @@ public class HibernateSFManager {
     public static synchronized SessionFactory getSF() {
         if (sessionFactory == null) {
             String configFile;
-            if(MakumbaSystem.getDefaultDatabaseName() == null) {
+            if(MakumbaSystem.getDefaultDataSourceName() == null) {
                 configFile = "default.cfg.xml";
             } else {
-                configFile = MakumbaSystem.getDefaultDatabaseName() + ".cfg.xml";
+                configFile = MakumbaSystem.getDefaultDataSourceName() + ".cfg.xml";
             }
             MakumbaSystem.getMakumbaLogger("hibernate.sf").info("Initializing configuration from "+configFile);
             return getSF(configFile, false);

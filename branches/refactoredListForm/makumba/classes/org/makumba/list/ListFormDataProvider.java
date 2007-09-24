@@ -8,13 +8,13 @@ import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 
 /**
@@ -71,7 +71,7 @@ public class ListFormDataProvider {
             ptrExpression = ptrExpr;
         } else {
             // FIXME this should be provided by the QueryProvider
-            ptrExpression = QueryTag.getQuery(pageCache, parentListKey).transformPointer(ptrExpr);
+            ptrExpression = QueryTag.getQuery(pageCache, parentListKey).qep.transformPointer(ptrExpr, QueryTag.getQuery(pageCache, parentListKey).getFromSection());
         }
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
             parentListKey, ptrExpression, pageCache));

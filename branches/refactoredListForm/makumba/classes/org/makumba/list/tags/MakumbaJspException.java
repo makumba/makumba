@@ -23,22 +23,28 @@
 
 package org.makumba.list.tags;
 
-import javax.servlet.jsp.JspException;
+import org.makumba.analyser.AnalysableTag;
 
-
-/**
- * mak:object tag
+/** 
+ * An exception thrown due to makumba-specific reasons during tag execution
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ObjectTag extends QueryTag {
-
+public class MakumbaJspException extends javax.servlet.jsp.JspException {
 
     private static final long serialVersionUID = 1L;
 
-    protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
-            throw new MakumbaJspException(this, "Object tag should have only one result");
-        super.setNumberOfIterations(max);
+    Exception e;
+
+    public MakumbaJspException(Exception e) {
+        this.e = e;
+    }
+
+    public MakumbaJspException(AnalysableTag t, String s) {
+        this(new RuntimeException(s + "\nin tag: " + t.toString()));
+    }
+
+    public String getMessage() {
+        return e.getMessage();
     }
 }

@@ -11,9 +11,9 @@ import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.list.tags.TomcatJsp;
 import org.makumba.util.MultipleKey;
-import org.makumba.view.jsptaglib.MakumbaJspAnalyzer;
 
 /**
  * Extend this class in order to get analysis support for your tag.
@@ -67,6 +67,9 @@ public abstract class AnalysableTag extends TagSupport {
      * 
      * @param pageContext
      *            The PageContext object of the current page
+     *            
+     * FIXME this shouldn't depend on our mak-specific jsp analyzer so we should use a pattern to hide
+     * its implementation.
      */
     public static PageCache getPageCache(PageContext pageContext) {
         PageCache pageCache = (PageCache) pageContext.getAttribute("makumba.parse.cache");

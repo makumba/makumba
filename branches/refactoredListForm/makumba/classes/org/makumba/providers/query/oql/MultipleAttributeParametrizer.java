@@ -26,12 +26,13 @@ package org.makumba.providers.query.oql;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
-import org.makumba.Attributes;
+import org.makumba.AttributeNotFoundException;
 import org.makumba.Transaction;
 import org.makumba.LogicException;
-import org.makumba.list.engine.ArgumentReplacer;
+import org.makumba.commons.ArgumentReplacer;
 import org.makumba.util.NamedResourceFactory;
 import org.makumba.util.NamedResources;
 import org.makumba.util.RuntimeWrappedException;
@@ -45,8 +46,8 @@ public class MultipleAttributeParametrizer {
 
     NamedResources parametrizers;
 
-    public Vector execute(Transaction db, Attributes a, int offset, int limit) throws LogicException {
-        return getAttributeParametrizer(a).execute(db, rewriteAttributes(a), offset, limit);
+    public Vector execute(Transaction db, Map args, int offset, int limit) throws LogicException {
+        return getAttributeParametrizer(args).execute(db, rewriteAttributes(args), offset, limit);
     }
 
     public MultipleAttributeParametrizer(String oql) {
@@ -57,9 +58,9 @@ public class MultipleAttributeParametrizer {
     }
 
     /** obtain the attribute parametrizer associuated to the length of the given attributes */
-    public AttributeParametrizer getAttributeParametrizer(Attributes a) throws LogicException {
+    public AttributeParametrizer getAttributeParametrizer(Map args) throws LogicException {
         try {
-            return (AttributeParametrizer) parametrizers.getResource(a);
+            return (AttributeParametrizer) parametrizers.getResource(args);
         } catch (RuntimeWrappedException e) {
             Throwable t = e.getReason();
             if (t instanceof LogicException)
@@ -73,17 +74,15 @@ public class MultipleAttributeParametrizer {
      */
 
     NamedResourceFactory parametrizerFactory = new NamedResourceFactory() {
-        /**
-         * 
-         */
+        
         private static final long serialVersionUID = 1L;
 
         protected Object getHashObject(Object nm) throws Exception {
             StringBuffer sb = new StringBuffer();
-            Attributes a = (Attributes) nm;
+            Map args = (Map) nm;
             for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
                 String name = (String) e.nextElement();
-                Object o = a.getAttribute(name);
+                Object o = args.get(name);
                 if (o instanceof Vector)
                     sb.append(((Vector) o).size());
                 else
@@ -94,17 +93,17 @@ public class MultipleAttributeParametrizer {
         }
 
         protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return new AttributeParametrizer(rewriteOQL((Attributes) nm));
+            return new AttributeParametrizer(rewriteOQL((Map) nm));
         }
     };
 
     /** rewrite an OQL string to replace all multiple arguments $xxx with $xxx_1, $xxx_2, etc */
-    public String rewriteOQL(Attributes a) throws LogicException {
+    public String rewriteOQL(Map args) throws LogicException {
         String workingOQL = baseOQL;
 
         for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
-            Object o = a.getAttribute(name);
+            Object o = args.get(name);
             if (o instanceof Vector)
                 workingOQL = multiplyParameter(workingOQL, name, ((Vector) o).size());
         }
@@ -133,12 +132,15 @@ public class MultipleAttributeParametrizer {
         }
     }
 
-    public Dictionary rewriteAttributes(Attributes a) throws LogicException {
+    public Dictionary rewriteAttributes(Map args) throws LogicException {
         Dictionary ret = new Hashtable();
 
         for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
-            Object o = a.getAttribute(name);
+            Object o = args.get(name);
+            // FIXME this should not be thrown at such a late stage, but earlier
+            // OR we could throw something here, but it should then be another kind of exception
+            if(o == null) throw new AttributeNotFoundException(name);
             if (o instanceof Vector) {
                 Vector v = (Vector) o;
                 for (int i = 1; i <= v.size(); i++)

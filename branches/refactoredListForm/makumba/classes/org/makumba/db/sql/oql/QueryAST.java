@@ -30,11 +30,12 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.db.Database;
+import org.makumba.providers.QueryAnalysis;
 
 import antlr.collections.AST;
 
 /** an OQL query, writes out the translated SQL query */
-public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer
+public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAnalysis
 {
   /**
 	 * 
@@ -612,6 +613,9 @@ public QueryAST(){}
     writeAfterWhere(d, sb);
     return sb.toString();
   }
+public String getQuery() {
+    return getOQL();
+}
 
 }
 
