@@ -28,7 +28,6 @@ import java.util.Dictionary;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.list.engine.ComposedQuery;
 
 /**
  * Generic formatter of Makumba data. Depending on the data type, calls specific formatters an applies them for each

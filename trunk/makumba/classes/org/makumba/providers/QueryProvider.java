@@ -4,11 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.makumba.Attributes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.list.engine.ComposedQuery;
 
 /**
  * This provider makes it possible to run queries against a data source.
