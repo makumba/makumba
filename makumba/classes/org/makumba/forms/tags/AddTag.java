@@ -27,7 +27,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.list.tags.QueryTag;
 import org.makumba.util.MultipleKey;
 
 /**
@@ -82,8 +81,7 @@ public class AddTag extends FormTagBase {
      * @return A DataDefinition corresponding to the type of object to which we want to add something
      */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        DataDefinition base = getOperation().equals("add") ? QueryTag.getQuery(pageCache, fdp.getParentListKey(this))
-                .getLabelType(baseObject) : ((NewTag) findParentForm()).type;
+        DataDefinition base = getOperation().equals("add") ? fdp.getBasePointerType(this, pageCache, baseObject) : ((NewTag) findParentForm()).type;
         if (base == null) { // we could not find the type
             String message = "Could not determine type for specified object '" + baseObject + "'";
             if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..

@@ -9,6 +9,7 @@ import org.makumba.Pointer;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.forms.tags.AddTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
@@ -171,6 +172,17 @@ public class ListFormDataProvider {
         vc.doEndAnalyze(pageCache);
         return vc.getType();
     }
+    
+    /**
+     * Gives the type corresponding to the base object of a tag, based on its name
+     * @param tag the tag for which we need to discover the tag
+     * @param pageCache the page cache of the current page
+     * @param baseObject the label of the object we want to discover
+     * @return the {@link DataDefinition} corresponding to the type of the object
+     */
+    public DataDefinition getBasePointerType(AnalysableTag tag, PageCache pageCache, String baseObject) {
+        return QueryTag.getQuery(pageCache, getParentListKey(tag)).getLabelType(baseObject);
+     }
 
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
 
@@ -193,12 +205,6 @@ public class ListFormDataProvider {
      */
     public Object getValue(MultipleKey tagKey, PageContext pageContext, PageCache pageCache) throws LogicException {
         return ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
-    }
-
-    public DataDefinition getBasePointerType(AnalysableTag tag, String baseObject) {
-        PageContext pageContext = tag.getPageContext();
-        return QueryTag.getQuery(GenericListTag.getPageCache(pageContext), QueryTag.getParentListKey(tag, null)).getLabelType(
-            baseObject);
     }
 
     /**
