@@ -11,8 +11,8 @@ import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.list.tags.TomcatJsp;
 import org.makumba.util.MultipleKey;
 
 /**

@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.tags;
+package org.makumba.analyser.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;

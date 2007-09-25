@@ -37,10 +37,10 @@ import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.list.tags.GenericListTag;
-import org.makumba.list.tags.TomcatJsp;
+import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.util.RuntimeWrappedException;
 
 /**
@@ -104,7 +104,7 @@ public class TagExceptionServlet extends HttpServlet {
             t = t1;
         }
 
-        if (t.getClass().getName().startsWith(org.makumba.list.tags.TomcatJsp.getJspCompilerPackage())) {
+        if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
             // see if the exception is servlet container specific
             // TODO: use the interface once this is a provider after mak:refactoring finished
             boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this);
@@ -185,14 +185,14 @@ public class TagExceptionServlet extends HttpServlet {
      */
     String formatTagData(HttpServletRequest req) {
         String tagExpl = "During analysis of the following tag (and possibly tags inside it):";
-        TagData tagData = GenericListTag.getAnalyzedTag();
+        TagData tagData = AnalysableTag.getAnalyzedTag();
         if (tagData == null) {
             tagExpl = "During running of: ";
-            tagData = GenericListTag.getRunningTag();
+            tagData = AnalysableTag.getRunningTag();
         }
         if (tagData == null) {
             tagExpl = "While executing inside this body tag, but most probably <b>not</b> due to the tag:";
-            tagData = GenericListTag.getCurrentBodyTag();
+            tagData = AnalysableTag.getCurrentBodyTag();
         }
         if (tagData == null) {
             String filePath = req.getRequestURL().toString();
@@ -362,7 +362,7 @@ public class TagExceptionServlet extends HttpServlet {
             t = t1;
         }
 
-        if (t.getClass().getName().startsWith(org.makumba.list.tags.TomcatJsp.getJspCompilerPackage())) {
+        if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
             return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
         }
         for (int i = 0; i < errors.length; i++) {
