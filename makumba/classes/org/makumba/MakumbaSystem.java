@@ -28,7 +28,6 @@ import org.makumba.controller.html.CalendarEditorProvider;
 import org.makumba.controller.html.KruseCalendarEditor;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
-import org.makumba.providers.query.oql.OQLQueryProvider;
 import org.makumba.util.NamedResources;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
