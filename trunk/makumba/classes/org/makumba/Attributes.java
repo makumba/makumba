@@ -96,7 +96,7 @@ public interface Attributes {
             this.a = a;
         }
 
-        public Object get(Object key) throws RuntimeException {
+        public Object get(Object key) {
             Object o = null;
             try {
                 o = a.getAttribute((String)key);
