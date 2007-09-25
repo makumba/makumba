@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
-import org.makumba.AttributeNotFoundException;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.LogicException;

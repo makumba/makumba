@@ -1,13 +1,9 @@
 package test;
 
-import java.util.Vector;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
-import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.hql.HQLQueryProvider;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
