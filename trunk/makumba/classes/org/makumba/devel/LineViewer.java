@@ -502,7 +502,7 @@ public abstract class LineViewer implements SourceViewer {
         } catch (Throwable t) {
             return null;
         }
-        if (org.makumba.util.ClassResource.get(c.getName().replace('.', '/') + ".java") != null)
+        if (org.makumba.commons.ClassResource.get(c.getName().replace('.', '/') + ".java") != null)
             return c;
         return null;
     }

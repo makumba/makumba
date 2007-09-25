@@ -23,7 +23,7 @@
 
 package org.makumba;
 
-import org.makumba.util.StringUtils;
+import org.makumba.commons.StringUtils;
 
 /** This exception occurs when an invalid value is passed to a field */
 public class InvalidValueException extends RuntimeException {

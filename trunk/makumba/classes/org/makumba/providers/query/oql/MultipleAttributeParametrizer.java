@@ -33,9 +33,9 @@ import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.LogicException;
 import org.makumba.commons.ArgumentReplacer;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
-import org.makumba.util.RuntimeWrappedException;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 
 /** Take care of multiple parameters, as a "decorator" of AttributeParametrizer which knows nothing about them */
 public class MultipleAttributeParametrizer {

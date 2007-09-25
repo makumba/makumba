@@ -29,29 +29,34 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.PageAttributes;
-import org.makumba.controller.html.dateEditor;
+import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.http.RequestAttributes;
+import org.makumba.forms.html.dateEditor;
 import org.makumba.list.ListFormDataProvider;
-import org.makumba.util.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in
  * similar manner (value="$attribute" or value="OQL expr").
  * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {
     
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
+    // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
+    protected DataDefinitionProvider ddp = MakumbaDataDefinitionFactory.getInstance();
+    
     String valueExprOriginal = null;
 
     /* Cannot be set here, subclasses who need it will set it */
@@ -120,13 +125,11 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         FieldDefinition type = null;
 
         if (dataType != null) {
-            dataTypeInfo = MakumbaSystem.makeFieldDefinition("dummyName", dataType);
+            dataTypeInfo = ddp.makeFieldDefinition("dummyName", dataType);
             if (contextType != null && !contextType.isAssignableFrom(dataTypeInfo))
                 throw new ProgrammerError("declared data type '" + dataType
                         + "' not compatible with the type computed from context '" + contextType + "'");
         }
-
-        // FIXME shouldn't this be in FormDataProvider - and should this class know about Values and Attributes?
         
         if (isValue()) {
             type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);

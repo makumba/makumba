@@ -29,8 +29,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.makumba.util.LongData;
-import org.makumba.util.RuntimeWrappedException;
+import org.makumba.commons.LongData;
+import org.makumba.commons.RuntimeWrappedException;
 
 /** A makumba text, a byte array that can be converted to String when needed. 
  * When texts get big, they are swapped on disk. Text swapping is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)} in the logger <b><code>"abstr.longContent"</code></b> with {@link java.util.logging.Level#FINE} logging level.

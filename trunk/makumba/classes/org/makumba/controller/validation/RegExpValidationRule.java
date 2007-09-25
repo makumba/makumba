@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
-import org.makumba.util.RegExpUtils;
+import org.makumba.commons.RegExpUtils;
 
 /**
  * This validation rule implements pattern matching for string types, using the syntax &lt;fieldname&gt; <i>matches</i>

@@ -40,7 +40,7 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
-import org.makumba.util.ClassResource;
+import org.makumba.commons.ClassResource;
 
 /**
  * 

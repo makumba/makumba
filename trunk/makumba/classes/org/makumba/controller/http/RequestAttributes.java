@@ -36,8 +36,8 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
+import org.makumba.controller.DbConnectionProvider;
 import org.makumba.controller.Logic;
-import org.makumba.util.DbConnectionProvider;
 
 /**
  * Implementation of the Makumba {@link Attributes}

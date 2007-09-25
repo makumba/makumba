@@ -41,7 +41,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
-import org.makumba.util.RuntimeWrappedException;
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * The servlet that receives errors in any makumba page and treats them meant to be friendly for developer, so he'll see
@@ -172,7 +172,7 @@ public class TagExceptionServlet extends HttpServlet {
             sw.parseText(wr);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new org.makumba.util.RuntimeWrappedException(e);
+            throw new org.makumba.commons.RuntimeWrappedException(e);
         }
     }
 
@@ -323,7 +323,7 @@ public class TagExceptionServlet extends HttpServlet {
             sw.parseText(wr);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new org.makumba.util.RuntimeWrappedException(e);
+            throw new org.makumba.commons.RuntimeWrappedException(e);
         }
 
     }

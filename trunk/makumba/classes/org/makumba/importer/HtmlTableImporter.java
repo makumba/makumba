@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.importer;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,108 +36,108 @@ import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
-import org.makumba.util.HtmlTagEnumerator;
+import org.makumba.commons.HtmlTagEnumerator;
 
-public class HtmlTableImporter 
-{
-  ObjectImporter imp;
-  boolean inRow=false;
-  boolean inCell=false;
-  String text;
-  Vector data;
-  String fieldOrder[];
-  String type;
-  Transaction db;
+/**
+ * Utility class making it possible to import data from a HTML table into a Makumba-based database.
+ * This class was created in order to import data from a Lotus Notes database, since there was no other
+ * mean to extract data than this one.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class HtmlTableImporter {
+    ObjectImporter imp;
 
-  void endOfCell()
-  {
-    if(inCell)
-      data.addElement(text);
-    text=null;
-  }
+    boolean inRow = false;
 
-  void endOfRow()
-  {
-    endOfCell();
-    if(data!=null && ! data.isEmpty())
-      if(data.size()!=fieldOrder.length)
-	MakumbaSystem.getMakumbaLogger("import").severe(type+": invalid HTML table row length: "+data.size()+"\r\nin: "+data);
-      else
-	  try {
-	db.insert(type, importVector());
-	  } catch (InvalidValueException e)
-	      {MakumbaSystem.getMakumbaLogger("import").warning("record not inserted --> "+e.getMessage());}
-  }
+    boolean inCell = false;
 
-  public HtmlTableImporter(Transaction db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
-       throws IOException
-  {
-    this.imp= new ObjectImporter(type, true);
-    this.fieldOrder=fieldOrder;
-    this.type= type.getName();
-    this.db=db;
-    String[] tables= {type.getName()};
-    MakumbaSystem._delete(db.getName(), db.getName(), tables); 
-    HtmlTagEnumerator e= new HtmlTagEnumerator(r);
-    while(e.next() && !e.getTag().equals(tableStartTag))
-      ;
-  
-    String s;
+    String text;
 
-    while(e.next())
-      {
-	if(e.getTagType().toLowerCase().equals("tr"))
-	  {
-	    endOfRow();
-	    inRow=true;
-	    inCell=false;
-	    data=new Vector();
-	  }
-	else if(inRow && e.getTagType().toLowerCase().equals("td"))
-	  {
-	    endOfCell();
-	    inCell=true;
-	  }
-	else if(inCell && (s=e.getNonHtml())!=null &&s.length()>0)
-	  text=s;
-	if(e.getTagType().toLowerCase().equals("/table"))
-	  {
-	    endOfRow();
-	    MakumbaSystem.getMakumbaLogger("import").severe("end of table encountered");
-	    return;
-	  }
-      }
-   MakumbaSystem.getMakumbaLogger("import").severe("end of table missing");
-  }
-  
-  Dictionary importVector()
-  {
-    Dictionary d= new Hashtable();
-    Vector v1= new Vector();
+    Vector data;
 
-    for(int i=0; i<fieldOrder.length; i++)
-      if(data.elementAt(i)!=null)
-	{
-	  Object o= imp.getValue(fieldOrder[i], (String)data.elementAt(i), db, null);
-	  if(o!=null)
-	    d.put(fieldOrder[i], o);
-	  v1.addElement(o);
-	}
-    MakumbaSystem.getMakumbaLogger("import").finest(v1.toString());
+    String fieldOrder[];
 
-    return d;
-  }
+    String type;
 
-  public static void main(String[] argv) throws IOException
-  {
-    String[]args= new String[argv.length-4];
-    System.arraycopy(argv, 4, args, 0, args.length);
+    Transaction db;
 
-    new HtmlTableImporter(
-			  MakumbaSystem.getConnectionTo(argv[0]),
-			  MakumbaSystem.getDataDefinition(argv[1]),
-			  new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))),
-			  argv[3],
-			  args);
-  }
+    void endOfCell() {
+        if (inCell)
+            data.addElement(text);
+        text = null;
+    }
+
+    void endOfRow() {
+        endOfCell();
+        if (data != null && !data.isEmpty())
+            if (data.size() != fieldOrder.length)
+                MakumbaSystem.getMakumbaLogger("import").severe(
+                    type + ": invalid HTML table row length: " + data.size() + "\r\nin: " + data);
+            else
+                try {
+                    db.insert(type, importVector());
+                } catch (InvalidValueException e) {
+                    MakumbaSystem.getMakumbaLogger("import").warning("record not inserted --> " + e.getMessage());
+                }
+    }
+
+    public HtmlTableImporter(Transaction db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
+            throws IOException {
+        this.imp = new ObjectImporter(type, true);
+        this.fieldOrder = fieldOrder;
+        this.type = type.getName();
+        this.db = db;
+        String[] tables = { type.getName() };
+        MakumbaSystem._delete(db.getName(), db.getName(), tables);
+        HtmlTagEnumerator e = new HtmlTagEnumerator(r);
+        while (e.next() && !e.getTag().equals(tableStartTag))
+            ;
+
+        String s;
+
+        while (e.next()) {
+            if (e.getTagType().toLowerCase().equals("tr")) {
+                endOfRow();
+                inRow = true;
+                inCell = false;
+                data = new Vector();
+            } else if (inRow && e.getTagType().toLowerCase().equals("td")) {
+                endOfCell();
+                inCell = true;
+            } else if (inCell && (s = e.getNonHtml()) != null && s.length() > 0)
+                text = s;
+            if (e.getTagType().toLowerCase().equals("/table")) {
+                endOfRow();
+                MakumbaSystem.getMakumbaLogger("import").severe("end of table encountered");
+                return;
+            }
+        }
+        MakumbaSystem.getMakumbaLogger("import").severe("end of table missing");
+    }
+
+    Dictionary importVector() {
+        Dictionary d = new Hashtable();
+        Vector v1 = new Vector();
+
+        for (int i = 0; i < fieldOrder.length; i++)
+            if (data.elementAt(i) != null) {
+                Object o = imp.getValue(fieldOrder[i], (String) data.elementAt(i), db, null);
+                if (o != null)
+                    d.put(fieldOrder[i], o);
+                v1.addElement(o);
+            }
+        MakumbaSystem.getMakumbaLogger("import").finest(v1.toString());
+
+        return d;
+    }
+
+    public static void main(String[] argv) throws IOException {
+        String[] args = new String[argv.length - 4];
+        System.arraycopy(argv, 4, args, 0, args.length);
+
+        new HtmlTableImporter(MakumbaSystem.getConnectionTo(argv[0]), MakumbaSystem.getDataDefinition(argv[1]),
+                new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
+    }
 }

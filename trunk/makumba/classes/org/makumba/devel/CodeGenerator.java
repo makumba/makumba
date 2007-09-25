@@ -42,7 +42,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.util.StringUtils;
+import org.makumba.commons.StringUtils;
 
 /**
  * This class generates code from a {@link DataDefinition}. Possible code types are:

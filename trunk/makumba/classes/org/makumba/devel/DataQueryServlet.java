@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.util.RuntimeWrappedException;
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * This class implements a query interface in OQL to the database. Results are displayed and can then be shown with

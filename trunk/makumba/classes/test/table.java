@@ -620,7 +620,7 @@ public class table extends TestCase {
 			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
 			+ "\njdbc connections allocated: "
 			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
-			+ "\ncaches: " + org.makumba.util.NamedResources.getCacheInfo()
+			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
 	
 	);
 			 MakumbaSystem.close();

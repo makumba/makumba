@@ -37,10 +37,12 @@ import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.GenericMakumbaTag;
-import org.makumba.controller.html.FormResponder;
+import org.makumba.commons.MultipleKey;
+import org.makumba.commons.StringUtils;
+import org.makumba.forms.html.FormResponder;
 import org.makumba.list.ListFormDataProvider;
-import org.makumba.util.MultipleKey;
-import org.makumba.util.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 /**
  * mak:form base tag
@@ -87,7 +89,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private String clientSideValidation = "live";
     
+    // FIXME use the interface here, inject it thru dependency injection
     protected ListFormDataProvider fdp = new ListFormDataProvider();
+    
+    //  TODO we should be able to specify the DataDefinitionProvider used at the form level or so
+    protected DataDefinitionProvider ddp = MakumbaDataDefinitionFactory.getInstance();
 
 
     public void setBodyContent(BodyContent bc) {

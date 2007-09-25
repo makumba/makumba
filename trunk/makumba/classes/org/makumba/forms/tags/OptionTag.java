@@ -30,7 +30,7 @@ import javax.servlet.jsp.tagext.BodyTag;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.util.MultipleKey;
+import org.makumba.commons.MultipleKey;
 
 /**
  * mak:option tag

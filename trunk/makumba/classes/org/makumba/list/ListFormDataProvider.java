@@ -9,13 +9,13 @@ import org.makumba.Pointer;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.commons.MultipleKey;
 import org.makumba.forms.tags.AddTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
-import org.makumba.util.MultipleKey;
 
 
 /**

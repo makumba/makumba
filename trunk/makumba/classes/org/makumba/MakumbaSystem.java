@@ -24,15 +24,15 @@
 package org.makumba;
 
 
-import org.makumba.controller.html.CalendarEditorProvider;
-import org.makumba.controller.html.KruseCalendarEditor;
+import org.makumba.commons.NamedResources;
+import org.makumba.forms.html.CalendarEditorProvider;
+import org.makumba.forms.html.KruseCalendarEditor;
+import org.makumba.forms.validation.ClientsideValidationProvider;
+import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
-import org.makumba.util.NamedResources;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
-import org.makumba.view.validation.ClientsideValidationProvider;
-import org.makumba.view.validation.LiveValidationProvider;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
@@ -55,7 +55,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.13
      */
     public static java.util.Map getCacheInfo() {
-        return org.makumba.util.NamedResources.getCacheInfo();
+        return org.makumba.commons.NamedResources.getCacheInfo();
     }
 
     /**
@@ -433,7 +433,7 @@ public class MakumbaSystem {
      * @return filenames as Vector of Strings.
      */
     public static java.util.Vector mddsInDirectory(String dirInClasspath) {
-        java.net.URL u = org.makumba.util.ClassResource.get(dirInClasspath);
+        java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
         java.io.File dir = new java.io.File(u.getFile());
         java.util.Vector<String> mdds = new java.util.Vector<String>();
         fillMdds(dir.toString().length() + 1, dir, mdds);

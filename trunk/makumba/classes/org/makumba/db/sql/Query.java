@@ -137,7 +137,7 @@ public class Query implements org.makumba.db.Query {
         try {
             while (rs.next()) {
                 rm.fillResult(rs, dt = new Object[size]);
-                ret.addElement(new org.makumba.util.ArrayMap(rm.keyIndex, dt));
+                ret.addElement(new org.makumba.commons.ArrayMap(rm.keyIndex, dt));
             }
             rs.close();
         } catch (SQLException e) {

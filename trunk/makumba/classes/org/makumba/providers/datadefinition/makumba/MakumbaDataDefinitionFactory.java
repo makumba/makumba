@@ -96,7 +96,7 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
      * @return filenames as Vector of Strings.
      */
     private java.util.Vector mddsInDirectory(String dirInClasspath) {
-        java.net.URL u = org.makumba.util.ClassResource.get(dirInClasspath);
+        java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
         java.io.File dir = new java.io.File(u.getFile());
         java.util.Vector mdds = new java.util.Vector();
         fillMdds(dir.toString().length() + 1, dir, mdds);

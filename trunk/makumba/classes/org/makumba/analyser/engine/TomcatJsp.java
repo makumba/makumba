@@ -120,7 +120,7 @@ public class TomcatJsp /* extends HttpServlet */{
                     sw.parseText(wr);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    throw new org.makumba.util.RuntimeWrappedException(e);
+                    throw new org.makumba.commons.RuntimeWrappedException(e);
                 }
                 return true;
             }

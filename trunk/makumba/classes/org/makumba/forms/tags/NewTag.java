@@ -24,9 +24,8 @@
 package org.makumba.forms.tags;
 
 import org.makumba.DataDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
-import org.makumba.util.MultipleKey;
+import org.makumba.commons.MultipleKey;
 
 /**
  * mak:new tag
@@ -43,7 +42,7 @@ public class NewTag extends FormTagBase {
     String multipleSubmitErrorMsg = null;
 
     public void setType(String s) {
-        type = MakumbaSystem.getDataDefinition(s);
+        type = ddp.getDataDefinition(s);
     }
 
     public void setMultipleSubmitErrorMsg(String s) {

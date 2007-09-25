@@ -45,8 +45,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.MakumbaSystem;
-import org.makumba.util.Base64;
-import org.makumba.util.ReadableFormatter;
+import org.makumba.commons.Base64;
+import org.makumba.commons.ReadableFormatter;
 
 /**
  * mak:info tag

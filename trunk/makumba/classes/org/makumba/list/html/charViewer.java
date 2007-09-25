@@ -27,9 +27,9 @@ import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
 import org.makumba.MakumbaSystem;
-import org.makumba.view.FieldFormatter;
-import org.makumba.view.InvalidValueException;
-import org.makumba.view.RecordFormatter;
+import org.makumba.commons.formatters.FieldFormatter;
+import org.makumba.commons.formatters.InvalidValueException;
+import org.makumba.commons.formatters.RecordFormatter;
 
 public class charViewer extends FieldViewer {
 	static String[] params = { "default", "empty", "urlEncode", "html", "format",

@@ -39,12 +39,11 @@ import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
-import org.makumba.util.ClassResource;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
-import org.makumba.util.ResourcePool;
-import org.makumba.util.RuntimeWrappedException;
-import org.makumba.util.SoftNamedResources;
+import org.makumba.commons.ClassResource;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.SoftNamedResources;
 
 /** 
  ptrOne...
@@ -111,7 +110,7 @@ public abstract class Database {
     public void close() {
         MakumbaSystem.getMakumbaLogger("db.init").info(
                 "closing  " + getConfiguration() + "\n\tat "
-                        + org.makumba.view.dateFormatter.debugTime.format(new java.util.Date()));
+                        + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
         queries.close();
         updates.close();
@@ -183,7 +182,7 @@ public abstract class Database {
             String name = (String) nm;
 
             try {
-                p.load(org.makumba.util.ClassResource.get(name + ".properties").openStream());
+                p.load(org.makumba.commons.ClassResource.get(name + ".properties").openStream());
             } catch (Exception e) {
                 throw new org.makumba.ConfigFileError(name + ".properties");
             }
@@ -285,7 +284,7 @@ public abstract class Database {
         protected Object makeResource(Object nm) {
             Properties p = new Properties();
             try {
-                java.io.InputStream input = org.makumba.util.ClassResource.get((String) nm).openStream();
+                java.io.InputStream input = org.makumba.commons.ClassResource.get((String) nm).openStream();
                 p.load(input);
                 input.close();
             } catch (Exception e) {

@@ -67,7 +67,7 @@ class version {
         Date buildDate = null;
 
         try {
-            prop.load(org.makumba.util.ClassResource.get(filename).openStream());
+            prop.load(org.makumba.commons.ClassResource.get(filename).openStream());
             buildDate = df.parse(prop.getProperty("buildDate"), new java.text.ParsePosition(0));
         } catch (Exception e) {
             // TODO: throw an exception (needs to adapt some other classes / methods, as doStartTag in MakumbaInfoTag

@@ -44,9 +44,9 @@ import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
-import org.makumba.util.ClassResource;
-import org.makumba.util.NamedResources;
-import org.makumba.util.StringUtils;
+import org.makumba.commons.ClassResource;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.StringUtils;
 
 /**
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the
@@ -140,9 +140,9 @@ public class javaViewer extends LineViewer {
             virtualPath = virtualPath.substring(1);
         }
         if (virtualPath.endsWith(".java")) {
-            url = org.makumba.util.ClassResource.get(virtualPath);
+            url = org.makumba.commons.ClassResource.get(virtualPath);
         } else {
-            url = org.makumba.util.ClassResource.get(virtualPath.replace('.', '/') + ".java");
+            url = org.makumba.commons.ClassResource.get(virtualPath.replace('.', '/') + ".java");
         }
         if (url != null) {
             setSearchLevels(false, false, false, true);
@@ -160,7 +160,7 @@ public class javaViewer extends LineViewer {
                 if (s.startsWith("/")) {
                     s = s.substring(1);
                 }
-                url= org.makumba.util.ClassResource.get(s.replace('.', '/'));
+                url= org.makumba.commons.ClassResource.get(s.replace('.', '/'));
             }
         }
         

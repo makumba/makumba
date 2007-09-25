@@ -34,12 +34,11 @@ import org.makumba.CompositeValidationException;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MultipleKey;
+import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.util.MultipleKey;
-import org.makumba.util.StringUtils;
 
 /**
  * mak:input tag
@@ -67,7 +66,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     /** input whith body, used only for choosers as yet * */
     BodyContent bodyContent = null;
 
-    org.makumba.util.ChoiceSet choiceSet;
+    org.makumba.forms.html.ChoiceSet choiceSet;
 
     // unused for now, set when we know at analysis that this input has
     // a body and will generate a choser (because it has <mak:option > inside)
@@ -166,7 +165,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      */
     public void doEndAnalyze(PageCache pageCache) {
         if (nameVar != null)
-            setType(pageCache, nameVar, MakumbaSystem.makeFieldOfType(nameVar, "char"));
+            setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
 
         super.doEndAnalyze(pageCache);
     }
@@ -187,7 +186,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
         // for now, only chosers can have body
-        choiceSet = new org.makumba.util.ChoiceSet();
+        choiceSet = new org.makumba.forms.html.ChoiceSet();
     }
 
     public void doInitBody() {
@@ -226,7 +225,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         checkBodyContentForNonWhitespace();
 
         if (choiceSet != null)
-            params.put(org.makumba.util.ChoiceSet.PARAMNAME, choiceSet);
+            params.put(org.makumba.forms.html.ChoiceSet.PARAMNAME, choiceSet);
 
         if ("false".equals(display))
             params.put("org.makumba.noDisplay", "dummy");

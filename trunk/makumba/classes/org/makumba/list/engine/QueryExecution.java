@@ -32,13 +32,13 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.Attributes;
 import org.makumba.LogicException;
+import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.commons.MultipleKey;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.QueryProvider;
-import org.makumba.util.ArrayMap;
-import org.makumba.util.MultipleKey;
 
 /**
  * This class holds the listData of a mak:list or the valueQuery data of a mak:value. It determines iterationGroups at

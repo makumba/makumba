@@ -48,14 +48,14 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
+import org.makumba.commons.ClassResource;
+import org.makumba.commons.RegExpUtils;
+import org.makumba.commons.ReservedKeywords;
 import org.makumba.controller.validation.BasicValidationRule;
 import org.makumba.controller.validation.ComparisonValidationRule;
 import org.makumba.controller.validation.NumberRangeValidationRule;
 import org.makumba.controller.validation.RegExpValidationRule;
 import org.makumba.controller.validation.StringLengthValidationRule;
-import org.makumba.util.ClassResource;
-import org.makumba.util.RegExpUtils;
-import org.makumba.util.ReservedKeywords;
 
 public class RecordParser {
     public static final String FILE_EXTENSION_VALIDATION = ".vd";
@@ -251,7 +251,7 @@ public class RecordParser {
     }
 
     static java.net.URL getResource(String s) {
-        return org.makumba.util.ClassResource.get(s);
+        return org.makumba.commons.ClassResource.get(s);
     }
 
     static public java.net.URL findDataDefinition(String s, String ext) {

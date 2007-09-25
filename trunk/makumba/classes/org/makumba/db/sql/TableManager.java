@@ -47,10 +47,10 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Table;
-import org.makumba.util.StringUtils;
 
 public class TableManager extends Table {
     protected String tbname;

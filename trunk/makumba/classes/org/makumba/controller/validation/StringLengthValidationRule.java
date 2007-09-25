@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Text;
-import org.makumba.util.RegExpUtils;
+import org.makumba.commons.RegExpUtils;
 
 /**
  * This validation rule implements string-length checks, using the syntax &lt;fieldname&gt; <i>length in</i>

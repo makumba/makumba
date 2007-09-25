@@ -11,14 +11,14 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.Transaction;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.sql.oql.OQLLexer;
 import org.makumba.db.sql.oql.OQLParser;
 import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
-import org.makumba.util.RuntimeWrappedException;
 
 
 
