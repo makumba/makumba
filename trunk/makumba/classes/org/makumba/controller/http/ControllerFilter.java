@@ -26,7 +26,6 @@ package org.makumba.controller.http;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -44,6 +43,7 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
+import org.makumba.analyser.AnalysableTag;
 import org.makumba.devel.TagExceptionServlet;
 import org.makumba.util.DbConnectionProvider;
 import org.makumba.util.StringUtils;
@@ -68,7 +68,7 @@ public class ControllerFilter implements Filter {
         conf = c;
     }
 
-    private static ThreadLocal requestThreadLocal = new ThreadLocal();
+    private static ThreadLocal<ServletRequest> requestThreadLocal = new ThreadLocal<ServletRequest>();
 
     /**
      * Gets the request
@@ -81,7 +81,7 @@ public class ControllerFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
-        org.makumba.list.tags.GenericListTag.initializeThread();
+        AnalysableTag.initializeThread();
         boolean filter = shouldFilter((HttpServletRequest) req);
         requestThreadLocal.set(req);
 
@@ -286,7 +286,7 @@ public class ControllerFilter implements Filter {
                             + "The makumba error message would have been:\n"
                             + new TagExceptionServlet().getErrorMessage(req));
             } finally {
-                org.makumba.list.tags.GenericListTag.initializeThread();
+                AnalysableTag.initializeThread();
             }
         }
         setWasException(req);
