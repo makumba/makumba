@@ -70,9 +70,9 @@ public class GeneratedCodeViewer extends jspViewer {
 
         URL[] templatePaths = new URL[2];
         // default built in templates
-        templatePaths[0] = org.makumba.util.ClassResource.get("org/makumba/devel/defaultCodeTemplates/");
+        templatePaths[0] = org.makumba.commons.ClassResource.get("org/makumba/devel/defaultCodeTemplates/");
         // user defined templates
-        templatePaths[1] = org.makumba.util.ClassResource.get("codeTemplates");
+        templatePaths[1] = org.makumba.commons.ClassResource.get("codeTemplates");
 
         for (int i = 0; i < templatePaths.length; i++) {
             if (templatePaths[i] != null) {
@@ -190,7 +190,7 @@ public class GeneratedCodeViewer extends jspViewer {
             fileRoot.mkdirs();
             File allPagesFile = null;
             logicFileName = CodeGenerator.getLogicNameFromDataDefinition(dd) + ".java";
-            classesDirectory = org.makumba.util.ClassResource.get("");
+            classesDirectory = org.makumba.commons.ClassResource.get("");
 
             CodeGenerator codeGenerator = new CodeGenerator();
 

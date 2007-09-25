@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ValidationDefinitionParseError;
-import org.makumba.controller.html.dateEditor;
-import org.makumba.util.RegExpUtils;
+import org.makumba.commons.RegExpUtils;
+import org.makumba.forms.html.dateEditor;
 
 /**
  * This validation rule implements comparison validations between two fields, using the syntax &lt;fieldname&gt;

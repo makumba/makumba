@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.interfaces.JavaAnalyzer;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 
 /**
  * This class performs a rudimentary detection of Java syntax elements in a Java class.

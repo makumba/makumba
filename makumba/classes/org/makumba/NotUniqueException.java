@@ -1,6 +1,6 @@
 package org.makumba;
 
-import org.makumba.util.StringUtils;
+import org.makumba.commons.StringUtils;
 
 /**
  * Not-unique is a special case of an {@link InvalidValueException} - the value is syntactically correct, but is

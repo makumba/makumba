@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.datadefinition.makumba.FieldInfo;
-import org.makumba.util.RegExpUtils;
 
 /**
  * This class provides basic support for validation rules. New rules should extend this class, or

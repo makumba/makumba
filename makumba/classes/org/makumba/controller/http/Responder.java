@@ -52,10 +52,10 @@ import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.controller.Logic;
-import org.makumba.controller.html.FormResponder;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
+import org.makumba.forms.html.FormResponder;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory

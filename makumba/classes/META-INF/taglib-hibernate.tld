@@ -10,7 +10,7 @@
 	<uri>http://www.makumba.org/view-hql</uri>
 
 	<listener>
-	<listener-class>org.makumba.util.NamedResourcesContextListener</listener-class>
+	<listener-class>org.makumba.commons.NamedResourcesContextListener</listener-class>
 
 	</listener>
 

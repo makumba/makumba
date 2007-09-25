@@ -44,9 +44,8 @@ import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
-import org.makumba.util.DbConnectionProvider;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 
 /** busines logic administration */
 public class Logic {
@@ -63,7 +62,7 @@ public class Logic {
     static {
         controllerConfig = new Properties();
         try {
-            controllerURL = org.makumba.util.ClassResource.get("MakumbaController.properties");
+            controllerURL = org.makumba.commons.ClassResource.get("MakumbaController.properties");
             controllerConfig.load(controllerURL.openStream());
         } catch (Exception e) {
             controllerConfig = null;
@@ -293,17 +292,17 @@ public class Logic {
 
     public static String getControllerFile(Object controller) {
         String ctrlClass = controller.getClass().getName();
-        java.net.URL u = org.makumba.util.ClassResource.get(ctrlClass.replace('.', '/') + ".java");
+        java.net.URL u = org.makumba.commons.ClassResource.get(ctrlClass.replace('.', '/') + ".java");
         if (u != null)
             return getFilePath(u);
-        return org.makumba.util.ClassResource.get(ctrlClass.replace('.', '/') + ".class").toString();
+        return org.makumba.commons.ClassResource.get(ctrlClass.replace('.', '/') + ".class").toString();
     }
 
     public static String getFilePath(java.net.URL u) {
         try {
             return new java.io.File((u.getFile())).getCanonicalPath();
         } catch (java.io.IOException ioe) {
-            throw new org.makumba.util.RuntimeWrappedException(ioe);
+            throw new org.makumba.commons.RuntimeWrappedException(ioe);
         }
     }
 

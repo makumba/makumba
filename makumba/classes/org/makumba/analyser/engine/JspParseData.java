@@ -38,9 +38,9 @@ import javax.servlet.jsp.tagext.Tag;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
-import org.makumba.util.RuntimeWrappedException;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * This class performs a rudimentary detection of JSP-relevant tags in a JSP page.

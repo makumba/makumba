@@ -29,8 +29,8 @@ import javax.servlet.jsp.PageContext;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.GenericMakumbaTag;
+import org.makumba.commons.MultipleKey;
 import org.makumba.list.ListFormDataProvider;
-import org.makumba.util.MultipleKey;
 
 /**
  * This class provides utility methods for all makumba tags, such as

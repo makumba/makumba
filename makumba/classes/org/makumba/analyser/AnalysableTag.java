@@ -13,7 +13,7 @@ import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.util.MultipleKey;
+import org.makumba.commons.MultipleKey;
 
 /**
  * Extend this class in order to get analysis support for your tag.

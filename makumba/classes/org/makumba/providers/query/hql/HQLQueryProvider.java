@@ -24,14 +24,14 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.commons.ArrayMap;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernatePointer;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.db.sql.SQLPointer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.util.ArrayMap;
-import org.makumba.util.NamedResourceFactory;
-import org.makumba.util.NamedResources;
 
 public class HQLQueryProvider extends QueryProvider {
 

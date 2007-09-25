@@ -2,7 +2,7 @@ package org.makumba.db.hibernate;
 
 import java.util.HashSet;
 
-import org.makumba.util.ReservedKeywords;
+import org.makumba.commons.ReservedKeywords;
 
 public class HibernateUtils {
 

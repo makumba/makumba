@@ -31,7 +31,7 @@ package org.makumba;
  * 
  * @version $Id$
  * */
-public class LogicException extends org.makumba.util.WrappedException {
+public class LogicException extends org.makumba.commons.WrappedException {
 
     private static final long serialVersionUID = 1L;
 

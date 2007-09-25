@@ -29,13 +29,13 @@ import java.util.Hashtable;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.commons.formatters.FieldFormatter;
+import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.commons.formatters.dateFormatter;
+import org.makumba.commons.formatters.intEnumFormatter;
+import org.makumba.commons.formatters.ptrFormatter;
+import org.makumba.commons.formatters.timestampFormatter;
 import org.makumba.list.engine.ComposedQuery;
-import org.makumba.view.FieldFormatter;
-import org.makumba.view.RecordFormatter;
-import org.makumba.view.dateFormatter;
-import org.makumba.view.intEnumFormatter;
-import org.makumba.view.ptrFormatter;
-import org.makumba.view.timestampFormatter;
 
 public class RecordViewer extends RecordFormatter {
     public RecordViewer(ComposedQuery q) {

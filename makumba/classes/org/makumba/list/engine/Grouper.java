@@ -28,8 +28,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.makumba.util.ArrayMap;
-import org.makumba.util.MultipleKey;
+import org.makumba.commons.ArrayMap;
+import org.makumba.commons.MultipleKey;
 
 /**
  * This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is

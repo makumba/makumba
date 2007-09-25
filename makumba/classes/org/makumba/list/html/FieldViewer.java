@@ -26,8 +26,8 @@ package org.makumba.list.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
-import org.makumba.view.FieldFormatter;
-import org.makumba.view.RecordFormatter;
+import org.makumba.commons.formatters.FieldFormatter;
+import org.makumba.commons.formatters.RecordFormatter;
 
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter {

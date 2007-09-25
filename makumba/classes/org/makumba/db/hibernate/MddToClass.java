@@ -11,8 +11,8 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.ClassResource;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
-import org.makumba.util.ClassResource;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;

@@ -9,12 +9,12 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MultipleKey;
 import org.makumba.commons.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
-import org.makumba.util.MultipleKey;
 
 /**
  * The manager of a setValueQuery.

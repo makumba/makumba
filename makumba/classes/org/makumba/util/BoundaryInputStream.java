@@ -35,7 +35,7 @@ import org.makumba.MakumbaSystem;
  * TODO: when there is network congestion is necessary to sleep and read again
  *       an exception is thrown in this implementation
  *
- * @author cristi
+ * @author Cristian Bogdan
  * @version 0.01, 07/06/04
  * @see java.io.PushbackInputStream
  * @since Mak 0.5.10.3

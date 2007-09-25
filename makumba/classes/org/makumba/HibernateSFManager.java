@@ -12,9 +12,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.makumba.commons.ClassResource;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
-import org.makumba.util.ClassResource;
 import org.xml.sax.SAXException;
 
 /**

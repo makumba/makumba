@@ -44,9 +44,9 @@ import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.commons.StringUtils;
+import org.makumba.controller.DbConnectionProvider;
 import org.makumba.devel.TagExceptionServlet;
-import org.makumba.util.DbConnectionProvider;
-import org.makumba.util.StringUtils;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
