@@ -25,7 +25,7 @@ package org.makumba.forms.tags;
 
 import org.makumba.DataDefinition;
 import org.makumba.analyser.PageCache;
-import org.makumba.list.tags.QueryTag;
+import org.makumba.list.ListFormDataProvider;
 
 /**
  * mak:editForm tag
@@ -35,6 +35,8 @@ import org.makumba.list.tags.QueryTag;
 public class EditTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
+    
+    private ListFormDataProvider fdp = new ListFormDataProvider();
 
     // for input tags:
     public String getDefaultExpr(String fieldName) {
@@ -42,6 +44,6 @@ public class EditTag extends FormTagBase {
     }
 
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        return QueryTag.getQuery(pageCache, fdp.getParentListKey(this)).getLabelType(baseObject);
+        return fdp.getBasePointerType(this, pageCache, baseObject);
     }
 }
