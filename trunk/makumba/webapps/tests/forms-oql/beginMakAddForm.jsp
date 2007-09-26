@@ -4,13 +4,14 @@
 <head><title>Field types</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
 <mak:object from="test.Person p, p.indiv i" where="i.name='john'">
-    <mak:addForm object="p" field="address" action="testMakAddForm.jsp" method="post" clientSideValidation="false">
-    	<mak:input name="email"/>
+    <form:add object="p" field="address" action="testMakAddForm.jsp" method="post" clientSideValidation="false">
+    	<form:input name="email"/>
    	    <input type="submit" name="addemail" value="Add!">
-    </mak:addForm>
+    </form:add>
 </mak:object>
 
 </body>

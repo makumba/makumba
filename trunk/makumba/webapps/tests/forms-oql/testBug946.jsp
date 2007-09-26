@@ -4,10 +4,10 @@
 <head><title>Test Bug 946</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
-<mak:newForm type="test.Person" action="" clientSideValidation="false">
-  Gender: <mak:input field="gender" value="1" />
-</mak:newForm>
+<form:new type="test.Person" action="" clientSideValidation="false">
+  Gender: <form:input field="gender" value="1" />
+</form:new>
 
 </body>

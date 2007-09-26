@@ -4,7 +4,7 @@
 <head><title>Field types</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list-hql" prefix="mak" %>
 
 
 <mak:object from="test.Person p join p.indiv i" where="i.name='john'">

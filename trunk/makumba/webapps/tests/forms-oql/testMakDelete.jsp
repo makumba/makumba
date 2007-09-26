@@ -3,22 +3,22 @@
 <html>
 <head><title>Test Mak Delete </title></head>
 <body>
-
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
 <mak:list from="test.Person p">
   name: <mak:value expr="p.indiv.name"/><br>
-  !<mak:deleteLink object="p" >    <mak:action>testMakDelete.jsp?person=<mak:value expr='p'/></mak:action>    
-  DeleteLink  </mak:deleteLink>!<br>
-  !<mak:delete object="p" action="" widget="link" preserveWhitespace="true">
-    <mak:action>testMakDelete.jsp?person=<mak:value expr='p'/></mak:action>
+  !<form:deleteLink object="p" >    <form:action>testMakDelete.jsp?person=<mak:value expr='p'/></form:action>    
+  DeleteLink  </form:deleteLink>!<br>
+  !<form:delete object="p" action="" widget="link" preserveWhitespace="true">
+    <form:action>testMakDelete.jsp?person=<mak:value expr='p'/></form:action>
     DeleteLink2
-  </mak:delete>!
-  <mak:delete object="p" action="" widget="button" method="post"><mak:action>testMakDelete.jsp?person=<mak:value expr='p'/></mak:action>    Delete Button  </mak:delete>
-  <mak:delete object="p" action="" widget="button" method="post" preserveWhitespace="true">
-  <mak:action>testMakDelete.jsp?person=<mak:value expr='p'/></mak:action>    
+  </form:delete>!
+  <form:delete object="p" action="" widget="button" method="post"><form:action>testMakDelete.jsp?person=<mak:value expr='p'/></form:action>    Delete Button  </form:delete>
+  <form:delete object="p" action="" widget="button" method="post" preserveWhitespace="true">
+  <form:action>testMakDelete.jsp?person=<mak:value expr='p'/></form:action>    
   Delete Button 
-   </mak:delete><br>
+   </form:delete><br>
   <hr>
 </mak:list>
 

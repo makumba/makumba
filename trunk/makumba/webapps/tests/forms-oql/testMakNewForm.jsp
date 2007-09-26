@@ -4,12 +4,12 @@
 <head><title>Field types</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
-testNewFormStart!<mak:newForm type="test.Person" action="testMakNewForm.jsp" method="post" clientSideValidation="false">!endNewFormStart
-        testName!<mak:input name="indiv.name"/>!endName
+testNewFormStart!<form:new type="test.Person" action="testMakNewForm.jsp" method="post" clientSideValidation="false">!endNewFormStart
+        testName!<form:input name="indiv.name"/>!endName
         testSubmit!<input type="submit">!endSubmit
-testNewFormEnd!</mak:newForm>!endNewFormEnd
+testNewFormEnd!</form:new>!endNewFormEnd
 
 </body>
 </html>
