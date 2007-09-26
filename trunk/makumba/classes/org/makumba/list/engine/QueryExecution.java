@@ -174,11 +174,11 @@ public class QueryExecution {
             try {
                 return Integer.parseInt((String) o);
             } catch (NumberFormatException nfe) {
-                throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s);
+                throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s+", value: "+o+", type: "+o.getClass().getName());
             }
         }
-        if (!(o instanceof Integer || o instanceof Long))
-            throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s);
+        if (!(o instanceof Number) || ((Number) o).intValue()!=((Number) o).doubleValue())
+            throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s+ ", value: "+o+", type: "+o.getClass().getName());
         return ((Number) o).intValue();
     }
 
