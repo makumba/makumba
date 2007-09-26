@@ -36,8 +36,6 @@ public class EditTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
     
-    private ListFormDataProvider fdp = new ListFormDataProvider();
-
     // for input tags:
     public String getDefaultExpr(String fieldName) {
         return baseObject + "." + fieldName;

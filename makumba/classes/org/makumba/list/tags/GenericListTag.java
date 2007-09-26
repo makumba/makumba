@@ -31,6 +31,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.ListFormDataProvider;
+import org.makumba.providers.FormDataProvider;
 
 /**
  * This class provides utility methods for all makumba tags, such as
@@ -55,7 +56,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
 
     public static final String DS_ATTR = "org.makumba.database";
     
-    protected ListFormDataProvider fdp = new ListFormDataProvider();
+    protected FormDataProvider fdp = new ListFormDataProvider();
 
     @Override
     public int doEndTag() throws JspException {
