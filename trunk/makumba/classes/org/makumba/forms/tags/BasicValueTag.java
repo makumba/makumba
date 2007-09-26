@@ -38,8 +38,8 @@ import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.controller.http.RequestAttributes;
 import org.makumba.forms.html.dateEditor;
-import org.makumba.list.ListFormDataProvider;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.FormDataProvider;
 import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 /**
@@ -64,7 +64,23 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
     public String expr = null;
     
-    protected ListFormDataProvider fdp = new ListFormDataProvider();
+    protected FormDataProvider fdp;
+
+    public BasicValueTag() {
+        // TODO move this somewhere else
+       try {
+        this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+    } catch (InstantiationException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+    }
 
     public void setValue(String value) {
         this.valueExprOriginal = value.trim();

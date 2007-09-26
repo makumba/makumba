@@ -10,12 +10,12 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
-import org.makumba.forms.tags.AddTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
+import org.makumba.providers.FormDataProvider;
 
 
 /**
@@ -26,20 +26,13 @@ import org.makumba.list.tags.QueryTag;
  * @author Manuel Gay
  * @version $Id: ListFormDataProvider.java,v 1.1 18.09.2007 18:31:07 Manuel Exp $
  */
-public class ListFormDataProvider {
+public class ListFormDataProvider implements FormDataProvider {
     
     private static final String[] dummyQuerySections = { null, null, null, null, null };
     
 
-    /**
-     * Computes data at the beginning of form analysis.
-     * 
-     * @param tag
-     *            the AnalysableTag for whom we do this
-     * @param pageCache
-     *            the pageCache of the current page
-     * @param ptrExpr
-     *            the base pointer expression
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onFormStartAnalyze(org.makumba.analyser.AnalysableTag, org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
         ValueComputer vc;
@@ -52,15 +45,8 @@ public class ListFormDataProvider {
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), vc);
     }
 
-    /**
-     * Computes data at the beginning of BasicValueTag analysis (InputTag, OptionTag)
-     * 
-     * @param tag
-     *            the AnalysableTag for whom we do this
-     * @param pageCache
-     *            the pageCache of the current page
-     * @param ptrExpr
-     *            the epxression of the base pointer
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onBasicValueStartAnalyze(org.makumba.analyser.AnalysableTag, boolean, org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onBasicValueStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String ptrExpr) {
             MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
@@ -91,28 +77,16 @@ public class ListFormDataProvider {
         }
     }
 
-    /**
-     * Computes data for analysis start in case of tags which aren't wrapped in a query context (of the kind mak:list).
-     * This is the case of InputTag and OptionTag in particular contexts (e.g. a newForm, which does not depend itself
-     * on data but where these tags need to fetch e.g. set values from a specific location).
-     * 
-     * @param tag
-     * @param pageCache
-     * @param expr
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onNonQueryStartAnalyze(org.makumba.analyser.AnalysableTag, boolean, org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onNonQueryStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String expr) {
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
             getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache), expr, pageCache));
     }
 
-    /**
-     * Computes data at the end of form analysis.
-     * 
-     * @param tag
-     *            the AnalysableTag for whom we do this
-     * @param pageCache
-     *            the pageCache of the current page
-     * @return the {@link FieldDefinition} corresponding to the object the tag is based on
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onFormEndAnalyze(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache)
      */
     public void onFormEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(GenericListTag.QUERY, tagKey);
@@ -120,27 +94,15 @@ public class ListFormDataProvider {
             dummy.analyze();
     }
 
-    /**
-     * Computes data at the end of BasicValueTag analysis (InputTag, OptionTag)
-     * 
-     * @param tag
-     *            the AnalysableTag for whom we do this
-     * @param pageCache
-     *            the pageCache of the current page
-     * @return the {@link FieldDefinition} corresponding to the object the tag is based on
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onBasicValueEndAnalyze(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache)
      */
     public FieldDefinition onBasicValueEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         return getTypeOnEndAnalyze(tagKey, pageCache);
     }
 
-    /**
-     * Computes data at the beginning of form runtime.
-     * 
-     * @param tag the FormTag that starts running
-     * @param pageCache the pageCache of the current page
-     * @param pageContext the pageContext in which the form is
-     * @return the base pointer expression corresponding to the current tag
-     * @throws LogicException
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onFormStartTag(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, javax.servlet.jsp.PageContext)
      */
     public void onFormStartTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) throws LogicException {
         // if we have a dummy query, we simulate an iteration
@@ -151,6 +113,9 @@ public class ListFormDataProvider {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#onFormEndTag(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, javax.servlet.jsp.PageContext)
+     */
     public void onFormEndTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) {
         // if we have a dummy query, we simulate end iteration
         if (pageCache.retrieve(GenericListTag.QUERY, tagKey) != null)
@@ -158,14 +123,8 @@ public class ListFormDataProvider {
 
     }
 
-    /**
-     * Computes the type of the field based on the information collected at analysis.
-     * 
-     * @param tag
-     *            the running tag
-     * @param pageCache
-     *            the pageCache of the current page
-     * @return a {@link FieldDefinition} indicating the type of what we are interested in
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#getTypeOnEndAnalyze(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache)
      */
     public FieldDefinition getTypeOnEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
@@ -173,17 +132,16 @@ public class ListFormDataProvider {
         return vc.getType();
     }
     
-    /**
-     * Gives the type corresponding to the base object of a tag, based on its name
-     * @param tag the tag for which we need to discover the tag
-     * @param pageCache the page cache of the current page
-     * @param baseObject the label of the object we want to discover
-     * @return the {@link DataDefinition} corresponding to the type of the object
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#getBasePointerType(org.makumba.analyser.AnalysableTag, org.makumba.analyser.PageCache, java.lang.String)
      */
     public DataDefinition getBasePointerType(AnalysableTag tag, PageCache pageCache, String baseObject) {
         return QueryTag.getQuery(pageCache, getParentListKey(tag)).getLabelType(baseObject);
      }
 
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#computeBasePointer(org.makumba.commons.MultipleKey, javax.servlet.jsp.PageContext)
+     */
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
 
         Object o = ((ValueComputer) GenericListTag.getPageCache(pageContext).retrieve(GenericListTag.VALUE_COMPUTERS,
@@ -193,30 +151,15 @@ public class ListFormDataProvider {
         return ((Pointer) o).toExternalForm();
     }
 
-    /**
-     * Returns the value of the currently running tag, for Input and Option tags.
-     * 
-     * @param tag
-     *            the AnalysableTag that is currently running
-     * @param pageCache
-     *            the pageCache of the current page
-     * @return the value corresponding to the tag.
-     * @throws LogicException
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#getValue(org.makumba.commons.MultipleKey, javax.servlet.jsp.PageContext, org.makumba.analyser.PageCache)
      */
     public Object getValue(MultipleKey tagKey, PageContext pageContext, PageCache pageCache) throws LogicException {
         return ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
     }
 
-    /**
-     * Gets the type of an input tag
-     * 
-     * @param base
-     *            TODO
-     * @param fieldName
-     *            the name of the field of which the type should be returned
-     * @param pageCache
-     *            the page cache of the current page
-     * @return A FieldDefinition corresponding to the type of the input field
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#getInputTypeAtAnalysis(org.makumba.DataDefinition, java.lang.String, org.makumba.analyser.PageCache)
      */
     public FieldDefinition getInputTypeAtAnalysis(DataDefinition dd, String fieldName, PageCache pageCache) {
         if (dd == null)
@@ -238,6 +181,9 @@ public class ListFormDataProvider {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.makumba.list.FormDataProvider#getParentListKey(org.makumba.analyser.AnalysableTag)
+     */
     public MultipleKey getParentListKey(AnalysableTag tag) {
         return QueryTag.getParentListKey(tag, null);
     }
