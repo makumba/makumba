@@ -47,23 +47,43 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
-    static String[] tags = { "value", "org.makumba.list.tags.ValueTag", "list",
-            "org.makumba.list.tags.QueryTag", "object", "org.makumba.list.tags.ObjectTag", "form",
-            "org.makumba.forms.tags.FormTagBase", "newForm", "org.makumba.forms.tags.NewTag", "addForm",
-            "org.makumba.forms.tags.AddTag", "editForm", "org.makumba.forms.tags.EditTag", "deleteLink",
-            "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
-            "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
-            "org.makumba.forms.tags.OptionTag", "if", "org.makumba.list.tags.IfTag" };
+    static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list",
+            "org.makumba.list.tags.QueryTag", "object", "org.makumba.list.tags.ObjectTag",
+            "if", "org.makumba.list.tags.IfTag" };
+    static String[] oldFormTags = {"form", "org.makumba.forms.tags.FormTagBase",
+        "newForm", "org.makumba.forms.tags.NewTag", "addForm",
+        "org.makumba.forms.tags.AddTag", "editForm", "org.makumba.forms.tags.EditTag", "deleteLink",
+        "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
+        "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
+        "org.makumba.forms.tags.OptionTag"};
+    static String[] formTags = { "form", "org.makumba.forms.tags.FormTagBase",
+        "new", "org.makumba.forms.tags.NewTag", "add", "org.makumba.forms.tags.AddTag", "edit",
+        "org.makumba.forms.tags.EditTag", "deleteLink",
+        "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
+        "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
+        "org.makumba.forms.tags.OptionTag"};
 
-    static final Map tagClasses = new HashMap();
+    static final Map<String, Class> tagClasses = new HashMap<String, Class>();
 
     /**
      * Puts the Makumba tags into a Map
      */
     static {
-        for (int i = 0; i < tags.length; i += 2)
+        for (int i = 0; i < listTags.length; i += 2)
             try {
-                tagClasses.put(tags[i], Class.forName(tags[i + 1]));
+                tagClasses.put(listTags[i], Class.forName(listTags[i + 1]));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        for (int i = 0; i < oldFormTags.length; i += 2)
+            try {
+                tagClasses.put(oldFormTags[i], Class.forName(oldFormTags[i + 1]));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        for (int i = 0; i < formTags.length; i += 2)
+            try {
+                tagClasses.put(formTags[i], Class.forName(formTags[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -78,13 +98,17 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      */
     class ParseStatus {
 
-        String makumbaPrefix;
+        String makumbaPrefix = new String("dummy_prefix"); //for old makumba and list
+        
+        String formPrefix = new String("dummy_prefix"); // for makumba forms
 
-        String makumbaURI;
+        String makumbaURI; // for old makumba and list
+        
+        String formMakumbaURI; // for makumba forms
 
-        List tags = new ArrayList();
+        List<AnalysableTag> tags = new ArrayList<AnalysableTag>();
 
-        List parents = new ArrayList();
+        List<AnalysableTag> parents = new ArrayList<AnalysableTag>();
 
         PageCache pageCache = new PageCache();
 
@@ -146,7 +170,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
          */
         public void end(TagData td) {
             String tagName = td.name;
-            if (!tagName.startsWith(makumbaPrefix))
+            if (!tagName.startsWith(makumbaPrefix) && !tagName.startsWith(formPrefix))
                 return;
 
             // checks if the tag was opened
@@ -156,8 +180,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 JspParseData.tagDataLine(td, sb);
                 throw new org.makumba.ProgrammerError(sb.toString());
             }
+            
+            if(tagName.startsWith(makumbaPrefix)) {
+                tagName = tagName.substring(makumbaPrefix.length() + 1);
+            } else if(tagName.startsWith(formPrefix)) {
+                tagName = tagName.substring(formPrefix.length() + 1);
+            }
 
-            tagName = tagName.substring(makumbaPrefix.length() + 1);
             AnalysableTag t = (AnalysableTag) parents.get(parents.size() - 1);
 
             // if the end and start of the tag are not the same kind of tag
@@ -209,22 +238,54 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     /**
      * Performs analysis for a system tag
      * 
+     * FIXME this should be thought of much more
+     * 
      * @param td
      *            the TagData holding the information
      * @param status
      *            the status of the parsing
      */
     public void systemTag(TagData td, Object status) {
+        
+        // JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
         if (td.name.equals("taglib")) {
-            // JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-            if (td.attributes.get("uri") != null
-                    && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
-                ((ParseStatus) status).makumbaPrefix = (String) td.attributes.get("prefix");
-                ((ParseStatus) status).makumbaURI = (String) td.attributes.get("uri");
-                if (((ParseStatus) status).makumbaURI.equals("http://www.makumba.org/presentation")) {
-                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
-                } else { // every other makumba.org tag-lib is treated to be hibernate
-                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "hql");
+            
+            // we check if this is a Makumba taglib declaration
+            if (td.attributes.get("uri") != null && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
+                String prefix = (String) td.attributes.get("prefix");
+                String URI = (String) td.attributes.get("uri");
+
+                // if this is an old makumba system-tag or a OQL list
+                if (URI.equals("http://www.makumba.org/presentation")
+                        || URI.equals("http://www.makumba.org/list")) {
+                    ((ParseStatus) status).makumbaPrefix = prefix;
+                    ((ParseStatus) status).makumbaURI = URI;
+                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
+                        MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
+
+                    // if this is a hibernate tag or HQL list
+                } else if (URI.equals("http://www.makumba.org/view-hql")
+                        || URI.equals("http://www.makumba.org/hibernate")
+                        || URI.equals("http://www.makumba.org/list-hql")) {
+                    ((ParseStatus) status).makumbaPrefix = prefix;
+                    ((ParseStatus) status).makumbaURI = URI;
+                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
+                        MakumbaJspAnalyzer.QUERY_LANGUAGE, "hql");
+
+                    // if this is a forms declaration
+                } else if (URI.equals("http://www.makumba.org/forms")) {
+                    ((ParseStatus) status).formPrefix = prefix;
+                    ((ParseStatus) status).formMakumbaURI = URI;
+                    
+                    // FIXME: here we actually shouldn't store a query language because that's the list's business
+                    // however if there's a page that doesn't use lists but only forms, we have to do it because
+                    // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
+                    
+                    if(((ParseStatus) status).pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE) == null) {
+                        ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
+                            MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
+                    }
+                    
                 }
             }
         }
@@ -239,10 +300,18 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      *            the status of the parsing
      */
     public void simpleTag(TagData td, Object status) {
-        String prefix = ((ParseStatus) status).makumbaPrefix + ":";
-        if (!td.name.startsWith(prefix))
+        String makumbaPrefix = ((ParseStatus) status).makumbaPrefix + ":";
+        String formsPrefix = ((ParseStatus) status).formPrefix + ":";
+        if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix))
             return;
-        Class c = (Class) tagClasses.get(td.name.substring(prefix.length()));
+        String tagName = "";
+        if(td.name.startsWith(makumbaPrefix)) {
+            tagName = td.name.substring(makumbaPrefix.length());
+        } else if(td.name.startsWith(formsPrefix)) {
+            tagName = td.name.substring(formsPrefix.length());
+        }
+        
+        Class c = (Class) tagClasses.get(tagName);
         if (c == null)
             return;
         AnalysableTag.analyzedTag.set(td);
