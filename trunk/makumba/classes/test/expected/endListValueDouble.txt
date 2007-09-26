@@ -1,0 +1,15 @@
+
+
+<html>
+<head><title>Field types</title></head>
+<body>
+
+
+
+
+
+  testWeight!85.7!endWeight<br>
+
+
+</body>
+</html>

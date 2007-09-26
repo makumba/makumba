@@ -187,36 +187,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void testTomcat(){}
 	
-	
-
-	protected String removeNewlines(String line) {
-		String parsed = line;
-		parsed = parsed.replaceAll("[\n\r]*", "");
-		return parsed;
-	}
-	protected String removeMakumbaResponder(String line) {		
-		String parsed = line;		
-		parsed = parsed.replaceAll("value=\"-?[0-9]*\"", "");
-		return parsed;
-	}
-	protected String removeMakumbaBase(String line) {		
-		String parsed = line;		
-		parsed = parsed.replaceAll("value=\"[0-9a-zA-Z]*\"", "");
-		return parsed;
-	}
-	protected String removeLabelStuff(String line) {
-		String parsed = line;
-		parsed = parsed.replaceAll("id=\"AutoLabel_[0-9]*\"", "");
-		parsed = parsed.replaceAll("<LABEL for=\"AutoLabel_[0-9]*\">", "");
-		parsed = parsed.replaceAll("</LABEL>", "");
-		return parsed;		
-	}
-	protected String removeTabs(String line) {
-		String parsed = line;
-		parsed = parsed.replaceAll(">[\t]*<", "><");
-		return parsed;
-	}
-	
 	public void testMakNewForm() throws ServletException, IOException {
 		pageContext.include("forms-oql/testMakNewForm.jsp");
 	}

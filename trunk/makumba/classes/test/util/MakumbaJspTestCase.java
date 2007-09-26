@@ -98,10 +98,10 @@ public class MakumbaJspTestCase extends JspTestCase {
      * Method that helps to fetch the result of a test, on the first run. Just pass it the expected result, it will
      * store it automatically. Don't forget to remove it after the first time!
      * 
-     * @param result
+     * @param output
      *            the result (HTML code) of the page that was ran correctly.
      */
-    protected void fetchValidTestResult(String result) {
+    protected void fetchValidTestResult(String output) {
 
         // first we retrieve the name of the method which calls us
         String testName = new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName();
@@ -117,7 +117,7 @@ public class MakumbaJspTestCase extends JspTestCase {
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(f));
-            out.write(result);
+            out.write(output);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
