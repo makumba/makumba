@@ -4,7 +4,7 @@
 <head><title>Person list</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list-hql" prefix="mak" %>
 
 Person:
 <br>

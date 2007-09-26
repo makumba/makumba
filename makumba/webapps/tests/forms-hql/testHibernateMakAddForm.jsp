@@ -3,8 +3,8 @@
 <html>
 <head><title>Field types</title></head>
 <body>
-
-<%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list-hql" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
 <mak:object from="test.Person p" where="p.indiv.name='john'">
 	testEmail!<mak:list from=" IN (p.address) a">

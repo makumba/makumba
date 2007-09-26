@@ -3,18 +3,18 @@
 <html>
 <head><title>Field types</title></head>
 <body>
-
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/list" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
 
 <mak:object from="test.Person p, p.indiv i" where="i.name='john'">
-    testMakEditFormStart!<mak:editForm object="p" action="testMakEditForm.jsp" method="post" clientSideValidation="false">!endMakEditFormStart
-    	testName!<mak:input name="indiv.name" />!endName
-        testSurname!<mak:input name="indiv.surname" type="password" maxlength="5" />!endSurname
-        testGender!<mak:input name="gender" type="tickbox" />!endGender
-        testBirthdate!<mak:input name="birthdate" format="yyyy-MM-dd" calendarEditor="false" />!endBirthdate
-        testComment!<mak:input name="comment" />!endComment
-        testWeight!<mak:input name="weight" />!endWeight
-    testMakEditFormEnd!</mak:editForm>!endMakEditFormEnd
+    testMakEditFormStart!<form:edit object="p" action="testMakEditForm.jsp" method="post" clientSideValidation="false">!endMakEditFormStart
+    	testName!<form:input name="indiv.name" />!endName
+        testSurname!<form:input name="indiv.surname" type="password" maxlength="5" />!endSurname
+        testGender!<form:input name="gender" type="tickbox" />!endGender
+        testBirthdate!<form:input name="birthdate" format="yyyy-MM-dd" calendarEditor="false" />!endBirthdate
+        testComment!<form:input name="comment" />!endComment
+        testWeight!<form:input name="weight" />!endWeight
+    testMakEditFormEnd!</form:edit>!endMakEditFormEnd
 </mak:object>
 
 </body>
