@@ -54,7 +54,10 @@ public class HQLQueryProvider extends QueryProvider {
     public void init(String db) {
         super.init(db);
         sf = (SessionFactory) org.makumba.db.Database.getDatabase(db).getHibernateSessionFactory();
-
+        // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
+        session = sf.openSession();
+        session.setCacheMode(CacheMode.IGNORE);
+        transaction = session.beginTransaction();
     }
 
     @Override
@@ -63,6 +66,7 @@ public class HQLQueryProvider extends QueryProvider {
 
         HqlAnalyzer analyzer = HQLQueryProvider.getHqlAnalyzer(query);
         DataDefinition dataDef = analyzer.getProjectionType();
+        DataDefinition paramsDef = analyzer.getParameterTypes();
 
         // check the query for correctness (we do not allow "select p from Person p", only "p.id")
         for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
@@ -80,11 +84,7 @@ public class HQLQueryProvider extends QueryProvider {
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
         query = analyzer.getHackedQuery(query);
 
-        // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
-        session = sf.openSession();
-        session.setCacheMode(CacheMode.IGNORE);
-        transaction = session.beginTransaction();
-        Query q = session.createQuery(query);
+         Query q = session.createQuery(query);
 
         q.setCacheable(false); // we do not cache queries
 
@@ -95,17 +95,28 @@ public class HQLQueryProvider extends QueryProvider {
         if (args != null) {
             String[] queryParams = q.getNamedParameters();
             for (int i = 0; i < queryParams.length; i++) {
-                if (args.get(queryParams[i]) instanceof Vector) {
-                    q.setParameterList(queryParams[i], (Collection) args.get(queryParams[i]));
-                } else if (args.get(queryParams[i]) instanceof Date) {
-                    q.setParameter(queryParams[i], args.get(queryParams[i]), Hibernate.DATE);
-                } else if (args.get(queryParams[i]) instanceof Integer) {
-                    q.setParameter(queryParams[i], args.get(queryParams[i]), Hibernate.INTEGER);
-                } else if (args.get(queryParams[i]) instanceof Pointer) {
-                    q.setParameter(queryParams[i], new Integer((int) ((Pointer) args.get(queryParams[i])).longValue()),
+                String paramName = queryParams[i];               
+                Object paramValue = args.get(paramName);
+                
+                FieldDefinition paramDef= paramsDef.getFieldDefinition(paramName);
+                
+                //FIXME: check if the type of the actual parameter is in accordance with paramDef
+                if (paramValue instanceof Vector) {
+                    q.setParameterList(paramName, (Collection) paramValue);
+                } else if (paramValue instanceof Date) {
+                    q.setParameter(paramName, paramValue, Hibernate.DATE);
+                } else if (paramValue instanceof Integer) {
+                    q.setParameter(paramName, paramValue, Hibernate.INTEGER);
+                } else if (paramValue instanceof Pointer) {
+                    q.setParameter(paramName, new Integer((int) ((Pointer) paramValue).longValue()),
                         Hibernate.INTEGER);
                 } else { // we have any param type (most likely String)
-                    q.setParameter(queryParams[i], args.get(queryParams[i]));
+                    if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
+                        Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                        q.setParameter(paramName, new Integer((int) p.longValue()),
+                            Hibernate.INTEGER);
+                    }else
+                        q.setParameter(paramName, paramValue);
                 }
             }
         }
