@@ -60,16 +60,49 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     AST deriveParamExpr(AST pe) throws SemanticException {
 
-        return new ParamTypeAST(ExprTypeAST.PARAMETER);
+        return new ParamTypeAST(ExprTypeAST.PARAMETER, pe.getText());
     }
     
     AST deriveLogicalExpr(AST le) {
+        // we assume that the two sides of the logical operation have the same type, which helps us to determine the parameter type if one side is a parameter
+
+        // FIXME grammar should be adjusted to build ExprTypeASTs whenever possible so the if() below passes, one way to work on that is to uncomment the else
+        // FIXME :param in (subquery) should use the subquery type analysis, currently it doesn't pass this if()
+        // FIXME :param in (comstant list) should infer the type from the constants
+        // FIXME exists() doesn't pass the if, but it maybe isn't useful for parameter type inference as it's a unary operator
+        
+        if(le.getFirstChild() instanceof ExprTypeAST && le.getFirstChild().getNextSibling() instanceof ExprTypeAST){
+                        
+            ExprTypeAST firstValue = null;
+            ExprTypeAST secondValue = null;
+  
+            firstValue = (ExprTypeAST) le.getFirstChild();
+            secondValue = (ExprTypeAST) firstValue.getNextSibling();
+            
+            inferParam(firstValue, secondValue);
+        }
+        //else{ System.out.println(le+" "+le.getFirstChild()+" "+le.getFirstChild().getNextSibling()); }
+        
         //FIXME check if the IN operands are of the same type
         return new ExprTypeAST(ExprTypeAST.INT);
     }
     
+    private void inferParam(ExprTypeAST firstValue, ExprTypeAST secondValue) {
+        // FIXME look at OQL analyzer, this is done there
+        inferParam1(firstValue, secondValue);
+        inferParam1(secondValue, firstValue);
+    }
+
+    private void inferParam1(ExprTypeAST firstValue, ExprTypeAST secondValue) {
+        if(firstValue instanceof ParamTypeAST && secondValue!=null){
+            // FIXME: check whether we already had a type for this parameter, and if the two are compatible
+            paramTypes.put(firstValue.getText(), secondValue);
+        }
+    }
+
     AST deriveFunctionCallExpr(AST fc, AST e) {
         //FIXME put the initialization stuff in another class
+        //FIXME if a function parameter is a query parameter, assign its type
         Map methodTypes = new HashMap();
         String functionCall = fc.getText().toUpperCase();
         //String arguments = e.getFirstChild().getClass().getName();
@@ -114,6 +147,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
+        // FIXME: add arithmetic parameter inferences, see deriveLogicalExpr
         // case-when already returns an analyzed expression
         if(ae instanceof ExprTypeAST)
             return ae;
@@ -166,6 +200,10 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     
     public Map getLabelTypes() {
         return aliasTypes;
+    }
+
+    public Map getParameterTypes() {
+        return paramTypes;
     }
 
     public List getResult() {

@@ -59,7 +59,8 @@ tokens
 		  AST deriveFunctionCallExpr(AST fc, AST e) throws antlr.RecognitionException{  return fc; 	  	 }
 	
 	  java.util.Map aliasTypes= new java.util.HashMap();
-	  
+	   java.util.Map paramTypes= new java.util.HashMap();
+	  	  
 	  java.util.Stack stackAliases = new java.util.Stack();
 	  
 		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
@@ -504,7 +505,8 @@ addrExpr! [ boolean root ]
 // *** 		processIndex(#addrExpr);
 	}
 	| p:identifier {
-		#addrExpr = #p;
+		#addrExpr = new ObjectTypeAST(#p, aliasTypes);
+		
 		// *** resolve(#addrExpr);
 		// *** setRoot(#p);
 	}

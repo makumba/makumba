@@ -2,6 +2,7 @@ package org.makumba.db.hibernate.hql;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -21,7 +22,8 @@ import antlr.debug.misc.ASTFrame;
 
 public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
 
-    private DataDefinition result;
+    private DataDefinition projTypes;
+    private DataDefinition paramTypes;
 
     private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
     static {
@@ -95,9 +97,9 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
     }
 
     public synchronized DataDefinition getProjectionType() {
-        if (result != null)
-            return result;
-        result = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
+        if (projTypes != null)
+            return projTypes;
+        projTypes = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
         try {
             for (int i = 0; i < walker.getResult().size(); i++) {
 
@@ -108,23 +110,12 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
                 if (name == null) {
                     name = "col" + (i + 1);
                 }
-                FieldDefinition fd=null;
-                if (atom.getObjectType() == null) {
-                    if(atom.getExtraTypeInfo()!=null)
-                        fd=MakumbaSystem.makeFieldWithName(name, (FieldDefinition)atom.getExtraTypeInfo(), atom.getDescription());
-                    else
-                        fd= MakumbaSystem.makeFieldOfType(name, getTypeName(atom.getDataType()), atom
-                            .getDescription());
-                } else {
-                    fd= MakumbaSystem.makeFieldDefinition(name, "ptr " + atom.getObjectType() + ";"
-                            + atom.getDescription());
-                }
-                result.addField(fd);
+                projTypes.addField(makeField(name, atom));
             }
         } catch (RuntimeException e) {
             throw new OQLParseError("during analysis of query: " + query, e);
         }
-        return result;
+        return projTypes;
     }
 
     public DataDefinition getLabelType(String labelName) {
@@ -132,12 +123,39 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
     }
 
     public DataDefinition getParameterTypes() {
-        // not implemented
-        throw new UnsupportedOperationException("getParameterTypes");
+        if (paramTypes != null)
+            return paramTypes;
+        paramTypes = MakumbaSystem.getTemporaryDataDefinition("Parameters for " + query);
+        try {
+            for (Iterator<Map.Entry<String, ExprTypeAST>> i=walker.getParameterTypes().entrySet().iterator(); i.hasNext();) {
+                Map.Entry<String, ExprTypeAST> e= i.next();
+                
+                paramTypes.addField(makeField(e.getKey(), e.getValue()));
+            }
+        } catch (RuntimeException e) {
+            throw new OQLParseError("during analysis of query: " + query, e);
+        }
+        return paramTypes;
     }
 
+    private FieldDefinition makeField(String name, ExprTypeAST expr) {
+        FieldDefinition fd=null;
+        if (expr.getObjectType() == null) {
+            if(expr.getExtraTypeInfo()!=null)
+                fd=MakumbaSystem.makeFieldWithName(name, (FieldDefinition)expr.getExtraTypeInfo(), expr.getDescription());
+            else
+                fd= MakumbaSystem.makeFieldOfType(name, getTypeName(expr.getDataType()), expr
+                    .getDescription());
+        } else {
+            fd= MakumbaSystem.makeFieldDefinition(name, "ptr " + expr.getObjectType() + ";"
+                    + expr.getDescription());
+        }
+        return fd;
+    }
+    
+   
     public int parameterNumber() {
-        throw new UnsupportedOperationException("getParameterNumber");
+        return walker.getParameterTypes().size();
     }
 
     public int parameterAt(int index) {
