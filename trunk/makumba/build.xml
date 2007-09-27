@@ -8,17 +8,6 @@
 		</fileset>
 	</path>
 
-	<path id="list.class.path">
-		<fileset dir="lib">
-			<include name="**/*.jar" />
-			<exclude name="**/makumba.jar" />
-		</fileset>
-		<fileset dir="classes">
-			<include name="**/*.java" />
-		</fileset>
-	</path>
-
-
 	<!-- jikes as default compiler
        	<property name="build.compiler" value="jikes" />
  -->
@@ -512,8 +501,69 @@ package org.makumba]]>
 		<replacefilter token="bodycontent>" value="body-content>" />
 	</replace>
 </target>
+	
+	
+<target name="makeListSource" depends="clean">
+	<mkdir dir="source/list/classes"/>
+	<copy todir="source/list/classes">
+		<fileset dir="classes">
+			<include name="**/makumba/list/**" />
+		</fileset>			
+	</copy>
+	<mkdir dir="source/list/lib"/>
+	<copy todir="source/list/lib">
+		<fileset dir="lib">
+			<include name="*.jar" />
+			<exclude name="makumba*.jar"/>
+		</fileset>			
+	</copy>
+	<mkdir dir="source/list/META-INF"/>
+	<copy file="classes/META-INF/taglib-list-oql.tld" todir="source/list/META-INF" />
+	<copy file="classes/META-INF/taglib-list-hql.tld" todir="source/list/META-INF" />
+	<copy file="build-product.xml" tofile="source/list/build.xml" />
+	
+	<zip zipfile="source/makumba-list-src.zip">
+		<fileset dir="source/list" />
+	</zip>
+	
+	<delete includeEmptyDirs="true" failonerror="false">
+		<fileset dir="source/list" />
+	</delete>
+	
+</target>
 
+<target name="makeFormSource" depends="clean">
+	<mkdir dir="source/forms/classes"/>
+	<copy todir="source/forms/classes">
+		<fileset dir="classes">
+			<include name="**/makumba/forms/**" />
+		</fileset>			
+	</copy>
+	<mkdir dir="source/forms/lib"/>
+	<copy todir="source/forms/lib">
+		<fileset dir="lib">
+			<include name="*.jar" />
+			<exclude name="makumba*.jar"/>
+		</fileset>			
+	</copy>
+	<mkdir dir="source/forms/META-INF"/>
+	<copy file="classes/META-INF/taglib-forms.tld" todir="source/forms/META-INF" />
+	<copy file="build-product.xml" tofile="source/list/build.xml" />
+	
+	<zip zipfile="source/makumba-forms-src.zip">
+		<fileset dir="source/forms" />
+	</zip>
+	
+	<delete includeEmptyDirs="true" failonerror="false">
+		<fileset dir="source/forms" />
+	</delete>
+	
+</target>
+	
+<target name="makeCommonsCompiled" depends="jarRest">
+	<mkdir dir="source/commons"/>
+	<copy file="lib/makumba-commons.jar" todir="source/commons">
+	</copy>
+</target>
 
 </project>
-
-
