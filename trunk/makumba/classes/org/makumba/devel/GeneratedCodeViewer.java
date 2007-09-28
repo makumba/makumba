@@ -26,7 +26,9 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.commons.Configuration;
 import org.makumba.controller.Logic;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -153,7 +155,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** Starts the code generation. */
     public void generateCode() throws IOException {
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
 
             // check what code types are selected
             typeParam = request.getParameter("type");
@@ -209,7 +211,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     String logicPath = classesDirectory.getPath() + logicDir;
                     System.out.println(new File(logicDir).getAbsolutePath());
                     if (new File(logicPath).mkdirs()) {
-                        MakumbaSystem.getMakumbaLogger("devel.codeGenerator").info(
+                        java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator").info(
                             "Created logic directory " + logicPath);
                     }
                     boolean hasSuperLogic = new File(logicPath + "Logic.java").exists();

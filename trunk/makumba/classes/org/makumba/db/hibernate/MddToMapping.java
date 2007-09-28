@@ -25,6 +25,7 @@ import org.hibernate.cfg.Configuration;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -37,12 +38,16 @@ public class MddToMapping extends HibernateUtils {
     private String generatedMappingPath = "";
 
     private String prefix = "";
+    
+    private org.makumba.commons.Configuration c = new org.makumba.commons.Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
 
     public MddToMapping(Vector v, Configuration cfg, String generationPath, String prefix)
             throws TransformerConfigurationException, SAXException {
         managePaths(generationPath, prefix);
         for (int i = 0; i < v.size(); i++)
-            generateMapping(MakumbaSystem.getDataDefinition((String) v.elementAt(i)), cfg);
+            generateMapping(ddp.getDataDefinition((String) v.elementAt(i)), cfg);
         while (!mddsToDo.isEmpty())
             generateMapping((DataDefinition) mddsToDo.removeFirst(), cfg);
     }

@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
@@ -262,7 +261,7 @@ public class TagExceptionServlet extends HttpServlet {
                 if (i != -1)
                     s = s.substring(0, i);
                 else
-                    MakumbaSystem.getMakumbaLogger("devel").severe("servlet or filter call not found in stacktrace");
+                    java.util.logging.Logger.getLogger("org.makumba." + "devel").severe("servlet or filter call not found in stacktrace");
             }
 
         }

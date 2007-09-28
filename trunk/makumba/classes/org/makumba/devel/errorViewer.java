@@ -123,7 +123,7 @@ public class errorViewer extends LineViewer {
                 try {
                     lineNr = Integer.valueOf(lineNumberText);
                 } catch (NumberFormatException e) {
-                    MakumbaSystem.getMakumbaLogger("devel").warning("Error in error viewer: " + e.getMessage());
+                    java.util.logging.Logger.getLogger("org.makumba." + "devel").warning("Error in error viewer: " + e.getMessage());
                     e.printStackTrace();
                 }
             }

@@ -12,6 +12,8 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 import javassist.CannotCompileException;
@@ -32,11 +34,16 @@ public class MddToClass extends HibernateUtils {
     private List mddsDone = new ArrayList();
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
+    
+    private Configuration c = new Configuration();
+    
+    private DataDefinitionProvider ddp;
 
     public MddToClass(Vector v, String generationPath)throws CannotCompileException, NotFoundException, IOException{
+      this.ddp = new DataDefinitionProvider(c);
       this.generatedClassPath = generationPath;
       for(int i=0; i<v.size(); i++)
-        generateClass(MakumbaSystem.getDataDefinition((String)v.elementAt(i)));
+        generateClass(ddp.getDataDefinition((String)v.elementAt(i)));
       while (!mddsToDo.isEmpty()) 
             generateClass((DataDefinition)mddsToDo.removeFirst());
         while (!appendToClass.isEmpty()) {
@@ -45,6 +52,7 @@ public class MddToClass extends HibernateUtils {
         }
     }
 	public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException, IOException {
+        this.ddp = new DataDefinitionProvider(c);
         this.generatedClassPath = generationPath;
         generateClass(dd);
 		while (!mddsToDo.isEmpty()) {

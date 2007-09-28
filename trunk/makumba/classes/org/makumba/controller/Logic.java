@@ -80,13 +80,13 @@ public class Logic {
                 nameToObject.put(className, controller);
                 return controller;
             } catch (ClassNotFoundException e) {
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             } catch (InstantiationException e) {
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             } catch (IllegalAccessException e) {
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             }
         }
@@ -215,7 +215,7 @@ public class Logic {
             } else
                 msg += "\nFound class " + lastFound.getClass().getName();
 
-            MakumbaSystem.getMakumbaLogger("controller").info(msg);
+            java.util.logging.Logger.getLogger("org.makumba." + "controller").info(msg);
             ((Hashtable) supplementary).put(p, msg);
             Object foundClass = nameToObject.get(lastFound.getClass().getName());
             if (foundClass != null) {
@@ -340,7 +340,7 @@ public class Logic {
                 throw new LogicInvocationError(g);
             }
         } else {
-            MakumbaSystem.getMakumbaLogger("controller").warning(
+            java.util.logging.Logger.getLogger("org.makumba." + "controller").warning(
                 "requiredAttributes() is deprecated. Use checkAttributes(Attributes a, Database db) instead");
             Object attrs = null;
             try {

@@ -42,6 +42,9 @@ import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.commons.Configuration;
+import org.makumba.commons.NamedResources;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Testing table operations
@@ -73,6 +76,10 @@ public class table extends TestCase {
 	public void tearDown() {
 		db.close();
 	}
+    
+    private Configuration config = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
 
 	static Pointer ptr, ptr1;
 
@@ -118,13 +125,13 @@ public class table extends TestCase {
 			try {
 				Vector v1 = db.executeQuery("SELECT t FROM test.validMdds."
 						+ (String) v.elementAt(i) + " t", null);
-				Vector fields = MakumbaSystem.getDataDefinition(
+				Vector fields = ddp.getDataDefinition(
 						"test.validMdds." + (String) v.elementAt(i))
 						.getFieldNames();
 				String what = "";
 				for (Enumeration e = fields.elements(); e.hasMoreElements();) {
 					String fname = (String) e.nextElement();
-					String ftype = MakumbaSystem.getDataDefinition(
+					String ftype = ddp.getDataDefinition(
 							"test.validMdds." + (String) v.elementAt(i))
 							.getFieldDefinition(fname).getDataType();
 					// System.out.println(fname+": "+ftype);
@@ -623,7 +630,8 @@ public class table extends TestCase {
 			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
 	
 	);
-			 MakumbaSystem.close();
+			 java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+            NamedResources.cleanup();
 		}
 	}
 	}

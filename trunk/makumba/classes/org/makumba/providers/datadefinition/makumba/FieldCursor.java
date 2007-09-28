@@ -229,7 +229,7 @@ public class FieldCursor {
 
         DataDefinition ri = null;
         try {
-            ri = MakumbaSystem.getDataDefinition(path);
+            ri = RecordInfo.getRecordInfo(path);
         } catch (org.makumba.DataDefinitionNotFoundError e) {
             // might want to check for same-package stuff
         }

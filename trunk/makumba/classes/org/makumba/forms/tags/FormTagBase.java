@@ -41,6 +41,7 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FormResponder;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DataDefinitionProviderInterface;
 import org.makumba.providers.FormDataProvider;
 import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
@@ -92,7 +93,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     protected FormDataProvider fdp;
     
     //  TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = MakumbaDataDefinitionFactory.getInstance();
+    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
     
     public FormTagBase() {
         //TODO move this somewhere else
@@ -406,7 +407,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null)
-                MakumbaSystem.getMakumbaLogger("taglib.performance").fine(
+                java.util.logging.Logger.getLogger("org.makumba." + "taglib.performance").fine(
                     "form time: " + ((new java.util.Date().getTime() - starttime)));
         } catch (IOException e) {
             throw new JspException(e.toString());

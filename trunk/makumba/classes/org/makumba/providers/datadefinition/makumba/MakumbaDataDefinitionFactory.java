@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DataDefinitionProviderInterface;
 
 /**
  * This class is the Makumba implementation of a data definition provider, based on MDD files. TODO refactor together
@@ -13,15 +13,12 @@ import org.makumba.providers.DataDefinitionProvider;
  * @author Manuel Gay
  * @version $Id$
  */
-public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
-
-    private static DataDefinitionProvider singleton = null;
+public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInterface {
 
     /**
      * {@inheritdoc} The type a.b.C will generate a lookup for the file CLASSPATH/a/b/C.mdd and then for
      * CLASSPATH/dataDefinitions/a/b/C.mdd
      */
-    @Override
     public DataDefinition getDataDefinition(String typeName) {
         return RecordInfo.getRecordInfo(typeName);
     }
@@ -29,7 +26,6 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public DataDefinition getVirtualDataDefinition(String name) {
         return new RecordInfo(name);
     }
@@ -37,7 +33,6 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public FieldDefinition makeFieldDefinition(String name, String definition) {
         return FieldInfo.getFieldInfo(name, definition, true);
     }
@@ -45,7 +40,6 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public FieldDefinition makeFieldOfType(String name, String type) {
         return FieldInfo.getFieldInfo(name, type, false);
     }
@@ -53,7 +47,6 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public FieldDefinition makeFieldOfType(String name, String type, String description) {
         return FieldInfo.getFieldInfo(name, type, false, description);
     }
@@ -61,7 +54,6 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type) {
         return FieldInfo.getFieldInfo(name, type, false);
     }
@@ -69,23 +61,10 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     /**
      * {@inheritdoc}
      */
-    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return FieldInfo.getFieldInfo(name, type, false, description);
     }
 
-    public static DataDefinitionProvider getInstance() {
-        if (singleton == null) {
-            singleton = new MakumbaDataDefinitionFactory();
-        }
-        return singleton;
-    }
-
-    private MakumbaDataDefinitionFactory() {
-
-    }
-
-    @Override
     public Vector getDataDefinitionsInLocation(String location) {
         return mddsInDirectory(location);
     }
@@ -103,7 +82,7 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
         return mdds;
     }
 
-    private void fillMdds(int baselength, java.io.File dir, java.util.Vector mdds) {
+    private void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
         if (dir.isDirectory()) {
             String[] list = dir.list();
             for (int i = 0; i < list.length; i++) {
@@ -120,6 +99,10 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
                 }
             }
         }
+    }
+    
+    public MakumbaDataDefinitionFactory() {
+        
     }
 
 }

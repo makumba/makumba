@@ -330,7 +330,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         
         holder = analyzer.endPage(holder);
 
-        org.makumba.MakumbaSystem.getMakumbaLogger("javaparser.time").info(
+        java.util.logging.Logger.getLogger("org.makumba." + "javaparser.time").info(
                 "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
     }
 
@@ -407,7 +407,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
                             currentContent.add(new DefinitionPoint(className, end.getPosition()));
                             Collections.sort(currentContent);
                             definedObjects.put(objectName, currentContent);
-                            MakumbaSystem.getMakumbaLogger("javaparser").finest(
+                            java.util.logging.Logger.getLogger("org.makumba." + "javaparser").finest(
                                 "Put defined object: " + objectName + ", values: " + currentContent);
                         }
                     }

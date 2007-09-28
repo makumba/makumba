@@ -24,29 +24,21 @@
 package org.makumba;
 
 
-import org.makumba.commons.NamedResources;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
-    /** DataDefinition provider * */
-    private static DataDefinitionProvider MDDFactory = MakumbaDataDefinitionFactory.getInstance();
+    /** DataDefinition provider - FIXME should read which one it is from config */
+    private static DataDefinitionProvider MDDFactory = new DataDefinitionProvider();
 
     /** The date at which makumba is loaded */
     static public final java.util.Date loadingTime = new java.util.Date();
-
-    /** cleanup all the makumba resources at the end of a makumba program or at e.g. servlet context reload */
-    public static void close() {
-        org.makumba.MakumbaSystem.getMakumbaLogger("system").info("destroying makumba caches");
-        NamedResources.cleanup();
-    }
 
     /**
      * Get information about the makumba cache sizes.
@@ -363,7 +355,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getMakumbaLogger(String suffix) {
-        return java.util.logging.Logger.getLogger(loggingRoot + "." + suffix);
+        return java.util.logging.Logger.getLogger("org.makumba." + suffix);
     }
 
     /**
@@ -374,7 +366,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getLogger(String suffix) {
-        return getMakumbaLogger("apps." + suffix);
+        return java.util.logging.Logger.getLogger("org.makumba." + "apps." + suffix);
     }
 
     /**
@@ -385,7 +377,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getLogger() {
-        return getMakumbaLogger("apps");
+        return java.util.logging.Logger.getLogger("org.makumba." + "apps");
     }
 
     /**

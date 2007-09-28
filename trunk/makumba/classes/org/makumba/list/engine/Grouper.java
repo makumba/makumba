@@ -97,7 +97,7 @@ public class Grouper extends Hashtable {
         long diff = (new Date().getTime() - l);
 
         // if(diff>20)
-        org.makumba.MakumbaSystem.getMakumbaLogger("db.query.performance.grouping").fine("grouping " + diff + " ms");
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.performance.grouping").fine("grouping " + diff + " ms");
     }
 
     int max;

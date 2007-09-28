@@ -30,14 +30,20 @@ import java.util.Vector;
 import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.providers.DataDefinitionProvider;
 
 public class ptrEditor extends choiceEditor {
 
     private static final class SingletonHolder {
         static final FieldEditor singleton = new ptrEditor();
     }
+    
+    private Configuration config = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
 
     /** Don't use this, use getInstance() */
     protected ptrEditor() {
@@ -83,7 +89,7 @@ public class ptrEditor extends choiceEditor {
                                 + ") has a null value for the title-field ("
                                 + ptr.getType()
                                 + "."
-                                + MakumbaSystem.getDataDefinition(ptr.getType()).getTitleFieldName()
+                                + ddp.getDataDefinition(ptr.getType()).getTitleFieldName()
                                 + "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
             }
             c.add(d.get("choice"), ttl.toString(), false, false);

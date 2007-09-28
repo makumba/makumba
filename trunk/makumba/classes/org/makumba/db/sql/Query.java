@@ -34,20 +34,23 @@ import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.NoSuchFieldException;
-import org.makumba.OQLAnalyzer;
+import org.makumba.commons.Configuration;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.sql.oql.QueryAST;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.oql.OQLQueryProvider;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.Query {
     
     QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
+    
+    private Configuration config = new Configuration();
+    
+    DataDefinitionProvider ddp = new DataDefinitionProvider(config);
     
     String query;
 
@@ -111,7 +114,7 @@ public class Query implements org.makumba.db.Query {
             if (s != null)
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
 
-            MakumbaSystem.getMakumbaLogger("db.query.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").fine("" + ps);
             java.util.Date d = new java.util.Date();
             ResultSet rs = null;
             try {
@@ -121,7 +124,7 @@ public class Query implements org.makumba.db.Query {
                 throw new DBError(se, com);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            MakumbaSystem.getMakumbaLogger("db.query.performance").fine("" + diff + " ms " + com);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.performance").fine("" + diff + " ms " + com);
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
@@ -147,7 +150,7 @@ public class Query implements org.makumba.db.Query {
     }
 
     void analyzeInsertIn(DataDefinition proj, org.makumba.db.Database db) {
-        DataDefinition insert = MakumbaSystem.getDataDefinition(insertIn);
+        DataDefinition insert = ddp.getDataDefinition(insertIn);
         for (Iterator i = proj.getFieldNames().iterator(); i.hasNext();) {
             String s = (String) i.next();
             if (insert.getFieldDefinition(s) == null) {

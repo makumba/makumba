@@ -3,8 +3,9 @@ package org.makumba.db.hibernate.hql;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
@@ -12,10 +13,13 @@ import antlr.SemanticException;
 
 public class MddObjectType implements ObjectType {
     
+    private Configuration config = new Configuration();
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
         if(field==null)
         try{
-            MakumbaSystem.getDataDefinition(type);
+            ddp.getDataDefinition(type);
             return type;
         }catch(DataDefinitionNotFoundError err){ return null; }
 
@@ -26,7 +30,7 @@ public class MddObjectType implements ObjectType {
             return type;
         } else if (field.startsWith("hibernate_")) {
             String ptrToCheck = field.substring(field.indexOf("_")+1);
-            DataDefinition ddPtr = MakumbaSystem.getDataDefinition(type);
+            DataDefinition ddPtr = ddp.getDataDefinition(type);
             FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
             if(fiPtr==null)
                 //throw new SemanticException("No such field \"" + field + "\" in type "+type);
@@ -37,7 +41,7 @@ public class MddObjectType implements ObjectType {
         }
 
         try {
-            dd = MakumbaSystem.getDataDefinition(type);
+            dd = ddp.getDataDefinition(type);
         } catch (DataDefinitionNotFoundError e) {
             //throw new SemanticException("No such MDD \"" + type + "\"");
             throw new ProgrammerError("No such MDD \"" + type + "\"");
@@ -74,11 +78,11 @@ public class MddObjectType implements ObjectType {
             //System.out.println("In SET: Trying to get field type: " + field + " from type " + type + " ...");
             //System.out.println(MakumbaSystem.getDataDefinition(foreign.getName()).getName());
             
-            return MakumbaSystem.getDataDefinition(foreign.getName()).getName();
+            return ddp.getDataDefinition(foreign.getName()).getName();
 
         } else
             //System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
-            return MakumbaSystem.getDataDefinition(type).getFieldDefinition(field);
+            return ddp.getDataDefinition(type).getFieldDefinition(field);
     }
 
     /** given a type descriptor, resolve it to an integer for type analysis */

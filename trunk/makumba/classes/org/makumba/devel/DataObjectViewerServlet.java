@@ -37,6 +37,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * /** This class shows a single object from the DB.<br>
@@ -64,7 +66,7 @@ public class DataObjectViewerServlet extends DataServlet {
         dataPointer = new Pointer(type, request.getParameter("ptr"));
 
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) {

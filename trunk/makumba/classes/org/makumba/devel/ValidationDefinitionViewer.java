@@ -33,10 +33,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.commons.Configuration;
 import org.makumba.controller.validation.ComparisonValidationRule;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -60,7 +61,7 @@ public class ValidationDefinitionViewer extends DefinitionViewer {
         String mddViewerPath = contextPath + "/dataDefinitions/" + virtualPath;
 
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
             try {
                 vd = dd.getValidationDefinition();
             } catch (MakumbaError pe) {

@@ -29,7 +29,9 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
 import org.makumba.db.Database;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
 import antlr.collections.AST;
@@ -41,6 +43,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+    
+    private Configuration config = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
 
 public QueryAST(){}
   public QueryAST(antlr.Token t) { super(t); }
@@ -90,16 +96,16 @@ public QueryAST(){}
   String oneProjectionLabel;
 
   /** projections */
-  Vector projections= new Vector();
+  Vector<Projection> projections= new Vector<Projection>();
   
   /** labels of the projections, given or attributed automatically */
   Vector projectionLabels;
 
   /** searcher for projection labels */
-  Hashtable projectionLabelSearch= new Hashtable();
+  Hashtable<String, Projection> projectionLabelSearch= new Hashtable<String, Projection>();
 
   /** parameters for this query */
-  Vector parameters= new Vector();
+  Vector<ParamAST> parameters= new Vector<ParamAST>();
 
   /** the type of the returned result */
   DataDefinition resultInfo;
@@ -217,16 +223,16 @@ public QueryAST(){}
   }
 
   /** asssociate each label to its makumba type */
-  Hashtable labels= new Hashtable();
+  Hashtable<String, DataDefinition> labels= new Hashtable<String, DataDefinition>();
 
   /** support aliases in query */
-  Hashtable aliases= new Hashtable();
+  Hashtable<String, String> aliases= new Hashtable<String, String>();
 
   /** the joins needed out of the label.field from this query */
-  Vector joins= new Vector();
+  Vector<Join> joins= new Vector<Join>();
 
   /** finder for joins in the form label.field, used in order not to repeat the same join */
-  Hashtable joinNames= new Hashtable();
+  Hashtable<String, String> joinNames= new Hashtable<String, String>();
 
   /** the four elements of a join: label1.field1 = label2.field2 */
   class Join
@@ -323,7 +329,7 @@ public QueryAST(){}
     DataDefinition type=null;
     try {
       // if it's a type, we just add it as such
-      type= MakumbaSystem.getDataDefinition(iterator);
+      type= ddp.getDataDefinition(iterator);
     }catch(org.makumba.DataDefinitionNotFoundError e){}
     catch(org.makumba.DataDefinitionParseError p){ throw new antlr.RecognitionException(p.getMessage()); }
     if(type!=null)
@@ -370,7 +376,7 @@ public QueryAST(){}
   }
 
   /** expressions, for type analysis */
-  Vector expressions= new Vector();
+  Vector<AST> expressions= new Vector<AST>();
 
   public void addExpression(AST token)
   {
@@ -390,7 +396,7 @@ public QueryAST(){}
   }
 
   /** makumba identifiers label.field or label detected inside expressions */
-  Vector expressionIdentifiers= new Vector();
+  Vector<AST> expressionIdentifiers= new Vector<AST>();
 
   /** add a makumba identifier */
   public void addExpressionIdentifier(AST token)

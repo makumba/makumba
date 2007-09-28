@@ -28,10 +28,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
 import org.makumba.db.DBConnection;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * This class imports makumba objects from fields of Java objects. Imported classes have the opportunity to say what not
@@ -60,7 +63,7 @@ public class ObjectToRecord {
             } catch (NoSuchMethodException nsme) {
             }
 
-            this.type = MakumbaSystem.getDataDefinition(type);
+            this.type = (new DataDefinitionProvider(new Configuration())).getDataDefinition(type);
 
             Field no = null;
             try {
@@ -108,7 +111,7 @@ public class ObjectToRecord {
                     if (noImport.get(s) == null)
                         fields.put(s, f);
                 } else if (accountedImport.get(s) == null)
-                    MakumbaSystem.getMakumbaLogger("import").severe(
+                    java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
                         "No Java correspondent for " + type + "." + s + " in " + c.getName());
             }
             Field flds[] = c.getFields();
@@ -119,7 +122,7 @@ public class ObjectToRecord {
                     String s = flds[i].getName();
 
                     if (this.type.getFieldDefinition(s) == null && noImport.get(s) == null)
-                        MakumbaSystem.getMakumbaLogger("import").severe(
+                        java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
                             "No Makumba correspondent for " + c.getName() + "." + s + " in " + type);
                 }
             }
@@ -166,7 +169,7 @@ public class ObjectToRecord {
         } catch (InvocationTargetException ite) {
             ite.getTargetException().printStackTrace();
         } catch (org.makumba.InvalidValueException ive) {
-            MakumbaSystem.getMakumbaLogger("import").warning(ive.getMessage());
+            java.util.logging.Logger.getLogger("org.makumba." + "import").warning(ive.getMessage());
             return null;
         } catch (Throwable t) {
             t.printStackTrace();
@@ -184,7 +187,7 @@ public class ObjectToRecord {
             i = new Integer(Integer.parseInt(s.trim()));
         } catch (NumberFormatException nfe) {
             if (s.trim().length() > 0)
-                MakumbaSystem.getMakumbaLogger("import").warning(s);
+                Logger.getLogger("org.makumba." + "import").warning(s);
             return;
         }
         hmdd.put(mdd, i);

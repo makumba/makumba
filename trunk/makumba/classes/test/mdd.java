@@ -23,7 +23,6 @@
 
 package test;
 
-import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -33,7 +32,8 @@ import junit.framework.TestSuite;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Testing mdd handling & parsing
@@ -41,6 +41,11 @@ import org.makumba.MakumbaSystem;
  * @author Stefan Baebler
  */
 public class mdd extends TestCase {
+    
+    private Configuration c = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
+    
 	public mdd(String name) {
 		super(name);
 	}
@@ -54,8 +59,8 @@ public class mdd extends TestCase {
 	}
 
 	public void testMdd() {
-		MakumbaSystem.getDataDefinition("test.Person");
-		MakumbaSystem.getDataDefinition("test.Person.address.sth");
+        ddp.getDataDefinition("test.Person");
+        ddp.getDataDefinition("test.Person.address.sth");
 	}
 
 	/** removed printers, so no need to test them anymore! */
@@ -71,7 +76,7 @@ public class mdd extends TestCase {
 	// }
 	public void testNonexistingMdd() {
 		try {
-			MakumbaSystem.getDataDefinition("test.brokenMdds.NonexistingMdd");
+            ddp.getDataDefinition("test.brokenMdds.NonexistingMdd");
 			fail("Should raise DataDefinitionNotFoundError");
 		} catch (DataDefinitionNotFoundError e) {
 		}
@@ -90,7 +95,7 @@ public class mdd extends TestCase {
 
 	public void testAllValidMdds() {
 		String base = "test/validMdds/";
-		Vector mdds = MakumbaSystem.mddsInDirectory(base);
+		Vector mdds = ddp.getDataDefinitionsInLocation(base);
 
 		// we have to collect all errors if we want to run tests on all
 		// MDDs in directory instead of stoping at first fail()ure.
@@ -98,7 +103,7 @@ public class mdd extends TestCase {
 		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
 			String mdd = (String) e.nextElement();
             try {
-				MakumbaSystem.getDataDefinition("test.validMdds."+mdd);
+                ddp.getDataDefinition("test.validMdds."+mdd);
 			} catch (DataDefinitionParseError ex) {
 				errors
 						.add("\n ." + (errors.size() + 1)
@@ -114,7 +119,7 @@ public class mdd extends TestCase {
 
 	public void testIfAllBrokenMddsThrowErrors() {
 		String base = "test/brokenMdds/";
-		Vector mdds = MakumbaSystem.mddsInDirectory(base);
+		Vector mdds = ddp.getDataDefinitionsInLocation(base);
 
 		// we have to collect all errors if we want to run tests on all
 		// MDDs in directory instead of stoping at first fail()ure.
@@ -124,7 +129,7 @@ public class mdd extends TestCase {
 			DataDefinitionParseError actual = expected;
 			String mdd = (String) e.nextElement();
 			try {
-				MakumbaSystem.getDataDefinition("test.brokenMdds."+mdd);
+				ddp.getDataDefinition("test.brokenMdds."+mdd);
 			} catch (DataDefinitionParseError thrown) {
 				actual = thrown;
 			}

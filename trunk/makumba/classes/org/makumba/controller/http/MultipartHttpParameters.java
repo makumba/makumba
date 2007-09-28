@@ -68,7 +68,7 @@ public class MultipartHttpParameters extends HttpParameters {
     public MultipartHttpParameters(HttpServletRequest req) {
         super(req);
 
-        MakumbaSystem.getMakumbaLogger("fileUpload").fine("\n\n---- code with apache.commons.fileupload  ------\n");
+        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine("\n\n---- code with apache.commons.fileupload  ------\n");
 
         // Create a factory for disk-based file items
         DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -118,7 +118,7 @@ public class MultipartHttpParameters extends HttpParameters {
                     parameters.put(name + "_contentLength", new Integer(contentSize));
                     parameters.put(name, contentToSave);
 
-                    MakumbaSystem.getMakumbaLogger("fileUpload").fine(
+                    java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
                         "Parameters set: contentType=" + type + ", fileName=" + fileName + ", contentSize="
                                 + contentSize);
                 }

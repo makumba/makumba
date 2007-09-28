@@ -34,7 +34,6 @@ import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.DataTransformer;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 
 /**
@@ -183,11 +182,11 @@ public abstract class Table // extends RecordHandler
 
         Vector<Object> v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
         if (v.size() == 0) {
-            MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm + ": no records to copy");
+            java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm + ": no records to copy");
             return;
         }
 
-        MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm + ": starting copying " + v.size() + " records");
+        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm + ": starting copying " + v.size() + " records");
 
         System.out.print("|");
         for (int b = 0; b < BAR; b++)

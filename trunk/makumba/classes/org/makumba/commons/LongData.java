@@ -129,7 +129,7 @@ public class LongData {
         FileStrategy() throws IOException {
             temp = File.createTempFile("makumbaLongContent", ".bin", null);
             temp.deleteOnExit();
-            org.makumba.MakumbaSystem.getMakumbaLogger("util.longContent").fine("writing to " + temp);
+            java.util.logging.Logger.getLogger("org.makumba." + "util.longContent").fine("writing to " + temp);
 
             out = new BufferedOutputStream(new FileOutputStream(temp), org.makumba.Text.FILE_LIMIT);
         }
