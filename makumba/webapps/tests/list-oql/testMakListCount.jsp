@@ -4,7 +4,7 @@
 <head><title>Language list</title></head>
 <body>
 
-<%@taglib uri="http://www.makumba.org/list" prefix="mak" %>
+<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 <b>Languages:</b>
 <br><br><br>
 <mak:list from="test.Language l">
