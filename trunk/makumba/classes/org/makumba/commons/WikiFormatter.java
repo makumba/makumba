@@ -1,4 +1,4 @@
-package org.makumba.util.wiki;
+package org.makumba.commons;
 
 /**
  * 

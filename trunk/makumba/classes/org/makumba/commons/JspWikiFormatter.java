@@ -1,4 +1,4 @@
-package org.makumba.util.wiki;
+package org.makumba.commons;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class JspWikiFormatter implements WikiFormatter {
     }
 
     /**
-     * @see org.makumba.util.wiki.WikiFormatter#wiki2html(java.lang.String)
+     * @see org.makumba.commons.WikiFormatter#wiki2html(java.lang.String)
      */
     public String wiki2html(String s) {
         if (context == null) {
