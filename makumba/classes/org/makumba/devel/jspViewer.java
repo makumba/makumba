@@ -34,7 +34,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
@@ -125,7 +124,7 @@ public class jspViewer extends LineViewer {
 
         } catch (Throwable t) { // the properties file was not found / readable / etc.
 
-            MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
+            java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
                     "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
 
@@ -272,7 +271,7 @@ public class jspViewer extends LineViewer {
             int currentLineLength = lineText.length();
 
             if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > syntaxPoints.getLineText(currentLine).length() + 1) {
-                MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").finest(
+                java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").finest(
                         "skipped syntax Point due to wrong offset: "
                                 + (currentSyntaxPoint.isBegin() ? "begin " : "end ") + currentSyntaxPoint.getType()
                                 + " " + currentSyntaxPoint.getLine() + ":" + currentSyntaxPoint.getColumn()
@@ -378,7 +377,7 @@ public class jspViewer extends LineViewer {
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").finer(
+        java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").finer(
                 "Sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 

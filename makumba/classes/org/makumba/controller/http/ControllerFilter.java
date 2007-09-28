@@ -105,7 +105,7 @@ public class ControllerFilter implements Filter {
 
                     // Check if we shall reload the form page
                     Responder firstResponder = Responder.getFirstResponder(req);
-                    MakumbaSystem.getMakumbaLogger("controller").fine(
+                    java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                         "Caught a CompositeValidationException, reloading form page: "
                                 + firstResponder.getReloadFormOnError());
                     if (firstResponder.getReloadFormOnError()) {
@@ -157,16 +157,16 @@ public class ControllerFilter implements Filter {
 
                         };
 
-                        MakumbaSystem.getMakumbaLogger("controller").fine(
+                        java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                             "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
                         if (firstResponder.getShowFormAnnotated()) {
-                            MakumbaSystem.getMakumbaLogger("controller").finer(
+                            java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
                                 "Processing CompositeValidationException for annotation:\n" + v.toString());
                             // if the form shall be annotated, we need to filter which exceptions can be assigned to
                             // fields, and which not
                             ArrayList unassignedExceptions = Responder.getUnassignedExceptions(v,
                                 (HttpServletRequest) req);
-                            MakumbaSystem.getMakumbaLogger("controller").finer(
+                            java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
                                 "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
 
                             // the messages left unassigned will be shown as the form response
@@ -278,7 +278,7 @@ public class ControllerFilter implements Filter {
                 // most likely due to not being able to redirect the page to the error page due to already flushed
                 // buffers
                 // ==> we display a warning, and display the error message as it would have been on the page
-                MakumbaSystem.getMakumbaLogger("controller").severe(
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").severe(
                     "Page execution breaks on page '"
                             + req.getServletPath()
                             + "' but the error page can't be displayed due to too small buffer size.\n"

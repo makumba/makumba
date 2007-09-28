@@ -41,6 +41,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * This class imports makumba records from text files based on markers placed in special configuration files with the
@@ -117,7 +119,7 @@ public class ObjectImporter {
                 notMarked.addElement(fieldName);
         }
         if (notMarked.size() > 0)
-            MakumbaSystem.getMakumbaLogger("import").warning(
+            java.util.logging.Logger.getLogger("org.makumba." + "import").warning(
                 "marker file "
                         + u
                         + " does not contain markers for:\n "
@@ -130,11 +132,11 @@ public class ObjectImporter {
             if (configError != null && !isIgnored(fieldName)) {
                 if (!hasErrors) {
                     hasErrors = true;
-                    MakumbaSystem.getMakumbaLogger("import").warning(
+                    java.util.logging.Logger.getLogger("org.makumba." + "import").warning(
                         "marker file " + u + " contains errors. Erroneous fields will be ignored.");
                 }
                 ignored = true;
-                MakumbaSystem.getMakumbaLogger("import").severe(configError.toString());
+                java.util.logging.Logger.getLogger("org.makumba." + "import").severe(configError.toString());
             }
         }
     }
@@ -179,19 +181,19 @@ public class ObjectImporter {
 
     /** imports all files from a directory */
     public static void main(String argv[]) throws Throwable {
-        ObjectImporter ri = new ObjectImporter(MakumbaSystem.getDataDefinition(argv[0]));
+        ObjectImporter ri = new ObjectImporter((new DataDefinitionProvider(new Configuration())).getDataDefinition(argv[0]));
         File dir = new File(argv[1]);
         String[] lst = dir.list();
         char buffer[] = new char[8196];
         for (int i = 0; i < lst.length; i++) {
-            MakumbaSystem.getMakumbaLogger("import").finest(lst[i]);
+            java.util.logging.Logger.getLogger("org.makumba." + "import").finest(lst[i]);
             Reader r = new FileReader(new File(dir, lst[i]));
             StringWriter sw = new StringWriter();
             int n;
             while ((n = r.read(buffer)) != -1)
                 sw.write(buffer, 0, n);
             String content = sw.toString().toString();
-            MakumbaSystem.getMakumbaLogger("import").finest(ri.importFrom(content, null, null).toString());
+            java.util.logging.Logger.getLogger("org.makumba." + "import").finest(ri.importFrom(content, null, null).toString());
         }
     }
 
@@ -408,7 +410,7 @@ public class ObjectImporter {
     void warningField(String fieldName, String s) {
         String err = canonicalFieldName(fieldName) + " " + s;
         if (canError)
-            MakumbaSystem.getMakumbaLogger("import").warning(err);
+            java.util.logging.Logger.getLogger("org.makumba." + "import").warning(err);
         else
             throw new MakumbaError(err);
     }
@@ -417,7 +419,7 @@ public class ObjectImporter {
     void warningField(String fieldName, Throwable t) {
         String err = canonicalFieldName(fieldName);
         if (canError)
-            MakumbaSystem.getMakumbaLogger("import").warning(err + " " + t.toString());
+            java.util.logging.Logger.getLogger("org.makumba." + "import").warning(err + " " + t.toString());
         else
             throw new MakumbaError(t, err);
     }
@@ -493,7 +495,7 @@ public class ObjectImporter {
             if (!s1.equals(s.substring(n + 1, n1)))
                 return s;
         } catch (StringIndexOutOfBoundsException aio) {
-            MakumbaSystem.getMakumbaLogger("import").severe("EEEE " + s + " " + s1);
+            java.util.logging.Logger.getLogger("org.makumba." + "import").severe("EEEE " + s + " " + s1);
             return s;
         }
         if (!s1.startsWith("http"))

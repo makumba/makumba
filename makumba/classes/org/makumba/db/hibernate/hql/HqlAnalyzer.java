@@ -10,9 +10,9 @@ import java.util.Vector;
 import org.hibernate.hql.ast.HqlParser;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
-import org.makumba.OQLAnalyzer;
 import org.makumba.OQLParseError;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryProvider;
 
@@ -20,10 +20,12 @@ import antlr.SemanticException;
 import antlr.collections.AST;
 import antlr.debug.misc.ASTFrame;
 
-public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
+public class HqlAnalyzer implements QueryAnalysis {
 
     private DataDefinition projTypes;
     private DataDefinition paramTypes;
+    private Configuration c = new Configuration();
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
 
     private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
     static {
@@ -99,7 +101,7 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
     public synchronized DataDefinition getProjectionType() {
         if (projTypes != null)
             return projTypes;
-        projTypes = MakumbaSystem.getTemporaryDataDefinition("Projections for " + query);
+        projTypes = ddp.getVirtualDataDefinition("Projections for " + query);
         try {
             for (int i = 0; i < walker.getResult().size(); i++) {
 
@@ -119,13 +121,13 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
     }
 
     public DataDefinition getLabelType(String labelName) {
-        return MakumbaSystem.getDataDefinition((String) walker.getLabelTypes().get(labelName));
+        return ddp.getDataDefinition((String) walker.getLabelTypes().get(labelName));
     }
 
     public DataDefinition getParameterTypes() {
         if (paramTypes != null)
             return paramTypes;
-        paramTypes = MakumbaSystem.getTemporaryDataDefinition("Parameters for " + query);
+        paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
         try {
             for (Iterator<Map.Entry<String, ExprTypeAST>> i=walker.getParameterTypes().entrySet().iterator(); i.hasNext();) {
                 Map.Entry<String, ExprTypeAST> e= i.next();
@@ -142,12 +144,12 @@ public class HqlAnalyzer implements OQLAnalyzer, QueryAnalysis {
         FieldDefinition fd=null;
         if (expr.getObjectType() == null) {
             if(expr.getExtraTypeInfo()!=null)
-                fd=MakumbaSystem.makeFieldWithName(name, (FieldDefinition)expr.getExtraTypeInfo(), expr.getDescription());
+                fd=ddp.makeFieldWithName(name, (FieldDefinition)expr.getExtraTypeInfo(), expr.getDescription());
             else
-                fd= MakumbaSystem.makeFieldOfType(name, getTypeName(expr.getDataType()), expr
+                fd= ddp.makeFieldOfType(name, getTypeName(expr.getDataType()), expr
                     .getDescription());
         } else {
-            fd= MakumbaSystem.makeFieldDefinition(name, "ptr " + expr.getObjectType() + ";"
+            fd= ddp.makeFieldDefinition(name, "ptr " + expr.getObjectType() + ";"
                     + expr.getDescription());
         }
         return fd;

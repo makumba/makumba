@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 
 /**
@@ -43,7 +42,7 @@ public abstract class DataServlet extends HttpServlet {
 
     protected String virtualPath;
 
-    static final Logger logger = MakumbaSystem.getMakumbaLogger("devel.codeGenerator");
+    static final Logger logger = java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator");
 
     public DataServlet() {
     }

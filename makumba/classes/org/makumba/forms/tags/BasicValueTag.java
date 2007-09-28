@@ -40,7 +40,6 @@ import org.makumba.controller.http.RequestAttributes;
 import org.makumba.forms.html.dateEditor;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
-import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in
@@ -55,7 +54,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = MakumbaDataDefinitionFactory.getInstance();
+    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
     
     String valueExprOriginal = null;
 

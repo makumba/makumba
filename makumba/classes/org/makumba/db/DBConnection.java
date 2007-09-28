@@ -34,19 +34,26 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
-import org.makumba.MakumbaSystem;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 
 public abstract class DBConnection implements org.makumba.Transaction {
     protected org.makumba.db.Database db;
+    
+    protected Configuration config = new Configuration();
+    
+    protected DataDefinitionProvider ddp;
 
     protected DBConnection() {
+        this.ddp = new DataDefinitionProvider(config);
     } // for the wrapper
 
     public DBConnection(Database database) {
         this.db = database;
+        this.ddp = new DataDefinitionProvider(config);
     }
 
     public org.makumba.db.Database getHostDatabase() {
@@ -104,7 +111,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
     public Dictionary read(Pointer p, Object flds) {
         Enumeration e = null;
         if (flds == null) {
-            DataDefinition ri = MakumbaSystem.getDataDefinition(p.getType());
+            DataDefinition ri = ddp.getDataDefinition(p.getType());
             Vector<String> v = new Vector<String>();
             for (Enumeration f = ri.getFieldNames().elements(); f.hasMoreElements();) {
                 String s = (String) f.nextElement();
@@ -134,7 +141,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
         String separator = "";
         while (e.hasMoreElements()) {
             Object o = e.nextElement();
-            DataDefinition r = MakumbaSystem.getDataDefinition(p.getType());
+            DataDefinition r = ddp.getDataDefinition(p.getType());
             if (!(o instanceof String))
                 throw new org.makumba.NoSuchFieldException(r,
                         "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
@@ -234,9 +241,9 @@ public abstract class DBConnection implements org.makumba.Transaction {
      * @return a Pointer to the inserted record
      */
     public Pointer insert(Pointer base, String field, java.util.Dictionary data) {
-        FieldDefinition fi = MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
+        FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
         if (fi == null) {
-            throw new NoSuchFieldException(MakumbaSystem.getDataDefinition(base.getType()), field);
+            throw new NoSuchFieldException(ddp.getDataDefinition(base.getType()), field);
         }
         if (fi.getType().equals("setComplex")) {
             data.put(fi.getSubtable().getSetOwnerFieldName(), base);
@@ -250,7 +257,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
      * subrecords and subsets are automatically deleted.
      */
     public void delete(Pointer ptr) {
-        DataDefinition ri = MakumbaSystem.getDataDefinition(ptr.getType());
+        DataDefinition ri = ddp.getDataDefinition(ptr.getType());
         FieldDefinition fi = ri.getParentField();
 
         // if this is a ptrOne, we nullify the pointer in the parent record
@@ -263,7 +270,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
     }
 
     void delete1(Pointer ptr) {
-        DataDefinition ri = MakumbaSystem.getDataDefinition(ptr.getType());
+        DataDefinition ri = ddp.getDataDefinition(ptr.getType());
         Object param[] = { ptr };
 
         // delete the ptrOnes
@@ -292,7 +299,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
         }
         // delete the record
         executeUpdate(ptr.getType() + " this", null, "this."
-                + MakumbaSystem.getDataDefinition(ptr.getType()).getIndexPointerFieldName() + "=$1", ptr);
+                + ddp.getDataDefinition(ptr.getType()).getIndexPointerFieldName() + "=$1", ptr);
     }
 
     // delete a set
@@ -303,7 +310,7 @@ public abstract class DBConnection implements org.makumba.Transaction {
 
     /** Update the given external set */
     void updateSet(Pointer base, String field, Object val) {
-        FieldDefinition fi = MakumbaSystem.getDataDefinition(base.getType()).getFieldDefinition(field);
+        FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
         if (!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum"))
             throw new InvalidFieldTypeException(fi, "set");
 
@@ -354,11 +361,17 @@ class DataHolder {
     Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
 
     private Dictionary fullData;
+    
+    private Configuration configuration = new Configuration();
+    
+    private DataDefinitionProvider ddp;
 
     DataHolder(DBConnection d, Dictionary data, String type) {
         this.d = d;
         this.fullData = data;
-        t = d.db.getTable(MakumbaSystem.getDataDefinition(type).getName());
+        this.ddp = new DataDefinitionProvider(configuration);
+        
+        t = d.db.getTable(ddp.getDataDefinition(type).getName());
 
         for (Enumeration e = data.keys(); e.hasMoreElements();) {
             Object o = e.nextElement();
@@ -491,7 +504,7 @@ class DataHolder {
         }
         if (set.trim().length() > 0)
             d.executeUpdate(t.getDataDefinition().getName() + " this", set, "this."
-                    + MakumbaSystem.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
+                    + ddp.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
 
         for (Enumeration e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();

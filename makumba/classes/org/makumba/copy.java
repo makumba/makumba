@@ -24,6 +24,8 @@
 package org.makumba;
 import java.util.Vector;
 
+import org.makumba.commons.NamedResources;
+
 /** Copies one database to the other. Usage: 
  *  <code>java org.makumba.copy source dest type1 [type2 ...]</code>
    * Copying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
@@ -70,7 +72,8 @@ public class copy
 		      System.arraycopy(argv, firstArg+2, types, 0, types.length);
 		    }
 		  MakumbaSystem._copy(argv[firstArg], argv[firstArg+1], types, ignoreDbsv);
-		  MakumbaSystem.close();
+		  java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+        NamedResources.cleanup();
 		}catch(Throwable tr){ tr.printStackTrace(); exit=1;usage(); }
       }
     System.exit(exit);

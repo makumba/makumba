@@ -39,14 +39,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.ClassResource;
-import org.makumba.commons.NamedResources;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the
@@ -83,6 +83,10 @@ public class javaViewer extends LineViewer {
     private SyntaxPoint[] sourceSyntaxPoints;
 
     private JavaParseData javaParseData;
+    
+    private Configuration config = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
 
     private URL url;
     
@@ -115,7 +119,7 @@ public class javaViewer extends LineViewer {
                     DEFAULT_JAVASTRINGLITERAL_STYLE));
         } catch (Throwable t) { // the properties file was not found / readable / etc 
             // --> use default values
-            MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
+            java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
                     "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                             + "' not found! Using default values.");
             javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVADOC_STYLE);
@@ -308,14 +312,14 @@ public class javaViewer extends LineViewer {
                             if (parts != null) {
                                 String mddName = findMddNameFromHandler(parts[1]);
                                 try {
-                                    dd = MakumbaSystem.getDataDefinition(mddName);
+                                    dd = ddp.getDataDefinition(mddName);
                                     writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + dd.getName()
                                         + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
                                         + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
                                     mddName = findMddNameFromHandler(parts[1], true);
                                     try {
-                                        dd = MakumbaSystem.getDataDefinition(mddName);
+                                        dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
                                         writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + parentDd.getName()
                                             + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
@@ -346,7 +350,7 @@ public class javaViewer extends LineViewer {
 
         printPageEnd(writer);
         double timeTaken = System.currentTimeMillis() - begin;
-        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").info(
+        java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").info(
                 "Java sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 

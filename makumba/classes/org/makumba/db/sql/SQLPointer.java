@@ -54,7 +54,7 @@ static long compute(int dbsv, int uid)
     this(type);
     if(uid > (1<<MASK_ORDER))
       {
-	MakumbaSystem.getMakumbaLogger("debug.db").finest("p");
+	java.util.logging.Logger.getLogger("org.makumba." + "debug.db").finest("p");
 	n= uid;
       }
     else

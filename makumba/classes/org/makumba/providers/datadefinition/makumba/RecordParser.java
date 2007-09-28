@@ -1063,7 +1063,7 @@ public class RecordParser {
     public static void main(String[] args) {
         RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
                 "!unique( abc )", "!unique(abc , def )" });
-        MakumbaSystem.getDataDefinition("test.Person");
+        RecordInfo.getRecordInfo("test.Person");
     }
 
 }

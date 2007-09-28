@@ -52,7 +52,7 @@ public abstract class ResourcePool {
     Object createAndCount() throws Exception {
         Object o = create();
         all.addElement(o);
-        org.makumba.MakumbaSystem.getMakumbaLogger("util.pool").fine("pool size: " + all.size());
+        java.util.logging.Logger.getLogger("org.makumba." + "util.pool").fine("pool size: " + all.size());
         return o;
     }
 
@@ -68,7 +68,7 @@ public abstract class ResourcePool {
             if (stack.isEmpty())
                 return createAndCount();
             timeStack.pop();
-            org.makumba.MakumbaSystem.getMakumbaLogger("util.pool.member").fine("pool members: " + timeStack.size());
+            java.util.logging.Logger.getLogger("org.makumba." + "util.pool.member").fine("pool members: " + timeStack.size());
             return stack.pop();
         }
     }
@@ -83,7 +83,7 @@ public abstract class ResourcePool {
         synchronized (stack) {
             stack.push(o);
             timeStack.push(new Date());
-            org.makumba.MakumbaSystem.getMakumbaLogger("util.pool.member").fine("pool members: " + timeStack.size());
+            java.util.logging.Logger.getLogger("org.makumba." + "util.pool.member").fine("pool members: " + timeStack.size());
         }
     }
 
@@ -138,7 +138,7 @@ public abstract class ResourcePool {
             for (int i = 0; i < timeStack.size(); i++) {
                 // if the resource can stale by the end of the next sleeping period
                 if (((Date) timeStack.elementAt(i)).getTime() + stale < (new Date()).getTime() + sleeping) {
-                    org.makumba.MakumbaSystem.getMakumbaLogger("util.pool").fine(
+                    java.util.logging.Logger.getLogger("org.makumba." + "util.pool").fine(
                         "renewing resource " + stack.elementAt(i) + " not used since " + timeStack.elementAt(i));
                     renew(stack.elementAt(i));
                     timeStack.setElementAt(new Date(), i);

@@ -36,7 +36,9 @@ import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.HtmlTagEnumerator;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Utility class making it possible to import data from a HTML table into a Makumba-based database.
@@ -73,13 +75,13 @@ public class HtmlTableImporter {
         endOfCell();
         if (data != null && !data.isEmpty())
             if (data.size() != fieldOrder.length)
-                MakumbaSystem.getMakumbaLogger("import").severe(
+                java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
                     type + ": invalid HTML table row length: " + data.size() + "\r\nin: " + data);
             else
                 try {
                     db.insert(type, importVector());
                 } catch (InvalidValueException e) {
-                    MakumbaSystem.getMakumbaLogger("import").warning("record not inserted --> " + e.getMessage());
+                    java.util.logging.Logger.getLogger("org.makumba." + "import").warning("record not inserted --> " + e.getMessage());
                 }
     }
 
@@ -110,11 +112,11 @@ public class HtmlTableImporter {
                 text = s;
             if (e.getTagType().toLowerCase().equals("/table")) {
                 endOfRow();
-                MakumbaSystem.getMakumbaLogger("import").severe("end of table encountered");
+                java.util.logging.Logger.getLogger("org.makumba." + "import").severe("end of table encountered");
                 return;
             }
         }
-        MakumbaSystem.getMakumbaLogger("import").severe("end of table missing");
+        java.util.logging.Logger.getLogger("org.makumba." + "import").severe("end of table missing");
     }
 
     Dictionary importVector() {
@@ -128,7 +130,7 @@ public class HtmlTableImporter {
                     d.put(fieldOrder[i], o);
                 v1.addElement(o);
             }
-        MakumbaSystem.getMakumbaLogger("import").finest(v1.toString());
+        java.util.logging.Logger.getLogger("org.makumba." + "import").finest(v1.toString());
 
         return d;
     }
@@ -137,7 +139,7 @@ public class HtmlTableImporter {
         String[] args = new String[argv.length - 4];
         System.arraycopy(argv, 4, args, 0, args.length);
 
-        new HtmlTableImporter(MakumbaSystem.getConnectionTo(argv[0]), MakumbaSystem.getDataDefinition(argv[1]),
+        new HtmlTableImporter(MakumbaSystem.getConnectionTo(argv[0]), (new DataDefinitionProvider(new Configuration())).getDataDefinition(argv[1]),
                 new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
     }
 }

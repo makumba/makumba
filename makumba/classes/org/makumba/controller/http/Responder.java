@@ -240,7 +240,7 @@ public abstract class Responder implements java.io.Serializable {
                         objectOut.close();
                     }
                 } catch (IOException e) {
-                    MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                    java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                         "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 }
             }
@@ -399,23 +399,23 @@ public abstract class Responder implements java.io.Serializable {
             } catch (UnsupportedClassVersionError e) {
                 // if we try to read a responder that was written with a different version of the responder class
                 // we delete it, and throw an exception
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 new File(fileName).delete();
                 throw new org.makumba.MakumbaError(
                         "Responder cannot be re-used due to Makumba version change! Please reload this page.");
             } catch (InvalidClassException e) {
                 // same as above
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 new File(fileName).delete();
                 throw new org.makumba.MakumbaError(
                         "Responder cannot be re-used due to Makumba version change! Please reload this page.");
             } catch (IOException e) {
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
             } catch (ClassNotFoundException e) {
-                MakumbaSystem.getMakumbaLogger("controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
             } finally {
                 if (objectIn != null) {
@@ -510,7 +510,7 @@ public abstract class Responder implements java.io.Serializable {
                 // we do nothing, cause we will treat that from the ControllerFilter.doFilter
                 return e;
             } catch (LogicException e) {
-                MakumbaSystem.getMakumbaLogger("logic.error").log(Level.INFO, "error", e);
+                java.util.logging.Logger.getLogger("org.makumba." + "logic.error").log(Level.INFO, "error", e);
                 message = errorMessage(e);
                 req.setAttribute(fr.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);

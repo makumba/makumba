@@ -31,7 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -51,7 +52,7 @@ public class mddViewer extends DefinitionViewer {
     public void intro(PrintWriter w) {
         DataDefinition dd = null;
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {

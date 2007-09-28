@@ -176,7 +176,7 @@ public class SQLUpdate implements Update {
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
-            MakumbaSystem.getMakumbaLogger("db.update.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").fine("" + ps);
             java.util.Date d = new java.util.Date();
             int rez;
             try {
@@ -190,7 +190,7 @@ public class SQLUpdate implements Update {
                 throw new DBError(se, debugString);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            MakumbaSystem.getMakumbaLogger("db.update.performance").fine("" + diff + " ms " + debugString);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.update.performance").fine("" + diff + " ms " + debugString);
             return rez;
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);

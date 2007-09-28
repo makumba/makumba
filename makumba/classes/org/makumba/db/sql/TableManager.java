@@ -185,7 +185,7 @@ public class TableManager extends Table {
         s = Database.findConfig(config, "alter#" + getDataDefinition().getName());
         alter = (s != null && config.getProperty(s).trim().equals("true"));
 
-        MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
             getDatabase().getConfiguration() + ": checking " + getDataDefinition().getName() + " as " + tbname);
 
         try {
@@ -255,12 +255,12 @@ public class TableManager extends Table {
                 try {
                     Statement st = dbc.createStatement();
                     st.executeUpdate(indexCreateUniqueSyntax(fieldNames));
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                         "INDEX ADDED on " + briefMulti);
                     st.close();
                     indexCreated(dbc);
                 } catch (SQLException e) {
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                         "Problem adding multi-field INDEX on " + briefMulti + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
                     if (getDatabase().isDuplicateException(e)) {
@@ -282,7 +282,7 @@ public class TableManager extends Table {
                     try {
                         Statement st = dbc.createStatement();
                         st.executeUpdate(syntax);
-                        org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                             "INDEX DROPPED on " + getDataDefinition().getName() + "#" + indexName);
                         st.close();
                     } catch (SQLException e) {
@@ -297,7 +297,7 @@ public class TableManager extends Table {
                     separator = ", ";
                 }
                 if (extraList.length() > 0)
-                    MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                         "Extra indexes on " + getDataDefinition().getName() + ": " + extraList);
             }
 
@@ -322,9 +322,9 @@ public class TableManager extends Table {
         if (command.indexOf("fk") != -1)
             // dropping a hibernate foreign key, this is serious
             lev = Level.WARNING;
-        if (!MakumbaSystem.getMakumbaLogger("db.exception").isLoggable(lev))
+        if (!java.util.logging.Logger.getLogger("org.makumba." + "db.exception").isLoggable(lev))
             return;
-        MakumbaSystem.getMakumbaLogger("db.exception").log(lev, "Unsuccessful: " + command);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.exception").log(lev, "Unsuccessful: " + command);
         Database.logException(e, dbc, lev);
     }
 
@@ -447,7 +447,7 @@ public class TableManager extends Table {
                      */
                     present.addElement(fieldName);
                     if (!cs.checkColumn(fieldName) && !(alter && alter(dbc, fieldName, getColumnAlterKeyword()))) {
-                        MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                             "should modify: " + fieldName + " " + getFieldDBName(fieldName) + " "
                                     + getFieldDBType(fieldName) + " " + cs.columnType() + " " + cs.columnName());
                         modify.addElement(fieldName);
@@ -458,7 +458,7 @@ public class TableManager extends Table {
             if (found)
                 continue;
             drop.addElement(dbfn);
-            MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                 "extra field: " + cs.columnName() + " " + cs.columnType() + " " + cs.columnTypeName());
         }
 
@@ -471,7 +471,7 @@ public class TableManager extends Table {
                 continue;
             if (handlerExist.get(fieldName) == null && !(alter && alter(dbc, fieldName, "ADD"))) {
                 add.addElement(fieldName);
-                MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                     "should add " + fieldName + " " + getFieldDBName(fieldName) + " " + getFieldDBType(fieldName));
             } else {
                 keyIndex.put(fieldName, new Integer(v.size()));
@@ -493,13 +493,13 @@ public class TableManager extends Table {
             try {
                 command = "DROP INDEX " + getFieldDBIndexName(fieldName) + " ON " + getDBName();
                 st.executeUpdate(command);
-                MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("SUCCESS: " + command);
+                java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info("SUCCESS: " + command);
             } catch (SQLException e) {
                 treatIndexException(e, command, dbc);
             }
         autoIncrementAlter = false;
         String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
-        MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(getSQLDatabase().getConfiguration() + ": " + s);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(getSQLDatabase().getConfiguration() + ": " + s);
         st.executeUpdate(s);
         handlerExist.put(fieldName, "");
         dbc.commit();
@@ -576,11 +576,11 @@ public class TableManager extends Table {
 
         command = createDbSpecific(command);
         if (!really) {
-            MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning("would be:\n" + command);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning("would be:\n" + command);
             return;
         }
         if (!tblname.startsWith("temp"))
-            MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(command);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(command);
         st.executeUpdate(command);
         if (!tblname.startsWith("temp"))
             dbc.commit();
@@ -836,7 +836,7 @@ public class TableManager extends Table {
             try {
                 data[i] = getValue(dd.getFieldDefinition(i).getName(), rs, i + 1);
             } catch (ArrayIndexOutOfBoundsException e) {
-                org.makumba.MakumbaSystem.getMakumbaLogger("db.query.execution").log(java.util.logging.Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").log(java.util.logging.Level.SEVERE,
                     "" + i + " " + dd.getName() + " " + keyIndex + " " + dd.getFieldNames(), e);
                 throw e;
             }
@@ -1014,7 +1014,7 @@ public class TableManager extends Table {
                 // System.out.println("UTF: setUpdateArgument");
                 setArgument(fieldName, ps, n, o);
             } catch (SQLException e) {
-                org.makumba.MakumbaSystem.getMakumbaLogger("db.update.execution").log(java.util.logging.Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").log(java.util.logging.Level.SEVERE,
                     getDBName() + "  " + o.getClass(), e);
                 throw e;
             }
@@ -1583,13 +1583,13 @@ public class TableManager extends Table {
                     // try creating unique index
                     Statement st = dbc.createStatement();
                     st.executeUpdate(indexCreateUniqueSyntax(fieldName));
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                         "UNIQUE INDEX ADDED on " + brief);
                     st.close();
                     indexCreated(dbc);
                 } catch (SQLException e) {
                     // log all errors
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                     // rm.getDatabase().getConfiguration()+": "+ //DB
                         // name
                         "Problem adding UNIQUE INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: "
@@ -1603,11 +1603,11 @@ public class TableManager extends Table {
                     // create normal index
                     Statement st = dbc.createStatement();
                     st.executeUpdate(indexCreateSyntax(fieldName));
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info("INDEX ADDED on " + brief);
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info("INDEX ADDED on " + brief);
                     st.close();
                     indexCreated(dbc);
                 } catch (SQLException e) {
-                    org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").warning(
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
                     // rm.getDatabase().getConfiguration()+": "+ //DB
                         // name
                         "Problem adding INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: " + e.getErrorCode()
@@ -1624,7 +1624,7 @@ public class TableManager extends Table {
         try { // drop the old, wrong index if it exists
             Statement st = dbc.createStatement();
             st.executeUpdate(syntax);
-            org.makumba.MakumbaSystem.getMakumbaLogger("db.init.tablechecking").info(message);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(message);
             st.close();
         } catch (SQLException e) {
             treatIndexException(e, syntax, dbc);

@@ -123,11 +123,11 @@ public class OQLQueryProvider extends QueryProvider {
              * if(t!=null) { ASTFrame frame = new ASTFrame("AST JTree Example", t); frame.setVisible(true); }
              */
         } catch (antlr.TokenStreamException f) {
-            MakumbaSystem.getMakumbaLogger("db.query.compilation").warning(f + ": " + oqlQuery);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").warning(f + ": " + oqlQuery);
             throw new org.makumba.MakumbaError(f, oqlQuery);
         }
         long diff = new java.util.Date().getTime() - d.getTime();
-        MakumbaSystem.getMakumbaLogger("db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
         return t;
     }
 

@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.MakumbaSystem;
 
 /**
  * invoke the necessary SourceViewer, depending on the type of the source the architecture should change, and be organized in filters. example:
@@ -159,7 +158,7 @@ public class SourceViewServlet extends HttpServlet {
                         }
                     }
                 } else {
-                    MakumbaSystem.getMakumbaLogger("devel").warning("Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
+                    java.util.logging.Logger.getLogger("org.makumba." + "devel").warning("Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
                 }
                 w.println("</pre>");
                 DevelUtils.printDeveloperSupportFooter(w);

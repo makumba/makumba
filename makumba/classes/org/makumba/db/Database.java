@@ -37,13 +37,14 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SoftNamedResources;
+import org.makumba.providers.DataDefinitionProvider;
 
 /** 
  ptrOne...
@@ -63,6 +64,10 @@ public abstract class Database {
     public String getName() {
         return configName;
     }
+    
+    private Configuration configuration = new Configuration();
+    
+    private DataDefinitionProvider ddp = new DataDefinitionProvider(configuration);
 
     NamedResources queries;
 
@@ -108,7 +113,7 @@ public abstract class Database {
     }
 
     public void close() {
-        MakumbaSystem.getMakumbaLogger("db.init").info(
+        java.util.logging.Logger.getLogger("org.makumba." + "db.init").info(
                 "closing  " + getConfiguration() + "\n\tat "
                         + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
@@ -421,7 +426,7 @@ public abstract class Database {
 
         int n = name.indexOf("->");
         if (n == -1)
-            return getTable(MakumbaSystem.getDataDefinition(name));
+            return getTable(ddp.getDataDefinition(name));
         // the abstract level doesn't return recordInfo for subtables (->) since it is supposed they are managed via
         // their parent tables. the current DB api doesn't provide that.
 
@@ -462,8 +467,8 @@ public abstract class Database {
     public abstract int getMaxPointerValue();
 
     public void deleteFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv) {
-        DataDefinition dd = MakumbaSystem.getDataDefinition(table);
-        MakumbaSystem.getMakumbaLogger("db.admin.delete").info(
+        DataDefinition dd = ddp.getDataDefinition(table);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.delete").info(
                 "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
@@ -517,7 +522,7 @@ public abstract class Database {
     }
 
     public void copyFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv) {
-        DataDefinition dd = MakumbaSystem.getDataDefinition(table);
+        DataDefinition dd = ddp.getDataDefinition(table);
         getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB, ignoreDbsv);
 
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
@@ -536,7 +541,7 @@ public abstract class Database {
 
             for (int i = 0; i < _tables.length; i++) {
                 String nm = (String) ((Dictionary) v.elementAt(i)).get("name");
-                MakumbaSystem.getMakumbaLogger("db.admin.copy").info(nm);
+                java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm);
                 _tables[i] = nm;
             }
             copyFrom(c, _tables, sourceDB, ignoreDbsv);
@@ -554,7 +559,7 @@ public abstract class Database {
 
     public void openTable(String table) {
         getTable(table);
-        DataDefinition dd = MakumbaSystem.getDataDefinition(table);
+        DataDefinition dd = ddp.getDataDefinition(table);
 
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());

@@ -17,6 +17,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -49,7 +51,7 @@ public class DataTypeListerServlet extends DataServlet {
         }
 
         try {
-            dd = MakumbaSystem.getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) { // make a directory listing

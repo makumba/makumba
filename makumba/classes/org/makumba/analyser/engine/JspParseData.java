@@ -219,7 +219,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         holder = analyzer.endPage(holder);
 
-        org.makumba.MakumbaSystem.getMakumbaLogger("jspparser.time").info(
+        java.util.logging.Logger.getLogger("org.makumba." + "jspparser.time").info(
                 "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
     }
 
@@ -266,7 +266,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 syntaxPoints.addSyntaxPoints(origin + n + 1, origin + s.length(), "JSPTagAttributeValue", null);
             }
             // debug
-            Logger log = MakumbaSystem.getMakumbaLogger("jspparser.tags.attribute");
+            Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags.attribute");
             log.finest("< Attribute : " + attr);
             log.finest("> AttrParse : " + attName + " = " + attValue);
         }
@@ -392,7 +392,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         if (!tagEnd)
             td.attributes = parseAttributes(tag, m.start());
 
-        Logger log = MakumbaSystem.getMakumbaLogger("jspparser.tags");
+        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE))
@@ -445,7 +445,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             }
         }
 
-        Logger log = MakumbaSystem.getMakumbaLogger("jspparser.tags");
+        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE))

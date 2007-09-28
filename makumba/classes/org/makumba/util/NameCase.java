@@ -66,7 +66,7 @@ public class NameCase {
         }
         String ret = sb.toString();
         if (!s.equals(ret))
-            org.makumba.MakumbaSystem.getMakumbaLogger("import").info("org.makumba.util.NameCase: " + s + " -> " + ret);
+            java.util.logging.Logger.getLogger("org.makumba." + "import").info("org.makumba.util.NameCase: " + s + " -> " + ret);
         return ret;
     }
 

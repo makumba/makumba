@@ -45,7 +45,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.engine.JavaParseData;
 
 /**
@@ -185,7 +184,7 @@ public abstract class LineViewer implements SourceViewer {
         printPageEnd(writer);
         reader.close();
         double timeTaken = System.currentTimeMillis() - begin;
-        MakumbaSystem.getMakumbaLogger("org.makumba.devel.sourceViewer").fine(
+        java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
                 "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
