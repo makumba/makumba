@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
-import org.makumba.MakumbaSystem;
 
 /**
  * Class <code>BoundaryInputStream</code> extends <code>InputStream</code>

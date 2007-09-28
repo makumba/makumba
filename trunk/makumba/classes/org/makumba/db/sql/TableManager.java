@@ -42,7 +42,6 @@ import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;

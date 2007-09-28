@@ -18,8 +18,7 @@ public abstract class QueryProvider {
 
     private static Map<String, QueryProvider> analysisQueryProviders = new HashMap<String, QueryProvider>();
 
-    private static String[] queryProviders = { "oql", "org.makumba.providers.query.oql.OQLQueryProvider",
-            "hql", "org.makumba.providers.query.hql.HQLQueryProvider" };
+    private static String[] queryProviders = {"oql", "org.makumba.providers.query.oql.OQLQueryProvider", "hql", "org.makumba.providers.query.hql.HQLQueryProvider" };
 
     static final Map<String, Class> providerClasses = new HashMap<String, Class>();
 
@@ -37,6 +36,8 @@ public abstract class QueryProvider {
     
     /**
      * Provides the analysis QueryProvider for a given query language.
+     * 
+     * TODO this should be refactored to use the same mechanism as for the dataDefinitionProvider
      * 
      * @param name
      *            the name of the query language
@@ -59,6 +60,8 @@ public abstract class QueryProvider {
 
     /**
      * Provides the query execution environment corresponding to the query language.
+     * 
+     * TODO this should be refactored to use the same mechanism as for the dataDefinitionProvider
      * 
      * @param dataSource
      *            the source on which the query should be run

@@ -26,12 +26,13 @@ package org.makumba.list.tags;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.ListFormDataProvider;
 import org.makumba.providers.FormDataProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * This class provides utility methods for all makumba tags, such as
@@ -57,6 +58,10 @@ public abstract class GenericListTag extends GenericMakumbaTag {
     public static final String DS_ATTR = "org.makumba.database";
     
     protected FormDataProvider fdp = new ListFormDataProvider();
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
 
     @Override
     public int doEndTag() throws JspException {
@@ -100,9 +105,13 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      * @return A String containing the name of the database
      */
     public static String getDataSourceName(PageContext pc) {
+        Configuration config = new Configuration();
+        
+        TransactionProvider tp = new TransactionProvider(config);
+
         String ds = (String) pc.getAttribute(DS_ATTR);
         if (ds == null)
-            return MakumbaSystem.getDefaultDataSourceName();
+            return tp.getDefaultDataSourceName();
         return ds;
     }
 

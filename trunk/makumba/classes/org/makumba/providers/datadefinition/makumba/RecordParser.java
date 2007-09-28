@@ -45,7 +45,6 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
 import org.makumba.commons.ClassResource;

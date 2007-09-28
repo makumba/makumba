@@ -33,11 +33,12 @@ import javax.servlet.http.HttpSession;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
+import org.makumba.commons.Configuration;
 import org.makumba.controller.DbConnectionProvider;
 import org.makumba.controller.Logic;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Implementation of the Makumba {@link Attributes}
@@ -56,9 +57,13 @@ public class RequestAttributes implements Attributes {
     HttpServletRequest request;
 
     Object controller;
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
 
     public String getRequestDatabase() {
-        return MakumbaSystem.getDefaultDataSourceName();
+        return tp.getDefaultDataSourceName();
     }
 
     public Object getRequestController() {

@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 
 /** the SQL pointer, represents a pointer as a long, but only an int is needed... */

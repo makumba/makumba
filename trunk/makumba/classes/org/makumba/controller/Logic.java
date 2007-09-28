@@ -39,7 +39,6 @@ import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
-import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;

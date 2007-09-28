@@ -31,7 +31,6 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.engine.TomcatJsp;
 
 /**

@@ -33,7 +33,6 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.GenericMakumbaTag;
@@ -41,9 +40,7 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FormResponder;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DataDefinitionProviderInterface;
 import org.makumba.providers.FormDataProvider;
-import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 /**
  * mak:form base tag

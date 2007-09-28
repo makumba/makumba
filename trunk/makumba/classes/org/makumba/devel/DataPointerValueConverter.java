@@ -33,9 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.InvalidValueException;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.Configuration;
 import org.makumba.db.sql.SQLPointer;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * This class provides an interface to convert Pointer values from DB values to the external form and vice-versa.
@@ -50,6 +51,11 @@ public class DataPointerValueConverter extends DataServlet {
     public final static int FROM_DB = 10;
 
     public final static int FROM_EXTERNAL = 20;
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -73,7 +79,7 @@ public class DataPointerValueConverter extends DataServlet {
         writeScripts(writer);
         writeHeaderEnd(writer, "Value Converter");
 
-        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDataSourceName(), MODE_CONVERTOR);
+        writePageContentHeader(type, writer, tp.getDefaultDataSourceName(), MODE_CONVERTOR);
 
         writer.println("<form>");
         writer.println("<table>");

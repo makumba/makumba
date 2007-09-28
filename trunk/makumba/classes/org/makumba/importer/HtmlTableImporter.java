@@ -35,10 +35,10 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.HtmlTagEnumerator;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Utility class making it possible to import data from a HTML table into a Makumba-based database.
@@ -92,7 +92,7 @@ public class HtmlTableImporter {
         this.type = type.getName();
         this.db = db;
         String[] tables = { type.getName() };
-        MakumbaSystem._delete(db.getName(), db.getName(), tables);
+        HtmlTableImporter._delete(db.getName(), db.getName(), tables);
         HtmlTagEnumerator e = new HtmlTagEnumerator(r);
         while (e.next() && !e.getTag().equals(tableStartTag))
             ;
@@ -135,11 +135,38 @@ public class HtmlTableImporter {
         return d;
     }
 
+    /**
+     * Deletes the records of certain types. Useful for failed imports or copies. The database configuration must have
+     * admin# confirmations that match each of the indicated types. Use _delete(d, d, ...) for databases that need
+     * re-import of data of certain types. Deletion is logged (see {@link java.util.logging.Logger},
+     * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.delete"</code></b>
+     * logger, with {@link java.util.logging.Level#INFO} logging level.
+     */
+    public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
+        Configuration config = new Configuration();
+        (new TransactionProvider(config))._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
+    }
+
+    /**
+     * Deletes the records of certain types that originate from a certain database. Useful for failed imports or copies.
+     * The database configuration must have admin# confirmations that match each of the indicated types. Use _delete(d,
+     * d, ...) for databases that need re-import of data of certain types. Deletion is logged (see
+     * {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the
+     * <b><code>"db.admin.delete"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
+     */
+    public static void _delete(String whereDB, String provenienceDB, String[] typeNames) {
+        _delete(whereDB, provenienceDB, typeNames, false);
+    }
+
     public static void main(String[] argv) throws IOException {
         String[] args = new String[argv.length - 4];
         System.arraycopy(argv, 4, args, 0, args.length);
+        
+        Configuration config = new Configuration();
+        
+        TransactionProvider tp = new TransactionProvider(config);
 
-        new HtmlTableImporter(MakumbaSystem.getConnectionTo(argv[0]), (new DataDefinitionProvider(new Configuration())).getDataDefinition(argv[1]),
+        new HtmlTableImporter(tp.getConnectionTo(argv[0]), (new DataDefinitionProvider(new Configuration())).getDataDefinition(argv[1]),
                 new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
     }
 }

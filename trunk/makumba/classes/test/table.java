@@ -45,6 +45,7 @@ import org.makumba.Text;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Testing table operations
@@ -52,6 +53,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * @author Cristian Bogdan
  */
 public class table extends TestCase {
+    
 	static Transaction db;
 
 	static long epsilon = 2000;
@@ -69,8 +71,7 @@ public class table extends TestCase {
 	}
 
 	public void setUp() {
-		db = MakumbaSystem.getConnectionTo(MakumbaSystem
-				.getDefaultDatabaseName("test/testDatabase.properties"));
+		db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
 	}
 
 	public void tearDown() {
@@ -80,6 +81,8 @@ public class table extends TestCase {
     private Configuration config = new Configuration();
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    
+    private TransactionProvider tp = new TransactionProvider(config);
 
 	static Pointer ptr, ptr1;
 
@@ -614,8 +617,7 @@ public class table extends TestCase {
 		 * if yes, we do cleanup
 		 */
 		if(toString().equals("testCopy(test.table)")){
-			String nm = MakumbaSystem
-			.getDefaultDatabaseName("test/testDatabase.properties");
+			String nm = tp.getDataSourceName("test/testDatabase.properties");
 	
 			System.out.println("\nworked with: "
 			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")

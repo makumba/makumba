@@ -34,11 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * /** This class shows a single object from the DB.<br>
@@ -50,6 +50,11 @@ import org.makumba.providers.DataDefinitionProvider;
 public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -72,7 +77,7 @@ public class DataObjectViewerServlet extends DataServlet {
         if (dd == null) {
 
         } else {
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
+            Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
                 String dataBaseName = t.getName();

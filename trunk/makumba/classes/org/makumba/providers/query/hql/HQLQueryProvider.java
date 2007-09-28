@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernatePointer;
@@ -32,6 +32,7 @@ import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.db.sql.SQLPointer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.TransactionProvider;
 
 public class HQLQueryProvider extends QueryProvider {
 
@@ -40,7 +41,11 @@ public class HQLQueryProvider extends QueryProvider {
     private SessionFactory sf;
 
     private Transaction transaction;
-
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp;
+    
     public static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
     new NamedResourceFactory() {
         private static final long serialVersionUID = 1L;
@@ -53,7 +58,8 @@ public class HQLQueryProvider extends QueryProvider {
     @Override
     public void init(String db) {
         super.init(db);
-        sf = (SessionFactory) org.makumba.db.Database.getDatabase(db).getHibernateSessionFactory();
+        tp = new TransactionProvider(config);
+        sf = (SessionFactory) tp.getHibernateSessionFactory(db);
         // FIXME: we might want to open the session in a constructor, to re-use it for more than one exection
         session = sf.openSession();
         session.setCacheMode(CacheMode.IGNORE);
@@ -186,8 +192,12 @@ public class HQLQueryProvider extends QueryProvider {
      * Method for testing the query runner outside a JSP
      */
     public static void main(String[] args) throws LogicException {
+        Configuration config = new Configuration();
+        
+        TransactionProvider tp = new TransactionProvider(config);
+
         HQLQueryProvider qr = new HQLQueryProvider();
-        qr.init(MakumbaSystem.getDefaultDataSourceName());
+        qr.init(tp.getDefaultDataSourceName());
 
         Vector v = new Vector();
         v.add(new Integer(1));

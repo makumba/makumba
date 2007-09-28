@@ -34,10 +34,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * This class implements a query interface in OQL to the database. Results are displayed and can then be shown with
@@ -52,6 +53,11 @@ public class DataQueryServlet extends DataServlet {
     public final int QUERY_LANGUAGE_OQL = 10;
 
     public final int QUERY_LANGUAGE_HQL = 20;
+
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -104,7 +110,7 @@ public class DataQueryServlet extends DataServlet {
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
+            Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
                 Vector results = t.executeQuery(query, null, 0, limit);

@@ -31,9 +31,8 @@ import java.util.Hashtable;
 import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
-import org.makumba.MakumbaSystem;
+import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
-import org.makumba.db.DBConnection;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -158,7 +157,7 @@ public class ObjectToRecord {
                 cleaned = true;
             }
             if (transform == null || ((Boolean) transform.invoke(o, args)).booleanValue()) {
-                DBConnection dbc = db.getDBConnection();
+                Transaction dbc = db.getDBConnection();
                 try {
                     dbc.insert(type.getName(), h);
                 } finally {

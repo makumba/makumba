@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.MakumbaSystem;
 
 /**
  * This is the field definition tokenizer. The lookup metods return false or null if the respective token has not been

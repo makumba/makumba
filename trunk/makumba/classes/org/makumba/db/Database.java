@@ -23,7 +23,6 @@
 
 package org.makumba.db;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -78,7 +77,7 @@ public abstract class Database {
     int initConnections = 1;
     protected static boolean requestUTF8 = false;
     
-    static public boolean supportsUTF8() {
+    static protected boolean supportsUTF8() {
         return requestUTF8;
     }
     
@@ -163,8 +162,6 @@ public abstract class Database {
 
     public abstract Pointer getPointer(String type, int uid);
 
-    static Class[] theProp = { java.util.Properties.class };
-
     public String getConfiguration() {
         return fullName;
     }
@@ -175,65 +172,6 @@ public abstract class Database {
         }
         return config.getProperty(v);
     }
-
-    static int dbs = NamedResources.makeStaticCache("Databases open", new NamedResourceFactory() {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-
-        protected Object makeResource(Object nm) {
-            Properties p = new Properties();
-            String name = (String) nm;
-
-            try {
-                p.load(org.makumba.commons.ClassResource.get(name + ".properties").openStream());
-            } catch (Exception e) {
-                throw new org.makumba.ConfigFileError(name + ".properties");
-            }
-
-            try {
-                String origName= name;
-                name = name.substring(name.lastIndexOf('/') + 1);
-                int n = name.indexOf('_');
-                String host;
-                p.put("#host", host = name.substring(0, n));
-                int m = name.indexOf('_', n + 1);
-                if (Character.isDigit(name.charAt(n + 1))) {
-                    p.put("#host", host + ":" + name.substring(n + 1, m));
-                    n = m;
-                    m = name.indexOf('_', n + 1);
-                }
-
-                p.put("#sqlEngine", name.substring(n + 1, m));
-                p.put("#database", name.substring(m + 1));
-
-                String dbclass = (String) p.get("dbclass");
-                if (dbclass == null) {
-                    dbclass = org.makumba.db.sql.Database.getEngineProperty(p.getProperty("#sqlEngine") + ".dbclass");
-                    if (dbclass == null)
-                        dbclass = "org.makumba.db.sql.Database";
-                }
-                p.put("db.name", (String) name);
-                Object pr[] = { p };
-
-                try {
-                    Database d = (Database) Class.forName(dbclass).getConstructor(theProp).newInstance(pr);
-                    d.configName = (String) name;
-                    d.fullName=origName;
-                    d.tables = new NamedResources("Database tables for " + name, d.tableFactory);
-     
-                    // TODO: need to check if hibernate schema update is authorized. If yes, drop/adjust indexes from all tabbles so that hibernate can create its foreign keys at schema update.
-                    
-                    return d;
-                } catch (InvocationTargetException ite) {
-                    throw new org.makumba.MakumbaError(ite.getTargetException());
-                }
-            } catch (Exception e) {
-                throw new org.makumba.MakumbaError(e);
-            }
-        }
-    });
 
     static String findInHostProperties(Properties p, String str){
         for (Enumeration e = p.keys(); e.hasMoreElements();) {
@@ -273,11 +211,11 @@ public abstract class Database {
     }
 
     public static Database findDatabase(Properties p) {
-        return getDatabase(findDatabaseName(p));
+        return MakumbaTransactionProvider.getDatabase(findDatabaseName(p));
     }
 
     public static Database findDatabase(String s) {
-        return getDatabase(findDatabaseName(s));
+        return MakumbaTransactionProvider.getDatabase(findDatabaseName(s));
     }
 
     static int dbsel = NamedResources.makeStaticCache("Database selection files", new NamedResourceFactory() {
@@ -299,32 +237,9 @@ public abstract class Database {
         }
     });
 
-    public static String findDatabaseName(String s) {
+    protected static String findDatabaseName(String s) {
         try {
             return findDatabaseName((Properties) NamedResources.getStaticCache(dbsel).getResource(s));
-        } catch (RuntimeWrappedException e) {
-            if (e.getReason() instanceof org.makumba.MakumbaError)
-                throw (org.makumba.MakumbaError) e.getReason();
-            throw e;
-        }
-    }
-
-    /**
-     * Initializes a Database object from the given properties. The following properties are expected:
-     * <dl>
-     * <dt> dbclass
-     * <dd> the class of the concrete database, e.g. org.makumba.db.sql.SQLDatabase. An object of this class will be
-     * instantiated, and the properties will be passed on to it for further initialization
-     * <dt> tableclass
-     * <dd> the class of the concrete database table, e.g. org.makumba.db.sql.odbc.RecordManager. If this is not
-     * present, the class returned by the method getTableClass() is used
-     * <dt> dbsv
-     * <dd> the unique id of the database. Can be any integer 0-255
-     * </dl>
-     */
-    public static Database getDatabase(String name) {
-        try {
-            return (Database) NamedResources.getStaticCache(dbs).getResource(name);
         } catch (RuntimeWrappedException e) {
             if (e.getReason() instanceof org.makumba.MakumbaError)
                 throw (org.makumba.MakumbaError) e.getReason();
@@ -485,7 +400,7 @@ public abstract class Database {
 
     public void deleteFrom(String source, String[] tables, boolean ignoreDbsv) {
         DBConnection c = getDBConnection();
-        DBConnection sourceDBc = getDatabase(source).getDBConnection();
+        DBConnection sourceDBc = MakumbaTransactionProvider.getDatabase(source).getDBConnection();
         try {
             deleteFrom(c, tables, sourceDBc, ignoreDbsv);
         } finally {
@@ -506,7 +421,7 @@ public abstract class Database {
 
     public void copyFrom(String source, String[] tables, boolean ignoreDbsv) {
         DBConnection c = getDBConnection();
-        DBConnection sourceDBc = getDatabase(source).getDBConnection();
+        DBConnection sourceDBc = MakumbaTransactionProvider.getDatabase(source).getDBConnection();
         try {
             copyFrom(c, tables, sourceDBc, ignoreDbsv);
         } finally {

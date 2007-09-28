@@ -10,23 +10,17 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
-import org.makumba.commons.ClassResource;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.annotation.EnumMemberValue;
 
 public class MddToClass extends HibernateUtils {
     //public static final String generatedClassPath="work/generated-hibernate-classes";

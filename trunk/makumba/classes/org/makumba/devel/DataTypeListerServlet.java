@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -31,6 +31,11 @@ import org.makumba.providers.datadefinition.makumba.RecordParser;
 public class DataTypeListerServlet extends DataServlet {
 
     protected static final long serialVersionUID = 1L;
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -57,7 +62,7 @@ public class DataTypeListerServlet extends DataServlet {
         if (dd == null) { // make a directory listing
             doDirectoryListing(request, response, writer);
         } else { // display data from that MDD
-            Transaction t = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
+            Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
                 String dataBaseName = t.getName();
@@ -197,7 +202,7 @@ public class DataTypeListerServlet extends DataServlet {
             relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
         }
 
-        writePageContentHeader(type, writer, MakumbaSystem.getDefaultDataSourceName(), MODE_LIST);
+        writePageContentHeader(type, writer, tp.getDefaultDataSourceName(), MODE_LIST);
 
         writer.print("<pre style=\"margin-top:0\">");
         if (!relativeDirectory.equals("dataDefinitions")) {

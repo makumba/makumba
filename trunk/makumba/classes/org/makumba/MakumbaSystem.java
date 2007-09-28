@@ -29,6 +29,7 @@ import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.util.wiki.JspWikiFormatter;
 import org.makumba.util.wiki.WikiFormatter;
 
@@ -36,6 +37,9 @@ import org.makumba.util.wiki.WikiFormatter;
 public class MakumbaSystem {
     /** DataDefinition provider - FIXME should read which one it is from config */
     private static DataDefinitionProvider MDDFactory = new DataDefinitionProvider();
+    
+    /** TransactionProvider - FIXME should read which one it is from config */
+    private static TransactionProvider tp = new TransactionProvider();
 
     /** The date at which makumba is loaded */
     static public final java.util.Date loadingTime = new java.util.Date();
@@ -57,17 +61,7 @@ public class MakumbaSystem {
      * @deprecated Use {@link #getDefaultDataSourceName()} instead
      */
     public static String getDefaultDatabaseName() {
-        return getDefaultDataSourceName();
-    }
-
-    /**
-     * The name of the default datasource according to the Makumba configuration
-     * 
-     * TODO use DataSource provider
-     * 
-     */
-    public static String getDefaultDataSourceName() {
-        return org.makumba.db.Database.findDatabaseName("MakumbaDatabase.properties");
+        return tp.getDefaultDataSourceName();
     }
 
     /**
@@ -77,9 +71,11 @@ public class MakumbaSystem {
      *            the name of the database lookup file, including ".properties", or any other extension. The file should
      *            be in CLASSPATH.
      * @since makumba-0.5.4
+     * @deprecated use {@link TransactionProvider#getDataSourceName(String)} instead
      */
+    @Deprecated
     public static String getDefaultDatabaseName(String dbLookupFile) {
-        return org.makumba.db.Database.findDatabaseName(dbLookupFile);
+        return tp.getDataSourceName(dbLookupFile);
     }
 
     /**
@@ -94,9 +90,11 @@ public class MakumbaSystem {
      *            (connections, checkings), {@link java.util.logging.Level#SEVERE} (fatal errors) and with
      *            {@link java.util.logging.Level#WARNING} logging levels.
      * @since makumba-0.5.4
+     * @deprecated use {@link TransactionProvider#getConnectionTo(String)} instead
      */
+    @Deprecated
     public static Transaction getConnectionTo(String name) {
-        return org.makumba.db.Database.getDatabase(name).getDBConnection();
+        return tp.getConnectionTo(name);
     }
 
     /**
@@ -107,7 +105,7 @@ public class MakumbaSystem {
      *             getConnectionTo(getDefaultDatabaseName()) instead
      */
     public static Transaction findDatabase() {
-        return getConnectionTo(getDefaultDataSourceName());
+        return getConnectionTo(tp.getDefaultDataSourceName());
     }
 
     /**
@@ -162,42 +160,50 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.7
      */
     public static String getDatabaseProperty(String name, String propName) {
-        return org.makumba.db.Database.getDatabase(name).getConfiguration(propName);
+        return tp.getDatabaseProperty(name, propName);
     }
 
     /**
      * Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file
      * CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd
+     * @deprecated Use {@link DataDefinitionProvider#getDataDefinition(String)} instead
      */
+    @Deprecated
     public static DataDefinition getDataDefinition(String typeName) {
         return MDDFactory.getDataDefinition(typeName);
     }
 
+    @Deprecated
     public static DataDefinition getTemporaryDataDefinition(String name) {
         return MDDFactory.getVirtualDataDefinition(name);
     }
 
     /** Make a field definition from the indicated string */
+    @Deprecated
     public static FieldDefinition makeFieldDefinition(String name, String definition) {
         return MDDFactory.makeFieldDefinition(name, definition);
     }
 
     /** Make a field definition with the elementary type */
+    @Deprecated
     public static FieldDefinition makeFieldOfType(String name, String type) {
         return MDDFactory.makeFieldOfType(name, type);
     }
 
     /** Make a field definition identical with the given one, except for the name */
+    @Deprecated
     public static FieldDefinition makeFieldWithName(String name, FieldDefinition type) {
         return MDDFactory.makeFieldWithName(name, type);
     }
 
     /** Make a field definition with the elementary type */
+    @Deprecated
     public static FieldDefinition makeFieldOfType(String name, String type, String description) {
         return MDDFactory.makeFieldOfType(name, type, description);
     }
 
     /** Make a field definition identical with the given one, except for the name */
+    @Deprecated
     public static FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return MDDFactory.makeFieldWithName(name, type, description);
     }
@@ -211,49 +217,6 @@ public class MakumbaSystem {
         return OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType();
     }
     */
-
-    /**
-     * Deletes the records of certain types that originate from a certain database. Useful for failed imports or copies.
-     * The database configuration must have admin# confirmations that match each of the indicated types. Use _delete(d,
-     * d, ...) for databases that need re-import of data of certain types. Deletion is logged (see
-     * {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the
-     * <b><code>"db.admin.delete"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
-     */
-    public static void _delete(String whereDB, String provenienceDB, String[] typeNames) {
-        org.makumba.db.Database.getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, false);
-    }
-
-    /**
-     * Deletes the records of certain types. Useful for failed imports or copies. The database configuration must have
-     * admin# confirmations that match each of the indicated types. Use _delete(d, d, ...) for databases that need
-     * re-import of data of certain types. Deletion is logged (see {@link java.util.logging.Logger},
-     * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.delete"</code></b>
-     * logger, with {@link java.util.logging.Level#INFO} logging level.
-     */
-    public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        org.makumba.db.Database.getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, ignoreDbsv);
-    }
-
-    /**
-     * Copies records of certain types (and their subtypes) from a database to another. Only data having the dbsv of the
-     * first database is copied. The destination database must have admin# confirmations that match each of the
-     * indicated types Copying is logged (see {@link java.util.logging.Logger},
-     * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.admin.copy"</code></b>
-     * logger, with {@link java.util.logging.Level#INFO} logging level.
-     */
-    public static void _copy(String sourceDB, String destinationDB, String[] typeNames) {
-        org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames, false);
-    }
-
-    /**
-     * Copies records of certain types (and their subtypes) from a database to another. The destination database must
-     * have admin# confirmations that match each of the indicated types Copying is logged (see
-     * {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the
-     * <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
-     */
-    public static void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
-        org.makumba.db.Database.getDatabase(destinationDB).copyFrom(sourceDB, typeNames, ignoreDbsv);
-    }
 
     /** Returns a Makumba version (derived from a CVS tag) */
     public static String getVersion() {
@@ -311,7 +274,7 @@ public class MakumbaSystem {
 
      <tr><td>database administration
      <td>loggingRoot + <code>db.admin.copy</code>, <code>db.admin.delete
-     <td>see {@link #_copy}, {@link #_delete}
+     <td>see {@link copy#_copy}, {@link HtmlTableImporter#_delete}
      <td>{@link java.util.logging.Level#INFO}
 
      <tr><td>database querying
@@ -425,30 +388,7 @@ public class MakumbaSystem {
      * @return filenames as Vector of Strings.
      */
     public static java.util.Vector mddsInDirectory(String dirInClasspath) {
-        java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
-        java.io.File dir = new java.io.File(u.getFile());
-        java.util.Vector<String> mdds = new java.util.Vector<String>();
-        fillMdds(dir.toString().length() + 1, dir, mdds);
-        return mdds;
-    }
-
-    static void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
-        if (dir.isDirectory()) {
-            String[] list = dir.list();
-            for (int i = 0; i < list.length; i++) {
-                String s = list[i];
-                if (s.endsWith(".mdd")) {
-                    s = dir.toString() + java.io.File.separatorChar + s;
-                    s = s.substring(baselength, s.length() - 4); // cut off the ".mdd"
-                    s = s.replace(java.io.File.separatorChar, '.');
-                    mdds.add(s);
-                } else {
-                    java.io.File f = new java.io.File(dir, s);
-                    if (f.isDirectory())
-                        fillMdds(baselength, f, mdds);
-                }
-            }
-        }
+        return MDDFactory.getDataDefinitionsInLocation(dirInClasspath);
     }
 
     /** Get the default calendar editor. FIXME: read this from some config, or so. */

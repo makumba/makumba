@@ -46,7 +46,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.Base64;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.ReadableFormatter;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * mak:info tag
@@ -57,6 +59,9 @@ import org.makumba.commons.ReadableFormatter;
 public class MakumbaInfoTag extends TagSupport {
 	private static final long serialVersionUID = 1L;
     private int line = 0;
+    
+    private Configuration config = new Configuration();
+    private TransactionProvider tp = new TransactionProvider(config);
     
     Object applicationProperties;
 
@@ -225,7 +230,7 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
             out.println("  <tr bgcolor=\"#cccccc\"> <th>Property</th> <th>Value</th> </tr>");
 			
-            String dbname = MakumbaSystem.getDefaultDataSourceName();
+            String dbname = tp.getDefaultDataSourceName();
 
             line = 0;
             printMakumbaPropertyRow(out, "<a href=\"/makumba-docs/CHANGELOG.txt\">version</a>", MakumbaSystem.getVersion());

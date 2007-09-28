@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.analyser.AnalysableTag;

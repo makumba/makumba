@@ -15,6 +15,7 @@ import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.makumba.commons.ClassResource;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
+import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -115,10 +116,12 @@ public class HibernateSFManager {
     public static synchronized SessionFactory getSF() {
         if (sessionFactory == null) {
             String configFile;
-            if(MakumbaSystem.getDefaultDataSourceName() == null) {
+            org.makumba.commons.Configuration config = new org.makumba.commons.Configuration();
+            TransactionProvider tp = new TransactionProvider(config);
+            if(tp.getDefaultDataSourceName() == null) {
                 configFile = "default.cfg.xml";
             } else {
-                configFile = MakumbaSystem.getDefaultDataSourceName() + ".cfg.xml";
+                configFile = tp.getDefaultDataSourceName() + ".cfg.xml";
             }
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Initializing configuration from "+configFile);
             return getSF(configFile, false);
