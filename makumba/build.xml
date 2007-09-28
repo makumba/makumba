@@ -109,20 +109,26 @@
 		</javac>
 	</target>
 	
-	<target name="compileAnalyser" description="compile all java files for analyser">
+	<target name="compileAnalyser" depends="OQLParserGeneration" description="compile all java files for analyser">
 		<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
 	
-	<target name="compileMDDProvider" description="compile all java files for MDDProvider">
-			<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/providers/datadefinition/makumba//**/*.java">
+	<target name="compileMDDProvider" depends="OQLParserGeneration" description="compile all java files for MDDProvider">
+			<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/providers/datadefinition/makumba/**/*.java">
+				<classpath refid="project.class.path" />
+			</javac>
+	</target>
+	
+	<target name="compileCommons" depends="OQLParserGeneration" description="compile all java files for commons">
+			<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/*.java, org/makumba/commons/**/*.java, org/makumba/providers/*.java, org.makumba.controller/**/*.java">
 				<classpath refid="project.class.path" />
 			</javac>
 	</target>
 
 	<target name="compileRest" depends="OQLParserGeneration" description="compile all java files for list">
-		<javac srcdir="classes" source="1.5" target="1.5" debug="on" excludes="org/makumba/list/**/*.java">
+		<javac srcdir="classes" source="1.5" target="1.5" debug="on" excludes="org/makumba/list/**/*.java, org/makumba/forms/**/*.java, org/makumba/analyser/**/*.java, org/makumba/providers/datadefinition/makumba/**/*.java">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
@@ -141,7 +147,6 @@
 	</target>
 
 	<target name="checkManifest">
-		<mkdir dir="META-INF" />
 		<condition property="meta-inf.ok">
 			<and>
 				<uptodate srcfile="classes/META-INF/taglib.tld" targetfile="META-INF/makumba.tld" />
@@ -221,11 +226,21 @@
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
+	
+	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compileCommons">
+		<mkdir dir="${jar.place}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.place}/lib/makumba-commons.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/providers/*.class, org.makumba.controller/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
 
 	<target name="jarRest" description="make a jar for the rest in ./lib" depends="compileRest">
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-commons.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.place}/lib/makumba-rest.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" excludes="org/makumba/list/**/*.class, org/makumba/forms/**/*.class, org/makumba/analyser/**/*.class, org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
@@ -555,10 +570,11 @@ package org.makumba]]>
 	<zip zipfile="source/makumba-list-src.zip">
 		<fileset dir="source/list" />
 	</zip>
-	
+	<!--
 	<delete includeEmptyDirs="true" failonerror="false">
 		<fileset dir="source/list" />
 	</delete>
+	-->
 	
 </target>
 
@@ -583,14 +599,15 @@ package org.makumba]]>
 	<zip zipfile="source/makumba-forms-src.zip">
 		<fileset dir="source/forms" />
 	</zip>
-	
+	<!--
 	<delete includeEmptyDirs="true" failonerror="false">
 		<fileset dir="source/forms" />
 	</delete>
+	-->
 	
 </target>
 	
-<target name="makeCommonsCompiled" depends="jarRest, jarAnalyser, jarMDDProvider">
+<target name="makeCommonsCompiled" depends="jarAnalyser, jarMDDProvider, jarCommons">
 	<mkdir dir="source/commons"/>
 	<copy file="lib/makumba-commons.jar" todir="source/commons"/>
 	<copy file="lib/makumba-analyser.jar" todir="source/commons"/>
