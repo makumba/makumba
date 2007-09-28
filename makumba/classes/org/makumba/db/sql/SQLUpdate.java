@@ -29,13 +29,11 @@ import java.sql.SQLException;
 import org.makumba.DBError;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.db.Update;
 import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.oql.OQLQueryProvider;
 
 public class SQLUpdate implements Update {
     

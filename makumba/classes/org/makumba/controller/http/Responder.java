@@ -48,14 +48,15 @@ import org.makumba.AttributeNotFoundException;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.controller.Logic;
 import org.makumba.forms.html.FormResponder;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
@@ -437,6 +438,10 @@ public abstract class Responder implements java.io.Serializable {
     /** respond to a http request */
     static Exception response(HttpServletRequest req, HttpServletResponse resp) {
         setResponderWorkingDir(req);
+        
+        Configuration config = new Configuration();
+        
+        TransactionProvider tp = new TransactionProvider(config);
 
         if (req.getAttribute(RESPONSE_STRING_NAME) != null)
             return null;
@@ -468,7 +473,7 @@ public abstract class Responder implements java.io.Serializable {
                         && reqFormSession != null) {
                     Transaction db = null;
                     try {
-                        db = MakumbaSystem.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                        db = tp.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                         // check to see if the ticket is valid... if it exists in the db
                         Vector v = db.executeQuery(

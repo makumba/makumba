@@ -8,11 +8,6 @@ package org.makumba.db.hibernate.hql;
 
 import java.util.Map;
 
-import org.makumba.DataDefinition;
-import org.makumba.DataDefinitionNotFoundError;
-import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
-
 import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;

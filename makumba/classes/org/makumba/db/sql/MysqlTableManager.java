@@ -26,7 +26,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.db.sql.SQLDBConnection;
 
 public class MysqlTableManager extends org.makumba.db.sql.TableManager

@@ -28,12 +28,12 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.Transaction;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 public class ptrEditor extends choiceEditor {
 
@@ -44,6 +44,8 @@ public class ptrEditor extends choiceEditor {
     private Configuration config = new Configuration();
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    
+    private TransactionProvider tp = new TransactionProvider(config);
 
     /** Don't use this, use getInstance() */
     protected ptrEditor() {
@@ -67,7 +69,7 @@ public class ptrEditor extends choiceEditor {
 
         Vector v = null;
 
-        Transaction dbc = MakumbaSystem.getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
+        Transaction dbc = tp.getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
             v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
         } finally {

@@ -35,7 +35,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.interfaces.JavaAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;

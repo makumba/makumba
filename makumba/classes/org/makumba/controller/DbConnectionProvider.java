@@ -28,7 +28,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.makumba.Transaction;
-import org.makumba.MakumbaSystem;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * A group of database connections, at most one per database name. They can be closed all at a time. This object is not
@@ -38,12 +39,17 @@ import org.makumba.MakumbaSystem;
  * @author Cristian Bogdan
  */
 public class DbConnectionProvider {
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
+    
     Map<String, Transaction> connections = new HashMap<String, Transaction>(7);
 
     public Transaction getConnectionTo(String dbname) {
         Transaction db = (Transaction) connections.get(dbname);
         if (db == null)
-            connections.put(dbname, db = MakumbaSystem.getConnectionTo(dbname));
+            connections.put(dbname, db = tp.getConnectionTo(dbname));
         return db;
     }
 

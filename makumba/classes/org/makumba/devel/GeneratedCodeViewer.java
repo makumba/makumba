@@ -22,13 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.Configuration;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -59,7 +59,7 @@ public class GeneratedCodeViewer extends jspViewer {
     private static final int TEMPLATES_BUILTIN = 1;
 
     private static final int TEMPLATES_USERDEFINED = 2;
-
+    
     static {
         initTemplates();
     }
@@ -332,6 +332,11 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** print links to the generated JSP and java files in the page header. */
     private void printGeneratedCodeLinks(PrintWriter w) {
+        
+        Configuration config = new Configuration();
+        
+        TransactionProvider tp = new TransactionProvider(config);
+        
         String cgiParams = "";
 
         w.println("<span style=\"font-size: smaller;\">");
@@ -344,7 +349,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     || currentType == CodeGenerator.TYPE_DELETE && cgiParams.equals("")) {
                 String labelName = CodeGenerator.getLabelNameFromDataDefinition(dd);
                 // we need to find an object to edit
-                Transaction db = MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDataSourceName());
+                Transaction db = tp.getConnectionTo(tp.getDefaultDataSourceName());
                 try {
                     String query = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;

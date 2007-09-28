@@ -34,15 +34,21 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.Responder;
 import org.makumba.forms.validation.ClientsideValidationProvider;
+import org.makumba.providers.TransactionProvider;
 
 public class FormResponder extends Responder {
 
     private static final long serialVersionUID = 1L;
 
     RecordEditor editor;
+    
+    private Configuration config = new Configuration();
+    
+    private TransactionProvider tp = new TransactionProvider(config);
 
     /**
      * reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved
@@ -225,7 +231,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = MakumbaSystem.getConnectionTo(database);
+            Transaction db = tp.getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);

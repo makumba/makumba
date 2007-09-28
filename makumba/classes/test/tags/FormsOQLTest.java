@@ -21,17 +21,15 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import junit.extensions.TestSetup;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
 import org.makumba.Transaction;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.tags.MakumbaVersionTag;
+import org.makumba.commons.Configuration;
+import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
 import test.util.MakumbaJspTestCase;
@@ -158,7 +156,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	
 	private static Transaction getDB() {
-		return MakumbaSystem.getConnectionTo(MakumbaSystem.getDefaultDatabaseName("test/testDatabase.properties"));
+        Configuration config = new Configuration();
+        TransactionProvider tp = new TransactionProvider(config);
+        return tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
 	}
     
     

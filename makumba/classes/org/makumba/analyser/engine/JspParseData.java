@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.jsp.tagext.Tag;
 
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
