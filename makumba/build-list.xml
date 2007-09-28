@@ -1,0 +1,39 @@
+<project name="Makumba" default="compile" basedir=".">
+	<path id="project.class.path">
+		<fileset dir="../commons/lib">
+			<include name="**/*.jar" />
+			<exclude name="**/makumba.jar" />
+		</fileset>
+		<fileset dir="../commons">
+			<include name="makumba-commons.jar" />
+			<include name="makumba-analyser.jar" />
+			<include name="makumba-datadefinitionprovider.jar" />
+		</fileset>
+	</path>
+	
+	<property name="jar.place" value="../commons" />
+	
+	<target name="clean" description="delete all generated files and backups">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="classes" includes="**/*.class,**/*.*~" defaultExcludes="no" />
+		</delete>
+	</target>
+	
+	<target name="compile" description="compile all java files for the product">
+		<javac srcdir="classes" source="1.5" target="1.5" debug="on">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+	
+	<target name="jar" description="make a jar for the list in commons/lib, to serve as FormDataProvider" depends="compile">
+		<mkdir dir="." />
+		<jar jarfile="makumba-list.jar">
+			<fileset dir="classes" includes="org/makumba/list/**/*.class" defaultExcludes="no" />
+			<metainf dir="META-INF" includes="taglib-list-oql.tld, taglib-list-hql.tld" defaultExcludes="no" />
+		</jar>
+	</target>
+	
+
+
+
+</project>

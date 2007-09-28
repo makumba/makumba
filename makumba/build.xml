@@ -146,13 +146,9 @@
 		</delete>
 	</target>
 
-	<target name="checkManifest">
+	<target name="checkManifest" depends="compileCommons">
 		<condition property="meta-inf.ok">
-			<and>
-				<uptodate srcfile="classes/META-INF/taglib.tld" targetfile="META-INF/makumba.tld" />
-				<uptodate srcfile="classes/META-INF/taglib-hibernate.tld" targetfile="META-INF/taglib-hibernate.tld" />
-				<uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
-			</and>
+				<uptodate srcfile="manifest.template" targetfile="manifest.mf" />
 		</condition>
 	</target>
 
@@ -227,11 +223,11 @@
 		</jar>
 	</target>
 	
-	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compileCommons">
+	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compile">
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba-commons.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/providers/*.class, org.makumba.controller/**/*.class" defaultExcludes="no" />
+			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/controller/**/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
@@ -555,26 +551,19 @@ package org.makumba]]>
 			<include name="**/makumba/list/**" />
 		</fileset>			
 	</copy>
-	<mkdir dir="source/list/lib"/>
-	<copy todir="source/list/lib">
-		<fileset dir="lib">
-			<include name="*.jar" />
-			<exclude name="makumba*.jar"/>
-		</fileset>			
-	</copy>
 	<mkdir dir="source/list/META-INF"/>
 	<copy file="classes/META-INF/taglib-list-oql.tld" todir="source/list/META-INF" />
 	<copy file="classes/META-INF/taglib-list-hql.tld" todir="source/list/META-INF" />
-	<copy file="build-product.xml" tofile="source/list/build.xml" />
+	<copy file="build-list.xml" tofile="source/list/build.xml" />
 	
 	<zip zipfile="source/makumba-list-src.zip">
-		<fileset dir="source/list" />
+		<fileset dir="source" includes="list/**" />
 	</zip>
-	<!--
+	
 	<delete includeEmptyDirs="true" failonerror="false">
 		<fileset dir="source/list" />
 	</delete>
-	-->
+	
 	
 </target>
 
@@ -585,25 +574,18 @@ package org.makumba]]>
 			<include name="**/makumba/forms/**" />
 		</fileset>			
 	</copy>
-	<mkdir dir="source/forms/lib"/>
-	<copy todir="source/forms/lib">
-		<fileset dir="lib">
-			<include name="*.jar" />
-			<exclude name="makumba*.jar"/>
-		</fileset>			
-	</copy>
 	<mkdir dir="source/forms/META-INF"/>
 	<copy file="classes/META-INF/taglib-forms.tld" todir="source/forms/META-INF" />
-	<copy file="build-product.xml" tofile="source/forms/build.xml" />
+	<copy file="build-forms.xml" tofile="source/forms/build.xml" />
 	
 	<zip zipfile="source/makumba-forms-src.zip">
-		<fileset dir="source/forms" />
+		<fileset dir="source" includes="forms/**" />
 	</zip>
-	<!--
+	
 	<delete includeEmptyDirs="true" failonerror="false">
 		<fileset dir="source/forms" />
 	</delete>
-	-->
+	
 	
 </target>
 	
@@ -612,6 +594,22 @@ package org.makumba]]>
 	<copy file="lib/makumba-commons.jar" todir="source/commons"/>
 	<copy file="lib/makumba-analyser.jar" todir="source/commons"/>
 	<copy file="lib/makumba-datadefinitionprovider.jar" todir="source/commons"/>
+	<mkdir dir="source/commons/lib"/>
+	<copy todir="source/commons/lib">
+		<fileset dir="lib">
+			<include name="*.jar" />
+			<exclude name="makumba*.jar"/>
+		</fileset>			
+	</copy>
+	
+	<zip zipfile="source/makumba-lib.zip">
+		<fileset dir="source/" includes="commons/**" />
+	</zip>
+		
+	<delete includeEmptyDirs="true" failonerror="false">
+		<fileset dir="source/commons" />
+	</delete>
+	
 </target>
 
 </project>
