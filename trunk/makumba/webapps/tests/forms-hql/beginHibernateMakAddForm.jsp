@@ -3,14 +3,14 @@
 <html>
 <head><title>Field types</title></head>
 <body>
-<%@taglib uri="http://www.makumba.org/list-hql" prefix="mak" %>
-<%@taglib uri="http://www.makumba.org/forms" prefix="form" %>
+
+<%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
 
 <mak:object from="test.Person p join p.indiv i" where="i.name='john'">
-    <form:add object="p" field="address" action="testHibernateMakAddForm.jsp" method="post">
-    	<form:input name="email"/>
+    <mak:addForm object="p" field="address" action="testHibernateMakAddForm.jsp" method="post">
+    	<mak:input name="email"/>
    	    <input type="submit" name="addemail" value="Add!">
-    </form:add>
+    </mak:addForm>
 </mak:object>
 
 </body>
