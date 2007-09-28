@@ -1,0 +1,8 @@
+This file describes the visible changes due to refactoring, that can have an impact outside of Makumba (for users).
+
+- in web.xml: the NamedResourcesContextListener is not anymore in util package but commons
+
+- in org.makumba.MakumbaSystem:
+  - close() inlined
+  - getMakumbaLogger() inlined
+  - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
