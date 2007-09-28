@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.util;
+package org.makumba.commons;
 
 public class NameCase {
     public static String transformCase(String s) {

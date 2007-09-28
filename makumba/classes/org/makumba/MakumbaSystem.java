@@ -24,14 +24,14 @@
 package org.makumba;
 
 
+import org.makumba.commons.JspWikiFormatter;
+import org.makumba.commons.WikiFormatter;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.util.wiki.JspWikiFormatter;
-import org.makumba.util.wiki.WikiFormatter;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
