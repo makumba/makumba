@@ -6,6 +6,8 @@
 		</fileset>
 		<fileset dir="../commons">
 			<include name="makumba-commons.jar" />
+			<include name="makumba-analyser.jar" />
+			<include name="makumba-datadefinitionprovider.jar" />
 		</fileset>
 	</path>
 	

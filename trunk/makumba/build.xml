@@ -103,10 +103,22 @@
 		</javac>
 	</target>
 
-	<target name="compileForms" depends="OQLParserGeneration" description="compile all java files for list">
+	<target name="compileForms" depends="OQLParserGeneration" description="compile all java files for forms">
 		<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/forms/**/*.java">
 			<classpath refid="project.class.path" />
 		</javac>
+	</target>
+	
+	<target name="compileAnalyser" description="compile all java files for analyser">
+		<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+	
+	<target name="compileMDDProvider" description="compile all java files for MDDProvider">
+			<javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/providers/datadefinition/makumba//**/*.java">
+				<classpath refid="project.class.path" />
+			</javac>
 	</target>
 
 	<target name="compileRest" depends="OQLParserGeneration" description="compile all java files for list">
@@ -182,7 +194,7 @@
 		</jar>
 	</target>
 
-	<target name="jarForms" description="make a jar for the list in ./lib" depends="compileForms">
+	<target name="jarForms" description="make a jar for the forms in ./lib" depends="compileForms">
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba-forms.jar" manifest="manifest.mf">
@@ -191,12 +203,30 @@
 			<metainf dir="classes/META-INF" includes="taglib-forms.tld" defaultExcludes="no" />
 		</jar>
 	</target>
+	
+	<target name="jarAnalyser" description="make a jar for the analyser in ./lib" depends="compileAnalyser">
+		<mkdir dir="${jar.place}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.place}/lib/makumba-analyser.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/analyser/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+	
+	<target name="jarMDDProvider" description="make a jar for the MDD provider in ./lib" depends="compileMDDProvider">
+		<mkdir dir="${jar.place}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.place}/lib/makumba-datadefinitionprovider.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
 
 	<target name="jarRest" description="make a jar for the rest in ./lib" depends="compileRest">
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba-commons.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" excludes="org/makumba/list/**/*.class" defaultExcludes="no" />
+			<fileset dir="classes" includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" excludes="org/makumba/list/**/*.class, org/makumba/forms/**/*.class, org/makumba/analyser/**/*.class, org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
@@ -548,7 +578,7 @@ package org.makumba]]>
 	</copy>
 	<mkdir dir="source/forms/META-INF"/>
 	<copy file="classes/META-INF/taglib-forms.tld" todir="source/forms/META-INF" />
-	<copy file="build-product.xml" tofile="source/list/build.xml" />
+	<copy file="build-product.xml" tofile="source/forms/build.xml" />
 	
 	<zip zipfile="source/makumba-forms-src.zip">
 		<fileset dir="source/forms" />
@@ -560,10 +590,11 @@ package org.makumba]]>
 	
 </target>
 	
-<target name="makeCommonsCompiled" depends="jarRest">
+<target name="makeCommonsCompiled" depends="jarRest, jarAnalyser, jarMDDProvider">
 	<mkdir dir="source/commons"/>
-	<copy file="lib/makumba-commons.jar" todir="source/commons">
-	</copy>
+	<copy file="lib/makumba-commons.jar" todir="source/commons"/>
+	<copy file="lib/makumba-analyser.jar" todir="source/commons"/>
+	<copy file="lib/makumba-datadefinitionprovider.jar" todir="source/commons"/>
 </target>
 
 </project>
