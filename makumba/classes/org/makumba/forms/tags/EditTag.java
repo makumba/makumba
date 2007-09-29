@@ -25,7 +25,6 @@ package org.makumba.forms.tags;
 
 import org.makumba.DataDefinition;
 import org.makumba.analyser.PageCache;
-import org.makumba.list.ListFormDataProvider;
 
 /**
  * mak:editForm tag
