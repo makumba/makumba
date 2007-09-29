@@ -8,9 +8,6 @@
 			<include name="makumba-analyser.jar" />
 			<include name="makumba-datadefinitionprovider.jar" />
 		</fileset>
-		<fileset dir="../list">
-			<include name="makumba-list.jar" />
-		</fileset>
 	</path>
 	
 	<property name="jar.place" value="../commons" />
@@ -21,12 +18,7 @@
 		</delete>
 	</target>
 	
-	<target name="createListDataProvider">
-		<ant dir="../list/" target="jar" inheritall="false"/>
-	</target>
-	
-	<target name="compile" description="compile all java files for the product" depends="createListDataProvider">
-		
+	<target name="compile" description="compile all java files for the product">
 		<javac srcdir="classes" source="1.5" target="1.5" debug="on">
 			<classpath refid="project.class.path" />
 		</javac>
