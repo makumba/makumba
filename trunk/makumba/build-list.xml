@@ -26,8 +26,7 @@
 	</target>
 	
 	<target name="jar" description="make a jar for the list in commons/lib, to serve as FormDataProvider" depends="compile">
-		<mkdir dir="." />
-		<jar jarfile="makumba-list.jar">
+		<jar jarfile="${jar.place}/lib/makumba-list.jar">
 			<fileset dir="classes" includes="org/makumba/list/**/*.class" defaultExcludes="no" />
 			<metainf dir="META-INF" includes="taglib-list-oql.tld, taglib-list-hql.tld" defaultExcludes="no" />
 		</jar>
