@@ -22,30 +22,35 @@
 /////////////////////////////////////
 
 package org.makumba.controller.jsp;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+/**
+ * mak:response tag, displaying the response of a form submission.
+ * @author Cristian Bogdan
+ * @version $Id$
+ */
+public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
+    
+    private static final long serialVersionUID = 1L;
 
-public int doStartTag() throws JspException
-  {
-    try{
-      Object response= pageContext.getRequest().getAttribute
-	(org.makumba.controller.http.Responder.RESPONSE_STRING_NAME);
-      
-      // response is null only during login, maybe a more strict check should be made
-      if(response!=null)
-	pageContext.getOut().print(response);
-    }catch(IOException e) { org.makumba.controller.http.ControllerFilter.treatException(e, (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());}
+    public int doStartTag() throws JspException {
+        try {
+            Object response = pageContext.getRequest().getAttribute(
+                org.makumba.controller.http.Responder.RESPONSE_STRING_NAME);
 
-    return EVAL_BODY_INCLUDE;
-  }
+            // response is null only during login, maybe a more strict check should be made
+            if (response != null)
+                pageContext.getOut().print(response);
+        } catch (IOException e) {
+            org.makumba.controller.http.ControllerFilter.treatException(e,
+                (HttpServletRequest) pageContext.getRequest(), (HttpServletResponse) pageContext.getResponse());
+        }
+
+        return EVAL_BODY_INCLUDE;
+    }
 }
