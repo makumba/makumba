@@ -123,8 +123,11 @@ public abstract class Responder implements java.io.Serializable {
     /** new and add responders set their result to a result attribute */
     protected String resultAttribute = anonymousResult;
 
-    /** the business logic handler, for simple forms */
+    /** the business logic handler, for all types of forms */
     protected String handler;
+
+    /** the business logic after handler, for all types of forms */
+    protected String afterHandler;
 
     /**
      * edit, add and delete makumba operations have a special pointer called the base pointer
@@ -189,6 +192,11 @@ public abstract class Responder implements java.io.Serializable {
     /** pass the response handler, if other than the default one */
     public void setHandler(String handler) {
         this.handler = handler;
+    }
+
+    /** pass the response afterHandler, if other than the default one */
+    public void setAfterHandler(String afterHandler) {
+        this.afterHandler = afterHandler;
     }
 
     /** pass the base pointer type, needed for the response */
@@ -319,7 +327,7 @@ public abstract class Responder implements java.io.Serializable {
      * return the enumeration of responder codes
      */
     static Iterator getResponderCodes(HttpServletRequest req) {
-        TreeSet set = new TreeSet(bySuffix);
+        TreeSet<Object> set = new TreeSet<Object>(bySuffix);
 
         Object o = RequestAttributes.getParameters(req).getParameter(responderName);
         if (o != null) {
@@ -596,10 +604,17 @@ public abstract class Responder implements java.io.Serializable {
                 } else {
                     handlerName = "on_edit" + Logic.upperCase(resp.basePointerType);
                 }
+                String afterHandlerName;
+                if (resp.afterHandler != null) {
+                    afterHandlerName = resp.afterHandler;
+                } else {
+                    afterHandlerName = "after_edit" + Logic.upperCase(resp.basePointerType);
+                }
 
-                return Logic.doEdit(resp.controller, handlerName, resp.basePointerType, resp.getHttpBasePointer(req,
-                    suffix), resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req, resp.database),
-                    resp.database, RequestAttributes.getConnectionProvider(req));
+                return Logic.doEdit(resp.controller, handlerName, afterHandlerName, resp.basePointerType,
+                    resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
+                            resp.controller, req, resp.database), resp.database,
+                    RequestAttributes.getConnectionProvider(req));
             }
 
             public String verify(Responder resp) {
@@ -633,8 +648,14 @@ public abstract class Responder implements java.io.Serializable {
                 } else {
                     handlerName = "on_new" + Logic.upperCase(resp.newType);
                 }
-                return Logic.doNew(resp.controller, handlerName, resp.newType, resp.getHttpData(req, suffix),
-                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
+                String afterHandlerName;
+                if (resp.afterHandler != null) {
+                    afterHandlerName = resp.afterHandler;
+                } else {
+                    afterHandlerName = "after_new" + Logic.upperCase(resp.newType);
+                }
+                return Logic.doNew(resp.controller, handlerName, afterHandlerName, resp.newType, resp.getHttpData(req,
+                    suffix), new RequestAttributes(resp.controller, req, resp.database), resp.database,
                     RequestAttributes.getConnectionProvider(req));
             }
 
@@ -654,9 +675,15 @@ public abstract class Responder implements java.io.Serializable {
                 } else {
                     handlerName = "on_add" + Logic.upperCase(resp.basePointerType + "->" + resp.addField);
                 }
-                return Logic.doAdd(resp.controller, handlerName, resp.basePointerType + "->" + resp.addField,
-                    resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
-                            resp.controller, req, resp.database), resp.database,
+                String afterHandlerName;
+                if (resp.afterHandler != null) {
+                    afterHandlerName = resp.afterHandler;
+                } else {
+                    afterHandlerName = "after_add" + Logic.upperCase(resp.basePointerType + "->" + resp.addField);
+                }
+                return Logic.doAdd(resp.controller, handlerName, afterHandlerName, resp.basePointerType + "->"
+                        + resp.addField, resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
+                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
                     RequestAttributes.getConnectionProvider(req));
             }
 
@@ -683,11 +710,17 @@ public abstract class Responder implements java.io.Serializable {
                 if (resp.handler != null) {
                     handlerName = resp.handler;
                 } else {
-                    System.out.println("resp.basePointerType:" + resp.basePointerType);
-                    handlerName = "on_edit" + Logic.upperCase(resp.basePointerType);
+                    handlerName = "on_add" + Logic.upperCase(resp.basePointerType);
                 }
+                String afterHandlerName;
+                if (resp.afterHandler != null) {
+                    afterHandlerName = resp.afterHandler;
+                } else {
+                    afterHandlerName = "after_add" + Logic.upperCase(resp.basePointerType);
+                }
+
                 // otherwise, we add to the new object
-                return Logic.doAdd(resp.controller, handlerName, resp.newType + "->" + resp.addField,
+                return Logic.doAdd(resp.controller, handlerName, afterHandlerName, resp.newType + "->" + resp.addField,
                     (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req,
                             resp.database), resp.database, RequestAttributes.getConnectionProvider(req));
             }
