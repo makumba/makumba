@@ -45,6 +45,9 @@ public class ObjectTypeAST extends ExprTypeAST {
     
     public ObjectTypeAST(AST pointer, Map aliasTypes) throws SemanticException {
         String type = (String) aliasTypes.get(pointer.getText());
+        if(type==null)
+            throw new SemanticException("unknown alias: " + pointer.getText());
+            
         setObjectType(type);
         setDescription(pointer.getText());
     }
@@ -53,7 +56,7 @@ public class ObjectTypeAST extends ExprTypeAST {
         return objectType;
     }
 
-    public void setObjectType(String objectType) {
+    void setObjectType(String objectType) {
         this.objectType = objectType;
     }
 
