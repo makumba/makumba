@@ -12,6 +12,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryProvider;
@@ -79,8 +80,11 @@ public class HqlAnalyzer implements QueryAnalysis {
                 walker.typeComputer = new MddObjectType();
                 try {
                     walker.statement(t1);
-                } catch (RuntimeException e) {
-                    throw new OQLParseError("during analysis of query: " + query1, e);
+                } catch(RuntimeWrappedException e1){
+                    throw new OQLParseError(" during analysis of query: " + query1, e1.getReason()); 
+                }
+                catch (RuntimeException e) {
+                    throw new OQLParseError(" during analysis of query: " + query1, e);
                 }
                 
                   //print the tree
@@ -114,6 +118,8 @@ public class HqlAnalyzer implements QueryAnalysis {
                 }
                 projTypes.addField(makeField(name, atom));
             }
+        }catch(RuntimeWrappedException e1){
+            throw new OQLParseError(" during analysis of query: " + query, e1.getReason()); 
         } catch (RuntimeException e) {
             throw new OQLParseError("during analysis of query: " + query, e);
         }
@@ -134,7 +140,9 @@ public class HqlAnalyzer implements QueryAnalysis {
                 
                 paramTypes.addField(makeField(e.getKey(), e.getValue()));
             }
-        } catch (RuntimeException e) {
+        } catch(RuntimeWrappedException e1){
+            throw new OQLParseError(" during analysis of query: " + query, e1.getReason()); 
+        }catch (RuntimeException e) {
             throw new OQLParseError("during analysis of query: " + query, e);
         }
         return paramTypes;

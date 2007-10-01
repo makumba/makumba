@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.commons.RuntimeWrappedException;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
@@ -208,5 +209,10 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     public List getResult() {
         return result;
+    }
+    
+    @Override
+    public void reportError(RecognitionException ex){
+        throw new RuntimeWrappedException(ex);
     }
 }
