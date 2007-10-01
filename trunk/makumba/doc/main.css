@@ -172,7 +172,16 @@ pre.example {
 	margin-left: 20px;
 	padding-left: 5px;
 	background: #f5f5ff;
-	margin-top: 0.5em;
+	/* margin-top: 0.5em; */
+}
+
+
+.example-header {
+	border-top: solid green 1px;
+	border-bottom: solid green 1px;
+	text-align: center;
+	font-weight: bold;
+	background: #f5f5ff;
 }
 
 .note {
@@ -193,7 +202,7 @@ pre.example {
 	padding-bottom: 5px;
 }
 
-div.plainstyle {
+.plainstyle {
 	background: #dddddd;
 	margin-left: 20px;
 	font-family: serif;
@@ -201,7 +210,7 @@ div.plainstyle {
 	width: 50%;
 }
 
-div.plainstyle h1,div.plainstyle h2,div.plainstyle h3 {
+.plainstyle h1,.plainstyle h2,.plainstyle h3 {
 	color: black;
 	padding: 0;
 	background: transparent;
