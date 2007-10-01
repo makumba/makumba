@@ -13,14 +13,14 @@ function makeNavBar(pathToBase)
 	
 	document.write('<a href="'+bDir+'index.html"><img src="'+bDir+'makumba-logo-small.gif" border="0"></a><br>');
 
-        document.write('<br>');
+    document.write('<br>');
 	document.write('<a href="'+bDir+'index.html"><b>Home</b></a><br>');	
 	document.write('<br>');
 	document.write('<a href="'+bDir+'news.html"><b>News</b></a><br>');	
 
 	document.write('<br>');
 	document.write('<a href="'+bDir+'documentation.html"><b>Documentation</b></a><br>');
-	document.write('- <a href="'+bDir+'makumba-install.html">Installation</a><br/>');
+	document.write('- <a href="'+bDir+'makumba-install.html">Quick start</a><br/>');
 	document.write('- <a href="'+bDir+'makumba-spec.html">Specification</a><br>');
 	document.write('- <a href="'+bDir+'makumba-example.html">Example</a><br>');
 	document.write('- <a href="'+bDir+'SQL-drivers.html"> Config DB</a><br>');
