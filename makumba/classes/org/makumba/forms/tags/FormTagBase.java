@@ -59,6 +59,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String handler = null;
 
+    String afterHandler = null;
+
     String formMethod = null;
 
     public String formAction = null;
@@ -75,7 +77,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     BodyContent bodyContent = null;
 
-    String annotation;
+    String annotation = "after";
 
     private static final String[] validAnnotationParams = new String[] { "none", "before", "after", "both" };
 
@@ -127,6 +129,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setHandler(String s) {
         handler = s;
+    }
+
+    public void setAfterHandler(String s) {
+        afterHandler = s;
     }
 
     public void setMethod(String s) {
@@ -237,7 +243,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
-        Object[] keyComponents = { baseObject, handler, fdp.getParentListKey(this), getClass() };
+        Object[] keyComponents = { baseObject, handler, afterHandler, fdp.getParentListKey(this), getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
@@ -322,6 +328,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.setResultAttribute(formName);
         if (handler != null)
             responder.setHandler(handler);
+        if (afterHandler != null) {
+            responder.setAfterHandler(afterHandler);
+        }
         if (formAction != null)
             responder.setAction(formAction);
         if (formMethod != null)
@@ -409,7 +418,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         } catch (IOException e) {
             throw new JspException(e.toString());
         } finally {
-            baseObject = handler = formMethod = formAction = formName = formMessage = basePointer = null;
+            baseObject = handler = afterHandler = formMethod = formAction = formName = formMessage = basePointer = null;
             responder = null;
             bodyContent = null;
         }
