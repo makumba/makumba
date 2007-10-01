@@ -35,11 +35,11 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import org.makumba.Attributes;
+import org.makumba.CompositeValidationException;
 import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
-import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
@@ -52,7 +52,7 @@ public class Logic {
 
     static java.net.URL controllerURL;
 
-    static HashMap nameToObject = new HashMap();
+    static HashMap<String, Object> nameToObject = new HashMap<String, Object>();
 
     private static final String HANDLER_METHOD_HEAD = "public void ";
 
@@ -400,15 +400,15 @@ public class Logic {
         }
     }
 
-    public static Pointer doEdit(Object controller, String handlerName, String typename, Pointer p, Dictionary data,
-            Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+    public static Pointer doEdit(Object controller, String handlerName, String afterHandlerName, String typename,
+            Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { p, data, a, db };
         Method edit = null;
+        Method afterEdit = null;
         if (!(controller instanceof LogicNotFoundException)) {
-            String upper = upperCase(typename);
-            String handlerName2 = "on_edit" + upper;
             edit = getMethod(handlerName, editArgs, controller);
+            afterEdit = getMethod(afterHandlerName, editArgs, controller);
             if (edit == null)
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
@@ -418,9 +418,13 @@ public class Logic {
         }
 
         try {
-            if (edit != null)
+            if (edit != null) {
                 edit.invoke(controller, editArg);
+            }
             db.update(p, data);
+            if (afterEdit != null) {
+                afterEdit.invoke(controller, editArg);
+            }
             return p;
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
@@ -468,26 +472,25 @@ public class Logic {
         }
     }
 
-    public static Pointer doAdd(Object controller, String handlerName, String typename, Pointer p, Dictionary data,
-            Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+    public static Pointer doAdd(Object controller, String handlerName, String afterHandlerName, String typename,
+            Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] addArg = { p, data, a, db };
         Method on = null;
         Method after = null;
-        String upper = upperCase(typename);
         int n = typename.lastIndexOf("->");
         String field = typename.substring(n + 2);
         typename = typename.substring(0, n);
 
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, editArgs, controller);
-            after = getMethod("after_add" + upper, editArgs, controller);
+            after = getMethod(afterHandlerName, editArgs, controller);
 
             if (on == null && after == null)
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
                         + HANDLER_METHOD_HEAD + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_add" + upper
+                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
                         + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                         + "so it does not allow ADD operations on the type " + typename + ", field " + field
                         + "\nDefine any of the methods (even with an empty body) to allow such operations.");
@@ -513,23 +516,22 @@ public class Logic {
 
     static Class[] newArgs = { Dictionary.class, Attributes.class, Database.class };
 
-    public static Pointer doNew(Object controller, String handlerName, String typename, Dictionary data, Attributes a,
-            String dbName, DbConnectionProvider dbcp) throws LogicException {
+    public static Pointer doNew(Object controller, String handlerName, String afterHandlerName, String typename,
+            Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] onArgs = { data, a, db };
         Object[] afterArgs = { null, data, a, db };
         Method on = null;
         Method after = null;
-        String upper = upperCase(typename);
 
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, newArgs, controller);
-            after = getMethod("after_new" + upper, editArgs, controller);
+            after = getMethod(afterHandlerName, editArgs, controller);
             if (on == null && after == null)
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
                         + HANDLER_METHOD_HEAD + handlerName + "(Dictionary d, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_new" + upper
+                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
                         + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                         + "so it does not allow NEW operations on the type " + typename
                         + ".\nDefine any of the methods (even with an empty body) to allow such operations.");
