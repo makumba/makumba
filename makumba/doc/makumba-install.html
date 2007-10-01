@@ -240,12 +240,12 @@ Please note that you may not want to enable all developer support tools in a pro
 <h4>&nbsp;Database configuration files</h4>
 
 <p>Remember talking about the SQL engine. We assumed you were using MySQL. Let's further assume
-that the database server is located on a computer named <tt>dbhost.yourdomain.org</tt> and you'll be
+that the database server runs on your computer, having the hostname <tt>localhost</tt> and that you'll be
 using a database named <tt>maktest</tt> to store the tables for this application. For <b>Makumba</b>
-to know where and how it should connect to the database you need to create a file named <tt>dbhost.yourdomain.org_mysql_maktest.properties</tt>
+to know where and how it should connect to the database you need to create a file named <tt>localhost_mysql_maktest.properties</tt>
 and put it in your application's <i>CLASSPATH</i>, i.e. your <tt>/WEB-INF/classes</tt> folder.</p>
-<div class="note">If you're running the MySQL server locally (on the same computer where the
-Tomcat runs) you can name the database configuration file <tt>localhost_mysql_maktest.properties</tt>.</div>
+
+<div class="note">If you're running the MySQL server remotely the database configuration file will have a name like <tt>dbhost.yourdomain.org_mysql_maktest.properties</tt>.</div>
 
 <p>This file will contain the username and password to connect to the database and a line that
 instructs the <b>Makumba</b> engine to create or alter any needed table structure (you should
@@ -276,7 +276,7 @@ located in your <i>CLASSPATH</i>. In this case:</p>
 <pre class="example">
 <div class="example-header">maktest/WEB-INF/classes/MakumbaDatabase.properties</div>
 #Default database
-default=dbhost.yourdomain.org_mysql_maktest
+default=localhost_mysql_maktest
 </pre>
 
 <h3><a name="Data">&nbsp;</a>Data definitions</h3>
@@ -294,9 +294,8 @@ giving them an <i>*.mdd</i> extension. For example:</p>
 name=not null char[32]  ; Name
 age=not null int        ; Age
 </pre>
-
-<div class="note">More information on <a href="makumba-spec.html#Data_Description">Makumba
-Definition Files</a></div>
+<br>
+<div class="note">More information on <a href="makumba-spec.html#Data_Description">Makumba Data Definitions</a></div>
 
 <h3><a name="Example">&nbsp;</a>Example application</h3>
 
@@ -313,7 +312,7 @@ create an <tt>index.jsp</tt> file in our applications root folder:</p>
 
 &lt;%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;
 
-&lt;Persons:&gt;
+&lt;h1&gt;Persons&lt;/h1&gt;
 &lt;mak:list from="Person p"&gt;
 &nbsp;&nbsp;&lt;mak:value expr="p.name"/&gt;, &lt;mak:value expr="p.age"/&gt; &lt;br/&gt;
 &lt;/mak:list&gt;
