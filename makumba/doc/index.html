@@ -18,13 +18,24 @@
 <center>
 <a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0" style="border: 0px solid ; width: 329px; height: 100px;"></a></center>
 <p>
-<b>Makumba</b> is a technology designed by <a href="http://www.BEST.eu.org" title="Board of European Students of Technology">BEST</a>
-that helps you to rapidly develop web applications that keep their data in a database   (i.e. data driven web
-	applications). It is implemented in Java and offers a Java <abbr title="Application Programmer's Interface">API</abbr> and a <abbr title="Java Server Pages">JSP</abbr>
-tag library to the web app developer. The technology   has been in use since
-late 2001, and is being further developed, based on users'
+<b>Makumba</b> is a query-centric technology designed by <a href="http://www.BEST.eu.org" title="Board of European Students of Technology">BEST</a>
+that helps you to rapidly develop web applications that keep their data in a database (i.e. data driven web applications). It is implemented in Java and offers a Java <abbr title="Application Programmer's Interface">API</abbr> and a <abbr title="Java Server Pages">JSP</abbr>
+tag library to the web app developer. The technology has been in use since late 2001, and is being further developed, based on users'
 experience and requests.
 </p>
+<p>
+The main elements are:<br>
+<ul>
+<li><b>Makumba List</b>, an intuitive way of "looping" over data records and which automatically formats the display according to the data type.</li>
+<li><b>Makumba Forms</b>, making it possible to build nested forms without having to worry how the data gets stored</li>
+<li><b>Makumba Data Definitions</b>, a very simple yet powerful abstraction of data types which make data modelling very easy</li>
+</ul>
+</p>
+
+<p>
+<b>Makumba</b> is built around <a href="http://www.odmg.org/">OQL</a> (Object Query Language) and we are working on intergrating support for <a href="http://www.hibernate.org/hib_docs/reference/en/html/queryhql.html">HQL</a> (<a href="http://www.hibernate.org/">Hibernate</a> Query Language) as well as <a href="http://www.hibernate.org/hib_docs/reference/en/html/mapping.html">Hibernate mappings</a>.
+</p>
+
 
 <p>
 If you are interested in Makumba you might want to take a look to <a href="http://sourceforge.net/projects/parade"><b>ParaDe</b></a>, a Parallel Development
@@ -43,8 +54,8 @@ welcome to use and contribute to Makumba.
 <div align=left><big><b>Description of Makumba around a short example</b></big></div>
 <p>
 First you <b>describe the data</b> in a text file, called
-<a href="makumba-spec.html#Data_Description">data
-definition</a>. It contains lines like:
+<a href="makumba-spec.html#Data_Description">Makumba Data
+Definition</a>. It contains lines like:
 </p>
 
 <pre class="example">
@@ -62,10 +73,6 @@ Of course, complex applications have more types of data, with pointers from one 
 do read/write operations in a <a href="SQL-drivers.html">database</a>
 of your choice. It currently supports MySQL, Informix, DB2, PostgreSQL and ODBC but many
 other database engines can be easily supported if needed.
-What's more, you can copy data from one
-database to another (this is very important in BEST, we port data a lot,
-we develop on Windows with ODBC or MySQL and run on Linux with Postgres,
-etc).
 </p>
 
 <p>At the interface level, Makumba can <b>generate html</b>
