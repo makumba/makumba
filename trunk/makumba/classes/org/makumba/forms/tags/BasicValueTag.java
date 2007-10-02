@@ -163,12 +163,23 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
                             + "computed type for INPUT is different from the indicated dataType. The dataType is indicated to '"
                             + dataType + "' type computed is '" + type + "'");
 
-        if (type != null && contextType != null && !contextType.isAssignableFrom(type))
+        if (type != null && contextType != null && !contextType.isAssignableFrom(type)) {
+            String contextTypeStr = contextType.getType();
+            String typeStr = type.getType();
+            
+            // if we deal with pointers, also indicate what they point to
+            if(contextTypeStr.equals("ptr") && typeStr.equals("ptr")) {
+                contextTypeStr += " "+contextType.getSubtable().getName();
+                typeStr += " "+type.getSubtable().getName();
+            }
+            
             throw new ProgrammerError(
-                    fieldName
-                            + "computed type is different from the type resulting from form analysis. The context type was determined to '"
-                            + contextType + "', type computed is '" + type + "'");
+                fieldName
+                        + "The computed type is different from the type resulting from the analysis of the form. The context type was determined to '"
+                        + contextTypeStr + "', type computed is '" + typeStr + "'");
 
+        }
+            
         if (type == null && contextType == null && dataTypeInfo == null)
             throw new ProgrammerError(fieldName
                     + "cannot determine input type. Please specify the type using dataType=...");
