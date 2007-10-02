@@ -55,7 +55,7 @@ import org.makumba.Text;
  * @version $Id$
  */
 public class MultipartHttpParameters extends HttpParameters {
-    Hashtable parameters = new Hashtable();
+    Hashtable<String, Object> parameters = new Hashtable<String, Object>();
 
     void computeAtStart() {
     }
@@ -132,7 +132,7 @@ public class MultipartHttpParameters extends HttpParameters {
             if (o instanceof Vector)
                 ((Vector) o).addElement(value);
             else {
-                Vector v = new Vector();
+                Vector<Object> v = new Vector<Object>();
                 v.addElement(o);
                 v.addElement(value);
                 parameters.put(name, v);
@@ -178,7 +178,7 @@ public class MultipartHttpParameters extends HttpParameters {
             ((Vector) a2).addElement(a1);
             return a2;
         } else {
-            Vector v = new Vector();
+            Vector<Object> v = new Vector<Object>();
             v.addElement(a1);
             v.addElement(a2);
             return v;
