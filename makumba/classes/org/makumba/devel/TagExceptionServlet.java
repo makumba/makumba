@@ -108,6 +108,16 @@ public class TagExceptionServlet extends HttpServlet {
             // TODO: use the interface once this is a provider after mak:refactoring finished
             boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this);
             if (!servletEngineSpecificError) {
+                // FIXME this is most probably tomcat-specific
+                /* after JSP compilation, the actual JSP problem is in getRootCause, yet the exception 
+                 * is also very informative (includes code context). So we need to show both.
+                 */
+                t=((ServletException)t).getRootCause();
+                if(!original.getMessage().equals(t.getMessage())){
+                    t1= new Throwable(t.getMessage()+"\n\n"+original.getMessage());
+                    t1.setStackTrace(t.getStackTrace());
+                    t=t1;
+                }
                 knownError("JSP compilation error", t, original, req, wr);
             }
             return;
