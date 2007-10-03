@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.forms.html;
+package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -36,8 +36,10 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
-import org.makumba.controller.http.Responder;
+import org.makumba.forms.html.FieldEditor;
+import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 public class FormResponder extends Responder {
@@ -46,10 +48,6 @@ public class FormResponder extends Responder {
 
     RecordEditor editor;
     
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
-
     /**
      * reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved
      * as attributes
@@ -71,7 +69,7 @@ public class FormResponder extends Responder {
 
     Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
 
-    DataDefinition dd = MakumbaSystem.getTemporaryDataDefinition("Form responder"); // TODO: more precise name
+    DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getVirtualDataDefinition("Form responder"); // TODO: more precise name
 
     int max = 0;
 
@@ -95,7 +93,7 @@ public class FormResponder extends Responder {
         String colName = ("col" + max);
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
-        dd.addField(MakumbaSystem.makeFieldWithName(colName, ftype));
+        dd.addField(new DataDefinitionProvider(new Configuration()).makeFieldWithName(colName, ftype));
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
         provider.initField(fname, ftype, clientSideValidation.equals("live"));
@@ -181,7 +179,7 @@ public class FormResponder extends Responder {
             sb.append("\"" + method + "\"");
             if (multipart)
                 sb.append(" enctype=\"multipart/form-data\" ");
-            // if we do client side validation, we need to put an extra formattting parameter for onSubmit
+            // if we do client side validation, we need to put an extra formatting parameter for onSubmit
             if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
                 StringBuffer onSubmitValidation = provider.getOnSubmitValidation(StringUtils.equals(
                     clientSideValidation, "live"));
@@ -199,7 +197,7 @@ public class FormResponder extends Responder {
 
     public void writeFormPostamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
         String session = request.getSession().getId();
-        setResponderWorkingDir(request);
+        ResponderCacheManager.setResponderWorkingDir(request);
         if (storedSuffix.equals("") && operation.equals("deleteLink")) {
             // a root deleteLink
             sb.append("</a>");
@@ -231,7 +229,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = tp.getConnectionTo(database);
+            Transaction db = new TransactionProvider(new Configuration()).getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);
