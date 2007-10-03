@@ -121,13 +121,16 @@ public class HqlAnalyzer implements QueryAnalysis {
         }catch(RuntimeWrappedException e1){
             throw new OQLParseError(" during analysis of query: " + query, e1.getReason()); 
         } catch (RuntimeException e) {
-            throw new OQLParseError("during analysis of query: " + query, e);
+            throw new OQLParseError(" during analysis of query: " + query, e);
         }
         return projTypes;
     }
 
     public DataDefinition getLabelType(String labelName) {
-        return ddp.getDataDefinition((String) walker.getLabelTypes().get(labelName));
+        String labelTypeName = (String) walker.getLabelTypes().get(labelName);
+        if(labelTypeName==null)
+            throw new OQLParseError(" unknown label "+labelName+ " in query "+query);
+        return ddp.getDataDefinition(labelTypeName);
     }
 
     public DataDefinition getParameterTypes() {
