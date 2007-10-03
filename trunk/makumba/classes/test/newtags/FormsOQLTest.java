@@ -260,11 +260,25 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endFormMultipleForms(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output);
+            output = response.getText();
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
 
         assertTrue(compareTest(output));
     }
+    
+    public void testFormNestedForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakNestedForms.jsp");
+    }
+    public void endFormNestedForms(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+    
 }
