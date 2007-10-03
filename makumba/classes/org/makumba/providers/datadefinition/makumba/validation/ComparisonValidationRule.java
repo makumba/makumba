@@ -1,4 +1,4 @@
-package org.makumba.controller.validation;
+package org.makumba.providers.datadefinition.makumba.validation;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

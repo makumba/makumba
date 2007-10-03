@@ -50,11 +50,11 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
-import org.makumba.controller.validation.BasicValidationRule;
-import org.makumba.controller.validation.ComparisonValidationRule;
-import org.makumba.controller.validation.NumberRangeValidationRule;
-import org.makumba.controller.validation.RegExpValidationRule;
-import org.makumba.controller.validation.StringLengthValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 public class RecordParser {
     public static final String FILE_EXTENSION_VALIDATION = ".vd";

@@ -126,7 +126,7 @@ public class ptrEditor extends choiceEditor {
         return "" + ((ChoiceSet.Choice) ((ChoiceSet) options).get(i)).getTitle();
     }
 
-    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters p,
+    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
             String suffix) {
         Object o = super.readFrom(rf, fieldIndex, p, suffix);
         if ("".equals(o))

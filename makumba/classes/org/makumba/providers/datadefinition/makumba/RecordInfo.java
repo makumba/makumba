@@ -44,10 +44,10 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.controller.validation.ComparisonValidationRule;
-import org.makumba.controller.validation.NumberRangeValidationRule;
-import org.makumba.controller.validation.RegExpValidationRule;
-import org.makumba.controller.validation.StringLengthValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 /**
  * This is the internal representation of the org.makumba. One can make RecordHandlers based on an instance of this
