@@ -1527,7 +1527,7 @@
 
 	<tag>
 		<name>response</name>
-		<tag-class>org.makumba.controller.jsp.ResponseTag</tag-class>
+		<tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
 		<body-content>empty</body-content>
 		<description> display response and status from forms or delete</description>
 	</tag>
