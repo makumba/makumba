@@ -12,6 +12,7 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
+import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 
@@ -25,7 +26,7 @@ import org.makumba.commons.MultipleKey;
 
 public abstract class AnalysableTag extends TagSupport {
     
-    /** Cache names, for PageCache of analysis * */
+    /** Cache names, for PageCache of analysis */
     public static final String TYPES = "org.makumba.types";
 
     public static ThreadLocal<TagData> analyzedTag = new ThreadLocal<TagData>();
@@ -67,19 +68,19 @@ public abstract class AnalysableTag extends TagSupport {
      * 
      * @param pageContext
      *            The PageContext object of the current page
-     *            
-     * FIXME this shouldn't depend on our mak-specific jsp analyzer so we should use a pattern to hide
-     * its implementation.
+     * @param analyzer the JSP analyzer
      */
-    public static PageCache getPageCache(PageContext pageContext) {
+    public static PageCache getPageCache(PageContext pageContext, JspAnalyzer analyzer) {
         PageCache pageCache = (PageCache) pageContext.getAttribute("makumba.parse.cache");
     
         // if there is no PageCache stored in the PageContext, we run the analysis and store the result in the
         // PageContext
         if (pageCache == null) {
+            // FIXME: perhaps this should be back in the Filter? check where it is used
+            initializeThread();
             Object result = JspParseData.getParseData(
                 pageContext.getServletConfig().getServletContext().getRealPath("/"),
-                TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), MakumbaJspAnalyzer.getInstance()).getAnalysisResult(
+                TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(
                 null);
     
             if ((result instanceof Throwable) && result.getClass().getName().startsWith("org.makumba")) {
@@ -212,11 +213,13 @@ public abstract class AnalysableTag extends TagSupport {
     /**
      * Handles exceptions, initialises state and calls {@link doAnalyzedStartTag}
      * 
+     * FIXME some of the exception handling should not be here
+     * 
      * @throws JspException
      */
     public int doStartTag() throws JspException {
         PageCache pageCache = null;
-        // need to check if this is still needed, it was here only if the tag was root...
+        // FIXME: need to check if this is still needed, it was here only if the tag was root...
         if (pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) != null
                 && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             getRequest().setAttribute("org.makumba.wasException", "yes");
@@ -225,7 +228,7 @@ public abstract class AnalysableTag extends TagSupport {
             return SKIP_PAGE;
         try {
             if (needPageCache())
-                pageCache = getPageCache(pageContext);
+                pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             setTagKey(pageCache);
             if (pageCache != null) {
                 tagData = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, tagKey);
@@ -245,8 +248,7 @@ public abstract class AnalysableTag extends TagSupport {
 
     // should be overriden
     protected void treatException(Throwable t) throws JspException {
-        
-        
+
     }
 
     /**
@@ -260,7 +262,7 @@ public abstract class AnalysableTag extends TagSupport {
                 return SKIP_PAGE;
             PageCache pageCache = null;
             if (needPageCache())
-                pageCache = getPageCache(pageContext);
+                pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             if (tagData != null) {
                 runningTag.set(tagData);
                 getThreadTagStack().pop();
@@ -298,6 +300,11 @@ public abstract class AnalysableTag extends TagSupport {
         return true;
     }
     
+    /**
+     * Determines whether this tag can have a body or not.
+     * @return <code>true</code> if the tag is allowed to have a body, <code>false</code>
+     *         otherwise
+     */
     public boolean canHaveBody() {
         return false;
     }
