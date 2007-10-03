@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.controller.jsp;
+package org.makumba.forms.tags;
 
 import java.io.IOException;
 
@@ -41,7 +41,7 @@ public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
     public int doStartTag() throws JspException {
         try {
             Object response = pageContext.getRequest().getAttribute(
-                org.makumba.controller.http.Responder.RESPONSE_STRING_NAME);
+                org.makumba.forms.responder.Responder.RESPONSE_STRING_NAME);
 
             // response is null only during login, maybe a more strict check should be made
             if (response != null)
