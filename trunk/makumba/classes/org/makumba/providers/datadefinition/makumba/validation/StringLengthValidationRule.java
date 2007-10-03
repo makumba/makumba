@@ -1,4 +1,4 @@
-package org.makumba.controller.validation;
+package org.makumba.providers.datadefinition.makumba.validation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

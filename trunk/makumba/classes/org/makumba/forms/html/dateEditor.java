@@ -31,11 +31,11 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.commons.formatters.dateFormatter;
-import org.makumba.controller.http.HttpParameters;
 
 public class dateEditor extends FieldEditor {
 
@@ -159,7 +159,7 @@ public class dateEditor extends FieldEditor {
         }
     }
 
-    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters pr,
+    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters pr,
             String suffix) {
         Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
         c.clear();

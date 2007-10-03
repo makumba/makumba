@@ -36,9 +36,9 @@ import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.commons.Configuration;
-import org.makumba.controller.validation.ComparisonValidationRule;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
+import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 
 /**
  * This class implements a viewer for validation definition syntax highlighting.

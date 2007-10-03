@@ -44,7 +44,7 @@ public class setintEnumEditor extends setcharEnumEditor {
 		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
 			String suffix) {
 		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 

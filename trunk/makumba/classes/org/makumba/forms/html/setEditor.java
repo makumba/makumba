@@ -53,7 +53,7 @@ public class setEditor extends ptrEditor {
 	}
 
 	public Object readFrom(RecordFormatter rf, int fieldIndex,
-			org.makumba.controller.http.HttpParameters p, String suffix) {
+			org.makumba.commons.attributes.HttpParameters p, String suffix) {
 		Object o = super.readFrom(rf, fieldIndex, p, suffix);
 		if (o == null)
 			return new Vector();

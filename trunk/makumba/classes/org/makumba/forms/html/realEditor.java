@@ -39,7 +39,7 @@ public class realEditor extends intEditor {
 		return SingletonHolder.singleton;
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters par,
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
 			String suffix) {
 		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 

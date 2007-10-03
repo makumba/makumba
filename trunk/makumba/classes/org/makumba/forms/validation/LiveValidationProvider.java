@@ -8,12 +8,12 @@ import java.util.Iterator;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
-import org.makumba.controller.validation.ComparisonValidationRule;
-import org.makumba.controller.validation.NumberRangeValidationRule;
-import org.makumba.controller.validation.RangeValidationRule;
-import org.makumba.controller.validation.RegExpValidationRule;
-import org.makumba.controller.validation.StringLengthValidationRule;
 import org.makumba.forms.html.FieldEditor;
+import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.RangeValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 /**
  * This class implements java-script based client side validation using the <i>LiveValidation</i> library. For more

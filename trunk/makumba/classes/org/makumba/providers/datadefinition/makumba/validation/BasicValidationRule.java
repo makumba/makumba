@@ -1,4 +1,4 @@
-package org.makumba.controller.validation;
+package org.makumba.providers.datadefinition.makumba.validation;
 
 import java.io.Serializable;
 import java.util.Arrays;

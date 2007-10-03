@@ -132,7 +132,7 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 		formatParams.put(extraFormattingParam, extraFormatting);
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.controller.http.HttpParameters p,
+	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
 			String suffix) {
 		return p.getParameter(getInputName(rf, fieldIndex, suffix));
 	}
