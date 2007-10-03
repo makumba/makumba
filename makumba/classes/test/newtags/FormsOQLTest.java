@@ -254,4 +254,17 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         assertTrue(compareTest(output));
     }
+    
+    public void testFormMultipleForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakMultipleForms.jsp");
+    }
+    public void endFormMultipleForms(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
 }
