@@ -35,10 +35,10 @@ import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
-import org.makumba.forms.html.FormResponder;
+import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.forms.responder.FormResponder;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 

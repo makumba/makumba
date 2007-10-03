@@ -36,6 +36,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.ControllerFilter;
@@ -232,7 +233,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext));
+            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
             if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"

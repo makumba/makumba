@@ -29,7 +29,7 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.GenericMakumbaTag;
+import org.makumba.commons.tags.GenericMakumbaTag;
 
 /**
  * mak:action tag
