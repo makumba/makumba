@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.commons.attributes;
 
 import java.util.Enumeration;
 import java.util.Map;
@@ -32,7 +32,6 @@ import javax.servlet.jsp.PageContext;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
-import org.makumba.controller.http.RequestAttributes;
 
 public class PageAttributes implements Attributes {
     public static PageAttributes getAttributes(PageContext pc) {
