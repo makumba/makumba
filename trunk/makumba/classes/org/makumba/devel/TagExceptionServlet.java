@@ -169,6 +169,8 @@ public class TagExceptionServlet extends HttpServlet {
                 body = formatTagData(req) + body;
             }
         }
+        else 
+            body = formatTagData(req) + body;
 
         
         if (original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic") != -1) {
