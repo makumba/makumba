@@ -1,4 +1,4 @@
-package org.makumba.commons;
+package org.makumba.commons.tags;
 
 import java.util.HashMap;
 import java.util.Hashtable;
