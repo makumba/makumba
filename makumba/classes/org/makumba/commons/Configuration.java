@@ -1,5 +1,7 @@
 package org.makumba.commons;
 
+import java.io.Serializable;
+
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specifc services.
  * It can be seen as a service dispatcher in a way.
@@ -7,8 +9,10 @@ package org.makumba.commons;
  * @author Manuel Gay
  * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
  */
-public class Configuration {
+public class Configuration implements Serializable {
     
+    private static final long serialVersionUID = 1L;
+
     private String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
     
     private String defaultTransactionProvider = "org.makumba.db.MakumbaTransactionProvider";
