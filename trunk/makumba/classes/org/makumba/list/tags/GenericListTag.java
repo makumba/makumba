@@ -28,8 +28,8 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.Configuration;
-import org.makumba.commons.GenericMakumbaTag;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.list.ListFormDataProvider;
 import org.makumba.providers.FormDataProvider;
 import org.makumba.providers.TransactionProvider;

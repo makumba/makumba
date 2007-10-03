@@ -35,7 +35,7 @@ import org.makumba.LogicException;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.PageAttributes;
+import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.QueryProvider;
@@ -138,8 +138,8 @@ public class QueryExecution {
      */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
         currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
-        ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext), key);
-        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), (String) GenericListTag.getPageCache(pageContext).retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
+        ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), (String) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
         
         try {
             Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));

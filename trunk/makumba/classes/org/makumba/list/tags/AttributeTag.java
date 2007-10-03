@@ -27,8 +27,8 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.GenericMakumbaTag;
-import org.makumba.commons.PageAttributes;
+import org.makumba.commons.attributes.PageAttributes;
+import org.makumba.commons.tags.GenericMakumbaTag;
 
 /**
  * mak:attribute tag

@@ -30,7 +30,7 @@ import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.PageAttributes;
+import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
