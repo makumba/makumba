@@ -44,8 +44,11 @@ import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.DbConnectionProvider;
 import org.makumba.devel.TagExceptionServlet;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderCacheManager;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
@@ -72,7 +75,7 @@ public class ControllerFilter implements Filter {
     /**
      * Gets the request
      * 
-     * @return The HTTpServletRequest corresponding to the current access
+     * @return The HTTPServletRequest corresponding to the current access
      */
     public static HttpServletRequest getRequest() {
         return (HttpServletRequest) requestThreadLocal.get();
@@ -80,20 +83,16 @@ public class ControllerFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
-        AnalysableTag.initializeThread();
         boolean filter = shouldFilter((HttpServletRequest) req);
         requestThreadLocal.set(req);
 
+        // initalises a database pool (one connection per database)
         DbConnectionProvider prov = RequestAttributes.getConnectionProvider((HttpServletRequest) req);
 
         if (filter) {
             try {
-                try {
-                    RequestAttributes.getAttributes((HttpServletRequest) req);
-                } catch (Throwable e) {
-                    treatException(e, (HttpServletRequest) req, (HttpServletResponse) resp);
-                    return;
-                }
+                if(!checkAttributes(req, resp)) return;
+                
                 Exception e = Responder.response((HttpServletRequest) req, (HttpServletResponse) resp);
                 if (e instanceof CompositeValidationException) {
                     CompositeValidationException v = (CompositeValidationException) e;
@@ -103,15 +102,18 @@ public class ControllerFilter implements Filter {
                     String message;
 
                     // Check if we shall reload the form page
-                    Responder firstResponder = Responder.getFirstResponder(req);
+                    Responder firstResponder = ResponderCacheManager.getFirstResponder(req);
                     java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                         "Caught a CompositeValidationException, reloading form page: "
                                 + firstResponder.getReloadFormOnError());
+                    
                     if (firstResponder.getReloadFormOnError()) {
+                        
                         final String root = conf.getInitParameter(req.getServerName());
                         HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
                         String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
                         String contextPath = httpServletRequest.getContextPath();
+                        
                         if (originatingPage.startsWith(contextPath)) {
                             originatingPage = originatingPage.substring(contextPath.length());
                         }
@@ -119,45 +121,12 @@ public class ControllerFilter implements Filter {
                             originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
                         }
 
-                        // make a request wrapper, using an anonymous inner class
-                        req = new HttpServletRequestWrapper((HttpServletRequest) req) {
-
-                            public String getServletPath() {
-                                HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
-                                String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
-                                String contextPath = httpServletRequest.getContextPath();
-                                if (originatingPage.startsWith(contextPath)) {
-                                    originatingPage = originatingPage.substring(contextPath.length());
-                                }
-                                if (originatingPage.indexOf("?") > 0) {
-                                    originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
-                                }
-                                return originatingPage;
-                            }
-
-                            /**
-                             * We override this method so we can serve the previous request URI. This doesn't have any
-                             * effect on the URI displayed in the browser, but it makes submitting the form twice
-                             * possible...
-                             */
-                            public String getRequestURI() {
-                                return getRequest().getParameter(Responder.originatingPageName);
-                            }
-                        };
-
-                        // make a response wrapper, using an anonymous inner class
-                        resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
-                            public void sendRedirect(String s) throws java.io.IOException {
-                                if (root != null && s.startsWith(root)) {
-                                    s = s.substring(root.length());
-                                }
-                                ((HttpServletResponse) getResponse()).sendRedirect(s);
-                            }
-
-                        };
+                        req = getFormReloadRequest(req);
+                        resp = getFormReloadResponse(resp, root);
 
                         java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                             "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
+                        
                         if (firstResponder.getShowFormAnnotated()) {
                             java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
                                 "Processing CompositeValidationException for annotation:\n" + v.toString());
@@ -200,6 +169,69 @@ public class ControllerFilter implements Filter {
             return;
         } finally {
             prov.close();
+        }
+    }
+
+    /**
+     * Makes a response wrapper, using an anonymous inner class
+     * @param resp the original response
+     * @param root the server hostname
+     * @return a wrapped ServletResponse redirecting to the original page
+     */
+    private ServletResponse getFormReloadResponse(ServletResponse resp, final String root) {
+        resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
+            public void sendRedirect(String s) throws java.io.IOException {
+                if (root != null && s.startsWith(root)) {
+                    s = s.substring(root.length());
+                }
+                ((HttpServletResponse) getResponse()).sendRedirect(s);
+            }
+
+        };
+        return resp;
+    }
+
+    /**
+     * Makes a request wrapper, using an anonymous inner class.
+     * @param req the original request
+     * @return a wrapped ServletRequest containing information about the originally submitted page
+     */
+    private ServletRequest getFormReloadRequest(ServletRequest req) {
+        // 
+        req = new HttpServletRequestWrapper((HttpServletRequest) req) {
+
+            public String getServletPath() {
+                HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
+                String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
+                String contextPath = httpServletRequest.getContextPath();
+                if (originatingPage.startsWith(contextPath)) {
+                    originatingPage = originatingPage.substring(contextPath.length());
+                }
+                if (originatingPage.indexOf("?") > 0) {
+                    originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
+                }
+                return originatingPage;
+            }
+
+            /**
+             * We override this method so we can serve the previous request URI. This doesn't have any
+             * effect on the URI displayed in the browser, but it makes submitting the form twice
+             * possible...
+             */
+            public String getRequestURI() {
+                return getRequest().getParameter(Responder.originatingPageName);
+            }
+        };
+        return req;
+    }
+
+    private boolean checkAttributes(ServletRequest req, ServletResponse resp) {
+        try {
+            RequestAttributes.getAttributes((HttpServletRequest) req);
+            return true;
+        } catch (Throwable e) {
+            treatException(e, (HttpServletRequest) req, (HttpServletResponse) resp);
+            return false;
         }
     }
 
