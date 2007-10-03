@@ -281,4 +281,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
+    public void testFormMakNewFile() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakNewFormFile.jsp");
+    }
+    public void endFormMakNewFile(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+ 
+    
+    
+    
 }
