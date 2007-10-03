@@ -2,8 +2,8 @@ package org.makumba.forms.validation;
 
 import org.makumba.FieldDefinition;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.forms.html.FormResponder;
 import org.makumba.forms.html.RecordEditor;
+import org.makumba.forms.responder.FormResponder;
 
 /**
  * Provides an interface to a client-side validation mechanism. For HTML forms, this can e.g. be javascript validation.
