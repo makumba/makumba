@@ -40,8 +40,8 @@ import org.makumba.InvalidValueException;
 import org.makumba.ValidationRule;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.controller.validation.ComparisonValidationRule;
 import org.makumba.forms.validation.ClientsideValidationProvider;
+import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 
 /**
  * Editor of Makumba data. Each subclass knows how to format HTML <input> and <select> tags for each type of Makumba
@@ -107,14 +107,13 @@ public class RecordEditor extends RecordFormatter {
         // the declared types in the MDD match with what we have in the form
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
-            FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             String inputName = fe.getInputName(this, i, suffix);
             if (inputName == null) {
                 continue;
             }
             Object o = null;
             try {
-                o = fe.readFrom(this, i, org.makumba.controller.http.RequestAttributes.getParameters(req), suffix);
+                o = fe.readFrom(this, i, org.makumba.commons.attributes.RequestAttributes.getParameters(req), suffix);
                 if (o != null) {
                     o = dd.getFieldDefinition(i).checkValue(o);
                 } else {
@@ -163,14 +162,14 @@ public class RecordEditor extends RecordFormatter {
                 }
             }
 
-            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix) + "_type",
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix) + "_type",
                 fieldDefinition);
 
             if (o != null) {
                 // the data is written in the dictionary without the suffix
                 data.put(fe.getInputName(this, i, ""), o);
             }
-            org.makumba.controller.http.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
         }
 
         if (exceptions.size() > 0) {
@@ -185,7 +184,7 @@ public class RecordEditor extends RecordFormatter {
         }
     }
 
-    protected void initFormatters() {
+    public void initFormatters() {
         formatterArray = new FieldFormatter[dd.getFieldNames().size()];
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
@@ -210,6 +209,7 @@ public class RecordEditor extends RecordFormatter {
                     formatterArray[i] = charEnumEditor.getInstance();
                     break;
                 case FieldDefinition._text:
+                case FieldDefinition._binary:
                     formatterArray[i] = textEditor.getInstance();
                     break;
                 case FieldDefinition._date:
