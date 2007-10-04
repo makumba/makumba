@@ -1,6 +1,8 @@
 package org.makumba.analyser;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
@@ -8,10 +10,13 @@ import java.util.HashMap;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
+ * @author Rudolf Mayer
  */
 public class PageCache {
 
-    private HashMap caches = new HashMap();
+    private HashMap<String, HashMap<Object, Object>> caches = new HashMap<String, HashMap<Object, Object>>();
+
+    private HashMap<String, HashSet<Object>> setCaches = new HashMap<String, HashSet<Object>>();
 
     /**
      * Caches an object in a specific cache
@@ -24,9 +29,9 @@ public class PageCache {
      *            the value of the object to be cached
      */
     public void cache(String cacheName, Object key, Object value) {
-        HashMap cache = (HashMap) caches.get(cacheName);
+        HashMap<Object, Object> cache = (HashMap<Object, Object>) caches.get(cacheName);
         if (cache == null) {
-            cache = new HashMap();
+            cache = new HashMap<Object, Object>();
             caches.put(cacheName, cache);
         }
         cache.put(key, value);
@@ -43,9 +48,26 @@ public class PageCache {
      */
     public Object retrieve(String cacheName, Object key) {
         HashMap cache = (HashMap) caches.get(cacheName);
-        if (cache == null) 
+        if (cache == null)
             return null;
         return cache.get(key);
     }
 
+    /**
+     * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
+     */
+    public void cacheSetValues(String cacheName, Object[] value) {
+        HashSet<Object> hashSet = setCaches.get(cacheName);
+        if (hashSet == null) {
+            hashSet = new HashSet<Object>();
+            setCaches.put(cacheName, hashSet);
+        }
+
+        hashSet.addAll(Arrays.asList(value));
+    }
+
+    /** Retrieves a set from a specific set cache. */
+    public HashSet<Object> retrieveSetValues(String cacheName) {
+        return setCaches.get(cacheName);
+    }
 }
