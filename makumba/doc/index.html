@@ -19,15 +19,15 @@
 <a href="http://www.makumba.org" title="Makumba"><img src="makumba-logo.gif" alt="Makumba" border="0" style="border: 0px solid ; width: 329px; height: 100px;"></a></center>
 <p>
 <b>Makumba</b> is a query-centric technology designed by <a href="http://www.BEST.eu.org" title="Board of European Students of Technology">BEST</a>
-that helps you to rapidly develop web applications that keep their data in a database (i.e. data driven web applications). It is implemented in Java and offers a Java <abbr title="Application Programmer's Interface">API</abbr> and a <abbr title="Java Server Pages">JSP</abbr>
-tag library to the web app developer. The technology has been in use since late 2001, and is being further developed, based on users'
+that helps you to rapidly develop web applications that keep their data in a database (i.e. data driven web applications). It is implemented in Java and offers a <abbr title="Java Server Pages">JSP</abbr>
+tag library and a Java <abbr title="Application Programmer's Interface">API</abbr> to the web app developer. The technology has been in use since late 2001, and is being further developed, based on users'
 experience and requests.
 </p>
 <p>
 The main elements are:<br>
 <ul>
-<li><b>Makumba List</b>, an intuitive way of "looping" over data records and which automatically formats the display according to the data type.</li>
-<li><b>Makumba Forms</b>, making it possible to build nested forms without having to worry how the data gets stored</li>
+<li><b>Makumba List</b>, an intuitive way of iterating over data records and which automatically formats the display according to the data type and the subtype.</li>
+<li><b>Makumba Forms</b>, making it possible to build nested forms without having to worry how the data gets stored or the form gets rendered</li>
 <li><b>Makumba Data Definitions</b>, a very simple yet powerful abstraction of data types which make data modelling very easy</li>
 </ul>
 </p>
@@ -59,8 +59,11 @@ Definition</a>. It contains lines like:
 </p>
 
 <pre class="example">
-name= char[30] ;Name
-dob= date      ;Date of birth
+name= char[30]                   ;Name
+dob= date                        ;Date of birth
+addresses= set                   ;Addresses of the person
+addresses-> city = char[40]      ;City
+addresses-> phone_number = int  ;Phone number
 </pre>
 
 <p>
@@ -81,25 +84,34 @@ database. You don't have to care about details of HTML forms, parsing
 the CGI arguments, composing SQL statements etc.
 All this routine work is done for you, but you can freely build upon it.<br>
 </p>
-<p>For instance, following code will show a selected person. You mix HTML
+<p>For instance, following code will show a list of persons and their phone numbers. You mix HTML
   and Makumba jsp tags to get the desired view.</p>
 
 <pre class="example">
-&lt;mak:object from="general.Person p" where="<i>uniqueCondition</i>"&gt;
-           &lt;b&gt;&lt;mak:value expr="p.name"/&gt;&lt;/b&gt;
-           was born on &lt;mak:value expr="p.dob"/&gt;
-&lt;/mak:object&gt;
+&lt;mak:list from="general.Person p, p.addresses a" where="a.city = 'Vienna'"&gt;
+  &lt;b&gt;&lt;mak:value expr="p.name"/&gt;&lt;/b&gt; was born on &lt;mak:value expr="p.dob"/&gt;&lt;br&gt;
+  Phone numbers:
+  &lt;mak:list from="p.addresses a, a.phone_number n" separator=", "&gt;
+    &lt;mak:value expr="n"/&gt;
+  &lt;/mak:list&gt;
+&lt;/mak:list&gt;
 </pre>
+
+<p>Makumba will generate the appropriate queries needed to display the result and optimise them so as to execute the least possible number of queries, in order to increase performance.</p>
 
             <p>If you wish to add a new Person to your database, you can just
 write the following code. It takes care of creating an input form in HTML,
-and arranges for all necessary database commands to be performed after submit.
+and arranges for all necessary database commands to be performed after submit
+(including the creation of subrecords, in our example a new address object).
             </p>
 
 <pre class="example">
-&lt;mak:newForm type="general.Person" ... &gt;
+&lt;mak:newForm type="general.Person" name="person" action="listPersons.jsp"&gt;
         Name : &lt;mak:input name="name"/&gt; &lt;br&gt;
         Date of birth : &lt;mak:input name="dob"/&gt;
+        &lt;mak:addForm object="person" field="addresses"&gt;
+          Phone number: &lt;mak:input field="phone_number"/&gt;
+        &lt;/mak:addForm&gt;
 &lt;/mak:newForm&gt;
 </pre>
 
@@ -117,9 +129,9 @@ You can see more in a slightly more detailed <a href="makumba-example.html">exam
 </tr>
 </table>
 
- <p>So more or less this is it. Lotus Notes does the same but we found
-  it impossible to use it because of visual programming (rather than plain
- text files) and other problems. Other tools (say MS Access) have similar
+ <p>So more or less this is it. Makumba was inspired by Lotus Notes, but we found
+it impossible to use Lotus Notes because of visual programming (rather than plain
+ext files) and other problems. Other tools (say MS Access) have similar
 problems, plus we don't want to be dependent on one technology. We want to
 work with plain text files because it's easy to cooperate at a distance using
 them. We want everything to be simple for the web app developer.
