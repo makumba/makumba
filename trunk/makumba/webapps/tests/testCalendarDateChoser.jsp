@@ -5,16 +5,10 @@
 <head>
   <title>Testing annotation</title>
   <link rel="StyleSheet" href="style/style.css" type="text/css" media="all"/>
-  <% String[] neededJS = MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames(); 
-     for (int i=0; i<neededJS.length; i++) { %>
-        <script type="text/javascript" src="scripts/<%= neededJS[i] %>"></script><%
-     }
-  %>
 </head>
 <body>
   
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
-<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 
 response:<br>
 <mak:response/><br><br>
