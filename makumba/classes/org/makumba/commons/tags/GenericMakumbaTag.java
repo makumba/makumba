@@ -16,6 +16,8 @@ import org.makumba.analyser.PageCache;
 
 public class GenericMakumbaTag extends AnalysableTag {
     
+    public static final String NEEDED_RESOURCES = "org.makumba.neededResources";
+    
     private static final long serialVersionUID = 1L;
 
     /** Tag parameters */
