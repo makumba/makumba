@@ -25,6 +25,7 @@ package org.makumba.forms.tags;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -33,8 +34,10 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -310,7 +313,12 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 throw new ProgrammerError(
                         "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
         }
-        
+        // add needed resources, stored in cache for this page
+        if (clientSideValidation != null && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES,
+                MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+        }
+
         if (!shouldComputeBasePointer())
             return;
         
@@ -391,6 +399,20 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         
         try {
             StringBuffer sb = new StringBuffer();
+
+            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+            // if we are at the first form
+            if (pageContext.getAttribute("firstFormPassed") == null) {
+                // included needed resources
+                HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
+                for (Object object : resources) {
+                    String rsc = (request).getContextPath() + "/" + MakumbaResourceServlet.resourceDirectory + "/"
+                            + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
+                    sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
+                }
+                pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
+            }
+
             responder.writeFormPreamble(sb, basePointer);
             bodyContent.getEnclosingWriter().print(sb.toString());
 
