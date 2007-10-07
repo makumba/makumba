@@ -112,11 +112,13 @@ public class TagExceptionServlet extends HttpServlet {
                 /* after JSP compilation, the actual JSP problem is in getRootCause, yet the exception 
                  * is also very informative (includes code context). So we need to show both.
                  */
-                t=((ServletException)t).getRootCause();
-                if(!original.getMessage().equals(t.getMessage())){
-                    t1= new Throwable(t.getMessage()+"\n\n"+original.getMessage());
-                    t1.setStackTrace(t.getStackTrace());
-                    t=t1;
+                if (((ServletException) t).getRootCause() != null) {
+                    t = ((ServletException) t).getRootCause();
+                    if (t != null && !original.getMessage().equals(t.getMessage())) {
+                        t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
+                        t1.setStackTrace(t.getStackTrace());
+                        t = t1;
+                    }
                 }
                 knownError("JSP compilation error", t, original, req, wr);
             }
