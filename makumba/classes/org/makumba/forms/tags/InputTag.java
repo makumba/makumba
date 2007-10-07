@@ -34,6 +34,7 @@ import org.makumba.CompositeValidationException;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -167,6 +168,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doEndAnalyze(PageCache pageCache) {
         if (nameVar != null)
             setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
+
+        if (calendarEditor != null && calendarEditor.equals("true")) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES,
+                MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
+        }
 
         super.doEndAnalyze(pageCache);
     }
