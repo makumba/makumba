@@ -16,6 +16,17 @@
   </filter-mapping>
 
   <servlet>
+    <servlet-name>makumbaResources</servlet-name>
+    <servlet-class>org.makumba.util.MakumbaResourceServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>makumbaResources</servlet-name>
+    <url-pattern>/makumbaResources/*</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
     <servlet-name>mddLinker</servlet-name>
     <servlet-class>org.makumba.devel.SourceViewServlet</servlet-class>
   </servlet>
