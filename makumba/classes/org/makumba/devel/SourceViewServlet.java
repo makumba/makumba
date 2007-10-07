@@ -88,14 +88,7 @@ public class SourceViewServlet extends HttpServlet {
                 }
             } else //try to handle anyway
             {
-                if (req.getPathInfo() == null) {
-                    if (servletPath.startsWith("/"))
-                        servletPath = servletPath.substring(1);
-                    res.sendRedirect(servletPath + "/");
-                    return;
-                }
-                if (!req.getPathInfo().endsWith("/")) {
-                    res.sendRedirect(servletPath + req.getPathInfo() + "/");
+                if (redirected(req, res, servletPath)) {
                     return;
                 }
                 if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) { // redirect browsing of directories to mdd Viewer
@@ -111,17 +104,7 @@ public class SourceViewServlet extends HttpServlet {
                     relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
                 }
                 res.setContentType("text/html");
-                w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-                w.println("<html><head><title>" + relativeDirectory + "</title>");
-                w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-
-                w .println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
-                w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">"
-                        + relativeDirectory + "</font></a></font>");
-                w.print("<font size=\"-1\"><br>" + dir.getCanonicalPath() + "</font>");
-                w.print("</td>");
-
-                w.print("</tr></table>\n<pre style=\"margin-top:0\">");
+                printDirlistingHeader(w, dir, relativeDirectory);
 
                 if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
                     w.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -174,14 +157,42 @@ public class SourceViewServlet extends HttpServlet {
         }
     }
 
-    static void processDirectory(PrintWriter w, File dir, String extension) {
+    public static boolean redirected(HttpServletRequest req, HttpServletResponse res, String servletPath) throws IOException {
+        if (req.getPathInfo() == null) {
+            if (servletPath.startsWith("/"))
+                servletPath = servletPath.substring(1);
+            res.sendRedirect(servletPath + "/");
+            return true;
+        }
+        if (!req.getPathInfo().endsWith("/")) {
+            res.sendRedirect(servletPath + req.getPathInfo() + "/");
+            return true;
+        }
+        return false;
+    }
+
+    public static void printDirlistingHeader(PrintWriter w, File dir, String relativeDirectory) throws IOException {
+        w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+        w.println("<html><head><title>" + relativeDirectory + "</title>");
+        w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
+
+        w .println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
+        w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">"
+                + relativeDirectory + "</font></a></font>");
+        w.print("<font size=\"-1\"><br>" + dir.getCanonicalPath() + "</font>");
+        w.print("</td>");
+
+        w.print("</tr></table>\n<pre style=\"margin-top:0\">");
+    }
+
+    public static void processDirectory(PrintWriter w, File dir, String extension) {
         String[] list = dir.list();
         Arrays.sort(list);
         for (int i = 0; i < list.length; i++) {
             String s = list[i];
             File f = new File(dir.getAbsolutePath() + File.separator + s);
-            if (f.isDirectory() && !f.getName().equals("CVS")) {
-                if (containsFilesWithExtension(f, extension)) {
+            if (f.isDirectory() && !f.getName().equals("CVS") && !f.getName().equals(".svn")) {
+                if (extension == null || containsFilesWithExtension(f, extension)) {
                     w.println("<b><a href=\"" + s + "/\">" + s + "/</a></b>");
                 }
             }
