@@ -1080,7 +1080,15 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     public boolean isSimpleSetType() {
-        return getIntegerType() == _set || getIntegerType() == _setIntEnum || getIntegerType() == _setCharEnum;
+        return getIntegerType() == _set || isSetEnumType();
+    }
+    
+    public boolean isEnumType() {
+        return getIntegerType() == _intEnum || getIntegerType() == _charEnum;
+    }
+
+    public boolean isSetEnumType() {
+        return getIntegerType() == _setIntEnum || getIntegerType() == _setCharEnum;
     }
 
     public boolean isStringType() {
