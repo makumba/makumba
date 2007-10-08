@@ -1,4 +1,4 @@
-/**
+/** $Id: AllowedException.java 1049 2005-06-25 13:16:52Z rosso_nero $
 adds functions to the livevalidation framework which are not defined there, e.g. comparison of strings and numbers. 
 
 Issues to fix:

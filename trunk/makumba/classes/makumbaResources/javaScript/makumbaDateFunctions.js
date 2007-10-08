@@ -1,3 +1,4 @@
+/** $Id: AllowedException.java 1049 2005-06-25 13:16:52Z rosso_nero $ */
 // returns a date as String, parsed from 3 makumba input controls
 function getDateString(y_obj, m_obj, d_obj) {
   var y = y_obj.value;
