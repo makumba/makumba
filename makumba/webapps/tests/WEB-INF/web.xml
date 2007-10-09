@@ -17,7 +17,7 @@
 
   <servlet>
     <servlet-name>makumbaResources</servlet-name>
-    <servlet-class>org.makumba.util.MakumbaResourceServlet</servlet-class>
+    <servlet-class>org.makumba.commons.MakumbaResourceServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
