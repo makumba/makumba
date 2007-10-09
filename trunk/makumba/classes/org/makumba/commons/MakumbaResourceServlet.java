@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +35,8 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static final String RESOURCE_PATH_JAVASCRIPT = "javaScript/";
 
+    public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
         String servletPath = req.getServletPath();
@@ -40,32 +44,32 @@ public class MakumbaResourceServlet extends HttpServlet {
         String resource = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         URL url = ClassResource.get(resourceDirectory + resource);
         try {
-            File dir = new File(url.toURI());
-            if (dir.isDirectory()) {
+            File file = new File(url.toURI());
+            if (file.isDirectory()) {
                 resp.setContentType("text/html");
                 if (SourceViewServlet.redirected(req, resp, servletPath)) {
                     return;
                 }
-                String relativeDirectory = dir.getName();
-                if (dir.getAbsolutePath().indexOf(resourceDirectory) != -1) {
-                    relativeDirectory = dir.getAbsolutePath().substring(
-                        dir.getAbsolutePath().indexOf(resourceDirectory));
+                String relativeDirectory = file.getName();
+                if (file.getAbsolutePath().indexOf(resourceDirectory) != -1) {
+                    relativeDirectory = file.getAbsolutePath().substring(
+                        file.getAbsolutePath().indexOf(resourceDirectory));
                 }
-                SourceViewServlet.printDirlistingHeader(writer, dir, relativeDirectory);
+                SourceViewServlet.printDirlistingHeader(writer, file, relativeDirectory);
 
                 if (!(relativeDirectory.equals(resourceDirectory))) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");
                 }
 
                 // process and display directories
-                SourceViewServlet.processDirectory(writer, dir, null);
+                SourceViewServlet.processDirectory(writer, file, null);
 
                 // process and display files
-                String[] list = dir.list();
+                String[] list = file.list();
                 Arrays.sort(list);
                 for (int i = 0; i < list.length; i++) {
                     String s = list[i];
-                    File f = new File(dir.getAbsolutePath() + File.separator + s);
+                    File f = new File(file.getAbsolutePath() + File.separator + s);
                     if (f.isFile()) {
                         writer.println("<b><a href=\"" + s + "\">" + s + "</a></b>");
                     }
@@ -75,8 +79,8 @@ public class MakumbaResourceServlet extends HttpServlet {
                 writer.println("</body></html>");
                 return;
             }
+            resp.setHeader("Last-Modified", dfLastModified.format(new Date(file.lastModified())));
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         resp.setContentType(getContentType(url));
