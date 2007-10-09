@@ -82,4 +82,13 @@ public class HttpParameters {
         return value;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer("{");
+        while (request.getParameterNames().hasMoreElements()) {
+            String key = (String) request.getParameterNames().nextElement();
+            sb.append(key + "=" + getParameter(key));
+        }
+        return sb.append("}").toString();
+    }
+
 }
