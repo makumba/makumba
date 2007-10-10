@@ -23,6 +23,9 @@
 
 package org.makumba;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents an abstract makumba pointer. It is up to the concrete database to represent it. Pointer values
  * are returned by the database inserts and queries, they cannot be constructed explicitely.
@@ -63,6 +66,9 @@ public class Pointer implements java.io.Serializable {
     /** null constant for external sets */
     public static Object NullSet = new NullObject("null set");
 
+    private static final List<Object> NullTypes = Arrays.asList(new Object[] { Null, NullDate, NullInteger, NullReal,
+            NullSet, NullString, NullText });
+
     /** Get the database identifier of the database where the pointed record was created */
     public int getDbsv() {
         return (int) (n >> MASK_ORDER);
@@ -81,6 +87,10 @@ public class Pointer implements java.io.Serializable {
     /** generate a printable format */
     public String toString() {
         return getType() + "[" + getDbsv() + ":" + getUid() + "]";
+    }
+
+    public static boolean isNullObject(Object o) {
+        return NullTypes.contains(o);
     }
 
     static long crc(long v) {
