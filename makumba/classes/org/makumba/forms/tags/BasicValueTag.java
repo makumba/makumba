@@ -50,35 +50,35 @@ import org.makumba.providers.FormDataProvider;
  * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {
-    
+
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = new DataDefinitionProvider();
-    
+
     String valueExprOriginal = null;
 
     /* Cannot be set here, subclasses who need it will set it */
     String dataType = null;
 
     public String expr = null;
-    
+
     protected FormDataProvider fdp;
 
     public BasicValueTag() {
         // TODO move this somewhere else
-       try {
-        this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
-    } catch (InstantiationException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+        try {
+            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void setValue(String value) {
@@ -91,6 +91,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
     /**
      * Indicates if the expression is null
+     * 
      * @return <code>true</code> if the expression is null, <code>false</code> otherwise
      */
     public boolean isNull() {
@@ -99,7 +100,9 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
     /**
      * Indicates if the expression is a value
-     * @return <code>true</code> if the expression doesn't start with '$' and is not null, <code>false</code> otherwise
+     * 
+     * @return <code>true</code> if the expression doesn't start with '$' and is not null, <code>false</code>
+     *         otherwise
      */
     boolean isValue() {
         return expr != null && !expr.startsWith("$") && !isNull();
@@ -107,15 +110,18 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
     /**
      * Indicates if the expression is an attribute
+     * 
      * @return <code>true</code> if the expression starts with '$', <code>false</code> otherwise
      */
     boolean isAttribute() {
         return expr != null && expr.startsWith("$");
     }
 
-    /** 
+    /**
      * Determines the ValueComputer and associates it with the tagKey
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
         if (isValue()) {
@@ -129,9 +135,11 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
     abstract FieldDefinition getTypeFromContext(PageCache pageCache);
 
-    /** 
+    /**
      * Tells the ValueComputer to finish analysis, and sets the types for var and printVar.
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
         FieldDefinition contextType = getTypeFromContext(pageCache);
@@ -145,7 +153,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
                 throw new ProgrammerError("declared data type '" + dataType
                         + "' not compatible with the type computed from context '" + contextType + "'");
         }
-        
+
         if (isValue()) {
             type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);
         }
@@ -156,7 +164,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         if (this instanceof InputTag) {
             fieldName = "Field <" + ((InputTag) this).name + ">: ";
         }
-        
+
         if (type != null && dataTypeInfo != null && !dataTypeInfo.isAssignableFrom(type))
             throw new ProgrammerError(
                     fieldName
@@ -166,20 +174,20 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         if (type != null && contextType != null && !contextType.isAssignableFrom(type)) {
             String contextTypeStr = contextType.getType();
             String typeStr = type.getType();
-            
+
             // if we deal with pointers, also indicate what they point to
-            if(contextTypeStr.equals("ptr") && typeStr.equals("ptr")) {
-                contextTypeStr += " "+contextType.getSubtable().getName();
-                typeStr += " "+type.getSubtable().getName();
+            if (contextTypeStr.equals("ptr") && typeStr.equals("ptr")) {
+                contextTypeStr += " " + contextType.getSubtable().getName();
+                typeStr += " " + type.getSubtable().getName();
             }
-            
+
             throw new ProgrammerError(
-                fieldName
-                        + "The computed type is different from the type resulting from the analysis of the form. The context type was determined to '"
-                        + contextTypeStr + "', type computed is '" + typeStr + "'");
+                    fieldName
+                            + "The computed type is different from the type resulting from the analysis of the form. The context type was determined to '"
+                            + contextTypeStr + "', type computed is '" + typeStr + "'");
 
         }
-            
+
         if (type == null && contextType == null && dataTypeInfo == null)
             throw new ProgrammerError(fieldName
                     + "cannot determine input type. Please specify the type using dataType=...");
@@ -194,14 +202,16 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
         Object val = null;
-        
+
         // if we are reloading the form page on validation errors, fill form inputs as in the request
         if (this instanceof InputTag
-                && StringUtils.equals(pageContext.getRequest().getAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD), "true")) {
+                && StringUtils.equals(pageContext.getRequest().getAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD),
+                    "true")) {
             String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
-            if (type.getIntegerType() == FieldDefinition._date) { 
+            if (type.getIntegerType() == FieldDefinition._date) {
                 // we need a special treatment for date fields, as they do not come in a single input, but several ones
-                val = dateEditor.readFrom(tagName, RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest()));
+                val = dateEditor.readFrom(tagName,
+                    RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest()));
             } else { // other types can be handled normally
                 val = pageContext.getRequest().getParameter(tagName);
             }
@@ -210,7 +220,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         if (isValue())
             val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
-            
+
         if (isAttribute()) {
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
         }
@@ -221,10 +231,13 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         return computedValue(val, type);
     }
 
-    /** 
+    /**
      * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
-     * @param o the value
-     * @param type the type of the data
+     * 
+     * @param o
+     *            the value
+     * @param type
+     *            the type of the data
      */
     abstract int computedValue(Object o, FieldDefinition type) throws JspException, LogicException;
 }
