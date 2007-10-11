@@ -39,6 +39,8 @@ import com.meterware.httpunit.WebResponse;
  * @version $Id: ListOQLTest.java,v 1.1 25.09.2007 15:58:58 Manuel Exp $
  */
 public class ListOQLTest extends MakumbaJspTestCase {
+    
+    private boolean record = false;
 
     static Pointer person;
 
@@ -188,7 +190,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakObjectTag(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -201,7 +203,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakListTag(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -215,7 +217,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakListCount(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -229,7 +231,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueChar(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -243,7 +245,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueDate(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -256,7 +258,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueInt(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -269,7 +271,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueDouble(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -282,7 +284,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueText(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -295,7 +297,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueSet(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -309,7 +311,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueTS_create(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -322,7 +324,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakValueTS_modify(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
