@@ -135,7 +135,35 @@ public abstract class Responder implements java.io.Serializable {
     protected String operation;
 
     /** the operation handler, computed from the operation */
-    protected ResponderOp op;
+    protected ResponderOperation op;
+    
+    public String getHandler() {
+        return handler;
+    }
+
+    public String getAfterHandler() {
+        return afterHandler;
+    }
+
+    public String getAddField() {
+        return addField;
+    }
+
+    public String getBasePointerType() {
+        return basePointerType;
+    }
+
+    public Object getController() {
+        return controller;
+    }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public String getNewType() {
+        return newType;
+    }
 
     // --------------- form time, responder preparation -------------------
     /** pass the http request, so the responder computes its default controller and database */
@@ -147,7 +175,7 @@ public abstract class Responder implements java.io.Serializable {
     /** pass the operation */
     public void setOperation(String operation) {
         this.operation = operation;
-        op = responderOps.get(operation);
+        op = ResponderOperationLocator.locate(operation);
     }
 
     /** pass the form response message */
@@ -327,7 +355,7 @@ public abstract class Responder implements java.io.Serializable {
     // ----------------- response section ------------------
     static public final String RESPONSE_STRING_NAME = "makumba.response";
 
-    static final String resultNamePrefix = "org.makumba.controller.resultOf_";
+    public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
 
     /** respond to a http request */
     public static Exception response(HttpServletRequest req, HttpServletResponse resp) {
@@ -349,7 +377,7 @@ public abstract class Responder implements java.io.Serializable {
             Responder formResponder = ResponderCacheManager.getResponder(code, suffix, parentSuffix);
 
             try {
-                checkMultipleSubmission(req, new TransactionProvider(new Configuration()), formResponder);
+                checkMultipleSubmission(req, formResponder);
 
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
@@ -394,13 +422,13 @@ public abstract class Responder implements java.io.Serializable {
      * @param fr the formResponder
      * @throws LogicException if a form has already been submitted once, throw a LogicException to say so
      */
-    private static void checkMultipleSubmission(HttpServletRequest req, TransactionProvider tp, Responder fr) throws LogicException {
+    private static void checkMultipleSubmission(HttpServletRequest req, Responder fr) throws LogicException {
         String reqFormSession = (String) RequestAttributes.getParameters(req).getParameter(formSessionName);
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("")
                 && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = tp.getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = new TransactionProvider(new Configuration()).getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(
@@ -464,185 +492,4 @@ public abstract class Responder implements java.io.Serializable {
         }
         return unassignedExceptions;
     }
-
-
-    static Hashtable<String, ResponderOp> responderOps = new Hashtable<String, ResponderOp>();
-    static {
-        responderOps.put("edit", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                String handlerName;
-                if (resp.handler != null) {
-                    handlerName = resp.handler;
-                } else {
-                    handlerName = "on_edit" + Logic.upperCase(resp.basePointerType);
-                }
-                String afterHandlerName;
-                if (resp.afterHandler != null) {
-                    afterHandlerName = resp.afterHandler;
-                } else {
-                    afterHandlerName = "after_edit" + Logic.upperCase(resp.basePointerType);
-                }
-
-                return Logic.doEdit(resp.controller, handlerName, afterHandlerName, resp.basePointerType,
-                    resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
-                            resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("simple", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                return Logic.doOp(resp.controller, resp.handler, resp.getHttpData(req, suffix), new RequestAttributes(
-                        resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("new", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                String handlerName;
-                if (resp.handler != null) {
-                    handlerName = resp.handler;
-                } else {
-                    handlerName = "on_new" + Logic.upperCase(resp.newType);
-                }
-                String afterHandlerName;
-                if (resp.afterHandler != null) {
-                    afterHandlerName = resp.afterHandler;
-                } else {
-                    afterHandlerName = "after_new" + Logic.upperCase(resp.newType);
-                }
-                return Logic.doNew(resp.controller, handlerName, afterHandlerName, resp.newType, resp.getHttpData(req,
-                    suffix), new RequestAttributes(resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("add", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                String handlerName;
-                if (resp.handler != null) {
-                    handlerName = resp.handler;
-                } else {
-                    handlerName = "on_add" + Logic.upperCase(resp.basePointerType + "->" + resp.addField);
-                }
-                String afterHandlerName;
-                if (resp.afterHandler != null) {
-                    afterHandlerName = resp.afterHandler;
-                } else {
-                    afterHandlerName = "after_add" + Logic.upperCase(resp.basePointerType + "->" + resp.addField);
-                }
-                return Logic.doAdd(resp.controller, handlerName, afterHandlerName, resp.basePointerType + "->"
-                        + resp.addField, resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
-                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("addToNew", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                // get result we got from the new form
-                Object resultFromNew = req.getAttribute(resultNamePrefix + parentSuffix);
-
-                // if we got a null response from the new form (possibly from a logic exception thrown by the
-                // programmer)
-                if (resultFromNew == org.makumba.Pointer.Null) {
-                    return org.makumba.Pointer.Null; // we return null here too
-                }
-
-                String handlerName;
-                if (resp.handler != null) {
-                    handlerName = resp.handler;
-                } else {
-                    handlerName = "on_add" + Logic.upperCase(resp.basePointerType);
-                }
-                String afterHandlerName;
-                if (resp.afterHandler != null) {
-                    afterHandlerName = resp.afterHandler;
-                } else {
-                    afterHandlerName = "after_add" + Logic.upperCase(resp.basePointerType);
-                }
-
-                // otherwise, we add to the new object
-                return Logic.doAdd(resp.controller, handlerName, afterHandlerName, resp.newType + "->" + resp.addField,
-                    (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.controller, req,
-                            resp.database), resp.database, RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("deleteLink", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                return Logic.doDelete(resp.controller, resp.basePointerType, resp.getHttpBasePointer(req, suffix),
-                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-
-        responderOps.put("deleteForm", new ResponderOp() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                return Logic.doDelete(resp.controller, resp.basePointerType, resp.getHttpBasePointer(req, suffix),
-                    new RequestAttributes(resp.controller, req, resp.database), resp.database,
-                    RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        });
-    }
-}
-
-/** this class helps to differentiate between the different types of forms */
-abstract class ResponderOp implements java.io.Serializable {
-    /** respond to the given request, with the data from the given responder, read using the given multiple form suffix */
-    public abstract Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-            throws LogicException;
-
-    /** check the validity of the given responder data, return not-null if there is a problem */
-    public abstract String verify(Responder resp);
 }

@@ -23,9 +23,16 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.DataDefinition;
+import org.makumba.LogicException;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.controller.Logic;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:new tag
@@ -71,5 +78,37 @@ public class NewTag extends FormTagBase {
 
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return type;
+    }
+    
+    public static ResponderOperation getResponderOperation(String operation) {
+        if(operation.equals("new")) {
+            return new ResponderOperation() {
+                private static final long serialVersionUID = 1L;
+
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    String handlerName;
+                    if (resp.getHandler()!= null) {
+                        handlerName = resp.getHandler();
+                    } else {
+                        handlerName = "on_new" + Logic.upperCase(resp.getNewType());
+                    }
+                    String afterHandlerName;
+                    if (resp.getAfterHandler() != null) {
+                        afterHandlerName = resp.getAfterHandler();
+                    } else {
+                        afterHandlerName = "after_new" + Logic.upperCase(resp.getNewType());
+                    }
+                    return Logic.doNew(resp.getController(), handlerName, afterHandlerName, resp.getNewType(), resp.getHttpData(req,
+                        suffix), new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+
+                public String verify(Responder resp) {
+                    return null;
+                }
+            };
+        }
+        return null;
     }
 }

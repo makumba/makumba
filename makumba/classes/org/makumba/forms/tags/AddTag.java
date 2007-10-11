@@ -23,11 +23,20 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.LogicException;
+import org.makumba.MakumbaError;
+import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.controller.Logic;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:addForm tag
@@ -109,5 +118,79 @@ public class AddTag extends FormTagBase {
 
     public boolean shouldComputeBasePointer() {
         return getOperation().equals("add");
+    }
+    
+    public static ResponderOperation getResponderOperation(String operation) {
+        
+        // if this is a simple addForm
+        if(operation.equals("add")) {
+            return new ResponderOperation() {
+                private static final long serialVersionUID = 1L;
+
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    String handlerName;
+                    if (resp.getHandler() != null) {
+                        handlerName = resp.getHandler();
+                    } else {
+                        handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
+                    }
+                    String afterHandlerName;
+                    if (resp.getAfterHandler() != null) {
+                        afterHandlerName = resp.getAfterHandler();
+                    } else {
+                        afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
+                    }
+                    return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType() + "->"
+                            + resp.getAddField(), resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
+                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+
+                public String verify(Responder resp) {
+                    return null;
+                }
+        };
+
+    } else if(operation.equals("addToNew")) {
+        new ResponderOperation() {
+            private static final long serialVersionUID = 1L;
+
+            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                    throws LogicException {
+                // get result we got from the new form
+                Object resultFromNew = req.getAttribute(Responder.resultNamePrefix + parentSuffix);
+
+                // if we got a null response from the new form (possibly from a logic exception thrown by the
+                // programmer)
+                if (resultFromNew == org.makumba.Pointer.Null) {
+                    return org.makumba.Pointer.Null; // we return null here too
+                }
+
+                String handlerName;
+                if (resp.getHandler() != null) {
+                    handlerName = resp.getHandler();
+                } else {
+                    handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType());
+                }
+                String afterHandlerName;
+                if (resp.getAfterHandler() != null) {
+                    afterHandlerName = resp.getAfterHandler();
+                } else {
+                    afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType());
+                }
+
+                // otherwise, we add to the new object
+                return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getNewType() + "->" + resp.getAddField(),
+                    (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.getController(), req,
+                            resp.getDatabase()), resp.getDatabase(), RequestAttributes.getConnectionProvider(req));
+            }
+
+            public String verify(Responder resp) {
+                return null;
+            }
+        };
+    }
+        return null;
     }
 }

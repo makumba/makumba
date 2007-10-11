@@ -23,8 +23,15 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.DataDefinition;
+import org.makumba.LogicException;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.controller.Logic;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:editForm tag
@@ -42,5 +49,39 @@ public class EditTag extends FormTagBase {
 
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return fdp.getBasePointerType(this, pageCache, baseObject);
+    }
+    
+    public static ResponderOperation getResponderOperation(String operation) {
+        if(operation.equals("edit")) {
+            return new ResponderOperation() {
+                private static final long serialVersionUID = 1L;
+
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    String handlerName;
+                    if (resp.getHandler() != null) {
+                        handlerName = resp.getHandler();
+                    } else {
+                        handlerName = "on_edit" + Logic.upperCase(resp.getBasePointerType());
+                    }
+                    String afterHandlerName;
+                    if (resp.getAfterHandler() != null) {
+                        afterHandlerName = resp.getAfterHandler();
+                    } else {
+                        afterHandlerName = "after_edit" + Logic.upperCase(resp.getBasePointerType());
+                    }
+
+                    return Logic.doEdit(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType(),
+                        resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
+                                resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+
+                public String verify(Responder resp) {
+                    return null;
+                }
+            };
+        }
+        return null;
     }
 }
