@@ -100,8 +100,11 @@ public class MakumbaJspTestCase extends JspTestCase {
      * 
      * @param output
      *            the result (HTML code) of the page that was ran correctly.
+     * @param record TODO
      */
-    protected void fetchValidTestResult(String output) {
+    protected void fetchValidTestResult(String output, boolean record) {
+        
+        if(!record) return;
 
         // first we retrieve the name of the method which calls us
         String testName = new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName();

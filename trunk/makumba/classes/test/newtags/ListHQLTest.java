@@ -39,6 +39,8 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ListHQLTest extends MakumbaJspTestCase {
     
+    private boolean record = false;
+    
     static Pointer person;
     static Pointer brother;
     static Pointer address;
@@ -190,7 +192,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListObjectTag(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -204,7 +206,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
 
     public void endHibernateListListTag(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -217,7 +219,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
 
     public void endHibernateListValueChar(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -230,7 +232,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     
     public void endHibernateListValueDate(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -243,7 +245,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     
     public void endHibernateListValueInt(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -255,7 +257,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListValueDouble(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -268,7 +270,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListValueText(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -281,7 +283,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListValueSet(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -294,7 +296,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListValueTS_create(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -307,7 +309,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateListValueTS_modify(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -321,7 +323,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     
     public void endHibernateListIf(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }

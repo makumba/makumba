@@ -46,6 +46,8 @@ import com.meterware.httpunit.WebResponse;
  * @author Manuel Gay
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
+    
+    private boolean record = false;
 
 	static Pointer person;
 	static Pointer brother;
@@ -207,7 +209,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endFormAddForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -220,7 +222,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endFormEditForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -233,7 +235,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endFormForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -247,7 +249,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endFormBug946(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -260,7 +262,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endFormMultipleForms(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -273,7 +275,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endFormNestedForms(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -286,7 +288,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endFormMakNewFile(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }

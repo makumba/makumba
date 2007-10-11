@@ -42,10 +42,13 @@ import com.meterware.httpunit.WebResponse;
 
 
 /**
- * @author jpeeters
+ * @author Johannes Peeters
+ * @author Manuel Gay
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
 
+    private boolean record = false;
+    
 	static Pointer person;
 	static Pointer brother;
 	static Pointer address;
@@ -192,7 +195,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endMakNewForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -216,7 +219,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endMakAddForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -229,7 +232,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endMakEditForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -242,7 +245,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	}
 	public void endMakForm(WebResponse response) throws Exception {
 		try {
-			output = response.getText();
+			output = response.getText(); fetchValidTestResult(output, record);
 		} catch (IOException e) {
 			fail("JSP output error: " + response.getResponseMessage());
 		}
@@ -256,7 +259,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
     public void endBug946(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }

@@ -37,8 +37,11 @@ import com.meterware.httpunit.WebResponse;
 
 /**
  * @author Rudolf Mayer
+ * @author Manuel Gay
  */
 public class FormsHQLTest extends MakumbaJspTestCase {
+    
+    private boolean record = false;
 
     static Pointer person;
 
@@ -187,7 +190,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateMakNewForm(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -214,7 +217,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateMakAddForm(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -227,7 +230,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateMakEditForm(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -241,7 +244,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     }
     public void endHibernateMakForm(WebResponse response) throws Exception {
         try {
-            output = response.getText();
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
