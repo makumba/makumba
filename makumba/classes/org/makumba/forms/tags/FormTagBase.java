@@ -405,12 +405,14 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             if (pageContext.getAttribute("firstFormPassed") == null) {
                 // included needed resources
                 HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
-                for (Object object : resources) {
-                    String rsc = (request).getContextPath() + "/" + MakumbaResourceServlet.resourceDirectory + "/"
-                            + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
-                    sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
-                }
-                pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
+                if(resources != null) {
+                    for (Object object : resources) {
+                        String rsc = (request).getContextPath() + "/" + MakumbaResourceServlet.resourceDirectory + "/"
+                                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
+                        sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
+                    }
+                    pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
+                }   
             }
 
             responder.writeFormPreamble(sb, basePointer);
