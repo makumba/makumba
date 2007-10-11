@@ -40,8 +40,12 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.controller.Logic;
 import org.makumba.forms.responder.FormResponder;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
@@ -51,7 +55,6 @@ import org.makumba.providers.FormDataProvider;
  * @author Cristian Bogdan
  * @author Rudolf Mayery
  * @version $Id$
- * 
  */
 public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
@@ -91,28 +94,27 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     boolean reloadFormOnError = true;
 
     private String clientSideValidation = "live";
-    
-    protected FormDataProvider fdp;
-    
-    //  TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
-    
-    public FormTagBase() {
-        //TODO move this somewhere else
-        try {
-         this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
-     } catch (InstantiationException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-     } catch (IllegalAccessException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-     } catch (ClassNotFoundException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-     }
-    }
 
+    protected FormDataProvider fdp;
+
+    // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
+    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
+
+    public FormTagBase() {
+        // TODO move this somewhere else
+        try {
+            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
@@ -253,16 +255,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
 
     /**
-     * {@inheritDoc}
-     * 
-     * FIXME QueryExecutionProvider should tell us the syntax for the primary key name
-     *
+     * {@inheritDoc} FIXME QueryExecutionProvider should tell us the syntax for the primary key name
      */
     public void doStartAnalyze(PageCache pageCache) {
         if (!shouldComputeBasePointer()) {
             return;
         }
-        
+
         fdp.onFormStartAnalyze(this, pageCache, baseObject);
     }
 
@@ -304,7 +303,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     public void doEndAnalyze(PageCache pageCache) {
         fdp.onFormEndAnalyze(getTagKey(), pageCache);
-        
+
         if (formAction == null && findParentForm() == null)
             throw new ProgrammerError(
                     "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
@@ -321,8 +320,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         if (!shouldComputeBasePointer())
             return;
-        
-        pageCache.cache(BASE_POINTER_TYPES, tagKey, fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
+
+        pageCache.cache(BASE_POINTER_TYPES, tagKey,
+            fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
     }
 
     /**
@@ -363,9 +363,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * @throws LogicException
      */
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
-        
+
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
-        
+
         responder.setOperation(getOperation());
         responder.setExtraFormatting(extraFormatting);
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
@@ -394,9 +394,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * @throws JspException
      */
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
-                
+
         fdp.onFormEndTag(getTagKey(), pageCache, pageContext);
-        
+
         try {
             StringBuffer sb = new StringBuffer();
 
@@ -454,6 +454,34 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /** The basic data type inside the form. null for generic forms */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
+        return null;
+    }
+
+    /**
+     * Gives the operation associated with this form tag. Each tag should implement its own
+     * 
+     * @param operation
+     *            name of the operation
+     * @return a {@link ResponderOperation} object holding the operation information
+     */
+    public static ResponderOperation getResponderOperation(String operation) {
+        if (operation.equals("simple")) {
+            return new ResponderOperation() {
+
+                private static final long serialVersionUID = 1L;
+
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
+                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+
+                public String verify(Responder resp) {
+                    return null;
+                }
+            };
+        }
         return null;
     }
 

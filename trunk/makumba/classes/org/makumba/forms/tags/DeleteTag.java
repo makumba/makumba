@@ -23,7 +23,14 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.controller.Logic;
+import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:delete tag
@@ -66,5 +73,40 @@ public class DeleteTag extends EditTag {
     public boolean getPreserveWhiteSpace() {
         return preserveWhiteSpace;
     }
+    
+    public static ResponderOperation getResponderOperation(String operation) {
+        if(operation.equals("deleteLink")) {
+            return new ResponderOperation() {
+                private static final long serialVersionUID = 1L;
 
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
+                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+
+                public String verify(Responder resp) {
+                    return null;
+                }
+            };
+        } else if(operation.equals("deleteForm")) {
+            return new ResponderOperation() {
+                
+                private static final long serialVersionUID = 1L;
+    
+                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                        throws LogicException {
+                    return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
+                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                        RequestAttributes.getConnectionProvider(req));
+                }
+    
+                public String verify(Responder resp) {
+                    return null;
+                }
+            };
+        }
+        return null;
+    }
 }
