@@ -426,7 +426,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 bodyContent.writeOut(bodyContent.getEnclosingWriter());
             }
 
-            if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+            // write client side validation, but only for edit operations (not search)
+            if (!getOperation().equals("search")
+                    && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
                 sb = new StringBuffer();
                 responder.writeClientsideValidation(sb);
                 bodyContent.getEnclosingWriter().print(sb.toString());
