@@ -76,9 +76,14 @@ public abstract class Database {
 
     int initConnections = 1;
     protected static boolean requestUTF8 = false;
+    protected static boolean requestForeignKeys = false;
     
     static protected boolean supportsUTF8() {
         return requestUTF8;
+    }
+    
+    static protected boolean supportsForeignKeys() {
+        return requestForeignKeys;
     }
     
     protected ResourcePool connections = new ResourcePool() {

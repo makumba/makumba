@@ -76,6 +76,13 @@ public class Database extends org.makumba.db.Database {
 	    return false;
 	}
 
+    static public boolean supportsForeignKeys() {
+        if(requestForeignKeys == false) return false;
+        if(sqlDrivers.getProperty(eng+".foreignkeys") == null) return false;
+        if(sqlDrivers.getProperty(eng+".foreignkeys").equals("true")) return requestForeignKeys;
+        return false;
+    }
+    
 	protected DBConnection makeDBConnection() {
 		try {
 			return new SQLDBConnection(this);
@@ -163,6 +170,9 @@ public class Database extends org.makumba.db.Database {
 
 			if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
                 requestUTF8 = true;
+
+            if(p.getProperty("foreignkeys") != null && p.getProperty("foreignkeys").equals("true")) 
+                requestForeignKeys = true;
 			
 			if (driver == null)
 				driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));

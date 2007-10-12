@@ -88,7 +88,7 @@ public abstract class Table // extends RecordHandler
                 relatedTables.put(name, fd.getSubtable());
         }
     }
-
+    
     public DataDefinition getDataDefinition() {
         return dd;
     }
