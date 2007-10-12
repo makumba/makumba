@@ -30,58 +30,40 @@ import org.makumba.controller.http.ControllerFilter;
  */
 public class ResponderCacheManager {
 
+    private ResponderFactory factory;
+    
+    private static ResponderCacheManager instance = null;
+    
+    public static ResponderCacheManager getInstance() {
+        if(instance == null) {
+            instance = new ResponderCacheManager();
+        }
+        return instance;
+    }
+    
     static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();
 
     public static String makumbaResponderBaseDirectory;
 
     static String validResponderFilename(int responderValue) {
-        return new String(ResponderCacheManager.makumbaResponderBaseDirectory + "/")
+        return new String(makumbaResponderBaseDirectory + "/")
                 + String.valueOf(responderValue).replaceAll("-", "_");
     }
 
-    public static void setResponderWorkingDir(HttpServletRequest request) {
+    public void setResponderWorkingDir(HttpServletRequest request) {
         // set the correct working directory for the responders
-        if (ResponderCacheManager.makumbaResponderBaseDirectory == null) {
+        if (makumbaResponderBaseDirectory == null) {
             System.out.println("had an empty responder dir - working dir ==> "
                     + request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir"));
             String baseDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir")
                     + System.getProperty("file.separator") + "makumba-responders"
                     + System.getProperty("file.separator");
-            ResponderCacheManager.makumbaResponderBaseDirectory = baseDir + request.getContextPath();
-            if (!new File(ResponderCacheManager.makumbaResponderBaseDirectory).exists()) {
+            makumbaResponderBaseDirectory = baseDir + request.getContextPath();
+            if (!new File(makumbaResponderBaseDirectory).exists()) {
                 new File(baseDir).mkdir();
-                new File(ResponderCacheManager.makumbaResponderBaseDirectory).mkdir();
+                new File(makumbaResponderBaseDirectory).mkdir();
             }
-            System.out.println("base dir: " + ResponderCacheManager.makumbaResponderBaseDirectory);
-        }
-    }
-
-    /**
-     * Returns the first responder object found fitting the request. It can be used to retrieve information
-     * about the form which is valid for all nested forms, and is used e.g. in {@link ControllerFilter} to find out the
-     * value of {@link #getReloadFormOnError()}.
-     * @param req the current request
-     * @return the first responder fitting the request.
-     */
-    public static Responder getFirstResponder(ServletRequest req) {
-        Iterator responderCodes = Responder.getResponderCodes((HttpServletRequest) req);
-        if (responderCodes.hasNext()) {
-            String code = (String) responderCodes.next();
-            String suffix = "";
-            String parentSuffix = null;
-            int n = code.indexOf(Responder.suffixSeparator);
-            if (n != -1) {
-                suffix = code.substring(n);
-                parentSuffix = "";
-                n = suffix.indexOf(Responder.suffixSeparator, 1);
-                if (n != -1) {
-                    parentSuffix = suffix.substring(n);
-                    suffix = suffix.substring(0, n);
-                }
-            }
-            return ResponderCacheManager.getResponder(code, suffix, parentSuffix);
-        } else {
-            return null;
+            System.out.println("base dir: " + makumbaResponderBaseDirectory);
         }
     }
 
@@ -92,10 +74,10 @@ public class ResponderCacheManager {
      * @param parentSuffix the suffix of the parent responder (of the parent form)
      * @return the cached responder object, if any could be found
      */
-    static Responder getResponder(String code, String suffix, String parentSuffix) {
+    Responder getResponder(String code, String suffix, String parentSuffix) {
         Integer i = new Integer(Integer.parseInt(code));
-        Responder fr = ((Responder) ResponderCacheManager.indexedCache.get(i));
-        String fileName = ResponderCacheManager.validResponderFilename(i.intValue());
+        Responder fr = ((Responder) indexedCache.get(i));
+        String fileName = validResponderFilename(i.intValue());
 
         // responder check
         if (fr == null) { // we do not have responder in cache --> try to get it from disk
@@ -179,5 +161,13 @@ public class ResponderCacheManager {
             return name;
         }
     });
+
+    public ResponderFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(ResponderFactory factory) {
+        this.factory = factory;
+    }
 
 }

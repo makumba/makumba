@@ -70,8 +70,7 @@ public class RecordEditor extends RecordFormatter {
         query = new String[ri.getFieldNames().size()];
     }
 
-    public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
-            HttpServletRequest req, String suffix) {
+    public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             Collection exceptions = e.getExceptions(fe.getInputName(this, i, suffix));

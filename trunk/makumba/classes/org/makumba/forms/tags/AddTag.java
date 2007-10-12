@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
@@ -36,6 +35,7 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.Logic;
 import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.forms.responder.ResponderOperation;
 
 /**
@@ -159,7 +159,7 @@ public class AddTag extends FormTagBase {
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                     throws LogicException {
                 // get result we got from the new form
-                Object resultFromNew = req.getAttribute(Responder.resultNamePrefix + parentSuffix);
+                Object resultFromNew = req.getAttribute(ResponderFactory.resultNamePrefix + parentSuffix);
 
                 // if we got a null response from the new form (possibly from a logic exception thrown by the
                 // programmer)

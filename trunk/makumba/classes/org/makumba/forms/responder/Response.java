@@ -12,34 +12,44 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Response {
     
-    private HttpServletRequest req;
+    private HttpServletRequest request;
     
-    private HttpServletResponse resp;
+    private HttpServletResponse response;
     
-    private Exception e;
+    private Exception exception;
+    
+    private String message;
 
-    public Exception getE() {
-        return e;
+    public Exception getException() {
+        return exception;
     }
 
-    public void setE(Exception e) {
-        this.e = e;
+    public void setException(Exception e) {
+        this.exception = e;
     }
 
-    public HttpServletRequest getReq() {
-        return req;
+    public HttpServletRequest getRequest() {
+        return request;
     }
 
-    public void setReq(HttpServletRequest req) {
-        this.req = req;
+    public void setRequest(HttpServletRequest req) {
+        this.request = req;
     }
 
-    public HttpServletResponse getResp() {
-        return resp;
+    public HttpServletResponse getResponse() {
+        return response;
     }
 
-    public void setResp(HttpServletResponse resp) {
-        this.resp = resp;
+    public void setResponse(HttpServletResponse resp) {
+        this.response = resp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }
