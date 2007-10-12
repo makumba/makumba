@@ -24,6 +24,15 @@ import org.makumba.forms.tags.NewTag;
  * @version $Id: ResponderOperationLocation.java,v 1.1 11.10.2007 16:10:44 Manuel Exp $
  */
 public class ResponderOperationLocator {
+    
+    private static ResponderOperationLocator instance;
+    
+    public static ResponderOperationLocator getInstance() {
+        if(instance == null) {
+            instance = new ResponderOperationLocator();
+        }
+        return instance;
+    }
 
     private static Map<String, ResponderOperation> responderOperations = new HashMap<String, ResponderOperation>();
 
@@ -51,7 +60,7 @@ public class ResponderOperationLocator {
      *            the name of the operation
      * @return a {@link ResponderOperation} object corresponding to the requested operation
      */
-    public static ResponderOperation locate(String operation) {
+    public ResponderOperation locate(String operation) {
 
         // since we know exactly where each operation is performed, we don't need to do anything very special
         return responderOperations.get(operation);

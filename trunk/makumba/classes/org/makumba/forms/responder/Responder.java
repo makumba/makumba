@@ -208,7 +208,7 @@ public abstract class Responder implements java.io.Serializable {
     /** pass the operation */
     public void setOperation(String operation) {
         this.operation = operation;
-        op = ResponderOperationLocator.locate(operation);
+        op = ResponderOperationLocator.getInstance().locate(operation);
     }
 
     /** pass the form response message */
