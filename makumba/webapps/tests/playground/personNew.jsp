@@ -8,6 +8,7 @@
 <table>
   <tr><th>indiv.name</th><td><mak:input name="indiv.name" /></td></tr>  
   <tr><th>indiv.surname</th><td><mak:input name="indiv.surname" /></td></tr>  
+  <tr><th>gender</th><td><mak:input name="gender" /></td></tr>  
   <tr><th>age</th><td><mak:input name="age" /></td></tr>  
   <tr><th>weight</th><td><mak:input name="weight" /></td></tr>  
   <tr><th>email</th><td><mak:input name="email" /></td></tr>  

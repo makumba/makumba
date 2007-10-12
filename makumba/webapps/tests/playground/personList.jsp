@@ -16,6 +16,7 @@ th {
   <tr>
     <th>indiv name</th>
     <th>indiv surname</th>
+    <th>gender</th>
     <th>age</th>
     <th>weight</th>
     <th>email</th>
@@ -33,6 +34,7 @@ th {
     <tr>
       <td><mak:value expr="p.indiv.name" /></td>
       <td><mak:value expr="p.indiv.surname" /></td>
+      <td><mak:value expr="p.gender" /></td>
       <td><mak:value expr="p.age" /></td>
       <td><mak:value expr="p.weight" />
       <td><mak:value expr="p.email" />
