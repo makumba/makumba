@@ -5,7 +5,9 @@
 <body>
 
 
-testNewFormStart!<form action="testMakNewForm.jsp" method="post" name="myNewForm" >!endNewFormStart
+testNewFormStart!<script type="text/javascript" src="/tests-new/makumbaResources/javaScript/makumba-livevalidation.js"></script>
+<script type="text/javascript" src="/tests-new/makumbaResources/javaScript/livevalidation_1.0_standalone.js"></script>
+<form action="testMakNewForm.jsp" method="post" name="myNewForm" >!endNewFormStart
         testName!<input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name" >!endName
         testAdd!
           testAddEmail!<input name="email_1" type="text" value="" maxlength="40" id="email" >!endAddEmail
