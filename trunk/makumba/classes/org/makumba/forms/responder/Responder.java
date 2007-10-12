@@ -205,10 +205,10 @@ public abstract class Responder implements java.io.Serializable {
         database = RequestAttributes.getAttributes(req).getRequestDatabase();
     }
 
-    /** pass the operation */
-    public void setOperation(String operation) {
+    /** pass the operation **/
+    public void setOperation(String operation, ResponderOperation op) {
         this.operation = operation;
-        op = ResponderOperationLocator.getInstance().locate(operation);
+        this.op = op;
     }
 
     /** pass the form response message */
