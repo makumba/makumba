@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -37,15 +36,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
-import org.makumba.CompositeValidationException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.controller.Logic;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.providers.TransactionProvider;
 
@@ -64,8 +62,8 @@ public abstract class Responder implements java.io.Serializable {
     public final static String originatingPageName = "__makumba__originatingPage__";
 
     /**
-     * used to fix the multiple submition bug (#190), it's basicaliy respoder+sessionID. <br>
-     * TODO find a meaningful name :)
+     * prevents multiple submition of the same form (bug #190), computes as respoder+sessionID,
+     * "__makumba__formSession__"
      */
     public final static String formSessionName = "__makumba__formSession__";
 
@@ -75,8 +73,29 @@ public abstract class Responder implements java.io.Serializable {
     /** the default response message, "changes done" */
     static public final String defaultMessage = "changes done";
 
+    /** the default response message for search forms, "Search done!" */
+    public static final String defaultMessageSearchForm = "Search done!";
+
     /** the name of the CGI parameter that passes the base pointer, see {@link #basePointerType}, "__makumba__base__" */
     public final static String basePointerName = "__makumba__base__";
+
+    public static final String MATCH_CONTAINS = "contains";
+
+    public static final String MATCH_EQUALS = "equals";
+
+    public static final String MATCH_BEGINS = "begins";
+
+    public static final String MATCH_ENDS = "ends";
+
+    public static final String MATCH_BEFORE = "before";
+
+    public static final String MATCH_AFTER = "after";
+
+    public static final String MATCH_LESS = "lessThan";
+
+    public static final String MATCH_GREATER = "greaterThan";
+
+    public static final String SUFFIX_INPUT_MATCH = "Match";
 
     /** the responder key, as computed from the other fields */
     protected int identity;
@@ -125,6 +144,12 @@ public abstract class Responder implements java.io.Serializable {
      */
     protected String basePointerType;
 
+    /** the type where the search operation is made */
+    protected String searchType;
+
+    /** the name of the form we operate on (only needed for search forms). */
+    protected String formName;
+
     /** the type where the new operation is made */
     protected String newType;
 
@@ -136,7 +161,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
-    
+
     public String getHandler() {
         return handler;
     }
@@ -163,6 +188,14 @@ public abstract class Responder implements java.io.Serializable {
 
     public String getNewType() {
         return newType;
+    }
+
+    public String getSearchType() {
+        return searchType;
+    }
+
+    public String getFormName() {
+        return formName;
     }
 
     // --------------- form time, responder preparation -------------------
@@ -238,6 +271,15 @@ public abstract class Responder implements java.io.Serializable {
         newType = dd.getName();
     }
 
+    /** pass the type on which the new operation is made */
+    public void setSearchType(DataDefinition dd) {
+        searchType = dd.getName();
+    }
+
+    public void setFormName(String formName) {
+        this.formName = formName;
+    }
+
     abstract protected void postDeserializaton();
 
     /** a key that should identify this responder among all */
@@ -282,10 +324,11 @@ public abstract class Responder implements java.io.Serializable {
 
     /**
      * Given a responder code, extracts the suffix
-     * @param code the responder code
-     * @return the responder suffix, ZERO if none found
      * 
-     * FIXME maybe this goes just 2 levels, so forms in forms in forms aren't working?
+     * @param code
+     *            the responder code
+     * @return the responder suffix, ZERO if none found FIXME maybe this goes just 2 levels, so forms in forms in forms
+     *         aren't working?
      */
     static Integer suffix(String code) {
         int n = code.indexOf(suffixSeparator);
@@ -297,13 +340,14 @@ public abstract class Responder implements java.io.Serializable {
             code = code.substring(0, n);
         return new Integer(Integer.parseInt(code));
     }
-    
+
     /**
      * Given a responder code, extracts suffix and parentSuffix
-     * @param responderCode the responder code
-     * @return a String[] containing the suffix as first element and the parentSuffix as second element
      * 
-     * FIXME maybe this goes just 2 levels, so forms in forms in forms aren't working?
+     * @param responderCode
+     *            the responder code
+     * @return a String[] containing the suffix as first element and the parentSuffix as second element FIXME maybe this
+     *         goes just 2 levels, so forms in forms in forms aren't working?
      */
     public static String[] getSuffixes(String responderCode) {
         String suffix = "";
@@ -320,15 +364,18 @@ public abstract class Responder implements java.io.Serializable {
         }
         return new String[] { suffix, parentSuffix };
     }
-    
+
     /**
-     * Reads all responder codes from a request (all code_suffix values of __mak__responder__) and orders them by suffix.
-     * @param req the request in which we currently are
+     * Reads all responder codes from a request (all code_suffix values of __mak__responder__) and orders them by
+     * suffix.
+     * 
+     * @param req
+     *            the request in which we currently are
      * @return the enumeration of responder codes
      */
     static Iterator<Object> getResponderCodes(HttpServletRequest req) {
         TreeSet<Object> set = new TreeSet<Object>(bySuffix);
-    
+
         Object o = RequestAttributes.getParameters(req).getParameter(responderName);
         if (o != null) {
             if (o instanceof String)
@@ -359,9 +406,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** respond to a http request */
     public static Exception response(HttpServletRequest req, HttpServletResponse resp) {
-        
+
         ResponderCacheManager.setResponderWorkingDir(req);
-        
+
         if (req.getAttribute(RESPONSE_STRING_NAME) != null)
             return null;
         req.setAttribute(RESPONSE_STRING_NAME, "");
@@ -369,7 +416,7 @@ public abstract class Responder implements java.io.Serializable {
 
         // we go over all the responders of this page (hold in the request)
         for (Iterator<Object> responderCodes = Responder.getResponderCodes(req); responderCodes.hasNext();) {
-            
+
             // first we need to retrieve the responder from the cache
             String code = (String) responderCodes.next();
             String suffix = getSuffixes(code)[0];
@@ -381,7 +428,7 @@ public abstract class Responder implements java.io.Serializable {
 
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
-                
+
                 // display the response message and set attributes
                 message = "<font color=green>" + formResponder.message + "</font>";
                 if (result != null) {
@@ -389,7 +436,7 @@ public abstract class Responder implements java.io.Serializable {
                     req.setAttribute(resultNamePrefix + suffix, result);
                 }
                 req.setAttribute("makumba.successfulResponse", "yes");
-                
+
             } catch (AttributeNotFoundException anfe) {
                 // attribute not found is a programmer error and is reported
                 ControllerFilter.treatException(anfe, req, resp);
@@ -417,23 +464,26 @@ public abstract class Responder implements java.io.Serializable {
 
     /**
      * Checks if a form has been submitted several times.
-     * @param req the current request
-     * @param tp a TransactionProvider needed to query the database for the form tickets
-     * @param fr the formResponder
-     * @throws LogicException if a form has already been submitted once, throw a LogicException to say so
+     * 
+     * @param req
+     *            the current request
+     * @param tp
+     *            a TransactionProvider needed to query the database for the form tickets
+     * @param fr
+     *            the formResponder
+     * @throws LogicException
+     *             if a form has already been submitted once, throw a LogicException to say so
      */
     private static void checkMultipleSubmission(HttpServletRequest req, Responder fr) throws LogicException {
         String reqFormSession = (String) RequestAttributes.getParameters(req).getParameter(formSessionName);
-        if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("")
-                && reqFormSession != null) {
+        if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
                 db = new TransactionProvider(new Configuration()).getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(
-                    "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1",
-                    reqFormSession);
+                    "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1", reqFormSession);
                 if (v.size() == 0) { // the ticket does not exist... error
                     throw new LogicException(fr.multipleSubmitErrorMsg);
 
@@ -444,8 +494,8 @@ public abstract class Responder implements java.io.Serializable {
 
                     Object[] params = { reqFormSession, c.getTime() };
                     // delete the currently used ticked and the expired ones
-                    db.delete("org.makumba.controller.MultipleSubmit ms",
-                        "ms.formSession=$1 OR ms.TS_create<$2", params);
+                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2",
+                        params);
                 }
             } finally {
                 db.close();
@@ -473,8 +523,11 @@ public abstract class Responder implements java.io.Serializable {
     /**
      * Reads the data needed for the logic operation, from the http request. org.makumba.forms.html.FormResponder
      * provides an implementation
-     * @param req the request corresponding to the current page
-     * @param suffix the responder / form suffix
+     * 
+     * @param req
+     *            the request corresponding to the current page
+     * @param suffix
+     *            the responder / form suffix
      * @return a Dicionary holding the data read by the logic
      */
     public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
@@ -487,8 +540,8 @@ public abstract class Responder implements java.io.Serializable {
         for (Iterator<Object> responderCodes = Responder.getResponderCodes(req); responderCodes.hasNext();) {
             String responderCode = (String) responderCodes.next();
             String[] suffixes = getSuffixes(responderCode);
-            ResponderCacheManager.getResponder(responderCode, suffixes[0], suffixes[1]).getUnassignedExceptions(e, unassignedExceptions, req,
-                suffixes[0]);
+            ResponderCacheManager.getResponder(responderCode, suffixes[0], suffixes[1]).getUnassignedExceptions(e,
+                unassignedExceptions, req, suffixes[0]);
         }
         return unassignedExceptions;
     }
