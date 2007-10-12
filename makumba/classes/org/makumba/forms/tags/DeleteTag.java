@@ -48,6 +48,21 @@ public class DeleteTag extends EditTag {
 
     private boolean preserveWhiteSpace = false;
 
+    private final static ResponderOperation deleteLinkOp = new ResponderOperation() {
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
+
     public void setWidget(String w) {
         if (w.equals("") || w.equals("link") || w.equals("button")) {
             widget = w;
@@ -74,39 +89,30 @@ public class DeleteTag extends EditTag {
         return preserveWhiteSpace;
     }
     
-    public static ResponderOperation getResponderOperation(String operation) {
+    @Override
+    public ResponderOperation getResponderOperation(String operation) {
         if(operation.equals("deleteLink")) {
-            return new ResponderOperation() {
-                private static final long serialVersionUID = 1L;
-
-                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                        throws LogicException {
-                    return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
-                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                        RequestAttributes.getConnectionProvider(req));
-                }
-
-                public String verify(Responder resp) {
-                    return null;
-                }
-            };
+            return deleteLinkOp;
         } else if(operation.equals("deleteForm")) {
-            return new ResponderOperation() {
-                
-                private static final long serialVersionUID = 1L;
-    
-                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                        throws LogicException {
-                    return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
-                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                        RequestAttributes.getConnectionProvider(req));
-                }
-    
-                public String verify(Responder resp) {
-                    return null;
-                }
-            };
+            return deleteFormOp ;
         }
         return null;
     }
+    
+    private final static ResponderOperation deleteFormOp = new ResponderOperation() {
+        
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
+
 }

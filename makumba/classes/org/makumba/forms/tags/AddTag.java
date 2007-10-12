@@ -40,6 +40,7 @@ import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:addForm tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -64,7 +65,9 @@ public class AddTag extends FormTagBase {
     /**
      * Sets tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before
      * doMakumbaStartTag()
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
         Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), getClass() };
@@ -86,11 +89,14 @@ public class AddTag extends FormTagBase {
 
     /**
      * Tries to figure out the type of the object to which we want to add some data
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      * @return A DataDefinition corresponding to the type of object to which we want to add something
      */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        DataDefinition base = getOperation().equals("add") ? fdp.getBasePointerType(this, pageCache, baseObject) : ((NewTag) findParentForm()).type;
+        DataDefinition base = getOperation().equals("add") ? fdp.getBasePointerType(this, pageCache, baseObject)
+                : ((NewTag) findParentForm()).type;
         if (base == null) { // we could not find the type
             String message = "Could not determine type for specified object '" + baseObject + "'";
             if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..
@@ -107,6 +113,7 @@ public class AddTag extends FormTagBase {
 
     /**
      * Figures out the operation
+     * 
      * @return 'addNew' if we are inside of a newForm, 'add' otherwise
      */
     String getOperation() {
@@ -119,79 +126,85 @@ public class AddTag extends FormTagBase {
     public boolean shouldComputeBasePointer() {
         return getOperation().equals("add");
     }
-    
-    public static ResponderOperation getResponderOperation(String operation) {
-        
+
+    @Override
+    public ResponderOperation getResponderOperation(String operation) {
+
         // if this is a simple addForm
-        if(operation.equals("add")) {
-            return new ResponderOperation() {
-                private static final long serialVersionUID = 1L;
+        if (operation.equals("add")) {
+            return addOp;
 
-                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                        throws LogicException {
-                    String handlerName;
-                    if (resp.getHandler() != null) {
-                        handlerName = resp.getHandler();
-                    } else {
-                        handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
-                    }
-                    String afterHandlerName;
-                    if (resp.getAfterHandler() != null) {
-                        afterHandlerName = resp.getAfterHandler();
-                    } else {
-                        afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
-                    }
-                    return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType() + "->"
-                            + resp.getAddField(), resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
-                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                        RequestAttributes.getConnectionProvider(req));
-                }
-
-                public String verify(Responder resp) {
-                    return null;
-                }
-        };
-
-    } else if(operation.equals("addToNew")) {
-        return new ResponderOperation() {
-            private static final long serialVersionUID = 1L;
-
-            public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                    throws LogicException {
-                // get result we got from the new form
-                Object resultFromNew = req.getAttribute(ResponderFactory.resultNamePrefix + parentSuffix);
-
-                // if we got a null response from the new form (possibly from a logic exception thrown by the
-                // programmer)
-                if (resultFromNew == org.makumba.Pointer.Null) {
-                    return org.makumba.Pointer.Null; // we return null here too
-                }
-
-                String handlerName;
-                if (resp.getHandler() != null) {
-                    handlerName = resp.getHandler();
-                } else {
-                    handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType());
-                }
-                String afterHandlerName;
-                if (resp.getAfterHandler() != null) {
-                    afterHandlerName = resp.getAfterHandler();
-                } else {
-                    afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType());
-                }
-
-                // otherwise, we add to the new object
-                return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getNewType() + "->" + resp.getAddField(),
-                    (Pointer) resultFromNew, resp.getHttpData(req, suffix), new RequestAttributes(resp.getController(), req,
-                            resp.getDatabase()), resp.getDatabase(), RequestAttributes.getConnectionProvider(req));
-            }
-
-            public String verify(Responder resp) {
-                return null;
-            }
-        };
-    }
+        } else if (operation.equals("addToNew")) {
+            return addToNewOp;
+        }
         throw new RuntimeException("Houston, we have a problem");
-        
+
     }
+    
+    private final static ResponderOperation addToNewOp = new ResponderOperation() {
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            // get result we got from the new form
+            Object resultFromNew = req.getAttribute(ResponderFactory.resultNamePrefix + parentSuffix);
+
+            // if we got a null response from the new form (possibly from a logic exception thrown by the
+            // programmer)
+            if (resultFromNew == org.makumba.Pointer.Null) {
+                return org.makumba.Pointer.Null; // we return null here too
+            }
+
+            String handlerName;
+            if (resp.getHandler() != null) {
+                handlerName = resp.getHandler();
+            } else {
+                handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType());
+            }
+            String afterHandlerName;
+            if (resp.getAfterHandler() != null) {
+                afterHandlerName = resp.getAfterHandler();
+            } else {
+                afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType());
+            }
+
+            // otherwise, we add to the new object
+            return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getNewType() + "->"
+                    + resp.getAddField(), (Pointer) resultFromNew, resp.getHttpData(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
+
+    private final static ResponderOperation addOp = new ResponderOperation() {
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            String handlerName;
+            if (resp.getHandler() != null) {
+                handlerName = resp.getHandler();
+            } else {
+                handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
+            }
+            String afterHandlerName;
+            if (resp.getAfterHandler() != null) {
+                afterHandlerName = resp.getAfterHandler();
+            } else {
+                afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType() + "->" + resp.getAddField());
+            }
+            return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType() + "->"
+                    + resp.getAddField(), resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
 }
