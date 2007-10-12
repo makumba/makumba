@@ -1,5 +1,7 @@
 package org.makumba.providers.datadefinition.makumba;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -75,10 +77,16 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
      * @return filenames as Vector of Strings.
      */
     private java.util.Vector mddsInDirectory(String dirInClasspath) {
-        java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
-        java.io.File dir = new java.io.File(u.getFile());
         java.util.Vector mdds = new java.util.Vector();
-        fillMdds(dir.toString().length() + 1, dir, mdds);
+        try {
+            java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
+            // we need to create the file path with this methode. rather than u.getFile(), as that method would keep
+            // e.g. %20 for spaces in the path, which fails on windows.
+            java.io.File dir = new File(u.toURI());
+            fillMdds(dir.toString().length() + 1, dir, mdds);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         return mdds;
     }
 
@@ -100,9 +108,9 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
             }
         }
     }
-    
+
     public MakumbaDataDefinitionFactory() {
-        
+
     }
 
 }
