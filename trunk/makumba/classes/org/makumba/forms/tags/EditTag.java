@@ -51,37 +51,41 @@ public class EditTag extends FormTagBase {
         return fdp.getBasePointerType(this, pageCache, baseObject);
     }
     
-    public static ResponderOperation getResponderOperation(String operation) {
+    @Override
+    public ResponderOperation getResponderOperation(String operation) {
         if(operation.equals("edit")) {
-            return new ResponderOperation() {
-                private static final long serialVersionUID = 1L;
-
-                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                        throws LogicException {
-                    String handlerName;
-                    if (resp.getHandler() != null) {
-                        handlerName = resp.getHandler();
-                    } else {
-                        handlerName = "on_edit" + Logic.upperCase(resp.getBasePointerType());
-                    }
-                    String afterHandlerName;
-                    if (resp.getAfterHandler() != null) {
-                        afterHandlerName = resp.getAfterHandler();
-                    } else {
-                        afterHandlerName = "after_edit" + Logic.upperCase(resp.getBasePointerType());
-                    }
-
-                    return Logic.doEdit(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType(),
-                        resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
-                                resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                        RequestAttributes.getConnectionProvider(req));
-                }
-
-                public String verify(Responder resp) {
-                    return null;
-                }
-            };
+            return editOp ;
         }
         return null;
     }
+    
+    
+    private static final ResponderOperation editOp = new ResponderOperation() {
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            String handlerName;
+            if (resp.getHandler() != null) {
+                handlerName = resp.getHandler();
+            } else {
+                handlerName = "on_edit" + Logic.upperCase(resp.getBasePointerType());
+            }
+            String afterHandlerName;
+            if (resp.getAfterHandler() != null) {
+                afterHandlerName = resp.getAfterHandler();
+            } else {
+                afterHandlerName = "after_edit" + Logic.upperCase(resp.getBasePointerType());
+            }
+
+            return Logic.doEdit(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType(),
+                resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
+                        resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
 }

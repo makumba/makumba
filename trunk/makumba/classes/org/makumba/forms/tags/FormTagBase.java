@@ -348,7 +348,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.setMethod(formMethod);
         if (formMessage != null)
             responder.setMessage(formMessage);
-
+        
         responder.setReloadFormOnError(reloadFormOnError);
         responder.setShowFormAnnotated(StringUtils.equals(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
@@ -369,7 +369,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
 
-        responder.setOperation(getOperation());
+        responder.setOperation(getOperation(), getResponderOperation(getOperation()));
         responder.setExtraFormatting(extraFormatting);
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
 
@@ -471,25 +471,28 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      *            name of the operation
      * @return a {@link ResponderOperation} object holding the operation information
      */
-    public static ResponderOperation getResponderOperation(String operation) {
+    public ResponderOperation getResponderOperation(String operation) {
         if (operation.equals("simple")) {
-            return new ResponderOperation() {
-
-                private static final long serialVersionUID = 1L;
-
-                public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                        throws LogicException {
-                    return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
-                        new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                        RequestAttributes.getConnectionProvider(req));
-                }
-
-                public String verify(Responder resp) {
-                    return null;
-                }
-            };
+            return simepleOp;
         }
-        return null;
+        throw new RuntimeException("Houston, problem");
     }
+    
+    private final static ResponderOperation simepleOp = new ResponderOperation() {
+
+        private static final long serialVersionUID = 1L;
+
+        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
+                throws LogicException {
+            return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                RequestAttributes.getConnectionProvider(req));
+        }
+
+        public String verify(Responder resp) {
+            return null;
+        }
+    };
+
 
 }
