@@ -169,7 +169,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (nameVar != null)
             setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
 
-        if (calendarEditor != null && calendarEditor.equals("true")) {
+        FieldDefinition contextType = getTypeFromContext(pageCache);
+        boolean dataTypeIsDate = dataType != null && ddp.makeFieldDefinition("dummyName", dataType) != null
+                && ddp.makeFieldDefinition("dummyName", dataType).isDateType();
+        boolean contextTypeIsDate = contextType != null && contextType.isDateType();
+        if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor != null && calendarEditor.equals("true")) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
