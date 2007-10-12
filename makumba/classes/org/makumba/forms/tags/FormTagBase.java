@@ -405,7 +405,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             // if we are at the first form
-            if (pageContext.getAttribute("firstFormPassed") == null) {
+            if ( findParentForm() == null && pageContext.getAttribute("firstFormPassed") == null) {
                 // included needed resources
                 HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                 if(resources != null) {
