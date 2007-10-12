@@ -24,11 +24,9 @@
 package org.makumba.forms.responder;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -96,6 +94,8 @@ public abstract class Responder implements java.io.Serializable {
     public static final String MATCH_GREATER = "greaterThan";
 
     public static final String SUFFIX_INPUT_MATCH = "Match";
+
+    protected transient ResponderFactory factory;
 
     /** the responder key, as computed from the other fields */
     protected int identity;
@@ -295,7 +295,7 @@ public abstract class Responder implements java.io.Serializable {
         String s = op.verify(this);
         if (s != null)
             throw new MakumbaError("Bad responder configuration " + s);
-        return ((Responder) ResponderCacheManager.cache.getResource(this)).identity;
+        return factory.getResponderIdentity(this);
     }
 
     // ------------------ multiple form section -------------------
@@ -320,189 +320,8 @@ public abstract class Responder implements java.io.Serializable {
         return storedSuffix;
     }
 
-    static Integer ZERO = new Integer(0);
-
-    /**
-     * Given a responder code, extracts the suffix
-     * 
-     * @param code
-     *            the responder code
-     * @return the responder suffix, ZERO if none found FIXME maybe this goes just 2 levels, so forms in forms in forms
-     *         aren't working?
-     */
-    static Integer suffix(String code) {
-        int n = code.indexOf(suffixSeparator);
-        if (n == -1)
-            return ZERO;
-        code = code.substring(n + 1);
-        n = code.indexOf(suffixSeparator);
-        if (n != -1)
-            code = code.substring(0, n);
-        return new Integer(Integer.parseInt(code));
-    }
-
-    /**
-     * Given a responder code, extracts suffix and parentSuffix
-     * 
-     * @param responderCode
-     *            the responder code
-     * @return a String[] containing the suffix as first element and the parentSuffix as second element FIXME maybe this
-     *         goes just 2 levels, so forms in forms in forms aren't working?
-     */
-    public static String[] getSuffixes(String responderCode) {
-        String suffix = "";
-        String parentSuffix = null;
-        int n = responderCode.indexOf(suffixSeparator);
-        if (n != -1) {
-            suffix = responderCode.substring(n);
-            parentSuffix = "";
-            n = suffix.indexOf(suffixSeparator, 1);
-            if (n != -1) {
-                parentSuffix = suffix.substring(n);
-                suffix = suffix.substring(0, n);
-            }
-        }
-        return new String[] { suffix, parentSuffix };
-    }
-
-    /**
-     * Reads all responder codes from a request (all code_suffix values of __mak__responder__) and orders them by
-     * suffix.
-     * 
-     * @param req
-     *            the request in which we currently are
-     * @return the enumeration of responder codes
-     */
-    static Iterator<Object> getResponderCodes(HttpServletRequest req) {
-        TreeSet<Object> set = new TreeSet<Object>(bySuffix);
-
-        Object o = RequestAttributes.getParameters(req).getParameter(responderName);
-        if (o != null) {
-            if (o instanceof String)
-                set.add(o);
-            else
-                set.addAll((Vector) o);
-        }
-        return set.iterator();
-    }
-
-    /**
-     * Simple comparator to be able to sort by suffix
-     */
-    static Comparator<Object> bySuffix = new Comparator<Object>() {
-        public int compare(Object o1, Object o2) {
-            return suffix((String) o1).compareTo(suffix((String) o2));
-        }
-
-        public boolean equals(Object o) {
-            return false;
-        }
-    };
-
     // ----------------- response section ------------------
-    static public final String RESPONSE_STRING_NAME = "makumba.response";
-
-    public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
-
-    /** respond to a http request */
-    public static Exception response(HttpServletRequest req, HttpServletResponse resp) {
-
-        ResponderCacheManager.setResponderWorkingDir(req);
-
-        if (req.getAttribute(RESPONSE_STRING_NAME) != null)
-            return null;
-        req.setAttribute(RESPONSE_STRING_NAME, "");
-        String message = "";
-
-        // we go over all the responders of this page (hold in the request)
-        for (Iterator<Object> responderCodes = Responder.getResponderCodes(req); responderCodes.hasNext();) {
-
-            // first we need to retrieve the responder from the cache
-            String code = (String) responderCodes.next();
-            String suffix = getSuffixes(code)[0];
-            String parentSuffix = getSuffixes(code)[1];
-            Responder formResponder = ResponderCacheManager.getResponder(code, suffix, parentSuffix);
-
-            try {
-                checkMultipleSubmission(req, formResponder);
-
-                // respond, depending on the operation (new, add, edit, delete)
-                Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
-
-                // display the response message and set attributes
-                message = "<font color=green>" + formResponder.message + "</font>";
-                if (result != null) {
-                    req.setAttribute(formResponder.resultAttribute, result);
-                    req.setAttribute(resultNamePrefix + suffix, result);
-                }
-                req.setAttribute("makumba.successfulResponse", "yes");
-
-            } catch (AttributeNotFoundException anfe) {
-                // attribute not found is a programmer error and is reported
-                ControllerFilter.treatException(anfe, req, resp);
-                continue;
-            } catch (CompositeValidationException e) {
-                req.setAttribute(formResponder.resultAttribute, Pointer.Null);
-                req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
-                // we do nothing, cause we will treat that from the ControllerFilter.doFilter
-                return e;
-            } catch (LogicException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "logic.error").log(Level.INFO, "error", e);
-                message = errorMessage(e);
-                req.setAttribute(formResponder.resultAttribute, Pointer.Null);
-                req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
-            } catch (Throwable t) {
-                // all included error types should be considered here
-                ControllerFilter.treatException(t, req, resp);
-            }
-            // messages of inner forms are ignored
-            if (suffix.equals(""))
-                req.setAttribute(RESPONSE_STRING_NAME, message);
-        }
-        return null;
-    }
-
-    /**
-     * Checks if a form has been submitted several times.
-     * 
-     * @param req
-     *            the current request
-     * @param tp
-     *            a TransactionProvider needed to query the database for the form tickets
-     * @param fr
-     *            the formResponder
-     * @throws LogicException
-     *             if a form has already been submitted once, throw a LogicException to say so
-     */
-    private static void checkMultipleSubmission(HttpServletRequest req, Responder fr) throws LogicException {
-        String reqFormSession = (String) RequestAttributes.getParameters(req).getParameter(formSessionName);
-        if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
-            Transaction db = null;
-            try {
-                db = new TransactionProvider(new Configuration()).getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
-
-                // check to see if the ticket is valid... if it exists in the db
-                Vector v = db.executeQuery(
-                    "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1", reqFormSession);
-                if (v.size() == 0) { // the ticket does not exist... error
-                    throw new LogicException(fr.multipleSubmitErrorMsg);
-
-                } else if (v.size() >= 1) { // the ticket exists... continue
-                    // garbage collection of old tickets
-                    GregorianCalendar c = new GregorianCalendar();
-                    c.add(GregorianCalendar.HOUR, -5); // how many hours of history do we want?
-
-                    Object[] params = { reqFormSession, c.getTime() };
-                    // delete the currently used ticked and the expired ones
-                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2",
-                        params);
-                }
-            } finally {
-                db.close();
-            }
-        }
-    }
-
+ 
     /** formats an error message */
     public static String errorMessage(Throwable t) {
         return errorMessage(t.getMessage());
@@ -533,16 +352,13 @@ public abstract class Responder implements java.io.Serializable {
     public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
 
     public abstract ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
-            HttpServletRequest req, String suffix);
+            String suffix);
 
-    public static ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
-        ArrayList unassignedExceptions = e.getExceptions();
-        for (Iterator<Object> responderCodes = Responder.getResponderCodes(req); responderCodes.hasNext();) {
-            String responderCode = (String) responderCodes.next();
-            String[] suffixes = getSuffixes(responderCode);
-            ResponderCacheManager.getResponder(responderCode, suffixes[0], suffixes[1]).getUnassignedExceptions(e,
-                unassignedExceptions, req, suffixes[0]);
-        }
-        return unassignedExceptions;
+    public ResponderFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(ResponderFactory factory) {
+        this.factory = factory;
     }
 }

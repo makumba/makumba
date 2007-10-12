@@ -60,9 +60,9 @@ public class FormResponder extends Responder {
     }
 
     public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
-            HttpServletRequest req, String suffix) {
+            String suffix) {
         if (editor != null)
-            return editor.getUnassignedExceptions(e, unassignedExceptions, req, suffix);
+            return editor.getUnassignedExceptions(e, unassignedExceptions, suffix);
         else
             return null;
     }
@@ -202,7 +202,7 @@ public class FormResponder extends Responder {
 
     public void writeFormPostamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
         String session = request.getSession().getId();
-        ResponderCacheManager.setResponderWorkingDir(request);
+        factory.setResponderWorkingDir(request);
         if (storedSuffix.equals("") && operation.equals("deleteLink")) {
             // a root deleteLink
             sb.append("</a>");

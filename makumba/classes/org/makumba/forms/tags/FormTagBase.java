@@ -45,6 +45,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.controller.Logic;
 import org.makumba.forms.responder.FormResponder;
 import org.makumba.forms.responder.Responder;
+import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
@@ -96,6 +97,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     private String clientSideValidation = "live";
 
     protected FormDataProvider fdp;
+    
+    private ResponderFactory responderFactory = ResponderFactory.getInstance();
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = new DataDefinitionProvider();
@@ -331,7 +334,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void initialiseState() {
         super.initialiseState();
 
-        responder = new FormResponder();
+        responder = responderFactory.createResponder();
         if (formName != null)
             responder.setResultAttribute(formName);
         if (handler != null)

@@ -49,6 +49,7 @@ import org.makumba.controller.DbConnectionProvider;
 import org.makumba.devel.TagExceptionServlet;
 import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderCacheManager;
+import org.makumba.forms.responder.ResponderFactory;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
@@ -72,6 +73,8 @@ public class ControllerFilter implements Filter {
 
     private static ThreadLocal<ServletRequest> requestThreadLocal = new ThreadLocal<ServletRequest>();
 
+    private static ResponderFactory factory = ResponderFactory.getInstance();
+    
     /**
      * Gets the request
      * 
@@ -93,7 +96,7 @@ public class ControllerFilter implements Filter {
             try {
                 if(!checkAttributes(req, resp)) return;
                 
-                Exception e = Responder.response((HttpServletRequest) req, (HttpServletResponse) resp);
+                Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
                 if (e instanceof CompositeValidationException) {
                     CompositeValidationException v = (CompositeValidationException) e;
                     req.setAttribute(MAKUMBA_FORM_VALIDATION_ERRORS, v);
@@ -102,7 +105,7 @@ public class ControllerFilter implements Filter {
                     String message;
 
                     // Check if we shall reload the form page
-                    Responder firstResponder = ResponderCacheManager.getFirstResponder(req);
+                    Responder firstResponder = factory.getFirstResponder(req);
                     java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                         "Caught a CompositeValidationException, reloading form page: "
                                 + firstResponder.getReloadFormOnError());
@@ -132,7 +135,7 @@ public class ControllerFilter implements Filter {
                                 "Processing CompositeValidationException for annotation:\n" + v.toString());
                             // if the form shall be annotated, we need to filter which exceptions can be assigned to
                             // fields, and which not
-                            ArrayList unassignedExceptions = Responder.getUnassignedExceptions(v,
+                            ArrayList unassignedExceptions = factory.getUnassignedExceptions(v,
                                 (HttpServletRequest) req);
                             java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
                                 "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
@@ -152,7 +155,7 @@ public class ControllerFilter implements Filter {
                     }
 
                     message = Responder.errorMessage(message);
-                    req.setAttribute(Responder.RESPONSE_STRING_NAME, message);
+                    req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
 
                 } else if (wasException((HttpServletRequest) req))
                     return;
