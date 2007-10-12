@@ -96,7 +96,10 @@ public class FormResponder extends Responder {
         dd.addField(new DataDefinitionProvider(new Configuration()).makeFieldWithName(colName, ftype));
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
-        provider.initField(fname, ftype, clientSideValidation.equals("live"));
+        // add client side validation, but only for edit operations (not search)
+        if (!operation.equals("search") && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+            provider.initField(fname, ftype, clientSideValidation.equals("live"));
+        }
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
     }
@@ -180,7 +183,9 @@ public class FormResponder extends Responder {
             if (multipart)
                 sb.append(" enctype=\"multipart/form-data\" ");
             // if we do client side validation, we need to put an extra formatting parameter for onSubmit
-            if (StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+            // but, do it only for edit operations (not search)
+            if (!operation.equals("search")
+                    && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
                 StringBuffer onSubmitValidation = provider.getOnSubmitValidation(StringUtils.equals(
                     clientSideValidation, "live"));
                 // we append it only if we actually have data
@@ -213,16 +218,21 @@ public class FormResponder extends Responder {
         String formSessionValue = responderValue + session; // gets the formSession value
 
         // writes the hidden fields
-        String url = request.getRequestURI();
-        String queryString = request.getQueryString();
-        if (queryString != null) {
-            if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
-                queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
+
+        // write originating page, only for edit operations (not search)
+        if (!operation.equals("search")) {
+            String url = request.getRequestURI();
+            String queryString = request.getQueryString();
+            if (queryString != null) {
+                if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
+                    queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
+                }
+                url += "?" + queryString;
             }
-            url += "?" + queryString;
+            writeInput(sb, originatingPageName, url, "");
+            sb.append('\n');
         }
-        writeInput(sb, originatingPageName, url, "");
-        sb.append('\n');
+
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
             sb.append('\n');
@@ -252,14 +262,6 @@ public class FormResponder extends Responder {
     protected void postDeserializaton() {
         if (editor != null) {
             editor.initFormatters();
-        }
-    }
-
-    public void initClientSideValidation(boolean validateLive) {
-        if (editor != null) { // if there are no fields, there is nothing to validate...
-            String responderCode = getPrototype() + storedSuffix + storedParentSuffix;
-            String[] suffixes = getSuffixes(responderCode);
-            editor.initClientSideValidation(provider, validateLive, suffixes[0]);
         }
     }
 
