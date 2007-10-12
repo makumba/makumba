@@ -153,7 +153,7 @@ public class AddTag extends FormTagBase {
         };
 
     } else if(operation.equals("addToNew")) {
-        new ResponderOperation() {
+        return new ResponderOperation() {
             private static final long serialVersionUID = 1L;
 
             public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
@@ -191,6 +191,7 @@ public class AddTag extends FormTagBase {
             }
         };
     }
-        return null;
+        throw new RuntimeException("Houston, we have a problem");
+        
     }
 }
