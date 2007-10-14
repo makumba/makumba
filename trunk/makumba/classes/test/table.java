@@ -86,6 +86,8 @@ public class table extends TestCase {
 
 	static Pointer ptr, ptr1;
 
+    static Pointer fptr1, fptr2, fptr;
+    
 	static Date create;
 
 	static String[] personFields = { "TS_modify", "TS_create", "extraData",
@@ -106,6 +108,8 @@ public class table extends TestCase {
 	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
 
 	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
+
+    String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
 	String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
@@ -168,7 +172,7 @@ public class table extends TestCase {
 		c.set(1977, 2, 5);
 		Date birth = c.getTime();
         
-        Text comment = new Text("Iñtërnâtiônàlizætiøn");
+        Text comment = new Text("Itrntinliztin");
 
 		p.put("birthdate", birth);
         p.put("comment", comment);
@@ -230,6 +234,76 @@ public class table extends TestCase {
 		assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
 	}
 
+    public void testForeignKeys() {
+        assertTrue(org.makumba.db.sql.Database.supportsForeignKeys());
+        
+        // try to delete brother = that ID
+        // try to delete the other brother
+        
+        // insert the first person
+        Properties p = new Properties();
+        
+        Text comment = new Text("Hello world!!!!");
+        
+        p.put("comment", comment);
+        
+        p.put("indiv.name", "john");
+        p.put("indiv.surname", "doe");
+        p.put("extraData.something", "else");
+
+        fptr = db.insert("test.Person", p);
+        
+        // check if he got inserted
+        assertNotNull(fptr);
+        assertEquals(fptr.getType(), "test.Person");
+
+        Vector v = db.executeQuery(readPerson2, fptr);
+        //System.out.println(v.size()); 
+        assertEquals(1, v.size());
+
+        // insert the second person (brother)
+        p = new Properties();
+        
+        comment = new Text("Itrntinliztin");
+
+        p.put("comment", comment);
+        p.put("brother", fptr);
+        p.put("indiv.name", "john");
+        p.put("indiv.surname", "doe");
+        p.put("extraData.something", "else");
+
+        fptr1 = db.insert("test.Person", p);
+        assertNotNull(fptr1);
+        assertEquals(fptr.getType(), "test.Person");
+
+        // check if it links to the first one correctly
+        v = db.executeQuery(readPerson2, fptr1);
+
+        assertEquals(1, v.size());
+        
+        pc = (Dictionary) v.elementAt(0);
+        
+        fptr2 = (Pointer) pc.get("brother");
+        assertNotNull(fptr2);
+        assertEquals("Brother", fptr2, fptr);
+        
+        // try to delete the first guy (who was set as a brother. should fail)
+        try
+        {
+            db.delete(fptr);
+            // we could delete him... the foreign keys don't work
+            assertTrue(false);
+        } catch(org.makumba.DBError e) {
+        }
+        
+        // try to delete the second guy
+        db.delete(fptr1);
+        
+        // delete the first guy again, this time he shouldn't be linked to from anywhere
+        db.delete(fptr);
+
+    }
+    
 	static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
 	public void testSetInsert() {
@@ -444,7 +518,6 @@ public class table extends TestCase {
 		create = (Date) modc.get("TS_create");
 		assertEquals(val, modc.get("name"));
 		assertEquals("doe", modc.get("surname"));
-		assertEquals(create, pc.get("TS_create"));
 		assertTrue(now.getTime() - ((Date) modc.get("TS_modify")).getTime() < epsilon);
 		assertNotNull(db.read(ptrOne, ptrOneFields));
 
