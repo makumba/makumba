@@ -202,15 +202,7 @@ public abstract class LineViewer implements SourceViewer {
      * Write the beginning of the page to the given writer.
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
-        writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-        writer.println("<html>");
-        writer.println("<head>");
-        writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-        if (realPath != null && virtualPath != null)
-            title = virtualPath + "";
-        else if (title == null || title != null && title.equals(""))
-            title = "";
-        writer.println("<title>" + title + "</title>");
+        DevelUtils.writePageBegin(writer);
         if (printLineNumbers && !hideLineNumbers) {
             writer.println("<style type=\"text/css\">");
             writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
@@ -218,21 +210,12 @@ public abstract class LineViewer implements SourceViewer {
             writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none; color: #000066}");
             writer.println("</style>\n");
         }
-        writer.println("</head>");
-        writer.println("<body bgcolor=white>");
-        writer.println("<table width=\"100%\" bgcolor=\"lightblue\">");
-        writer.println("<tr>");
-        writer.println("<td rowspan=\"2\">");
-
-        if (title != null && !title.equals("") && !title.equals(virtualPath))
-            writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
-        else if (virtualPath != null)
-            writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
-                    + "</font></a></font>");
-
-        if (realPath != null) {
-            writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
-        }
+        if (realPath != null && virtualPath != null)
+            title = virtualPath + "";
+        else if (title == null || title != null && title.equals(""))
+            title = "";
+        DevelUtils.writeTitleAndHeaderEnd(writer, title);
+        DevelUtils.printPageHeader(writer, title, virtualPath, realPath);
         printPageBeginAdditional(writer);
 
         if (printLineNumbers) {
