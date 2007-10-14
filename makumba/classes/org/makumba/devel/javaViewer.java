@@ -363,7 +363,7 @@ public class javaViewer extends LineViewer {
      */
     private String findMddNameFromHandler(String encodedMddName, boolean upperCaseSecondButLast) {
         String mddName = "";
-        ArrayList partList = new ArrayList();
+        ArrayList<String> partList = new ArrayList<String>();
 
         // Pattern camelCase = Pattern.compile("[^A-Z*|A-Z^A-Z*]*");
         // Pattern camelCase = Pattern.compile("[A-Z(^A-Z)*]*");
