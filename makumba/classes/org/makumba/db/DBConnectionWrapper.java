@@ -22,6 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db;
+import java.util.Date;
+
 import org.makumba.Pointer;
 
 /** a wrapper for dbconnections, used to provide a temporary that holds a reference to a permanent DBConnection */
@@ -31,7 +33,7 @@ public class DBConnectionWrapper extends DBConnection
     public DBConnection getWrapped(){ return wrapped; }
 
     DBConnectionWrapper(){}
-    DBConnectionWrapper(DBConnection wrapped){this.wrapped=wrapped; }
+    DBConnectionWrapper(DBConnection wrapped){this.wrapped=wrapped;}
 
     public String getName(){ return getWrapped().getName(); }
 
@@ -77,6 +79,10 @@ public class DBConnectionWrapper extends DBConnection
       commit();
       getHostDatabase().connections.put(getWrapped()); 
       wrapped=ClosedDBConnection.getInstance();
+      //System.out.println(Database.connectionsTrace + " CLOSED at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
+      //Database.connectionsTrace = Database.connectionsTrace.substring(0, Database.connectionsTrace.length() -1);
+      
+      
     }
     protected synchronized void finalize(){
         java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Makumba connection "+getName()+" not closed");
