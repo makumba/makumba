@@ -31,20 +31,19 @@ import org.makumba.providers.datadefinition.makumba.RecordParser;
 public class DataTypeListerServlet extends DataServlet {
 
     protected static final long serialVersionUID = 1L;
-    
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
 
+    private Configuration config = new Configuration();
+
+    private TransactionProvider tp = new TransactionProvider(config);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
 
         PrintWriter writer = response.getWriter();
-        writePageBegin(writer);
-        writeStyles(writer);
+        DevelUtils.writePageBegin(writer);
+        DevelUtils.writeStyles(writer);
         writeScripts(writer);
-        writeHeaderEnd(writer, "Data Lister");
+        DevelUtils.writeTitleAndHeaderEnd(writer, "Data Lister");
 
         DataDefinition dd = null;
 
@@ -142,7 +141,7 @@ public class DataTypeListerServlet extends DataServlet {
                         value = "<i>[none]</i>";
                     } else if (value instanceof Pointer) {
                         Pointer pointer = ((Pointer) value);
-                        value = writePointerValueLink(pointer);
+                        value = DevelUtils.writePointerValueLink(contextPath, pointer);
                     }
                     writer.println(value);
 
@@ -154,7 +153,7 @@ public class DataTypeListerServlet extends DataServlet {
                         otherValue = "<i>[none]</i>";
                     } else if (otherValue instanceof Pointer) {
                         Pointer pointer = ((Pointer) otherValue);
-                        otherValue = writePointerValueLink(pointer);
+                        otherValue = DevelUtils.writePointerValueLink(contextPath, pointer);
                     }
                     writer.println(otherValue);
 
@@ -176,7 +175,7 @@ public class DataTypeListerServlet extends DataServlet {
                 t.close();
             }
         }
-        writePageEnd(writer);
+        DevelUtils.writePageEnd(writer);
     }
 
     private void doDirectoryListing(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
@@ -188,7 +187,7 @@ public class DataTypeListerServlet extends DataServlet {
             response.sendRedirect(contextPath + request.getServletPath() + pathInfo + "/");
             return;
         }
-        //FIXME should not depend directly on RecordParser
+        // FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");

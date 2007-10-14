@@ -63,19 +63,6 @@ public abstract class DataServlet extends HttpServlet {
         browsePath = type.replace('.', '/').substring(0, type.lastIndexOf('.') + 1);
     }
 
-    protected void writeHeaderEnd(PrintWriter w, String title) {
-        w.println("<title>" + title + "</title>");
-        w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-        w.println("</head>");
-        w.println();
-    }
-
-    protected void writePageBegin(PrintWriter w) {
-        w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-        w.println("<html>");
-        w.println("<head>");
-    }
-
     protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, int mode) {
         w.println("<body bgcolor=\"white\">");
         w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
@@ -129,23 +116,6 @@ public abstract class DataServlet extends HttpServlet {
         w.println("</table>");
     }
 
-    protected void writePageEnd(PrintWriter w) throws IOException {
-        DevelUtils.printDeveloperSupportFooter(w);
-        w.println("</body>");
-        w.println("</html>");
-    }
-
-    protected String writePointerValueLink(Pointer pointer) {
-        String result = "<span style=\"font-size: smaller;\">" + pointer.getType();
-        result += " <span style=\"color: green; afont-size: x-small;\">[";
-        result += "<a href=\"" + contextPath + "/dataView/" + pointer.getType() + "?ptr=" + pointer.toExternalForm()
-                + "\" style=\"color: green\" title=\"Database Value: " + pointer.longValue() + "; DBSV|Unique Index: "
-                + pointer.getDbsv() + "|" + pointer.getUid() + "\">" + pointer.toExternalForm() + "</a>";
-        result += "]</span>";
-        result += "</span>";
-        return result;
-    }
-
     protected void writeScripts(PrintWriter w) {
         w.println("<script language=\"javascript\">");
         w.println("<!--");
@@ -164,17 +134,6 @@ public abstract class DataServlet extends HttpServlet {
         w.println("  // -->");
         w.println("</script>");
         w.println();
-    }
-
-    protected void writeStyles(PrintWriter w) {
-        w.println("<style type=\"text/css\">");
-        w.println("th {color:navy; background-color:lightblue; font-weight: normal;}");
-        w.println("td.columnHead {color:navy; background-color:lightblue;}");
-        w.println("tr.odd {background-color: #CCFFFF; }");
-        w.println("span.active {color:lightblue; background-color: darkblue; padding: 5px; }");
-        w.println("</style>");
-        w.println();
-
     }
 
     /** Extracts the fields and sets from a given DataDefinition. */
