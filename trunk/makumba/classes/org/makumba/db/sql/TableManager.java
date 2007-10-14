@@ -1672,12 +1672,12 @@ public class TableManager extends Table {
                         // name
                         "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
+                    throw new DBError("Error adding foreign key for " + brief 
+                        + ": " + e.getMessage());
                 }
                 
             }
         }
-        
-
     }// method
 
     private void dropIndex(String fieldName, SQLDBConnection dbc, String message) {
