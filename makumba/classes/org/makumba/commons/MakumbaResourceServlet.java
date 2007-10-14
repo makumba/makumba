@@ -47,6 +47,8 @@ public class MakumbaResourceServlet extends HttpServlet {
             File file = new File(url.toURI());
             if (file.isDirectory()) {
                 resp.setContentType("text/html");
+                DevelUtils.writePageBegin(writer);
+                DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
                 if (SourceViewServlet.redirected(req, resp, servletPath)) {
                     return;
                 }
@@ -75,8 +77,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                     }
                 }
                 writer.println("</pre>");
-                DevelUtils.printDeveloperSupportFooter(writer);
-                writer.println("</body></html>");
+                DevelUtils.writePageEnd(writer);
                 return;
             }
             resp.setHeader("Last-Modified", dfLastModified.format(new Date(file.lastModified())));
