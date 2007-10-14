@@ -26,7 +26,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
      * <dd> the unique id of the database. Can be any integer 0-255
      * </dl>
      */
-    protected static Database getDatabase(String name) {
+    public static Database getDatabase(String name) {
         try {
             return (Database) NamedResources.getStaticCache(dbs).getResource(name);
         } catch (RuntimeWrappedException e) {
