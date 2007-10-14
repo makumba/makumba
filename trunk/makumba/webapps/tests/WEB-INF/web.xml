@@ -25,6 +25,15 @@
     <url-pattern>/makumbaResources/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>referenceChecker</servlet-name>
+    <servlet-class>org.makumba.devel.ReferenceChecker</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>referenceChecker</servlet-name>
+    <url-pattern>/referenceChecker</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>mddLinker</servlet-name>
