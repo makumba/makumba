@@ -25,6 +25,17 @@
   </servlet-mapping>
 
 
+  <!-- Developer support - reference checker tool -->
+  <servlet>
+    <servlet-name>referenceChecker</servlet-name>
+    <servlet-class>org.makumba.devel.ReferenceChecker</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>referenceChecker</servlet-name>
+    <url-pattern>/referenceChecker</url-pattern>
+  </servlet-mapping>
+
   <!-- Developer support - MDD & Business logic browser & viewer -->
   <servlet>
     <servlet-name>mddLinker</servlet-name>
