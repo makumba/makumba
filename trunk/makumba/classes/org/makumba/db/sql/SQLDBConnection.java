@@ -107,7 +107,7 @@ public class SQLDBConnection extends DBConnection {
         return getConnection().createStatement();
     }
 
-    PreparedStatement getPreparedStatement(String s) {
+    public PreparedStatement getPreparedStatement(String s) {
         try {
             return getConnection().prepareStatement(s);
         } catch (SQLException e) {
