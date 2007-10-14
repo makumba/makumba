@@ -74,10 +74,10 @@ public class DataPointerValueConverter extends DataServlet {
         }
 
         PrintWriter writer = response.getWriter();
-        writePageBegin(writer);
-        writeStyles(writer);
+        DevelUtils.writePageBegin(writer);
+        DevelUtils.writeStyles(writer);
         writeScripts(writer);
-        writeHeaderEnd(writer, "Value Converter");
+        DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
         writePageContentHeader(type, writer, tp.getDefaultDataSourceName(), MODE_CONVERTOR);
 
@@ -149,7 +149,7 @@ public class DataPointerValueConverter extends DataServlet {
             }
         }
 
-        writePageEnd(writer);
+        DevelUtils.writePageEnd(writer);
 
     }
 

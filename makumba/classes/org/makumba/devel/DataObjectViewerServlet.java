@@ -50,21 +50,20 @@ import org.makumba.providers.TransactionProvider;
 public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
-    
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
 
+    private Configuration config = new Configuration();
+
+    private TransactionProvider tp = new TransactionProvider(config);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + "/dataList/" + browsePath;
 
         PrintWriter writer = response.getWriter();
-        writePageBegin(writer);
-        writeStyles(writer);
+        DevelUtils.writePageBegin(writer);
+        DevelUtils.writeStyles(writer);
         writeScripts(writer);
-        writeHeaderEnd(writer, "Data Viewer");
+        DevelUtils.writeTitleAndHeaderEnd(writer, "Data Viewer");
 
         DataDefinition dd = null;
 
@@ -123,7 +122,8 @@ public class DataObjectViewerServlet extends DataServlet {
                         writer.println("</td>");
                         Object value = values.get(fd.getName());
                         if (value instanceof Pointer) {
-                            writer.println("    <td>" + writePointerValueLink((Pointer) value) + "</td>");
+                            writer.println("    <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
+                                    + "</td>");
                         } else {
                             writer.println("    <td>" + value + "</td>");
                         }
@@ -135,7 +135,7 @@ public class DataObjectViewerServlet extends DataServlet {
                 t.close();
             }
         }
-        writePageEnd(writer);
+        DevelUtils.writePageEnd(writer);
     }
 
 }

@@ -55,9 +55,8 @@ public class DataQueryServlet extends DataServlet {
     public final int QUERY_LANGUAGE_HQL = 20;
 
     private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
 
+    private TransactionProvider tp = new TransactionProvider(config);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -81,10 +80,10 @@ public class DataQueryServlet extends DataServlet {
         }
 
         PrintWriter writer = response.getWriter();
-        writePageBegin(writer);
-        writeStyles(writer);
+        DevelUtils.writePageBegin(writer);
+        DevelUtils.writeStyles(writer);
         writeScripts(writer);
-        writeHeaderEnd(writer, "OQL Query Translater & executer");
+        DevelUtils.writeTitleAndHeaderEnd(writer, "OQL Query Translater & executer");
 
         writePageContentHeader(null, writer, null, MODE_QUERY);
 
@@ -125,8 +124,9 @@ public class DataQueryServlet extends DataServlet {
                     }
                 } else {
                     // TODO: hibernate querys still need to be implemented, a way to get the actual SQL is not yet clear
-                    // Session session =
-                    // org.makumba.db.Database.getDatabase(MakumbaSystem.getDefaultDatabaseName()).getHibernateSessionFactory().openSession();
+                    // SessionFactory hibernateSessionFactory = (SessionFactory) org.makumba.db.Database.findDatabase(
+                    // MakumbaSystem.getDefaultDatabaseName()).getHibernateSessionFactory();
+                    // Session session = hibernateSessionFactory.openSession();
                     // session.setCacheMode(CacheMode.IGNORE);
                     // org.hibernate.Transaction transaction = session.beginTransaction();
                     // Query q = session.createQuery(query);
@@ -153,7 +153,8 @@ public class DataQueryServlet extends DataServlet {
                     for (int j = 0; j < keys.size(); j++) {
                         Object value = d.get(keys.get(j));
                         if (value instanceof Pointer) {
-                            writer.println("<td>" + writePointerValueLink((Pointer) value) + "</td>");
+                            writer.println("<td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
+                                    + "</td>");
                         } else {
                             writer.println("<td>" + value + "</td>");
                         }
@@ -180,6 +181,6 @@ public class DataQueryServlet extends DataServlet {
                 t.close();
             }
         }
-        writePageEnd(writer);
+        DevelUtils.writePageEnd(writer);
     }
 }
