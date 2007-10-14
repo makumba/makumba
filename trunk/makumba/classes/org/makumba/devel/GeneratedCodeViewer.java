@@ -26,6 +26,7 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -44,7 +45,7 @@ public class GeneratedCodeViewer extends jspViewer {
 
     private static final String GENERATED_CODE_DIRECTORY = "generatedCode";
 
-    private static Hashtable selectableCodeTypes = new Hashtable();
+    private static Hashtable<String, String> selectableCodeTypes = new Hashtable<String, String>();
 
     private static ArrayList selectableCodeTypesOrdered = new ArrayList();
 
@@ -98,7 +99,7 @@ public class GeneratedCodeViewer extends jspViewer {
             }
         }
         defaultTemplate = (String) TEMPLATES[TEMPLATES_BUILTIN].keys().nextElement();
-        selectableCodeTypes = new Hashtable();
+        selectableCodeTypes = new Hashtable<String, String>();
         selectableCodeTypes.put(CodeGenerator.TYPE_NEWFORM, "mak:newForm");
         selectableCodeTypes.put(CodeGenerator.TYPE_EDITFORM, "mak:editForm");
         selectableCodeTypes.put(CodeGenerator.TYPE_LIST, "mak:list");
@@ -358,6 +359,8 @@ public class GeneratedCodeViewer extends jspViewer {
                         cgiParams = "?" + labelName + "="
                                 + ((Pointer) ((Dictionary) v.firstElement()).get(labelName)).toExternalForm();
                     }
+                }catch (RuntimeWrappedException e) {
+                    w.println("<br/> <span style=\"color: red\">" + e.getReason() + "</span>");
                 } finally {
                     db.close();
                 }
