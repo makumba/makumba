@@ -46,6 +46,7 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
@@ -1818,7 +1819,17 @@ public class TableManager extends Table {
      * @return true if an entry for the given key already exists with these values
      */
     public boolean findMultiFieldMultiTableDuplicates(Pointer pointer,
-            DataDefinition.MultipleUniqueKeyDefinition definition, Object values[], SQLDBConnection dbc) {
+            DataDefinition.MultipleUniqueKeyDefinition definition, Object values[]) {
+        
+        DBConnection connection = getDatabase().getDBConnection();
+        
+        if (connection instanceof DBConnectionWrapper) {
+            connection = ((DBConnectionWrapper) connection).getWrapped();
+        }
+        
+        SQLDBConnection dbc = (SQLDBConnection) connection;
+        
+        
         String[] fields = definition.getFields();
         String from = getDBName();
         String where = "";
@@ -2044,10 +2055,6 @@ public class TableManager extends Table {
     private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData) throws CompositeValidationException {
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
-        DBConnection connection = getDatabase().getDBConnection();
-        if (connection instanceof DBConnectionWrapper) {
-            connection = ((DBConnectionWrapper) connection).getWrapped();
-        }
         CompositeValidationException notUnique = new CompositeValidationException();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
@@ -2057,7 +2064,7 @@ public class TableManager extends Table {
                 for (int j = 0; j < fields.length; j++) {
                     values[j] = fullData.get(fields[j]);
                 }
-                if (findMultiFieldMultiTableDuplicates(pointer, key, values, (SQLDBConnection) connection)) {
+                if (findMultiFieldMultiTableDuplicates(pointer, key, values)) {
                     notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
                             values));
                     // duplicates.put(fields, values);
@@ -2065,7 +2072,7 @@ public class TableManager extends Table {
             }
         }
         notUnique.throwCheck();
-    }
+     }
 
     // moved from dateCreateJavaManager, dateModifyJavaManager and
     // ptrIndexJavaManager
