@@ -24,6 +24,7 @@
 package org.makumba.db;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -60,9 +61,12 @@ import org.makumba.providers.DataDefinitionProvider;
 
 /** a generic database, that maps RecordInfos to tables */
 public abstract class Database {
+    
     public String getName() {
         return configName;
     }
+    
+    //public static String connectionsTrace = ">";
     
     private Configuration configuration = new Configuration();
     
@@ -81,7 +85,6 @@ public abstract class Database {
     static protected boolean supportsUTF8() {
         return requestUTF8;
     }
-    
     static protected boolean supportsForeignKeys() {
         return requestForeignKeys;
     }
@@ -130,6 +133,8 @@ public abstract class Database {
 
     public DBConnection getDBConnection() {
         try {
+            //connectionsTrace += ">";
+            //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
             return new DBConnectionWrapper((DBConnection) connections.get());
         } catch (Exception e) {
             throw new DBError(e);
