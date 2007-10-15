@@ -442,13 +442,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     public ValidationDefinition getValidationDefinition() {
-        // now parse the validation definition
-        // TODO: parse only once, use a boolean flag to discover
-        if (!alreadyParsed) {
-            RecordParser recordParser = new RecordParser(this, new RecordParser());
-            recordParser.parseValidationDefinition();
-            alreadyParsed = true;
-        }
         return this;
     }
 
