@@ -26,7 +26,6 @@ package org.makumba.analyser.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -232,11 +231,11 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
      * 
      * @return A collection of Strings denoting package names.
      */
-    public Collection getImportedPackages() {
+    public HashSet<String> getImportedPackages() {
         return importedPackages;
     }
 
-    public Hashtable getImportedClasses() {
+    public Hashtable<String, String> getImportedClasses() {
         return importedClasses;
     }
 
