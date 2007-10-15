@@ -83,3 +83,69 @@ MakumbaValidate.StringComparison = function(value1, paramsObj){
     }
     return true;
 }
+
+
+function getHTTPObject() 
+{
+	var xmlhttp;
+	/*@cc_on
+		@if (@_jscript_version >= 5)
+			try 
+			{
+				xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+			} 
+			catch (e) 
+			{
+				try 
+				{
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (E)
+				{
+					xmlhttp = false;
+				}
+			}
+		@else
+			xmlhttp = false;
+	@end @*/
+	if (!xmlhttp && typeof XMLHttpRequest != 'undefined') 
+	{
+		try 
+		{
+			xmlhttp = new XMLHttpRequest();
+		} 
+		catch (e) 
+		{
+			xmlhttp = false;
+		}
+	}
+	return xmlhttp;
+}
+
+var httpObject = getHTTPObject(); // We create the HTTP Object
+
+
+
+MakumbaValidate.Uniqueness = function(value, paramsObj)
+{
+    var paramsObj = paramsObj || {};
+    
+    var table = (paramsObj.table) || "";
+    var field = (paramsObj.field) || "";
+    
+    var yes = 1;
+    
+	httpObject.open("GET", "../makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), false);
+	httpObject.onreadystatechange = function() { if(httpObject.readyState == 4) { if(httpObject.responseText.substring(0,6) == "unique") {
+		yes = 0;
+	}}; };
+	httpObject.send(null);
+
+	if(yes == 1) Validate.fail(paramsObj.failureMessage);
+	
+	return true;
+}
+
+
+
+
