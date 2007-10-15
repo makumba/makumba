@@ -1875,16 +1875,23 @@ public class TableManager extends Table {
         try {
             // now we need to set the parameters for the query
             for (int i = 0; i < fields.length; i++) {
-                if (values[i] != null) {
-                    if (fields[i].indexOf(".") != -1) { // is it a field in a different table
-                        String subField = fields[i].substring(0, fields[i].indexOf("."));
-                        String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
-                        DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
-                        // then we use the table manager of that table to set the value
-                        TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
-                        otherTable.setUpdateArgument(fieldName, ps, (i + 1), values[i]);
-                    } else { // otherwise we use this table manager
-                        setUpdateArgument(fields[i], ps, (i + 1), values[i]);
+                int n = (i + 1);
+                if (fields[i].indexOf(".") != -1) { // is it a field in a different table
+                    String subField = fields[i].substring(0, fields[i].indexOf("."));
+                    String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
+                    DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
+                    // then we use the table manager of that table to set the value
+                    TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
+                    if (values[i] != null) {
+                        otherTable.setUpdateArgument(fieldName, ps, n, values[i]);
+                    } else {
+                        otherTable.setNullArgument(fieldName, ps, n);
+                    }
+                } else { // otherwise we use this table manager
+                    if (values[i] != null) {
+                        setUpdateArgument(fields[i], ps, n, values[i]);
+                    } else {
+                        setNullArgument(fields[i], ps, n);
                     }
                 }
             }
