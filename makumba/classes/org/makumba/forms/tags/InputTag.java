@@ -53,17 +53,17 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     private static final long serialVersionUID = 1L;
 
-    String name = null;
+    protected String name = null;
 
-    String display = null;
+    protected String display = null;
 
-    String nameVar = null;
+    protected String nameVar = null;
 
-    private String calendarEditorLink = null;
+    protected String calendarEditorLink = null;
 
-    private String calendarEditor = "true";
+    protected String calendarEditor = "true";
 
-    private String nullOption;
+    protected String nullOption;
 
     /** input whith body, used only for choosers as yet * */
     BodyContent bodyContent = null;
@@ -155,7 +155,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doStartAnalyze(PageCache pageCache) {
         if (name == null)
             throw new ProgrammerError("name attribute is required");
-        if(isValue())
+        if (isValue())
             fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
     }
 
@@ -180,7 +180,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         super.doEndAnalyze(pageCache);
     }
-
 
     /**
      * {@inheritDoc}
