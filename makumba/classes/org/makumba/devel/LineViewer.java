@@ -50,11 +50,9 @@ import org.makumba.analyser.engine.JavaParseData;
 /**
  * a viewer that shows everything per line
  * 
- * 
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
- *  
  */
 public abstract class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
@@ -85,7 +83,7 @@ public abstract class LineViewer implements SourceViewer {
 
     protected boolean searchMDD = true;
 
-    //  default for old .jspx - change this to "s" when .jsps gets adopted (bug 677)
+    // default for old .jspx - change this to "s" when .jsps gets adopted (bug 677)
     protected String jspSourceViewExtension = "x";
 
     protected String jspClasspath;
@@ -97,14 +95,14 @@ public abstract class LineViewer implements SourceViewer {
     protected String servletPath;
 
     protected String logicPath;
-    
+
     protected String codeBackgroundStyle = "";
-    
+
     protected boolean hideLineNumbers = false;
-    
-    /**  Default packages to be known. Use {@link JavaParseData#getImportedPackages()} to add more */
+
+    /** Default packages to be known. Use {@link JavaParseData#getImportedPackages()} to add more */
     protected String[] importedPackages = new String[] { "java.lang." };
-    
+
     protected Hashtable importedClasses = new Hashtable();
 
     protected Error caughtError;
@@ -146,7 +144,8 @@ public abstract class LineViewer implements SourceViewer {
         this.printLineNumbers = printLineNumbers;
         servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
-        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null && request.getParameter(PARAM_HIDE_LINES).equals("true");
+        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null
+                && request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
 
     /**
@@ -157,11 +156,12 @@ public abstract class LineViewer implements SourceViewer {
         printPageBegin(writer);
 
         // display error messages if we have caught an exception
-        
+
         if (caughtError != null) {
             setSearchLevels(true, true, true, true);
             writer.println(parseLine("There were errors analyzing the page - the page analysis reports an <i>"
-                    + caughtError.getClass().getName() + "</i>") + "\n");
+                    + caughtError.getClass().getName() + "</i>")
+                    + "\n");
             writer.println("<span style=\"color: red    ; \">" + caughtError.getMessage() + "</span>");
             writer.print("<hr color:\"red\" style=\"background-color: red; border-width: 0px;\">");
         }
@@ -185,7 +185,7 @@ public abstract class LineViewer implements SourceViewer {
         reader.close();
         double timeTaken = System.currentTimeMillis() - begin;
         java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
-                "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
+            "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
     /**
@@ -222,7 +222,7 @@ public abstract class LineViewer implements SourceViewer {
             String urlParams = "";
             Enumeration e = request.getParameterNames();
             while (e.hasMoreElements()) {
-                String key =  (String) e.nextElement();
+                String key = (String) e.nextElement();
                 Object value = request.getParameter(key);
                 if (!key.equals(PARAM_HIDE_LINES)) {
                     if (!urlParams.equals("")) {
@@ -231,16 +231,16 @@ public abstract class LineViewer implements SourceViewer {
                     urlParams += key + "=" + value;
                 }
             }
-            
+
             if (!urlParams.equals("")) {
                 urlParams += "&";
             }
             urlParams += PARAM_HIDE_LINES + "=" + !hideLineNumbers;
             if (!urlParams.equals("")) {
                 urlParams = "?" + urlParams;
-            }            
+            }
             String link = request.getRequestURI() + urlParams;
-         
+
             writer.print("<div style=\"font-size: smaller; vertical-align: bottom;\"><a href=\"" + link + "\">");
             if (hideLineNumbers) {
                 writer.print("Show");
@@ -287,8 +287,8 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     /**
-     * Sets the amount of links to other files the viewer is trying to find. changing some of these parameters can significantely speed up the viewing
-     * process.
+     * Sets the amount of links to other files the viewer is trying to find. changing some of these parameters can
+     * significantely speed up the viewing process.
      * 
      * @param searchJSPPages
      *            whether to search for .jsp files.
@@ -315,12 +315,10 @@ public abstract class LineViewer implements SourceViewer {
      * <li>Java Classes</li>
      * <li>from JSP pages generated Java classes</li>
      * </ul>
-     * 
-     * Subclasses that want to provide any additional formatting (syntax highlighting, etc) should extend this method, apply their formatting and
-     * before/afterwards call this method.
-     * 
-     * This method is rather time-consuming, and subclasses interested in providing links just to a part of the above should use the
-     * <code>setSearchLevels</code> method to specify for what types of files are searched for.
+     * Subclasses that want to provide any additional formatting (syntax highlighting, etc) should extend this method,
+     * apply their formatting and before/afterwards call this method. This method is rather time-consuming, and
+     * subclasses interested in providing links just to a part of the above should use the <code>setSearchLevels</code>
+     * method to specify for what types of files are searched for.
      * 
      * @param s
      *            the unformatted code line.
@@ -347,8 +345,9 @@ public abstract class LineViewer implements SourceViewer {
                 result.append(formatMakumbaLink(token));
             } else if (token.indexOf("java.sun.com") != -1) {
                 result.append(formatSunTaglibLink(token));
-            //FIXME should not depend directly on RecordParser
-            } else if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
+                // FIXME should not depend directly on RecordParser
+            } else if (searchMDD
+                    && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
                     || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                 result.append(formatMDDLink(token));
             } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
@@ -392,7 +391,8 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "#" + lineNumber + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "#" + lineNumber + "\">" + className
+                    + "</a>";
         } else {
             return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "\">" + className + "</a>";
 
@@ -404,7 +404,8 @@ public abstract class LineViewer implements SourceViewer {
      * @return
      */
     public String formatMDDLink(String mddName) {
-        return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath + "/dataDefinitions/" + mddName + "\">" + mddName + "</a>";
+        return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath
+                + "/dataDefinitions/" + mddName + "\">" + mddName + "</a>";
     }
 
     /**
@@ -444,7 +445,7 @@ public abstract class LineViewer implements SourceViewer {
      * @return The page found, <code>null</code> otherwise
      */
     public String findPage(String s) {
-        if (s.startsWith("/")) { //absolute reference to file
+        if (s.startsWith("/")) { // absolute reference to file
             File file = new File(servletContext.getRealPath(s));
             if (file.exists()) {
                 return contextPath + s;
@@ -455,11 +456,11 @@ public abstract class LineViewer implements SourceViewer {
                 }
             }
         }
-        if (s.startsWith("/")) { //absolute reference to file, take two. rather a dirty hack
+        if (s.startsWith("/")) { // absolute reference to file, take two. rather a dirty hack
             // needed e.g. for files like /usr/local/cvsroot/karamba/public_html/general/survey/user/viewStatistics.jsp
             s = s.substring(s.lastIndexOf("/") + 1);
         }
-        if (!s.startsWith("/") && realPath != null) { //relative reference
+        if (!s.startsWith("/") && realPath != null) { // relative reference
             File file = new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar)) + File.separatorChar
                     + s.replace('/', File.separatorChar));
             if (file.exists()) {
@@ -470,9 +471,8 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     /**
-     * Searches for Java Classes with the given name
-     *  FIXME: still needed?
-     *
+     * Searches for Java Classes with the given name FIXME: still needed?
+     * 
      * @param s
      *            The class name to search for
      * @return The class, if found, <code>null</code> otherwise.
@@ -516,7 +516,7 @@ public abstract class LineViewer implements SourceViewer {
      * @return The given, with &amp;, &lt; and &gt; escaped.
      */
     public String htmlEscape(String s) {
-        //TODO: use internal java class?!
+        // TODO: use internal java class?!
 
         // we NEED to have this replacement first, otherwise we will replace the '&' from the &lt; and &gt;
         s = s.replaceAll("&", "&amp;");
@@ -568,24 +568,24 @@ public abstract class LineViewer implements SourceViewer {
         }
         return null;
     }
-    
+
     public String formatClassLink(Class c, String methodName, String displayName) {
         if (c != null) {
             String s = "<a class=\"classLink\" href=\"";
             if (c.getName().startsWith("java")) {
                 s += "http://java.sun.com/j2se/1.4.2/docs/api/" + c.getName().replaceAll("\\.", "/") + ".html";
                 if (methodName != null) {
-                    s+= "#" + methodName + "()";
+                    s += "#" + methodName + "()";
                 }
             } else if (c.getName().startsWith("org.makumba")) {
                 s += "http://www.makumba.org/api/" + c.getName().replaceAll("\\.", "/") + ".html";
                 if (methodName != null) {
-                    s+= "#" + methodName + "()";
+                    s += "#" + methodName + "()";
                 }
             } else if (c.getName().startsWith("org.hibernate")) {
                 s += "http://www.hibernate.org/hib_docs/v3/api/" + c.getName().replaceAll("\\.", "/") + ".html";
                 if (methodName != null) {
-                    s+= "#" + methodName + "()";
+                    s += "#" + methodName + "()";
                 }
             } else {
                 s += contextPath + "/classes/" + c.getName().replace('.', '/');
@@ -619,4 +619,3 @@ public abstract class LineViewer implements SourceViewer {
 
     }
 }
-
