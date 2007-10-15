@@ -104,6 +104,10 @@ public class RecordParser {
 
     private ArrayList<String> unparsedValidationDefinitions = new ArrayList<String>();
 
+    public static boolean isValidationRule(String s) {
+        return validationDefinitionPattern.matcher(s).matches();
+    }
+
     RecordParser() {
         definedTypes = new Properties();
     }
@@ -1001,7 +1005,6 @@ public class RecordParser {
                         throw new ValidationDefinitionParseError("", "Illegal comparison definition", line);
                     }
                     if (dd.getFieldDefinition(fieldName) == null) { // let's see if the first part is a field name
-                        ruleName = fieldName;
                         fieldName = matcher.group(1);
                     }
                     String functionName = null;
@@ -1017,7 +1020,6 @@ public class RecordParser {
                         // we have a comparison to a date constant / expression
                         rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage, operator);
                     } else {
-                        ruleName = fieldName;
                         FieldDefinition otherFd = getFieldDefinition(line, compareTo);
                         rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo, ruleName,
                                 errorMessage, operator);
