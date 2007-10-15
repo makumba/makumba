@@ -110,8 +110,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     private Hashtable<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new Hashtable<Object, MultipleUniqueKeyDefinition>();
 
-    private boolean alreadyParsed = false;
-
     void addStandardFields(String name) {
         FieldInfo fi;
 
@@ -447,6 +445,10 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public ArrayList getRulesSyntax() {
         return operators;
+    }
+
+    public boolean hasValidationRules() {
+        return validationRuleNames.size() > 0;
     }
 
     // Mutliple unique keys methods
