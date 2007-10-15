@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Vector;
 
+import org.makumba.commons.StringUtils;
+
 /**
  * Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is
@@ -132,6 +134,11 @@ public interface DataDefinition {
 
         public boolean isKeyOverSubfield() {
             return keyOverSubfield;
+        }
+
+        @Override
+        public String toString() {
+            return "Multi-field unique key over: " + StringUtils.toString(fields);
         }
 
     }
