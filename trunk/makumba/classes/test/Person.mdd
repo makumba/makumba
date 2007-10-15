@@ -73,14 +73,13 @@ address=set			 ;Addresses
 
 uniqPtr=unique ptr test.Language	;test ptr uniqness
   
-#!unique(age, email)
-#!unique(indiv.name, indiv.surname)
-
-# This is a sample validation definition
+# comparison validation rules spanning over more than one field
 ageWeight%compare = weight < age : You should not be more heavy than you're old!
 firstSex%compare = firstSex >= birthdate : Can't have sex before you'are born!
-lowerMail%compare = lower(email) != email : HA
+lowerMail%compare = lower(email) = email : E-mail address must be all lower case!
 lowerName%compare = lower(indiv.name) != indiv.name : Your name can't be all lower cases!
+
+# multi-field uniqueness keys
 unique12%unique = age, email : these need to be unique!
 unique13%unique = indiv.name, indiv.surname : these too!
 
