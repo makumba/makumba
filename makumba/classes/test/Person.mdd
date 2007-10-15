@@ -4,15 +4,24 @@
 indiv= unique fixed not null ptr test.Individual
 
 birthdate=date		 ;Birthdate
+birthdate%compare = birthdate <= date($now, $now, $now - 15, 0, 0, 0) : You have to be at least 15 years old!
+birthdate%compare = birthdate >= date($now, $now, $now - 105, 0, 0, 0) : Maximum age is 105!
+
 firstSex = date
+
 beginDate = date;
+beginDate%compare = beginDate >= $now : Begin date can't be in the past!
+beginDate%compare = beginDate >= date($now,$now,$now - 5) : Begin date can't be longer than 5 years ago!
+
 gender=genTyp		 ;Gender
 all=char[25]             ;test a reserved word
 field=char[80]           ;another reserved word
 
 militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
 driver=yesNo		 ;Driving Licence
+
 age=int				;Age
+age%range = [12..99] : Age must be between 12 and 99!
 
 makumbaTillDeath = not null yesNo	; makumbian or not
 designer = yesNo	; are you a designer?
@@ -20,6 +29,8 @@ designer = yesNo	; are you a designer?
 weight=real ; weight in kilos
 
 hobbies=text             ;Hobbies
+hobbies%length = [1..?] : Hobbies must not be empty! 
+
 comment=text		 ;Comments
 
 picture=binary		;Picture of the person
@@ -43,6 +54,7 @@ intSet= set int {"a"=0, "b"=1, "c"=2 }
 charSet=set char{ "d", "e", "f" }
 
 email = char[40]
+email%matches = .+@.+\.[a-z]+ : Email address is not valid!
 
 address=set			 ;Addresses
   address->!title=description
@@ -63,3 +75,12 @@ uniqPtr=unique ptr test.Language	;test ptr uniqness
   
 #!unique(age, email)
 #!unique(indiv.name, indiv.surname)
+
+# This is a sample validation definition
+ageWeight%compare = weight < age : You should not be more heavy than you're old!
+firstSex%compare = firstSex >= birthdate : Can't have sex before you'are born!
+lowerMail%compare = lower(email) != email : HA
+lowerName%compare = lower(indiv.name) != indiv.name : Your name can't be all lower cases!
+unique12%unique = age, email : these need to be unique!
+unique13%unique = indiv.name, indiv.surname : these too!
+
