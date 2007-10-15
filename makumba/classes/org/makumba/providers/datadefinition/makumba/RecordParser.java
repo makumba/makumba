@@ -971,8 +971,7 @@ public class RecordParser {
                 if (StringUtils.equals(operation, RegExpValidationRule.getOperator())) {
                     // regexp validation
                     FieldDefinition fd = getFieldDefinition(line, fieldName);
-                    rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage,
-                            singleValidationMatcher.group(3));
+                    rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, ruleDef);
 
                 } else if (StringUtils.equals(operation, NumberRangeValidationRule.getOperator())) {
                     // number (int or real) validation
@@ -981,8 +980,8 @@ public class RecordParser {
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
                     }
-                    rule = new NumberRangeValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(1),
-                            matcher.group(2));
+                    rule = new NumberRangeValidationRule(fd, fieldName, ruleName, errorMessage,
+                            matcher.group(1).trim(), matcher.group(2).trim());
 
                 } else if (StringUtils.equals(operation, StringLengthValidationRule.getOperator())) {
                     // string lenght (char or text) validation
@@ -991,8 +990,8 @@ public class RecordParser {
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
                     }
-                    rule = new StringLengthValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(1),
-                            matcher.group(2));
+                    rule = new StringLengthValidationRule(fd, fieldName, ruleName, errorMessage,
+                            matcher.group(1).trim(), matcher.group(2).trim());
 
                 } else if (StringUtils.equals(operation, ComparisonValidationRule.getOperator())) {
                     // comparison validation, compares two fields or a field with a constant
@@ -1011,8 +1010,8 @@ public class RecordParser {
                         fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
                     }
                     FieldDefinition fd = getFieldDefinition(line, fieldName);
-                    String operator = matcher.group(2);
-                    String compareTo = matcher.group(3);
+                    String operator = matcher.group(2).trim();
+                    String compareTo = matcher.group(3).trim();
                     if (fd.getIntegerType() == FieldDefinition._date
                             && ComparisonValidationRule.matchesDateExpression(compareTo)) {
                         // we have a comparison to a date constant / expression
@@ -1033,7 +1032,7 @@ public class RecordParser {
                     for (int j = 1; j <= matcher.groupCount(); j++) {
                         if (matcher.group(j) != null) {
                             // checking if the fields exist will be done later
-                            groupList.add(matcher.group(j));
+                            groupList.add(matcher.group(j).trim());
                         }
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
