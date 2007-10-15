@@ -22,13 +22,24 @@ public class DevelUtils {
 
     public static void writeStyles(PrintWriter w) {
         w.println("<style type=\"text/css\">");
-        w.println("th {color:navy; background-color:lightblue; font-weight: normal;}");
-        w.println("td.columnHead {color:navy; background-color:lightblue;}");
-        w.println("tr.odd {background-color: #CCFFFF; }");
-        w.println("span.active {color:lightblue; background-color: darkblue; padding: 5px; }");
+        w.println("  th {color:navy; background-color:lightblue; font-weight: normal;}");
+        w.println("  td.columnHead {color:navy; background-color:lightblue;}");
+        w.println("  tr.odd {background-color: #CCFFFF; }");
+        w.println("  span.active {color:lightblue; background-color: darkblue; padding: 5px; }");
         w.println("</style>");
         w.println();
 
+    }
+    public static void writeViewerStyles(PrintWriter w) {
+        w.println("<style type=\"text/css\">");
+        w.println("  .mddSubFieldSeparator {color:red; }");
+        w.println("  .mddComment {color:green; }");
+        w.println("  .mddValidationLine {background: Aquamarine; }");
+        w.println("  .mddLineComment {color:gray; }");
+        w.println("  .mddDateFunctionEvaluated {color: grey; font-style:italic; display:none; }");
+        w.println("  .mddDateFunction {color: navy; text-decoration:underline; }");
+        w.println("</style>");
+        w.println();
     }
 
     public static void writeTitleAndHeaderEnd(PrintWriter w, String title) {
@@ -77,6 +88,55 @@ public class DevelUtils {
         if (realPath != null) {
             writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
         }
+    }
+
+    public static void writeScripts(PrintWriter w) {
+        w.println("<script language=\"javascript\">");
+        w.println("<!--");
+        w.println("  // toggles stack trace visibility on and off");
+        w.println("  function toggleStackTrace() {");
+        w.println("    if (document.getElementById('stackTrace').style.display == 'none') {");
+        w.println("      document.getElementById('stackTrace').style.display = \"block\";");
+        w.println("      document.getElementById('hideStackTrace').style.display = \"inline\";");
+        w.println("      document.getElementById('showStackTrace').style.display = \"none\";");
+        w.println("    } else {");
+        w.println("      document.getElementById('stackTrace').style.display = \"none\";");
+        w.println("      document.getElementById('hideStackTrace').style.display = \"none\";");
+        w.println("      document.getElementById('showStackTrace').style.display = \"inline\";");
+        w.println("    }");
+        w.println("  }");
+        w.println("  // toggles reference SQL details visibility on and off");
+        w.println("  function toggleSQLDisplay(element, link) {");
+        w.println("    if (element.style.display == \"none\") {");
+        w.println("      element.style.display = \"block\";");
+        w.println("      link.innerHTML=\"[-]\";");
+        w.println("    } else {");
+        w.println("      element.style.display = \"none\";");
+        w.println("      link.innerHTML=\"[+]\";");
+        w.println("    }");
+        w.println("  }");
+        w.println("  // toggles date function evaluation visibility on and off");
+        w.println("  function toggleDateFunctionDisplay(element) {");
+        w.println("    if (element.style.display == \"none\") {");
+        w.println("      element.style.display = \"inline\";");
+        w.println("    } else {");
+        w.println("      element.style.display = \"none\";");
+        w.println("    }");
+        w.println("  }");
+        w.println("  // toggles date function evaluation visibility on and off");
+        w.println("  function toggleValidtionRuleDisplay() {");
+        w.println("    var elements = document.getElementsByName('validationRule');");
+        w.println("    for (i=0; i<elements.length; i++) {");
+        w.println("      if (elements[i].style.display == \"none\") {");
+        w.println("        elements[i].style.display = \"inline\";");
+        w.println("      } else {");
+        w.println("        elements[i].style.display = \"none\";");
+        w.println("      }");
+        w.println("    }");
+        w.println("  }");
+        w.println("  // -->");
+        w.println("</script>");
+        w.println();
     }
 
 }

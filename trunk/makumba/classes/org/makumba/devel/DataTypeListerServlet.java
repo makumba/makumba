@@ -42,7 +42,7 @@ public class DataTypeListerServlet extends DataServlet {
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
         DevelUtils.writeStyles(writer);
-        writeScripts(writer);
+        DevelUtils.writeScripts(writer);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Data Lister");
 
         DataDefinition dd = null;
