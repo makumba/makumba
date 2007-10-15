@@ -17,6 +17,8 @@ import org.makumba.commons.RegExpUtils;
 public class RegExpValidationRule extends SingleFieldValidationRule {
     private static final String operator = "matches";
 
+    private static final String rule = compileRule(operator, "(" + RegExpUtils.nonWhitespaces + ")");
+
     private static final Pattern pattern = Pattern.compile(getAcceptedRules());
 
     private static final long serialVersionUID = 1L;
@@ -24,9 +26,6 @@ public class RegExpValidationRule extends SingleFieldValidationRule {
     private String regExp;
 
     private Pattern regExpPattern;
-
-    private static final String rule = "(" + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + "(" + operator
-            + ")" + RegExpUtils.minOneLineWhitespace + "(" + RegExpUtils.nonWhitespaces + ")";
 
     public static String getOperator() {
         return operator;
@@ -77,8 +76,9 @@ public class RegExpValidationRule extends SingleFieldValidationRule {
 
     /** Do some pattern matching tests. */
     public static void main(String[] args) {
+        System.out.println(getAcceptedRules());
         Pattern p = Pattern.compile(RegExpValidationRule.getAcceptedRules());
-        String[] rules = { "someField matches ", "someField matches fsgd" };
+        String[] rules = { "someField%matches=abc", "someField%matches=abc", "someField%matches=fsgd" };
         RegExpUtils.evaluate(p, rules);
     }
 

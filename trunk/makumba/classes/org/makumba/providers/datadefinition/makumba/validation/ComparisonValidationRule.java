@@ -25,6 +25,8 @@ import org.makumba.forms.html.dateEditor;
  */
 public class ComparisonValidationRule extends BasicValidationRule {
 
+    private static final String operator = "compare";
+
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd. MMM yyyy HH:mm:ss");
 
     private static final long serialVersionUID = 1L;
@@ -252,8 +254,13 @@ public class ComparisonValidationRule extends BasicValidationRule {
                 "birthdate <= date($now, $now, $now + 105, 0, 0, 0)", " beginDate >= date($now,$now,$now - 5)",
                 "beginDate >= date($now-5,$now,$now - 5)", "birthdate >= date($now, $now, $now - 15, 0, 0, 0)",
                 "lower(indiv.name) != indiv.name" };
+        rules = new String[]{"birthdate <= date($now, $now, $now - 15, 0, 0, 0)"};
 
         RegExpUtils.evaluate(pattern, rules, false);
+    }
+
+    public static Object getOperator() {
+        return operator;
     }
 
 }
