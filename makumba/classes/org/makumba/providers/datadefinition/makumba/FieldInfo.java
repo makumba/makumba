@@ -1125,7 +1125,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     public Collection getValidationRules() {
         // we sort the rules, so that comparison rules come in the end
-        ArrayList arrayList = new ArrayList(validationRules.values());
+        ArrayList<ValidationRule> arrayList = new ArrayList<ValidationRule>(validationRules.values());
         Collections.sort(arrayList);
         return arrayList;
     }
