@@ -33,7 +33,6 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -107,10 +106,9 @@ public abstract class LineViewer implements SourceViewer {
 
     protected Error caughtError;
 
-    protected void addImportedPackages(Collection newPackages) {
-        HashSet packages = new HashSet(newPackages);
-        packages.addAll(Arrays.asList(importedPackages));
-        importedPackages = (String[]) packages.toArray(new String[packages.size()]);
+    protected void addImportedPackages(HashSet<String> newPackages) {
+        newPackages.addAll(Arrays.asList(importedPackages));
+        importedPackages = newPackages.toArray(new String[newPackages.size()]);
     }
 
     /** if this resource is actually a directory, returns not null */
@@ -175,7 +173,7 @@ public abstract class LineViewer implements SourceViewer {
                 int n = lr.getLineNumber();
                 writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
             }
-            if (this instanceof ValidationDefinitionViewer) {
+            if (this instanceof mddViewer) {
                 printLine(writer, s, parseLine(s));
             } else {
                 printLine(writer, s, parseLine(htmlEscape(s)));
@@ -203,6 +201,8 @@ public abstract class LineViewer implements SourceViewer {
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
         DevelUtils.writePageBegin(writer);
+        DevelUtils.writeViewerStyles(writer);
+        DevelUtils.writeScripts(writer);
         if (printLineNumbers && !hideLineNumbers) {
             writer.println("<style type=\"text/css\">");
             writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
@@ -241,13 +241,16 @@ public abstract class LineViewer implements SourceViewer {
             }
             String link = request.getRequestURI() + urlParams;
 
-            writer.print("<div style=\"font-size: smaller; vertical-align: bottom;\"><a href=\"" + link + "\">");
+            writer.println("<div style=\"font-size: smaller; vertical-align: bottom;\">");
+            writer.print("<a href=\"" + link + "\">");
             if (hideLineNumbers) {
                 writer.print("Show");
             } else {
                 writer.print("Hide");
             }
-            writer.println(" line numbers</a></div>");
+            writer.println(" line numbers</a>");
+            writeAdditionalLinks(writer);
+            writer.println("</div>");
         }
         writer.println("</td>");
 
@@ -260,11 +263,13 @@ public abstract class LineViewer implements SourceViewer {
     /**
      * Write the page header to the given writer.
      */
-    public void intro(PrintWriter printWriter) throws IOException {
+    protected void intro(PrintWriter printWriter) throws IOException {
     }
 
-    public void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
+    protected void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
+    }
 
+    protected void writeAdditionalLinks(PrintWriter writer) {
     }
 
     /** Write the page footer to the given writer. */
