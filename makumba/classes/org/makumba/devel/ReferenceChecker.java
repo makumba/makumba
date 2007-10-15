@@ -67,17 +67,7 @@ public class ReferenceChecker extends HttpServlet {
         PrintWriter w = resp.getWriter();
         DevelUtils.writePageBegin(w);
         DevelUtils.writeStyles(w);
-        w.println("<script type=\"text/javascript\">");
-        w.println("function toggleDisplay(element, link) {");
-        w.println("  if (element.style.display == \"none\") {");
-        w.println("    element.style.display = \"block\";");
-        w.println("    link.innerHTML=\"[-]\";");
-        w.println("  } else {");
-        w.println("    element.style.display = \"none\";");
-        w.println("    link.innerHTML=\"[+]\";");
-        w.println("  }");
-        w.println("}");
-        w.println("</script>");
+        DevelUtils.writeScripts(w);
 
         String param = req.getParameter("mdd");
         if (param != null) { // check a specific MDD
@@ -186,7 +176,7 @@ public class ReferenceChecker extends HttpServlet {
                         w.println("&rarr; " + pointerDdName + "(" + count(pointerDd) + ")");
                         String idName = (mddName + f.getName()).replace('.', '_');
                         String query = getQueryString(pointerDd, dd, f, true);
-                        w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleDisplay(" + idName + ", "
+                        w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", "
                                 + idName + "Ref)\">[+]</a>");
                         w.println("<div id=\"" + idName + "\" style=\"display:none;\">" + query + "</div> "
                                 + printDetails(executeIntQuery(query), dd, f));

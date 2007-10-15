@@ -116,26 +116,6 @@ public abstract class DataServlet extends HttpServlet {
         w.println("</table>");
     }
 
-    protected void writeScripts(PrintWriter w) {
-        w.println("<script language=\"javascript\">");
-        w.println("<!--");
-        w.println("  // toggles applicants list visibility on and off");
-        w.println("  function toggleStackTrace() {");
-        w.println("    if (document.getElementById('stackTrace').style.display == 'none') {");
-        w.println("      document.getElementById('stackTrace').style.display = \"block\";");
-        w.println("      document.getElementById('hideStackTrace').style.display = \"inline\";");
-        w.println("      document.getElementById('showStackTrace').style.display = \"none\";");
-        w.println("    } else {");
-        w.println("      document.getElementById('stackTrace').style.display = \"none\";");
-        w.println("      document.getElementById('hideStackTrace').style.display = \"none\";");
-        w.println("      document.getElementById('showStackTrace').style.display = \"inline\";");
-        w.println("    }");
-        w.println("  }");
-        w.println("  // -->");
-        w.println("</script>");
-        w.println();
-    }
-
     /** Extracts the fields and sets from a given DataDefinition. */
     public static Vector[] extractFields(DataDefinition dd, boolean skipDefaultFields) {
         Vector<FieldDefinition> fields = new Vector<FieldDefinition>();

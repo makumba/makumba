@@ -62,7 +62,7 @@ public class DataObjectViewerServlet extends DataServlet {
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
         DevelUtils.writeStyles(writer);
-        writeScripts(writer);
+        DevelUtils.writeScripts(writer);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Data Viewer");
 
         DataDefinition dd = null;

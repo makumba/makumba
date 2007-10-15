@@ -76,7 +76,7 @@ public class DataPointerValueConverter extends DataServlet {
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
         DevelUtils.writeStyles(writer);
-        writeScripts(writer);
+        DevelUtils.writeScripts(writer);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
         writePageContentHeader(type, writer, tp.getDefaultDataSourceName(), MODE_CONVERTOR);
