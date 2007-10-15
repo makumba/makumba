@@ -1,6 +1,5 @@
 package org.makumba.providers.datadefinition.makumba.validation;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
@@ -18,12 +17,11 @@ import org.makumba.commons.RegExpUtils;
  */
 public class StringLengthValidationRule extends RangeValidationRule {
 
-    private static final String operator = "length in";
+    private static final String operator = "length";
 
-    private static final Pattern pattern = Pattern.compile(getAcceptedRules());
-
-    private static final String rule = "(" + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + operator
-            + RegExpUtils.minOneLineWhitespace + "" + rangeDef + "";
+//    private static final String rule = compileRule(operator, RegExpUtils.minOneLineWhitespace + rangeDef);
+//
+//    private static final Pattern pattern = Pattern.compile(getAcceptedRules());
 
     private static final long serialVersionUID = 1L;
 
@@ -65,18 +63,6 @@ public class StringLengthValidationRule extends RangeValidationRule {
 
     public String toString() {
         return "" + fieldName + " " + getOperator() + " [" + lowerLimitString + ".." + upperLimitString + "]";
-    }
-
-    public static String getAcceptedRules() {
-        return rule;
-    }
-
-    public static boolean matches(String rule) {
-        return getMatcher(rule).matches();
-    }
-
-    public static Matcher getMatcher(String rule) {
-        return pattern.matcher(rule);
     }
 
     /** Do some pattern matching tests. */

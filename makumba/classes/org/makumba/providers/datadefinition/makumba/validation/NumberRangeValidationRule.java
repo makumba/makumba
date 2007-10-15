@@ -1,6 +1,5 @@
 package org.makumba.providers.datadefinition.makumba.validation;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
@@ -18,12 +17,7 @@ import org.makumba.commons.RegExpUtils;
  */
 public class NumberRangeValidationRule extends RangeValidationRule {
 
-    private static final String operator = "in range";
-
-    private static final Pattern pattern = Pattern.compile(getAcceptedRules());
-
-    private static final String rule = "(" + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + operator
-            + RegExpUtils.minOneLineWhitespace + rangeDef;
+    private static final String operator = "range";
 
     private static final long serialVersionUID = 1L;
 
@@ -70,18 +64,12 @@ public class NumberRangeValidationRule extends RangeValidationRule {
         return rule;
     }
 
-    public static boolean matches(String rule) {
-        return getMatcher(rule).matches();
-    }
-
-    public static Matcher getMatcher(String rule) {
-        return pattern.matcher(rule);
-    }
-
     /** Do some pattern matching tests. */
     public static void main(String[] args) {
         Pattern p = Pattern.compile(NumberRangeValidationRule.getAcceptedRules());
-        String[] rules = { "someField range [1..20]", "someField range [?..500]", "someField rrnge [?..500]" };
+        String[] rules = { "someField%range=[1..20]", "someField%range=[?..500]", "someField%rrnge=[?..500]",
+                "age%range = [12..99]" };
+        rules = new String[] { "[12..99]" };
         RegExpUtils.evaluate(p, rules);
     }
 
