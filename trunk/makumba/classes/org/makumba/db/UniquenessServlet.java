@@ -51,7 +51,7 @@ public class UniquenessServlet extends HttpServlet {
             table = (TableManager)db.getTable(req.getParameter("table"));
         } catch(org.makumba.DataDefinitionNotFoundError e) {
             writer.println("No such table!");
-            //db.close();
+            db.close();
             return;
         }
         
@@ -60,7 +60,7 @@ public class UniquenessServlet extends HttpServlet {
         if(fd == null)
         {
             writer.println("No such field!");
-            //db.close();
+            db.close();
             return;
         }
         
@@ -91,7 +91,7 @@ public class UniquenessServlet extends HttpServlet {
             else
             {
                 writer.println("incorrect date");
-                //db.close();
+                db.close();
                 return;
             }
         }
@@ -109,7 +109,7 @@ public class UniquenessServlet extends HttpServlet {
         {
             writer.println("unique");
         }
-        //db.close();
+        db.close();
     }
 
 }
