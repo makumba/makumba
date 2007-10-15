@@ -242,7 +242,7 @@ public class ComparisonValidationRule extends BasicValidationRule {
         return getDateExpressionMatcher(rule).matches();
     }
 
-    public static List getOperators() {
+    public static List<String> getOperators() {
         return Arrays.asList(new String[] { "<", "=", ">", "!=", ">=", "<=" });
     }
 
