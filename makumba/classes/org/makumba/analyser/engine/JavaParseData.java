@@ -188,15 +188,15 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     String uri;
 
     /** The set of in this class imported packages. */
-    HashSet importedPackages = new HashSet();
+    HashSet<String> importedPackages = new HashSet<String>();
 
-    private Hashtable importedClasses = new Hashtable();
+    private Hashtable<String, String> importedClasses = new Hashtable<String, String>();
 
     private String viewedClass = null;
     
     private String superClass = null;
     
-    private Hashtable definedObjects = new Hashtable();
+    private Hashtable<String, ArrayList<DefinitionPoint>> definedObjects = new Hashtable<String, ArrayList<DefinitionPoint>>();
 
     /** Private constructor, construction can only be made by getParseData(). */
     protected JavaParseData(String path, JavaAnalyzer an, String uri) {
@@ -399,9 +399,9 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
                                 && substring.trim().indexOf("new ") == -1) {
                             String objectName = substring.trim().substring(
                                 substring.indexOf(className) + className.length()).replace('=', ' ').replace(';', ' ').trim();
-                            ArrayList currentContent = (ArrayList) definedObjects.get(objectName);
+                            ArrayList<DefinitionPoint> currentContent = definedObjects.get(objectName);
                             if (currentContent == null) {
-                                currentContent = new ArrayList();
+                                currentContent = new ArrayList<DefinitionPoint>();
                             }
                             currentContent.add(new DefinitionPoint(className, end.getPosition()));
                             Collections.sort(currentContent);
@@ -421,11 +421,11 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         code = code.replace(',', ' ').trim();
 
         StringTokenizer t = new StringTokenizer(code);
-        ArrayList s = new ArrayList();
+        ArrayList<String> s = new ArrayList<String>();
         while (t.hasMoreTokens()) {
             s.add(t.nextToken());
         }
-        String[] parts = (String[]) s.toArray(new String[s.size()]);
+        String[] parts = s.toArray(new String[s.size()]);
 
         if (pattern == JavaVariableDefinition || pattern == JavaParameter || pattern == JavaMethodReturn
                 || pattern == JavaClassCast) {
