@@ -25,17 +25,14 @@ package org.makumba.providers.datadefinition.makumba;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -48,16 +45,21 @@ import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
+import org.makumba.commons.StringUtils;
 import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
+import org.makumba.providers.datadefinition.makumba.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 public class RecordParser {
     public static final String FILE_EXTENSION_VALIDATION = ".vd";
+
+    public static final String VALIDATION_INDICATOR = "%";
 
     public static final String multiUniqueRegExpElement = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces;
@@ -65,10 +67,17 @@ public class RecordParser {
     public static final String multiUniqueRegExpElementRepeatment = "(?:" + RegExpUtils.LineWhitespaces + "," + "(?:"
             + multiUniqueRegExpElement + "))*";
 
-    public static final String multiUniqueRegExp = "!unique" + RegExpUtils.LineWhitespaces + "\\((?:"
-            + multiUniqueRegExpElement + ")" + multiUniqueRegExpElementRepeatment + RegExpUtils.LineWhitespaces + "\\)";
+    public static final String multiUniqueRegExp = RegExpUtils.LineWhitespaces + "(?:" + multiUniqueRegExpElement + ")"
+            + multiUniqueRegExpElementRepeatment + RegExpUtils.LineWhitespaces;
 
     public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
+
+    public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
+            + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
+            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)" + RegExpUtils.LineWhitespaces
+            + ":" + RegExpUtils.LineWhitespaces + ".+";
+
+    public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
 
     OrderedProperties text;
 
@@ -92,6 +101,8 @@ public class RecordParser {
     HashMap<String, DataDefinition> subtableParser_subtables = new HashMap<String, DataDefinition>();
 
     HashMap<String, DataDefinition> subtableParser_here = new HashMap<String, DataDefinition>();
+
+    private ArrayList<String> unparsedValidationDefinitions = new ArrayList<String>();
 
     RecordParser() {
         definedTypes = new Properties();
@@ -475,17 +486,12 @@ public class RecordParser {
             int l = s.indexOf('=');
             if (st.length() == 0 || st.charAt(0) == '#')
                 continue;
-            Matcher multiUniqueMatcher = multiUniquePattern.matcher(st);
-            if (l == -1 && multiUniqueMatcher.matches()) { // if we do have a multiple key def, parse & store it
-                // we will analyse if the fields are correct later
-                ArrayList<String> groupList = new ArrayList<String>();
-                for (int j = 1; j <= multiUniqueMatcher.groupCount(); j++) {
-                    if (multiUniqueMatcher.group(j) != null) {
-                        groupList.add(multiUniqueMatcher.group(j));
-                    }
-                }
-                String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
-                dd.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, s));
+
+            // check if the line is a validation definition
+            Matcher validationMatcher = validationDefinitionPattern.matcher(st);
+            if (validationMatcher.matches()) {
+                // we parse them later
+                unparsedValidationDefinitions.add(st);
                 continue;
             }
 
@@ -934,105 +940,125 @@ public class RecordParser {
     }
 
     public void parseValidationDefinition() throws ValidationDefinitionParseError {
-        URL url = findValidationDefinition(dd.getName());
-        if (url == null) {
-            return;
-        }
-        // System.out.println("Started parsing validation definition '" + name + "'.");
         ValidationDefinitionParseError mpe = new ValidationDefinitionParseError();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) url.getContent()));
-            // new BufferedReader(new FileReader(url.getFile()));
-            String line = null;
-            while ((line = rd.readLine()) != null) {
-                try {
-                    line = line.trim();
-                    if (line.equals("") || line.startsWith("#")) {
-                        continue; // skip empty lins & comment lines
-                    }
-                    if (line.indexOf(";") != -1) { // cut off end-of-line comments
-                        line = line.substring(0, line.indexOf(";")).trim();
-                    }
-                    String[] definitionParts = line.split(":");
-                    if (definitionParts.length < 3) {
-                        throw new ValidationDefinitionParseError(dd.getName(),
-                                "Rule does not consist of the three parts 'identifier':'message':'rule'!", line);
-                    }
-
-                    String ruleName = definitionParts[0].trim();
-                    String errorMessage = definitionParts[1].trim();
-                    String ruleDef = definitionParts[2].trim();
-                    ValidationRule rule = null;
-                    String fieldName = null;
-                    Matcher matcher;
-                    // check all possible validation types
-                    if ((matcher = RegExpValidationRule.getMatcher(ruleDef)).matches()) {
-                        // regexp validation
-                        fieldName = matcher.group(1);
-                        FieldDefinition fd = getFieldDefinition(line, fieldName);
-                        rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(3));
-
-                    } else if ((matcher = NumberRangeValidationRule.getMatcher(ruleDef)).matches()) {
-                        // number (int or real) validation
-                        fieldName = matcher.group(1);
-                        FieldDefinition fd = getFieldDefinition(line, fieldName);
-                        rule = new NumberRangeValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(2),
-                                matcher.group(3));
-
-                    } else if ((matcher = StringLengthValidationRule.getMatcher(ruleDef)).matches()) {
-                        // string lenght (char or text) validation
-                        fieldName = matcher.group(1);
-                        FieldDefinition fd = getFieldDefinition(line, fieldName);
-                        rule = new StringLengthValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(2),
-                                matcher.group(3));
-
-                    } else if ((matcher = ComparisonValidationRule.getMatcher(ruleDef)).matches()) {
-                        // comparison validation, compares two fields or a field with a constant
-                        fieldName = matcher.group(1);
-                        String functionName = null;
-                        if (BasicValidationRule.isValidFunctionCall(fieldName)) {
-                            functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
-                            fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
-                        }
-                        FieldDefinition fd = getFieldDefinition(line, fieldName);
-                        String operator = matcher.group(2);
-                        String compareTo = matcher.group(3);
-                        if (fd.getIntegerType() == FieldDefinition._date
-                                && ComparisonValidationRule.matchesDateExpression(compareTo)) {
-                            // we have a comparison to a date constant / expression
-                            rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage,
-                                    operator);
-                        } else {
-                            FieldDefinition otherFd = getFieldDefinition(line, compareTo);
-                            rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo,
-                                    ruleName, errorMessage, operator);
-                        }
-                    } else {
-                        // no recognised rule
-                        throw new ValidationDefinitionParseError("", "Rule type not recognised!", line);
-                    }
-
-                    rule.getFieldDefinition().addValidationRule(rule);
-                    // validationRules.put(fieldName, rule);
-                    ((RecordInfo) dd).addValidationRule(rule);
-                } catch (ValidationDefinitionParseError e) {
-                    mpe.add(e);
+        for (int i = 0; i < unparsedValidationDefinitions.size(); i++) {
+            String line = unparsedValidationDefinitions.get(i);
+            try {
+                line = line.trim();
+                if (line.indexOf(";") != -1) { // cut off end-of-line comments
+                    line = line.substring(0, line.indexOf(";")).trim();
                 }
 
+                // check if the line is a validation definition
+                Matcher singleValidationMatcher = validationDefinitionPattern.matcher(line);
+                if (!singleValidationMatcher.matches()) {
+                    throw new ValidationDefinitionParseError(dd.getName(), "Illegal rule definition!", line);
+                }
+                String[] definitionParts = line.split(":");
+                if (definitionParts.length < 2) {
+                    throw new ValidationDefinitionParseError(dd.getName(),
+                            "Rule does not consist of the two parts <rule>:<message>!", line);
+                }
+                String fieldName = singleValidationMatcher.group(1).trim();
+                String operation = singleValidationMatcher.group(2).trim();
+                String ruleDef = singleValidationMatcher.group(3).trim();
+                String errorMessage = definitionParts[1].trim();
+                String ruleName = line;
+                ValidationRule rule = null;
+                Matcher matcher;
+
+                // check all possible validation types
+                if (StringUtils.equals(operation, RegExpValidationRule.getOperator())) {
+                    // regexp validation
+                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage,
+                            singleValidationMatcher.group(3));
+
+                } else if (StringUtils.equals(operation, NumberRangeValidationRule.getOperator())) {
+                    // number (int or real) validation
+                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    matcher = RangeValidationRule.getMatcher(ruleDef);
+                    if (!matcher.matches()) {
+                        throw new ValidationDefinitionParseError("", "Illegal range definition", line);
+                    }
+                    rule = new NumberRangeValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(1),
+                            matcher.group(2));
+
+                } else if (StringUtils.equals(operation, StringLengthValidationRule.getOperator())) {
+                    // string lenght (char or text) validation
+                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    matcher = RangeValidationRule.getMatcher(ruleDef);
+                    if (!matcher.matches()) {
+                        throw new ValidationDefinitionParseError("", "Illegal range definition", line);
+                    }
+                    rule = new StringLengthValidationRule(fd, fieldName, ruleName, errorMessage, matcher.group(1),
+                            matcher.group(2));
+
+                } else if (StringUtils.equals(operation, ComparisonValidationRule.getOperator())) {
+                    // comparison validation, compares two fields or a field with a constant
+                    // fieldName = matcher.group(1);
+                    matcher = ComparisonValidationRule.getMatcher(ruleDef);
+                    if (!matcher.matches()) {
+                        throw new ValidationDefinitionParseError("", "Illegal comparison definition", line);
+                    }
+                    if (dd.getFieldDefinition(fieldName) == null) { // let's see if the first part is a field name
+                        ruleName = fieldName;
+                        fieldName = matcher.group(1);
+                    }
+                    String functionName = null;
+                    if (BasicValidationRule.isValidFunctionCall(fieldName)) {
+                        functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
+                        fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
+                    }
+                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    String operator = matcher.group(2);
+                    String compareTo = matcher.group(3);
+                    if (fd.getIntegerType() == FieldDefinition._date
+                            && ComparisonValidationRule.matchesDateExpression(compareTo)) {
+                        // we have a comparison to a date constant / expression
+                        rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage, operator);
+                    } else {
+                        ruleName = fieldName;
+                        FieldDefinition otherFd = getFieldDefinition(line, compareTo);
+                        rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo, ruleName,
+                                errorMessage, operator);
+                    }
+                } else if (StringUtils.equals(operation, "unique")) {
+                    // check if the line defines a multi-field unique key
+                    matcher = multiUniquePattern.matcher(ruleDef);
+                    if (!matcher.matches()) {
+                        throw new ValidationDefinitionParseError("", "Illegal multi-field unique definition", line);
+                    }
+                    ArrayList<String> groupList = new ArrayList<String>();
+                    for (int j = 1; j <= matcher.groupCount(); j++) {
+                        if (matcher.group(j) != null) {
+                            // checking if the fields exist will be done later
+                            groupList.add(matcher.group(j));
+                        }
+                    }
+                    String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
+                    dd.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
+                    java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").info(
+                        "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
+                    continue;
+                } else {
+                    // no recognised rule
+                    throw new ValidationDefinitionParseError("", "Rule type not recognised!", line);
+                }
+                rule.getFieldDefinition().addValidationRule(rule);
+                // validationRules.put(fieldName, rule);
+                ((RecordInfo) dd).addValidationRule(rule);
+                java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").info(
+                    "added rule: " + rule);
+            } catch (ValidationDefinitionParseError e) {
+                mpe.add(e);
             }
-            rd.close();
+
             if (!mpe.isSingle()) {
                 throw mpe;
             }
         }
 
-        catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         if (!mpe.isSingle()) {
             throw mpe;
         }
@@ -1063,90 +1089,6 @@ public class RecordParser {
         RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
                 "!unique( abc )", "!unique(abc , def )" });
         RecordInfo.getRecordInfo("test.Person");
-    }
-
-}
-
-class OrderedProperties extends Dictionary {
-    // FIXME: can this be replaced by some collection from java.util or apache-commons-collections?
-    Vector<Object> ks = new Vector<Object>();
-
-    Hashtable<Object, Object> orig = new Hashtable<Object, Object>();
-
-    Hashtable<Object, Object> content = new Hashtable<Object, Object>();
-
-    OrderedProperties() {
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer("{");
-        Enumeration e = keys();
-        if (e.hasMoreElements()) {
-            Object o = e.nextElement();
-            sb.append(o).append("=").append(get(o));
-            while (e.hasMoreElements()) {
-                o = e.nextElement();
-                sb.append(", ").append(o).append("= ").append(get(o));
-            }
-        }
-        return sb.append('}').toString();
-    }
-
-    public Enumeration elements() {
-        return ((Hashtable) content.clone()).elements();
-    }
-
-    public Object get(Object key) {
-        return content.get(key);
-    }
-
-    public Enumeration keys() {
-        return ((Vector) ks.clone()).elements();
-    }
-
-    public String getOriginal(String key) {
-        return (String) orig.get(key);
-    }
-
-    public String keyAt(int i) {
-        return (String) ks.elementAt(i);
-    }
-
-    public Object remove(Object key) {
-        ks.removeElement(key);
-        orig.remove(key);
-        return content.remove(key);
-    }
-
-    public Object putAt(int n, Object key, Object origKey, Object value) {
-        ks.insertElementAt(key, n);
-        orig.put(key, origKey);
-        return content.put(key, value);
-    }
-
-    public synchronized Object putLast(Object key, Object origKey, Object value) {
-        Object o = content.put(key, value);
-        if (o != null)
-            ks.removeElement(key);
-        ks.addElement(key);
-        orig.put(key, origKey);
-        return o;
-    }
-
-    public Object put(Object key, Object value) {
-        return putLast(key, key, value);
-    }
-
-    public String getProperty(String s) {
-        return (String) get(s);
-    }
-
-    public int size() {
-        return content.size();
-    }
-
-    public boolean isEmpty() {
-        return content.isEmpty();
     }
 
 }
