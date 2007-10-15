@@ -25,25 +25,16 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.AttributeNotFoundException;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
-import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.providers.TransactionProvider;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
