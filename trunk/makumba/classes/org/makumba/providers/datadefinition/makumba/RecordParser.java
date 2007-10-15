@@ -198,11 +198,11 @@ public class RecordParser {
         // call solveAll() on all subfields
         treatSubfields();
 
-        // after all fields are processed, process the multi field indices & check for field existance
-        checkMultipleUniqueFields();
-
         // parse validation definition
         parseValidationDefinition();
+
+        // after all fields are processed, process the multi field indices & check for field existance
+        checkMultipleUniqueFields();
 
     }
 
