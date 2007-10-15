@@ -64,7 +64,7 @@ public class TableManager extends Table {
 
     protected long primaryKeyCurrentIndex;
 
-    protected int dbsv;
+    protected int dbsv; 
 
     boolean alter;
 
@@ -1652,36 +1652,38 @@ public class TableManager extends Table {
         }// isIndexOk
 
         if (org.makumba.db.sql.Database.supportsForeignKeys()) {
-            // for foreign keys
-            if (getFieldDefinition(fieldName).isPointer() && !hasForeignKey(fieldName)) {
-                // System.out.println("We need a foreign key for " + brief);
-
-                try {
-                    // try creating foreign key index
-                    Statement st = dbc.createStatement();
-                    // System.out.println("testing: "+foreignKeyCreateSyntax(fieldName,
-                    // getFieldDefinition(fieldName).getPointedType().getName(),
-                    // getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
-                    st.executeUpdate(foreignKeyCreateSyntax(fieldName,
-                        getFieldDefinition(fieldName).getPointedType().getName(),
-                        getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
-                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
-                        "FOREIGN KEY ADDED on " + brief);
-                    st.close();
-                    indexCreated(dbc);
-                } catch (SQLException e) {
-                    // log all errors
-                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
-                    // rm.getDatabase().getConfiguration()+": "+ //DB
-                        // name
-                        "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
-                                + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
-                    throw new DBError("Error adding foreign key for " + brief + ": " + e.getMessage());
-                }
-
-            }
+            manageForeignKeys(fieldName, dbc, brief);
         }
     }// method
+
+    protected void manageForeignKeys(String fieldName, SQLDBConnection dbc, String brief) throws DBError {
+        // for foreign keys
+        if (getFieldDefinition(fieldName).isPointer() && !hasForeignKey(fieldName))
+        {
+            //System.out.println("We need a foreign key for " + brief);
+            
+            try {
+                // try creating foreign key index
+                Statement st = dbc.createStatement();
+                //System.out.println("testing: "+foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+                st.executeUpdate(foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+                java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
+                    "FOREIGN KEY ADDED on " + brief);
+                st.close();
+                indexCreated(dbc);
+            } catch (SQLException e) {
+                // log all errors
+                java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
+                // rm.getDatabase().getConfiguration()+": "+ //DB
+                    // name
+                    "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
+                            + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
+                throw new DBError("Error adding foreign key for " + brief 
+                    + ": " + e.getMessage());
+            }
+            
+        }
+    }
 
     private void dropIndex(String fieldName, SQLDBConnection dbc, String message) {
         String syntax = indexDropSyntax(fieldName);
