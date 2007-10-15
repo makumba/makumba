@@ -46,7 +46,6 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
@@ -214,6 +213,7 @@ public class TableManager extends Table {
     Hashtable<String, Boolean> indexes = new Hashtable<String, Boolean>();
 
     Boolean parsedForeignKeys = false;
+
     Hashtable<String, String[]> foreignKeys = new Hashtable<String, String[]>();
 
     Hashtable extraIndexes;
@@ -235,19 +235,17 @@ public class TableManager extends Table {
             rs.close();
             // http://osdir.com/ml/db.postgresql.jdbc/2002-11/msg00089.html for fieldnames
             ResultSet rs2 = dbc.getMetaData().getImportedKeys(null, null, getDBName());
-            
-            while(rs2.next()) {
-                String [] temp_foreign = new String[2];
+
+            while (rs2.next()) {
+                String[] temp_foreign = new String[2];
                 temp_foreign[0] = rs2.getString("PKTABLE_NAME");
                 temp_foreign[1] = rs2.getString("PKCOLUMN_NAME");
-                
-                if(foreignKeys.get(rs2.getString("FKCOLUMN_NAME")) != null)
-                {
+
+                if (foreignKeys.get(rs2.getString("FKCOLUMN_NAME")) != null) {
                     java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
-                        "WARNING: duplicate foreign keys for table `"+rs2.getString("FKTABLE_NAME")+"`, field `"+rs2.getString("FKCOLUMN_NAME")+"`");
-                }
-                else
-                {
+                        "WARNING: duplicate foreign keys for table `" + rs2.getString("FKTABLE_NAME") + "`, field `"
+                                + rs2.getString("FKCOLUMN_NAME") + "`");
+                } else {
                     foreignKeys.put(rs2.getString("FKCOLUMN_NAME").toLowerCase(), temp_foreign);
                 }
             }
@@ -520,7 +518,8 @@ public class TableManager extends Table {
             }
         autoIncrementAlter = false;
         String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
-        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(getSQLDatabase().getConfiguration() + ": " + s);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
+            getSQLDatabase().getConfiguration() + ": " + s);
         st.executeUpdate(s);
         handlerExist.put(fieldName, "");
         dbc.commit();
@@ -597,7 +596,8 @@ public class TableManager extends Table {
 
         command = createDbSpecific(command);
         if (!really) {
-            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning("would be:\n" + command);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
+                "would be:\n" + command);
             return;
         }
         if (!tblname.startsWith("temp"))
@@ -857,7 +857,8 @@ public class TableManager extends Table {
             try {
                 data[i] = getValue(dd.getFieldDefinition(i).getName(), rs, i + 1);
             } catch (ArrayIndexOutOfBoundsException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").log(java.util.logging.Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").log(
+                    java.util.logging.Level.SEVERE,
                     "" + i + " " + dd.getName() + " " + keyIndex + " " + dd.getFieldNames(), e);
                 throw e;
             }
@@ -1035,8 +1036,8 @@ public class TableManager extends Table {
                 // System.out.println("UTF: setUpdateArgument");
                 setArgument(fieldName, ps, n, o);
             } catch (SQLException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").log(java.util.logging.Level.SEVERE,
-                    getDBName() + "  " + o.getClass(), e);
+                java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").log(
+                    java.util.logging.Level.SEVERE, getDBName() + "  " + o.getClass(), e);
                 throw e;
             }
     }
@@ -1513,11 +1514,11 @@ public class TableManager extends Table {
     public void onStartup(String fieldName, Properties config, SQLDBConnection dbc) throws SQLException {
         if (alter && shouldIndex(fieldName))
             manageIndexes(fieldName, dbc);
-        
-        //getFieldDefinition(fieldName).is
-        
-        //getFieldDBName(fieldName)
-        
+
+        // getFieldDefinition(fieldName).is
+
+        // getFieldDBName(fieldName)
+
         if (shouldIndex(fieldName))
             extraIndexes.remove(getFieldDBIndexName(fieldName).toLowerCase());
 
@@ -1573,14 +1574,13 @@ public class TableManager extends Table {
         return false;
     } // end isIndexOk()
 
-    
     public boolean hasForeignKey(String fieldName) {
-        if(foreignKeys.get(getFieldDBIndexName(fieldName).toLowerCase()) == null)
+        if (foreignKeys.get(getFieldDBIndexName(fieldName).toLowerCase()) == null)
             return false;
-        
+
         return true;
     } // end hasForeignKey()
-    
+
     public boolean isIndexOk(String[] fieldNames) {
         Boolean b = (Boolean) indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
         if (b != null)
@@ -1631,13 +1631,14 @@ public class TableManager extends Table {
                     createNormalEvenIfUnique = true;
                 }
             }
-            
+
             if (createNormalEvenIfUnique || !getFieldDefinition(fieldName).isUnique()) {
                 try {
                     // create normal index
                     Statement st = dbc.createStatement();
                     st.executeUpdate(indexCreateSyntax(fieldName));
-                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info("INDEX ADDED on " + brief);
+                    java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
+                        "INDEX ADDED on " + brief);
                     st.close();
                 } catch (SQLException e) {
                     java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").warning(
@@ -1649,19 +1650,21 @@ public class TableManager extends Table {
             }
 
         }// isIndexOk
-        
-        if(org.makumba.db.sql.Database.supportsForeignKeys())
-        {
+
+        if (org.makumba.db.sql.Database.supportsForeignKeys()) {
             // for foreign keys
-            if (getFieldDefinition(fieldName).isPointer() && !hasForeignKey(fieldName))
-            {
-                //System.out.println("We need a foreign key for " + brief);
-                
+            if (getFieldDefinition(fieldName).isPointer() && !hasForeignKey(fieldName)) {
+                // System.out.println("We need a foreign key for " + brief);
+
                 try {
                     // try creating foreign key index
                     Statement st = dbc.createStatement();
-                    //System.out.println("testing: "+foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
-                    st.executeUpdate(foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+                    // System.out.println("testing: "+foreignKeyCreateSyntax(fieldName,
+                    // getFieldDefinition(fieldName).getPointedType().getName(),
+                    // getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+                    st.executeUpdate(foreignKeyCreateSyntax(fieldName,
+                        getFieldDefinition(fieldName).getPointedType().getName(),
+                        getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
                     java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                         "FOREIGN KEY ADDED on " + brief);
                     st.close();
@@ -1673,10 +1676,9 @@ public class TableManager extends Table {
                         // name
                         "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
-                    throw new DBError("Error adding foreign key for " + brief 
-                        + ": " + e.getMessage());
+                    throw new DBError("Error adding foreign key for " + brief + ": " + e.getMessage());
                 }
-                
+
             }
         }
     }// method
@@ -1710,11 +1712,12 @@ public class TableManager extends Table {
 
     /** Syntax for unique index creation. */
     public String foreignKeyCreateSyntax(String fieldName, String fkTableName, String fkFieldName) {
-        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY (" + getFieldDBName(fieldName) + ") REFERENCES "+
-        ((TableManager)getDatabase().getTable(fkTableName)).getDBName() + 
-        " ("+ ((TableManager)getDatabase().getTable(fkTableName)).getFieldDBName(fkFieldName) +")";
+        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY (" + getFieldDBName(fieldName) + ") REFERENCES "
+                + ((TableManager) getDatabase().getTable(fkTableName)).getDBName() + " ("
+                + ((TableManager) getDatabase().getTable(fkTableName)).getFieldDBName(fkFieldName) + ")";
     }
-    //ALTER TABLE child ADD FOREIGN KEY (parent_id) REFERENCES parent(id)
+
+    // ALTER TABLE child ADD FOREIGN KEY (parent_id) REFERENCES parent(id)
 
     /** Syntax for multi-field index */
     public String indexCreateUniqueSyntax(String[] fieldNames) {
@@ -1820,16 +1823,15 @@ public class TableManager extends Table {
      */
     public boolean findMultiFieldMultiTableDuplicates(Pointer pointer,
             DataDefinition.MultipleUniqueKeyDefinition definition, Object values[]) {
-        
+
         DBConnection connection = getDatabase().getDBConnection();
-        
+
         if (connection instanceof DBConnectionWrapper) {
             connection = ((DBConnectionWrapper) connection).getWrapped();
         }
-        
+
         SQLDBConnection dbc = (SQLDBConnection) connection;
-        
-        
+
         String[] fields = definition.getFields();
         String from = getDBName();
         String where = "";
@@ -2052,7 +2054,8 @@ public class TableManager extends Table {
      * the database, and we just need to find them if something fails
      * {@link #findDuplicates(SQLDBConnection, Dictionary)}.
      */
-    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData) throws CompositeValidationException {
+    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData)
+            throws CompositeValidationException {
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
         CompositeValidationException notUnique = new CompositeValidationException();
@@ -2072,7 +2075,7 @@ public class TableManager extends Table {
             }
         }
         notUnique.throwCheck();
-     }
+    }
 
     // moved from dateCreateJavaManager, dateModifyJavaManager and
     // ptrIndexJavaManager
