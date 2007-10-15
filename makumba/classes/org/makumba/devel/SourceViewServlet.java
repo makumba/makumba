@@ -59,8 +59,6 @@ public class SourceViewServlet extends HttpServlet {
         try {
             if (servletPath.equals("/dataDefinitions")) {
                 sw = new mddViewer(req, this);
-            } else if (servletPath.equals("/validationDefinitions")) {
-                sw = new ValidationDefinitionViewer(req, this);
             } else if (servletPath.endsWith(".jspx") || servletPath.endsWith(".jsps") || servletPath.endsWith(".jspxp")) {
                 sw = new jspViewer(req, this);
             } else if (servletPath.equals("/classes")) {
