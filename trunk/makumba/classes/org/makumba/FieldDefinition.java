@@ -75,6 +75,8 @@ public interface FieldDefinition {
 
     public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
 
+    public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
+
     /** The name of this field, normally the same with the name of the field */
     public String getName();
 

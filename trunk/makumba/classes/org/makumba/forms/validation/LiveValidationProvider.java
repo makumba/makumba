@@ -52,6 +52,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         if (fieldDefinition == null) {
             System.out.println("null def for " + inputName);
         }
+        
         if (fieldDefinition.isNotNull()) {
             validations.append(getValidationLine(inputVarName, "Validate.Presence", FieldDefinition.ERROR_NOT_NULL));
         }
@@ -98,6 +99,11 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 }
             }
         }
+        if (fieldDefinition.isUnique() && !fieldDefinition.isDateType( )) {
+            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness", FieldDefinition.ERROR_NOT_UNIQUE,
+                    "table: \""+fieldDefinition.getDataDefinition().getName()+"\", "+"field: \""+fieldDefinition.getName()+"\", "));
+        }
+        
         if (validations.length() > 0) {
             definitionVarNames.add(inputVarName);
             validationObjects.append("var " + inputVarName + " = new LiveValidation('" + inputName
@@ -147,7 +153,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     }
 
     public String[] getNeededJavaScriptFileNames() {
-        return new String[] { "livevalidation_1.0_standalone.js", "makumba-livevalidation.js" };
+        // the order gets reversed for some reason... therefore we reverse it here as well
+        return new String[] { "makumba-livevalidation.js", "livevalidation_1.2_standalone.js" };
     }
 
     private String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {

@@ -20,9 +20,19 @@
     <servlet-class>org.makumba.commons.MakumbaResourceServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>makumbaUnique</servlet-name>
+    <servlet-class>org.makumba.db.UniquenessServlet</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>makumbaResources</servlet-name>
     <url-pattern>/makumbaResources/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>makumbaUnique</servlet-name>
+    <url-pattern>/makumbaUnique/*</url-pattern>
   </servlet-mapping>
 
   <servlet>

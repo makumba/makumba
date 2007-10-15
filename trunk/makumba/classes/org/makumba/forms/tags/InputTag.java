@@ -307,7 +307,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     private void printAnnotation(String fieldName, InvalidValueException e) throws IOException {
-        pageContext.getOut().print("<span class=\"formAnnotation\">");
+        pageContext.getOut().print("<span class=\"LV_validation_message LV_invalid\">");
+        //pageContext.getOut().print("<span class=\"formAnnotation\">");
         pageContext.getOut().print(e.getShortMessage());
         pageContext.getOut().print("</span>");
     }
