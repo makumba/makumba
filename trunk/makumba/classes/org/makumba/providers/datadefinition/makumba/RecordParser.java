@@ -1039,7 +1039,7 @@ public class RecordParser {
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
                     dd.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
-                    java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").info(
+                    java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
                         "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     continue;
                 } else {
@@ -1049,7 +1049,7 @@ public class RecordParser {
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
                 ((RecordInfo) dd).addValidationRule(rule);
-                java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").info(
+                java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
                     "added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
                 mpe.add(e);
