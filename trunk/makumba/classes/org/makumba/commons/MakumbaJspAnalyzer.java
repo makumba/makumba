@@ -26,6 +26,7 @@ package org.makumba.commons;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -144,6 +145,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 pageCache.cache(TAG_CACHE, t.getTagKey(), t);
             }
             pageCache.cache(TagData.TAG_DATA_CACHE, t.getTagKey(), td);
+            
             t.doStartAnalyze(pageCache);
             tags.add(t);
         }
