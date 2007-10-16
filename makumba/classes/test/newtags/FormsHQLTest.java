@@ -37,6 +37,7 @@ import com.meterware.httpunit.WebResponse;
 
 /**
  * @author Rudolf Mayer
+ * @version $Id: ListOQLTest.java,v 1.1 25.09.2007 15:58:58 Manuel Exp $
  */
 public class FormsHQLTest extends MakumbaJspTestCase {
     

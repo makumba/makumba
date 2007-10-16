@@ -44,6 +44,7 @@ import com.meterware.httpunit.WebResponse;
 /**
  * @author Johannes Peeters
  * @author Manuel Gay
+ * @version $Id$
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
 
@@ -124,8 +125,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
 		protected void deletePerson(Transaction db) {
 			db.delete(address);
-			db.delete(brother);
 			db.delete(person);
+            // brother is referenced by person so we delete it after person
+            db.delete(brother);
 		}
 
 		protected void insertLanguages(Transaction db) {
