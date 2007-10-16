@@ -116,8 +116,8 @@ public class ListHQLTest extends MakumbaJspTestCase {
 
         protected void deletePerson(Transaction db) {
             db.delete(address);
-            db.delete(brother);
             db.delete(person);
+            db.delete(brother);
         }
 
         protected void insertLanguages(Transaction db) {
