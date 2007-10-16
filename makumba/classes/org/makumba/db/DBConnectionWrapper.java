@@ -22,7 +22,6 @@
 /////////////////////////////////////
 
 package org.makumba.db;
-import java.util.Date;
 
 import org.makumba.Pointer;
 
@@ -30,10 +29,16 @@ import org.makumba.Pointer;
 public class DBConnectionWrapper extends DBConnection
 {
     DBConnection wrapped;
+
+    // uncomment this if you want to know where the unclosed connections are created
+    // maybe this can become a devel feature? 
+    // Throwable t;
+    
     public DBConnection getWrapped(){ return wrapped; }
 
     DBConnectionWrapper(){}
-    DBConnectionWrapper(DBConnection wrapped){this.wrapped=wrapped;}
+    DBConnectionWrapper(DBConnection wrapped){/*t= new Throwable();*/ this.wrapped=wrapped; }
+
 
     public String getName(){ return getWrapped().getName(); }
 
@@ -78,32 +83,29 @@ public class DBConnectionWrapper extends DBConnection
     public synchronized void close(){
       commit();
       getHostDatabase().connections.put(getWrapped()); 
-      wrapped=ClosedDBConnection.getInstance();
-      //System.out.println(Database.connectionsTrace + " CLOSED at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
-      //Database.connectionsTrace = Database.connectionsTrace.substring(0, Database.connectionsTrace.length() -1);
-      
-      
+      wrapped=ClosedDBConnection.getInstance();     
     }
     protected synchronized void finalize(){
         java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Makumba connection "+getName()+" not closed");
-	if(wrapped!=ClosedDBConnection.getInstance())
-	    close();
+//       t.printStackTrace();
+        if(wrapped!=ClosedDBConnection.getInstance())
+        close();
     }
   
 }
 
 class ClosedDBConnection extends DBConnectionWrapper
 {
-	private static final class SingletonHolder {
-		static final DBConnection singleton = new ClosedDBConnection();
-	}
+    private static final class SingletonHolder {
+        static final DBConnection singleton = new ClosedDBConnection();
+    }
 
-	private ClosedDBConnection() {}
+    private ClosedDBConnection() {}
 
-	public static DBConnection getInstance() {
-		return SingletonHolder.singleton;
-	}
-	
+    public static DBConnection getInstance() {
+        return SingletonHolder.singleton;
+    }
+    
     public DBConnection getWrapped() { throw new IllegalStateException("connection already closed"); }
 }
 
