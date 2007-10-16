@@ -49,7 +49,6 @@ public class ListHQLTest extends MakumbaJspTestCase {
     static Vector v;
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
     private String output;
-    private String line;
 
     static ArrayList languages = new ArrayList();
     static Object[][] languageData = { { "English", "en" }, { "French", "fr" },

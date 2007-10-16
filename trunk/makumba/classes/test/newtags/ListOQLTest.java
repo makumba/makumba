@@ -58,9 +58,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     private String output;
 
-    private String line;
-
-    static ArrayList languages = new ArrayList();
+    static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
     static Object[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
@@ -109,7 +107,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
             p.put("uniqInt", new Integer(255));
 
-            Vector intSet = new Vector();
+            Vector<Integer> intSet = new Vector<Integer>();
             intSet.addElement(new Integer(1));
             intSet.addElement(new Integer(0));
             p.put("intSet", intSet);
@@ -134,7 +132,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
         protected void insertLanguages(Transaction db) {
             languages.clear();
-            Dictionary p = new Hashtable();
+            Dictionary<String, Object> p = new Hashtable<String, Object>();
             for (int i = 0; i < languageData.length; i++) {
                 p.put("name", languageData[i][0]);
                 p.put("isoCode", languageData[i][1]);
