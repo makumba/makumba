@@ -248,7 +248,7 @@ public class table extends TestCase {
         p.put("comment", comment);
         
         p.put("indiv.name", "john");
-        p.put("indiv.surname", "doe");
+        p.put("indiv.surname", "doe_1");
         p.put("extraData.something", "else");
 
         fptr = db.insert("test.Person", p);
@@ -269,7 +269,7 @@ public class table extends TestCase {
         p.put("comment", comment);
         p.put("brother", fptr);
         p.put("indiv.name", "john");
-        p.put("indiv.surname", "doe");
+        p.put("indiv.surname", "doe_2");
         p.put("extraData.something", "else");
 
         fptr1 = db.insert("test.Person", p);
