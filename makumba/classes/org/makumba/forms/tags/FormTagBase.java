@@ -418,7 +418,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         try {
             responder.setHttpRequest((HttpServletRequest) pageContext.getRequest());
         } catch (LogicException e) {
-           // treatException(e);
+           treatException(e);
         }
 
         return EVAL_BODY_BUFFERED;
