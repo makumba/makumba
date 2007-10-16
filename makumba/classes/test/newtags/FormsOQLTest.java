@@ -6,8 +6,6 @@ package test.newtags;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,17 +15,15 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
-import org.makumba.Transaction;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
@@ -58,9 +54,8 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 	static Vector v;
 	static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 	private String output;
-	private String line;
 
-	static ArrayList languages = new ArrayList();
+	static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 	static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
 			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
 
@@ -106,7 +101,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
 			p.put("uniqInt", new Integer(255));				
 			
-			Vector intSet = new Vector();
+			Vector<Integer> intSet = new Vector<Integer>();
 			intSet.addElement(new Integer(1));
 			intSet.addElement(new Integer(0));
 			p.put("intSet", intSet);
@@ -132,7 +127,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
 		protected void insertLanguages(Transaction db) {
 			languages.clear();
-			Dictionary p = new Hashtable();
+			Dictionary<String, Object> p = new Hashtable<String, Object>();
 			for (int i = 0; i < languageData.length; i++) {
 				p.put("name", languageData[i][0]);
 				p.put("isoCode", languageData[i][1]);
