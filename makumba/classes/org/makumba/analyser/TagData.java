@@ -31,6 +31,10 @@ public class TagData {
     public SyntaxPoint getStart() {
         return start;
     }
+    
+    public Object getTagObject() {
+        return tagObject;
+    }
 
     public SyntaxPoint getEnd() {
         return end;

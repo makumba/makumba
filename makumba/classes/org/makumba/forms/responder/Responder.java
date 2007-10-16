@@ -25,6 +25,7 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -152,6 +153,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
+    
+    /** order of the forms in the page **/
+    protected List formOrder;
 
     public String getHandler() {
         return handler;
@@ -187,6 +191,11 @@ public abstract class Responder implements java.io.Serializable {
 
     public String getFormName() {
         return formName;
+    }
+    
+
+    public List getFormOrder() {
+        return formOrder;
     }
 
     // --------------- form time, responder preparation -------------------
@@ -270,6 +279,11 @@ public abstract class Responder implements java.io.Serializable {
     public void setFormName(String formName) {
         this.formName = formName;
     }
+    
+    public void setFormOrder(List formOrder) {
+        this.formOrder = formOrder;
+    }
+
 
     abstract protected void postDeserializaton();
 
