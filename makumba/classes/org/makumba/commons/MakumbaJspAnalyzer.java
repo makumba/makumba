@@ -26,7 +26,6 @@ package org.makumba.commons;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,29 +39,31 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 
 /**
- * This class analyzes a JSP taking into account the specifics of Makumba tags.
- * 
+ * This class analyzes a JSP taking into account the specifics of Makumba tags. When implementing a new Makumba tag, be
+ * sure to add it to on of {@link #listTags}, {@link #oldFormTags} or {@link #formTags}. TODO maybe extract some
+ * commonly used methods and add them to a generic analyser
+ * <p>
  * TODO maybe extract some commonly used methods and add them to a generic analyser
+ * </p>
  * 
  * @author Cristian Bogdan
  * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
-    static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list",
-            "org.makumba.list.tags.QueryTag", "object", "org.makumba.list.tags.ObjectTag",
-            "if", "org.makumba.list.tags.IfTag" };
-    static String[] oldFormTags = {"form", "org.makumba.forms.tags.FormTagBase",
-        "newForm", "org.makumba.forms.tags.NewTag", "addForm",
-        "org.makumba.forms.tags.AddTag", "editForm", "org.makumba.forms.tags.EditTag", "deleteLink",
-        "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
-        "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
-        "org.makumba.forms.tags.OptionTag"};
-    static String[] formTags = { "form", "org.makumba.forms.tags.FormTagBase",
-        "new", "org.makumba.forms.tags.NewTag", "add", "org.makumba.forms.tags.AddTag", "edit",
-        "org.makumba.forms.tags.EditTag", "deleteLink",
-        "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
-        "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
-        "org.makumba.forms.tags.OptionTag"};
+    static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
+            "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag" };
+
+    static String[] oldFormTags = { "form", "org.makumba.forms.tags.FormTagBase", "newForm",
+            "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",
+            "org.makumba.forms.tags.EditTag", "deleteLink", "org.makumba.forms.tags.DeleteTag", "delete",
+            "org.makumba.forms.tags.DeleteTag", "input", "org.makumba.forms.tags.InputTag", "action",
+            "org.makumba.forms.tags.ActionTag", "option", "org.makumba.forms.tags.OptionTag" };
+
+    static String[] formTags = { "form", "org.makumba.forms.tags.FormTagBase", "new", "org.makumba.forms.tags.NewTag",
+            "add", "org.makumba.forms.tags.AddTag", "edit", "org.makumba.forms.tags.EditTag", "deleteLink",
+            "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
+            "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
+            "org.makumba.forms.tags.OptionTag" };
 
     static final Map<String, Class> tagClasses = new HashMap<String, Class>();
 
@@ -89,9 +90,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 t.printStackTrace();
             }
     }
-    
+
     public static final String TAG_CACHE = "org.makumba.tags";
-    
+
     /**
      * Class used to store the status of the parser
      * 
@@ -99,12 +100,12 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      */
     class ParseStatus {
 
-        String makumbaPrefix = new String("dummy_prefix"); //for old makumba and list
-        
+        String makumbaPrefix = new String("dummy_prefix"); // for old makumba and list
+
         String formPrefix = new String("dummy_prefix"); // for makumba forms
 
         String makumbaURI; // for old makumba and list
-        
+
         String formMakumbaURI; // for makumba forms
 
         List<AnalysableTag> tags = new ArrayList<AnalysableTag>();
@@ -134,18 +135,17 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 if (sameKey != null) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("Due to limitations of the JSP standard, Makumba cannot make\n").append(
-                            "a difference between the following two tags: \n");
+                        "a difference between the following two tags: \n");
                     sameKey.addTagText(sb);
                     sb.append("\n");
                     t.addTagText(sb);
-                    sb
-                            .append("\nTo address this, add an id= attribute to one of the tags, and make sure that id is unique within the page.");
+                    sb.append("\nTo address this, add an id= attribute to one of the tags, and make sure that id is unique within the page.");
                     throw new ProgrammerError(sb.toString());
                 }
                 pageCache.cache(TAG_CACHE, t.getTagKey(), t);
             }
             pageCache.cache(TagData.TAG_DATA_CACHE, t.getTagKey(), td);
-            
+
             t.doStartAnalyze(pageCache);
             tags.add(t);
         }
@@ -182,10 +182,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 JspParseData.tagDataLine(td, sb);
                 throw new org.makumba.ProgrammerError(sb.toString());
             }
-            
-            if(tagName.startsWith(makumbaPrefix)) {
+
+            if (tagName.startsWith(makumbaPrefix)) {
                 tagName = tagName.substring(makumbaPrefix.length() + 1);
-            } else if(tagName.startsWith(formPrefix)) {
+            } else if (tagName.startsWith(formPrefix)) {
                 tagName = tagName.substring(formPrefix.length() + 1);
             }
 
@@ -238,9 +238,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     }
 
     /**
-     * Performs analysis for a system tag
-     * 
-     * FIXME this should be thought of much more
+     * Performs analysis for a system tag FIXME this should be thought of much more
      * 
      * @param td
      *            the TagData holding the information
@@ -248,18 +246,18 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      *            the status of the parsing
      */
     public void systemTag(TagData td, Object status) {
-        
+
         // JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
         if (td.name.equals("taglib")) {
-            
+
             // we check if this is a Makumba taglib declaration
-            if (td.attributes.get("uri") != null && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
+            if (td.attributes.get("uri") != null
+                    && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
                 String prefix = (String) td.attributes.get("prefix");
                 String URI = (String) td.attributes.get("uri");
 
                 // if this is an old makumba system-tag or a OQL list
-                if (URI.equals("http://www.makumba.org/presentation")
-                        || URI.equals("http://www.makumba.org/list")) {
+                if (URI.equals("http://www.makumba.org/presentation") || URI.equals("http://www.makumba.org/list")) {
                     ((ParseStatus) status).makumbaPrefix = prefix;
                     ((ParseStatus) status).makumbaURI = URI;
                     ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
@@ -278,16 +276,17 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 } else if (URI.equals("http://www.makumba.org/forms")) {
                     ((ParseStatus) status).formPrefix = prefix;
                     ((ParseStatus) status).formMakumbaURI = URI;
-                    
+
                     // FIXME: here we actually shouldn't store a query language because that's the list's business
                     // however if there's a page that doesn't use lists but only forms, we have to do it because
                     // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
-                    
-                    if(((ParseStatus) status).pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE) == null) {
+
+                    if (((ParseStatus) status).pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE,
+                        MakumbaJspAnalyzer.QUERY_LANGUAGE) == null) {
                         ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
                             MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
                     }
-                    
+
                 }
             }
         }
@@ -307,12 +306,12 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix))
             return;
         String tagName = "";
-        if(td.name.startsWith(makumbaPrefix)) {
+        if (td.name.startsWith(makumbaPrefix)) {
             tagName = td.name.substring(makumbaPrefix.length());
-        } else if(td.name.startsWith(formsPrefix)) {
+        } else if (td.name.startsWith(formsPrefix)) {
             tagName = td.name.substring(formsPrefix.length());
         }
-        
+
         Class c = (Class) tagClasses.get(tagName);
         if (c == null)
             return;
