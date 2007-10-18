@@ -39,8 +39,10 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.OQLParseError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -74,6 +76,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     // Vector templateArgumentNames;
 
     Vector<String> fieldOrder = new Vector<String>();
+
+    Hashtable<String, QueryFragmentFunction> functionNames = new Hashtable<String, QueryFragmentFunction>();
 
     String title;
 
@@ -319,6 +323,17 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         if (n < 0 || n >= fieldOrder.size())
             return null;
         return getFieldDefinition((String) fieldOrder.elementAt(n));
+    }
+
+    public QueryFragmentFunction getFunction(String name) {
+        if (functionNames.get(name) == null) {
+            throw new OQLParseError("Function '" + name + "' does not exist in type '" + name + "'!");
+        }
+        return functionNames.get(name);
+    }
+
+    public void addFunction(String name, QueryFragmentFunction function) {
+        functionNames.put(name, function);
     }
 
     /** returns the path-like abstract-level name of this record info */
