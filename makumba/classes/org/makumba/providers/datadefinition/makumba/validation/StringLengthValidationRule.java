@@ -19,10 +19,6 @@ public class StringLengthValidationRule extends RangeValidationRule {
 
     private static final String operator = "length";
 
-//    private static final String rule = compileRule(operator, RegExpUtils.minOneLineWhitespace + rangeDef);
-//
-//    private static final Pattern pattern = Pattern.compile(getAcceptedRules());
-
     private static final long serialVersionUID = 1L;
 
     public static String getOperator() {
