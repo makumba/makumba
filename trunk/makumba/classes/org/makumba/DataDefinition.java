@@ -27,6 +27,7 @@ package org.makumba;
 
 import java.io.Serializable;
 import java.util.Dictionary;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.commons.StringUtils;
@@ -104,13 +105,61 @@ public interface DataDefinition {
     /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
     public Vector getReferenceFields();
 
+    public QueryFragmentFunction getFunction(String name);
+
+    public void addFunction(String name, QueryFragmentFunction function);
+
+    class QueryFragmentFunction implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private String name;
+
+        private String queryFragment;
+
+        private DataDefinition parameters;
+
+        public QueryFragmentFunction(String name, String queryFragment, DataDefinition parameters) {
+            super();
+            this.name = name;
+            this.queryFragment = queryFragment;
+            this.parameters = parameters;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public DataDefinition getParameters() {
+            return parameters;
+        }
+
+        public String getQueryFragment() {
+            return queryFragment;
+        }
+
+        @Override
+        public String toString() {
+            String s = "";
+            Vector fieldNames = getParameters().getFieldNames();
+            for (Iterator iter = fieldNames.iterator(); iter.hasNext();) {
+                String name = (String) iter.next();
+                s += getParameters().getFieldDefinition(name).getType() + " " + name;
+                if (iter.hasNext()) {
+                    s += ", ";
+                }
+            }
+            s += "";
+            return "QueryFragment Function: " + getName() + "(" + s + ")" + " = " + queryFragment;
+        }
+    }
+
     /** Data structure holding the definition of a mult-field unique key. */
     class MultipleUniqueKeyDefinition implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        String[] fields;
+        private String[] fields;
 
-        String line;
+        private String line;
 
         /** indicates whether this key spans over subfields (internal or external sets, or pointer). */
         private boolean keyOverSubfield = false;
