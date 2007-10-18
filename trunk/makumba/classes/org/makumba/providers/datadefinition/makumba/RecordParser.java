@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
-import org.makumba.commons.ClassResource;
 import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
@@ -57,10 +55,9 @@ import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationR
 import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 public class RecordParser {
-    public static final String FILE_EXTENSION_VALIDATION = ".vd";
-
     public static final String VALIDATION_INDICATOR = "%";
 
+    // regular expressions for multi-field unique keys //
     public static final String multiUniqueRegExpElement = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces;
 
@@ -72,12 +69,28 @@ public class RecordParser {
 
     public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
 
+    // regular expressions for validation definitions //
     public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
             + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)" + RegExpUtils.LineWhitespaces
             + ":" + RegExpUtils.LineWhitespaces + ".+";
 
     public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
+
+    // regular expressions for function definitions //
+    public static final String funcDefParamTypeRegExp = "(char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
+
+    public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
+            + "(\\d+|" + RegExpUtils.fieldName + ")";
+
+    public static final String funcDefParamRepeatRegExp = "\\((?:" + "(?:" + funcDefParamRegExp + ")" + "(?:"
+            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
+            + RegExpUtils.LineWhitespaces + ")?\\)";
+
+    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + ")" + funcDefParamRepeatRegExp
+            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)";
+
+    public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
 
     OrderedProperties text;
 
@@ -298,19 +311,6 @@ public class RecordParser {
         return u;
     }
 
-    /** Find the URL to the validation definition with the given name. */
-    static public java.net.URL findValidationDefinition(String s) {
-        String definitionFileName = s.replace('.', '/') + FILE_EXTENSION_VALIDATION;
-        URL url = ClassResource.get(definitionFileName);
-        if (url == null) {
-            url = ClassResource.get("dataDefinitions/" + definitionFileName);
-            if (url == null) {
-                url = ClassResource.get("validationDefinitions/" + definitionFileName);
-            }
-        }
-        return url;
-    }
-
     void solveIncludes() {
         int line = 0;
         OrderedProperties inclText;
@@ -492,10 +492,32 @@ public class RecordParser {
                 continue;
 
             // check if the line is a validation definition
-            Matcher validationMatcher = validationDefinitionPattern.matcher(st);
-            if (validationMatcher.matches()) {
+            Matcher matcher = validationDefinitionPattern.matcher(st);
+            if (matcher.matches()) {
                 // we parse them later
                 unparsedValidationDefinitions.add(st);
+                continue;
+            }
+
+            // check if the line is a function definition
+            matcher = funcDefPattern.matcher(st);
+            if (matcher.matches()) {
+                String name = matcher.group(1);
+                String queryFragment = matcher.group(matcher.groupCount());
+                DataDefinition params = new RecordInfo(dd.getName() + "." + matcher.group(0));
+                for (int i = 2; i < matcher.groupCount(); i += 2) {
+                    String type = matcher.group(i);
+                    if (type != null) {
+                        if (type.equals("char[]")) {
+                            type = ("char[255]");
+                        }
+                        params.addField(new FieldInfo(matcher.group(i + 1), type));
+                    }
+                }
+                DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
+                        queryFragment, params);
+                dd.addFunction(name, function);
+                System.out.println("added " + function);
                 continue;
             }
 
@@ -1087,8 +1109,11 @@ public class RecordParser {
     }
 
     public static void main(String[] args) {
-        RegExpUtils.evaluate(RecordParser.multiUniquePattern, new String[] { "!unique(abc)", "!unique(abc,def)",
-                "!unique( abc )", "!unique(abc , def )" });
+        // test some function definition
+        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() = abc",
+                " someFunc(char[] a, int 5) =abc", "someFunction(int a, char[] b) = yeah" });
+
+        // test some mdd reading
         RecordInfo.getRecordInfo("test.Person");
     }
 
