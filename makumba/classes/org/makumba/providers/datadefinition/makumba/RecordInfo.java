@@ -39,10 +39,8 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.OQLParseError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -326,9 +324,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     public QueryFragmentFunction getFunction(String name) {
-        if (functionNames.get(name) == null) {
-            throw new OQLParseError("Function '" + name + "' does not exist in type '" + name + "'!");
-        }
         return functionNames.get(name);
     }
 
