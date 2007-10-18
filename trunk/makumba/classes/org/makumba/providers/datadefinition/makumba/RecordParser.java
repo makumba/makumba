@@ -452,17 +452,6 @@ public class RecordParser {
         return p.getOriginal(k) + "=" + p.getProperty(k);
     }
 
-    static String listArguments(Vector v) {
-        StringBuffer sb = new StringBuffer();
-        if (v != null && v.size() > 0) {
-            sb.append('(').append(v.elementAt(0));
-            for (int i = 1; i < v.size(); i++)
-                sb.append(", ").append(v.elementAt(i));
-            sb.append(')');
-        }
-        return sb.toString();
-    }
-
     DataDefinitionParseError fail(String why, String where) {
         return new DataDefinitionParseError(dd.getName(), why, where, where.length());
     }
@@ -487,22 +476,31 @@ public class RecordParser {
                 break;
 
             String st = s.trim();
-            int l = s.indexOf('=');
             if (st.length() == 0 || st.charAt(0) == '#')
                 continue;
 
+            String lineWithoutComment = null;
+            if (st.indexOf(";") == -1) {
+                lineWithoutComment = st;
+            } else {
+                lineWithoutComment = st.substring(0, st.indexOf(";"));
+            }
+
             // check if the line is a validation definition
-            Matcher matcher = validationDefinitionPattern.matcher(st);
+            Matcher matcher = validationDefinitionPattern.matcher(lineWithoutComment);
             if (matcher.matches()) {
                 // we parse them later
-                unparsedValidationDefinitions.add(st);
+                unparsedValidationDefinitions.add(lineWithoutComment);
                 continue;
             }
 
             // check if the line is a function definition
-            matcher = funcDefPattern.matcher(st);
+            matcher = funcDefPattern.matcher(lineWithoutComment);
             if (matcher.matches()) {
                 String name = matcher.group(1);
+                if (dd.getFunction(name) != null) {
+                    mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, st));
+                }
                 String queryFragment = matcher.group(matcher.groupCount());
                 DataDefinition params = new RecordInfo(dd.getName() + "." + matcher.group(0));
                 for (int i = 2; i < matcher.groupCount(); i += 2) {
@@ -521,6 +519,7 @@ public class RecordParser {
                 continue;
             }
 
+            int l = s.indexOf('=');
             if (l == -1) {
                 mpe.add(fail("non-empty, non-comment line without =", s));
                 continue;
