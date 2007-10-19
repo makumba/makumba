@@ -139,7 +139,7 @@ public class ReferenceChecker extends HttpServlet {
     private void printAllBrokenRefs(String contextPath, PrintWriter w) throws IOException {
         String title = "Broken references in " + MakumbaSystem.getDefaultDatabaseName();
         DevelUtils.writeTitleAndHeaderEnd(w, title);
-        DevelUtils.printPageHeader(w, title, null, null);
+        DevelUtils.printPageHeader(w, title);
         writeHeader(w);
         Vector mdds = MakumbaSystem.mddsInDirectory("dataDefinitions");
         Vector clean = (Vector) mdds.clone();
@@ -218,7 +218,7 @@ public class ReferenceChecker extends HttpServlet {
 
         String title = "Broken references in " + dd.getName() + "#" + fd.getName();
         DevelUtils.writeTitleAndHeaderEnd(w, title);
-        DevelUtils.printPageHeader(w, title, null, null);
+        DevelUtils.printPageHeader(w, title);
         writeHeader(w);
         w.println("<h3>Type: " + dd.getName() + "</h3>");
 

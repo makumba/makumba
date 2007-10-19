@@ -30,6 +30,7 @@ public class DevelUtils {
         w.println();
 
     }
+
     public static void writeViewerStyles(PrintWriter w) {
         w.println("<style type=\"text/css\">");
         w.println("  .mddSubFieldSeparator {color:red; }");
@@ -72,8 +73,12 @@ public class DevelUtils {
         return result;
     }
 
-    public static void printPageHeader(PrintWriter writer, String title, String virtualPath, String realPath)
-            throws IOException {
+    public static void printPageHeader(PrintWriter writer, String title) throws IOException {
+        printPageHeader(writer, title, null, null, null);
+    }
+
+    public static void printPageHeader(PrintWriter writer, String title, String virtualPath, String realPath,
+            String repositoryLink) throws IOException {
         writer.println("<body bgcolor=white>");
         writer.println("<table width=\"100%\" bgcolor=\"lightblue\">");
         writer.println("<tr>");
@@ -85,6 +90,7 @@ public class DevelUtils {
             writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
                     + "</font></a></font>");
         }
+        writer.println(repositoryLink);
         if (realPath != null) {
             writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
         }

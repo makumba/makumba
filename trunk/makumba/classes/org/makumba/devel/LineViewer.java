@@ -106,6 +106,10 @@ public abstract class LineViewer implements SourceViewer {
 
     protected Error caughtError;
 
+    private String versionControlRepositoryURL;
+
+    private String versionControlRepositoryLinkText = "CVS";
+
     protected void addImportedPackages(HashSet<String> newPackages) {
         newPackages.addAll(Arrays.asList(importedPackages));
         importedPackages = newPackages.toArray(new String[newPackages.size()]);
@@ -140,6 +144,16 @@ public abstract class LineViewer implements SourceViewer {
         this.request = request;
         this.servlet = servlet;
         this.printLineNumbers = printLineNumbers;
+        versionControlRepositoryURL = servlet.getServletConfig().getInitParameter(
+            SourceViewServlet.PARAM_REPOSITORY_URL);
+        if (!versionControlRepositoryURL.endsWith("/")) {
+            versionControlRepositoryURL += "/";
+        }
+        if (servlet.getServletConfig().getInitParameter(SourceViewServlet.PARAM_REPOSITORY_LINK_TEXT) != null) {
+            versionControlRepositoryLinkText = servlet.getServletConfig().getInitParameter(
+                SourceViewServlet.PARAM_REPOSITORY_LINK_TEXT);
+        }
+
         servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
         hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null
@@ -215,7 +229,7 @@ public abstract class LineViewer implements SourceViewer {
         else if (title == null || title != null && title.equals(""))
             title = "";
         DevelUtils.writeTitleAndHeaderEnd(writer, title);
-        DevelUtils.printPageHeader(writer, title, virtualPath, realPath);
+        DevelUtils.printPageHeader(writer, title, virtualPath, realPath, printVersionControlLink());
         printPageBeginAdditional(writer);
 
         if (printLineNumbers) {
@@ -267,6 +281,33 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     protected void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
+    }
+
+    /** Prints a link to the page CVS/SVN for the file currently viewed. */
+    protected String printVersionControlLink() {
+        if (versionControlRepositoryURL != null) {
+            String path = virtualPath;
+            if (this instanceof javaViewer) {
+                path = "WEB-INF/classes/" + replaceDots(path) + ".java";
+            } else if (this instanceof mddViewer) {
+                String additionalPath = "WEB-INF/classes/";
+                if (realPath.contains("classes/dataDefinitions")) {
+                    additionalPath += "dataDefinitions/";
+                }
+                path = additionalPath + replaceDots(path) + ".mdd";
+            }
+            return " (<a title=\"See this file in the version control repository\" href=\""
+                    + versionControlRepositoryURL + path + "\">" + versionControlRepositoryLinkText + "</a>)";
+        } else {
+            return "";
+        }
+    }
+
+    private String replaceDots(String path) {
+        while (path.indexOf('.') != -1 && path.indexOf('.') < path.lastIndexOf('.')) {
+            path = path.replace('.', '/');
+        }
+        return path;
     }
 
     protected void writeAdditionalLinks(PrintWriter writer) {
@@ -603,7 +644,10 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     public static void main(String[] args) {
+        testLinkDetection();
+    }
 
+    private static void testLinkDetection() {
         String p1 = "http://www.makumba.org/presentation";
         String p2 = "mak:object from=\"general.survey.Survey survey\" where=\"survey=$survey\">";
         String p3 = "/layout/header.jsp?title=Statistics for ";
@@ -621,6 +665,6 @@ public abstract class LineViewer implements SourceViewer {
             }
             System.out.println();
         }
-
     }
+
 }
