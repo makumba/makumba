@@ -46,10 +46,11 @@ import javax.servlet.http.HttpServletResponse;
  * that the Java and JSP syntax colouring (and maybe Java linking) can be outsourced.
  */
 public class SourceViewServlet extends HttpServlet {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
+
+    public static final String PARAM_REPOSITORY_URL = "repositoryURL";
+
+    public static final String PARAM_REPOSITORY_LINK_TEXT = "repositoryLinkText";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter w = res.getWriter();
@@ -73,8 +74,7 @@ public class SourceViewServlet extends HttpServlet {
             res.sendError(404, e.toString());
             return;
         }
-        if (sw != null) // we have a known handler
-        {
+        if (sw != null) {// we have a known handler
             File dir = sw.getDirectory();
             if (dir == null) {
                 res.setContentType("text/html");
@@ -84,13 +84,12 @@ public class SourceViewServlet extends HttpServlet {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else // try to handle anyway
-            {
+            } else {// try to handle anyway
                 if (redirected(req, res, servletPath)) {
                     return;
                 }
-                if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) { // redirect browsing of
-                                                                                            // directories to mdd Viewer
+                if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) { 
+                    // redirect browsing of directories to mdd Viewer
                     res.sendRedirect(req.getContextPath() + "/dataDefinitions" + req.getPathInfo());
                     return;
                 }
