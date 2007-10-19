@@ -40,6 +40,15 @@
   <servlet>
     <servlet-name>mddLinker</servlet-name>
     <servlet-class>org.makumba.devel.SourceViewServlet</servlet-class>
+    <!-- generate links to SVN repository -->
+    <init-param>
+      <param-name>repositoryURL</param-name>
+      <param-value>http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/examples/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>repositoryLinkText</param-name>
+      <param-value>SVN</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
