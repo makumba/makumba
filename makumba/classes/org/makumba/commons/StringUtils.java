@@ -37,7 +37,15 @@ public class StringUtils {
         return toString(array, true);
     }
 
+    public static String toString(Object[] array, String delimeter) {
+        return toString(array, true, delimeter);
+    }
+
     public static String toString(Object[] array, boolean frame) {
+        return toString(array, frame, ", ");
+    }
+
+    public static String toString(Object[] array, boolean frame, String delimeter) {
         StringBuffer b = new StringBuffer();
         if (frame) {
             b.append('[');
@@ -45,7 +53,7 @@ public class StringUtils {
         for (int i = 0; i < array.length; i++) {
             b.append(array[i]);
             if (i < (array.length - 1)) {
-                b.append(", ");
+                b.append(delimeter);
             }
         }
         if (frame) {
@@ -92,6 +100,18 @@ public class StringUtils {
         }
         for (int i = 0; i < options.length; i++) {
             if (s.equals(options[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean startsWith(String s, String[] options) {
+        if (s == null) {
+            return false;
+        }
+        for (int i = 0; i < options.length; i++) {
+            if (s.startsWith(options[i])) {
                 return true;
             }
         }
