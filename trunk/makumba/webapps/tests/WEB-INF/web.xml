@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	      xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-	      version="2.4">
-	      
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+
   <filter>
     <filter-name>makumba_controller</filter-name>
     <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
@@ -48,6 +46,15 @@
   <servlet>
     <servlet-name>mddLinker</servlet-name>
     <servlet-class>org.makumba.devel.SourceViewServlet</servlet-class>
+    <!-- generate links to SVN repository -->
+    <init-param>
+      <param-name>repositoryURL</param-name>
+      <param-value>http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/tests/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>repositoryLinkText</param-name>
+      <param-value>SVN</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
@@ -79,13 +86,13 @@
     <servlet-name>mddLinker</servlet-name>
     <url-pattern>/codeGenerator/*</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>mddLinker</servlet-name>
     <url-pattern>/validationDefinitions/*</url-pattern>
   </servlet-mapping>
-  
-  
+
+
 
   <servlet>
     <servlet-name>dataViewer</servlet-name>
@@ -132,7 +139,7 @@
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>
-	
+
   <servlet-mapping>
     <servlet-name>invoker</servlet-name>
     <url-pattern>/servlet/*</url-pattern>
@@ -143,32 +150,28 @@
     <servlet-class>org.makumba.devel.CodeGenerator</servlet-class>
   </servlet>
 
-   <taglib>
-  	<taglib-uri>http://www.makumba.org/presentation</taglib-uri>
-  	<taglib-location>
-  		../../../classes/META-INF/taglib.tld
-  	</taglib-location>
+  <taglib>
+    <taglib-uri>http://www.makumba.org/presentation</taglib-uri>
+    <taglib-location>../../../classes/META-INF/taglib.tld</taglib-location>
   </taglib>
 
   <taglib>
-  	<taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
-  	<taglib-location>
-  		../../../classes/META-INF/taglib-hibernate.tld
-  	</taglib-location>
+    <taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
+    <taglib-location>../../../classes/META-INF/taglib-hibernate.tld</taglib-location>
   </taglib>
 
   <servlet>
-      <servlet-name>JspRedirector</servlet-name>
-      <jsp-file>/JspRedirector.jsp</jsp-file>
-      <init-param>
-        <param-name>param1</param-name>
-        <param-value>value1 used for testing</param-value>
-      </init-param>
+    <servlet-name>JspRedirector</servlet-name>
+    <jsp-file>/JspRedirector.jsp</jsp-file>
+    <init-param>
+      <param-name>param1</param-name>
+      <param-value>value1 used for testing</param-value>
+    </init-param>
   </servlet>
 
-	<servlet-mapping>
-	    <servlet-name>JspRedirector</servlet-name>
-	    <url-pattern>/JspRedirector</url-pattern>
-	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JspRedirector</servlet-name>
+    <url-pattern>/JspRedirector</url-pattern>
+  </servlet-mapping>
 
 </web-app>
