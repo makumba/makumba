@@ -118,11 +118,18 @@ public interface DataDefinition {
 
         private DataDefinition parameters;
 
-        public QueryFragmentFunction(String name, String queryFragment, DataDefinition parameters) {
+        private String errorMessage;
+
+        public QueryFragmentFunction(String name, String queryFragment, DataDefinition parameters, String errorMessage) {
             super();
             this.name = name;
             this.queryFragment = queryFragment;
             this.parameters = parameters;
+            if (errorMessage != null) {
+                this.errorMessage = errorMessage;
+            } else {
+                this.errorMessage = "";
+            }
         }
 
         public String getName() {
@@ -137,6 +144,10 @@ public interface DataDefinition {
             return queryFragment;
         }
 
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
         @Override
         public String toString() {
             String s = "";
@@ -149,8 +160,9 @@ public interface DataDefinition {
                 }
             }
             s += "";
-            return "QueryFragment Function: " + getName() + "(" + s + ")" + " = " + queryFragment;
+            return "QueryFragment Function: " + getName() + "(" + s + ")" + " = " + queryFragment + ":" + errorMessage;
         }
+
     }
 
     /** Data structure holding the definition of a mult-field unique key. */
