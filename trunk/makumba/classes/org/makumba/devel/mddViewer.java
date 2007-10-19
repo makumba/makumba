@@ -229,7 +229,7 @@ public class mddViewer extends LineViewer {
 
     @Override
     protected void writeAdditionalLinks(PrintWriter w) {
-        if (dd.getValidationDefinition().hasValidationRules()) {
+        if (dd != null && dd.getValidationDefinition() != null && dd.getValidationDefinition().hasValidationRules()) {
             w.println("<a href=\"javascript:toggleValidtionRuleDisplay();\">Hide validation rules</a>");
         }
     }
