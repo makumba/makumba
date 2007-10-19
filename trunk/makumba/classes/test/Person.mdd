@@ -83,3 +83,5 @@ lowerName%compare = lower(indiv.name) != indiv.name : Your name can't be all low
 unique12%unique = age, email : these need to be unique!
 unique13%unique = indiv.name, indiv.surname : these too!
 
+someFunction(char[] b) = count(address) > 0 : You need to specify an address ; some sample function definition
+someOtherFunction(int age, char[] b) = this.age > age : You are too young!

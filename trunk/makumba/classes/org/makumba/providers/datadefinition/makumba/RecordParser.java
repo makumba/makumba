@@ -78,17 +78,29 @@ public class RecordParser {
     public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
 
     // regular expressions for function definitions //
+    /**
+     * defines all possible types. <br>
+     * FIXME: maybe this shall be move to {@link FieldDefinition}?
+     */
     public static final String funcDefParamTypeRegExp = "(char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
 
+    /** defines "int a" or "int 5". */
     public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
             + "(\\d+|" + RegExpUtils.fieldName + ")";
 
+    /** treats (int a, char b, ...) */
     public static final String funcDefParamRepeatRegExp = "\\((?:" + "(?:" + funcDefParamRegExp + ")" + "(?:"
             + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
             + RegExpUtils.LineWhitespaces + ")?\\)";
 
+    /**
+     * treats function(params) = queryFragment : errorMessage.<br>
+     * FIXME: this regexp always produces at least 4 groups for the parameters, which get the value of null if there are
+     * no params --> would be good to remove this.
+     */
     public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + ")" + funcDefParamRepeatRegExp
-            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)";
+            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.[^:]+)"
+            + RegExpUtils.LineWhitespaces + "(?::" + RegExpUtils.LineWhitespaces + "(.*))?";
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
 
@@ -501,19 +513,22 @@ public class RecordParser {
                 if (dd.getFunction(name) != null) {
                     mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, st));
                 }
-                String queryFragment = matcher.group(matcher.groupCount());
+                String queryFragment = matcher.group(matcher.groupCount() - 1);
+                String errorMessage = matcher.group(matcher.groupCount());
                 DataDefinition params = new RecordInfo(dd.getName() + "." + matcher.group(0));
-                for (int i = 2; i < matcher.groupCount(); i += 2) {
+                for (int i = 2; i < matcher.groupCount() - 2; i += 2) {
                     String type = matcher.group(i);
+                    // if we provide < 2 params, we still get 2 * 2 empty groups matched ==> need to check tht here
+                    // see the comment in the field init.
                     if (type != null) {
-                        if (type.equals("char[]")) {
+                        if (type.equals("char[]")) { // we substitute char[] with the max char length
                             type = ("char[255]");
                         }
                         params.addField(new FieldInfo(matcher.group(i + 1), type));
                     }
                 }
                 DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                        queryFragment, params);
+                        queryFragment, params, errorMessage);
                 dd.addFunction(name, function);
                 System.out.println("added " + function);
                 continue;
@@ -1109,8 +1124,9 @@ public class RecordParser {
 
     public static void main(String[] args) {
         // test some function definition
-        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() = abc",
-                " someFunc(char[] a, int 5) =abc", "someFunction(int a, char[] b) = yeah" });
+        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() = abc : errorMessage",
+                " someFunc(char[] a, int 5) =abc:errorMessages", "someFunction(int a, char[] b) = yeah:errorMessage3",
+                "someOtherFunction(int age, char[] b) = this.age > age : You are too young!" });
 
         // test some mdd reading
         RecordInfo.getRecordInfo("test.Person");
