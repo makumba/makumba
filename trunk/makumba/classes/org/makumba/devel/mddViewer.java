@@ -141,6 +141,8 @@ public class mddViewer extends LineViewer {
         int current = 0;
         if (RecordParser.isValidationRule(s)) {
             return parseValidationLine(s);
+        } else if (RecordParser.isFunction(s)) {
+            return parseFunctionLine(s);
         }
         s = htmlEscape(s);
         while (current < s.length()) {
@@ -171,12 +173,31 @@ public class mddViewer extends LineViewer {
         return super.parseLine(result.toString() + closeLine);
     }
 
+    private String parseFunctionLine(String s) {
+        StringBuffer result = new StringBuffer();
+        result.append("<span name=\"mddFunction\" class=\"mddFunction\">");
+        int commentBegin = s.indexOf(";");
+        if (commentBegin == -1) {
+            commentBegin = s.length();
+        }
+        String name = htmlEscape(s.substring(0, s.indexOf("(")));
+        String params = htmlEscape(s.substring(s.indexOf("("), s.indexOf(")") + 1));
+        String definition = htmlEscape(s.substring(s.indexOf(")") + 1, s.indexOf(":")));
+        String message = htmlEscape(s.substring(s.indexOf(":"), commentBegin));
+        result.append("<span class=\"mddFunctionName\">" + name + "</span>");
+        result.append("<span class=\"mddFunctionParams\">" + params + "</span>");
+        result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");  
+        result.append("<span class=\"mddFunctionMessage\">" + message + "</span>");
+        if (s.indexOf(";") != -1) {
+            result.append("<span class=\"mddComment\">" + htmlEscape(s.substring(commentBegin)) + "</span>");
+        }
+        result.append("</span>");
+        return super.parseLine(result.toString());
+    }
+
     public String parseValidationLine(String s) {
         validationRuleCounter += 1;
         StringBuffer result = new StringBuffer();
-        if (s.trim().startsWith("#")) {
-            return "<span class=\"mddLineComment\">" + s.trim() + "</span>";
-        }
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
         String ruleName = s.trim();
@@ -231,6 +252,9 @@ public class mddViewer extends LineViewer {
     protected void writeAdditionalLinks(PrintWriter w) {
         if (dd != null && dd.getValidationDefinition() != null && dd.getValidationDefinition().hasValidationRules()) {
             w.println("<a href=\"javascript:toggleValidtionRuleDisplay();\">Hide validation rules</a>");
+        }
+        if (dd != null && dd.getFunctions().size() > 0) {
+            w.println("<a href=\"javascript:toggleFunctionDisplay();\">Hide functions</a>");
         }
     }
 
