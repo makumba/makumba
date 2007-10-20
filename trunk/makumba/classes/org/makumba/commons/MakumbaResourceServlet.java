@@ -35,6 +35,8 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static final String RESOURCE_PATH_JAVASCRIPT = "javaScript/";
 
+    public static final String RESOURCE_PATH_CSS = "css/";
+
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
