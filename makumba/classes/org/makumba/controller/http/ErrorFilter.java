@@ -1,7 +1,5 @@
 package org.makumba.controller.http;
 
-import java.io.CharArrayWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,11 +7,9 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
@@ -26,21 +22,16 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.devel.LineViewer;
 import org.makumba.devel.SourceViewer;
 import org.makumba.devel.errorViewer;
 import org.makumba.providers.TransactionProvider;
 
-
-
 /**
- * The filter that performs exception handling. Receives errors in any makumba page and treats them meant to be friendly 
- * developer, so he'll see helpful stuff during development and not stupid stakctraces (which are shown only in case of 
- * unknown exceptions) also indented for intercepting lack of authorization and show login pages.
- * 
- * Most of the code was copied from the TagExceptionServlet
- * 
- * FIXME the exception hierarchy needs to be reviewed.
+ * The filter that performs exception handling. Receives errors in any makumba page and treats them meant to be friendly
+ * developer, so he'll see helpful stuff during development and not stupid stakctraces (which are shown only in case of
+ * unknown exceptions) also indented for intercepting lack of authorization and show login pages. Most of the code was
+ * copied from the TagExceptionServlet.<br>
+ * FIXME the exception hierarchy needs to be reviewed.<br>
  * FIXME: this class should extend the Filter class (part of refactoring)
  * 
  * @author Cristian Bogdan
@@ -48,10 +39,9 @@ import org.makumba.providers.TransactionProvider;
  * @author Rudolf Mayer
  * @author Filip Kis
  * @version $Id: ControllerFilter.java 1785 2007-10-12 14:41:55Z manuel_gay $ *
- * 
  */
 
-public class ErrorFilter  {
+public class ErrorFilter {
 
     static Object errors[][] = { { org.makumba.OQLParseError.class, "query" },
             { org.makumba.DataDefinitionNotFoundError.class, "data definition not found" },
@@ -153,16 +143,16 @@ public class ErrorFilter  {
      * @param req
      *            the http request corresponding to the access
      */
- 
+
     public void logError(Throwable t, HttpServletRequest req) {
         TransactionProvider tp = new TransactionProvider(new Configuration());
         Transaction tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
-        
-        try {
-            Dictionary d = new Hashtable();
 
-            //TODO: read and store the soruce of the submited page
-            //d.put("page", "");
+        try {
+            Dictionary<String, Comparable> d = new Hashtable<String, Comparable>();
+
+            // TODO: read and store the soruce of the submited page
+            // d.put("page", "");
             if (t != null && t.getMessage() != null)
                 d.put("exception", t.getMessage());
             d.put("executionDate", new Date());
@@ -422,7 +412,7 @@ public class ErrorFilter  {
                 break;
             t = t1;
         }
-        
+
         logError(t, req);
 
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
