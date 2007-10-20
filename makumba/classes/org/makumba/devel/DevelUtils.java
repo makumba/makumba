@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.makumba.Pointer;
+import org.makumba.commons.MakumbaResourceServlet;
 
 /**
  * This class combines some methods to print pages used by various developer support tools in package org.makumba.devel.
@@ -20,27 +21,15 @@ public class DevelUtils {
                 + org.makumba.MakumbaSystem.getVersion() + "</font>");
     }
 
-    public static void writeStyles(PrintWriter w) {
-        w.println("<style type=\"text/css\">");
-        w.println("  th {color:navy; background-color:lightblue; font-weight: normal;}");
-        w.println("  td.columnHead {color:navy; background-color:lightblue;}");
-        w.println("  tr.odd {background-color: #CCFFFF; }");
-        w.println("  span.active {color:lightblue; background-color: darkblue; padding: 5px; }");
-        w.println("</style>");
-        w.println();
-
+    public static void writeStylesAndScripts(PrintWriter w, String contextPath) {
+        writeScripts(w, contextPath);
+        writeStyles(w, contextPath);
     }
 
-    public static void writeViewerStyles(PrintWriter w) {
-        w.println("<style type=\"text/css\">");
-        w.println("  .mddSubFieldSeparator {color:red; }");
-        w.println("  .mddComment {color:green; }");
-        w.println("  .mddValidationLine {background: Aquamarine; }");
-        w.println("  .mddLineComment {color:gray; }");
-        w.println("  .mddDateFunctionEvaluated {color: grey; font-style:italic; display:none; }");
-        w.println("  .mddDateFunction {color: navy; text-decoration:underline; }");
-        w.println("</style>");
-        w.println();
+    public static void writeStyles(PrintWriter w, String contextPath) {
+        w.println("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath + "/"
+                + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_CSS
+                + "makumbaDevelStyles.css\"/>");
     }
 
     public static void writeTitleAndHeaderEnd(PrintWriter w, String title) {
@@ -96,53 +85,10 @@ public class DevelUtils {
         }
     }
 
-    public static void writeScripts(PrintWriter w) {
-        w.println("<script language=\"javascript\">");
-        w.println("<!--");
-        w.println("  // toggles stack trace visibility on and off");
-        w.println("  function toggleStackTrace() {");
-        w.println("    if (document.getElementById('stackTrace').style.display == 'none') {");
-        w.println("      document.getElementById('stackTrace').style.display = \"block\";");
-        w.println("      document.getElementById('hideStackTrace').style.display = \"inline\";");
-        w.println("      document.getElementById('showStackTrace').style.display = \"none\";");
-        w.println("    } else {");
-        w.println("      document.getElementById('stackTrace').style.display = \"none\";");
-        w.println("      document.getElementById('hideStackTrace').style.display = \"none\";");
-        w.println("      document.getElementById('showStackTrace').style.display = \"inline\";");
-        w.println("    }");
-        w.println("  }");
-        w.println("  // toggles reference SQL details visibility on and off");
-        w.println("  function toggleSQLDisplay(element, link) {");
-        w.println("    if (element.style.display == \"none\") {");
-        w.println("      element.style.display = \"block\";");
-        w.println("      link.innerHTML=\"[-]\";");
-        w.println("    } else {");
-        w.println("      element.style.display = \"none\";");
-        w.println("      link.innerHTML=\"[+]\";");
-        w.println("    }");
-        w.println("  }");
-        w.println("  // toggles date function evaluation visibility on and off");
-        w.println("  function toggleDateFunctionDisplay(element) {");
-        w.println("    if (element.style.display == \"none\") {");
-        w.println("      element.style.display = \"inline\";");
-        w.println("    } else {");
-        w.println("      element.style.display = \"none\";");
-        w.println("    }");
-        w.println("  }");
-        w.println("  // toggles date function evaluation visibility on and off");
-        w.println("  function toggleValidtionRuleDisplay() {");
-        w.println("    var elements = document.getElementsByName('validationRule');");
-        w.println("    for (i=0; i<elements.length; i++) {");
-        w.println("      if (elements[i].style.display == \"none\") {");
-        w.println("        elements[i].style.display = \"inline\";");
-        w.println("      } else {");
-        w.println("        elements[i].style.display = \"none\";");
-        w.println("      }");
-        w.println("    }");
-        w.println("  }");
-        w.println("  // -->");
-        w.println("</script>");
-        w.println();
+    public static void writeScripts(PrintWriter w, String contextPath) {
+        w.println("<script type=\"text/javascript\" src=\"" + contextPath + "/"
+                + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT
+                + "makumbaDevelScripts.js\">" + "</script>\n");
     }
 
 }
