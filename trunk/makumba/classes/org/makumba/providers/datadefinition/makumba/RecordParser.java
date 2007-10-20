@@ -534,7 +534,6 @@ public class RecordParser {
                 DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
                         queryFragment, params, errorMessage);
                 dd.addFunction(name, function);
-                System.out.println("added " + function);
                 continue;
             }
 
