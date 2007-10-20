@@ -81,8 +81,7 @@ public class DataQueryServlet extends DataServlet {
 
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStyles(writer);
-        DevelUtils.writeScripts(writer);
+        DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "OQL Query Translater & executer");
 
         writePageContentHeader(null, writer, null, MODE_QUERY);

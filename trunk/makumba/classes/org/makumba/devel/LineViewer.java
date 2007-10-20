@@ -232,8 +232,7 @@ public abstract class LineViewer implements SourceViewer {
             title = "";
         if (printHeaderFooter) {
             DevelUtils.writePageBegin(writer);
-            DevelUtils.writeViewerStyles(writer);
-            DevelUtils.writeScripts(writer);
+            DevelUtils.writeStylesAndScripts(writer, contextPath);
             if (printLineNumbers && !hideLineNumbers) {
                 writer.println("<style type=\"text/css\">");
                 writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");

@@ -66,8 +66,7 @@ public class ReferenceChecker extends HttpServlet {
         resp.setContentType("text/html");
         PrintWriter w = resp.getWriter();
         DevelUtils.writePageBegin(w);
-        DevelUtils.writeStyles(w);
-        DevelUtils.writeScripts(w);
+        DevelUtils.writeStylesAndScripts(w, contextPath);
 
         String param = req.getParameter("mdd");
         if (param != null) { // check a specific MDD
