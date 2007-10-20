@@ -146,7 +146,7 @@ public abstract class LineViewer implements SourceViewer {
         this.printLineNumbers = printLineNumbers;
         versionControlRepositoryURL = servlet.getServletConfig().getInitParameter(
             SourceViewServlet.PARAM_REPOSITORY_URL);
-        if (!versionControlRepositoryURL.endsWith("/")) {
+        if (versionControlRepositoryURL != null && !versionControlRepositoryURL.endsWith("/")) {
             versionControlRepositoryURL += "/";
         }
         if (servlet.getServletConfig().getInitParameter(SourceViewServlet.PARAM_REPOSITORY_LINK_TEXT) != null) {
