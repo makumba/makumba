@@ -23,6 +23,9 @@
 
 package org.makumba.controller.http;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.jsp.JspPage;
 
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
@@ -46,9 +50,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.DbConnectionProvider;
-import org.makumba.devel.TagExceptionServlet;
 import org.makumba.forms.responder.Responder;
-import org.makumba.forms.responder.ResponderCacheManager;
 import org.makumba.forms.responder.ResponderFactory;
 
 /**
@@ -56,6 +58,7 @@ import org.makumba.forms.responder.ResponderFactory;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
+ * @author Filip Kis
  * @version $Id$ *
  */
 public class ControllerFilter implements Filter {
@@ -281,8 +284,13 @@ public class ControllerFilter implements Filter {
     }
 
     /**
-     * Treats an exception that occured during the request. Displays the exception and sets an attribute corresponding
-     * to it.
+     * Treats an exception that occurred during the request. Displays the exception and sets an attribute corresponding
+     * to it. The exception is displayed either in custom "error.jsp" set by the user in the folder
+     * of the page that throw an exception or any parent root. In this case, three attributes (mak_error_title, mak_error_description
+     * , mak_error_realpath) are set so that the user can place use them in the custom page freely.
+     * If the custom page is not found the error is show in the TagExceptionFilter. 
+     * 
+     * TODO: move to ErrorFilter
      * 
      * @param t
      *            the Throwable corresponding to the exception
@@ -297,7 +305,23 @@ public class ControllerFilter implements Filter {
         if (req.getAttribute("org.makumba.exceptionTreated") == null
                 && !((t instanceof UnauthorizedException) && login(req, resp))) {
             try {
-                req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
+                
+                String errorPage = getPage(req,req.getServletPath() ,"error.jsp");
+                
+                if(errorPage!=null)
+                {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter wr = new PrintWriter(sw);
+                    ErrorFilter ef = new ErrorFilter(req,req.getSession().getServletContext(),wr, false);
+                    req.setAttribute("mak_error_title", ef.title);
+                    req.setAttribute("mak_error_description",sw.toString());
+                    req.setAttribute("mak_error_realpath", new File(req.getSession().getServletContext().getRealPath("/")).getCanonicalPath());
+                    //FIXME:see if error code thrown gives problems to tests
+                    //resp.setStatus(500);
+                    req.getRequestDispatcher(errorPage).forward(req, resp);
+                }else
+                    req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
+                
             }
             // we only catch the improbable ServletException and IOException
             // so if something is rotten in the TagExceptionServlet,
@@ -318,7 +342,7 @@ public class ControllerFilter implements Filter {
                             + "' but the error page can't be displayed due to too small buffer size.\n"
                             + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
                             + "The makumba error message would have been:\n"
-                            + new TagExceptionServlet().getErrorMessage(req));
+                            + new ErrorFilter().getErrorMessage(req));
             } finally {
                 AnalysableTag.initializeThread();
             }
@@ -351,26 +375,50 @@ public class ControllerFilter implements Filter {
     /**
      * Computes the login page from a servletPath
      * 
+     * @param req 
+     *          the http request corresponding to the current access
      * @param servletPath
      *            the path of the servlet we are in
      * @return A String containing the path to the login page
      */
-    public static String getLoginPage(String servletPath) {
-        String root = conf.getServletContext().getRealPath("/");
+    public static String getLoginPage(HttpServletRequest req, String servletPath) {
+        return getPage(req,servletPath,"login.jsp");
+    }
+
+    /**
+     * Computes any page from a servletPath, used to compute login,
+     * error or any other default page
+     *
+     * @param req
+     *          the http request corresponding to the current access
+     * @param servletPath
+     *          the path of the servlet we are in
+     * @param pageName
+     *          the name of the page we are looking for
+     * @return
+     */
+    
+    public static String getPage(HttpServletRequest req, String servletPath, String pageName) {
+        
+        //FIXME: This doesn't work in the webapps, it returns the path of the last context
+        //alphabetically and not the one you are in:
+        //String root = conf.getServletContext().getRealPath("/");
+        String root = req.getSession().getServletContext().getRealPath("/");
+        
         String virtualRoot = "/";
-        String login = "/login.jsp";
+        String page = null;
 
         java.util.StringTokenizer st = new java.util.StringTokenizer(servletPath, "/");
         while (st.hasMoreElements()) {
-            if (new java.io.File(root + "login.jsp").exists())
-                login = virtualRoot + "login.jsp";
+            if (new java.io.File(root + pageName).exists())
+                page = virtualRoot + pageName;
             String s = st.nextToken() + "/";
             root += s;
             virtualRoot += s;
         }
-        if (new java.io.File(root + "login.jsp").exists())
-            login = virtualRoot + "login.jsp";
-        return login;
+        if (new java.io.File(root + pageName).exists())
+            page = virtualRoot + pageName;
+        return page;
     }
 
     /**
@@ -383,7 +431,7 @@ public class ControllerFilter implements Filter {
      */
     protected static boolean login(HttpServletRequest req, HttpServletResponse resp) {
         // the request path may be modified by the filter, we take it as is
-        String login = getLoginPage(req.getServletPath());
+        String login = getLoginPage(req,req.getServletPath());
 
         if (login == null)
             return false;

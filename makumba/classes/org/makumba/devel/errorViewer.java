@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,12 +45,13 @@ import org.makumba.analyser.engine.TomcatJsp;
 public class errorViewer extends LineViewer {
     private String hiddenBody;
 
-    public errorViewer(HttpServletRequest request, HttpServlet servlet, String title, String body, String hiddenBody)
+    public errorViewer(HttpServletRequest request, ServletContext servletContext, String title, String body, String hiddenBody,
+            boolean printHeaderFooter)
             throws IOException {
-        super(false, request, servlet);
-        realPath = servlet.getServletConfig().getServletContext().getRealPath("/");
-
-        jspClasspath = TomcatJsp.getContextCompiledJSPDir(servlet.getServletContext());
+        super(false, request, servletContext);
+        realPath = servletContext.getRealPath("/");
+        this.printHeaderFooter = printHeaderFooter;
+        jspClasspath = TomcatJsp.getContextCompiledJSPDir(servletContext);
         super.title = title;
         this.hiddenBody = hiddenBody;
         reader = new StringReader(body);
