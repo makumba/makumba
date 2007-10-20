@@ -26,6 +26,7 @@
 package org.makumba;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.Vector;
@@ -105,9 +106,14 @@ public interface DataDefinition {
     /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
     public Vector getReferenceFields();
 
+    /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name);
 
+    /** adds a new function to this data definition. */
     public void addFunction(String name, QueryFragmentFunction function);
+
+    /** returns all functions in this data definition. */
+    public Collection<QueryFragmentFunction> getFunctions();
 
     class QueryFragmentFunction implements Serializable {
         private static final long serialVersionUID = 1L;
