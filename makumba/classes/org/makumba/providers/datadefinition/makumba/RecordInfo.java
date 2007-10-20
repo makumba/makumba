@@ -41,6 +41,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -329,6 +330,10 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public void addFunction(String name, QueryFragmentFunction function) {
         functionNames.put(name, function);
+    }
+
+    public Collection<QueryFragmentFunction> getFunctions() {
+        return functionNames.values();
     }
 
     /** returns the path-like abstract-level name of this record info */

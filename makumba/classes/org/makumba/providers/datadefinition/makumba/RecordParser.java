@@ -133,6 +133,10 @@ public class RecordParser {
         return validationDefinitionPattern.matcher(s).matches();
     }
 
+    public static boolean isFunction(String s) {
+        return funcDefPattern.matcher(s).matches();
+    }
+
     RecordParser() {
         definedTypes = new Properties();
     }
