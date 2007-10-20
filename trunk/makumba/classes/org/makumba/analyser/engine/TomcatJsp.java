@@ -95,7 +95,7 @@ public class TomcatJsp /* extends HttpServlet */{
     }
 
     public static boolean treatException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
-            HttpServlet servlet) {
+            ServletContext servletContext, boolean printHeaderFooter, String title) {
         if (t.getMessage().indexOf("Duplicate local variable") != -1) {
             String message = t.getMessage();
             String[] split = message.split("\n");
@@ -114,9 +114,9 @@ public class TomcatJsp /* extends HttpServlet */{
                 body += "Do not use it as name for your Java variables, or as <mak:value expr=\"...\" var=\""
                         + variableName + "\" /> resp. <mak:value expr=\"...\" printVar=\"" + variableName + "\" />";
                 String hiddenBody = t.getMessage();
-                String title = "Programmer Error - usage of reserved Tomcat keyword";
+                title = "Programmer Error - usage of reserved Tomcat keyword";
                 try {
-                    SourceViewer sw = new errorViewer(req, servlet, title, body, hiddenBody);
+                    SourceViewer sw = new errorViewer(req, servletContext, title, body, hiddenBody, printHeaderFooter);
                     sw.parseText(wr);
                 } catch (IOException e) {
                     e.printStackTrace();

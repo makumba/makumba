@@ -106,6 +106,8 @@ public abstract class LineViewer implements SourceViewer {
 
     protected Error caughtError;
 
+    protected boolean printHeaderFooter = true;
+
     private String versionControlRepositoryURL;
 
     private String versionControlRepositoryLinkText = "CVS";
@@ -160,6 +162,15 @@ public abstract class LineViewer implements SourceViewer {
                 && request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
 
+    public LineViewer(boolean printLineNumbers, HttpServletRequest request, ServletContext servletContext) {
+        this.request = request;
+        this.printLineNumbers = printLineNumbers;
+        this.servletContext = servletContext;
+        contextPath = request.getContextPath();
+        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null
+                && request.getParameter(PARAM_HIDE_LINES).equals("true");
+    }
+
     /**
      * parse the text and write the output
      */
@@ -207,70 +218,73 @@ public abstract class LineViewer implements SourceViewer {
     public void printPageEnd(PrintWriter writer) throws IOException {
         writer.println("\n</pre>");
         footer(writer);
-        writer.println("\n</body></html>");
+        if (printHeaderFooter)
+            writer.println("\n</body></html>");
     }
 
     /**
      * Write the beginning of the page to the given writer.
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeViewerStyles(writer);
-        DevelUtils.writeScripts(writer);
-        if (printLineNumbers && !hideLineNumbers) {
-            writer.println("<style type=\"text/css\">");
-            writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
-            writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
-            writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none; color: #000066}");
-            writer.println("</style>\n");
-        }
         if (realPath != null && virtualPath != null)
             title = virtualPath + "";
         else if (title == null || title != null && title.equals(""))
             title = "";
-        DevelUtils.writeTitleAndHeaderEnd(writer, title);
-        DevelUtils.printPageHeader(writer, title, virtualPath, realPath, printVersionControlLink());
-        printPageBeginAdditional(writer);
+        if (printHeaderFooter) {
+            DevelUtils.writePageBegin(writer);
+            DevelUtils.writeViewerStyles(writer);
+            DevelUtils.writeScripts(writer);
+            if (printLineNumbers && !hideLineNumbers) {
+                writer.println("<style type=\"text/css\">");
+                writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
+                writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
+                writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none; color: #000066}");
+                writer.println("</style>\n");
+            }
+            DevelUtils.writeTitleAndHeaderEnd(writer, title);
+            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, printVersionControlLink());
+            printPageBeginAdditional(writer);
 
-        if (printLineNumbers) {
-            String urlParams = "";
-            Enumeration e = request.getParameterNames();
-            while (e.hasMoreElements()) {
-                String key = (String) e.nextElement();
-                Object value = request.getParameter(key);
-                if (!key.equals(PARAM_HIDE_LINES)) {
-                    if (!urlParams.equals("")) {
-                        urlParams += "&";
+            if (printLineNumbers) {
+                String urlParams = "";
+                Enumeration e = request.getParameterNames();
+                while (e.hasMoreElements()) {
+                    String key = (String) e.nextElement();
+                    Object value = request.getParameter(key);
+                    if (!key.equals(PARAM_HIDE_LINES)) {
+                        if (!urlParams.equals("")) {
+                            urlParams += "&";
+                        }
+                        urlParams += key + "=" + value;
                     }
-                    urlParams += key + "=" + value;
                 }
-            }
 
-            if (!urlParams.equals("")) {
-                urlParams += "&";
-            }
-            urlParams += PARAM_HIDE_LINES + "=" + !hideLineNumbers;
-            if (!urlParams.equals("")) {
-                urlParams = "?" + urlParams;
-            }
-            String link = request.getRequestURI() + urlParams;
+                if (!urlParams.equals("")) {
+                    urlParams += "&";
+                }
+                urlParams += PARAM_HIDE_LINES + "=" + !hideLineNumbers;
+                if (!urlParams.equals("")) {
+                    urlParams = "?" + urlParams;
+                }
+                String link = request.getRequestURI() + urlParams;
 
-            writer.println("<div style=\"font-size: smaller; vertical-align: bottom;\">");
-            writer.print("<a href=\"" + link + "\">");
-            if (hideLineNumbers) {
-                writer.print("Show");
-            } else {
-                writer.print("Hide");
+                writer.println("<div style=\"font-size: smaller; vertical-align: bottom;\">");
+                writer.print("<a href=\"" + link + "\">");
+                if (hideLineNumbers) {
+                    writer.print("Show");
+                } else {
+                    writer.print("Hide");
+                }
+                writer.println(" line numbers</a>");
+                writeAdditionalLinks(writer);
+                writer.println("</div>");
             }
-            writer.println(" line numbers</a>");
-            writeAdditionalLinks(writer);
-            writer.println("</div>");
+            writer.println("</td>");
+
+            intro(writer);
+            writer.println("</tr>");
+            writer.println("</table>");
         }
-        writer.println("</td>");
-
-        intro(writer);
-        writer.println("</tr>");
-        writer.println("</table>");
         writer.print("<pre class=\"code\">");
     }
 
