@@ -254,6 +254,10 @@ li.section {
 	padding-bottom: 20px;
 }
 
+li.sectionLevel2 {
+	margin-left: -20px;
+}
+
 div.navbarPage {
 	margin-left: -50px;
 }

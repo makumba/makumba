@@ -42,23 +42,32 @@
       <li class="section"><a href="#DefaultFields">Default fields</a></li>
       <li class="section"><a href="#SimpleFieldTypes">Simple&nbsp;field&nbsp;types</a>
       <ul class="navbarPage">
-        <li><a href="#int">int</a></li>
-        <li><a href="#real">real</a></li>
-        <li><a href="#char">char</a></li>
-        <li><a href="#text">text</a></li>
-        <li><a href="#date">date</a></li>
+        <li class="sectionLevel2"><a href="#int">int</a></li>
+        <li class="sectionLevel2"><a href="#real">real</a></li>
+        <li class="sectionLevel2"><a href="#char">char</a></li>
+        <li class="sectionLevel2"><a href="#text">text</a></li>
+        <li class="sectionLevel2"><a href="#date">date</a></li>
       </ul>
       </li>
       <li class="section"><a href="#StructuralTypes">Structural (relational) types</a>
       <ul class="navbarPage">
-        <li><a href="#ptr">ptr</a></li>
-        <li><a href="#set">set</a></li>
+        <li class="sectionLevel2"><a href="#ptr">ptr</a></li>
+        <li class="sectionLevel2"><a href="#set">set</a></li>
       </ul>
       </li>
       <li class="section"><a href="#MacroTypes">Macro types</a></li>
       <li class="section"><a href="#FieldAttributes">Field attributes</a></li>
       <li class="section"><a href="#ObjectTitle">Object title</a></li>
       <li class="section"><a href="#Include">Include mechanism</a></li>
+      <li class="section"><a href="#validation">Validation definition</a>
+      <ul class="navbarPage">
+        <li class="sectionLevel2"><a href="#range">Range</a></li>
+        <li class="sectionLevel2"><a href="#stringLength">String lenght</a></li>
+        <li class="sectionLevel2"><a href="#regexp">Regular expressions</a></li>
+        <li class="sectionLevel2"><a href="#comparison">Comparison</a></li>
+      </ul>
+      </li>
+
     </ul>
     </div>
     </td>
@@ -249,6 +258,141 @@
     <p>it means that it does not actually exist. this can be used to cancel an included field.</p>
     <div class="note futfeat">include might be replaced by more advanced concepts such as inheritance and type
     inclusion (rather than reference in foreign table)</div>
+
+    <h2><a name="validation">Validation Rules</a></h2>
+    <p>Validation rules are defined inside a data definition, and allow Makumba to automatically validated form data
+    input.</p>
+    <p>The general syntax of a validation rule definition is as follows:
+    <pre class="example">[validation rule name] : [validation rule] : [error message]</pre>
+    <h3>Validation rule name</h3>
+    <p>The validation rule name is an identifier which should be unique. The exact usage is not yet specified, but
+    it could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
+    <h3>Validation rule</h3>
+    <p>The validation rule specifies what should be validated, and can be one of the following</p>
+    <pre class="example">[range validation | string length | regular expression | comparison]</pre>
+    
+    <h4 name="range">Number range rule</h4>
+    <p>The range definition rule applies for <code>Number</code> types, i.e. <i>int</i> and <i>real</i>. The
+    [validation rule] is defined as:</p>
+    <pre class="example">[fieldName]%range = [1..10]</pre>
+    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to java.lang.Integer.MIN_VALUE
+    and java.lang.Integer.MAX_VALUE, respectively, i.e. +/- 2<sup>31</sup>-1.</p>
+    <p>To require that the age needs to be between 12 and 99:</p>
+    <pre class="example">age%range = [12..99] : Age must be between 12 and 99!</pre>
+    <p>To define that we need to be at least 5 year old:</p>
+    <pre class="example">age%range = [5..?] : Age must be at least 5!</pre>
+
+    <h4 name="stringLength">String length rule</h4>
+    <p>The length definition rule applies for <code>string</code> types, i.e. <code>char</code> and <char>text</char>. The
+    [validation rule] is defined as:</p>
+    <pre class="example">[fieldName]%length = [1..10]</pre>
+    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
+    maxium length of 255</p>
+    <p>To define that the CV needs to be at least 100 characters, define:</p>
+    <pre class="example">cv%length = [100..?] : CV must be of decent length!</pre>
+
+    <h4 name="regexp">Regular expression rule</h4>
+    <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
+    but also for <char>text</char>. The [validation rule] is defined as:</p>
+    <pre class="example">[fieldName]%matches = <i>regular expression</i></pre>
+    <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
+      href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html">specification</a> and <a
+      href="http://java.sun.com/docs/books/tutorial/essential/regex/">tutorial</a>.</p>
+    <p>To compare if a field contains a valid e-mail address, define:</p>
+    <pre class="example">email%matches = .+@.+\.[a-z]+ : Email address is not valid!</pre>
+
+    <h4 name="comparison">Comparison rule</h4>
+    <p>This rule allows to compare a field to a constant value or simple function calls.</p>
+    <p>The following constants are currently available:</p>
+    <table class="tagParamDef">
+      <tr>
+        <th>Constants</th>
+        <th>Description</th>
+        <th>Valid</th>
+      </tr>
+      <tr>
+        <td>$now</td>
+        <td>The current date and time.</td>
+        <td rowspan="2"><code>date</code> types</td>
+      </tr>
+      <tr>
+        <td>$today</td>
+        <td>The current date, time set to 00:00.</td>
+      </tr>
+    </table>
+    
+    <p>The following functions are currently available:</p>
+    <table class="tagParamDef">
+      <tr>
+        <th>Function</th>
+        <th>Description</th>
+        <th>Valid</th>
+      </tr>
+      <tr>
+        <td>$date(.., .., .., .., .., ..)</td>
+        <td>Constructs a date.<br />
+        The function takes up to six arguments, for day, month, year, hours, minutes and seconds. If less than six
+        arguments are passed, the missing values will be automatically set to the current date.<br />
+        $now is available as a constant for the current date value, and + and - operators can be used to modify that
+        value. e.g. <pre class="example">date($now,$now,$now - 5)</pre> evaluates as the current date & month 5 years
+        ago.</td>
+        <td><code>date</code> types</td>
+      </tr>
+      <tr>
+        <td>$lower</td>
+        <td>Converts a string to lower case.</td>
+        <td rowspan="2"><code>String</code>, i.e. 'char' and 'text' types</td>
+      </tr>
+      <tr>
+        <td>$upper</td>
+        <td>Converts a string to upper case.</td>
+      </tr>
+    </table>
+    
+    <p>Valid comparison operators are the ones defined in Java:</p>
+    <table class="tagParamDef">
+      <tr>
+        <th>Operator</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>==</td>
+        <td>equal</td>
+      </tr>
+      <tr>
+        <td>!=</td>
+        <td>not equal</td>
+      </tr>
+      <tr>
+        <td>&lt;</td>
+        <td>less than</td>
+      </tr>
+      <tr>
+        <td>&gt;</td>
+        <td>less than</td>
+      </tr>
+      <tr>
+        <td>=&lt;</td>
+        <td>less than or equal</td>
+      </tr>
+      <tr>
+        <td>&gt;=</td>
+        <td>greater than or equal</td>
+      </tr>
+    </table>
+
+    <p>To compare if someone is at least 15 years old, define the following validation rule:</p>
+    <pre class="example">birthday%compare = date($now,$now,$now - 15) : You have to be at least 15 years old!</pre>
+
+    <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
+    <pre class="example">birthday%name = lower(name) != name : Your name must not contain only lower-case letters!</pre>
+
+    <p>Tow fields can be compared in a similar way</p>
+    <pre class="example">birthdate%compare = birthdate < graduationDate : You cannot finish school before your birthdate!</pre>
+    
+    <h3>Error message</h3>
+    <p>The error message that will be displayed if the validation fails.</p>
+
     </td>
   </tr>
 </table>
