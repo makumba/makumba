@@ -23,9 +23,9 @@
 
 package org.makumba.controller.http;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,11 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.jsp.JspPage;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
-import org.makumba.CompositeValidationException;
 import org.makumba.UnauthorizedException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.StringUtils;
@@ -116,16 +115,6 @@ public class ControllerFilter implements Filter {
                     if (firstResponder.getReloadFormOnError()) {
                         
                         final String root = conf.getInitParameter(req.getServerName());
-                        HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
-                        String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
-                        String contextPath = httpServletRequest.getContextPath();
-                        
-                        if (originatingPage.startsWith(contextPath)) {
-                            originatingPage = originatingPage.substring(contextPath.length());
-                        }
-                        if (originatingPage.indexOf("?") > 0) {
-                            originatingPage = originatingPage.substring(0, originatingPage.indexOf("?"));
-                        }
 
                         req = getFormReloadRequest(req);
                         resp = getFormReloadResponse(resp, root);
