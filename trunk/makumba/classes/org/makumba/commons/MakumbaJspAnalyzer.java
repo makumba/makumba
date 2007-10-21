@@ -57,7 +57,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",
             "org.makumba.forms.tags.EditTag", "deleteLink", "org.makumba.forms.tags.DeleteTag", "delete",
             "org.makumba.forms.tags.DeleteTag", "input", "org.makumba.forms.tags.InputTag", "action",
-            "org.makumba.forms.tags.ActionTag", "option", "org.makumba.forms.tags.OptionTag" };
+            "org.makumba.forms.tags.ActionTag", "option", "org.makumba.forms.tags.OptionTag", "searchForm",
+            "org.makumba.forms.tags.SearchTag", "criterion", "org.makumba.forms.tags.CriterionTag", "searchField",
+            "org.makumba.forms.tags.SearchFieldTag", "matchMode", "org.makumba.forms.tags.MatchModeTag" };
 
     static String[] formTags = { "form", "org.makumba.forms.tags.FormTagBase", "new", "org.makumba.forms.tags.NewTag",
             "add", "org.makumba.forms.tags.AddTag", "edit", "org.makumba.forms.tags.EditTag", "deleteLink",
