@@ -94,6 +94,10 @@ public class StringUtils {
         return equals(s, o);
     }
 
+    public static boolean equals(Object o, String[] options) {
+        return o instanceof String && equals((String) o, options);
+    }
+
     public static boolean equals(String s, String[] options) {
         if (s == null) {
             return false;
