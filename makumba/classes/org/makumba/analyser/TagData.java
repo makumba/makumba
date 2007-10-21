@@ -1,5 +1,6 @@
 package org.makumba.analyser;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.makumba.analyser.engine.JspParseData;
@@ -10,7 +11,9 @@ import org.makumba.analyser.engine.SyntaxPoint;
  * 
  * @author Cristian Bogdan
  */
-public class TagData {
+public class TagData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /** The parse data where this TagData was produced */
     public JspParseData parseData;
 
@@ -31,7 +34,7 @@ public class TagData {
     public SyntaxPoint getStart() {
         return start;
     }
-    
+
     public Object getTagObject() {
         return tagObject;
     }
