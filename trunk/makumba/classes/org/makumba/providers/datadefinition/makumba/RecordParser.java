@@ -47,6 +47,7 @@ import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
 import org.makumba.commons.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
@@ -1013,12 +1014,12 @@ public class RecordParser {
                 // check all possible validation types
                 if (StringUtils.equals(operation, RegExpValidationRule.getOperator())) {
                     // regexp validation
-                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
                     rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, ruleDef);
 
                 } else if (StringUtils.equals(operation, NumberRangeValidationRule.getOperator())) {
                     // number (int or real) validation
-                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1028,7 +1029,7 @@ public class RecordParser {
 
                 } else if (StringUtils.equals(operation, StringLengthValidationRule.getOperator())) {
                     // string lenght (char or text) validation
-                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1051,7 +1052,7 @@ public class RecordParser {
                         functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
                         fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
                     }
-                    FieldDefinition fd = getFieldDefinition(line, fieldName);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
                     String operator = matcher.group(2).trim();
                     String compareTo = matcher.group(3).trim();
                     if (fd.getIntegerType() == FieldDefinition._date
@@ -1059,7 +1060,7 @@ public class RecordParser {
                         // we have a comparison to a date constant / expression
                         rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage, operator);
                     } else {
-                        FieldDefinition otherFd = getFieldDefinition(line, compareTo);
+                        FieldDefinition otherFd = DataDefinitionProvider.getFieldDefinition(dd, compareTo, line);
                         rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo, ruleName,
                                 errorMessage, operator);
                     }
@@ -1103,26 +1104,6 @@ public class RecordParser {
             throw mpe;
         }
         // System.out.println("Finished parsing validation definition '" + name + "'.");
-    }
-
-    protected FieldDefinition getFieldDefinition(String line, String fieldName) throws ValidationDefinitionParseError {
-        DataDefinition checkedDataDef = dd;
-
-        // treat sub-fields
-        int indexOf = -1;
-        while ((indexOf = fieldName.indexOf(".")) != -1) {
-            // we have a sub-record-field
-            String subFieldName = fieldName.substring(0, indexOf);
-            fieldName = fieldName.substring(indexOf + 1);
-            checkedDataDef = checkedDataDef.getFieldDefinition(subFieldName).getPointedType();
-        }
-
-        FieldDefinition fd = checkedDataDef.getFieldDefinition(fieldName);
-        if (fd == null) {
-            throw new ValidationDefinitionParseError(checkedDataDef.getName(), "Field &lt;" + fieldName
-                    + "&gt; not defined in type " + dd.getName() + "!", line);
-        }
-        return fd;
     }
 
     public static void main(String[] args) {
