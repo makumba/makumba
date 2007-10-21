@@ -1059,6 +1059,14 @@
           <td>Fixed. Defaults to "changes done".</td>
         </tr>
         <tr>
+          <td><tt>multipleSubmitErrorMsg</tt></td>
+          <td>Enables multiple form submission prevention, and sets the given value as the error message.</td>
+          <td>For a form with multiple submission prevention, a ticket will be generated on form load, containing a
+          form-specific key and a time stamp. Each ticket is only valid for a single form submission. Upon subsequent
+          submission, the error message will be displyed. Note that this does not prevent duplicate entries, it just
+          prevents double submission of one specific form instance. To prevent duplicate entries, define unique keys</a>.</td>
+        </tr>
+        <tr>
           <td><tt>reloadFormOnError</tt></td>
           <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded</td>
           <td>Fixed. Values are <code>true</code> or <code>false</code>; defaults to <code>false</code>.</td>
