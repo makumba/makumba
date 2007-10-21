@@ -36,11 +36,11 @@ import java.util.Vector;
  * @version $Id$
  */
 public class ArgumentReplacer {
-    Vector text = new Vector();
+    Vector<String> text = new Vector<String>();
 
-    Dictionary argumentNames = new Hashtable();
+    Dictionary<String, String> argumentNames = new Hashtable<String, String>();
 
-    Vector argumentOrder = new Vector();
+    Vector<String> argumentOrder = new Vector<String>();
 
     /** Gets the arguments list 
      *  @return An Enumeration containing the list of arguments
@@ -106,7 +106,9 @@ public class ArgumentReplacer {
             text.addElement(prev + s.substring(0, dollar - 1));
             prev = "";
 
-            for (n = dollar + 1; n < s.length() && s.charAt(n) != '$' && Character.isJavaIdentifierPart(s.charAt(n)); n++)
+            // we allow also '.' in the attribute name, which is needed in search forms for searches on subfields
+            // TODO: check if that also works for HQL
+            for (n = dollar + 1; n < s.length() && s.charAt(n) != '$' && (Character.isJavaIdentifierPart(s.charAt(n)) || s.charAt(n)=='.'); n++)
                 ;
             argname = s.substring(dollar, n);
             if (n < s.length() && s.charAt(n) == '$')
