@@ -3,6 +3,7 @@ package org.makumba.providers;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.Configuration;
 
@@ -15,7 +16,7 @@ import org.makumba.commons.Configuration;
  * @version $Id$
  */
 public class DataDefinitionProvider implements DataDefinitionProviderInterface {
-    
+
     private DataDefinitionProviderInterface dataDefinitionProviderImplementation;
 
     /**
@@ -24,7 +25,8 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
     public DataDefinitionProvider() {
         Configuration c = new Configuration();
         try {
-            this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(c.getDefaultDataDefinitionProviderClass()).newInstance();
+            this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
+                c.getDefaultDataDefinitionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -39,7 +41,8 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
 
     public DataDefinitionProvider(Configuration c) {
         try {
-            this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(c.getDefaultDataDefinitionProviderClass()).newInstance();
+            this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
+                c.getDefaultDataDefinitionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -49,7 +52,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } 
+        }
 
     }
 
@@ -83,6 +86,32 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
 
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return dataDefinitionProviderImplementation.makeFieldWithName(name, type, description);
+    }
+
+    /**
+     * This method finds a field definition with the given name within the given data definition. The difference to a
+     * simple {@link DataDefinition#getFieldDefinition(String)} is that the field name can be of the form
+     * field.subfield.otherSubfield, over an arbitrary number of levels.
+     */
+    public static final FieldDefinition getFieldDefinition(DataDefinition dd, String fieldName,
+            String lineWithDefinition) throws DataDefinitionParseError {
+        DataDefinition checkedDataDef = dd;
+
+        // treat sub-fields
+        int indexOf = -1;
+        while ((indexOf = fieldName.indexOf(".")) != -1) {
+            // we have a sub-record-field
+            String subFieldName = fieldName.substring(0, indexOf);
+            fieldName = fieldName.substring(indexOf + 1);
+            checkedDataDef = checkedDataDef.getFieldDefinition(subFieldName).getPointedType();
+        }
+
+        FieldDefinition fd = checkedDataDef.getFieldDefinition(fieldName);
+        if (fd == null) {
+            throw new DataDefinitionParseError(checkedDataDef.getName(), "Field '" + fieldName
+                    + "' not defined in type " + dd.getName() + "!", lineWithDefinition);
+        }
+        return fd;
     }
 
 }
