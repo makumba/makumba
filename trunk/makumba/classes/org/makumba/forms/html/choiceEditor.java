@@ -36,10 +36,13 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public abstract class choiceEditor extends FieldEditor {
 
-    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator",
-            "nullOption" };
+    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
+            "selectMultiple" };
 
-    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null, null };
+    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
+            null, { "true", "false" } };
+
+    protected String nullOption = null;
 
     public String[] getAcceptedParams() {
         return _params;
@@ -88,11 +91,13 @@ public abstract class choiceEditor extends FieldEditor {
         boolean yn_radio = "radio".equals(type);
         boolean yn_checkbox = "checkbox".equals(type);
         boolean yn_tickbox = "tickbox".equals(type);
+        boolean selectMultiple = "true".equals(formatParams.get("selectMultiple"));
+        formatParams.remove("selectMultiple");
 
         // check whether the enum Editor should have a null value option.
         // doing this from here seems a bit dirty, but the formatParams are not available in the subclass.
-        if (this instanceof charEnumEditor) {
-            ((charEnumEditor) this).setNullOption(formatParams.get("nullOption"));
+        if (this instanceof choiceEditor) {
+            ((choiceEditor) this).setNullOption(formatParams.get("nullOption"));
         }
 
         if (yn_tickbox) {
@@ -124,7 +129,7 @@ public abstract class choiceEditor extends FieldEditor {
             if (size == -1)
                 size = getDefaultSize(rf, fieldIndex);
             hcw.setSize(size);
-            hcw.setMultiple(isMultiple(rf, fieldIndex));
+            hcw.setMultiple(isMultiple(rf, fieldIndex) || selectMultiple);
             hcw.setLiteralHtml(getExtraFormatting(rf, fieldIndex, formatParams));
 
             Object opt = getOptions(rf, fieldIndex, formatParams);
@@ -134,8 +139,8 @@ public abstract class choiceEditor extends FieldEditor {
 
             for (int i = 0; i < getOptionsLength(rf, fieldIndex, opt); i++) {
                 Object val = getOptionValue(rf, fieldIndex, opt, i);
-         
-                values.add(val==null?null:formatOptionValue(rf, fieldIndex, opt, i, val));
+
+                values.add(val == null ? null : formatOptionValue(rf, fieldIndex, opt, i, val));
                 labels.add(formatOptionTitle(rf, fieldIndex, opt, i));
                 // System.out.println(formatOptionTitle(opt,
                 // i)+"="+formatOptionValue(opt, i, val));
@@ -202,6 +207,15 @@ public abstract class choiceEditor extends FieldEditor {
             }
         }
         return o;
+    }
+
+    /** Sets the value of the null option from the mak:input tag. */
+    public void setNullOption(Object nullOption) {
+        if (nullOption instanceof String && ((String) nullOption).trim().length() > 0) {
+            this.nullOption = (String) nullOption;
+        } else { // if we got no / an empty value, we need to empty the fields due to the re-use of the editors
+            this.nullOption = null;
+        }
     }
 
 }
