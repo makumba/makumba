@@ -54,7 +54,7 @@ public class FormResponder extends Responder {
      */
     public Dictionary getHttpData(HttpServletRequest req, String suffix) {
         if (editor != null)
-            return editor.readFrom(req, suffix);
+            return editor.readFrom(req, suffix, !operation.equals("search"));
         else
             return new Hashtable(1);
     }

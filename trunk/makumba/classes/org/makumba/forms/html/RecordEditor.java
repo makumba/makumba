@@ -95,7 +95,7 @@ public class RecordEditor extends RecordFormatter {
         }
     }
 
-    public Dictionary readFrom(HttpServletRequest req, String suffix) {
+    public Dictionary readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
         Vector<Exception> exceptions = new Vector<Exception>(); // will collect all exceptions from the field validity checks
 
@@ -139,9 +139,9 @@ public class RecordEditor extends RecordFormatter {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
-            Collection validationRules = fieldDefinition.getValidationRules();// validationDefinition.getValidationRules(fe.getInputName(this,
-                                                                                // i, ""));
-            if (validationRules != null) {
+            Collection validationRules = fieldDefinition.getValidationRules();
+            
+            if (validationRules != null && applyValidationRules) {
                 for (Iterator iter = validationRules.iterator(); iter.hasNext();) {
                     ValidationRule rule = (ValidationRule) iter.next();
                     try { // evaluate each rule separately
