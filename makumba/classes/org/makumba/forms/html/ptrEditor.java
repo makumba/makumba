@@ -76,6 +76,9 @@ public class ptrEditor extends choiceEditor {
             dbc.close();
         }
         c = new ChoiceSet();
+        if (nullOption != null) {
+            c.add("", nullOption, false, false);
+        }
         for (Iterator i = v.iterator(); i.hasNext();) {
             Dictionary d = (Dictionary) i.next();
             Object ttl = d.get("title");

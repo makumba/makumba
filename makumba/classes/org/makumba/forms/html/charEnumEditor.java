@@ -27,10 +27,6 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class charEnumEditor extends choiceEditor {
-    protected boolean hasNullOption = false;
-
-    protected String nullOption = null;
-
     private static final class SingletonHolder {
         static final FieldEditor singleton = new charEnumEditor();
     }
@@ -49,7 +45,7 @@ public class charEnumEditor extends choiceEditor {
 
     public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
         int enumeratorSize = rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
-        if (hasNullOption) {
+        if (nullOption != null) {
             return enumeratorSize + 1;
         } else {
             return enumeratorSize;
@@ -57,7 +53,7 @@ public class charEnumEditor extends choiceEditor {
     }
 
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (hasNullOption) {
+        if (nullOption != null) {
             if (i == 0) {
                 return null;
             } else {
@@ -76,7 +72,7 @@ public class charEnumEditor extends choiceEditor {
     }
 
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (hasNullOption) {
+        if (nullOption != null) {
             if (i == 0) {
                 return nullOption;
             } else {
@@ -96,17 +92,6 @@ public class charEnumEditor extends choiceEditor {
 
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
-    }
-
-    /** Sets the value of the null option from the mak:input tag. */
-    public void setNullOption(Object nullOption) {
-        if (nullOption instanceof String && ((String) nullOption).trim().length() > 0) {
-            this.nullOption = (String) nullOption;
-            this.hasNullOption = true;
-        } else { // if we got no / an empty value, we need to empty the fields due to the re-use of the editors
-            this.nullOption = null;
-            this.hasNullOption = false;
-        }
     }
 
 }

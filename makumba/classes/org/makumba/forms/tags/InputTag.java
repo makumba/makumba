@@ -243,9 +243,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
             FieldDefinition fd = getTypeFromContext(getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
-            if (fd.getIntegerType() != FieldDefinition._charEnum && fd.getIntegerType() != FieldDefinition._intEnum) {
+            if (!fd.isEnumType() && !fd.isPointer()) {
                 throw new ProgrammerError(
-                        "Attribute 'nullOption' is only applicable for 'charEnum' and 'intEnum' types, but input '"
+                        "Attribute 'nullOption' is only applicable for 'charEnum', 'intEnum' and 'ptr' types, but input '"
                                 + fd.getName() + "' is of type '" + fd.getType() + "'!");
             }
             params.put("nullOption", nullOption);
@@ -308,7 +308,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     private void printAnnotation(String fieldName, InvalidValueException e) throws IOException {
         pageContext.getOut().print("<span class=\"LV_validation_message LV_invalid\">");
-        //pageContext.getOut().print("<span class=\"formAnnotation\">");
+        // pageContext.getOut().print("<span class=\"formAnnotation\">");
         pageContext.getOut().print(e.getShortMessage());
         pageContext.getOut().print("</span>");
     }
