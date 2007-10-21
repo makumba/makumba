@@ -25,6 +25,7 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,24 +69,6 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the name of the CGI parameter that passes the base pointer, see {@link #basePointerType}, "__makumba__base__" */
     public final static String basePointerName = "__makumba__base__";
-
-    public static final String MATCH_CONTAINS = "contains";
-
-    public static final String MATCH_EQUALS = "equals";
-
-    public static final String MATCH_BEGINS = "begins";
-
-    public static final String MATCH_ENDS = "ends";
-
-    public static final String MATCH_BEFORE = "before";
-
-    public static final String MATCH_AFTER = "after";
-
-    public static final String MATCH_LESS = "lessThan";
-
-    public static final String MATCH_GREATER = "greaterThan";
-
-    public static final String SUFFIX_INPUT_MATCH = "Match";
 
     protected transient ResponderFactory factory;
 
@@ -153,8 +136,8 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
-    
-    /** order of the forms in the page **/
+
+    /** order of the forms in the page * */
     protected List formOrder;
 
     public String getHandler() {
@@ -192,7 +175,6 @@ public abstract class Responder implements java.io.Serializable {
     public String getFormName() {
         return formName;
     }
-    
 
     public List getFormOrder() {
         return formOrder;
@@ -205,7 +187,7 @@ public abstract class Responder implements java.io.Serializable {
         database = RequestAttributes.getAttributes(req).getRequestDatabase();
     }
 
-    /** pass the operation **/
+    /** pass the operation * */
     public void setOperation(String operation, ResponderOperation op) {
         this.operation = operation;
         this.op = op;
@@ -279,11 +261,10 @@ public abstract class Responder implements java.io.Serializable {
     public void setFormName(String formName) {
         this.formName = formName;
     }
-    
+
     public void setFormOrder(List formOrder) {
         this.formOrder = formOrder;
     }
-
 
     abstract protected void postDeserializaton();
 
@@ -313,6 +294,12 @@ public abstract class Responder implements java.io.Serializable {
 
     protected transient String storedParentSuffix = "";
 
+    /**
+     * Used in search forms to store a mapping of a input name to the list of (one or more) fields in the mdd the input
+     * should be matched against.
+     */
+    private Hashtable<String, String[]> multiFieldSearchMapping = new Hashtable<String, String[]>();
+
     protected static final char suffixSeparator = '_';
 
     /** pass the parent responder */
@@ -326,7 +313,7 @@ public abstract class Responder implements java.io.Serializable {
     }
 
     // ----------------- response section ------------------
- 
+
     /** formats an error message */
     public static String errorMessage(Throwable t) {
         return errorMessage(t.getMessage());
@@ -365,5 +352,13 @@ public abstract class Responder implements java.io.Serializable {
 
     public void setFactory(ResponderFactory factory) {
         this.factory = factory;
+    }
+
+    public void addMultiFieldSearchMapping(String name, String[] allFieldNames) {
+        multiFieldSearchMapping.put(name, allFieldNames);
+    }
+
+    public String[] getMultiFieldSearchCriterion(String name) {
+        return multiFieldSearchMapping.get(name);
     }
 }
