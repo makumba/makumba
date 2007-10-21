@@ -43,7 +43,6 @@ import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -323,9 +322,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void doEndAnalyze(PageCache pageCache) {
         fdp.onFormEndAnalyze(getTagKey(), pageCache);
 
-        if (formAction == null && findParentForm() == null)
+        // form action is not needed for search tags
+        if (formAction == null && findParentForm() == null && !getOperation().equals("search")) {
             throw new ProgrammerError(
                     "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
+        }
         if (findParentForm() != null) {
             if (formAction != null)
                 throw new ProgrammerError(
