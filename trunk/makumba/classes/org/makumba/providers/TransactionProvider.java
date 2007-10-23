@@ -1,5 +1,11 @@
 package org.makumba.providers;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.makumba.DBError;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 
@@ -47,8 +53,12 @@ public class TransactionProvider implements TransactionProviderInterface {
         }
     }
     
+    private Vector<Transaction> connections = new Vector<Transaction>();
+
     public Transaction getConnectionTo(String name) {
-        return transactionProviderImplementation.getConnectionTo(name);
+        Transaction t = transactionProviderImplementation.getConnectionTo(name);
+        connections.add(t);
+        return t;
     }
 
     public String getDefaultDataSourceName() {
@@ -80,4 +90,22 @@ public class TransactionProvider implements TransactionProviderInterface {
         return transactionProviderImplementation.supportsUTF8();
     }
     
+    private void close() {
+        Iterator<Transaction> i = connections.iterator();
+        
+        while(i.hasNext()) {
+            Transaction t = i.next();
+            try {
+                t.commit();
+                t.close();
+                java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Transaction not closed");
+            } catch(DBError e) {
+                // connection was already closed
+            }
+        }
+    }
+    
+    protected synchronized void finalize() {
+        close();
+    }
 }
