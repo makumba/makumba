@@ -13,6 +13,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.RuntimeWrappedException;
 
 public class GenericMakumbaTag extends AnalysableTag {
     
@@ -54,15 +55,6 @@ public class GenericMakumbaTag extends AnalysableTag {
         extraFormattingParams.clear();
         extraFormatting = null;
         return doEndTag;
-    }
-    
-    @Override
-    protected void treatException(Throwable t) throws JspException {
-        if (pageContext == null)
-            throw (JspException) t;
-
-        org.makumba.controller.http.ControllerFilter.treatException(t, (HttpServletRequest) pageContext.getRequest(),
-            (HttpServletResponse) pageContext.getResponse());
     }
 
     public void setStyleId(String s) {

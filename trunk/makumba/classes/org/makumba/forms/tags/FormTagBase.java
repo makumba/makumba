@@ -43,6 +43,7 @@ import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -419,7 +420,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         try {
             responder.setHttpRequest((HttpServletRequest) pageContext.getRequest());
         } catch (LogicException e) {
-           treatException(e);
+            throw new RuntimeWrappedException(e);
         }
 
         return EVAL_BODY_BUFFERED;

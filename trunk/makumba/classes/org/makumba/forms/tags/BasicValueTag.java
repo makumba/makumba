@@ -37,8 +37,8 @@ import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.controller.http.ControllerFilter;
 import org.makumba.forms.html.dateEditor;
+import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
@@ -206,7 +206,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         // if we are reloading the form page on validation errors, fill form inputs as in the request
         if (this instanceof InputTag
-                && StringUtils.equals(pageContext.getRequest().getAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD),
+                && StringUtils.equals(pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD),
                     "true")) {
             String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
             if (type.getIntegerType() == FieldDefinition._date) {
