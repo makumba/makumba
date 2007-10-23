@@ -1,8 +1,12 @@
 package org.makumba.db;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
 
+import org.makumba.DBError;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -95,7 +99,6 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
         }
     });
     
-
     public Transaction getConnectionTo(String name) {
         return getDatabase(name).getDBConnection();
     }
@@ -129,5 +132,4 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     public boolean supportsUTF8() {
         return Database.supportsUTF8();
     }
-    
 }
