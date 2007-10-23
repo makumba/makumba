@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.controller.http.ErrorFilter;
 
 /**
  * Displays the error processed by ErrorFilter in a servlet.
@@ -49,7 +48,7 @@ public class TagExceptionServlet extends HttpServlet {
         resp.setContentType("text/html");
         //FIXME:see if error code thrown gives problems to tests
         //resp.setStatus(500);
-        ErrorFilter er = new ErrorFilter(req,this.getServletContext(),resp.getWriter(), true);
+        ErrorFormatter er = new ErrorFormatter(req,this.getServletContext(), resp.getWriter(), true);
         resp.getWriter().flush();
     }
 }
