@@ -18,6 +18,7 @@ import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.providers.TransactionProvider;
@@ -276,8 +277,7 @@ public class ResponderFactory {
 
             } catch (AttributeNotFoundException anfe) {
                 // attribute not found is a programmer error and is reported
-                ControllerFilter.treatException(anfe, req, resp);
-                continue;
+                throw new RuntimeWrappedException(anfe);
             } catch (CompositeValidationException e) {
                 req.setAttribute(formResponder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
@@ -290,7 +290,7 @@ public class ResponderFactory {
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
             } catch (Throwable t) {
                 // all included error types should be considered here
-                ControllerFilter.treatException(t, req, resp);
+                throw new RuntimeWrappedException(t);
             }
             // messages of inner forms are ignored
             if (suffix.equals(""))
