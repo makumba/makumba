@@ -70,7 +70,10 @@ public class FormsHQLTest extends MakumbaJspTestCase {
         }
 
         protected void setUp() {
-            Transaction db = getDB();
+            Configuration config = new Configuration();
+            TransactionProvider tp = new TransactionProvider(config);
+            Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+            
             insertLanguages(db);
             insertPerson(db);
 
@@ -149,7 +152,10 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
         public void tearDown() {
             // do your one-time tear down here!
-            Transaction db = getDB();
+            Configuration config = new Configuration();
+            TransactionProvider tp = new TransactionProvider(config);
+            Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+            
             deletePerson(db);
             deleteLanguages(db);
             db.close();
@@ -159,12 +165,6 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     public static Test suite() {
         setup = new Suite(new TestSuite(FormsHQLTest.class));
         return setup;
-    }
-
-    private static Transaction getDB() {
-        Configuration config = new Configuration();
-        TransactionProvider tp = new TransactionProvider(config);
-        return tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
     }
 
     public void beginTomcat(Request request) {
