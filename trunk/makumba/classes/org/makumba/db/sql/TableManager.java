@@ -46,6 +46,7 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
@@ -1824,15 +1825,7 @@ public class TableManager extends Table {
      * @return true if an entry for the given key already exists with these values
      */
     public boolean findMultiFieldMultiTableDuplicates(Pointer pointer,
-            DataDefinition.MultipleUniqueKeyDefinition definition, Object values[]) {
-
-        DBConnection connection = getDatabase().getDBConnection();
-
-        if (connection instanceof DBConnectionWrapper) {
-            connection = ((DBConnectionWrapper) connection).getWrapped();
-        }
-
-        SQLDBConnection dbc = (SQLDBConnection) connection;
+            DataDefinition.MultipleUniqueKeyDefinition definition, Object values[], SQLDBConnection dbc) {
 
         String[] fields = definition.getFields();
         String from = getDBName();
@@ -2065,25 +2058,39 @@ public class TableManager extends Table {
      */
     private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData)
             throws CompositeValidationException {
-        MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
-        // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
-        CompositeValidationException notUnique = new CompositeValidationException();
-        for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
-            MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
-            String[] fields = key.getFields();
-            Object[] values = new Object[fields.length];
-            if (key.isKeyOverSubfield()) {
-                for (int j = 0; j < fields.length; j++) {
-                    values[j] = fullData.get(fields[j]);
-                }
-                if (findMultiFieldMultiTableDuplicates(pointer, key, values)) {
-                    notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
-                            values));
-                    // duplicates.put(fields, values);
+        
+        DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
+        SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
+        
+        // we use a try to make sure that in any case in the end, our connection gets closed
+        try {
+            MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
+            // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
+            CompositeValidationException notUnique = new CompositeValidationException();
+            for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
+                MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
+                String[] fields = key.getFields();
+                Object[] values = new Object[fields.length];
+                if (key.isKeyOverSubfield()) {
+                    for (int j = 0; j < fields.length; j++) {
+                        values[j] = fullData.get(fields[j]);
+                    }
+                    if (findMultiFieldMultiTableDuplicates(pointer, key, values, dbc)) {
+                        notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
+                                values));
+                        // duplicates.put(fields, values);
+                    }
                 }
             }
+            notUnique.throwCheck();
+            
+        } catch(Exception e) {
+            throw new RuntimeWrappedException(e);
+        } finally {
+            dbcw.close();
         }
-        notUnique.throwCheck();
+        
+        
     }
 
     // moved from dateCreateJavaManager, dateModifyJavaManager and
