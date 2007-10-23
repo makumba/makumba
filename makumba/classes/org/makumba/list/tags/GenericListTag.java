@@ -29,6 +29,7 @@ import javax.servlet.jsp.PageContext;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.list.ListFormDataProvider;
 import org.makumba.providers.FormDataProvider;
@@ -125,7 +126,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      */
     protected void onlyRootArgument(String s) throws JspException {
         if (findAncestorWithClass(this, GenericListTag.class) != null)
-            treatException(new MakumbaJspException(this, "the " + s
+            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
                     + " argument cannot be set for non-root makumba tags"));
     }
 

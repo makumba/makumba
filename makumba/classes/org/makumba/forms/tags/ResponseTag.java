@@ -25,21 +25,24 @@ package org.makumba.forms.tags;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * mak:response tag, displaying the response of a form submission.
+ * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  * @version $Id$
  */
 public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
-    
+
     private static final long serialVersionUID = 1L;
 
     public int doStartTag() throws JspException {
         try {
+
             Object response = pageContext.getRequest().getAttribute(
                 org.makumba.forms.responder.ResponderFactory.RESPONSE_STRING_NAME);
 
@@ -47,8 +50,7 @@ public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
             if (response != null)
                 pageContext.getOut().print(response);
         } catch (IOException e) {
-            org.makumba.controller.http.ControllerFilter.treatException(e,
-                (HttpServletRequest) pageContext.getRequest(), (HttpServletResponse) pageContext.getResponse());
+            throw new RuntimeWrappedException(e);
         }
 
         return EVAL_BODY_INCLUDE;

@@ -35,6 +35,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -120,7 +121,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         while (t != null && t instanceof ObjectTag)
             t = (QueryTag) findAncestorWithClass(t, QueryTag.class);
         if (t instanceof QueryTag)
-            treatException(new MakumbaJspException(this, "the " + s
+            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
                     + " parameter can only be set for the outermost mak:list tag"));
     }
 
@@ -131,7 +132,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException nfe) {
-            treatException(new MakumbaJspException(this, "the " + s + " parameter can only be an $attribute or an int"));
+            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s + " parameter can only be an $attribute or an int"));
 
         }
     }

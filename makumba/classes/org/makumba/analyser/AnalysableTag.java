@@ -15,6 +15,7 @@ import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * Extend this class in order to get analysis support for your tag.
@@ -77,7 +78,7 @@ public abstract class AnalysableTag extends TagSupport {
         // PageContext
         if (pageCache == null) {
             // FIXME: perhaps this should be back in the Filter? check where it is used
-            initializeThread();
+            // initializeThread();
             Object result = JspParseData.getParseData(
                 pageContext.getServletConfig().getServletContext().getRealPath("/"),
                 TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(
@@ -226,7 +227,6 @@ public abstract class AnalysableTag extends TagSupport {
         if ("yes".equals(getRequest().getAttribute("org.makumba.wasException"))
                 && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             return SKIP_PAGE;
-        try {
             if (needPageCache())
                 pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             setTagKey(pageCache);
@@ -234,21 +234,17 @@ public abstract class AnalysableTag extends TagSupport {
                 tagData = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, tagKey);
                 runningTag.set(tagData);
             }
-            int n = doAnalyzedStartTag(pageCache);
+            int n;
+            try {
+                n = doAnalyzedStartTag(pageCache);
+            } catch (LogicException e) {
+                throw new RuntimeWrappedException(e);
+            }
             if (tagData != null) {
                 runningTag.set(null);
                 getThreadTagStack().push(tagData);
             }
             return n;
-        } catch (Throwable t) {
-            treatException(t);
-            return SKIP_PAGE;
-        }
-    }
-
-    // should be overriden
-    protected void treatException(Throwable t) throws JspException {
-
     }
 
     /**
@@ -268,9 +264,8 @@ public abstract class AnalysableTag extends TagSupport {
                 getThreadTagStack().pop();
             }
             return doAnalyzedEndTag(pageCache);
-        } catch (Throwable t) {
-            treatException(t);
-            return SKIP_PAGE;
+        } catch (LogicException e) {
+            throw new RuntimeWrappedException(e);
         } finally {
             runningTag.set(null);
             tagKey = null;

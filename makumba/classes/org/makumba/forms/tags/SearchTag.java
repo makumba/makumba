@@ -16,9 +16,9 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.controller.http.ControllerFilter;
 import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderOperation;
+import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -140,7 +140,7 @@ public class SearchTag extends FormTagBase {
             HttpParameters parameters = RequestAttributes.getParameters(req);
             DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(resp.getSearchType());
 
-            req.setAttribute(ControllerFilter.MAKUMBA_FORM_RELOAD, "true");
+            req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");
             String objectName = "o";
             req.setAttribute(resp.getFormName() + "VariableFrom", resp.getSearchType() + " " + objectName);
             req.setAttribute(resp.getFormName() + "VariableFrom", "");

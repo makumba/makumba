@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
 
@@ -78,8 +79,7 @@ public class AttributeTag extends GenericMakumbaTag {
         }
         if (t != null)
             if (exceptionVar == null) {
-                treatException(t);
-                return SKIP_PAGE;
+                throw new RuntimeWrappedException(t);
             } else {
                 pageContext.setAttribute(exceptionVar, t);
                 if (t instanceof AttributeNotFoundException)

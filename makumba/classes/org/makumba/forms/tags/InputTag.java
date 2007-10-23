@@ -40,7 +40,7 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
-import org.makumba.controller.http.ControllerFilter;
+import org.makumba.forms.responder.ResponseControllerHandler;
 
 /**
  * mak:input tag
@@ -272,7 +272,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             try {
                 // check for a possible composite validation error set, and do form annotation if needed
                 CompositeValidationException errors = (CompositeValidationException) pageContext.getRequest().getAttribute(
-                    ControllerFilter.MAKUMBA_FORM_VALIDATION_ERRORS);
+                    ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
                 Collection exceptions = null;
                 if (errors != null) { // get the exceptions for this field
                     exceptions = errors.getExceptions(fieldName);
