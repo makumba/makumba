@@ -1,14 +1,18 @@
 package org.makumba.providers.query.hql;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.hibernate.CacheMode;
@@ -23,6 +27,7 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.Text;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
@@ -197,7 +202,12 @@ public class HQLQueryProvider extends QueryProvider {
         TransactionProvider tp = new TransactionProvider(config);
 
         HQLQueryProvider qr = new HQLQueryProvider();
-        qr.init(tp.getDefaultDataSourceName());
+        qr.init("test/localhost_mysql_makumba");
+        
+        //populateDatabase(getDB());
+        
+        
+        
 
         Vector v = new Vector();
         v.add(new Integer(1));
@@ -212,10 +222,6 @@ public class HQLQueryProvider extends QueryProvider {
         params.put("testPerson", new SQLPointer("test.Person", 345678));
         params.put("someDouble", new Double(2.0));
 
-        // populate db
-        // TestHibernateTags tht = new TestHibernateTags();
-        // tht.populateDb();
-
         String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
         String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date and p.T_shirt in (:someSet) order by p.surname DESC";
         String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :someDouble";
@@ -225,12 +231,89 @@ public class HQLQueryProvider extends QueryProvider {
         String query7 = "SELECT p.id AS ID, p.driver AS col3, p.birthdate AS col4 FROM test.Person p";
         String query8 = "SELECT 1 from test.Person p join p.indiv i WHERE i.name = 'john'";
         String query9 = "SELECT p.id from test.Person p WHERE p = :testPerson";
+        String query10 = "SELECT p.indiv.name FROM test.Person p WHERE p.gender = 1";
+        String query11 = "SELECT p.indiv.person.indiv.name FROM test.Person p WHERE p.gender = 1";
+        String query12 = "SELECT myIndiv.person.indiv.name FROM test.Person p join p.indiv as myIndiv";
 
         String[] queries = new String[] { query8, query7 };
-        for (int i = 0; i < queries.length; i++) {
+        /*for (int i = 0; i < queries.length; i++) {
             System.out.println("Query " + queries[i] + " ==> \n"
                     + printQueryResults(qr.execute(queries[i], params, 0, 50)) + "\n\n");
-        }
+        }*/
+        System.out.println("Query  ==> \n"
+            + printQueryResults(qr.execute(query12, params, 0, 50)) + "\n\n");
+    }
+    
+    static Pointer person;
+    static Pointer brother;
+    static Pointer address;
+    static Dictionary pc;
+    static Vector v;
+    static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
+    static ArrayList languages = new ArrayList();
+    static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
+            { "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
+    
+    private static boolean populated = false;
+    
+    private static void populateDatabase(org.makumba.Transaction db) {
+        if(populated) return;
+        populated = true;
+        
+        languages.clear();
+        Dictionary language = new Hashtable();
+        for (int i = 0; i < languageData.length; i++) {
+            language.put("name", languageData[i][0]);
+            language.put("isoCode", languageData[i][1]);
+            languages.add(db.insert("test.Language", language));
+        }  
+        
+        Properties p = new Properties();
+        
+        p.put("indiv.name", "bart");
+        brother=db.insert("test.Person", p);
+
+        p.clear();
+        p.put("indiv.name", "john");
+        
+        Calendar c = Calendar.getInstance();
+        c.clear();
+        c.set(1977, 2, 5);
+        Date birthdate = c.getTime();
+        p.put("birthdate", birthdate);
+                
+        p.put("uniqDate", birthdate);
+        p.put("gender", new Integer(1));
+        p.put("uniqChar", new String("testing \" character field"));
+        
+        p.put("weight", new Double(85.7d));
+        
+        p.put("comment", new Text("This is a text field. It's a comment about this person."));
+
+        p.put("uniqInt", new Integer(255));             
+        
+        Vector intSet = new Vector();
+        intSet.addElement(new Integer(1));
+        intSet.addElement(new Integer(0));
+        p.put("intSet", intSet);
+
+        p.put("brother", brother);
+        p.put("uniqPtr", languages.get(0));
+        person = db.insert("test.Person", p);
+        
+        p.clear();
+        p.put("description", "");
+        p.put("usagestart", birthdate);
+        p.put("email", "email1");
+        System.out.println(address=db.insert(person, "address", p));
+        
+                  
+    }
+    
+    private static org.makumba.Transaction getDB() {
+        Configuration config = new Configuration();
+        TransactionProvider tp = new TransactionProvider(config);
+        return tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
     }
 
     public static String printQueryResults(Vector v) {
