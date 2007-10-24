@@ -3,6 +3,14 @@
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <jsp:include page="header.jsp" flush="false" />
 
+<style>
+<!--
+.smallText {
+  font-size: x-small;
+}
+-->
+</style>
+
 <table border="0">
   <mak:searchForm in="test.Person" name="searchArchive" method="get">
     <tr>
@@ -15,9 +23,26 @@
       </td>
     </tr>
     <tr>
-      <th>language</th> 
+      <th>uniq ptr (language)</th> 
       <td>
         <mak:criterion fields="uniqPtr"> <mak:searchField nullOption="any" /> </mak:criterion>
+      </td>
+    </tr>
+    <tr>
+      <th>uniq ptr (language) name</th> 
+      <td>
+        <mak:criterion fields="uniqPtr.name"> 
+          <mak:matchMode matchModes="contains, equals, begins, ends" type="radio" /><br>
+          <mak:searchField /> 
+        </mak:criterion>
+      </td>
+    </tr>
+    <tr>
+      <th>speaks</th> 
+      <td>
+        <mak:criterion fields="speaks"> 
+          <mak:searchField size="4"/> 
+        </mak:criterion>
       </td>
     </tr>
     <tr>
@@ -66,79 +91,22 @@ where: ${searchArchiveWhere}<br>
 <c:if test="${searchArchiveDone}">
   <h3>Results with mak:resultList</h3>
   <table width="100%">
-    <tr>
-      <th>indiv name</th>
-      <th>indiv surname</th>
-      <th>gender</th>
-      <th>age</th>
-      <th>weight</th>
-      <th>email</th>
-      <th>hobbies</th>
-      <th>birth date</th>
-      <th>begin Date</th>
-      <th>uniq Ptr</th>
-      <th>uniq Date</th>
-      <th>uniq Int</th>
-      <th>uniq Char</th>
-      <th>action</th>
-    </tr> 
+    <%@include file="personListHeaderInclude.jsp" %>
     <mak:resultList resultsFrom="searchArchive" >
-      <tr>
-        <td><mak:value expr="o.indiv.name" /></td>
-        <td><mak:value expr="o.indiv.surname" /></td>
-        <td><mak:value expr="o.gender" /></td>
-        <td><mak:value expr="o.age" /></td>
-        <td><mak:value expr="o.weight" />
-        <td><mak:value expr="o.email" />
-        <td><mak:value expr="o.hobbies" />
-        <td><mak:value expr="o.birthdate" />
-        <td><mak:value expr="o.beginDate" />
-        <td><mak:value expr="o.uniqPtr" />
-        <td><mak:value expr="o.uniqDate" />
-        <td><mak:value expr="o.uniqInt" />
-        <td><mak:value expr="o.uniqChar" />
-        <td><a href="personEdit.jsp?person=<mak:value expr='o'/>">edit</a> <mak:delete object="o" widget="button" action="personList.jsp" method="post" style="display:inline">Delete</mak:delete> </td>
-      </tr>
+      <%@include file="personListDisplayInclude.jsp" %>
     </mak:resultList>
   </table>
   
   <h3>Results with standard mak:list</h3>
   <table width="100%">
-    <tr>
-      <th>indiv name</th>
-      <th>indiv surname</th>
-      <th>gender</th>
-      <th>age</th>
-      <th>weight</th>
-      <th>email</th>
-      <th>hobbies</th>
-      <th>birth date</th>
-      <th>begin Date</th>
-      <th>uniq Ptr</th>
-      <th>uniq Date</th>
-      <th>uniq Int</th>
-      <th>uniq Char</th>
-      <th>action</th>
-    </tr> 
+    <%@include file="personListHeaderInclude.jsp" %>
     <mak:list from="test.Person o" variableFrom="#{searchArchiveVariableFrom}" where="#{searchArchiveWhere}" id="makList">
-      <tr>
-        <td><mak:value expr="o.indiv.name" /></td>
-        <td><mak:value expr="o.indiv.surname" /></td>
-        <td><mak:value expr="o.gender" /></td>
-        <td><mak:value expr="o.age" /></td>
-        <td><mak:value expr="o.weight" />
-        <td><mak:value expr="o.email" />
-        <td><mak:value expr="o.hobbies" />
-        <td><mak:value expr="o.birthdate" />
-        <td><mak:value expr="o.beginDate" />
-        <td><mak:value expr="o.uniqPtr" />
-        <td><mak:value expr="o.uniqDate" />
-        <td><mak:value expr="o.uniqInt" />
-        <td><mak:value expr="o.uniqChar" />
-        <td><a href="personEdit.jsp?person=<mak:value expr='o'/>">edit</a> <mak:delete object="o" widget="button" action="personList.jsp" method="post" style="display:inline">Delete</mak:delete> </td>
-      </tr>
+      <%@include file="personListDisplayInclude.jsp" %>
     </mak:list>
   </table>  
 </c:if>
+
+<hr/>
+
 </body>
 <html>

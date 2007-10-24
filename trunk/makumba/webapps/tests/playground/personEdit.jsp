@@ -21,6 +21,7 @@
   <tr><th>uniqDate</th><td><mak:input name="uniqDate" /></td></tr> 
   <tr><th>uniqInt</th><td><mak:input name="uniqInt" /></td></tr> 
   <tr><th>uniqChar</th><td><mak:input name="uniqChar" /></td></tr> 
+  <tr><th>speaks</th><td><mak:input name="speaks" /></td></tr> 
   <tr>
     <td colspan="2" align="center"><input type="submit" /> </td>
   </tr>
