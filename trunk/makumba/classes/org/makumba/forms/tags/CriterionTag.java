@@ -70,8 +70,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         String[] fieldsSplit = getFieldsSplit();
         for (int i = 0; i < fieldsSplit.length; i++) {
             String element = fieldsSplit[i];
-            FieldDefinition fd = getForm().fdp.getInputTypeAtAnalysis(getForm().getDataTypeAtAnalysis(pageCache),
-                element, pageCache);
+            FieldDefinition fd = getForm().fdp.getInputTypeAtAnalysis(this,
+                getForm().getDataTypeAtAnalysis(pageCache), element, pageCache);
 
             // if the fd is not found, the field is not known
             if (fd == null) {
@@ -151,7 +151,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         if (fieldDef == null) {
             parseFieldList(pageCache);
         }
-        return fdp.getInputTypeAtAnalysis(getForm().getDataTypeAtAnalysis(pageCache), getInputName(), pageCache);
+        return fdp.getInputTypeAtAnalysis(this, getForm().getDataTypeAtAnalysis(pageCache), getInputName(), pageCache);
     }
 
     @Override

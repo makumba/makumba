@@ -143,7 +143,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     FieldDefinition getTypeFromContext(PageCache pageCache) {
-        return fdp.getInputTypeAtAnalysis(getForm().getDataTypeAtAnalysis(pageCache), name, pageCache);
+        return fdp.getInputTypeAtAnalysis(this, getForm().getDataTypeAtAnalysis(pageCache), name, pageCache);
     }
 
     /**

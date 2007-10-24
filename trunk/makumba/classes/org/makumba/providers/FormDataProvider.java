@@ -128,15 +128,18 @@ public interface FormDataProvider {
     /**
      * Gets the type of an input tag
      * 
-     * @param base
+     * @param tag
      *            TODO
      * @param fieldName
      *            the name of the field of which the type should be returned
      * @param pageCache
      *            the page cache of the current page
+     * @param base
+     *            TODO
      * @return A FieldDefinition corresponding to the type of the input field
      */
-    public abstract FieldDefinition getInputTypeAtAnalysis(DataDefinition dd, String fieldName, PageCache pageCache);
+    public abstract FieldDefinition getInputTypeAtAnalysis(AnalysableTag tag, DataDefinition dd, String fieldName,
+            PageCache pageCache);
 
     public abstract MultipleKey getParentListKey(AnalysableTag tag);
 
