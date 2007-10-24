@@ -19,6 +19,9 @@ public class TagData implements Serializable {
 
     /** Name of the tag */
     public String name;
+    
+    /** Number of the node in the graph of tags of the page **/
+    public int nodeNumber;
 
     /** Tag attributes */
     public Map attributes;
