@@ -230,8 +230,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param origin
      *            the origin of the string in the parsed page
      */
-    Map parseAttributes(String s, int origin) {
-        Map attributes = new HashMap(13);
+    Map<String, String> parseAttributes(String s, int origin) {
+        Map<String, String> attributes = new HashMap<String, String>(13);
         // System.out.println("tag = " + s); //debugging
 
         Matcher m = JspTagAttributePattern.matcher(s);
