@@ -24,7 +24,7 @@ public class TagData implements Serializable {
     public int nodeNumber;
 
     /** Tag attributes */
-    public Map attributes;
+    public Map<String, String> attributes;
 
     /** Tag object, if one is created by the analyzer */
     public Object tagObject;
