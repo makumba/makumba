@@ -13,7 +13,6 @@ import org.makumba.list.engine.ComposedQuery;
 /**
  * This class is a specially tailored mak:list to work on the results from a search form. It provides short-cuts to set
  * the from, variableFrom and where parameters from the request attributes set by the search form. <br>
- * FIXME: it does not work yet...
  * 
  * @see SearchTag
  * @see QueryTag
@@ -30,19 +29,9 @@ public class ResultListTag extends QueryTag {
     }
 
     @Override
-    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
-        return super.doAnalyzedEndTag(pageCache);
-    }
-
-    @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         setFieldsFromSearchFormInfo(pageCache);
         return super.doAnalyzedStartTag(pageCache);
-    }
-
-    @Override
-    public void doEndAnalyze(PageCache pageCache) {
-        super.doEndAnalyze(pageCache);
     }
 
     @Override
@@ -51,6 +40,10 @@ public class ResultListTag extends QueryTag {
         super.doStartAnalyze(pageCache);
     }
 
+    /**
+     * Sets the from, variableFrom and where parts of the query from the search form information. This method must be
+     * called before any of the super class methods to do analysis & execution is invoked.
+     */
     private void setFieldsFromSearchFormInfo(PageCache pageCache) {
         TagData tag = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE,
             new MultipleKey(new Object[] { resultsFrom }));
@@ -73,7 +66,6 @@ public class ResultListTag extends QueryTag {
 
     @Override
     public void setTagKey(PageCache pageCache) {
-        // super.setTagKey(pageCache);
         setFieldsFromSearchFormInfo(pageCache);
         super.setTagKey(pageCache);
     }
