@@ -66,6 +66,8 @@ public class SearchTag extends FormTagBase {
 
     public static final String SUFFIX_INPUT_MATCH = "Match";
 
+    public static final String OBJECT_NAME = "o";
+
     DataDefinition in = null;
 
     private void fillFormAction() {
@@ -116,8 +118,7 @@ public class SearchTag extends FormTagBase {
      * Inherited
      */
     public void setTagKey(PageCache pageCache) {
-        Object keyComponents[] = { in.getName(), formName, fdp.getParentListKey(this), getClass() };
-        tagKey = new MultipleKey(keyComponents);
+        tagKey = new MultipleKey(new Object[] { formName });
     }
 
     protected class SearchResponderOperation extends ResponderOperation {
@@ -141,8 +142,11 @@ public class SearchTag extends FormTagBase {
             DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(resp.getSearchType());
 
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");
-            String objectName = "o";
-            req.setAttribute(resp.getFormName() + "VariableFrom", resp.getSearchType() + " " + objectName);
+
+            req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + OBJECT_NAME);
+
+            // TODO: variable from will need to be computed, depending what sub/field inputs are filled in
+            // for now, just leave it empty
             req.setAttribute(resp.getFormName() + "VariableFrom", "");
             String where = "";
 
@@ -170,7 +174,7 @@ public class SearchTag extends FormTagBase {
                         if (i == 0) {
                             where += " ( ";
                         }
-                        where = computeTypeSpecificQuery(req, attributes, parameters, objectName, where,
+                        where = computeTypeSpecificQuery(req, attributes, parameters, OBJECT_NAME, where,
                             multiFieldSearchCriterion[i], inputName, fd);
                         if (i < multiFieldSearchCriterion.length - 1) {
                             where += " OR ";
