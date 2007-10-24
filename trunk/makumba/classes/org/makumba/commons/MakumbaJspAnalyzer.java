@@ -52,7 +52,8 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
-            "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag" };
+            "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
+            "org.makumba.list.tags.ResultListTag" };
 
     static String[] oldFormTags = { "form", "org.makumba.forms.tags.FormTagBase", "newForm",
             "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",

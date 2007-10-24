@@ -79,7 +79,6 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
 
-
     <attribute>
       <name>offset</name>
       <required>false</required>
@@ -91,8 +90,9 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
-
   </tag>
+  
+  
   <tag>
     <name>object</name>
     <tag-class>org.makumba.list.tags.ObjectTag</tag-class>
@@ -160,6 +160,70 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+
+  <tag>
+    <name>resultList</name>
+    <tag-class>org.makumba.list.tags.ResultListTag</tag-class>
+    <tei-class>org.makumba.list.tags.CountTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>display result from a search form</description>
+
+    <attribute>
+      <name>resultsFrom</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>from</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>groupBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>offset</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>limit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  
 
   <tag>
     <name>value</name>
