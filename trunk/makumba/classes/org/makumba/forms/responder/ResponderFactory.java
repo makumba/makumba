@@ -3,7 +3,11 @@ package org.makumba.forms.responder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -15,12 +19,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.analyser.TagData;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
+import org.makumba.forms.tags.FormTagBase;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -48,28 +56,81 @@ public class ResponderFactory {
      */
     private void init() {
         cacheManager.setFactory(this);
-
     }
 
     /**
-     * Reads all responder codes from a request (all code_suffix values of __mak__responder__) and orders them by
-     * suffix.
+     * Reads all responder codes from a request (all code_suffix values of __mak__responder__).
      * 
      * @param req
      *            the request in which we currently are
      * @return the enumeration of responder codes
      */
-    public Iterator<Object> getResponderCodes(HttpServletRequest req) {
-        TreeSet<Object> set = new TreeSet<Object>(bySuffix);
-
+    public Iterator<String> getResponderCodes(HttpServletRequest req) {
+        TreeSet<String> set = new TreeSet<String>(bySuffix);
+        
         Object o = RequestAttributes.getParameters(req).getParameter(Responder.responderName);
         if (o != null) {
             if (o instanceof String)
-                set.add(o);
+                set.add((String)o);
             else
                 set.addAll((Vector) o);
         }
+        
+         
         return set.iterator();
+    }
+    
+    /**
+     * Returns the responders in the page in a topological order
+     * @param req the request corresponding to the current page
+     * @return an Iterator iterating over a sorted array of responder codes
+     */
+    public Iterator<String> getOrderedResponderCodes(HttpServletRequest req) {
+        
+        // let's fetch the List containing the order of the forms in the page
+        // for this we need to fetch a root form responder
+        // we also make a translation from form key to form responder
+        Iterator<String> responderCodes = getResponderCodes(req);
+        Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
+        MultipleKey[] order = null;
+        
+        while(responderCodes.hasNext()) {
+            String responderCode = responderCodes.next();
+            if(responderCode == null) {
+                continue;
+            }
+            Responder responder = getResponder(responderCode);
+            if(responder.getFormKey() != null)
+                formKeyToResponderCode.put(responder.getFormKey(), responderCode); 
+            if(responder.getFormOrder() != null) {
+                order = responder.getFormOrder();
+            } 
+        }
+        
+        // now we can order the responders
+        List<String> orderedResponderCodes = new LinkedList<String>();
+        
+        if(order != null ) {
+            
+            for(int i = 0; i < order.length; i++) {
+                if(order[i] != null)
+                    orderedResponderCodes.add(formKeyToResponderCode.get(order[i]));
+            }
+        }
+        return orderedResponderCodes.iterator();
+        
+    }
+    
+    public void printOrderedResponders(HttpServletRequest req) {
+        Iterator<String> order = getOrderedResponderCodes(req);
+        while(order.hasNext()) {
+            String code = order.next();
+            if(code == null) break;
+            Responder r = getResponder(code);
+            System.out.println("** responder code: "+code);
+            System.out.println("** responder form name: "+r.getFormName());
+            System.out.println("** responder form key:  "+r.responderKey());
+        }
     }
 
     /**
@@ -114,13 +175,15 @@ public class ResponderFactory {
      * 
      * @param code
      *            the responder code
-     * @return the responder suffix, ZERO if none found FIXME maybe this goes just 2 levels, so forms in forms in forms
-     *         aren't working?
+     * @return the responder suffix, ZERO if none found
+     * 
+     * FIXME maybe this goes just 2 levels, so forms in forms in forms
+     * aren't working?
      */
     private Integer suffix(String code) {
         int n = code.indexOf(Responder.suffixSeparator);
         if (n == -1)
-            return ResponderFactory.ZERO;
+            return ZERO;
         code = code.substring(n + 1);
         n = code.indexOf(Responder.suffixSeparator);
         if (n != -1)
@@ -144,6 +207,8 @@ public class ResponderFactory {
     public Responder getResponder(String code) {
         String suffix = getSuffixes(code)[0];
         String parentSuffix = getSuffixes(code)[1];
+        if(suffix != "")
+            code = code.substring(0, code.indexOf(suffix));
         return cacheManager.getResponder(code, suffix, parentSuffix);
     }
 
@@ -189,8 +254,8 @@ public class ResponderFactory {
      */
     public ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
         ArrayList unassignedExceptions = e.getExceptions();
-        for (Iterator<Object> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
-            String responderCode = (String) responderCodes.next();
+        for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+            String responderCode = responderCodes.next();
             String[] suffixes = getSuffixes(responderCode);
             getResponder(responderCode).getUnassignedExceptions(e, unassignedExceptions, suffixes[0]);
         }
@@ -230,12 +295,12 @@ public class ResponderFactory {
      * FIXME this code is not taking into account multiple forms: it iterates through all the responders of a
      * page, but directly treats the exception of the first form responder, which means that errors in the nested forms
      * are ignored. this should be fixed, in doing something like this:
-     * - iterate through all the forms, extract the form hierarchy and start processing with the most inner form
+     * - iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance
      * - for each form responder, store the message, errors, request and response (containing modified attributes) into
      *   a Response object
      * - generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
      *   an ArrayList of Response objects)
-     * - the controller should then treat the responses and exceptions according to this specific order
+     * - the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors get ignored)
      * 
      * @param req
      *            the {@link HttpServletRequest} corresponding to the current page
@@ -244,29 +309,27 @@ public class ResponderFactory {
      * @return a response object holding all necessary information for the {@link ControllerFilter}
      */
     public Exception getResponse(HttpServletRequest req, HttpServletResponse resp) {
-
+        
         setResponderWorkingDir(req);
 
         if (req.getAttribute(RESPONSE_STRING_NAME) != null)
             return null;
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
-
+        
         // we go over all the responders of this page (hold in the request)
-        for (Iterator<Object> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+        for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
 
             // first we need to retrieve the responder from the cache
-            String code = (String) responderCodes.next();
+            String code = responderCodes.next();
             String suffix = getSuffixes(code)[0];
             String parentSuffix = getSuffixes(code)[1];
             Responder formResponder = getResponder(code);
 
             try {
                 checkMultipleSubmission(req, formResponder);
-
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
-
                 // display the response message and set attributes
                 message = "<font color=green>" + formResponder.message + "</font>";
                 if (result != null) {
