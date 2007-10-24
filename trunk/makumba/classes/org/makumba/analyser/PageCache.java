@@ -57,27 +57,6 @@ public class PageCache {
     }
 
     /**
-     * Returns all elements of a cache in an ordered way
-     * 
-     * @param cacheName
-     *            the name of the cache we want to work with
-     * @return a List containing all the elements of the cache in the order of addition to the cache
-     */
-    public List retrieveElements(String cacheName) {
-        HashMap cache = (HashMap) caches.get(cacheName);
-        if (cache == null)
-            return null;
-
-        List orderedElements = new LinkedList();
-
-        Iterator i = cache.keySet().iterator();
-        while (i.hasNext()) {
-            orderedElements.add(cache.get(i.next()));
-        }
-        return orderedElements;
-    }
-
-    /**
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
      */
     public void cacheSetValues(String cacheName, Object[] value) {
