@@ -6,3 +6,9 @@ This file describes the visible changes due to refactoring, that can have an imp
   - close() inlined
   - getMakumbaLogger() inlined
   - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
+  
+ - possible behavioural changes (needs testing): 
+  
+  - in GenericMakumbaTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
+  - in ResponseTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
+  - filter refactoring: exceptions are passed on, not treatException-ed anymore until the ErrorFilter handles them 
