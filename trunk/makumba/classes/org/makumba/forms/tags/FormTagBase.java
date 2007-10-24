@@ -26,8 +26,6 @@ package org.makumba.forms.tags;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -36,11 +34,10 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
-import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.analyser.TagData;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
@@ -171,13 +168,14 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.setMultipart(true);
     }
     
-    public void setFormOrder(List order) {
+    public void setFormOrder(MultipleKey[] order) {
         FormTagBase parent = findParentForm();
         if (parent != null) {// propagate form order to the root form
             parent.setFormOrder(order);
         }
         else {
-            responder.setFormOrder(order);
+            if(responder.getFormOrder() == null)
+                responder.setFormOrder(order);
         }
             
     }
@@ -390,26 +388,12 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
         responder.setExtraFormatting(extraFormatting);
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
+        responder.setFormKey(getTagKey());
         
-
-        // retrieves the form order from page cache and puts it into the responder
-        List<TagData> orderedTagData = pageCache.retrieveElements(TagData.TAG_DATA_CACHE);
-        if(orderedTagData == null)
-            throw new MakumbaError("Form order could not be retrieved. Please report to the developers");
-        
-        // this list contains all the tags TagData, we will focus on the forms 
-        Iterator<TagData> i = orderedTagData.iterator();
-        while(i.hasNext()) {
-            Object tag = i.next().getTagObject();
-            if(tag == null) { // shouldn't be for makumba tags
-                orderedTagData.remove(tag);
-                continue;
-            }
-            if(!(tag instanceof FormTagBase))
-                orderedTagData.remove(tag);
-        }
-        
-        setFormOrder(orderedTagData);
+        // retrieves the form dependency graph from the cache
+        MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.DEPENDENCY_CACHE, MakumbaJspAnalyzer.DEPENDENCY_CACHE);
+ 
+        setFormOrder(sortedForms);
         
         starttime = new java.util.Date().getTime();
 
