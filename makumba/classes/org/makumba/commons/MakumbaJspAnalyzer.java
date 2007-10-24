@@ -24,6 +24,7 @@
 package org.makumba.commons;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -73,7 +74,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     static final Map<String, Class> tagClasses = new HashMap<String, Class>();
     
-    static final List<String> formTagNamesList = new LinkedList<String>();
+    static final List<String> formTagNamesList = Arrays.asList(formTagNames);
     
     /**
      * Puts the Makumba tags into a Map
@@ -97,10 +98,6 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-            
-        for(int i = 0; i < formTagNames.length; i++) {
-            formTagNamesList.add(formTagNames[i]);
-        }
     }
 
     public static final String TAG_CACHE = "org.makumba.tags";
