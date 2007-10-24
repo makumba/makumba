@@ -26,6 +26,7 @@ package org.makumba.commons;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,9 +67,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
             "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
             "org.makumba.forms.tags.OptionTag" };
+    
+    static String[] formTagNames = {"form", "newForm", "addForm", "editForm", "deleteLink", "delete", "new", "add", "edit"};
 
     static final Map<String, Class> tagClasses = new HashMap<String, Class>();
-
+    
+    static final List<String> formTagNamesList = new LinkedList<String>();
+    
     /**
      * Puts the Makumba tags into a Map
      */
@@ -91,9 +96,15 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+            
+        for(int i = 0; i < formTagNames.length; i++) {
+            formTagNamesList.add(formTagNames[i]);
+        }
     }
 
     public static final String TAG_CACHE = "org.makumba.tags";
+    
+    public static final String DEPENDENCY_CACHE = "org.makumba.dependency";
 
     /**
      * Class used to store the status of the parser
@@ -115,9 +126,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         List<AnalysableTag> parents = new ArrayList<AnalysableTag>();
 
         PageCache pageCache = new PageCache();
+        
+        GraphTS formGraph = new GraphTS();
+        
+        
 
         /**
-         * Adds a tag to the current tagData
+         * Caches useful information for a tag in its TagData object and caches it in the pageCache. 
          * 
          * @param t
          *            the tag to be added
@@ -146,10 +161,45 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 }
                 pageCache.cache(TAG_CACHE, t.getTagKey(), t);
             }
+            
+            // we also want to cache the dependencies between form tags
+            if(formTagNamesList.contains(getTagName(t.tagData.name))) {
+                
+                // fetch the parent
+                if(t.getParent() instanceof AnalysableTag) {
+                    
+                    AnalysableTag parent = (AnalysableTag) t.getParent();
+                    
+                    // if the parent is a form tag
+                    // maybe not needed, but who knows
+                    if(formTagNamesList.contains(getTagName(parent.tagData.name))) {
+                        
+                        // we add this tag to the form graph
+                        td.nodeNumber = formGraph.addVertex(t.getTagKey());
+                        
+                        // we also add the dependency
+                        formGraph.addEdge(td.nodeNumber, parent.tagData.nodeNumber);
+                        
+                    } else {
+                        // we are a root form
+                        // we simply add it
+                        td.nodeNumber = formGraph.addVertex(t.getTagKey());
+                    }
+                    
+                } else if(t.getParent() == null) {
+                    // this form tag has no parent
+                    // we simply add it
+                    td.nodeNumber = formGraph.addVertex(t.getTagKey());
+                }
+            }
+            
             pageCache.cache(TagData.TAG_DATA_CACHE, t.getTagKey(), td);
 
             t.doStartAnalyze(pageCache);
             tags.add(t);
+            
+            
+            
         }
 
         /**
@@ -185,11 +235,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 throw new org.makumba.ProgrammerError(sb.toString());
             }
 
-            if (tagName.startsWith(makumbaPrefix)) {
-                tagName = tagName.substring(makumbaPrefix.length() + 1);
-            } else if (tagName.startsWith(formPrefix)) {
-                tagName = tagName.substring(formPrefix.length() + 1);
-            }
+            tagName = getTagName(tagName);
 
             AnalysableTag t = (AnalysableTag) parents.get(parents.size() - 1);
 
@@ -209,6 +255,20 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         }
 
         /**
+         * Gets the short name of a tag, without the prefix
+         * @param tagName the inital name of the tak, e.g. mak:newForm
+         * @return the short version of the name, e.g. newForm
+         */
+        private String getTagName(String tagName) {
+            if (tagName.startsWith(makumbaPrefix)) {
+                tagName = tagName.substring(makumbaPrefix.length() + 1);
+            } else if (tagName.startsWith(formPrefix)) {
+                tagName = tagName.substring(formPrefix.length() + 1);
+            }
+            return tagName;
+        }
+
+        /**
          * Ends the analysis when the end of the page is reached.
          */
         public void endPage() {
@@ -218,6 +278,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 t.doEndAnalyze(pageCache);
                 AnalysableTag.analyzedTag.set(null);
             }
+            // additionally to the tags, we also store the dependency graph in the pageCache after sorting it
+            formGraph.topo();            
+            pageCache.cache(DEPENDENCY_CACHE, DEPENDENCY_CACHE, formGraph.getSortedKeys());
         }
     }
 
@@ -305,8 +368,12 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     public void simpleTag(TagData td, Object status) {
         String makumbaPrefix = ((ParseStatus) status).makumbaPrefix + ":";
         String formsPrefix = ((ParseStatus) status).formPrefix + ":";
+        
+        // we handle only Makumba tags
         if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix))
             return;
+        
+        // we retrieve the name of the tag to fetch its class
         String tagName = "";
         if (td.name.startsWith(makumbaPrefix)) {
             tagName = td.name.substring(makumbaPrefix.length());
@@ -324,6 +391,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         } catch (Throwable thr) {
             thr.printStackTrace();
         }
+        // we set the tagObject of the tagData with the new tag object
         td.tagObject = t;
         t.setTagDataAtAnalysis(td);
         ((ParseStatus) status).addTag(t, td);
@@ -365,4 +433,5 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         ((ParseStatus) status).endPage();
         return ((ParseStatus) status).pageCache;
     }
+    
 }
