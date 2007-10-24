@@ -10,6 +10,7 @@
   <tr>
     <th><a href="languageList.jsp?sortBy=created">#</a></th>
     <th><a href="languageList.jsp?sortBy=name">name</a></th>
+    <th><a href="languageList.jsp?sortBy=isoCode">isoCode</a></th>
     <th><a href="languageList.jsp?sortBy=created">Created</a></th>
     <th><a href="languageList.jsp?sortBy=modified">Modified</a></th>
     <th>Actions</th>
@@ -18,6 +19,7 @@
     <tr>
       <td>${mak:count()}</td>
       <td><mak:value expr="language.name" /></td>
+      <td><mak:value expr="language.isoCode" /></td>
       <td><mak:value expr="language.TS_create" format="yyyy-MM-dd hh:mm:ss" /></td>
       <td><mak:value expr="language.TS_modify" format="yyyy-MM-dd hh:mm:ss" /></td>
       <td><a href="languageEdit.jsp?language=<mak:value expr="language" />">[Edit]</a> <a href="languageDelete.jsp?language=<mak:value expr="language" />">[Delete]</a> </td>    
