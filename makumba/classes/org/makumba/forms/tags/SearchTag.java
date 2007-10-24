@@ -2,7 +2,9 @@ package org.makumba.forms.tags;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -145,12 +147,10 @@ public class SearchTag extends FormTagBase {
 
             req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + OBJECT_NAME);
 
-            // TODO: variable from will need to be computed, depending what sub/field inputs are filled in
-            // for now, just leave it empty
-            req.setAttribute(resp.getFormName() + "VariableFrom", "");
             String where = "";
 
             Enumeration enumeration = data.keys();
+            HashSet<String> variableFroms = new HashSet<String>(1);
             while (enumeration.hasMoreElements()) {
                 String inputName = (String) enumeration.nextElement();
 
@@ -170,25 +170,31 @@ public class SearchTag extends FormTagBase {
                         where += " AND ";
                     }
 
+                    String whereThisField = "";
                     for (int i = 0; i < multiFieldSearchCriterion.length; i++) {
-                        if (i == 0) {
-                            where += " ( ";
+                        if (whereThisField.length() > 0) {
+                            whereThisField = " OR " + whereThisField;
                         }
-                        where = computeTypeSpecificQuery(req, attributes, parameters, OBJECT_NAME, where,
+                        whereThisField += computeTypeSpecificQuery(req, attributes, parameters, OBJECT_NAME,
                             multiFieldSearchCriterion[i], inputName, fd);
-                        if (i < multiFieldSearchCriterion.length - 1) {
-                            where += " OR ";
-                        } else {
-                            where += " ) ";
+                    }
+                    if (whereThisField.trim().length() > 0) {
+                        where += " ( " + whereThisField + " ) ";
+                        if (fd.isSetType()) { // enhance the variableFrom part
+                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName);
                         }
                     }
                 }
             }
             req.setAttribute(resp.getFormName() + "Where", where);
+            req.setAttribute(resp.getFormName() + "VariableFrom", StringUtils.toString(variableFroms, false));
             req.setAttribute(resp.getFormName() + "Done", Boolean.TRUE);
-            // System.out.println("where: " + where);
-            // System.out.println("params: " + parameters);
-            // System.out.println("attributes: " + attributes);
+            Logger.getLogger("org.makumba.searchForm").info(
+                "Set Where: " + req.getAttribute(resp.getFormName() + "Where"));
+            Logger.getLogger("org.makumba.searchForm").info(
+                "Set VariableFrom: " + req.getAttribute(resp.getFormName() + "VariableFrom"));
+            Logger.getLogger("org.makumba.searchForm").info(
+                "Set Done: " + req.getAttribute(resp.getFormName() + "Done"));
             return null;
         }
 
@@ -197,11 +203,22 @@ public class SearchTag extends FormTagBase {
         }
 
         private String computeTypeSpecificQuery(HttpServletRequest req, RequestAttributes attributes,
-                HttpParameters parameters, String objectName, String where, String fieldName, String attributeName,
-                FieldDefinition fd) throws LogicException {
+                HttpParameters parameters, String objectName, String fieldName, String attributeName, FieldDefinition fd)
+                throws LogicException {
+            String where = "";
             Object value = attributes.getAttribute(attributeName);
             if (value instanceof Vector) {
-                where += objectName + "." + fieldName + " IN SET ($" + attributeName + ")";
+                // if the vector actually has no elements, we do not add to the where-part
+                if (((Vector) value).size() > 0) {
+                    // we need to check for the field type as well - we have different labels for the sets
+                    String labelName;
+                    if (!fd.isSetType()) {
+                        labelName = objectName + "." + fieldName;
+                    } else {
+                        labelName = objectName + "_" + fieldName;
+                    }
+                    where += labelName + " IN SET ($" + attributeName + ")";
+                }
             } else if (isSingleValue(value)) {
                 Object advancedMatch = parameters.getParameter(attributeName + SearchTag.SUFFIX_INPUT_MATCH);
 
