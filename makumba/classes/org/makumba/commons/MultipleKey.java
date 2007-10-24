@@ -23,6 +23,7 @@
 
 package org.makumba.commons;
 
+import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Vector;
 
@@ -33,7 +34,7 @@ import java.util.Vector;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class MultipleKey extends Vector {
+public class MultipleKey extends Vector implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
