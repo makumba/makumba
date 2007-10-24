@@ -10,6 +10,8 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.forms.tags.CriterionTag;
+import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
@@ -161,7 +163,7 @@ public class ListFormDataProvider implements FormDataProvider {
     /* (non-Javadoc)
      * @see org.makumba.list.FormDataProvider#getInputTypeAtAnalysis(org.makumba.DataDefinition, java.lang.String, org.makumba.analyser.PageCache)
      */
-    public FieldDefinition getInputTypeAtAnalysis(DataDefinition dd, String fieldName, PageCache pageCache) {
+    public FieldDefinition getInputTypeAtAnalysis(AnalysableTag tag, DataDefinition dd, String fieldName, PageCache pageCache) {
         if (dd == null)
             return null;
         int dot = -1;
@@ -173,7 +175,7 @@ public class ListFormDataProvider implements FormDataProvider {
             FieldDefinition fd = dd.getFieldDefinition(fname);
             if (fd == null)
                 throw new org.makumba.NoSuchFieldException(dd, fname);
-            if (!(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
+            if (!(tag instanceof SearchFieldTag || tag instanceof CriterionTag) && !(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
                 throw new org.makumba.InvalidFieldTypeException(fieldName + " must be linked via not null pointers, "
                         + fd.getDataDefinition().getName() + "->" + fd.getName() + " is not");
             dd = fd.getPointedType();
