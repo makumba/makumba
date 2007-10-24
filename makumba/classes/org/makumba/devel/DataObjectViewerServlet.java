@@ -88,7 +88,7 @@ public class DataObjectViewerServlet extends DataServlet {
                 String OQL = "SELECT ";
                 for (int i = 0; i < fields.size(); i++) {
                     FieldDefinition fd = (FieldDefinition) fields.get(i);
-                    if (!fd.isSimpleSetType()) {
+                    if (!fd.isSetType()) {
                         OQL += "o." + fd.getName() + " AS " + fd.getName();
                     } else {
                         OQL += "\"<i>&lt;SET&gt;</i>\" AS " + fd.getName();
