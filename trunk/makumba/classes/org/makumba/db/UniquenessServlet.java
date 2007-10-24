@@ -103,11 +103,11 @@ public class UniquenessServlet extends HttpServlet {
         
         if(v.size() > 0) 
         {
-            writer.println("not unique");
+            writer.print("not unique");
         }
         else
         {
-            writer.println("unique");
+            writer.print("unique");
         }
         db.close();
     }
