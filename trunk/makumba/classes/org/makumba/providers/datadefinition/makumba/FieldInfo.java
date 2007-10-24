@@ -1079,10 +1079,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return isIntegerType() || isRealType();
     }
 
-    public boolean isSimpleSetType() {
-        return getIntegerType() == _set || isSetEnumType();
+    public boolean isSetType() {
+        return getIntegerType() == _set || isInternalSet();
     }
-    
+
     public boolean isEnumType() {
         return getIntegerType() == _intEnum || getIntegerType() == _charEnum;
     }
