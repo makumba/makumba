@@ -10,6 +10,8 @@ import java.util.Collection;
  */
 public class StringUtils {
 
+    private static final String DEFAULT_DELIMETER = ", ";
+
     /** Returns a string with lower-cased first letter. */
     public static String lowerCaseBeginning(String s) {
         return String.valueOf(s.charAt(0)).toLowerCase() + s.substring(1);
@@ -42,7 +44,7 @@ public class StringUtils {
     }
 
     public static String toString(Object[] array, boolean frame) {
-        return toString(array, frame, ", ");
+        return toString(array, frame, DEFAULT_DELIMETER);
     }
 
     public static String toString(Object[] array, boolean frame, String delimeter) {
@@ -62,8 +64,16 @@ public class StringUtils {
         return b.toString();
     }
 
+    public static String toString(Collection collection, boolean frame, String delimeter) {
+        return toString((Object[]) collection.toArray(new Object[collection.size()]), frame, delimeter);
+    }
+
+    public static String toString(Collection collection, boolean frame) {
+        return toString(collection, frame, DEFAULT_DELIMETER);
+    }
+
     public static String toString(Collection collection) {
-        return toString((Object[]) collection.toArray(new Object[collection.size()]));
+        return toString(collection, true);
     }
 
     public static String concatAsString(Object[] array) {
