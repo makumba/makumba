@@ -26,7 +26,6 @@ package org.makumba.forms.responder;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,6 +34,7 @@ import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
+import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 
@@ -124,6 +124,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the name of the form we operate on (only needed for search forms). */
     protected String formName;
+    
+    /** the key of the form we operate on **/
+    protected MultipleKey formKey;
 
     /** the type where the new operation is made */
     protected String newType;
@@ -136,9 +139,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
-
-    /** order of the forms in the page * */
-    protected List formOrder;
+    
+    /** order of the forms in the page **/
+    protected MultipleKey[] formOrder;
 
     public String getHandler() {
         return handler;
@@ -176,7 +179,11 @@ public abstract class Responder implements java.io.Serializable {
         return formName;
     }
 
-    public List getFormOrder() {
+    public MultipleKey getFormKey() {
+        return formKey;
+    }
+    
+    public MultipleKey[] getFormOrder() {
         return formOrder;
     }
 
@@ -187,7 +194,7 @@ public abstract class Responder implements java.io.Serializable {
         database = RequestAttributes.getAttributes(req).getRequestDatabase();
     }
 
-    /** pass the operation * */
+    /** pass the operation **/
     public void setOperation(String operation, ResponderOperation op) {
         this.operation = operation;
         this.op = op;
@@ -261,8 +268,12 @@ public abstract class Responder implements java.io.Serializable {
     public void setFormName(String formName) {
         this.formName = formName;
     }
-
-    public void setFormOrder(List formOrder) {
+    
+    public void setFormKey(MultipleKey formKey) {
+        this.formKey = formKey;
+    }
+    
+    public void setFormOrder(MultipleKey[] formOrder) {
         this.formOrder = formOrder;
     }
 
@@ -313,7 +324,7 @@ public abstract class Responder implements java.io.Serializable {
     }
 
     // ----------------- response section ------------------
-
+ 
     /** formats an error message */
     public static String errorMessage(Throwable t) {
         return errorMessage(t.getMessage());
