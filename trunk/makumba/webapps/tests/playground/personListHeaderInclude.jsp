@@ -1,5 +1,3 @@
-<%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
-<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
   <tr>
     <th>indiv name</th>
     <th>indiv surname</th>
