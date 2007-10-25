@@ -209,8 +209,8 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
                 && StringUtils.equals(pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD),
                     "true")) {
             String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
-            if (type.getIntegerType() == FieldDefinition._date) {
-                HttpParameters parameters = RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest());
+            HttpParameters parameters = RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest());
+            if (type.isDateType()) {
                 // we need a special treatment for date fields, as they do not come in a single input, but several ones
                 val = dateEditor.readFrom(tagName, parameters);
                 // if the date is the default value date, set it to null
@@ -218,7 +218,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
                     val = null;
                 }
             } else { // other types can be handled normally
-                val = pageContext.getRequest().getParameter(tagName);
+                val = parameters.getParameter(tagName); 
             }
             return computedValue(val, type);
         }
