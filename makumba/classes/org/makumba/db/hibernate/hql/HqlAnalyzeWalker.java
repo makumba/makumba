@@ -20,6 +20,7 @@ import antlr.collections.AST;
 public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     private List result;
+    private String query;
 
     void setAliasType(AST alias, String type) throws antlr.RecognitionException{
         if (aliasTypes.get(alias.getText()) != null)
@@ -147,6 +148,26 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         
     }
 
+    AST deriveQueryExpr(AST ae) throws SemanticException {
+        // the query type is the first projection type
+        // FIXME maybe we should check to make sure that we only have one projection
+        ae= ae.getFirstChild().getFirstChild();
+        return ae;
+    }
+    AST deriveAggregateExpr(AST ae, AST ag) throws SemanticException {
+        String agr= ag.getText();
+        if("max".equals(agr) || "min".equals(agr))
+            // min and max return the same type as the expr
+            return ae;
+        if("avg".equals(agr))
+            return new ExprTypeAST(ExprTypeAST.DOUBLE);
+        if("count".equals(agr))
+            return new ExprTypeAST(ExprTypeAST.INT);
+        
+        // FIXME see if there are other aggregate functions, throw exception for unknown aggregate (though the walker should not let it pass)
+        return null;
+    }
+
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
         // FIXME: add arithmetic parameter inferences, see deriveLogicalExpr
         // case-when already returns an analyzed expression
@@ -188,14 +209,17 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     
     void beforeStatement(String statementName, int statementType) {
         super.beforeStatement(statementName, statementType);
-        HashMap aliasTypes1=(HashMap)((HashMap)aliasTypes).clone();
-        stackAliases.push(aliasTypes);
-        aliasTypes= aliasTypes1;
+        if(isSubQuery()){
+            HashMap aliasTypes1=(HashMap)((HashMap)aliasTypes).clone();
+            stackAliases.push(aliasTypes);
+            aliasTypes= aliasTypes1;
+        }
     }
     
     void afterStatementCompletion(String statementName) {
+        if(isSubQuery())
+            aliasTypes = (HashMap) stackAliases.pop();
         super.afterStatementCompletion(statementName);
-        aliasTypes = (HashMap) stackAliases.pop();
     }
     
     
@@ -214,5 +238,13 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     @Override
     public void reportError(RecognitionException ex){
         throw new RuntimeWrappedException(ex);
+    }
+
+    public void setDebug(String query1) {
+        query=query1;        
+    }
+    
+    public String toString() {
+        return query;
     }
 }
