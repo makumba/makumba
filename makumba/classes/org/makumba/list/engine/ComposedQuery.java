@@ -447,6 +447,9 @@ public class ComposedQuery {
      * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
      */
     public Object checkExprSetOrNullable(String expr) {
+        if(expr.toLowerCase().indexOf(" from ")!=-1)
+        	// subqueries do not need separate queries
+            return null;
         int n = 0;
         int m = 0;
         while (true) {
