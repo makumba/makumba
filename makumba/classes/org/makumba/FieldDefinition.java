@@ -301,8 +301,8 @@ public interface FieldDefinition {
     /** retuns whether this field is a real type. */
     public boolean isRealType();
 
-    /** retuns whether this field is a set type, i.e. set, setIntEnum or setCharEnum, but not setComplex. */
-    public boolean isSimpleSetType();
+    /** retuns whether this field is a set type, i.e. set, setIntEnum or setCharEnum or setComplex. */
+    public boolean isSetType();
 
     /** retuns whether this field is a set enum type, i.e. setIntEnum or setCharEnum. */
     public boolean isSetEnumType();
