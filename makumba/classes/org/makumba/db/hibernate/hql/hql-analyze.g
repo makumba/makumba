@@ -51,7 +51,13 @@ tokens
   AST deriveArithmethicExpr(AST ae) throws antlr.RecognitionException { 
   			    return ae; 
 	  	 }
+  AST deriveQueryExpr(AST ae) throws antlr.RecognitionException { 
+  			    return ae; 
+	  	 }	  	 
 	  	 
+	  	 AST deriveAggregateExpr(AST ae, AST ag) throws antlr.RecognitionException { 
+  			    return ae; 
+	  	 }	  	 
 	  	AST deriveLogicalExpr(AST le) throws antlr.RecognitionException{  return le; 	  	 }
 	  	 
 		  AST deriveParamExpr(AST pe) throws antlr.RecognitionException{  return pe; 	  	 }
@@ -239,7 +245,7 @@ query!
 		#query = #([SELECT,"SELECT"], #s, #f, #w, #g, #o);
 //		***beforeStatementCompletion( "select" );
 		//processQuery( #s, #query );
-		//afterStatementCompletion( "select" );
+		afterStatementCompletion( "select" );
 	}
 	;
 
@@ -290,6 +296,7 @@ selectExpr
 	| literal //***already done
 	| are:arithmeticExpr { #selectExpr= deriveArithmethicExpr(#are); }
 		| logicalExpr
+		| qr: query { #selectExpr=deriveQueryExpr(#qr); }
 	;
 
 count
@@ -471,7 +478,7 @@ collectionFunction
 functionCall
 	: #(METHOD_CALL  {inFunctionCall=true;} p:pathAsIdent ( #(e:EXPR_LIST (expr)* ) )? )
 		{ #functionCall = deriveFunctionCallExpr(#p, #e); } {inFunctionCall=false;}
-	| #(AGGREGATE aggregateExpr )
+	| #(ag:AGGREGATE ae:aggregateExpr )  { #functionCall=deriveAggregateExpr(#ae, #ag); }
 	;
 
 constant
