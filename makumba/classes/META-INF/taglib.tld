@@ -91,8 +91,8 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
-  
-  
+
+
   <tag>
     <name>object</name>
     <tag-class>org.makumba.list.tags.ObjectTag</tag-class>
@@ -160,7 +160,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
-  
+
 
   <tag>
     <name>resultList</name>
@@ -223,7 +223,7 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
-  
+
 
   <tag>
     <name>value</name>
