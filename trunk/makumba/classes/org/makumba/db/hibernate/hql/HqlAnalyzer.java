@@ -79,6 +79,7 @@ public class HqlAnalyzer implements QueryAnalysis {
                 walker = new HqlAnalyzeWalker();
                 walker.typeComputer = new MddObjectType();
                 try {
+                    walker.setDebug(query1);
                     walker.statement(t1);
                 } catch(RuntimeWrappedException e1){
                     throw new OQLParseError(" during analysis of query: " + query1, e1.getReason()); 
