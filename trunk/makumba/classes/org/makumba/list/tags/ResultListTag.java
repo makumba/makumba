@@ -31,6 +31,19 @@ public class ResultListTag extends QueryTag {
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         setFieldsFromSearchFormInfo(pageCache);
+        // make sure we have the attributes from the search form set, otherwise we assume that there is no correct
+        // search form and throw a programmer error.
+        // FIXME: maybe in this case we should just not do the tag body.
+        String[] attributesToCheck = { SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM, SearchTag.ATTRIBUTE_NAME_WHERE };
+        for (int i = 0; i < attributesToCheck.length; i++) {
+            String thisAttribute = resultsFrom + attributesToCheck[i];
+            if (pageContext.getRequest().getAttribute(thisAttribute) == null) {
+                throw new ProgrammerError(
+                        "Attribute '"
+                                + thisAttribute
+                                + "' not found. Please make sure you have a correct 'searchForm' tag before this 'resultList' tag.");
+            }
+        }
         return super.doAnalyzedStartTag(pageCache);
     }
 
@@ -56,11 +69,11 @@ public class ResultListTag extends QueryTag {
                             + resultsFrom
                             + "' in this page. Please check the name is correct, or if the search form is on a different page, please specify the type to be searched with the from=\"\" attribute.");
         }
-        setVariableFrom("#{" + resultsFrom + "VariableFrom" + "}");
-        setWhere("#{" + resultsFrom + "Where" + "}");
+        setVariableFrom("#{" + resultsFrom + SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM + "}");
+        setWhere("#{" + resultsFrom + SearchTag.ATTRIBUTE_NAME_WHERE + "}");
         if (tag != null) {
-            tag.attributes.put("from", queryProps[ComposedQuery.WHERE]);
-            tag.attributes.put("from", queryProps[ComposedQuery.VARFROM]);
+            tag.attributes.put("where", queryProps[ComposedQuery.WHERE]);
+            tag.attributes.put("variableFrom", queryProps[ComposedQuery.VARFROM]);
         }
     }
 
