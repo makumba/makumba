@@ -3,6 +3,7 @@ package org.makumba.forms.tags;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -18,6 +19,7 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.forms.responder.FormResponder;
 import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.forms.responder.ResponseControllerHandler;
@@ -37,6 +39,17 @@ import org.makumba.providers.DataDefinitionProvider;
  */
 public class SearchTag extends FormTagBase {
     private static final long serialVersionUID = 1L;
+
+    public static final String ATTRIBUTE_NAME_DONE = "Done";
+
+    public static final String ATTRIBUTE_NAME_QUERYSTRING = "QueryString";
+
+    public static final String ATTRIBUTE_NAME_VARIABLE_FROM = "VariableFrom";
+
+    public static final String ATTRIBUTE_NAME_WHERE = "Where";
+
+    public static final String[] allAttributes = { ATTRIBUTE_NAME_WHERE, ATTRIBUTE_NAME_VARIABLE_FROM,
+            ATTRIBUTE_NAME_QUERYSTRING, ATTRIBUTE_NAME_DONE };
 
     public static final String MATCH_AFTER = "after";
 
@@ -63,6 +76,13 @@ public class SearchTag extends FormTagBase {
     private static final String[] MATCH_BEFORE_LESS = { MATCH_BEFORE, MATCH_LESS };
 
     private static final String[] MATCH_BETWEEN_ALL = { MATCH_BETWEEN, MATCH_BETWEEN_INCLUSIVE };
+
+    // hold comparison operators for between matches
+    private static final Hashtable<String, String[]> MATCH_BETWEEN_OPERATORS = new Hashtable<String, String[]>();
+    static {
+        MATCH_BETWEEN_OPERATORS.put(MATCH_BETWEEN, new String[] { ">", "<" });
+        MATCH_BETWEEN_OPERATORS.put(MATCH_BETWEEN_INCLUSIVE, new String[] { ">=", "<=" });
+    }
 
     private static final String RANGE_END = "RangeEnd";
 
@@ -127,14 +147,36 @@ public class SearchTag extends FormTagBase {
 
         private static final long serialVersionUID = 1L;
 
-        private boolean haveValue(Object value) {
-            return value instanceof Vector || isSingleValue(value);
+        private boolean notEmpty(Object value) {
+            if (value instanceof Vector) {
+                return ((Vector) value).size() > 0;
+            } else {
+                return isSingleValue(value);
+            }
         }
 
         private boolean isSingleValue(Object value) {
-            return value != null && !Pointer.isNullObject(value) && value.toString().length() > 0;
+            return value != null && !(value instanceof Vector) && !Pointer.isNullObject(value)
+                    && value.toString().length() > 0;
         }
 
+        /**
+         * Respond to the search form, by constructing the querie's variableFrom and where parts. The following request
+         * attributes will be set and made available in the page.
+         * <ul>
+         * <li>&lt:formname&gt;From - the from part of the query, i.e. the part specified in the in='' attribute of the
+         * search form; will be automatically used by mak:resultList</li>
+         * <li>&lt:formname&gt;Where - the where part of the query; can be used in mak:list, and will be automatically
+         * used by mak:resultList</li>
+         * <li>&lt:formname&gt;VariableFrom - the variable from part of the query, i.e. basically selecting sets linked
+         * from the main data definition; can be used in mak:list, and will be automatically used by mak:resultList</li>
+         * <li>&lt:formname&gt;From - the from part of the query, i.e. the part specified in the in='' attribute of the
+         * search form; will be automatically used by mak:resultList</li>
+         * <li>&lt:formname&gt;Done - boolean value set to true if the search was conducted - should be used in a
+         * &lt;c:if test="${&lt:formname&gt;Done}"&gt; around the list displaying the results, to avoid the list being
+         * evaluated when the Where and VariableFrom parts are not set.</li>
+         * </ul>
+         */
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
 
@@ -143,126 +185,189 @@ public class SearchTag extends FormTagBase {
             HttpParameters parameters = RequestAttributes.getParameters(req);
             DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(resp.getSearchType());
 
+            // indicate that the form is reloaded, similar as for validation errors
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");
 
+            // set the from part & set a lable name
             req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + OBJECT_NAME);
 
+            HashSet<String> variableFroms = new HashSet<String>(1); // hold variable from selections
             String where = "";
+            StringBuffer queryString = new StringBuffer();
 
+            // iterate over all fields in the form
             Enumeration enumeration = data.keys();
-            HashSet<String> variableFroms = new HashSet<String>(1);
             while (enumeration.hasMoreElements()) {
                 String inputName = (String) enumeration.nextElement();
 
-                // we skip fields that are range-end fields
-                if (inputName.endsWith(RANGE_END)
-                        && data.get(inputName.substring(0, inputName.length() - RANGE_END.length())) != null) {
-                    continue;
+                Object value = attributes.getAttribute(inputName);
+
+                if (notEmpty(value)) {
+                    appendParam(queryString, inputName, value);
+                }
+
+                // special treatment for range end fields
+                if (inputName.endsWith(RANGE_END)) {
+                    if (notEmpty(attributes.getAttribute(getRangeBeginName(inputName)))) {
+                        continue; // those fields will get treated with the range begin check
+                    } else {
+                        // seems like a hack, but is needed to get the correct field names in the mdd, etc..
+                        inputName = getRangeBeginName(inputName);
+                    }
                 }
 
                 String[] multiFieldSearchCriterion = resp.getMultiFieldSearchCriterion(inputName);
-                Object value = attributes.getAttribute(inputName);// parameters.getParameter(key);
-
                 FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, inputName, inputName);
 
-                if (haveValue(value)) {
-                    if (where.length() > 0) {
+                if (notEmpty(value)) { // we only regard fields that have a value entered
+                    if (where.length() > 0) { // combine different fields with AND
                         where += " AND ";
                     }
 
                     String whereThisField = "";
+                    // iterate over all data fields this input is associated with
                     for (int i = 0; i < multiFieldSearchCriterion.length; i++) {
+                        String objectName = OBJECT_NAME;
+                        String fieldName = multiFieldSearchCriterion[i];
+                        String attributeName = inputName;
+                        Object matchMode = parameters.getParameter(inputName + SearchTag.SUFFIX_INPUT_MATCH);
+                        if (StringUtils.notEmpty(matchMode)) {
+                            appendParam(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
+                        }
+
                         if (whereThisField.length() > 0) {
+                            // if we are having a multi-field match, we might need to combine rules
                             whereThisField = " OR " + whereThisField;
                         }
-                        whereThisField += computeTypeSpecificQuery(req, attributes, parameters, OBJECT_NAME,
-                            multiFieldSearchCriterion[i], inputName, fd);
+                        if (StringUtils.equals(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
+                            // range comparison
+                            whereThisField += computeRangeQuery(parameters, objectName, fieldName, attributeName,
+                                matchMode);
+                        } else {
+                            // other comparison
+                            whereThisField += computeTypeSpecificQuery(req, parameters, objectName, fieldName,
+                                attributeName, fd);
+                        }
                     }
                     if (whereThisField.trim().length() > 0) {
                         where += " ( " + whereThisField + " ) ";
-                        if (fd.isSetType()) { // enhance the variableFrom part
+                        if (fd.isSetType()) { // enhance the variableFrom part if we select sets
                             variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName);
                         }
                     }
                 }
             }
-            req.setAttribute(resp.getFormName() + "Where", where);
-            req.setAttribute(resp.getFormName() + "VariableFrom", StringUtils.toString(variableFroms, false));
-            req.setAttribute(resp.getFormName() + "Done", Boolean.TRUE);
-            Logger.getLogger("org.makumba.searchForm").info(
-                "Set Where: " + req.getAttribute(resp.getFormName() + "Where"));
-            Logger.getLogger("org.makumba.searchForm").info(
-                "Set VariableFrom: " + req.getAttribute(resp.getFormName() + "VariableFrom"));
-            Logger.getLogger("org.makumba.searchForm").info(
-                "Set Done: " + req.getAttribute(resp.getFormName() + "Done"));
+            appendParam(queryString, FormResponder.responderName, parameters.getParameter(FormResponder.responderName));
+
+            // set the attributes, and do logging
+            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_WHERE, where);
+            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_VARIABLE_FROM, StringUtils.toString(variableFroms,
+                false));
+            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_QUERYSTRING, queryString.toString());
+            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_DONE, Boolean.TRUE);
+            for (int i = 0; i < allAttributes.length; i++) {
+                Logger.getLogger("org.makumba.searchForm").info(
+                    "Set '" + allAttributes[i] + "': " + req.getAttribute(resp.getFormName() + allAttributes[i]));
+            }
             return null;
+        }
+
+        private void appendParam(StringBuffer link, String inputName, Object value) {
+            if (link.length() > 0) {
+                link.append("&");
+            }
+            if (value instanceof Vector) {
+                for (int i = 0; i < ((Vector) value).size(); i++) {
+                    link.append(inputName).append("=").append(((Vector) value).get(i));
+                    if (i + 1 < ((Vector) value).size()) {
+                        link.append("&");
+                    }
+                }
+            } else {
+                link.append(inputName).append("=").append(value);
+            }
+        }
+
+        private String computeRangeQuery(HttpParameters parameters, String objectName, String fieldName,
+                String attributeName, Object advancedMatch) {
+            String where = "";
+            String attributeNameEnd = attributeName + RANGE_END;
+            boolean haveBegin = true;
+            boolean haveEnd = fieldName.endsWith(RANGE_END) || notEmpty(parameters.getParameter(attributeNameEnd));
+            if (!notEmpty(parameters.getParameter(fieldName))) {
+                haveBegin = false;
+            }
+            // only compare with lower end if we have it
+            if (haveBegin) {
+                where += objectName + "." + fieldName + MATCH_BETWEEN_OPERATORS.get(advancedMatch)[0] + "$"
+                        + attributeName;
+            }
+            if (haveBegin && haveEnd) {
+                where += " AND ";
+            }
+            // only compare with upper end of range if we have it
+            if (haveEnd) {
+                where += objectName + "." + fieldName + MATCH_BETWEEN_OPERATORS.get(advancedMatch)[1] + "$"
+                        + attributeNameEnd;
+            }
+            if (haveBegin && haveEnd) { // need extra parantheses only if we have both range ends
+                where = " ( " + where + " ) ";
+            }
+            return where;
         }
 
         public String verify(Responder resp) {
             return null;
         }
 
-        private String computeTypeSpecificQuery(HttpServletRequest req, RequestAttributes attributes,
-                HttpParameters parameters, String objectName, String fieldName, String attributeName, FieldDefinition fd)
-                throws LogicException {
+        private String computeTypeSpecificQuery(HttpServletRequest req, HttpParameters parameters, String objectName,
+                String fieldName, String attributeName, FieldDefinition fd) throws LogicException {
             String where = "";
-            Object value = attributes.getAttribute(attributeName);
-            if (value instanceof Vector) {
-                // if the vector actually has no elements, we do not add to the where-part
-                if (((Vector) value).size() > 0) {
-                    // we need to check for the field type as well - we have different labels for the sets
-                    String labelName;
-                    if (!fd.isSetType()) {
-                        labelName = objectName + "." + fieldName;
-                    } else {
-                        labelName = objectName + "_" + fieldName;
-                    }
-                    where += labelName + " IN SET ($" + attributeName + ")";
+            Object value = parameters.getParameter(attributeName);
+            if (value instanceof Vector || fd.isSetType()) {
+                // we need to check for the field type as well - we have different labels for the sets
+                String labelName;
+                if (!fd.isSetType()) {
+                    labelName = objectName + "." + fieldName;
+                } else {
+                    labelName = objectName + "_" + fieldName;
                 }
+                where += labelName + " IN SET ($" + attributeName + ")";
             } else if (isSingleValue(value)) {
                 Object advancedMatch = parameters.getParameter(attributeName + SearchTag.SUFFIX_INPUT_MATCH);
+                where += objectName + "." + fieldName;
 
-                if (StringUtils.equals(advancedMatch, SearchTag.MATCH_BETWEEN_ALL)) {
-                    where += " ( " + objectName + "." + fieldName + ">$" + attributeName;
-                    if (advancedMatch.equals(SearchTag.MATCH_BETWEEN_INCLUSIVE)) {
-                        where += " OR " + objectName + "." + fieldName + "=$" + attributeName;
-                    }
-                    where += " ) AND ( " + objectName + "." + fieldName + "<$" + attributeName + RANGE_END;
-                    if (advancedMatch.equals(SearchTag.MATCH_BETWEEN_INCLUSIVE)) {
-                        where += " OR " + objectName + "." + fieldName + "=$" + attributeName + RANGE_END;
-                    }
-                    where += " ) ";
-                } else {
-                    where += objectName + "." + fieldName;
-
-                    if (advancedMatch == null || advancedMatch.equals(SearchTag.MATCH_EQUALS)) {
-                        // do a normal match
-                        where += "=$" + attributeName;
-                    } else { // do a more sophisticated matching
-                        if (fd.isStringType()) {
-                            String keyLike = attributeName + "__Like";
-                            if (advancedMatch.equals(SearchTag.MATCH_CONTAINS)) {
-                                value = "%" + value + "%";
-                            } else if (advancedMatch.equals(SearchTag.MATCH_BEGINS)) {
-                                value = value + "%";
-                            } else if (advancedMatch.equals(SearchTag.MATCH_ENDS)) {
-                                value = "%" + value;
-                            }
-                            req.setAttribute(keyLike, value);
-                            where += " LIKE $" + keyLike + "";
-                        } else if (fd.isDateType() || fd.isNumberType()) { // matches for numbers & dates
-                            // before or < match
-                            if (StringUtils.equals(advancedMatch, SearchTag.MATCH_BEFORE_LESS)) {
-                                where += "<$" + attributeName;
-                                // after or > match
-                            } else if (StringUtils.equals(advancedMatch, SearchTag.MATCH_AFTER_GREATER)) {
-                                where += ">$" + attributeName;
-                            }
+                if (advancedMatch == null || advancedMatch.equals(SearchTag.MATCH_EQUALS)) {
+                    // do a normal match
+                    where += "=$" + attributeName;
+                } else { // do a more sophisticated matching
+                    if (fd.isStringType()) {
+                        String keyLike = attributeName + "__Like";
+                        if (advancedMatch.equals(SearchTag.MATCH_CONTAINS)) {
+                            value = "%" + value + "%";
+                        } else if (advancedMatch.equals(SearchTag.MATCH_BEGINS)) {
+                            value = value + "%";
+                        } else if (advancedMatch.equals(SearchTag.MATCH_ENDS)) {
+                            value = "%" + value;
+                        }
+                        req.setAttribute(keyLike, value);
+                        where += " LIKE $" + keyLike + "";
+                    } else if (fd.isDateType() || fd.isNumberType()) { // matches for numbers & dates
+                        // before or < match
+                        if (StringUtils.equals(advancedMatch, SearchTag.MATCH_BEFORE_LESS)) {
+                            where += "<$" + attributeName;
+                            // after or > match
+                        } else if (StringUtils.equals(advancedMatch, SearchTag.MATCH_AFTER_GREATER)) {
+                            where += ">$" + attributeName;
                         }
                     }
                 }
             }
             return where;
+        }
+
+        private String getRangeBeginName(String fieldName) {
+            return fieldName.substring(0, fieldName.length() - RANGE_END.length());
         }
     }
 
