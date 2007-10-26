@@ -101,10 +101,12 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         getForm().responder.addMultiFieldSearchMapping(getInputName(), getFieldsSplit());
-        try {
-            bodyContent.getEnclosingWriter().print(bodyContent.getString());
-        } catch (IOException e) {
-            throw new JspException(e.toString());
+        if (bodyContent != null) {
+            try {
+                bodyContent.getEnclosingWriter().print(bodyContent.getString());
+            } catch (IOException e) {
+                throw new JspException(e.toString());
+            }
         }
         return super.doAnalyzedEndTag(pageCache);
     }
