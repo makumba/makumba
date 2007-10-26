@@ -32,6 +32,16 @@ public class StringUtils {
         return o != null && o instanceof String && o.toString().length() > 0;
     }
 
+    /** Checks whether a String is null or has, after trimming, a length == 0. */
+    public static boolean isEmpty(String s) {
+        return s == null || s.length() > 0;
+    }
+
+    /** Checks whether an Object is null or has, after trimming, a length == 0. */
+    public static boolean isEmpty(Object o) {
+        return o == null || (o instanceof String && isEmpty((String) o));
+    }
+
     /**
      * Converts an array to a String represenation, using the toString() method of each array element.
      */
@@ -92,22 +102,27 @@ public class StringUtils {
         return b.toString();
     }
 
+    /** Checks whether the given Strings are equal. This method can handle null values. */
     public static boolean equals(String s, String s2) {
         return s != null && s.equals(s2);
     }
 
+    /** Checks whether the given Object equals the given String. */
     public static boolean equals(String s, Object o) {
         return o instanceof String && equals(s, (String) o);
     }
 
+    /** Checks whether the given Object equals the given String. */
     public static boolean equals(Object o, String s) {
         return equals(s, o);
     }
 
+    /** Checks whether the given Object equals any of the given options. */
     public static boolean equals(Object o, String[] options) {
         return o instanceof String && equals((String) o, options);
     }
 
+    /** Checks whether the given String equals any of the given options. */
     public static boolean equals(String s, String[] options) {
         if (s == null) {
             return false;
@@ -120,6 +135,7 @@ public class StringUtils {
         return false;
     }
 
+    /** Checks whether the given String starts with any of the given options. */
     public static boolean startsWith(String s, String[] options) {
         if (s == null) {
             return false;
@@ -130,6 +146,21 @@ public class StringUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Convert a <code>String</code> to an <code>int</code>, returning a default value if the conversion fails or
+     * if the string is <code>null</code>.
+     */
+    public static int toInt(String str, int defaultValue) {
+        if (str == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return defaultValue;
+        }
     }
 
 }
