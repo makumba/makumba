@@ -203,7 +203,7 @@ public class SearchTag extends FormTagBase {
                 Object value = attributes.getAttribute(inputName);
 
                 if (notEmpty(value)) {
-                    appendParam(queryString, inputName, value);
+                    appendParams(queryString, inputName, value);
                 }
 
                 // special treatment for range end fields
@@ -232,7 +232,7 @@ public class SearchTag extends FormTagBase {
                         String attributeName = inputName;
                         Object matchMode = parameters.getParameter(inputName + SearchTag.SUFFIX_INPUT_MATCH);
                         if (StringUtils.notEmpty(matchMode)) {
-                            appendParam(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
+                            appendParams(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
                         }
 
                         if (whereThisField.length() > 0) {
@@ -257,7 +257,7 @@ public class SearchTag extends FormTagBase {
                     }
                 }
             }
-            appendParam(queryString, FormResponder.responderName, parameters.getParameter(FormResponder.responderName));
+            appendParams(queryString, FormResponder.responderName, parameters.getParameter(FormResponder.responderName));
 
             // set the attributes, and do logging
             req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_WHERE, where);
@@ -272,19 +272,27 @@ public class SearchTag extends FormTagBase {
             return null;
         }
 
-        private void appendParam(StringBuffer link, String inputName, Object value) {
+        private void appendParams(StringBuffer link, String inputName, Object value) {
             if (link.length() > 0) {
                 link.append("&");
             }
             if (value instanceof Vector) {
                 for (int i = 0; i < ((Vector) value).size(); i++) {
-                    link.append(inputName).append("=").append(((Vector) value).get(i));
+                    link.append(inputName).append("=").append(treatValue(inputName, ((Vector) value).get(i)));
                     if (i + 1 < ((Vector) value).size()) {
                         link.append("&");
                     }
                 }
             } else {
-                link.append(inputName).append("=").append(value);
+                link.append(inputName).append("=").append(treatValue(inputName, value));
+            }
+        }
+
+        private String treatValue(String inputName, Object value) {
+            if (value instanceof Pointer) {
+                return ((Pointer) value).toExternalForm();
+            } else {
+                return value.toString();
             }
         }
 
