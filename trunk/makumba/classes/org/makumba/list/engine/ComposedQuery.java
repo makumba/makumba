@@ -35,6 +35,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.commons.ArgumentReplacer;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.QueryProvider;
 
 /**
@@ -78,13 +79,13 @@ public class ComposedQuery {
     }
 
     /** The subqueries of this query */
-    Vector subqueries = new Vector();
+    Vector<ComposedSubquery> subqueries = new Vector<ComposedSubquery>();
 
     /** The projections made in this query */
-    Vector projections = new Vector();
+    Vector<Object> projections = new Vector<Object>();
 
     /** The expression associated to each projection */
-    Hashtable projectionExpr = new Hashtable();
+    Hashtable<String, Integer> projectionExpr = new Hashtable<String, Integer>();
 
     /** Standard index for the FROM query section */
     public static final int FROM = 0;
@@ -115,13 +116,13 @@ public class ComposedQuery {
      * The keyset defining the primary key for this query. Normally the primary key is made of the keys declared in
      * FROM, in this query and all the parent queries. Keys are kept as integers (indexes)
      */
-    Vector keyset;
+    Vector<Integer> keyset;
 
     /** The keyset of all the parent queries */
     Vector previousKeyset;
 
     /** The labels of the keyset */
-    Vector keysetLabels;
+    Vector<String> keysetLabels;
 
     /** A Vector containing and empty vector. Used for empty keysets */
     static Vector empty;
@@ -182,8 +183,8 @@ public class ComposedQuery {
      */
     protected void initKeysets() {
         previousKeyset = empty;
-        keyset = new Vector();
-        keysetLabels = new Vector();
+        keyset = new Vector<Integer>();
+        keysetLabels = new Vector<String>();
     }
 
     /**
@@ -399,7 +400,7 @@ public class ComposedQuery {
 
         // replace names with numbers
         ArgumentReplacer ar = new ArgumentReplacer(ret);
-        Dictionary d = new Hashtable();
+        Dictionary<Object, String> d = new Hashtable<Object, String>();
         int j = 1;
         for (Enumeration e = ar.getArgumentNames(); e.hasMoreElements();)
             d.put(e.nextElement(), "$" + (j++));
@@ -447,8 +448,8 @@ public class ComposedQuery {
      * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
      */
     public Object checkExprSetOrNullable(String expr) {
-        if(expr.toLowerCase().indexOf(" from ")!=-1)
-        	// subqueries do not need separate queries
+        if (expr.toLowerCase().indexOf(" from ") != -1)
+            // subqueries do not need separate queries
             return null;
         int n = 0;
         int m = 0;
@@ -523,5 +524,14 @@ public class ComposedQuery {
             dd = fd.getPointedType();
             dot = dot1;
         }
+    }
+
+    /**
+     * allows to directly set a projection. Used for totalCount in
+     * {@link QueryTag#doAnalyzedStartTag(org.makumba.analyser.PageCache)} to compose a query with 'count(*)' as the
+     * only projection.
+     */
+    public void addProjection(Object o) {
+        projections.add(o);
     }
 }
