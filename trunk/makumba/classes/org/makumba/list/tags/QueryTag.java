@@ -25,6 +25,7 @@ package org.makumba.list.tags;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.IterationTag;
 
 import org.makumba.LogicException;
@@ -71,6 +72,12 @@ public class QueryTag extends GenericListTag implements IterationTag {
     static String standardMaxCountVar = "org_makumba_view_jsptaglib_maxCountVar";
 
     static String standardLastCountVar = "org_makumba_view_jsptaglib_lastCountVar";
+
+    static String standardMaxResultsVar = "org_makumba_view_jsptaglib_MaxResultsVar";
+
+    static String standardMaxResultsContext = "org_makumba_view_jsptaglib_MaxResultsContext";
+
+    static String standardMaxResultsKey = "org_makumba_view_jsptaglib_MaxResultsKey";
 
     public void setFrom(String s) {
         queryProps[ComposedQuery.FROM] = s;
@@ -132,7 +139,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException nfe) {
-            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s + " parameter can only be an $attribute or an int"));
+            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
+                    + " parameter can only be an $attribute or an int"));
 
         }
     }
@@ -241,6 +249,35 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         setNumberOfIterations(n);
 
+        // set the total result count, i.e. the count this list would have w/o limit & offset
+        int maxResults = Integer.MIN_VALUE;
+        int limitEval = QueryExecution.computeLimit(pageContext, limit, -1);
+        int offsetEval = QueryExecution.computeLimit(pageContext, offset, 0);
+        if ((offsetEval == 0 && limitEval == -1) || (offsetEval == 0 && (limitEval > 00 && limitEval < n))) {
+            // we can set the total count if there is no limit / offset in the page
+            maxResults = n;
+        } else {
+            // otherwise we need to make a new query
+            // we only prepare the query, but do not run it, that will happen on demand in the method getting the result
+            ComposedQuery query = null;
+            String[] simpleQueryProps = queryProps.clone();
+            simpleQueryProps[ComposedQuery.ORDERBY] = "";
+            MultipleKey maxResultsKey = getMaxResultsKey(tagKey);
+            MultipleKey parentKey = getParentListKey(this, pageCache);
+            String ql = (String) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE,
+                MakumbaJspAnalyzer.QUERY_LANGUAGE);
+            query = parentKey == null ? new ComposedQuery(simpleQueryProps, ql) : new ComposedSubquery(
+                    simpleQueryProps, QueryTag.getQuery(pageCache, parentKey), ql);
+            query.addProjection("count(*)");
+            query.init();
+            pageCache.cache(GenericListTag.QUERY, maxResultsKey, query);
+            // we need to pass these variables in request to the method doing the query
+            // TODO: this looks like a hack, and might not be safe if there are more lists in the same page
+            pageContext.getRequest().setAttribute(standardMaxResultsContext, pageContext);
+            pageContext.getRequest().setAttribute(standardMaxResultsKey, maxResultsKey);
+        }
+        pageContext.getRequest().setAttribute(standardMaxResultsVar, maxResults);
+
         if (n > 0) {
             if (countVar != null)
                 pageContext.setAttribute(countVar, one);
@@ -251,6 +288,12 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageContext.setAttribute(countVar, zero);
         pageContext.getRequest().setAttribute(standardCountVar, zero);
         return SKIP_BODY;
+    }
+
+    private MultipleKey getMaxResultsKey(MultipleKey tagKey) {
+        MultipleKey totalKey = (MultipleKey) tagKey.clone();
+        totalKey.add(standardMaxResultsVar);
+        return totalKey;
     }
 
     /**
@@ -381,9 +424,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (ret != null)
             return ret;
         String ql = (String) pc.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE);
-        ret = parentKey == null ? 
-                new ComposedQuery(sections, ql) : 
-                    new ComposedSubquery(sections, QueryTag.getQuery(pc, parentKey), ql);
+        ret = parentKey == null ? new ComposedQuery(sections, ql) : new ComposedSubquery(sections, QueryTag.getQuery(
+            pc, parentKey), ql);
 
         ret.init();
         pc.cache(GenericListTag.QUERY, key, ret);
@@ -398,7 +440,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public static int count() {
         Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
         if (countAttr == null) {
-            //throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
+            // throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
             return -1;
         }
         return ((Integer) countAttr).intValue();
@@ -412,10 +454,42 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public static int maxCount() {
         Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
         if (maxAttr == null) {
-            //throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
+            // throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
             return -1;
         }
         return ((Integer) maxAttr).intValue();
+    }
+
+    /**
+     * Gives the maximum number of results returned as if the query would not contain any limit / offset. <br>
+     * TODO: we need to pass quite some information in the request attributes, as this method has to be static. Not sure
+     * what happens if there are more lists in the same page, if that would overlap or not.
+     * 
+     * @return The maximum number of results returned as if the query would not contain any limit / offset.
+     */
+    public static int maxResults() {
+        ServletRequest servletRequest = servletRequestThreadLocal.get();
+        Object totalAttr = servletRequest.getAttribute(standardMaxResultsVar);
+        if (totalAttr == null) {
+            // throw new ProgrammerError("mak:maxResults() can only be used inside a <mak:list> tag");
+            return -1;
+        }
+
+        Integer total = ((Integer) totalAttr);
+        if (total == Integer.MIN_VALUE) { // we still need to evaluate this total count
+            PageContext pageContext = (PageContext) servletRequest.getAttribute(standardMaxResultsContext);
+            MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
+            try {
+                QueryExecution exec = QueryExecution.getFor(keyMaxResults, pageContext, null, null);
+                exec.getIterationGroupData();
+                total = ((Integer) exec.currentListData().get("col1"));
+                servletRequest.setAttribute(standardMaxResultsVar, total);
+            } catch (LogicException e) {
+                e.printStackTrace();
+                throw new RuntimeWrappedException(e);
+            }
+        }
+        return total;
     }
 
     /**
@@ -424,7 +498,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
-        if(servletRequestThreadLocal.get() == null) return -1;
+        if (servletRequestThreadLocal.get() == null)
+            return -1;
         return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar)).intValue();
     }
 

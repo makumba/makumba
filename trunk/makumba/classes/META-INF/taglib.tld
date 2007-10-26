@@ -2140,4 +2140,13 @@
     <function-signature>int lastCount()</function-signature>
   </function>
 
+  <function>
+    <name>maxResults</name>
+    <description>
+      the maximum count of the enclosing mak:list, disregarding potential limit and offset values
+    </description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int maxResults()</function-signature>
+  </function>
+
 </taglib>
