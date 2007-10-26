@@ -162,7 +162,7 @@ public class QueryExecution {
      * @return The int value of the limit, if a correct one is passed as tag parameter
      * @throws LogicException
      */
-    int computeLimit(PageContext pc, String s, int defa) throws LogicException {
+    public static int computeLimit(PageContext pc, String s, int defa) throws LogicException {
         if (s == null)
             return defa;
         s = s.trim();
