@@ -356,6 +356,8 @@ public class HQLQueryProvider extends QueryProvider {
     public String transformPointer(String ptrExpr, String fromSection) {
         if (getQueryAnalysis("SELECT " + ptrExpr + " as gigi FROM " + fromSection).getProjectionType().getFieldDefinition(
             "gigi").getType().equals("ptr")) {
+            if(ptrExpr.endsWith(".id"))  // FIXME query type analysis does not return ptrIndex for label.id but clearly there we don't need the hibernate_id 
+                return ptrExpr;
             int dot = ptrExpr.lastIndexOf('.') + 1;
             return ptrExpr.substring(0, dot) + "hibernate_" + ptrExpr.substring(dot);
         }
