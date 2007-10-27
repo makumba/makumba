@@ -97,7 +97,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         getInput().checkBodyContentForNonWhitespace();
         if (isNull())
             val = org.makumba.Pointer.Null;
-        getInput().choiceSet.add(val, bodyContent.getString(), false, false);
+        getInput().choiceSet.add(val, bodyContent==null?"":bodyContent.getString(), false, false);
         valueExprOriginal = dataType = expr = null;
         return EVAL_PAGE;
     }
