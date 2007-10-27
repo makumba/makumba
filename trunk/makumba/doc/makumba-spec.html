@@ -65,6 +65,7 @@
         <li class="sectionLevel2"><a href="#stringLength">String lenght</a></li>
         <li class="sectionLevel2"><a href="#regexp">Regular expressions</a></li>
         <li class="sectionLevel2"><a href="#comparison">Comparison</a></li>
+        <li class="sectionLevel2"><a href="#multiFielUnique">Multi-field uniqueness</a></li>
       </ul>
       </li>
 
@@ -235,8 +236,7 @@
       <li class="futfeat"><b>(encrypted</b> fields are encrypted when written to the database and decrypted when
       read)</li>
     </ul>
-    <div class="note futfeat">Currently only <b>fixed</b> and <b>not null</b> field attributes are working, while
-    support for <b>unique</b> is in progress.</div>
+
     <h3><a name="ObjectTitle">Object title</a></h3>
     <div class="note">The object title is used for <i>set</i> and <i>ptr</i> choosers</div>
     <p>One of the fields is always the <i>object title</i>, and is normally presented differently from other fields
@@ -387,9 +387,22 @@
     <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
     <pre class="example">birthday%name = lower(name) != name : Your name must not contain only lower-case letters!</pre>
 
-    <p>Tow fields can be compared in a similar way</p>
+    <p>Two fields can be compared in a similar way</p>
     <pre class="example">birthdate%compare = birthdate < graduationDate : You cannot finish school before your birthdate!</pre>
-    
+
+    <h4 name="multiFielUnique">Multi-field uniqueness definition</h4>
+    <p>Similar to the <a href="#FieldAttributes"><i>unique</i> field attribute</a>, you can also define multi-field
+    uniqueness contraints. These constraints can even span over several data definitions, if they are related via
+    pointers.</p>
+
+    <p>Multi-field uniqueness can be defined as follows</p>
+    <pre class="example">uniqueAgeEmail%unique = age, email : the combination of age and email must be unique! </pre>
+    <br/>
+
+    <div class="note internals">If the fields are in the same data definition, the uniqueness definition will
+    translate into a database level multi-field key and uniqueness will be enforced there.<br />
+    Otherwise, Makumba will issue a query checking the uniqueness before new or edit operations.</div>
+
     <h3>Error message</h3>
     <p>The error message that will be displayed if the validation fails.</p>
 
