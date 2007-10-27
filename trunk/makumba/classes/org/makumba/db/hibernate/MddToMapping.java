@@ -233,9 +233,12 @@ public class MddToMapping extends HibernateUtils {
                 atts.clear();
                 atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
 
+                String pointedName= fd.getPointedType().getIndexPointerFieldName();
+                if(pointedName.equals(dd.getIndexPointerFieldName()))
+                    pointedName+="_";
                 // TODO: "formula" works around hibernate bug 572
                 // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
-                atts.addAttribute("", "", "formula", "", columnName(fd.getPointedType().getIndexPointerFieldName()));
+                atts.addAttribute("", "", "formula", "", columnName(pointedName));
                 hd.startElement("", "", "many-to-many", atts);
                 hd.endElement("", "", "many-to-many");
                 hd.endElement("", "", "bag");
