@@ -319,6 +319,8 @@ options {
 	String is=null;
 	int lastAdditive;
 	int lastMultiplicative;
+	boolean wasLeftJoin=false;
+	
 	QueryAST currentQuery() throws antlr.RecognitionException
 	{ if(currentQuery!=null) return currentQuery; 
 	  throw new antlr.RecognitionException("wrong expression, probably an operator is missing (AND, OR, +, -, *, /)");
@@ -422,7 +424,7 @@ fromClause :
 
         "from" iteratorDef {currentQuery().setFromAST(#fromClause); }
         (
-            TOK_COMMA
+            (TOK_COMMA { wasLeftJoin=false; }| "left" "join"  { wasLeftJoin=true; })
             iteratorDef
         )*
     ;
@@ -438,7 +440,7 @@ iteratorDef :
 //*            labelIdentifier "in" expr
 
             lbl:labelIdentifier "in" mi:makumbaIdentifier 
-		{ currentQuery().addFrom(#mi.getText(), #lbl.getText()); }
+		{ currentQuery().addFrom(#mi.getText(), #lbl.getText(), wasLeftJoin); }
 
 //*       |   expr
 
@@ -447,7 +449,7 @@ iteratorDef :
 //* compulsory for now            (
                 ( "as" )?
                 lbl1: labelIdentifier 
-		{ currentQuery().addFrom(#mi1.getText(), #lbl1.getText()); }
+		{ currentQuery().addFrom(#mi1.getText(), #lbl1.getText(), wasLeftJoin); }
 //*             )?
         )
     ;
