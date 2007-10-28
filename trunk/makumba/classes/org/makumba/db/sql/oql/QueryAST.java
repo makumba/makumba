@@ -227,6 +227,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     /** asssociate each label to its makumba type */
     Hashtable<String, DataDefinition> labels = new Hashtable<String, DataDefinition>();
 
+    /** labels explicitly defined in OQL FROM*/
+    Hashtable<String, DataDefinition> fromLabels = new Hashtable<String, DataDefinition>();
+
     /** support aliases in query */
     Hashtable<String, String> aliases = new Hashtable<String, String>();
 
@@ -246,11 +249,14 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
         String field2;
 
-        public Join(String l1, String f1, String l2, String f2) {
+        boolean leftJoin;
+
+        public Join(String l1, String f1, String l2, String f2, boolean leftJoin) {
             label1 = l1;
             label2 = l2;
             field1 = f1;
             field2 = f2;
+            this.leftJoin= leftJoin;
         }
 
         public String toString() {
@@ -258,9 +264,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
     }
 
-    /** make a new join with the name and associate teh label with the type */
-    String addJoin(String l1, String f1, String name, String f2, DataDefinition type) {
-        joins.addElement(new Join(l1, f1, name, f2));
+    /** make a new join with the name and associate teh label with the type 
+     * @param leftJoin */
+    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin) {
+        joins.addElement(new Join(l1, f1, name, f2, leftJoin));
         joinNames.put(l1 + "." + f1, name);
         labels.put(name, type);
         return name;
@@ -270,8 +277,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      * produce a new label out of label.field, with the indicated labelf name for the result check if the indicated
      * field exists in the type of the label determine the type of the result label if more joins are necesary inbetween
      * (e.g. for sets), add these joins as well
+     * @param leftJoin 
      */
-    String join(String label, String field, String labelf) throws antlr.RecognitionException {
+    String join(String label, String field, String labelf, boolean leftJoin) throws antlr.RecognitionException {
         String s = (String) joinNames.get(label + "." + field);
         if (s != null)
             return s;
@@ -303,19 +311,20 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             label2 += "x";
 
         if (fi.getType().equals("ptr"))
-            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign);
+            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, leftJoin);
         else if (fi.getType().equals("ptrOne"))
-            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub);
+            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, leftJoin);
 
         else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum"))
-            return addJoin(label, index, label2, index, sub);
+            return addJoin(label, index, label2, index, sub, leftJoin);
         else if (fi.getType().equals("set")) {
             label2 = label + "x";
             while (labels.get(label2) != null)
                 label2 += "x";
 
-            addJoin(label, index, label2, index, sub);
+            // FIXME: pointers from set tables are never null, so probably leftJoin should always be false for sets
+            addJoin(label, index, label2, index, sub, false);
             labels.put(label2, sub);
 
             String label3 = label;
@@ -324,7 +333,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             while (labels.get(label3) != null)
                 label3 += "x";
 
-            return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign);
+            return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign , leftJoin);
         } else
             throw new antlr.RecognitionException("\"" + field + "\" is not a set or pointer in makumba type \""
                     + type.getName() + "\"");
@@ -334,7 +343,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      * add a FROM projection, if it's just a label declaration, associate the label with the type, otherwise
      * (label.field) generate the needed joins
      */
-    public void addFrom(String frm, String label) throws antlr.RecognitionException {
+    public void addFrom(String frm, String label, boolean leftJoin) throws antlr.RecognitionException {
         String iterator = frm;
         DataDefinition type = null;
         try {
@@ -346,6 +355,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
         if (type != null) {
             labels.put(label, type);
+            fromLabels.put(label, type);
             return;
         }
 
@@ -366,11 +376,11 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
-                    join(lbl, field, label);
+                    join(lbl, field, label, leftJoin);
                     break;
                 }
                 field = iterator.substring(0, i);
-                lbl = join(lbl, field, null);
+                lbl = join(lbl, field, null, leftJoin);
             }
         } else {
             if (labels.get(frm) == null)
@@ -460,8 +470,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
                                 + "\" contains reference to \"" + ri.getName() + "->" + field + "\"");
                     if (i == -1)
                         break;
-
-                    label = join(label, field, null);
+                    
+                    // FIXME: in fact it'd be better to have left join on "true" here!
+                    // but we preserve backwards compatibility
+                    label = join(label, field, null, false);
                     ri = fi.getPointedType();
                 }
             id.label = label;
@@ -500,13 +512,13 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     /** writes the iterator definitions (FROM part) */
     protected void writeFrom(Database d, StringBuffer ret) {
         boolean comma = false;
-        for (Enumeration e = labels.keys(); e.hasMoreElements();) {
+        for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
             if (comma)
                 ret.append(",");
             comma = true;
             String label = (String) e.nextElement();
             ret.append(getTableName(label, d))
-            // .append(" AS ")
+            //.append(" AS ")
             .append(" ").append(label);
         }
     }
@@ -521,7 +533,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
     }
 
-    /** return the database-level name of the given field of the given label */
+    /** return the database-level name of the given field of the given label*/
     protected String getFieldName(String label, String field, Database d) {
         DataDefinition ri = (DataDefinition) labels.get(label);
         try {
@@ -533,15 +545,22 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** write the translator-generated joins */
     protected void writeJoins(Database d, StringBuffer ret) {
-        boolean and = false;
+        //boolean and = false;
         for (Enumeration e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
-            if (and)
-                ret.append(" AND ");
-            and = true;
-
+//            if (and)
+//                ret.append(" AND ");
+//            and = true;
+            
+            if(j.leftJoin)
+                ret.append(" LEFT");
+            ret.append(" JOIN ");
+            ret.append(getTableName(j.label2, d))
+            //.append(" AS ")
+            .append(" ").append(j.label2);
+            ret.append(" ON ");
             ret.append(j.label1).append(".").append(getFieldName(j.label1, j.field1, d)).append("= ").append(j.label2).append(
-                ".").append(getFieldName(j.label2, j.field2, d));
+               ".").append(getFieldName(j.label2, j.field2, d));
         }
     }
 
@@ -567,7 +586,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         computeParameterTypes();
     }
 
-    /** write in SQL query, calling the methods for the sections */
+    /** write in SQL query, calling the methods for the sections*/
     public String writeInSQLQuery(Database d) {
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
@@ -577,17 +596,11 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             sb.append(" FROM ");
             writeFrom(d, sb);
         }
-        boolean hasJoins = joins.size() > 0;
-
-        if (whereAST != null || hasJoins) {
+        writeJoins(d, sb);
+        
+        if (whereAST != null ) {
             sb.append(" WHERE ");
-            if (hasJoins)
-                writeJoins(d, sb);
-            if (whereAST != null) {
-                if (hasJoins)
-                    sb.append(" AND ");
                 writeConditions(d, sb);
-            }
         }
         writeAfterWhere(d, sb);
         return sb.toString();
