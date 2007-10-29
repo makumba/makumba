@@ -514,7 +514,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         boolean comma = false;
         for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
             if (comma)
-                ret.append(",");
+                ret.append(" JOIN");
             comma = true;
             String label = (String) e.nextElement();
             ret.append(getTableName(label, d))
