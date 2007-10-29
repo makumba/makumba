@@ -224,7 +224,7 @@ public class SourceSyntaxPoints {
      *            the directive calling for the inclusion
      */
     public void include(File f, int position, String includeDirective) {
-        SourceSyntaxPoints sf = new SourceSyntaxPoints(f, client, this, includeDirective, position);
+        SourceSyntaxPoints sf = new SourceSyntaxPoints(f, client, this, includeDirective, position+offset);
 
         // FIXME: add a syntax point for the include
         // record the next position in this file for @include, also the text
@@ -243,7 +243,7 @@ public class SourceSyntaxPoints {
         // we move the position of all SyntaxPoints that occur after the include
         for (Iterator i = syntaxPoints.iterator(); i.hasNext();) {
             SyntaxPoint sp = (SyntaxPoint) i.next();
-            if (sp.position > position)
+            if (sp.position > position+offset)
                 sp.moveByInclude(delta);
         }
 
@@ -322,7 +322,11 @@ public class SourceSyntaxPoints {
      * @see #addSyntaxPointsCommon(int start, int end, String type, Object extra)
      */
     public SyntaxPoint.End addSyntaxPoints(int start, int end, String type, Object extra) {
-        return findSourceFile(start).addSyntaxPoints1(start, end, type, extra);
+        SourceSyntaxPoints ssp= findSourceFile(start);
+        if(ssp==this)
+            return addSyntaxPoints1(start, end, type, extra);
+        else
+            return ssp.addSyntaxPoints(start, end, type, extra);
     }
 
     SyntaxPoint.End addSyntaxPoints1(int start, int end, String type, Object extra) {
@@ -358,7 +362,7 @@ public class SourceSyntaxPoints {
      *            position of the syntax point
      */
     SourceSyntaxPoints findSourceFile(int position) {
-        int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position));
+        int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position-offset));
         if (index < 0)
             index = -index - 2;
         return (SourceSyntaxPoints) fileBeginnings.get(index);
