@@ -29,7 +29,7 @@ public abstract class ControllerHandler {
      * Performs an operation when an error occurs
      * @return <code>true</code> if this still is an error, <code>false</code> if it was handled
      */
-    public abstract boolean onError(ServletRequest request, ServletResponse response, Exception e);
+    public abstract boolean onError(ServletRequest request, ServletResponse response, Throwable e);
     
     /**
      * Performs cleanup operations after the filter operation is executed
