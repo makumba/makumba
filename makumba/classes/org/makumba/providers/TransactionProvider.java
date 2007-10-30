@@ -96,7 +96,6 @@ public class TransactionProvider implements TransactionProviderInterface {
         while(i.hasNext()) {
             Transaction t = i.next();
             try {
-                t.commit();
                 t.close();
                 java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Transaction not closed");
             } catch(DBError e) {
