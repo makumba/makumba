@@ -36,11 +36,6 @@ public class ErrorControllerHandler extends ControllerHandler {
     public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
 
     @Override
-    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
-        
-    }
-
-    @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
 
         // FIXME should not be here
@@ -223,12 +218,5 @@ public class ErrorControllerHandler extends ControllerHandler {
     public boolean wasException(HttpServletRequest req) {
         return "yes".equals(req.getAttribute("org.makumba.wasException"));
     }
-
-    @Override
-    public void finalize(ServletRequest request, ServletResponse response) {
-        // TODO Auto-generated method stub
-        
-    }
-
 
 }
