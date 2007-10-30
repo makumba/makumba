@@ -266,10 +266,13 @@ public class Logic {
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
         if (controller instanceof LogicNotFoundException)
             throw new NoSuchMethodException("no controller=> no attribute method");
+        // this will throw nosuchmethodexception if the findXXX method is missing so this method will kinda finish here
+        Method m= (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
+        
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
         try {
-            return (controller.getClass().getMethod("find" + firstUpper(attname), argDb)).invoke(controller, args);
+            return m.invoke(controller, args);
         } catch (IllegalAccessException e) {
             throw new NoSuchMethodException(e.getMessage());
         } catch (InvocationTargetException f) {
