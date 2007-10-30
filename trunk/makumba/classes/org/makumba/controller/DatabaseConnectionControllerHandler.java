@@ -31,7 +31,7 @@ public class DatabaseConnectionControllerHandler extends ControllerHandler {
     }
 
     @Override
-    public boolean onError(ServletRequest request, ServletResponse response, Exception e) {
+    public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
         // we simply forward it
         return true;
     }

@@ -25,7 +25,7 @@ public class AttributesControllerHandler extends ControllerHandler {
     }
 
     @Override
-    public boolean onError(ServletRequest request, ServletResponse response, Exception e) {
+    public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
         
         // we simply pass it on
         return true;
