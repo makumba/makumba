@@ -23,6 +23,9 @@
 
 package org.makumba.db;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.makumba.Pointer;
 
 /** a wrapper for dbconnections, used to provide a temporary that holds a reference to a permanent DBConnection */
@@ -32,12 +35,12 @@ public class DBConnectionWrapper extends DBConnection
 
     // uncomment this if you want to know where the unclosed connections are created
     // maybe this can become a devel feature? 
-    // Throwable t;
+    Throwable t;
     
     public DBConnection getWrapped(){ return wrapped; }
 
     DBConnectionWrapper(){}
-    DBConnectionWrapper(DBConnection wrapped){/*t= new Throwable();*/ this.wrapped=wrapped; }
+    DBConnectionWrapper(DBConnection wrapped){t= new Throwable(); this.wrapped=wrapped; }
 
 
     public String getName(){ return getWrapped().getName(); }
@@ -86,12 +89,19 @@ public class DBConnectionWrapper extends DBConnection
       wrapped=ClosedDBConnection.getInstance();     
     }
     protected synchronized void finalize(){
-        java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Makumba connection "+getName()+" not closed");
-//       t.printStackTrace();
+        java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Makumba connection "+getName()+" not closed\n"+getCreationStack());
         if(wrapped!=ClosedDBConnection.getInstance())
         close();
     }
-  
+    public String getCreationStack(){
+        StringWriter sbw= new StringWriter();
+        t.printStackTrace(new PrintWriter(sbw));
+        return sbw.toString();
+    }
+    public String toString(){
+
+        return getWrapped()+ " "+getCreationStack();
+    }
 }
 
 class ClosedDBConnection extends DBConnectionWrapper
