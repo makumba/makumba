@@ -78,9 +78,11 @@ public class ControllerFilter implements Filter {
                 if(!handlers[i].beforeFilter(req, resp, conf))
                     break;   
             imax=i-1;
-            if(i==handlers.length)
+            for(i=imax; i>=0; i--)
+                handlers[i].afterBeforeFilter(req, resp, conf);
+            if(imax==handlers.length-1)
                 chain.doFilter(req, resp);
-            
+
             for(i=imax; i>=0; i--)
                 handlers[i].afterFilter(req, resp, conf);
         } 
