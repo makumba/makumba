@@ -25,12 +25,6 @@ public class ResponseControllerHandler extends ControllerHandler {
     private ResponderFactory factory = ResponderFactory.getInstance();
 
     @Override
-    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf) throws Exception {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
@@ -84,13 +78,6 @@ public class ResponseControllerHandler extends ControllerHandler {
             req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
 
         }
-        return true;
-    }
-
-    @Override
-    public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
-
-        // we simply pass it on
         return true;
     }
 
@@ -150,11 +137,4 @@ public class ResponseControllerHandler extends ControllerHandler {
         };
         return req;
     }
-
-    @Override
-    public void finalize(ServletRequest request, ServletResponse response) {
-        // TODO Auto-generated method stub
-        
-    }
-
 }
