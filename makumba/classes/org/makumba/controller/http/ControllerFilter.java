@@ -43,7 +43,6 @@ import org.makumba.forms.responder.ResponseControllerHandler;
  * 
  * This filter uses a number of {@link ControllerHandler}-s which each serve a specific purpose.
  * 
- * TODO the different handlers should be invoked in a more generic way
  * TODO there should be a simple mechanism of deactivating one of the handlers, e.g. an invocation list
  * read from the filter configuration and by default calling all the handlers
  * 
@@ -58,94 +57,45 @@ public class ControllerFilter implements Filter {
 
     private static FilterConfig conf;
     
-    private ControllerHandler error;
-    private ControllerHandler filterCondition;
-    private ControllerHandler dbConnectionProvider;
-    private ControllerHandler attributes;
-    private ControllerHandler response;
+    private ControllerHandler handlers[]={
+            new ErrorControllerHandler(), 
+            new FilterConditionControllerHandler(), 
+            new DatabaseConnectionControllerHandler(), 
+            new AttributesControllerHandler(),
+            new ResponseControllerHandler()
+    };
     
     
-    public void init(FilterConfig c) {
-        conf = c;
-        error = new ErrorControllerHandler();
-        filterCondition = new FilterConditionControllerHandler();
-        dbConnectionProvider = new DatabaseConnectionControllerHandler();
-        attributes = new AttributesControllerHandler();
-        response = new ResponseControllerHandler();
-    }
+    
+    public void init(FilterConfig c) { }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
-        
-            boolean errorSuccess = true;
-            boolean filterConditionSuccess = true;
-            boolean dbConnectionProviderSuccess = true;
-            boolean attributesSuccess = true;
-            boolean responseSuccess = true;
-            
-            try {
-                
-                // we run all the beforeFilter methods of the handlers
-                
-                errorSuccess = error.beforeFilter(req, resp, conf);
-                filterConditionSuccess = filterCondition.beforeFilter(req, resp, conf);
-                dbConnectionProviderSuccess = dbConnectionProvider.beforeFilter(req, resp, conf);
-                attributesSuccess = attributes.beforeFilter(req, resp, conf);
-                responseSuccess = response.beforeFilter(req, resp, conf);
-                
-            } catch (Exception e) {
-                // if an exception occurs, we pass it through all the onError methods of the handlers
-                // until the exception is handled, we just pass it on
-                
-                boolean isError = true;
-                
-                isError = response.onError(req, resp, e);
-                if(isError)
-                    isError = attributes.onError(req, resp, e);
-                if(isError)
-                    isError = dbConnectionProvider.onError(req, resp, e);
-                if(isError)
-                    isError = filterCondition.onError(req, resp, e);
-                if(isError)
-                    isError = error.onError(req, resp, e);
-                
-                // if this still is an error we throw it to tomcat
-                if(isError)
-                    throw new RuntimeWrappedException(e);
-                
-            } finally {
-                // finally we finalize
-                response.finalize(req, resp);
-                attributes.finalize(req, resp);
-                dbConnectionProvider.finalize(req, resp);
-                filterCondition.finalize(req, resp);
-                error.finalize(req, resp);
-            }
-            
-            if(errorSuccess && filterConditionSuccess && attributesSuccess && responseSuccess && dbConnectionProviderSuccess) {
+        int i=0;
+        int imax=0;
+        try{
+            for(; i<handlers.length; i++)
+                if(!handlers[i].beforeFilter(req, resp, conf))
+                    break;   
+            imax=i-1;
+            if(i==handlers.length)
                 chain.doFilter(req, resp);
-            }
-            if(responseSuccess) {
-                response.afterFilter(req, resp, conf);
-                response.finalize(req, resp);
-            }
-            if(attributesSuccess) {
-                attributes.afterFilter(req, resp, conf);
-                attributes.finalize(req, resp);
-            }
-            if(dbConnectionProviderSuccess) {
-                dbConnectionProvider.afterFilter(req, resp, conf);
-                dbConnectionProvider.finalize(req, resp);
-            }
-            if(filterConditionSuccess) {
-                filterCondition.afterFilter(req, resp, conf);
-                filterCondition.finalize(req, resp);
-            }
-            if(errorSuccess) {
-                error.afterFilter(req, resp, conf);
-                error.finalize(req, resp);
-            }
-               
+            
+            for(i=imax; i>=0; i--)
+                handlers[i].afterFilter(req, resp, conf);
+        } 
+        catch (Throwable t) {
+            for(int j=i; j>=0; j--)
+                if(!handlers[i].onError(req, resp, t))
+                    break;
+            throw new RuntimeWrappedException(t);
+        }   
+
+        finally {
+            for(i=0;i<=imax;i++)
+                handlers[i].finalize(req, resp);           
+        }
+           
         }
 
     public void destroy() {
