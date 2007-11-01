@@ -281,10 +281,10 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         try {
             ri = (DataDefinition) NamedResources.getStaticCache(infos).getResource(path);
         } catch (RuntimeWrappedException e) {
-            if (e.getReason() instanceof DataDefinitionParseError)
-                throw (DataDefinitionParseError) e.getReason();
-            if (e.getReason() instanceof MakumbaError)
-                throw (MakumbaError) e.getReason();
+            if (e.getCause() instanceof DataDefinitionParseError)
+                throw (DataDefinitionParseError) e.getCause();
+            if (e.getCause() instanceof MakumbaError)
+                throw (MakumbaError) e.getCause();
             throw e;
         }
         if (path.indexOf("./") == -1)

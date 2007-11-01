@@ -62,7 +62,7 @@ public class MultipleAttributeParametrizer {
         try {
             return (AttributeParametrizer) parametrizers.getResource(args);
         } catch (RuntimeWrappedException e) {
-            Throwable t = e.getReason();
+            Throwable t = e.getCause();
             if (t instanceof LogicException)
                 throw (LogicException) t;
             throw e;

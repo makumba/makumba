@@ -360,7 +360,7 @@ public class GeneratedCodeViewer extends jspViewer {
                                 + ((Pointer) ((Dictionary) v.firstElement()).get(labelName)).toExternalForm();
                     }
                 }catch (RuntimeWrappedException e) {
-                    w.println("<br/> <span style=\"color: red\">" + e.getReason() + "</span>");
+                    w.println("<br/> <span style=\"color: red\">" + e.getCause() + "</span>");
                 } finally {
                     db.close();
                 }

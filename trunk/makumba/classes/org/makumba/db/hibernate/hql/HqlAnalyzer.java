@@ -82,7 +82,7 @@ public class HqlAnalyzer implements QueryAnalysis {
                     walker.setDebug(query1);
                     walker.statement(t1);
                 } catch(RuntimeWrappedException e1){
-                    throw new OQLParseError(" during analysis of query: " + query1, e1.getReason()); 
+                    throw new OQLParseError(" during analysis of query: " + query1, e1.getCause()); 
                 }
                 catch (RuntimeException e) {
                     throw new OQLParseError(" during analysis of query: " + query1, e);
@@ -120,7 +120,7 @@ public class HqlAnalyzer implements QueryAnalysis {
                 projTypes.addField(makeField(name, atom));
             }
         }catch(RuntimeWrappedException e1){
-            throw new OQLParseError(" during analysis of query: " + query, e1.getReason()); 
+            throw new OQLParseError(" during analysis of query: " + query, e1.getCause()); 
         } catch (RuntimeException e) {
             throw new OQLParseError(" during analysis of query: " + query, e);
         }
@@ -145,7 +145,7 @@ public class HqlAnalyzer implements QueryAnalysis {
                 paramTypes.addField(makeField(e.getKey(), e.getValue()));
             }
         } catch(RuntimeWrappedException e1){
-            throw new OQLParseError(" during analysis of query: " + query, e1.getReason()); 
+            throw new OQLParseError(" during analysis of query: " + query, e1.getCause()); 
         }catch (RuntimeException e) {
             throw new OQLParseError("during analysis of query: " + query, e);
         }
