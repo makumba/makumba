@@ -32,7 +32,7 @@ public class FilterConditionControllerHandler extends ControllerHandler {
             return false;
 
         // we compute the file that corresponds to the indicated path
-        java.io.File f = new java.io.File(conf.getServletContext().getRealPath(req.getRequestURI()));
+        java.io.File f = new java.io.File(conf.getServletContext().getRealPath(uri));
 
         // if it's a directory, there will most probably be a redirection, we filter anyway
         if (f.isDirectory())
