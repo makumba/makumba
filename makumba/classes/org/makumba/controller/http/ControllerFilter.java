@@ -30,6 +30,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.AttributesControllerHandler;
 import org.makumba.controller.ControllerHandler;
@@ -55,45 +59,58 @@ public class ControllerFilter implements Filter {
     
     private FilterConfig conf;
     
-    private ControllerHandler handlers[]={
-            new ErrorControllerHandler(), 
-            new FilterConditionControllerHandler(), 
-            new DatabaseConnectionControllerHandler(), 
-            new AttributesControllerHandler(),
-            new ResponseControllerHandler()
-    };
+    private String handlerClasses= 
+            "org.makumba.controller.ErrorControllerHandler,"+
+            "org.makumba.controller.FilterConditionControllerHandler,"+
+            "org.makumba.controller.DatabaseConnectionControllerHandler,"+ 
+            "org.makumba.commons.attributes.AttributesControllerHandler,"+
+            "org.makumba.forms.responder.ResponseControllerHandler";
     
+    private ArrayList<ControllerHandler> handlers= new ArrayList<ControllerHandler>();
     
-    
-    public void init(FilterConfig c) { conf=c;}
+    public void init(FilterConfig c) { 
+        conf=c;
+        String handlerParam= c.getInitParameter("handlerClasses");
+        if(handlerParam==null)
+            handlerParam=handlerClasses;
+        StringTokenizer str= new StringTokenizer(handlerParam, ",");
+        
+        while(str.hasMoreTokens()){
+            try {
+                handlers.add((ControllerHandler) Class.forName(str.nextToken().trim()).newInstance());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
         int i=0;
         int imax=0;
         try{
-            for(; i<handlers.length; i++)
-                if(!handlers[i].beforeFilter(req, resp, conf))
+            for(; i<handlers.size(); i++)
+                if(!handlers.get(i).beforeFilter(req, resp, conf))
                     break;   
             imax=i-1;
             for(i=imax; i>=0; i--)
-                handlers[i].afterBeforeFilter(req, resp, conf);
-            if(imax==handlers.length-1)
+                handlers.get(i).afterBeforeFilter(req, resp, conf);
+            if(imax==handlers.size()-1)
                 chain.doFilter(req, resp);
 
             for(i=imax; i>=0; i--)
-                handlers[i].afterFilter(req, resp, conf);
+                handlers.get(i).afterFilter(req, resp, conf);
         } 
         catch (Throwable t) {
             for(i=imax; i>=0; i--)
-                if(!handlers[i].onError(req, resp, t))
+                if(!handlers.get(i).onError(req, resp, t))
                     return;
             throw new RuntimeWrappedException(t);
         }   
 
         finally {
             for(i=0;i<=imax;i++)
-                handlers[i].finalize(req, resp);           
+                handlers.get(i).finalize(req, resp);           
         }
            
         }
