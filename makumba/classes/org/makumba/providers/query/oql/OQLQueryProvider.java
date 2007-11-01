@@ -72,8 +72,8 @@ public class OQLQueryProvider extends QueryProvider {
         try {
             return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
         } catch (RuntimeWrappedException e) {
-            if (e.getReason() instanceof antlr.RecognitionException) {
-                Exception f = (antlr.RecognitionException) e.getReason();
+            if (e.getCause() instanceof antlr.RecognitionException) {
+                Exception f = (antlr.RecognitionException) e.getCause();
                 String s = f.getMessage();
                 if (s.startsWith("line"))
                     s = s.substring(s.indexOf(':') + 1);

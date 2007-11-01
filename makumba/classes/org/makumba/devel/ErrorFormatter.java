@@ -87,7 +87,7 @@ public class ErrorFormatter {
             else if (t instanceof LogicInvocationError)
                 t1 = ((LogicInvocationError) t).getReason();
             else if (t instanceof RuntimeWrappedException)
-                t1 = ((RuntimeWrappedException) t).getReason();
+                t1 = ((RuntimeWrappedException) t).getCause();
             else if (t instanceof ServletException
                     && ((ServletException) t).getRootCause() instanceof NullPointerException) {
                 // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and
@@ -400,7 +400,7 @@ public class ErrorFormatter {
             else if (t instanceof LogicInvocationError)
                 t1 = ((LogicInvocationError) t).getReason();
             else if (t instanceof RuntimeWrappedException)
-                t1 = ((RuntimeWrappedException) t).getReason();
+                t1 = ((RuntimeWrappedException) t).getCause();
             else if (t instanceof ServletException
                     && ((ServletException) t).getRootCause() instanceof NullPointerException) {
                 // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and

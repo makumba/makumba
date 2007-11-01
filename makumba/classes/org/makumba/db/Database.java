@@ -251,8 +251,8 @@ public abstract class Database {
         try {
             return findDatabaseName((Properties) NamedResources.getStaticCache(dbsel).getResource(s));
         } catch (RuntimeWrappedException e) {
-            if (e.getReason() instanceof org.makumba.MakumbaError)
-                throw (org.makumba.MakumbaError) e.getReason();
+            if (e.getCause() instanceof org.makumba.MakumbaError)
+                throw (org.makumba.MakumbaError) e.getCause();
             throw e;
         }
     }
