@@ -53,9 +53,7 @@ import org.makumba.forms.responder.ResponseControllerHandler;
  */
 public class ControllerFilter implements Filter {
     
-    public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
-
-    private static FilterConfig conf;
+    private FilterConfig conf;
     
     private ControllerHandler handlers[]={
             new ErrorControllerHandler(), 
@@ -67,7 +65,7 @@ public class ControllerFilter implements Filter {
     
     
     
-    public void init(FilterConfig c) { }
+    public void init(FilterConfig c) { conf=c;}
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
@@ -89,7 +87,7 @@ public class ControllerFilter implements Filter {
         catch (Throwable t) {
             for(int j=i; j>=0; j--)
                 if(!handlers[i].onError(req, resp, t))
-                    break;
+                    return;
             throw new RuntimeWrappedException(t);
         }   
 
