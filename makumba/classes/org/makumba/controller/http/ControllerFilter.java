@@ -31,16 +31,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.attributes.AttributesControllerHandler;
 import org.makumba.controller.ControllerHandler;
-import org.makumba.controller.DatabaseConnectionControllerHandler;
-import org.makumba.controller.ErrorControllerHandler;
-import org.makumba.controller.FilterConditionControllerHandler;
-import org.makumba.forms.responder.ResponseControllerHandler;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
