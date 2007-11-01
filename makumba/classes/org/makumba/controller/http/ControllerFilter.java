@@ -85,7 +85,7 @@ public class ControllerFilter implements Filter {
                 handlers[i].afterFilter(req, resp, conf);
         } 
         catch (Throwable t) {
-            for(int j=i; j>=0; j--)
+            for(i=imax; i>=0; i--)
                 if(!handlers[i].onError(req, resp, t))
                     return;
             throw new RuntimeWrappedException(t);
