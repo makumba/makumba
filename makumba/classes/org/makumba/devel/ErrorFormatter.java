@@ -55,12 +55,14 @@ public class ErrorFormatter {
             { org.makumba.NoSuchFieldException.class, "no such field" },
             { org.makumba.LogicException.class, "business logic" } };
 
+    static final Class[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class };
+
     protected ServletContext servletContext;
 
     private String title = "";
 
     protected boolean printeHeaderFooter;
-    
+
     public String getTitle() {
         return this.title;
     }
@@ -108,22 +110,34 @@ public class ErrorFormatter {
             // TODO: use the interface once this is a provider after mak:refactoring finished
             boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this.servletContext,
                 printHeaderFooter, title);
+
             if (!servletEngineSpecificError) {
-                // FIXME this is most probably tomcat-specific
-                /*
-                 * after JSP compilation, the actual JSP problem is in getRootCause, yet the exception is also very
-                 * informative (includes code context). So we need to show both.
-                 */
-                if (((ServletException) t).getRootCause() != null) {
-                    t = ((ServletException) t).getRootCause();
-                    if (t != null && !original.getMessage().equals(t.getMessage())) {
-                        t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
-                        t1.setStackTrace(t.getStackTrace());
-                        t = t1;
+                // FIXME the code below of trying to get more info about the exception is not really accurate
+                // ==> not every JSP exception is a compilation error!! i.e. many runtime exceptions are wrapped into
+                // JSP exceptions
+                // ==> as a quick fix, we treat those as unknown errors
+                if (isRuntimeJspErrors((ServletException) t)) {
+                    unknownError(original, t, wr, req);
+                    return;
+                } else {
+                    Throwable rootCause = ((ServletException) t).getRootCause();
+                    // FIXME this is most probably tomcat-specific
+                    /*
+                     * after JSP compilation, the actual JSP problem is in getRootCause, yet the exception is also very
+                     * informative (includes code context). So we need to show both.
+                     */
+                    if (rootCause != null) {
+                        t = rootCause;
+                        if (t != null && !original.getMessage().equals(t.getMessage())) {
+                            t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
+                            t1.setStackTrace(t.getStackTrace());
+                            t = t1;
+                        }
                     }
+                    title = "JSP compilation error";
+                    knownError(title, t, original, req, wr);
                 }
-                title = "JSP compilation error";
-                knownError(title, t, original, req, wr);
+
             }
             return;
         }
@@ -135,6 +149,15 @@ public class ErrorFormatter {
                 return;
             }
         unknownError(original, t, wr, req);
+    }
+
+    private boolean isRuntimeJspErrors(ServletException t) {
+        for (int i = 0; i < knownJSPruntimeErrors.length; i++) {
+            if (t.getRootCause().getClass().isAssignableFrom(knownJSPruntimeErrors[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
