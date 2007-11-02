@@ -180,7 +180,7 @@
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" />
+			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
