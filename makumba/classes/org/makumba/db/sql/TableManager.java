@@ -2011,9 +2011,54 @@ public class TableManager extends Table {
         return ++primaryKeyCurrentIndex;
     }
 
-    // Moved from dateCreateJavaManager, dateModifyJavaManager and
-    // ptrIndexJavaManager
-    public void checkInsert(String fieldName, Dictionary d) {
+    /**
+     * Checks if a set of values can be inserted in the database
+     * @param fieldsToCheck the values to be checked
+     * @param fieldsToIgnore the values of toCheck not to be checked
+     * @param allFields the entire data to be inserted
+     */
+    public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
+        checkInsert(fieldsToCheck, fieldsToIgnore);
+        
+        // check multi-field multi-table uniqueness
+        checkMultiFieldMultiTableUniqueness(null, allFields);
+    }
+    
+    /**
+     * Checks if a set of values can be updated in the database
+     * @param pointer the pointer to the record to be updated
+     * @param fieldsToCheck the values to be checked
+     * @param fieldsToIgnore the values of toCheck not to be checked
+     * @param allFields the entire data to be inserted
+     */
+    public void checkUpdate(Pointer pointer, Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
+        checkUpdate(fieldsToCheck, fieldsToIgnore);
+        
+        // check multi-field key uniqueness that span over more than one table
+        checkMultiFieldMultiTableUniqueness(pointer, allFields);
+    }
+    
+
+    private void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore) {
+        dd.checkFieldNames(fieldsToCheck);
+        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String name = (String) e.nextElement();
+            if (fieldsToIgnore.get(name) == null) {
+                checkInsert(name, fieldsToCheck);
+            }
+        }
+    }
+    
+    /**
+     * Checks if a field in the current record can be inserted.
+     * Moved from dateCreateJavaManager, dateModifyJavaManager and ptrIndexJavaManager.
+     * 
+     * TODO this should be refactored in two parts:
+     * - the one handling the authorisation (checkCopy)
+     * - the one handling the validity of the value to be inserted
+     *   (base_checkInsert and checkValue(o))
+     */
+    private void checkInsert(String fieldName, Dictionary d) {
         Object o = d.get(fieldName);
         if (o != null) {
             switch (getFieldDefinition(fieldName).getIntegerType()) {
@@ -2034,23 +2079,28 @@ public class TableManager extends Table {
         }
     }
 
-    public void base_checkInsert(String fieldName, Dictionary d) {
+    private void base_checkInsert(String fieldName, Dictionary d) {
         getFieldDefinition(fieldName).checkInsert(d);
     }
-
-    // moved from RecordHandler
-    public void checkInsert(Dictionary d, Dictionary except, Dictionary fullData) {
+    
+    private void checkUpdate(Dictionary d, Dictionary except) {
         dd.checkFieldNames(d);
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             if (except.get(name) == null) {
-                checkInsert(name, d);
+                dd.checkUpdate(name, d);
             }
         }
-        // check multi-field multi-table uniqueness
-        checkMultiFieldMultiTableUniqueness(null, fullData);
     }
 
+    // moved from timeStampManager
+    public Object check_timeStamp_ValueImpl(String fieldName, Object value) {
+        Object o = getFieldDefinition(fieldName).checkValueImpl(value);
+        if (o instanceof java.util.Date && !(o instanceof Timestamp))
+            o = new Timestamp(((java.util.Date) o).getTime());
+        return o;
+    }
+    
     /**
      * Checks all mult-field unique indices that span over more than one table. Other unique indices will be checked by
      * the database, and we just need to find them if something fails
@@ -2091,51 +2141,6 @@ public class TableManager extends Table {
         }
         
         
-    }
-
-    // moved from dateCreateJavaManager, dateModifyJavaManager and
-    // ptrIndexJavaManager
-    public void checkUpdate(String fieldName, Dictionary d) {
-        Object o = d.get(fieldName);
-        if (o != null)
-            switch (getFieldDefinition(fieldName).getIntegerType()) {
-                case FieldDefinition._dateCreate:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a creation date");
-                case FieldDefinition._dateModify:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a modification date");
-                case FieldDefinition._ptrIndex:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update an index pointer");
-                default:
-                    base_checkUpdate(fieldName, d);
-            }
-    }
-
-    public void base_checkUpdate(String fieldName, Dictionary d) {
-        getFieldDefinition(fieldName).checkUpdate(d);
-    }
-
-    // moved from RecordHandler
-    public void checkUpdate(Pointer pointer, Dictionary d, Dictionary except, Dictionary fullDatat) {
-        dd.checkFieldNames(d);
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
-            if (except.get(name) == null) {
-                checkUpdate(name, d);
-            }
-        }
-        // check multi-field key uniqueness that span over more than one table
-        checkMultiFieldMultiTableUniqueness(pointer, fullDatat);
-    }
-
-    // moved from timeStampManager
-    public Object check_timeStamp_ValueImpl(String fieldName, Object value) {
-        Object o = getFieldDefinition(fieldName).checkValueImpl(value);
-        if (o instanceof java.util.Date && !(o instanceof Timestamp))
-            o = new Timestamp(((java.util.Date) o).getTime());
-        return o;
     }
 
 }

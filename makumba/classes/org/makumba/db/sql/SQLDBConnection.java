@@ -32,6 +32,7 @@ import java.sql.Statement;
 
 import org.makumba.DBError;
 import org.makumba.db.DBConnection;
+import org.makumba.providers.TransactionProvider;
 
 public class SQLDBConnection extends DBConnection {
     static int nconn = 0;
@@ -40,8 +41,8 @@ public class SQLDBConnection extends DBConnection {
 
     private Connection conn;
 
-    SQLDBConnection(org.makumba.db.Database db) throws SQLException {
-        super(db);
+    SQLDBConnection(org.makumba.db.Database db, TransactionProvider tp) throws SQLException {
+        super(db, tp);
         n = nconn++;
         makeConnection();
     }
