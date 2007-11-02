@@ -11,9 +11,12 @@ import org.makumba.Transaction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 public class MakumbaTransactionProvider implements TransactionProviderInterface {
+    
+    private static CRUDOperationProvider singleton;
     
     static Class[] theProp = { java.util.Properties.class };
     
@@ -41,9 +44,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     }
 
     static int dbs = NamedResources.makeStaticCache("Databases open", new NamedResourceFactory() {
-        /**
-         * 
-         */
+
         private static final long serialVersionUID = 1L;
 
         protected Object makeResource(Object nm) {
@@ -131,5 +132,13 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
 
     public boolean supportsUTF8() {
         return Database.supportsUTF8();
+    }
+
+    public CRUDOperationProvider getCRUD() {
+        if(singleton == null) {
+            singleton = new MakumbaCRUDOperationProvider();
+        }
+        return singleton;
+        
     }
 }

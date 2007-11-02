@@ -16,6 +16,8 @@ public interface TransactionProviderInterface {
     
     public String getDataSourceName(String lookupFile);
     
+    public CRUDOperationProvider getCRUD();
+    
     public boolean supportsUTF8();
     
     // FIXME moved from MakumbaSystem
