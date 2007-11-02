@@ -47,7 +47,7 @@ class version {
         if (version.indexOf(":")<=  0) {
             version="";
         }
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd-HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
         
         version += " built on " + df.format(getBuildDate());
         return version;

@@ -153,6 +153,7 @@
 	</target>
 
 	<target name="makeManifest" depends="checkManifest" unless="meta-inf.ok">
+		<antcall target="version" />
 		<java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
 			<classpath>
 				<pathelement path="classes/" />
