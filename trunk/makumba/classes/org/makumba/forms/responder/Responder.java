@@ -34,7 +34,6 @@ import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
-import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 
@@ -125,9 +124,6 @@ public abstract class Responder implements java.io.Serializable {
     /** the name of the form we operate on (only needed for search forms). */
     protected String formName;
     
-    /** the key of the form we operate on **/
-    protected MultipleKey formKey;
-
     /** the type where the new operation is made */
     protected String newType;
 
@@ -178,10 +174,7 @@ public abstract class Responder implements java.io.Serializable {
     public String getFormName() {
         return formName;
     }
-
-    public MultipleKey getFormKey() {
-        return formKey;
-    }
+    
     
     public String[] getFormOrder() {
         return formOrder;
@@ -267,10 +260,6 @@ public abstract class Responder implements java.io.Serializable {
 
     public void setFormName(String formName) {
         this.formName = formName;
-    }
-    
-    public void setFormKey(MultipleKey formKey) {
-        this.formKey = formKey;
     }
     
     public void setResponderOrder(String[] formOrder) {
