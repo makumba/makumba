@@ -1,6 +1,7 @@
 package org.makumba.forms.responder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -89,10 +90,10 @@ public class ResponderFactory {
         
         // let's fetch the List containing the order of the forms in the page
         // for this we need to fetch a root form responder
-        // we also make a translation from form key to form responder
+        
         Iterator<String> responderCodes = getResponderCodes(req);
-        Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
-        MultipleKey[] order = null;
+        //Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
+        String[] order = null;
         
         while(responderCodes.hasNext()) {
             String responderCode = responderCodes.next();
@@ -100,14 +101,12 @@ public class ResponderFactory {
                 continue;
             }
             Responder responder = getResponder(responderCode);
-            if(responder.getFormKey() != null)
-                formKeyToResponderCode.put(responder.getFormKey(), responderCode); 
             if(responder.getFormOrder() != null) {
                 order = responder.getFormOrder();
             } 
         }
         
-        // now we can order the responders
+        /* now we can order the responders
         List<String> orderedResponderCodes = new LinkedList<String>();
         
         if(order != null ) {
@@ -117,12 +116,17 @@ public class ResponderFactory {
                     orderedResponderCodes.add(formKeyToResponderCode.get(order[i]));
             }
         }
-        return orderedResponderCodes.iterator();
+        */
+        if(order != null)
+            return Arrays.asList(order).iterator();
+        else return null;
         
     }
     
     public void printOrderedResponders(HttpServletRequest req) {
         Iterator<String> order = getOrderedResponderCodes(req);
+        if(order == null)
+            return;
         while(order.hasNext()) {
             String code = order.next();
             if(code == null) break;
@@ -316,6 +320,8 @@ public class ResponderFactory {
             return null;
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
+        
+        //printOrderedResponders(req);
         
         // we go over all the responders of this page (hold in the request)
         for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {

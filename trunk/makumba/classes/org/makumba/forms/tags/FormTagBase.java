@@ -25,7 +25,9 @@ package org.makumba.forms.tags;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -168,14 +170,43 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.setMultipart(true);
     }
     
-    public void setFormOrder(MultipleKey[] order) {
+    /**
+     * Sets the order of the form responders according to the order of the forms
+     * @param order the order of MultipleKey-s of the forms in the page
+     */
+    public void setFormOrder(MultipleKey[] order, Map<MultipleKey, String> responders) {
         FormTagBase parent = findParentForm();
-        if (parent != null) {// propagate form order to the root form
-            parent.setFormOrder(order);
+        if (parent != null) {
+            
+            if(responders == null)
+                responders = new HashMap<MultipleKey, String>();
+            
+            // we add ourselves to the matching map
+            responders.put(this.getTagKey(), new Integer(this.responder.getPrototype()).toString());
+            
+            // propagate form order to the root form
+            parent.setFormOrder(order, responders);
         }
         else {
-            if(responder.getFormOrder() == null)
-                responder.setFormOrder(order);
+            // we are in the root form, which means that all child forms have a responder by now
+            // so now we can set the responder order in the responder
+            if(responder.getFormOrder() == null) {
+                
+                if(responders == null)
+                    responders = new HashMap<MultipleKey, String>();
+                
+                // first we add ourselves to the hashMap
+                responders.put(this.getTagKey(), new Integer(this.responder.getPrototype()).toString());
+                
+                String[] responderOrder = new String[order.length];
+                for(int i=0; i < order.length; i++) {
+                    if(responders.get(order[i]) != null)
+                        responderOrder[i] = responders.get(order[i]);
+                }
+                
+                responder.setResponderOrder(responderOrder);
+            }
+                
         }
             
     }
@@ -390,11 +421,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
         responder.setFormKey(getTagKey());
         
-        // retrieves the form dependency graph from the cache
-        MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.DEPENDENCY_CACHE, MakumbaJspAnalyzer.DEPENDENCY_CACHE);
- 
-        setFormOrder(sortedForms);
-        
         starttime = new java.util.Date().getTime();
 
         /** we compute the base pointer */
@@ -406,7 +432,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         } catch (LogicException e) {
             throw new RuntimeWrappedException(e);
         }
-
+        
         return EVAL_BODY_BUFFERED;
     }
 
@@ -466,6 +492,14 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             if (findParentForm() != null)
                 java.util.logging.Logger.getLogger("org.makumba." + "taglib.performance").fine(
                     "form time: " + ((new java.util.Date().getTime() - starttime)));
+            
+            // retrieves the form dependency graph from the cache
+            // this needs to be the last thing done, so we can retrieve the responder code safely
+            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.DEPENDENCY_CACHE, MakumbaJspAnalyzer.DEPENDENCY_CACHE);
+     
+            setFormOrder(sortedForms, null);
+     
+            
         } catch (IOException e) {
             throw new JspException(e.toString());
         } finally {
