@@ -40,15 +40,16 @@ class version {
 
     /** @see MakumbaSystem#getVersion() */
     static String getVersion() {
-        String vs = "$Name$";
         String version = getGlobalSVNRevision();
 
         // read http://svnbook.red-bean.com/en/1.1/re57.html to understand how svnversion works
         // here we assume that if we export a JAR, a STABLE release won't use a mixed revision
-        if (version.indexOf(":") > 0) {
-            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-            version = "devel-" + df.format(getBuildDate());
+        if (version.indexOf(":")<=  0) {
+            version="";
         }
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd-HH:mm:ss");
+        
+        version += " built on " + df.format(getBuildDate());
         return version;
     }
 
