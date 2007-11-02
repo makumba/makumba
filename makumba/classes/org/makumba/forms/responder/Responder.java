@@ -141,7 +141,7 @@ public abstract class Responder implements java.io.Serializable {
     protected ResponderOperation op;
     
     /** order of the forms in the page **/
-    protected MultipleKey[] formOrder;
+    protected String[] formOrder;
 
     public String getHandler() {
         return handler;
@@ -183,7 +183,7 @@ public abstract class Responder implements java.io.Serializable {
         return formKey;
     }
     
-    public MultipleKey[] getFormOrder() {
+    public String[] getFormOrder() {
         return formOrder;
     }
 
@@ -273,7 +273,7 @@ public abstract class Responder implements java.io.Serializable {
         this.formKey = formKey;
     }
     
-    public void setFormOrder(MultipleKey[] formOrder) {
+    public void setResponderOrder(String[] formOrder) {
         this.formOrder = formOrder;
     }
 
