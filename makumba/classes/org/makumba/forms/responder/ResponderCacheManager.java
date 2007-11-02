@@ -8,17 +8,13 @@ import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.controller.Logic;
-import org.makumba.controller.http.ControllerFilter;
 
 /**
  * This class is handling the caching mechanism of the Responder. There are two caches: one memory cache and one cache
