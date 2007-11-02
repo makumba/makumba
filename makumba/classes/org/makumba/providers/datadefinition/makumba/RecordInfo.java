@@ -480,4 +480,26 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return multiFieldUniqueList.get(fieldNames) != null;
     }
 
+    public void checkUpdate(String fieldName, Dictionary d) {
+        Object o = d.get(fieldName);
+        if (o != null)
+            switch (getFieldDefinition(fieldName).getIntegerType()) {
+                case FieldDefinition._dateCreate:
+                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
+                            "you cannot update a creation date");
+                case FieldDefinition._dateModify:
+                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
+                            "you cannot update a modification date");
+                case FieldDefinition._ptrIndex:
+                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
+                            "you cannot update an index pointer");
+                default:
+                    base_checkUpdate(fieldName, d);
+            }
+    }
+
+    private void base_checkUpdate(String fieldName, Dictionary d) {
+        getFieldDefinition(fieldName).checkUpdate(d);
+    }
+
 }
