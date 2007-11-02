@@ -419,7 +419,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
         responder.setExtraFormatting(extraFormatting);
         responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
-        responder.setFormKey(getTagKey());
         
         starttime = new java.util.Date().getTime();
 
