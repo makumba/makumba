@@ -27,11 +27,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.makumba.Pointer;
+import org.makumba.providers.TransactionProvider;
 
 /** a wrapper for dbconnections, used to provide a temporary that holds a reference to a permanent DBConnection */
 public class DBConnectionWrapper extends DBConnection
 {
     DBConnection wrapped;
+    
+    private TransactionProvider tp;
 
     // uncomment this if you want to know where the unclosed connections are created
     // maybe this can become a devel feature? 
@@ -40,7 +43,7 @@ public class DBConnectionWrapper extends DBConnection
     public DBConnection getWrapped(){ return wrapped; }
 
     DBConnectionWrapper(){}
-    DBConnectionWrapper(DBConnection wrapped){t= new Throwable(); this.wrapped=wrapped; }
+    DBConnectionWrapper(DBConnection wrapped, TransactionProvider tp){t= new Throwable(); this.wrapped=wrapped; this.tp = tp; }
 
 
     public String getName(){ return getWrapped().getName(); }

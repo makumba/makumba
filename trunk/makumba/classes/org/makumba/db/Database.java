@@ -45,6 +45,7 @@ import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SoftNamedResources;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /** 
  ptrOne...
@@ -71,6 +72,8 @@ public abstract class Database {
     private Configuration configuration = new Configuration();
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(configuration);
+    
+    protected TransactionProvider tp = new TransactionProvider(configuration);
 
     NamedResources queries;
 
@@ -135,7 +138,7 @@ public abstract class Database {
         try {
             //connectionsTrace += ">";
             //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
-            return new DBConnectionWrapper((DBConnection) connections.get());
+            return new DBConnectionWrapper((DBConnection) connections.get(), tp);
         } catch (Exception e) {
             throw new DBError(e);
         }

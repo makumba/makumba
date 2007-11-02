@@ -37,22 +37,40 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
-public abstract class DBConnection implements org.makumba.Transaction {
+/**
+ * This is the Makumba-specific implementation of a {@link Transaction}
+ * 
+ * @author Cristian Bogdan
+ * @author Manuel Gay
+ * @version $Id$
+ */
+public abstract class DBConnection implements Transaction {
+
     protected org.makumba.db.Database db;
 
     protected Configuration config = new Configuration();
 
     protected DataDefinitionProvider ddp;
 
+    private TransactionProvider tp;
+
     protected DBConnection() {
         this.ddp = new DataDefinitionProvider(config);
+    }
+
+    protected DBConnection(TransactionProvider tp) {
+        this();
+        this.tp = tp;
     } // for the wrapper
 
-    public DBConnection(Database database) {
+    public DBConnection(Database database, TransactionProvider tp) {
         this.db = database;
+        this.tp = tp;
         this.ddp = new DataDefinitionProvider(config);
     }
 
@@ -295,36 +313,11 @@ public abstract class DBConnection implements org.makumba.Transaction {
                     executeUpdate(fi.getSubtable().getName() + " this", null, "this."
                             + fi.getSubtable().getFieldDefinition(3).getName() + "= $1", param);
                 else
-                    deleteSet(ptr, fi);
+                    tp.getCRUD().deleteSet(this, ptr, fi);
         }
         // delete the record
         executeUpdate(ptr.getType() + " this", null, "this."
                 + ddp.getDataDefinition(ptr.getType()).getIndexPointerFieldName() + "=$1", ptr);
-    }
-
-    // delete a set
-    void deleteSet(Pointer base, FieldDefinition fi) {
-        executeUpdate(fi.getSubtable().getName() + " this", null, "this." + fi.getSubtable().getSetOwnerFieldName()
-                + "=$1", base);
-    }
-
-    /** Update the given external set */
-    void updateSet(Pointer base, String field, Object val) {
-        FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
-        if (!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum"))
-            throw new InvalidFieldTypeException(fi, "set");
-
-        deleteSet(base, fi);
-        if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0)
-            return;
-        Vector values = (Vector) val;
-
-        Dictionary<String, Object> data = new Hashtable<String, Object>(10);
-        data.put(fi.getSubtable().getSetOwnerFieldName(), base);
-        for (Enumeration e = values.elements(); e.hasMoreElements();) {
-            data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
-            db.getTable(fi.getSubtable()).insertRecord(this, data);
-        }
     }
 
     /*
@@ -347,213 +340,8 @@ public abstract class DBConnection implements org.makumba.Transaction {
         Object[] k = { OQL, "" };
         return ((Query) getHostDatabase().queries.getResource(k));
     }
-}
 
-/**
- * Class which enables it to perform "super-CRUD" operations, i.e. composite inserts and updates on subrecords
- * 
- * The data is passed as a dictionary, and its keys look like
- * 
- * a
- * a.b
- * a.b.c
- * ...
- * 
- * @author Cristian Bogdan
- * @version $Id$
- */
-class DataHolder {
-    
-    DBConnection d;
-
-    Table t;
-
-    /** dictionary holding the data used for the operation, and on which operations are performed **/
-    Dictionary<Object, Object> dictionnary = new Hashtable<Object, Object>();
-
-    /** dictionary holding subrecords, i.e. each key gives access to a hashtable of fields **/
-    Dictionary<String, Object> others = new Hashtable<String, Object>(); // contains data holders
-
-    /** dictionnary holding the data which has to be performed on sets **/
-    Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
-
-    private Dictionary fullData;
-
-    private Configuration configuration = new Configuration();
-
-    private DataDefinitionProvider ddp;
-
-    DataHolder(DBConnection d, Dictionary data, String type) {
-        this.d = d;
-        this.fullData = data;
-        this.ddp = new DataDefinitionProvider(configuration);
-
-        t = d.db.getTable(ddp.getDataDefinition(type).getName());
-
-        // we populate our dictionnary with the given data
-        for (Enumeration e = data.keys(); e.hasMoreElements();) {
-            Object o = e.nextElement();
-            dictionnary.put(o, data.get(o));
-        }
-
-        for (Enumeration e = data.keys(); e.hasMoreElements();) {
-            Object o = e.nextElement();
-            
-            // we check if the key of the dictionary is a string, if not, we complain
-            if (!(o instanceof String))
-                throw new org.makumba.NoSuchFieldException(t.getDataDefinition(),
-                        "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
-                                + "> is of type " + o.getClass() + t.getDataDefinition().getName());
-            
-            // we figure out the content of our dictionary. if dots are found, this means we refer to subtypes
-            String s = (String) o;
-            int dot = s.indexOf(".");
-            
-            // if there's no dot, this is a field of the current object (the "type" parameter)
-            if (dot == -1) {
-                FieldDefinition fi = t.getDataDefinition().getFieldDefinition(s);
-                
-                // if there was no field definition found, then this field doesn't exist and we complain
-                if (fi == null)
-                    throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), (String) o);
-                
-                // if this field is a set, we add it to our dictionary of sets
-                if (fi.getType().equals("set") || fi.getType().equals("setintEnum")
-                        || fi.getType().equals("setcharEnum")) {
-                    Object v = dictionnary.remove(s); // remove from our dictionary, as it was treated
-                    fi.checkValue(v);
-                    sets.put(s, v);
-                }
-            } else { // if there's a dot, we place it in our dictionary of subrecords
-                String fld = s.substring(0, dot);
-                Dictionary oth = (Dictionary) others.get(fld);
-                if (oth == null)
-                    others.put(fld, oth = new Hashtable());
-                oth.put(s.substring(dot + 1), dictionnary.remove(s)); // we keep only the field name after the dot
-            }
-        }
-        Dictionary others1 = others;
-        others = new Hashtable<String, Object>(); // we clean the dictionnary of subrecords
-        
-        // we check what is left (in the subrecords)
-        for (Enumeration e = others1.keys(); e.hasMoreElements();) {
-            
-            String fld = (String) e.nextElement();
-            FieldDefinition fd = t.getDataDefinition().getFieldDefinition(fld);
-            
-            if (fd == null)
-                throw new org.makumba.NoSuchFieldException(t.getDataDefinition(), fld);
-            
-            // both a field and its subrecords were indicated
-            if (dictionnary.get(fld) != null)
-                throw new org.makumba.InvalidValueException(fd,
-                        "you cannot indicate both a subfield and the field itself. Values for " + fld + "."
-                                + others.get(fld) + " were also indicated");
-            
-            // if this field is a ptrOne (in the same table), i.e. a subrecord (not external record)
-            if (!fd.getType().equals("ptrOne") && (!fd.isNotNull() || !fd.isFixed()))
-                throw new InvalidFieldTypeException(fd,
-                        "subpointer or base pointer, so it cannot be used for composite insert/edit");
-            
-            // we recursively add the subfield to our fields
-            others.put(fld, new DataHolder(d, (Dictionary) others1.get(fld), fd.getPointedType().getName()));
-        }
-    }
-
-    public String toString() {
-        return "data: " + dictionnary + " others: " + others;
-    }
-
-    /**
-     * Checks if it is possible to insert data for all subrecords
-     */
-    void checkInsert() {
-        for (Enumeration e = others.elements(); e.hasMoreElements();) {
-            ((DataHolder) e.nextElement()).checkInsert();
-        }
-        t.checkInsert(dictionnary, others, fullData);
-    }
-
-    /**
-     * Checks if it is possible to update for all subrecords
-     * @param pointer the pointer to the record to be updated
-     */
-    void checkUpdate(Pointer pointer) {
-        for (Enumeration e = others.elements(); e.hasMoreElements();) {
-            ((DataHolder) e.nextElement()).checkUpdate(pointer);
-        }
-        t.checkUpdate(pointer, dictionnary, others, fullData);
-    }
-
-    Pointer insert() {
-        // insert the other pointers, i.e. the subrecords
-        for (Enumeration e = others.keys(); e.hasMoreElements();) {
-            String fld = (String) e.nextElement();
-            dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
-        }
-        // insert the record
-        Pointer p = t.insertRecord(d, dictionnary);
-        // insert the sets
-
-        for (Enumeration e = sets.keys(); e.hasMoreElements();) {
-            String fld = (String) e.nextElement();
-            d.updateSet(p, fld, sets.get(fld));
-        }
-        return p;
-    }
-
-    void update(Pointer p) {
-        // see if we have to read some pointers
-        Vector<Object> ptrsx = new Vector<Object>();
-        // we have to read the "other" pointers
-        for (Enumeration e = others.keys(); e.hasMoreElements();)
-            ptrsx.addElement(e.nextElement());
-        // we might have to read the ptrOnes that are nullified
-        for (Enumeration e = dictionnary.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
-            if (dictionnary.get(s).equals(Pointer.Null)
-                    && t.getDataDefinition().getFieldDefinition(s).getType().equals("ptrOne"))
-                ptrsx.addElement(s);
-        }
-        // read the pointers if there are any to read
-        Dictionary ptrs = null;
-        if (ptrsx.size() > 0)
-            ptrs = d.read(p, ptrsx);
-
-        // update others
-        for (Enumeration e = others.keys(); e.hasMoreElements();) {
-            String fld = (String) e.nextElement();
-            Pointer ptr = (Pointer) ptrs.remove(fld);
-            if (ptr == null || ptr == Pointer.Null)
-                dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
-            else
-                ((DataHolder) others.get(fld)).update(ptr);
-        }
-
-        // rest of ptrs should be ptrOnes to delete
-        if (ptrs != null)
-            for (Enumeration e = ptrs.elements(); e.hasMoreElements();)
-                d.delete1((Pointer) e.nextElement());
-
-        Object[] params = new Object[dictionnary.size() + 1];
-        params[0] = p;
-        int n = 1;
-        String set = "";
-        String comma = "";
-        for (Enumeration upd = dictionnary.keys(); upd.hasMoreElements();) {
-            set += comma;
-            String s = (String) upd.nextElement();
-            params[n++] = dictionnary.get(s);
-            set += "this." + s + "=$" + n;
-            comma = ",";
-        }
-        if (set.trim().length() > 0)
-            d.executeUpdate(t.getDataDefinition().getName() + " this", set, "this."
-                    + ddp.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
-
-        for (Enumeration e = sets.keys(); e.hasMoreElements();) {
-            String fld = (String) e.nextElement();
-            d.updateSet(p, fld, sets.get(fld));
-        }
+    public TransactionProvider getTransactionProvider() {
+        return this.tp;
     }
 }

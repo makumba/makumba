@@ -85,7 +85,7 @@ public class Database extends org.makumba.db.Database {
     
 	protected DBConnection makeDBConnection() {
 		try {
-			return new SQLDBConnection(this);
+			return new SQLDBConnection(this, tp);
 		} catch (SQLException e) {
 			logException(e);
 			throw new DBError(e);
