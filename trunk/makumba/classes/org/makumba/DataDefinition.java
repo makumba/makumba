@@ -87,7 +87,10 @@ public interface DataDefinition {
 
     /** Checks whether all fieldnames exist in the database */
     public void checkFieldNames(Dictionary d);
-
+    
+    /** Checks whether a record can be updated **/
+    public void checkUpdate(String fieldName, Dictionary d);
+    
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
