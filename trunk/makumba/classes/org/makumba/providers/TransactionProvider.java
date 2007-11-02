@@ -1,7 +1,5 @@
 package org.makumba.providers;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -90,6 +88,10 @@ public class TransactionProvider implements TransactionProviderInterface {
         return transactionProviderImplementation.supportsUTF8();
     }
     
+    public CRUDOperationProvider getCRUD() {
+        return transactionProviderImplementation.getCRUD();
+    }
+    
     private void close() {
         Iterator<Transaction> i = connections.iterator();
         
@@ -107,4 +109,5 @@ public class TransactionProvider implements TransactionProviderInterface {
     protected synchronized void finalize() {
         close();
     }
+    
 }
