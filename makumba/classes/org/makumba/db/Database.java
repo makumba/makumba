@@ -186,79 +186,7 @@ public abstract class Database {
         return config.getProperty(v);
     }
 
-    static String findInHostProperties(Properties p, String str){
-        for (Enumeration e = p.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
-            int i = s.indexOf('#');
-            try {
-                if ((i==-1|| java.net.InetAddress.getByName(s.substring(0, i)).equals(java.net.InetAddress.getLocalHost()))
-                        && str.endsWith(s.substring(i + 1)))
-                    return p.getProperty(s);
-            } catch (java.net.UnknownHostException uhe) {
-            }
-        }
-        return null;
-    }
     
-    /**
-     * finds the database name of the server according to the host name and current directory. If none is specified, a
-     * default is used, if available
-     */
-    public static String findDatabaseName(Properties p) {
-        String userDir= System.getProperty("user.dir");
-        String n;
-        java.net.URL u= ClassResource.get("/"); 
-        String wbp= u!=null?u.toString():null;
-        
-        if(
-                (n= findInHostProperties(p, userDir))!=null 
-                ||
-                wbp!=null &&((n= findInHostProperties(p, wbp))!=null)
-                ||
-                (n= findInHostProperties(p, "default"))!=null
-                )
-          
-            return n;
-        
-        return p.getProperty("default");
-    }
-
-    public static Database findDatabase(Properties p) {
-        return MakumbaTransactionProvider.getDatabase(findDatabaseName(p));
-    }
-
-    public static Database findDatabase(String s) {
-        return MakumbaTransactionProvider.getDatabase(findDatabaseName(s));
-    }
-
-    static int dbsel = NamedResources.makeStaticCache("Database selection files", new NamedResourceFactory() {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-
-        protected Object makeResource(Object nm) {
-            Properties p = new Properties();
-            try {
-                java.io.InputStream input = org.makumba.commons.ClassResource.get((String) nm).openStream();
-                p.load(input);
-                input.close();
-            } catch (Exception e) {
-                throw new org.makumba.ConfigFileError((String) nm);
-            }
-            return p;
-        }
-    });
-
-    protected static String findDatabaseName(String s) {
-        try {
-            return findDatabaseName((Properties) NamedResources.getStaticCache(dbsel).getResource(s));
-        } catch (RuntimeWrappedException e) {
-            if (e.getCause() instanceof org.makumba.MakumbaError)
-                throw (org.makumba.MakumbaError) e.getCause();
-            throw e;
-        }
-    }
 
     protected Database(Properties config) {
         this.config = config;
@@ -464,7 +392,7 @@ public abstract class Database {
 
     public void copyFrom(String source, boolean ignoreDbsv) {
         DBConnection c = getDBConnection();
-        DBConnection sourceDB = findDatabase(source).getDBConnection();
+        DBConnection sourceDB = Configuration.findDatabase(source).getDBConnection();
         try {
             Vector v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
             String[] _tables = new String[v.size()];
