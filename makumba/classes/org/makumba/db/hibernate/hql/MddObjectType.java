@@ -28,10 +28,17 @@ public class MddObjectType implements ObjectType {
 
         if (field.equals("id")) {
             return type;
-        } else if (field.startsWith("hibernate_")) {
+        }  
+        try {
+            dd = ddp.getDataDefinition(type);
+        } catch (DataDefinitionNotFoundError e) {
+            //throw new SemanticException("No such MDD \"" + type + "\"");
+            throw new ProgrammerError("No such MDD \"" + type + "\"");
+        }
+  
+        if (field.startsWith("hibernate_")) {
             String ptrToCheck = field.substring(field.indexOf("_")+1);
-            DataDefinition ddPtr = ddp.getDataDefinition(type);
-            FieldDefinition fiPtr = ddPtr.getFieldDefinition(ptrToCheck);
+            FieldDefinition fiPtr = dd.getFieldDefinition(ptrToCheck);
             if(fiPtr==null)
                 //throw new SemanticException("No such field \"" + field + "\" in type "+type);
                 throw new ProgrammerError("No such field \"" + field + "\" in type "+type);
@@ -40,15 +47,14 @@ public class MddObjectType implements ObjectType {
             }
         }
 
-        try {
-            dd = ddp.getDataDefinition(type);
-        } catch (DataDefinitionNotFoundError e) {
-            //throw new SemanticException("No such MDD \"" + type + "\"");
-            throw new ProgrammerError("No such MDD \"" + type + "\"");
-        }
-
+        if(field.equals("enum_") && dd.getFieldDefinition("enum")!=null)
+            // FIXME: need to check if this is really a setEnum generated type
+            return dd.getFieldDefinition("enum");
+            
+            
         FieldDefinition fi = dd.getFieldDefinition(field);
-        if(fi == null)
+                    
+        if(fi==null)           
             //throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
             throw new ProgrammerError("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
 

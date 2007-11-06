@@ -112,12 +112,12 @@ below).
       <td style="vertical-align: top;">SELECT <span style="font-weight: bold;">s </span>FROM test.Person p, <span
         style="font-weight: bold;">p.intSet s</span><br>
       </td>
-      <td style="vertical-align: top;">SELECT<span style="font-weight: bold;"> s.enum </span>FROM test.Person p <span
+      <td style="vertical-align: top;">SELECT<span style="font-weight: bold;"> s.enum_ </span>FROM test.Person p <span
         style="font-weight: bold;">JOIN p.intSet s</span></td>
       <td style="vertical-align: top;">int/charEnum projection<br>
       </td>
       <td style="vertical-align: top;">A combination of set joining and label projection. Selecting s would select
-      the whole enumerator object, which is typically useless.<br>
+      the whole enumerator object, which is typically useless. Selecting enum (the hidden mdd's field name) leads to a java reserved keyword problem<br>
       </td>
       <td style="vertical-align: top;">Accept the current makumba form and translate into the Hibernate form. NOT
       sure if the Makumba form should be deprecated (like in other cases)</td>
