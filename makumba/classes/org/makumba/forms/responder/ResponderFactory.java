@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -20,16 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
-import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.analyser.TagData;
 import org.makumba.commons.Configuration;
-import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.forms.tags.FormTagBase;
 import org.makumba.providers.TransactionProvider;
 
 /**
