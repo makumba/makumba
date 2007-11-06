@@ -26,7 +26,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
         Configuration c = new Configuration();
         try {
             this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
-                c.getDefaultDataDefinitionProviderClass()).newInstance();
+                c.getDataDefinitionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -42,7 +42,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
     public DataDefinitionProvider(Configuration c) {
         try {
             this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
-                c.getDefaultDataDefinitionProviderClass()).newInstance();
+                c.getDataDefinitionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
