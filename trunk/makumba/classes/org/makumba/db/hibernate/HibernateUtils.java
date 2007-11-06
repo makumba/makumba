@@ -27,5 +27,11 @@ public class HibernateUtils {
             return arrowToDoubleUnderscore(name+"_");
         return arrowToDoubleUnderscore(name);
     }
-   
+    
+    protected String mddToSQLName(String name) {
+        name = dotToUnderscore(name);
+        name = arrowToDoubleUnderscore(name);
+        return name + "_";
+    }
+    
 }
