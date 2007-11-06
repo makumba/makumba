@@ -1,21 +1,32 @@
 package org.makumba.db.hibernate;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.ArrayMap;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.DataHolder;
 import org.makumba.db.Query;
 import org.makumba.db.TransactionImplementation;
+import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.query.hql.HQLQueryProvider;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -38,12 +49,13 @@ public class HibernateTransaction extends TransactionImplementation {
     public HibernateTransaction(DataDefinitionProvider ddp, TransactionProviderInterface tp) {
         this(tp);
         this.ddp = ddp;
-        this.s = HibernateSFManager.getSF().openSession();
+        // FIXME this obviously should not use this hardcoded value, but should come from something (like, tp.getConnectionTo?
+        this.s = HibernateSFManager.getSF("test/localhost_mysql_makumba.cfg.xml", true).openSession();
+        beginTransaction();
     }
 
     @Override
     public void close() {
-        t.commit();
         s.close();
     }
 
@@ -148,7 +160,92 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public Vector executeQuery(String OQL, Object parameterValues) {
-        throw new MakumbaError("Not implemented");
+        HqlAnalyzer analyzer = HQLQueryProvider.getHqlAnalyzer(OQL);
+        DataDefinition paramsDef = analyzer.getParameterTypes();
+
+        
+        org.hibernate.Query q = s.createQuery(OQL);
+        System.out.println("TRYING TO RUN: "+OQL);
+        q.setCacheable(false);
+
+        // setting params
+        //TODO RefactorMe - I am a weird copy-paste from HQLQueryProvider
+        Object[] argsArray = treatParam(parameterValues);
+        for(int i=0; i<argsArray.length; i++) {
+            
+            Object paramValue = argsArray[i];
+            
+            FieldDefinition paramDef= paramsDef.getFieldDefinition(i);
+            
+            if (paramValue instanceof Date) {
+                q.setDate(i, (Date)paramValue);
+            } else if (paramValue instanceof Integer) {
+                q.setInteger(i, (Integer)paramValue);
+            } else if (paramValue instanceof Pointer) {
+                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getUid()));
+            } else { // we have any param type (most likely String)
+                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
+                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                    q.setInteger(i, new Integer((int) p.longValue()));
+                }else
+                    q.setParameter(i, paramValue);
+            }
+            
+        }
+        
+        List list = q.list();
+        
+        // TODO RefactorMe - I am a copy-paste from HQLQueryProvider
+        DataDefinition dataDef = analyzer.getProjectionType();
+        
+        Vector results = new Vector(list.size());
+
+        Object[] projections = dataDef.getFieldNames().toArray();
+        Dictionary keyIndex = new java.util.Hashtable(projections.length);
+        for (int i = 0; i < projections.length; i++) {
+            keyIndex.put(projections[i], new Integer(i));
+        }
+
+        int i = 1;
+        for (Iterator iter = list.iterator(); iter.hasNext(); i++) {
+            Object resultRow = iter.next();
+            Object[] resultFields;
+            if (!(resultRow instanceof Object[])) { // our query result has only one field
+                resultFields = new Object[] { resultRow }; // we put it into an object[]
+            } else { // our query had more results ==>
+                resultFields = (Object[]) resultRow; // we had an object[] already
+            }
+
+            // process each field's result
+            for (int j = 0; j < resultFields.length; j++) { // 
+                if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
+                    FieldDefinition fd;
+                    if ((fd = dataDef.getFieldDefinition(j)).getType().equals("ptr")) {
+                        // we have a pointer
+                        String ddName = fd.getPointedType().getName();
+                        // FIXME: once we do not get dummy pointers from hibernate queries, take this out
+                        if (resultFields[j] instanceof Pointer) { // we have a dummy pointer
+                            resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getUid());
+                        } else if (resultFields[j] instanceof Integer) { // we have an integer
+                            resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
+                        } else {
+                            throw new RuntimeWrappedException(new org.makumba.LogicException(
+                                    "Internal Makumba error: Detected an unknown type returned by a query. "
+                                            + "The projection index is " + j + ", the result class is "
+                                            + resultFields[j].getClass() + ", it's content " + "is '" + resultFields[j]
+                                            + "'and type analysis claims its type is " + fd.getPointedType().getName(),
+                                    true));
+                        }
+                    } else {
+                        resultFields[j] = resultFields[j];
+                    }
+                }
+            }
+            Dictionary dic = new ArrayMap(keyIndex, resultFields);
+            results.add(dic);
+        }
+        
+        return results;
     }
 
     @Override
@@ -188,6 +285,10 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public String getPrimaryKeyName() {
         return ".id";
+    }
+
+    public org.hibernate.Transaction beginTransaction() {
+        return this.t = s.beginTransaction();
     }
 
 }
