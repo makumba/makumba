@@ -117,7 +117,7 @@ public class HqlAnalyzer implements QueryAnalysis {
                 if (name == null) {
                     name = "col" + (i + 1);
                 }
-                projTypes.addField(makeField(name, atom));
+                projTypes.addField(makeField(name, atom, null));
             }
         }catch(RuntimeWrappedException e1){
             throw new OQLParseError(" during analysis of query: " + query, e1.getCause()); 
@@ -139,10 +139,12 @@ public class HqlAnalyzer implements QueryAnalysis {
             return paramTypes;
         paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
         try {
+            int parameterCounter = 0;
             for (Iterator<Map.Entry<String, ExprTypeAST>> i=walker.getParameterTypes().entrySet().iterator(); i.hasNext();) {
                 Map.Entry<String, ExprTypeAST> e= i.next();
                 
-                paramTypes.addField(makeField(e.getKey(), e.getValue()));
+                paramTypes.addField(makeField(e.getKey(), e.getValue(), parameterCounter));
+                parameterCounter++;
             }
         } catch(RuntimeWrappedException e1){
             throw new OQLParseError(" during analysis of query: " + query, e1.getCause()); 
@@ -152,7 +154,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         return paramTypes;
     }
 
-    private FieldDefinition makeField(String name, ExprTypeAST expr) {
+    private FieldDefinition makeField(String name, ExprTypeAST expr, Integer count) {
         FieldDefinition fd=null;
         if (expr.getObjectType() == null) {
             if(expr.getExtraTypeInfo()!=null)
@@ -161,8 +163,14 @@ public class HqlAnalyzer implements QueryAnalysis {
                 fd= ddp.makeFieldOfType(name, getTypeName(expr.getDataType()), expr
                     .getDescription());
         } else {
-            fd= ddp.makeFieldDefinition(name, "ptr " + expr.getObjectType() + ";"
-                    + expr.getDescription());
+            // if this is a query with not named parameters
+            if(name.equals("?")) {
+                if(count == null) {
+                    throw new OQLParseError("Unexpected projection name during HQL query analysis"); // should not happen
+                }
+                name = "param"+count.toString();
+            }
+            fd= ddp.makeFieldDefinition(name, "ptr " + expr.getObjectType() + ";" + expr.getDescription());
         }
         return fd;
     }
