@@ -11,6 +11,8 @@ import org.makumba.commons.Configuration;
  * This class is a facade for creating different kinds of TransactionProviders. Its constructor knows from a
  * Configuration (or in the future maybe through other means) which implementation to use, and provides this
  * implementation methods to its client, without revealing the implementation used.
+ * 
+ * TODO this is not the best way of doing things, needs refactoring (TransactionProvider as superclass for the other guys)
 
  * @author Manuel Gay
  * @version $Id: TransactionProvider.java,v 1.1 28.09.2007 15:49:55 Manuel Exp $
@@ -18,12 +20,14 @@ import org.makumba.commons.Configuration;
 public class TransactionProvider implements TransactionProviderInterface {
     
     private TransactionProviderInterface transactionProviderImplementation;
-
+    
     
     public TransactionProvider() {
+        
         Configuration config = new Configuration();
+        
         try {
-            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getDefaultTransactionProviderClass()).newInstance();
+            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getTransactionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
