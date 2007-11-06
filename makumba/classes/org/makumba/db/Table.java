@@ -265,5 +265,5 @@ public abstract class Table // extends RecordHandler
 
     public abstract void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields);
 
-    public abstract void checkUpdate(Pointer pointer, Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields);
+    public abstract void checkUpdate(Pointer pointer, Dictionary allFields);
 }
