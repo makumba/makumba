@@ -160,16 +160,15 @@ public class DataHolder {
     }
 
     public Pointer insert() {
-        // insert the other pointers, i.e. the subrecords
+        // first we insert the other pointers, i.e. the subrecords
         for (Enumeration e = others.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
         }
-        // insert the record
+        // then we insert the record, and we know all the pointers to the subrecords
         Pointer p = tp.getCRUD().insert(t, type, dictionnary);
 
         // insert the sets
-
         for (Enumeration e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fi = ddp.getDataDefinition(p.getType()).getFieldDefinition(fld);
