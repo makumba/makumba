@@ -70,7 +70,7 @@ public class MddToClass extends HibernateUtils {
 		cc.defrost();
 		
 		String type = null;
-		String name = fd.getName();;
+		String name = fd.getName();
 		switch (fd.getIntegerType()) {
 			case FieldDefinition._ptr:
 			case FieldDefinition._ptrOne:
