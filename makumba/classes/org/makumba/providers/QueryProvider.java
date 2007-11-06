@@ -105,8 +105,7 @@ public abstract class QueryProvider {
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
      * @throws LogicException
-     *             because we use Attributes TODO implement a bridge from Attributes to Map and don't use Attributes
-     *             here anymore
+     *
      */
     public abstract Vector execute(String query, Map args, int offset, int limit) throws LogicException;
 
