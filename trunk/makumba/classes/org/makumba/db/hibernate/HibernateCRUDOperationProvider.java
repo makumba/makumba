@@ -66,7 +66,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         
         HibernateTransaction ht = (HibernateTransaction)t;
         
-        ht.t = ht.s.beginTransaction();
+        ht.beginTransaction();
         
         HibernateUtils utils = new HibernateUtils();
         
@@ -128,16 +128,22 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     break;
                 case FieldDefinition._ptr:
                 case FieldDefinition._ptrOne:
-                    fieldType = Pointer.class;
-                    continue;
                 case FieldDefinition._ptrRel:
+                    // jackpot! we need to get an instance of the object, not only its pointer
+                    
+                    // first we read its type
                     try {
-                        fieldType = Class.forName(fd.getPointedType().getName());
+                        fieldType = Class.forName(utils.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                     } catch (ClassNotFoundException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
-                    continue;
+                    
+                    // then, we know its pointer so we can read
+                    fieldValue = ((HibernateTransaction)t).s.get(fieldType, ((Pointer)fieldValue).getUid());
+                    
+                    
+                    break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
                     break;
@@ -160,7 +166,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // maybe we need an uppercase here, not sure
             Method m = null;
             try {
-                System.out.println("Getting setter set"+fieldNameInClass+" of class "+recordClass.getName());
+                System.out.println("Getting setter set"+fieldNameInClass+" of class "+recordClass.getName()+", trying to pass new value of type "+parameterTypes[0]);
                 m = recordClass.getMethod("set"+fieldNameInClass, parameterTypes);
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
