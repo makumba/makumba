@@ -1,13 +1,10 @@
 package org.makumba.db;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
 
-import org.makumba.DBError;
 import org.makumba.Transaction;
+import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -105,7 +102,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     }
 
     public String getDefaultDataSourceName() {
-        return Database.findDatabaseName("MakumbaDatabase.properties");
+        return Configuration.findDatabaseName("MakumbaDatabase.properties");
     }
 
 
@@ -127,7 +124,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     }
 
     public String getDataSourceName(String lookupFile) {
-        return Database.findDatabaseName(lookupFile);
+        return Configuration.findDatabaseName(lookupFile);
     }
 
     public boolean supportsUTF8() {
