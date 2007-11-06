@@ -2018,7 +2018,27 @@ public class TableManager extends Table {
      * @param allFields the entire data to be inserted
      */
     public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
-        checkInsert(fieldsToCheck, fieldsToIgnore);
+        dd.checkFieldNames(fieldsToCheck);
+        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String name = (String) e.nextElement();
+            if (fieldsToIgnore.get(name) == null) {
+                Object o = fieldsToCheck.get(name);
+                if (o != null) {
+                
+                    boolean isDateCreate = getFieldDefinition(name).getIntegerType() == FieldDefinition._dateCreate;
+                    boolean isDataModify = getFieldDefinition(name).getIntegerType() == FieldDefinition._dateModify;
+                    boolean isPtrIndex = getFieldDefinition(name).getIntegerType() == FieldDefinition._ptrIndex;
+                
+                    if (isDateCreate || isDataModify || isPtrIndex) {
+                        checkCopyRights(name);
+                    } else {
+                        getFieldDefinition(name).checkInsert(fieldsToCheck);
+                    }
+                
+                    fieldsToCheck.put(name, getFieldDefinition(name).checkValue(o));
+                }
+            }
+        }
         
         // check multi-field multi-table uniqueness
         checkMultiFieldMultiTableUniqueness(null, allFields);
@@ -2026,70 +2046,30 @@ public class TableManager extends Table {
     
     /**
      * Checks if a set of values can be updated in the database
+     * 
      * @param pointer the pointer to the record to be updated
      * @param fieldsToCheck the values to be checked
      * @param fieldsToIgnore the values of toCheck not to be checked
      * @param allFields the entire data to be inserted
      */
-    public void checkUpdate(Pointer pointer, Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
-        checkUpdate(fieldsToCheck, fieldsToIgnore);
+    public void checkUpdate(Pointer pointer, Dictionary allFields) {
         
         // check multi-field key uniqueness that span over more than one table
         checkMultiFieldMultiTableUniqueness(pointer, allFields);
     }
     
 
-    private void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore) {
-        dd.checkFieldNames(fieldsToCheck);
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
-            if (fieldsToIgnore.get(name) == null) {
-                checkInsert(name, fieldsToCheck);
-            }
-        }
-    }
-    
-    /**
-     * Checks if a field in the current record can be inserted.
-     * Moved from dateCreateJavaManager, dateModifyJavaManager and ptrIndexJavaManager.
-     * 
-     * TODO this should be refactored in two parts:
-     * - the one handling the authorisation (checkCopy)
-     * - the one handling the validity of the value to be inserted
-     *   (base_checkInsert and checkValue(o))
-     */
-    private void checkInsert(String fieldName, Dictionary d) {
-        Object o = d.get(fieldName);
-        if (o != null) {
-            switch (getFieldDefinition(fieldName).getIntegerType()) {
-                case FieldDefinition._dateCreate:
-                    checkCopy(fieldName, "creation date");
-                    break;
-                case FieldDefinition._dateModify:
-                    checkCopy(fieldName, "modification date");
-                    break;
-                case FieldDefinition._ptrIndex:
-                    checkCopy(fieldName, "index");
-                    break;
-                default:
-                    base_checkInsert(fieldName, d);
-                    return;
-            }
-            d.put(fieldName, getFieldDefinition(fieldName).checkValue(o));
-        }
-    }
-
-    private void base_checkInsert(String fieldName, Dictionary d) {
-        getFieldDefinition(fieldName).checkInsert(d);
-    }
-    
-    private void checkUpdate(Dictionary d, Dictionary except) {
-        dd.checkFieldNames(d);
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
-            if (except.get(name) == null) {
-                dd.checkUpdate(name, d);
-            }
+    private void checkCopyRights(String fieldName) {
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._dateCreate:
+                checkCopy(fieldName, "creation date");
+                break;
+            case FieldDefinition._dateModify:
+                checkCopy(fieldName, "modification date");
+                break;
+            case FieldDefinition._ptrIndex:
+                checkCopy(fieldName, "index");
+                break;
         }
     }
 
