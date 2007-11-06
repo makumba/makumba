@@ -13,6 +13,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * Class which enables it to perform "super-CRUD" operations, i.e. composite inserts and updates on subrecords The data
@@ -28,7 +29,7 @@ public class DataHolder {
     private Transaction t;
 
     /** the TransactionProvider of the transaction of this DataHolder * */
-    private TransactionProvider tp;
+    private TransactionProviderInterface tp;
 
     /** dictionary holding the data used for the operation, and on which operations are performed * */
     Dictionary<Object, Object> dictionnary = new Hashtable<Object, Object>();
@@ -52,13 +53,13 @@ public class DataHolder {
     /** the DataDefinition of the base object to be worked on * */
     private DataDefinition typeDef;
 
-    DataHolder(Transaction d, Dictionary data, String type) {
-        this.t = d;
+    public DataHolder(Transaction t, Dictionary data, String type) {
+        this.t = t;
         this.fullData = data;
         this.type = type;
 
         this.ddp = new DataDefinitionProvider(configuration);
-        this.tp = d.getTransactionProvider();
+        this.tp = t.getTransactionProvider();
         this.typeDef = ddp.getDataDefinition(type);
 
         // we populate our dictionnary with the given data
@@ -127,7 +128,7 @@ public class DataHolder {
                         "subpointer or base pointer, so it cannot be used for composite insert/edit");
 
             // we recursively add the subfield to our fields
-            others.put(fld, new DataHolder(d, (Dictionary) others1.get(fld), fd.getPointedType().getName()));
+            others.put(fld, new DataHolder(t, (Dictionary) others1.get(fld), fd.getPointedType().getName()));
         }
     }
 
@@ -138,7 +139,7 @@ public class DataHolder {
     /**
      * Checks if it is possible to insert data for all subrecords
      */
-    void checkInsert() {
+    public void checkInsert() {
         for (Enumeration e = others.elements(); e.hasMoreElements();) {
             ((DataHolder) e.nextElement()).checkInsert();
         }
@@ -158,7 +159,7 @@ public class DataHolder {
         tp.getCRUD().checkUpdate(t, type, pointer, dictionnary, others, fullData);
     }
 
-    Pointer insert() {
+    public Pointer insert() {
         // insert the other pointers, i.e. the subrecords
         for (Enumeration e = others.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
