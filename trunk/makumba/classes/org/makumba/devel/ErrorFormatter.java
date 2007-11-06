@@ -85,7 +85,7 @@ public class ErrorFormatter {
             if (t instanceof LogicException)
                 t1 = ((LogicException) t).getReason();
             else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
-                t1 = ((MakumbaError) t).getReason();
+                t1 = ((MakumbaError) t).getCause();
             else if (t instanceof LogicInvocationError)
                 t1 = ((LogicInvocationError) t).getReason();
             else if (t instanceof RuntimeWrappedException)
@@ -419,7 +419,7 @@ public class ErrorFormatter {
             if (t instanceof LogicException)
                 t1 = ((LogicException) t).getReason();
             else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
-                t1 = ((MakumbaError) t).getReason();
+                t1 = ((MakumbaError) t).getCause();
             else if (t instanceof LogicInvocationError)
                 t1 = ((LogicInvocationError) t).getReason();
             else if (t instanceof RuntimeWrappedException)
