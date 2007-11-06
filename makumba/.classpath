@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging-api.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate3.jar" sourcepath="lib-src/hibernate-3.0.5.zip"/>
+	<classpathentry kind="lib" path="lib/hibernate3.jar" sourcepath="lib-src/hibernate-3.2.4.sp1.zip"/>
 	<classpathentry kind="lib" path="lib/httpunit.jar" sourcepath="lib-src/httpunit-1.6.2.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="http://httpunit.sourceforge.net/doc/api"/>
