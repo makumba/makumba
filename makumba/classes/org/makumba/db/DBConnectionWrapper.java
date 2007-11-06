@@ -28,6 +28,7 @@ import java.io.StringWriter;
 
 import org.makumba.Pointer;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /** a wrapper for dbconnections, used to provide a temporary that holds a reference to a permanent DBConnection */
 public class DBConnectionWrapper extends DBConnection
@@ -42,8 +43,8 @@ public class DBConnectionWrapper extends DBConnection
     
     public DBConnection getWrapped(){ return wrapped; }
 
-    DBConnectionWrapper(){}
-    DBConnectionWrapper(DBConnection wrapped, TransactionProvider tp){t= new Throwable(); this.wrapped=wrapped; this.tp = tp; }
+    DBConnectionWrapper(TransactionProviderInterface tp){super(tp);}
+    DBConnectionWrapper(DBConnection wrapped, TransactionProviderInterface tp){this(tp); t= new Throwable(); this.wrapped=wrapped;}
 
 
     public String getName(){ return getWrapped().getName(); }
@@ -105,15 +106,16 @@ public class DBConnectionWrapper extends DBConnection
 
         return getWrapped()+ " "+getCreationStack();
     }
+    
 }
 
 class ClosedDBConnection extends DBConnectionWrapper
 {
     private static final class SingletonHolder {
-        static final DBConnection singleton = new ClosedDBConnection();
+        static final DBConnection singleton = new ClosedDBConnection(null);
     }
 
-    private ClosedDBConnection() {}
+    private ClosedDBConnection(TransactionProviderInterface tp) {super(tp);}
 
     public static DBConnection getInstance() {
         return SingletonHolder.singleton;
