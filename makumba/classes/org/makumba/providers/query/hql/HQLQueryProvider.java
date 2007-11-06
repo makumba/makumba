@@ -95,7 +95,7 @@ public class HQLQueryProvider extends QueryProvider {
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
         query = analyzer.getHackedQuery(query);
 
-         Query q = session.createQuery(query);
+        Query q = session.createQuery(query);
 
         q.setCacheable(false); // we do not cache queries
 
@@ -199,12 +199,15 @@ public class HQLQueryProvider extends QueryProvider {
     public static void main(String[] args) throws LogicException {
         Configuration config = new Configuration();
         
+        config.setTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
         TransactionProvider tp = new TransactionProvider(config);
 
         HQLQueryProvider qr = new HQLQueryProvider();
         qr.init("test/localhost_mysql_makumba");
         
-        //populateDatabase(getDB());
+        org.makumba.Transaction t = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+        
+        populateDatabase(t);
         
         
         
@@ -310,12 +313,6 @@ public class HQLQueryProvider extends QueryProvider {
                   
     }
     
-    private static org.makumba.Transaction getDB() {
-        Configuration config = new Configuration();
-        TransactionProvider tp = new TransactionProvider(config);
-        return tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-    }
-
     public static String printQueryResults(Vector v) {
         String result = "";
         for (int i = 0; i < v.size(); i++) {
