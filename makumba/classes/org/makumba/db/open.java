@@ -24,6 +24,8 @@
 package org.makumba.db;
 import java.util.Vector;
 
+import org.makumba.commons.Configuration;
+
 
 /** Copies one database to the other.
 */
@@ -34,7 +36,7 @@ public class open
     Database d=null;
     try{
       if(argv.length==0)
-	d= Database.findDatabase("MakumbaDatabase.properties");
+	d= Configuration.findDatabase("MakumbaDatabase.properties");
       else
 	d= MakumbaTransactionProvider.getDatabase(argv[0]);
       String[] tables;
