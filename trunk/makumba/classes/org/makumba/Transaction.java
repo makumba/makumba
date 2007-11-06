@@ -25,6 +25,7 @@ package org.makumba;
 
 import org.makumba.db.Query;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>
   Stricly speaking this class represents a database connection (later on, transaction). Obtaining more such objects for the same database configurations will result in opening more connections. Connections must be given back to the system using the {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.<p>
@@ -209,7 +210,7 @@ public interface Transaction extends Database
     public void unlock(String symbol);
     
     /** Returns the TransactionProvider which created this Transaction **/
-    public TransactionProvider getTransactionProvider();
+    public TransactionProviderInterface getTransactionProvider();
     
 }
 
