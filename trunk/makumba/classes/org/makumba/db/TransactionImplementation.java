@@ -5,6 +5,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
@@ -71,11 +73,16 @@ public abstract class TransactionImplementation implements Transaction {
 
         // if this is a ptrOne, we nullify the pointer in the parent record
         if (fi != null && fi.getType().equals("ptrOne"))
-            executeUpdate(transformTypeName(fi.getDataDefinition().getName()) + " this", "this." + fi.getName() + "=nil", "this."
-                    + fi.getName() + "="+getParameterName(), ptr);
+            executeUpdate(transformTypeName(fi.getDataDefinition().getName()) + " this", "this." + fi.getName() + "=" + getNullConstant(), "this."
+                    + fi.getName() + getPrimaryKeyName() + "="+getParameterName(), ptr);
 
         // then we do the rest of the delete job
-        delete1(ptr);
+        try {
+            delete1(ptr);
+        } catch(ConstraintViolationException e) {
+            throw new DBError(e);
+        }
+        
     }
 
     /**
@@ -194,7 +201,8 @@ public abstract class TransactionImplementation implements Transaction {
     protected abstract Vector executeReadQuery(Pointer p, StringBuffer sb);
 
     public void delete1(Pointer ptr) {
-        DataDefinition ri = ddp.getDataDefinition(ptr.getType());
+        String ptrDD = ptr.getType();
+        DataDefinition ri = ddp.getDataDefinition(ptrDD);
         Object param[] = { ptr };
 
         // delete the ptrOnes
@@ -209,7 +217,7 @@ public abstract class TransactionImplementation implements Transaction {
         if (ptrOnes.size() > 0) {
             Dictionary d = read(ptr, ptrOnes);
             for (Enumeration e = d.elements(); e.hasMoreElements();)
-                delete1((Pointer) e.nextElement());
+                delete((Pointer) e.nextElement());
         }
         // delete all the subfields
         for (Enumeration e = ri.getFieldNames().elements(); e.hasMoreElements();) {
@@ -217,17 +225,19 @@ public abstract class TransactionImplementation implements Transaction {
             if (fi.getType().startsWith("set"))
                 if (fi.getType().equals("setComplex"))
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
-                            + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + "= "+getParameterName(), param);
+                            + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName() + "= "+getParameterName(), param);
                 else
                     tp.getCRUD().deleteSet(this, ptr, fi);
         }
         // delete the record
-        executeUpdate(transformTypeName(ptr.getType()) + " this", null, "this."
-                + transformTypeName(ddp.getDataDefinition(ptr.getType()).getIndexPointerFieldName()) + "="+getParameterName(), ptr);
+        executeUpdate(transformTypeName(ptrDD) + " this", null, "this."
+                + getPrimaryKeyName(ptrDD) + "="+getParameterName(), ptr);
     }
 
     protected Object[] treatParam(Object args) {
-        if (args instanceof Vector) {
+        if (args == null) {
+            return new Object[] {};
+        } else if(args instanceof Vector) {
             Vector v = (Vector) args;
             Object[] param = new Object[v.size()];
             v.copyInto(param);
@@ -251,4 +261,11 @@ public abstract class TransactionImplementation implements Transaction {
     public String getPrimaryKeyName() {
         return "";
     }
+    
+    public String getPrimaryKeyName(String ptrDD) {
+        return ddp.getDataDefinition(ptrDD).getIndexPointerFieldName();
+    }
+    
+    public abstract String getNullConstant();
+
 }
