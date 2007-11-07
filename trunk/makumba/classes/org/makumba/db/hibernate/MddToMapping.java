@@ -168,7 +168,7 @@ public class MddToMapping extends HibernateUtils {
                 atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "many-to-one", atts);
                 hd.endElement("", "", "many-to-one");
-                atts.clear();
+                /*atts.clear();
                 atts.addAttribute("", "", "name", "", "hibernate_" + fd.getName());
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.PointerUserType");
                 atts.addAttribute("", "", "column", "", columnName(fd.getName()));
@@ -176,7 +176,7 @@ public class MddToMapping extends HibernateUtils {
                 atts.addAttribute("", "", "update", "", "false");
                 atts.addAttribute("", "", "access", "", "org.makumba.db.hibernate.propertyaccess.HibernatePrimaryKey");
                 hd.startElement("", "", "property", atts);
-                hd.endElement("", "", "property");
+                hd.endElement("", "", "property");*/
                 mddsToDo.add(fd.getPointedType());
                 break;
             case FieldDefinition._ptrOne:
@@ -224,7 +224,8 @@ public class MddToMapping extends HibernateUtils {
                 atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
                 atts.addAttribute("", "", "table", "", dd.getName().replaceAll("\\.", "_").replaceAll("->", "__")
                         + "__" + fd.getName() + "_");
-                atts.addAttribute("", "", "cascade", "", "all-delete-orphan");
+                atts.addAttribute("", "", "cascade", "", "all"); //""
+                atts.addAttribute("", "", "inverse", "", "false"); //"all-delete-orphan"
                 hd.startElement("", "", "bag", atts);
                 atts.clear();
                 atts.addAttribute("", "", "column", "", columnName(dd.getIndexPointerFieldName()));
@@ -238,7 +239,7 @@ public class MddToMapping extends HibernateUtils {
                     pointedName+="_";
                 // TODO: "formula" works around hibernate bug 572
                 // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
-                atts.addAttribute("", "", "formula", "", columnName(pointedName));
+                atts.addAttribute("", "", "column", "", columnName(pointedName));
                 hd.startElement("", "", "many-to-many", atts);
                 hd.endElement("", "", "many-to-many");
                 hd.endElement("", "", "bag");
