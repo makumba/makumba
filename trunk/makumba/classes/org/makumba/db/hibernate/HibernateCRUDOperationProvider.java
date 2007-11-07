@@ -4,9 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -63,54 +66,99 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
     public Pointer insert(Transaction t, String type, Dictionary data) {
-        
-        HibernateTransaction ht = (HibernateTransaction)t;
-        
-        ht.beginTransaction();
-        
-        HibernateUtils utils = new HibernateUtils();
-        
-        DataDefinition dd = ddp.getDataDefinition(type);
-        
-        String name = utils.arrowToDoubleUnderscore(dd.getName());
-            
-        Class recordClass = null;
+
         try {
+
+            HibernateTransaction ht = (HibernateTransaction) t;
+
+            HibernateUtils utils = new HibernateUtils();
+
+            DataDefinition dd = ddp.getDataDefinition(type);
+
+            String name = utils.arrowToDoubleUnderscore(dd.getName());
+
+            Class recordClass = null;
             recordClass = Class.forName(name);
-            System.out.println(recordClass.getName()+": "+ Arrays.toString(recordClass.getMethods()));
-            
-        } catch (ClassNotFoundException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
-        
-        Object newRecord = null;
-        try {
+            // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
+
+            Object newRecord = null;
             newRecord = recordClass.newInstance();
-        } catch (InstantiationException e2) {
+
+            // we need to iterate over the fields we have and set them through the setters
+            fillObject(t, data, utils, dd, recordClass, newRecord);
+
+            if (data.get("TS_create") == null) {
+                Class[] classes = new Class[] { java.util.Date.class };
+                Object[] now = new Object[] { new Date() };
+
+                Method m = recordClass.getMethod("setTS_create", classes);
+                m.invoke(newRecord, now);
+
+                m = recordClass.getMethod("setTS_modify", classes);
+                m.invoke(newRecord, now);
+
+            }
+
+            ht.s.persist(newRecord);
+            ht.s.flush();
+
+            Object pointerId = null;
+
+            Class[] noParam = {};
+            Method getId = recordClass.getMethod("getprimaryKey", noParam);
+
+            Object[] args = {};
+            pointerId = getId.invoke(newRecord, args);
+
+            if (pointerId != null)
+                return new SQLPointer(type, new Long((Integer) pointerId));
+            else
+                throw new MakumbaError("Unexpected return type while trying to get ID of inserted record");
+
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
+        } catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-            e2.printStackTrace();
-        } catch (IllegalAccessException e2) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             // TODO Auto-generated catch block
-            e2.printStackTrace();
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
-        // we need to iterate over the fields we have and set them through the setters
+
+        return null;
+
+    }
+
+    private void fillObject(Transaction t, Dictionary data, HibernateUtils utils, DataDefinition dd, Class recordClass,
+            Object newRecord) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException {
         Enumeration<String> fields = data.keys();
-        while(fields.hasMoreElements()) {
+        while (fields.hasMoreElements()) {
             String fieldName = fields.nextElement();
-            
+
             String fieldNameInClass = utils.checkReserved(fieldName);
-            
+
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
-            
+
             Class fieldType = null;
-            
+
             switch (fd.getIntegerType()) {
                 case FieldDefinition._intEnum:
-                    //type="enum";
-                    //break;
+                    // type="enum";
+                    // break;
                 case FieldDefinition._int:
                     fieldType = Integer.class;
                     break;
@@ -130,53 +178,83 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 case FieldDefinition._ptrOne:
                 case FieldDefinition._ptrRel:
                     // jackpot! we need to get an instance of the object, not only its pointer
-                    
+
                     // first we read its type
-                    try {
-                        fieldType = Class.forName(utils.arrowToDoubleUnderscore(fd.getPointedType().getName()));
-                    } catch (ClassNotFoundException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                    
+                    fieldType = Class.forName(utils.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+
                     // then, we know its pointer so we can read
-                    fieldValue = ((HibernateTransaction)t).s.get(fieldType, ((Pointer)fieldValue).getUid());
-                    
-                    
+                    // System.out.println("Going to load the object of type "+fieldType+" and with primary key
+                    // "+((Pointer) fieldValue).getUid());
+                    fieldValue = ((HibernateTransaction) t).s.get(fieldType, ((Pointer) fieldValue).getUid());
                     break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
                     break;
                 case FieldDefinition._text:
                 case FieldDefinition._binary:
-                    //FIXME
+                    // FIXME
                     fieldType = Text.class;
                     break;
                 default:
-                    try {
-                        throw new Exception("Unmapped type: " + fd.getName() + "-" + fd.getType());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    
+                    throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
+
             }
-           
-            Class[] parameterTypes = {fieldType};
-            
+
+            Class[] parameterTypes = { fieldType };
+
             // maybe we need an uppercase here, not sure
             Method m = null;
+            // System.out.println("Getting setter set" + fieldNameInClass + " of class " + recordClass.getName()
+            // + ", trying to pass new value of type " + parameterTypes[0]);
+            m = recordClass.getMethod("set" + fieldNameInClass, parameterTypes);
+            m.invoke(newRecord, fieldValue);
+
+        }
+    }
+
+    @Override
+    public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+
+        if (fi.getType().equals("set")) {
+
             try {
-                System.out.println("Getting setter set"+fieldNameInClass+" of class "+recordClass.getName()+", trying to pass new value of type "+parameterTypes[0]);
-                m = recordClass.getMethod("set"+fieldNameInClass, parameterTypes);
+
+                Collection values = (Collection) val;
+                if (values.isEmpty())
+                    return;
+
+                HibernateTransaction ht = (HibernateTransaction) t;
+                Class c = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(base.getType()));
+                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
+
+                Object baseObject = ht.s.get(c, base.getUid());
+
+                Collection col = (Collection) m.invoke(baseObject, new Object[] {});
+                if (col == null) {
+                    col = new HashSet();
+                    m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
+                    m.invoke(baseObject, new Object[] { col });
+                }
+
+                // we convert all the pointers to objects so Hibernate can handle them
+                for (Iterator i = values.iterator(); i.hasNext();) {
+                    Pointer p = (Pointer) i.next();
+                    Class c1 = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(p.getType()));
+                    col.add(ht.s.get(c1, p.getUid()));
+                }
+
+                ht.s.saveOrUpdate(baseObject);
+                ht.s.flush();
+
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             } catch (SecurityException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (NoSuchMethodException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            try {
-                m.invoke(newRecord, fieldValue);
             } catch (IllegalArgumentException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -187,28 +265,97 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
+        } else {
+            super.updateSet1(t, base, fi, val);
         }
-        
-        ht.s.persist(newRecord);
-        
-        ht.t.commit();
-        
-        Object pointerId = null;
-        
+
+    }
+
+    @Override
+    public void deleteSet(Transaction t, Pointer base, FieldDefinition fi) {
+
+        // Hibernate automatically cascades deletes in the case of sets
+
+        if (fi.getType().equals("set")) {
+
+            try {
+                HibernateTransaction ht = (HibernateTransaction) t;
+                Class c = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(base.getType()));
+                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
+
+                Object baseObject = ht.s.get(c, base.getUid());
+
+                /*
+                 * Collection col = (Collection) m.invoke(baseObject, new Object[] {}); if(col != null)
+                 * col.removeAll(col);
+                 */
+                m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
+                m.invoke(baseObject, new Object[] { new ArrayList() });
+
+                ht.s.saveOrUpdate(baseObject);
+                ht.s.flush();
+
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        } else {
+            super.deleteSet(t, base, fi);
+        }
+
+    }
+
+    @Override
+    public void update1(Transaction t, Pointer p, DataDefinition dd, Dictionary dic) {
+
+        if (dic.isEmpty())
+            return;
+
         try {
-            Class[] noParam = {};
-            Method getId = recordClass.getMethod("getprimaryKey", noParam);
-            
-            Object[] args = {};
-            pointerId = getId.invoke(newRecord, args);
-            
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            HibernateTransaction ht = (HibernateTransaction) t;
+
+            HibernateUtils utils = new HibernateUtils();
+
+            String name = utils.arrowToDoubleUnderscore(dd.getName());
+
+            Class recordClass = null;
+            recordClass = Class.forName(name);
+            // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
+
+            Object record = null;
+            record = ht.s.get(recordClass, p.getUid());
+
+            // we need to iterate over the fields we have and set them through the setters
+            fillObject(t, dic, utils, dd, recordClass, record);
+
+            Class[] classes = new Class[] { java.util.Date.class };
+            Object[] now = new Object[] { new Date() };
+            Method m = recordClass.getMethod("setTS_modify", classes);
+            m.invoke(record, now);
+
+            ht.s.saveOrUpdate(record);
+            ht.s.flush();
+
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
         } catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -218,12 +365,14 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         } catch (InvocationTargetException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
-        if(pointerId != null)
-            return new SQLPointer(type, new Long((Integer)pointerId));
-        else
-            throw new MakumbaError("Unexpected return type while trying to get ID of inserted record");
+
     }
 
 }
