@@ -21,6 +21,9 @@ public class ObjectTypeAST extends ExprTypeAST {
         String type = null;
         if (lhs instanceof ObjectTypeAST) {
             type = ((ObjectTypeAST)lhs).getObjectType();
+            if(type==null)
+                throw new SemanticException("unknown alias: " + lhs + " in property reference: "
+                    +"of " + rhs);
         } else {
             type = (String) aliasTypes.get(lhs.getText());
             if (type == null) {
@@ -30,8 +33,13 @@ public class ObjectTypeAST extends ExprTypeAST {
         }
 
         Object computedType = "";
-        setDescription(rhs.getText());
-        computedType = typeComputer.determineType(type, rhs.getText());
+        if(rhs==null)
+            computedType = typeComputer.determineType(type, null);
+        else {
+            setDescription(rhs.getText());
+            computedType = typeComputer.determineType(type, rhs.getText());
+            
+        }
         
         //System.out.println("GOT TYPE: " + computedType);
 
