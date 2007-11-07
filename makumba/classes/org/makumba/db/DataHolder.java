@@ -209,21 +209,8 @@ public class DataHolder {
             for (Enumeration e = ptrs.elements(); e.hasMoreElements();)
                 tp.getCRUD().delete(t, (Pointer) e.nextElement());
 
-        Object[] params = new Object[dictionnary.size() + 1];
-        params[0] = p;
-        int n = 1;
-        String set = "";
-        String comma = "";
-        for (Enumeration upd = dictionnary.keys(); upd.hasMoreElements();) {
-            set += comma;
-            String s = (String) upd.nextElement();
-            params[n++] = dictionnary.get(s);
-            set += "this." + s + "=$" + n;
-            comma = ",";
-        }
-        if (set.trim().length() > 0)
-            t.update(typeDef.getName() + " this", set, "this."
-                    + ddp.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
+        // we update the record
+        tp.getCRUD().update1(t, p, typeDef, dictionnary);
 
         for (Enumeration e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
@@ -231,4 +218,6 @@ public class DataHolder {
             tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
         }
     }
+
+    
 }
