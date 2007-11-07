@@ -101,6 +101,10 @@ public abstract class CRUDOperationProvider {
         if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0)
             return;
 
+        updateSet1(t, base, fi, val);
+    }
+
+    public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
         // we update the set with the new values
         Vector values = (Vector) val;
 
@@ -178,5 +182,7 @@ public abstract class CRUDOperationProvider {
         }
         return dd;
     }
+    
+    public abstract void update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary dic);
 
 }
