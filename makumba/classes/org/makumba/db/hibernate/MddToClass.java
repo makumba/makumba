@@ -77,7 +77,7 @@ public class MddToClass extends HibernateUtils {
 				type = arrowToDoubleUnderscore(fd.getPointedType().getName());
 				break;
 			case FieldDefinition._set:
-				type = "java.util.ArrayList";
+				type = "java.util.Collection";
 				break;
 		}
         name=checkReserved(name);
@@ -152,13 +152,13 @@ public class MddToClass extends HibernateUtils {
 						type = "org.makumba.Text";
 						break;
 					case FieldDefinition._set:
-						type = "java.util.ArrayList";
+						type = "java.util.Collection";
 						mddsToDo.add(fd.getPointedType());
 						break;
 					case FieldDefinition._setComplex:
 					case FieldDefinition._setCharEnum:
 					case FieldDefinition._setIntEnum:
-						type = "java.util.ArrayList";
+						type = "java.util.Collection";
 						mddsToDo.add(fd.getSubtable());
 						break;
 					default:
