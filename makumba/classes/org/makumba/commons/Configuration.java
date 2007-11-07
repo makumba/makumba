@@ -20,7 +20,7 @@ public class Configuration implements Serializable {
 
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
     
-    private static final String defaultTransactionProvider = "org.makumba.db.MakumbaTransactionProvider"; //"org.makumba.db.hibernate.HibernateTransactionProvider";
+    private String defaultTransactionProvider = "org.makumba.db.MakumbaTransactionProvider";
     
     private String getDefaultDataDefinitionProviderClass() {
         return defaultDataDefinitionProvider;
@@ -141,6 +141,10 @@ public class Configuration implements Serializable {
                 throw (org.makumba.MakumbaError) e.getCause();
             throw e;
         }
+    }
+
+    public void setDefaultTransactionProvider(String defaultTransactionProvider) {
+        this.defaultTransactionProvider = defaultTransactionProvider;
     }
 
 }
