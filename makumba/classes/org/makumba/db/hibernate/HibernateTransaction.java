@@ -1,15 +1,12 @@
 package org.makumba.db.hibernate;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -24,7 +21,6 @@ import org.makumba.db.Query;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 import org.makumba.providers.query.hql.HQLQueryProvider;
 
@@ -56,6 +52,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public void close() {
+        commit();
         s.close();
     }
 
@@ -76,27 +73,25 @@ public class HibernateTransaction extends TransactionImplementation {
                 throw new org.makumba.NoSuchFieldException(r,
                         "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
                                 + "> is of type " + o.getClass() + r.getName());
-            if (r.getFieldDefinition((String) o) == null)
+            FieldDefinition fieldDefinition = r.getFieldDefinition((String) o);
+            if (fieldDefinition == null)
                 throw new org.makumba.NoSuchFieldException(r, (String) o);
             String s = (String) o;
-            sb.append(separator).append("p.").append(s).append(" as ").append(s);
+            sb.append(separator).append("p.").append(s);
+            if(fieldDefinition.getType().startsWith(("ptr"))) {
+                sb.append(".id");
+            }
+            sb.append(" as ").append(s);
             separator = ",";
         }
-        sb.append(" FROM " + p.getType() + " p WHERE p=:ptr");
+        sb.append(" FROM " + (new HibernateUtils()).arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
         return sb;
     }
     
     @Override
     protected Vector executeReadQuery(Pointer p, StringBuffer sb) {
-        org.hibernate.Query query = s.createQuery(sb.toString());
-        query.setCacheable(false);
-        query.setParameter("ptr", new Integer((int) ((Pointer) p).longValue()), Hibernate.INTEGER);
         
-        Vector v = new Vector(query.list());
-        
-        t.commit();
-        
-        return v;
+        return executeQuery(sb.toString(), p);
     }
 
     
@@ -112,11 +107,11 @@ public class HibernateTransaction extends TransactionImplementation {
         
         // I have no idea if giving the type directly will work...
         if(set == null) {
-            hql = "DELETE FROM "+type+" WHERE "+where;
+            hql = "DELETE FROM "+type.replaceAll("->", "__")+" WHERE "+where;
         } else {
-            hql = "UPDATE "+type+" SET "+set+" WHERE "+where;
+            hql = "UPDATE "+type.replaceAll("->", "__")+" SET "+set+" WHERE "+where;
         }
-        System.out.println("HQL: "+hql);
+        //System.out.println("HQL: "+hql);
         
         org.hibernate.Query q = s.createQuery(hql);
         q.setCacheable(false);
@@ -155,7 +150,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public Vector executeQuery(String OQL, Object parameterValues, int offset, int limit) {
-        throw new MakumbaError("Not implemented");
+        return executeQuery(OQL, parameterValues);
     }
 
     @Override
@@ -165,7 +160,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
         
         org.hibernate.Query q = s.createQuery(OQL);
-        System.out.println("TRYING TO RUN: "+OQL);
+        //System.out.println("TRYING TO RUN: "+OQL);
         q.setCacheable(false);
 
         // setting params
@@ -286,6 +281,17 @@ public class HibernateTransaction extends TransactionImplementation {
     public String getPrimaryKeyName() {
         return ".id";
     }
+    
+    @Override
+    public String getPrimaryKeyName(String s) {
+        return "id";
+    }
+    
+    @Override
+    public String getNullConstant() {
+        return "null";
+    }
+    
 
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
