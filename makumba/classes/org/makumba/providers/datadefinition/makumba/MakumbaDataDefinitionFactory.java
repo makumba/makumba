@@ -22,35 +22,35 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
      * CLASSPATH/dataDefinitions/a/b/C.mdd
      */
     public DataDefinition getDataDefinition(String typeName) {
-        return RecordInfo.getRecordInfo(typeName);
+        return RecordInfo.getRecordInfo(typeName.replaceAll("__", "->"));
     }
 
     /**
      * {@inheritdoc}
      */
     public DataDefinition getVirtualDataDefinition(String name) {
-        return new RecordInfo(name);
+        return new RecordInfo(name.replaceAll("__", "->"));
     }
 
     /**
      * {@inheritdoc}
      */
     public FieldDefinition makeFieldDefinition(String name, String definition) {
-        return FieldInfo.getFieldInfo(name, definition, true);
+        return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), definition.replaceAll("__", "->"), true);
     }
 
     /**
      * {@inheritdoc}
      */
     public FieldDefinition makeFieldOfType(String name, String type) {
-        return FieldInfo.getFieldInfo(name, type, false);
+        return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false);
     }
 
     /**
      * {@inheritdoc}
      */
     public FieldDefinition makeFieldOfType(String name, String type, String description) {
-        return FieldInfo.getFieldInfo(name, type, false, description);
+        return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false, description);
     }
 
     /**
