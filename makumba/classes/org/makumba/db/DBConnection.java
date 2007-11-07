@@ -184,4 +184,9 @@ public abstract class DBConnection extends TransactionImplementation {
         Object[] k = { OQL, "" };
         return ((Query) getHostDatabase().queries.getResource(k));
     }
+    
+    @Override
+    public String getNullConstant() {
+        return "nil";
+    }
 }
