@@ -52,7 +52,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public void close() {
-        commit();
+        t.commit();
         s.close();
     }
 
