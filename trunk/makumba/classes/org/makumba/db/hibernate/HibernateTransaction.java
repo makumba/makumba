@@ -59,6 +59,7 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public void commit() {
         t.commit();
+        t=s.beginTransaction();
     }
 
     @Override
