@@ -1,6 +1,7 @@
 This file describes the visible changes due to refactoring, that can have an impact outside of Makumba (for users).
 
 - in web.xml: the NamedResourcesContextListener is not anymore in util package but commons
+OR simply remove it as it is declared already in the TLDs
 
 - in org.makumba.MakumbaSystem:
   - close() inlined
