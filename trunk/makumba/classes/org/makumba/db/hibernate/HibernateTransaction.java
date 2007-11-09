@@ -1,20 +1,28 @@
 package org.makumba.db.hibernate;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import org.hibernate.CacheMode;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.DataHolder;
 import org.makumba.db.Query;
@@ -22,7 +30,6 @@ import org.makumba.db.TransactionImplementation;
 import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProviderInterface;
-import org.makumba.providers.query.hql.HQLQueryProvider;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -42,11 +49,11 @@ public class HibernateTransaction extends TransactionImplementation {
         super(tp);
     }
     
-    public HibernateTransaction(DataDefinitionProvider ddp, TransactionProviderInterface tp) {
+    public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, TransactionProviderInterface tp) {
         this(tp);
         this.ddp = ddp;
-        // FIXME this obviously should not use this hardcoded value, but should come from something (like, tp.getConnectionTo?
-        this.s = HibernateSFManager.getSF("test/localhost_mysql_makumba.cfg.xml", true).openSession();
+        this.s = ((SessionFactory) tp.getHibernateSessionFactory(dataSource)).openSession();
+        s.setCacheMode(CacheMode.IGNORE);
         beginTransaction();
     }
 
@@ -149,49 +156,84 @@ public class HibernateTransaction extends TransactionImplementation {
         
     }
 
+    
+    /**
+     * Executes a query with the given parameters.
+     * @param query the HQL query
+     * @param args the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object for not named parameters.
+     * @param offset the offset from which the results should be returned
+     * @param limit the maximum number of results to be returned
+     * @return a Vector of Dictionaries containing the results
+     */
     @Override
-    public Vector executeQuery(String OQL, Object parameterValues, int offset, int limit) {
-        return executeQuery(OQL, parameterValues);
+    public Vector executeQuery(String query, Object args, int offset, int limit) {
+        return execute(query, args, offset, limit);
     }
 
+    /**
+     * Executes a query with the given parameters.
+     * @param query the HQL query
+     * @param args the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object for not named parameters.
+     * @return a Vector of Dictionaries containing the results
+     */
     @Override
-    public Vector executeQuery(String OQL, Object parameterValues) {
-        HqlAnalyzer analyzer = HQLQueryProvider.getHqlAnalyzer(OQL);
+    public Vector executeQuery(String query, Object parameterValues) {
+        return execute(query, parameterValues, 0, -1);
+    }
+    
+    public Vector execute(String query, Object args, int offset, int limit) {
+        MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
+
+        HqlAnalyzer analyzer = (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(query);
+
+        DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
-
         
-        org.hibernate.Query q = s.createQuery(OQL);
-        //System.out.println("TRYING TO RUN: "+OQL);
-        q.setCacheable(false);
-
-        // setting params
-        //TODO RefactorMe - I am a weird copy-paste from HQLQueryProvider
-        Object[] argsArray = treatParam(parameterValues);
-        for(int i=0; i<argsArray.length; i++) {
-            
-            Object paramValue = argsArray[i];
-            
-            FieldDefinition paramDef= paramsDef.getFieldDefinition(i);
-            
-            if (paramValue instanceof Date) {
-                q.setDate(i, (Date)paramValue);
-            } else if (paramValue instanceof Integer) {
-                q.setInteger(i, (Integer)paramValue);
-            } else if (paramValue instanceof Pointer) {
-                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getUid()));
-            } else { // we have any param type (most likely String)
-                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
-                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
-                    q.setInteger(i, new Integer((int) p.longValue()));
-                }else
-                    q.setParameter(i, paramValue);
+        // check the query for correctness (we do not allow "select p from Person p", only "p.id")
+        for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
+            FieldDefinition fd = dataDef.getFieldDefinition(i);
+            if (fd.getType().equals("ptr")) { // we have a pointer
+                if (!(fd.getDescription().equalsIgnoreCase("ID") || fd.getDescription().startsWith("hibernate_"))) {
+                    throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
+                            + fd.getDescription() + "' in the query '" + query + "'!\nYou have to select '"
+                            + fd.getDescription() + ".id' instead.");
+                }
             }
-            
         }
-        
-        List list = q.list();
-        
-        // TODO RefactorMe - I am a copy-paste from HQLQueryProvider
+    
+        // workaround for Hibernate bug HHH-2390
+        // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
+        query = analyzer.getHackedQuery(query);
+
+        org.hibernate.Query q = s.createQuery(query);
+
+        q.setCacheable(false); // we do not cache queries
+
+        q.setFirstResult(offset);
+        if (limit != -1) { // limit parameter was specified
+            q.setMaxResults(limit);
+        }
+        if (args != null && args instanceof Map) {
+            setNamedParameters((Map)args, paramsDef, q);
+        } else if(args != null) {
+            setOrderedParameters(args, paramsDef, q);
+        }
+
+        Vector results = getConvertedQueryResult(analyzer, q.list());
+        return results;
+    }
+
+
+    /**
+     * TODO: find a way to not fetch the results all by one, but row by row, to reduce the memory used in both the
+     * list returned from the query and the Vector composed out of.
+     * see also bug
+     *  
+     * @param analyzer
+     * @param list
+     * @return
+     */
+    private Vector getConvertedQueryResult(HqlAnalyzer analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
         
         Vector results = new Vector(list.size());
@@ -240,9 +282,73 @@ public class HibernateTransaction extends TransactionImplementation {
             Dictionary dic = new ArrayMap(keyIndex, resultFields);
             results.add(dic);
         }
-        
         return results;
     }
+
+    private void setOrderedParameters(Object parameterValues, DataDefinition paramsDef, org.hibernate.Query q) {
+        Object[] argsArray = treatParam(parameterValues);
+        for(int i=0; i<argsArray.length; i++) {
+            
+            Object paramValue = argsArray[i];
+            
+            FieldDefinition paramDef= paramsDef.getFieldDefinition(i);
+            
+            if (paramValue instanceof Date) {
+                q.setDate(i, (Date)paramValue);
+            } else if (paramValue instanceof Integer) {
+                q.setInteger(i, (Integer)paramValue);
+            } else if (paramValue instanceof Pointer) {
+                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getUid()));
+            } else { // we have any param type (most likely String)
+                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
+                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                    q.setInteger(i, new Integer((int) p.longValue()));
+                }else
+                    q.setParameter(i, paramValue);
+            }
+            
+        }
+    }
+    
+
+    private void setNamedParameters(Map args, DataDefinition paramsDef, org.hibernate.Query q) {
+        String[] queryParams = q.getNamedParameters();
+        for (int i = 0; i < queryParams.length; i++) {
+            String paramName = queryParams[i];               
+            Object paramValue = args.get(paramName);
+            
+            FieldDefinition paramDef= paramsDef.getFieldDefinition(paramName);
+            
+            //FIXME: check if the type of the actual parameter is in accordance with paramDef
+            if (paramValue instanceof Vector) {
+                q.setParameterList(paramName, (Collection) paramValue);
+            } else if (paramValue instanceof Date) {
+                q.setParameter(paramName, paramValue, Hibernate.DATE);
+            } else if (paramValue instanceof Integer) {
+                q.setParameter(paramName, paramValue, Hibernate.INTEGER);
+            } else if (paramValue instanceof Pointer) {
+                q.setParameter(paramName, new Integer((int) ((Pointer) paramValue).longValue()),
+                    Hibernate.INTEGER);
+            } else { // we have any param type (most likely String)
+                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
+                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                    q.setParameter(paramName, new Integer((int) p.longValue()),
+                        Hibernate.INTEGER);
+                }else
+                    q.setParameter(paramName, paramValue);
+            }
+        }
+    }
+    
+    public static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
+        new NamedResourceFactory() {
+            private static final long serialVersionUID = 1L;
+        
+            protected Object makeResource(Object nm, Object hashName) throws Exception {
+                return new HqlAnalyzer((String) nm);
+            }
+        }, true);
+
 
     @Override
     public Query getQuery(String OQL) {
@@ -296,6 +402,10 @@ public class HibernateTransaction extends TransactionImplementation {
 
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
+    }
+    
+    static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
+        return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
     }
 
 }
