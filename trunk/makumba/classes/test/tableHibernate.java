@@ -71,6 +71,8 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void setUp() {
+        config.setDefaultTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
+        tp = new TransactionProvider(config);
 		db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
 	}
 
@@ -82,7 +84,7 @@ public class tableHibernate extends TestCase {
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
     
-    private TransactionProvider tp = new TransactionProvider(config);
+    private TransactionProvider tp;
 
 	static Pointer ptr, ptr1;
 
@@ -105,15 +107,15 @@ public class tableHibernate extends TestCase {
 
 	static Pointer set1, set2;
 
-	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p.id= ?";
+	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData FROM test.Person p WHERE p.id= ?";
 
 	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p.id = ?";
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother.id as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p.id= ?";
 
-	String readIntSet = "SELECT i.id as member FROM test.Person p JOIN p.intSet i WHERE p.id=?";
+	String readIntSet = "SELECT i.enum_ as member FROM test.Person p JOIN p.intSet i WHERE p.id=? ORDER BY i.enum_";
 
-	String readCharSet = "SELECT c.id as member FROM test.Person p JOIN p.charSet c WHERE p.id=?";
+	String readCharSet = "SELECT c.enum_ as member FROM test.Person p JOIN p.charSet c WHERE p.id=? ORDER BY c.enum_";
 
 	static InputStream getExampleData() {
 		try {
@@ -125,46 +127,8 @@ public class tableHibernate extends TestCase {
 		}
 	}
 
-	public void testQueryValidMdds() {
-		Vector v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
-		Vector errors = new Vector();
-		for (int i = 0; i < v.size(); i++) {
-			try {
-				Vector v1 = db.executeQuery("SELECT t FROM test.validMdds."
-						+ (String) v.elementAt(i) + " t", null);
-				Vector fields = ddp.getDataDefinition(
-						"test.validMdds." + (String) v.elementAt(i))
-						.getFieldNames();
-				String what = "";
-				for (Enumeration e = fields.elements(); e.hasMoreElements();) {
-					String fname = (String) e.nextElement();
-					String ftype = ddp.getDataDefinition(
-							"test.validMdds." + (String) v.elementAt(i))
-							.getFieldDefinition(fname).getDataType();
-					// System.out.println(fname+": "+ftype);
-					if (ftype != null && !ftype.equals("null")
-							&& !ftype.startsWith("set")) // skip setComplex
-						// fields
-						what = what + (what.length() > 0 ? ", " : "") + "t."
-								+ fname;
-				}
-				// System.out.println(what);
-				if (what.length() > 0)
-					v1 = db.executeQuery("SELECT " + what
-							+ " FROM test.validMdds." + (String) v.elementAt(i)
-							+ " t", null);
-			} catch (Exception e) {
-				errors.add("\n ." + (errors.size() + 1)
-						+ ") Error querying valid MDD <"
-						+ (String) v.elementAt(i) + ">:\n\t " + e);
-			}
-		}
-		if (errors.size() > 0)
-			fail("\n  Tested " + v.size() + " valid MDDs, of which "
-					+ errors.size() + " cant be used for DB queries:"
-					+ errors.toString());
-	}
-
+    // FIXME test valid mdds - take from dbtabe test and adapt in hibernate cfg
+	
 	public void testInsert() {
 		Properties p = new Properties();
 		Calendar c = Calendar.getInstance();
@@ -232,10 +196,12 @@ public class tableHibernate extends TestCase {
 
 		assertEquals(create, pc.get("TS_modify"));
 		assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
+       
+        
 	}
 
     public void testForeignKeys() {
-        assertTrue(org.makumba.db.sql.Database.supportsForeignKeys());
+        //FIXME assertTrue(org.makumba.db.sql.Database.supportsForeignKeys());
         
         // try to delete brother = that ID
         // try to delete the other brother
@@ -301,10 +267,11 @@ public class tableHibernate extends TestCase {
         
         // delete the first guy again, this time he shouldn't be linked to from anywhere
         db.delete(fptr);
+        
 
     }
     
-	static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
+	static String subsetQuery = "SELECT a.description, a.id, a.description, a.sth.aaa FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
 
 	public void testSetInsert() {
 		Dictionary p = new Hashtable();
@@ -363,9 +330,8 @@ public class tableHibernate extends TestCase {
 		// we put it back
 		Dictionary p = new Hashtable();
 		p.put("description", "home");
-
-		set1 = db.insert(ptr, "address", p);
-		db.delete("test.Person->address->sth x", "1=1", null); //delete garbage
+       
+        set1 = db.insert(ptr, "address", p);
 	}
 
 	public void testSubrecordUpdate() {
@@ -388,17 +354,20 @@ public class tableHibernate extends TestCase {
 
 	static String[] toInsert = { "German", "Italian" };
 
-	static String langQuery = "SELECT l FROM test.Language l WHERE l.name=$1";
+	static String langQuery = "SELECT l.id FROM test.Language l WHERE l.name=?";
 
-	static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p, p.speaks l WHERE p=$1";
+	static String speaksQuery = "SELECT l.id as k, l.name as name FROM test.Person p JOIN p.speaks l WHERE p.id=?";
 
-	static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person.speaks l WHERE l.Person=$1";
+	static String checkSpeaksQuery = "SELECT l.id FROM test.Person s JOIN s.speaks l WHERE s.id=?";
 
 	void workWithSet(String[] t) {
 		Vector v = new Vector();
-		for (int i = 0; i < t.length; i++)
-			v.addElement(((Dictionary) (db.executeQuery(langQuery, t[i])
-					.elementAt(0))).get("col1"));
+		for (int i = 0; i < t.length; i++) {
+            Vector getLanguagesFromDb = db.executeQuery(langQuery, t[i]);
+            Dictionary resultDic = (Dictionary) (getLanguagesFromDb.elementAt(0));
+            v.addElement(resultDic.get("col1"));
+        }
+			
 
 		Hashtable dt = new Hashtable();
 		dt.put("speaks", v);
@@ -415,7 +384,7 @@ public class tableHibernate extends TestCase {
 				Dictionary d = (Dictionary) result.elementAt(j);
 				if (d.get("name").equals(t[i])) {
 					for (int k = 0; j < result1.size(); k++)
-						if (((Dictionary) result1.elementAt(k)).get("col2")
+						if (((Dictionary) result1.elementAt(k)).get("col1")
 								.equals(d.get("k"))) {
 							result1.removeElementAt(k);
 							break;
@@ -431,11 +400,12 @@ public class tableHibernate extends TestCase {
 
 	public void testSetUpdate() {
 		Dictionary p = new Hashtable();
-		if (db.executeQuery("SELECT l FROM test.Language l", null).size() == 0)
+		if (db.executeQuery("SELECT l.id FROM test.Language l", null).size() == 0)
 			for (int i = 0; i < languageData.length; i++) {
 				p.put("name", languageData[i][0]);
 				p.put("isoCode", languageData[i][1]);
-				db.insert("test.Language", p);
+				Pointer italian = db.insert("test.Language", p);
+                System.out.println("we are here "+italian);
 			}
 		p = new Hashtable();
 
@@ -453,8 +423,6 @@ public class tableHibernate extends TestCase {
 	public void testSetDelete() {
 		Dictionary p = new Hashtable();
 
-		Vector v = new Vector();
-
 		Hashtable dt = new Hashtable();
 		dt.put("speaks", new Vector());
 
@@ -463,11 +431,12 @@ public class tableHibernate extends TestCase {
 		assertEquals(0, result.size());
 
 		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr)
+				"SELECT l.id FROM test.Person p JOIN p.speaks l WHERE p.id=?", ptr)
 				.size());
-
 		workWithSet(toInsert3);
-		db.delete("test.Language l", "1=1", null); //delete garbage
+        //db.delete("test.Language l", "1=1", null); 
+        //delete garbage
+
 	}
 
 	public void testPtrOneDelete() {
@@ -532,8 +501,11 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testDelete() {
-		db.delete(ptr);
+        Hashtable dt = new Hashtable();
+        dt.put("speaks", new Vector());
 
+		db.delete(ptr);
+        
 		assertNull(db.read(ptr, personFields));
 		assertNull(db.read(ptrOne, ptrOneFields));
 		assertEquals(0, db.executeQuery(subsetQuery, ptr).size());
@@ -543,16 +515,16 @@ public class tableHibernate extends TestCase {
 		assertEquals(0, db.executeQuery(readIntSet, ptr).size());
 		assertEquals(0, db.executeQuery(readCharSet, ptr).size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr)
+				"SELECT l.id FROM  test.Person p JOIN p.speaks l WHERE p.id=?", ptr)
 				.size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr)
+				"SELECT l.enum_ FROM  test.Person p JOIN p.intSet l WHERE p.id=?", ptr)
 				.size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr)
+				"SELECT l.enum_ FROM  test.Person p JOIN p.charSet l WHERE p.id=?", ptr)
 				.size());
 
-		// delete all entries, bug 673:
+		/* delete all entries, bug 673:
 		db
 				.delete("test.validMdds.CharWithLength name",
 						"name.name='bla'", null);
@@ -560,84 +532,7 @@ public class tableHibernate extends TestCase {
 		db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \"www\"",
 				null);
 		db.delete("test.validMdds.CharWithLength bla", "'x'=bla.name", null);
-	}
-
-	public void testRealAggregation() {
-		db.delete("test.validMdds.Real r", "r=r", null); // delete all
-		// entries first
-		Dictionary p = new Hashtable();
-		p.put("r", new Double(.5d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(.2d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(1.8d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(.0008d));
-		db.insert("test.validMdds.Real", p);
-		Vector v = db
-				.executeQuery(
-						"SELECT avg(r.r) as av, sum(r.r) as su FROM  test.validMdds.Real r",
-						null);
-		assertEquals("Real aggregation", 1, v.size());
-		assertEquals("Avg(reals)", new Double(0.6252d), ((Dictionary) v
-				.firstElement()).get("av"));
-		assertEquals("Sum(reals)", new Double(2.5008d), ((Dictionary) v
-				.firstElement()).get("su"));
-
-		Object[] args = { new Double(0.2), new Double(1.8) };
-		v = db
-				.executeQuery(
-						"SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2",
-						args);
-		assertEquals("Real comparisment", 2, v.size());
-
-		// should we allow this? FIXME!
-		Object[] args2 = { new Integer(-1), new Double(1.5) };
-		v = db
-				.executeQuery(
-						"SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2",
-						args2);
-		assertEquals("Real comparison with integer parameter", new Integer(3),
-				((Dictionary) v.firstElement()).get("cnt"));
-
-		Object[] args3 = { new Double(1.5) };
-		v = db
-				.executeQuery(
-						"SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>-1 AND r.r<=$1",
-						args3);
-		assertEquals("Real comparison with hardcoded integer", new Integer(3),
-				((Dictionary) v.firstElement()).get("cnt"));
-
-		db.delete("test.validMdds.Real r", "r=r", null); // delete garbage
-	}
-
-	public void testIntAggregation() {
-		db.delete("test.validMdds.Int iii", "5=5", null); // delete all
-		// entries first
-		Dictionary p = new Hashtable();
-		p.put("i", new Integer(0));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(1));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(2));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(3));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(4));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(5));
-		db.insert("test.validMdds.Int", p);
-		Vector v = db
-				.executeQuery(
-						"SELECT avg(i.i) as av, sum(i.i) as su FROM  test.validMdds.Int i",
-						null);
-		assertEquals("Int aggregation", 1, v.size());
-		assertEquals("Avg(ints)", new Double(2.5d), ((Dictionary) v
-				.firstElement()).get("av"));
-		assertEquals("Sum(ints)", new Integer(15), ((Dictionary) v
-				.firstElement()).get("su"));
-
-		db.delete("test.validMdds.Int iii", "5=5", null); // delete garbage
+        */
 	}
 
 	public void testCopy() {
@@ -677,6 +572,7 @@ public class tableHibernate extends TestCase {
 		assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
 		db.delete(ptr1);
 		db.delete("test.Individual i","1=1",null);
+        db.delete("test.Language l", "1=1", null);
 	}
 	
 	public void run(TestResult r){
