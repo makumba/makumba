@@ -13,6 +13,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.db.hibernate.HibernateTransaction;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryProvider;
@@ -271,7 +272,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     
     public static void main(String[] args) {
         String q1 = "SELECT p as bullshit FROM test.Person p)";
-        HqlAnalyzer oA = HQLQueryProvider.getHqlAnalyzer(q1);
+        HqlAnalyzer oA = HibernateTransaction.getHqlAnalyzer(q1);
         
         System.out.println(oA.toString());
     }

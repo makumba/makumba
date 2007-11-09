@@ -39,9 +39,8 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
         return singleton;
     }
 
-    // FIXME: this requires some caching
     public Transaction getConnectionTo(String name) {
-        return new HibernateTransaction(ddp, this);
+        return new HibernateTransaction(name, ddp, this);
     }
 
     public String getDataSourceName(String lookupFile) {
