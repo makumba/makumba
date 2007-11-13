@@ -65,7 +65,7 @@
 **   java antlr.Tool oql.g
 */
 
-header {package org.makumba.db.sql.oql; }
+header {package org.makumba.providers.query.oql; }
 options {
     language="Java";
 }
@@ -400,7 +400,7 @@ query :
 
 selectExpr :
 
-        s:"select"^<AST=org.makumba.db.sql.oql.QueryAST>
+        s:"select"^<AST=org.makumba.providers.query.oql.QueryAST>
 	{ #s.setSuperQuery(currentQuery); currentQuery=#s; }
 
         (

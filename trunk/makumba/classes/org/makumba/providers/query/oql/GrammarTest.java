@@ -21,14 +21,18 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
-import antlr.collections.AST;
-public class Projection
-{
-  public Projection(AST proj, AST expr, String as)
-  { this.proj=(OQLAST)proj; this.expr= (OQLAST)expr; this.as=as; }
+package org.makumba.providers.query.oql;
 
-  OQLAST proj;
-  String as;
-  OQLAST expr;
+
+public class GrammarTest
+{
+   public static void main (String [] argv) throws Exception
+   {
+       OQLLexer lexer =  new OQLLexer(new java.io.StringReader(argv[0]));
+       OQLParser parser = new OQLParser(lexer);
+       // Parse the input expression
+       OQLAST t= null;
+         parser.queryProgram();
+   }
+
 }

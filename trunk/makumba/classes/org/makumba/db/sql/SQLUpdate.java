@@ -31,9 +31,9 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
 import org.makumba.db.Update;
-import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.oql.QueryAST;
 
 public class SQLUpdate implements Update {
     

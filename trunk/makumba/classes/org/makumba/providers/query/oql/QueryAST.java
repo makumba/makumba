@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
 
 import java.util.Enumeration;
 import java.util.Hashtable;

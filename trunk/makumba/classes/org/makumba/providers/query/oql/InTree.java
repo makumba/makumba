@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
 
 /** a tree checker for the IN operator. it makes sure that the type of the left operand is the same with the types of all operands in the compared set */
 public class InTree extends AnalysisTree

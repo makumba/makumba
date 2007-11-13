@@ -21,27 +21,33 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
 
-/** additive operations take their type from any of the operands, and have operands of the same type */
-public class AdditiveTree extends AnalysisTree
+import org.makumba.commons.NameResolver;
+import antlr.CommonAST;
+
+public class OQLAST extends CommonAST
 {
-  public AdditiveTree(Object left, int op, Object right){ super(left, op, right); }
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public Object computeTypeFromOperands() { return left.makumbaType; }
+public OQLAST(){};
+  public OQLAST(antlr.Token t) { super(t); }
+  public String writeInSQLQuery(NameResolver nr){return getText(); }
 
-  public Object guessParameterType(Object otherOperandType) 
+  /* used in expressions */
+  Object makumbaType;
+
+  AnalysisTree tree;
+
+  public Object getMakumbaType() throws antlr.RecognitionException
   {
-    return otherOperandType;
+    if(tree!=null)
+      return tree.getMakumbaType();
+    else
+      return makumbaType;
   }
-  
-  public void negociateOperandTypes(Object t1, Object t2)
-  throws antlr.RecognitionException
-	{ 
-		if(t1.equals("int") && t2.equals("real")
-		  ||t2.equals("int") && t1.equals("real") )
-		 return;
-	
-	super.negociateOperandTypes(t1, t2);
-	}
 }
+
