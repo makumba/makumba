@@ -46,6 +46,7 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
@@ -116,8 +117,8 @@ public class TableManager extends Table {
     }
 
     /** the SQL table opening. might call create() or alter() */
-    protected void open(Properties config) {
-        setTableAndFieldNames(config);
+    protected void open(Properties config, NameResolver nr) {
+        setTableAndFieldNames(nr);
         if (!getDataDefinition().isTemporary()) {
             DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
             SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
@@ -142,34 +143,10 @@ public class TableManager extends Table {
     }
 
     /** the SQL table opening. might call create() or alter() */
-    protected void setTableAndFieldNames(Properties config) {
+    protected void setTableAndFieldNames(NameResolver nr) {
 
-        tbname = config.getProperty(getDataDefinition().getName());
-        /*
-         * find the shortest possible table name, according to what is defined in config a config with rule and table:
-         * best.minerva.student=bms best.minerva.student->fields will create table _bms__fields_ instead of
-         * _best_minerva_student__fields_ as it did before
-         */
-        if (tbname == null) {
-            String key = Database.findConfig(config, getDataDefinition().getName());
-            String shortname = getDataDefinition().getName();
-            if (key != null)
-                shortname = config.getProperty(key) + getDataDefinition().getName().substring(key.length());
+        tbname = nr.resolveTypeName(dd);
 
-            tbname = getSQLDatabase().getTableName(shortname);
-        } else if (tbname.indexOf('.') != -1)
-            tbname = getSQLDatabase().getTableName(tbname);
-
-        /*
-         * setDbName(fieldName, config) which will probably call set_int_DbName, set_date_DbName, ...
-         */
-        /* TODO: callAll() */
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
-            if (getFieldDefinition(fieldName).getType().startsWith("set"))
-                continue;
-            setFieldDBName(fieldName, config);
-        }
     }
 
     boolean admin;
@@ -623,20 +600,6 @@ public class TableManager extends Table {
             command.append(getFieldDBName(fieldName));
         }
     }
-
-    /** Check if the given database tablename s actually exists in the database */
-    boolean checkTableDBName(String s) {
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
-            if (getFieldDefinition(fieldName).getType().startsWith("set"))
-                continue;
-            if (getFieldDBName(fieldName) != null && getFieldDBName(fieldName).toLowerCase().equals(s.toLowerCase()))
-                return true;
-        }
-        return false;
-    }
-
-    // ---------------------------------------
 
     protected String prepareInsert(boolean autoIncrement) {
 
@@ -1198,26 +1161,9 @@ public class TableManager extends Table {
         return new Timestamp(((java.util.Date) o).getTime());
     }
 
-    // Moved from FieldManager
-    /**
-     * sets the database-level name of this field, normally identical with its abstract-level name, unless the database
-     * has some restrictions, or the configuration indicates that the field exists in the table with another name
-     */
-    public void setFieldDBName(String fieldName, Properties config) {
-        String dbname1 = null;
-        dbname1 = config.getProperty(this.getDBName() + "#" + getFieldDBName(fieldName));
-        if (dbname1 == null) {
-            dbname1 = this.getSQLDatabase().getFieldName(fieldName);
-            while (checkTableDBName(dbname1))
-                dbname1 = dbname1 + "_";
-        }
-        fieldDBNames.put(fieldName, dbname1);
-    }
-
-    // moved from FieldManager method getDBName()
     /** the database-level name of the field */
     public String getFieldDBName(String fieldName) {
-        return (String) fieldDBNames.get(fieldName);
+        return getDatabase().getNameResolver().resolveFieldName(dd, fieldName);
     }
 
     // moved from FieldManager

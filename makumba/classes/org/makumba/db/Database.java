@@ -40,9 +40,9 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SoftNamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -164,6 +164,8 @@ public abstract class Database {
 
     String fullName;
 
+    protected NameResolver nr;
+
     /** return the unique index of this database */
     public int getDbsv() {
         return dbsv;
@@ -190,6 +192,7 @@ public abstract class Database {
 
     protected Database(Properties config) {
         this.config = config;
+        this.nr = new NameResolver(config);
         this.configName = config.getProperty("db.name");
         String s = config.getProperty("initConnections");
         if (s != null)
@@ -462,7 +465,7 @@ public abstract class Database {
     void configureTable(Table tbl, DataDefinition ri) {
         tbl.db = Database.this;
         tbl.setDataDefinition(ri);
-        tbl.open(config);
+        tbl.open(config, nr);
     }
 
     NamedResourceFactory tableFactory = new NamedResourceFactory() {
@@ -501,5 +504,35 @@ public abstract class Database {
         // TODO: add hibernate schema update authorization
         return false;
     }
+    
+    public String getTypeNameInSource(DataDefinition dd) {
+        String nameInSource = ((org.makumba.db.sql.TableManager) this.getTable(dd)).getDBName();
+        return nameInSource;
+    }
+
+    public String getFieldNameInSource(DataDefinition dd, String field) {
+        String nameInSource = ((org.makumba.db.sql.TableManager) this.getTable(dd)).getFieldDBName(field);
+        return nameInSource;
+    }
+    
+
+    public String resolveFieldName(String field) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String resolveTypeName(String type) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public Properties getConfigurationProperties() {
+        return config;
+    }
+    public NameResolver getNameResolver() {
+        return nr;
+    }
+
+
 
 }

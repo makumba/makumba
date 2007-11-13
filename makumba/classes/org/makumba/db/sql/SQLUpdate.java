@@ -89,7 +89,7 @@ public class SQLUpdate implements Update {
 
         String fakeCommand;
         try {
-            fakeCommand = ((QueryAST) qA).writeInSQLQuery(db);
+            fakeCommand = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }

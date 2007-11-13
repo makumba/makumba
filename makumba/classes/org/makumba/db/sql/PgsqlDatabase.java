@@ -34,8 +34,8 @@ public class PgsqlDatabase extends org.makumba.db.sql.Database
 
   /** Postgres column names are case-insensitive */
   protected String getFieldName(String s)
-  {
-    return super.getFieldName(s).toLowerCase();
+  { //FIXME needs a new nameresolver
+    return s.toLowerCase(); //nr.getFieldNameInSource(s).toLowerCase();
   }
 
   /** the postgres jdbc driver does not return sql states...

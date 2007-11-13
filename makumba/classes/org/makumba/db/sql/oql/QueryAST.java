@@ -31,7 +31,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.Configuration;
-import org.makumba.db.Database;
+import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
@@ -491,7 +491,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     }
 
     /** writes SELECT [DISTINCT] */
-    protected void writeDistinct(Database d, StringBuffer ret) {
+    protected void writeDistinct(NameResolver nr, StringBuffer ret) {
         if (getFirstChild().getText().toLowerCase().equals("distinct")) {
             ret.append(" DISTINCT ");
             firstProjection = getFirstChild().getNextSibling();
@@ -500,51 +500,54 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     }
 
     /** writes the part between SELECT and from FROM (i.e. the projections) */
-    protected void writeProjection(Database d, StringBuffer ret) {
+    protected void writeProjection(NameResolver nr, StringBuffer ret) {
         if (oneProjectionLabel != null)
             ret.append(" ").append(oneProjectionLabel).append(".*");
         else
             for (AST a = firstProjection; a != fromAST; a = a.getNextSibling())
-                ret.append(" ").append(((OQLAST) a).writeInSQLQuery(d));
+                ret.append(" ").append(((OQLAST) a).writeInSQLQuery(nr));
 
     }
 
     /** writes the iterator definitions (FROM part) */
-    protected void writeFrom(Database d, StringBuffer ret) {
+    protected void writeFrom(NameResolver nr, StringBuffer ret) {
         boolean comma = false;
         for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
             if (comma)
                 ret.append(" JOIN ");
             comma = true;
             String label = (String) e.nextElement();
-            ret.append(getTableName(label, d))
+            ret.append(getTableName(label, nr))
             //.append(" AS ")
             .append(" ").append(label);
         }
     }
 
     /** return the database-level name of the type of the given label */
-    protected String getTableName(String label, Database d) {
+    protected String getTableName(String label, NameResolver nr) {
         DataDefinition ri = (DataDefinition) labels.get(label);
         try {
-            return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
+//            return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
+            return nr.resolveTypeName(ri);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return ri.getName();
         }
     }
 
     /** return the database-level name of the given field of the given label*/
-    protected String getFieldName(String label, String field, Database d) {
+    protected String getFieldName(String label, String field, NameResolver nr) {
         DataDefinition ri = (DataDefinition) labels.get(label);
         try {
-            return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
+            //return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
+            return nr.resolveFieldName(ri, field);
         } catch (NullPointerException e) {
             return field;
         }
     }
 
     /** write the translator-generated joins */
-    protected void writeJoins(Database d, StringBuffer ret) {
+    protected void writeJoins(NameResolver nr, StringBuffer ret) {
         //boolean and = false;
         for (Enumeration e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
@@ -555,27 +558,27 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             if(j.leftJoin)
                 ret.append(" LEFT");
             ret.append(" JOIN ");
-            ret.append(getTableName(j.label2, d))
+            ret.append(getTableName(j.label2, nr))
             //.append(" AS ")
             .append(" ").append(j.label2);
             ret.append(" ON ");
-            ret.append(j.label1).append(".").append(getFieldName(j.label1, j.field1, d)).append("= ").append(j.label2).append(
-               ".").append(getFieldName(j.label2, j.field2, d));
+            ret.append(j.label1).append(".").append(getFieldName(j.label1, j.field1, nr)).append("= ").append(j.label2).append(
+               ".").append(getFieldName(j.label2, j.field2, nr));
         }
     }
 
     /** writes the where conditions */
-    protected void writeConditions(Database d, StringBuffer ret) {
+    protected void writeConditions(NameResolver nr, StringBuffer ret) {
         ret.append("(");
         for (AST a = whereAST.getNextSibling(); a != afterWhereAST; a = a.getNextSibling())
-            ret.append(" ").append(((OQLAST) a).writeInSQLQuery(d));
+            ret.append(" ").append(((OQLAST) a).writeInSQLQuery(nr));
         ret.append(")");
     }
 
     /** writes the rest of the query, after the WHERE part */
-    protected void writeAfterWhere(Database d, StringBuffer ret) {
+    protected void writeAfterWhere(NameResolver nr, StringBuffer ret) {
         for (AST a = afterWhereAST; a != null; a = a.getNextSibling())
-            ret.append(" ").append(((OQLAST) a).writeInSQLQuery(d));
+            ret.append(" ").append(((OQLAST) a).writeInSQLQuery(nr));
     }
 
     /** prepare the query for writing, by looking at the expression identifiers and projections */
@@ -587,22 +590,23 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     }
 
     /** write in SQL query, calling the methods for the sections*/
-    public String writeInSQLQuery(Database d) {
+    @Override
+    public String writeInSQLQuery(NameResolver nr) {
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
-        writeDistinct(d, sb);
-        writeProjection(d, sb);
+        writeDistinct(nr, sb);
+        writeProjection(nr, sb);
         if (labels.size() > 0) {
             sb.append(" FROM ");
-            writeFrom(d, sb);
+            writeFrom(nr, sb);
         }
-        writeJoins(d, sb);
+        writeJoins(nr, sb);
         
         if (whereAST != null ) {
             sb.append(" WHERE ");
-                writeConditions(d, sb);
+                writeConditions(nr, sb);
         }
-        writeAfterWhere(d, sb);
+        writeAfterWhere(nr, sb);
         return sb.toString();
     }
 

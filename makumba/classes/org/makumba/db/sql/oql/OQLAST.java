@@ -22,8 +22,8 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.db.Database;
 
+import org.makumba.commons.NameResolver;
 import antlr.CommonAST;
 
 public class OQLAST extends CommonAST
@@ -35,7 +35,7 @@ public class OQLAST extends CommonAST
 
 public OQLAST(){};
   public OQLAST(antlr.Token t) { super(t); }
-  public String writeInSQLQuery(Database d){return getText(); }
+  public String writeInSQLQuery(NameResolver nr){return getText(); }
 
   /* used in expressions */
   Object makumbaType;

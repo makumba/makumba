@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.db.Database;
+import org.makumba.commons.NameResolver;
 
 public class IdAST extends OQLAST
 {
@@ -38,10 +38,11 @@ QueryAST query;
   public IdAST(){}
   //  public IdAST(antlr.Token t) { super(t); }
 
-  public String writeInSQLQuery(Database d)
+  @Override
+  public String writeInSQLQuery(NameResolver nr)
   {
     if(projectionLabel!=null)
       return projectionLabel;
-    return label+"."+query.getFieldName(label, field, d);
+    return label+"."+query.getFieldName(label, field, nr);
   }
 }

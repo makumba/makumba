@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.db.Database;
+import org.makumba.commons.NameResolver;
 
 import antlr.collections.AST;
 
@@ -39,18 +39,19 @@ OQLAST expr;
 
     public void setExpr(OQLAST e){ expr=e; }
 
-    public String writeInSQLQuery(Database d)
+    @Override
+    public String writeInSQLQuery(NameResolver nr)
     {
 		StringBuffer sb= new StringBuffer();
 		sb.append(getText());
-		sb.append(expr.writeInSQLQuery(d));
+		sb.append(expr.writeInSQLQuery(nr));
 		 for(AST a= expr.getNextSibling(); !a.getText().equals(")"); a=a.getNextSibling())
-			  sb.append(((OQLAST)a).writeInSQLQuery(d));
+			  sb.append(((OQLAST)a).writeInSQLQuery(nr));
 		 
 		sb.append(")");
 		return sb.toString();	
     }
-    
+    @Override   
     public Object getMakumbaType() throws antlr.RecognitionException
     {
 	Object o= expr.getMakumbaType();
