@@ -21,24 +21,15 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
-import org.makumba.commons.NameResolver;
+package org.makumba.providers.query.oql;
 
-public class ParamAST extends OQLAST
+/** like operands are surely char */
+public class LikeTree extends ComparisonTree
 {
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  public LikeTree(Object left, int op, Object right){ super(left, op, right); }
 
-public String toString(){ return "$"+number; }
-  public ParamAST(){};
-
-  @Override
-  public String writeInSQLQuery(NameResolver r)
+  public Object guessParameterType() 
   {
-    return "?";
+    return "char";
   }
-
-  int number;
 }

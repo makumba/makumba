@@ -21,28 +21,14 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
-import org.makumba.commons.NameResolver;
-
-public class IdAST extends OQLAST
+package org.makumba.providers.query.oql;
+import antlr.collections.AST;
+public class Projection
 {
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-QueryAST query;
-  String field;
-  String label;
-  String projectionLabel;
+  public Projection(AST proj, AST expr, String as)
+  { this.proj=(OQLAST)proj; this.expr= (OQLAST)expr; this.as=as; }
 
-  public IdAST(){}
-  //  public IdAST(antlr.Token t) { super(t); }
-
-  @Override
-  public String writeInSQLQuery(NameResolver nr)
-  {
-    if(projectionLabel!=null)
-      return projectionLabel;
-    return label+"."+query.getFieldName(label, field, nr);
-  }
+  OQLAST proj;
+  String as;
+  OQLAST expr;
 }

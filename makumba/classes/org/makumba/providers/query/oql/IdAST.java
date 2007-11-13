@@ -21,33 +21,28 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
-
+package org.makumba.providers.query.oql;
 import org.makumba.commons.NameResolver;
-import antlr.CommonAST;
 
-public class OQLAST extends CommonAST
+public class IdAST extends OQLAST
 {
   /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+QueryAST query;
+  String field;
+  String label;
+  String projectionLabel;
 
-public OQLAST(){};
-  public OQLAST(antlr.Token t) { super(t); }
-  public String writeInSQLQuery(NameResolver nr){return getText(); }
+  public IdAST(){}
+  //  public IdAST(antlr.Token t) { super(t); }
 
-  /* used in expressions */
-  Object makumbaType;
-
-  AnalysisTree tree;
-
-  public Object getMakumbaType() throws antlr.RecognitionException
+  @Override
+  public String writeInSQLQuery(NameResolver nr)
   {
-    if(tree!=null)
-      return tree.getMakumbaType();
-    else
-      return makumbaType;
+    if(projectionLabel!=null)
+      return projectionLabel;
+    return label+"."+query.getFieldName(label, field, nr);
   }
 }
-

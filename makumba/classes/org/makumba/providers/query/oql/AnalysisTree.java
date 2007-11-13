@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
 import org.makumba.FieldDefinition;
 
 public class AnalysisTree

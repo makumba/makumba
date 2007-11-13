@@ -21,15 +21,27 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
 
-/** like operands are surely char */
-public class LikeTree extends ComparisonTree
+/** additive operations take their type from any of the operands, and have operands of the same type */
+public class AdditiveTree extends AnalysisTree
 {
-  public LikeTree(Object left, int op, Object right){ super(left, op, right); }
+  public AdditiveTree(Object left, int op, Object right){ super(left, op, right); }
 
-  public Object guessParameterType() 
+  public Object computeTypeFromOperands() { return left.makumbaType; }
+
+  public Object guessParameterType(Object otherOperandType) 
   {
-    return "char";
+    return otherOperandType;
   }
+  
+  public void negociateOperandTypes(Object t1, Object t2)
+  throws antlr.RecognitionException
+	{ 
+		if(t1.equals("int") && t2.equals("real")
+		  ||t2.equals("int") && t1.equals("real") )
+		 return;
+	
+	super.negociateOperandTypes(t1, t2);
+	}
 }

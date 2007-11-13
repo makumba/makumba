@@ -14,9 +14,6 @@ import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.db.sql.oql.OQLLexer;
-import org.makumba.db.sql.oql.OQLParser;
-import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
@@ -116,7 +113,7 @@ public class OQLQueryProvider extends QueryProvider {
         QueryAST t = null;
         try {
     
-            parser.setASTNodeClass("org.makumba.db.sql.oql.OQLAST");
+            parser.setASTNodeClass("org.makumba.providers.query.oql.OQLAST");
             parser.queryProgram();
             t = (QueryAST) parser.getAST();
             t.setOQL(oqlQuery);

@@ -40,10 +40,10 @@ import org.makumba.commons.NameResolver;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Database;
-import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.oql.QueryAST;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.Query {

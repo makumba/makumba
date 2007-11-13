@@ -21,18 +21,24 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.db.sql.oql;
+package org.makumba.providers.query.oql;
+import org.makumba.commons.NameResolver;
 
-
-public class GrammarTest
+public class ParamAST extends OQLAST
 {
-   public static void main (String [] argv) throws Exception
-   {
-       OQLLexer lexer =  new OQLLexer(new java.io.StringReader(argv[0]));
-       OQLParser parser = new OQLParser(lexer);
-       // Parse the input expression
-       OQLAST t= null;
-         parser.queryProgram();
-   }
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
+public String toString(){ return "$"+number; }
+  public ParamAST(){};
+
+  @Override
+  public String writeInSQLQuery(NameResolver r)
+  {
+    return "?";
+  }
+
+  int number;
 }
