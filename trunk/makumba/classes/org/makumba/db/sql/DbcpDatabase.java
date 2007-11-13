@@ -34,8 +34,8 @@ public class DbcpDatabase extends org.makumba.db.sql.Database
 
   /** column names are case-insensitive */
   protected String getFieldName(String s)
-  {
-    return super.getFieldName(s).toLowerCase();
+  { //FIXME needs a new nameresolver
+    return s.toLowerCase();//nr.getFieldNameInSource(s).toLowerCase();
   }
 
 

@@ -35,7 +35,8 @@ public class CloudscapeDatabase extends org.makumba.db.sql.Database
   /** Postgres column names are case-insensitive */
   protected String getFieldName(String s)
   {
-    return super.getFieldName(s).toUpperCase();
+      //FIXME needs a new nameresolver
+    return s.toUpperCase(); //nr.getFieldNameInSource(s).toUpperCase();
   }
 
   /** the postgres jdbc driver does not return sql states...

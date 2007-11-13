@@ -34,6 +34,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import org.makumba.DBError;
+import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.db.DBConnection;
@@ -164,9 +165,7 @@ public class Database extends org.makumba.db.Database {
 				connectionConfig.setProperty("autoReconnect", "true");
 
 			String driver = p.getProperty("sql.driver");
-			s = p.getProperty("addUnderscore");
-			if (s != null)
-				addUnderscore = s.equals("true");
+			
 
 			if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
                 requestUTF8 = true;
@@ -338,71 +337,6 @@ public class Database extends org.makumba.db.Database {
 		return sb.toString();
 	}
 
-	protected int getMaxTableNameLength() {
-		return 64;
-	}
-
-	protected int getMaxFieldNameLength() {
-		return 64;
-	}
-
-	/**
-	 * get the database-level name of a table with a certain abstract name This
-	 * just replaces strange signs like ., -> ( ) with underscores _ old names
-	 * are lowercased
-	 */
-	protected String getTableName(String s) {
-		//return (addUnderscore?s:("."+s.toLowerCase())).replace('.',
-		// '_').replace('(', '_').replace(')', '_').replace('>',
-		// '_').replace('-', '_')+(addUnderscore?"_":"");
-		String name = s;
-		if (!addUnderscore)
-			name = ("." + name.toLowerCase()); //OLDSUPPORT
-											   // "/general/Person"->"_general_person"
-		name = name.replace('.', '_').replace('(', '_').replace(')', '_')
-				.replace('>', '_').replace('-', '_'); //why '(' and ')'?
-		name = name + (addUnderscore ? "_" : "");
-		if (name.length() <= getMaxTableNameLength())
-			return name;
-		else //compose "startingpartoflongnam___HASH"
-		{
-			String hash = Integer
-					.toString(name.hashCode(), Character.MAX_RADIX).replace(
-							'-', '_');
-			String shortname = name.substring(0, getMaxTableNameLength() - 3
-					- hash.length());
-			return (shortname + "___" + hash);
-		}
-	}
-
-	/**
-	 * get the database-level name of a field with the given abstract name. This
-	 * simply returns the same name, but it can be otherwise for certain more
-	 * restrictive SQL engines old names have first letter lowercased
-	 */
-	protected String getFieldName(String s) {
-		//return
-		// (addUnderscore?s:(s.startsWith("TS_")?s:s.substring(0,1).toLowerCase()+s.substring(1))).replace('.','_')+(addUnderscore?"_":"");
-		String name = s;
-		if (!addUnderscore && !s.startsWith("TS_")) //make it start with
-													// lowercase
-			name = name.substring(0, 1).toLowerCase() + name.substring(1);
-		name = name.replace('.', '_'); //should be tirrelevant for field names,
-									   // OLDSUPPORT?
-		name = name + (addUnderscore ? "_" : "");
-		if (name.length() <= getMaxFieldNameLength())
-			return name;
-		else //compose "startingpartoflongnam___HASH"
-		{
-			String hash = Integer
-					.toString(name.hashCode(), Character.MAX_RADIX).replace(
-							'-', '_');
-			String shortname = name.substring(0, getMaxFieldNameLength() - 3
-					- hash.length());
-			return (shortname + "___" + hash);
-		}
-	}
-
 	/**
 	 * check the sql state of a SQL exception and throw a DBError if it is not
 	 * equal with the given state
@@ -494,4 +428,5 @@ public class Database extends org.makumba.db.Database {
 	public boolean isLimitOffsetFirst() {
 		return true;
 	}
+
 }

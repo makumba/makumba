@@ -22,7 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.sql.oql;
-import org.makumba.db.Database;
+import org.makumba.commons.NameResolver;
 
 public class ParamAST extends OQLAST
 {
@@ -34,7 +34,8 @@ public class ParamAST extends OQLAST
 public String toString(){ return "$"+number; }
   public ParamAST(){};
 
-  public String writeInSQLQuery(Database d)
+  @Override
+  public String writeInSQLQuery(NameResolver r)
   {
     return "?";
   }

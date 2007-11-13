@@ -36,8 +36,10 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.NameResolver;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
+import org.makumba.db.Database;
 import org.makumba.db.sql.oql.QueryAST;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -45,7 +47,7 @@ import org.makumba.providers.QueryProvider;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.Query {
-    
+
     QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
     
     private Configuration config = new Configuration();
@@ -73,12 +75,13 @@ public class Query implements org.makumba.db.Query {
     public String getCommand() {
         return command;
     }
-    
+
     public Query(org.makumba.db.Database db, String OQLQuery, String insertIn) {
+       
+        QueryAnalysis qA= qP.getQueryAnalysis(OQLQuery);
         
-        QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
-        
-        command = ((QueryAST) qA).writeInSQLQuery(db);
+        command = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
+            
 
         resultHandler = (TableManager) db.makePseudoTable((DataDefinition) qA.getProjectionType());
         assigner = new ParameterAssigner(db, qA);

@@ -35,6 +35,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataTransformer;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
+import org.makumba.commons.NameResolver;
 
 /**
  * This is a generic database table RecordHandler. Upon building, it uses the rules in
@@ -62,7 +63,6 @@ public abstract class Table // extends RecordHandler
 {
     protected DataDefinition dd;
 
-    protected HashMap fieldDBNames = new HashMap();
 
     public Table() {
     }
@@ -236,10 +236,11 @@ public abstract class Table // extends RecordHandler
      * Prepares everything needed for database management. identifies the database adapter that will be used, the type
      * of connection manager, etc. Might call create. Looks if secondary tables (from a one-to-many, sets) need to be
      * opened or created. Looks if the opened database actually respects the org.makumba file (if not, provides
-     * functionality to convert the database to the new format). Toto: Your brain is a mess where your stupidity is
-     * swimming.
+     * functionality to convert the database to the new format).
+     * 
+     * Toto: Your brain is a mess where your stupidity is swimming.
      */
-    protected abstract void open(Properties p);
+    protected abstract void open(Properties p, NameResolver nr);
 
     DataTransformer insertHook;
 

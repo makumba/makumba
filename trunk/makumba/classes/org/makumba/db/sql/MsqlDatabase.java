@@ -36,7 +36,8 @@ public class MsqlDatabase extends org.makumba.db.sql.Database
   /** msql doesn't accept underscores as first char of table name */
   protected String getTableName(String s)
   {
-    s= super.getTableName(s);
+      // FIXME should have a special name resolver 
+    //s= super.getTableName(s);
     if(s.charAt(0)=='_')
       s= "x"+s.substring(1);
     return s;
