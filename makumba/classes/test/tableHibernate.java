@@ -405,7 +405,6 @@ public class tableHibernate extends TestCase {
 				p.put("name", languageData[i][0]);
 				p.put("isoCode", languageData[i][1]);
 				Pointer italian = db.insert("test.Language", p);
-                System.out.println("we are here "+italian);
 			}
 		p = new Hashtable();
 
