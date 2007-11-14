@@ -53,9 +53,9 @@
 	<target name="checkAntlr">
 		<condition property="antlr.notRequired">
 			<and>
-				<uptodate targetfile="classes/org/makumba/db/sql/oql/OQLParser.java">
+				<uptodate targetfile="classes/org/makumba/providers/query/oql/OQLParser.java">
 
-					<srcfiles dir="classes/org/makumba/db/sql/oql/" includes="**/OQL-translator.g" />
+					<srcfiles dir="classes/org/makumba/providers/query/oql/" includes="**/OQL-translator.g" />
 				</uptodate>
 				<uptodate targetfile="classes/org/makumba/db/hibernate/hql/HqlAnalyzeBaseWalker.java">
 					<srcfiles dir="classes/org/makumba/db/hibernate/hql" includes="**/hql-analyze.g" />
@@ -72,7 +72,7 @@
 			<arg value="hql-analyze.g" />
 		</java>
 
-		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/db/sql/oql/" failonerror="true" taskname="antlr">
+		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/oql/" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
 			<arg value="OQL-translator.g" />
 		</java>
@@ -223,6 +223,16 @@
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
+	
+	<target name="jarDB" description="make a jar for the rest in ./lib" depends="compile">
+		<mkdir dir="${jar.place}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.place}/lib/makumba-db.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/db/*/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+	
 	
 	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compile">
 		<mkdir dir="${jar.place}/lib" />
@@ -590,9 +600,10 @@ package org.makumba]]>
 	
 </target>
 	
-<target name="makeCommonsCompiled" depends="jarAnalyser, jarMDDProvider, jarCommons">
+<target name="makeCommonsCompiled" depends="jarAnalyser, jarMDDProvider, jarCommons, jarDB">
 	<mkdir dir="source/commons"/>
 	<copy file="lib/makumba-commons.jar" todir="source/commons"/>
+	<copy file="lib/makumba-db.jar" todir="source/commons"/>
 	<copy file="lib/makumba-analyser.jar" todir="source/commons"/>
 	<copy file="lib/makumba-datadefinitionprovider.jar" todir="source/commons"/>
 	<mkdir dir="source/commons/lib"/>
