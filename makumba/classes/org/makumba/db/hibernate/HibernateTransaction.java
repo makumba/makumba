@@ -45,12 +45,15 @@ public class HibernateTransaction extends TransactionImplementation {
     
     private DataDefinitionProvider ddp;
     
+    private String dataSource;
+    
     public HibernateTransaction(TransactionProviderInterface tp) {
         super(tp);
     }
     
     public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, TransactionProviderInterface tp) {
         this(tp);
+        this.dataSource = dataSource;
         this.ddp = ddp;
         this.s = ((SessionFactory) tp.getHibernateSessionFactory(dataSource)).openSession();
         s.setCacheMode(CacheMode.IGNORE);
@@ -399,6 +402,11 @@ public class HibernateTransaction extends TransactionImplementation {
         return "null";
     }
     
+    @Override
+    public String getDataSource() {
+        return this.dataSource;
+    }
+    
 
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
@@ -407,5 +415,4 @@ public class HibernateTransaction extends TransactionImplementation {
     static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
         return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
     }
-
 }

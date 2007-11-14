@@ -34,11 +34,14 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
+import org.makumba.LogicException;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
@@ -50,15 +53,25 @@ import org.makumba.providers.TransactionProviderInterface;
  * @version $Id$
  */
 public abstract class DBConnection extends TransactionImplementation {
-
+   
+    private QueryProvider qp;
+    
+    protected String dataSource;
+    
     protected DBConnection(TransactionProviderInterface tp) {
         super(tp);
     }//for the wrapper
-
+    
     public DBConnection(Database database, TransactionProviderInterface tp) {
         this(tp);
         this.db = database;
         this.ddp = new DataDefinitionProvider(config);
+    }
+
+    public DBConnection(Database database, String dataSource, TransactionProviderInterface tp) {
+        this(database, tp);
+        this.dataSource = dataSource;
+        this.qp = QueryProvider.makeQueryRunner(getDataSource(), "oql");
     }
 
     public org.makumba.db.Database getHostDatabase() {
@@ -155,8 +168,24 @@ public abstract class DBConnection extends TransactionImplementation {
      * @return a Vector of Dictionaries
      */
     public java.util.Vector executeQuery(String OQL, Object args, int offset, int limit) {
-        Object[] k = { OQL, "" };
-        return ((Query) getHostDatabase().queries.getResource(k)).execute(treatParam(args), this, offset, limit);
+        
+        Vector results = new Vector();
+        
+        // let's see if this query has named parameters
+        if (args != null && args instanceof Map) {
+            try {
+                results = qp.execute(OQL, (Map)args, offset, limit);
+            } catch(LogicException le) {
+                throw new RuntimeWrappedException(le);
+            }
+        } else {
+            Object[] k = { OQL, "" };
+            results = ((Query) getHostDatabase().queries.getResource(k)).execute(treatParam(args), this, offset, limit);
+        }
+        
+        return results;
+        
+        
     }
 
     public int insertFromQuery(String type, String OQL, Object args) {
@@ -188,5 +217,15 @@ public abstract class DBConnection extends TransactionImplementation {
     @Override
     public String getNullConstant() {
         return "nil";
+    }
+    
+    @Override
+    public String getDataSource() {
+        return this.dataSource;
+    }
+    
+    // FIXME should be done at construction time, but due to nature of how DB is now it's not possible
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
     }
 }
