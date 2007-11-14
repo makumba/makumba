@@ -92,7 +92,7 @@
 	</target>
 
 	<target name="compile" depends="OQLParserGeneration" description="compile all java files">
-		<javac srcdir="classes" source="1.5" target="1.5" debug="on">
+		<javac srcdir="classes" source="1.4" target="1.4" debug="on">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
@@ -135,7 +135,7 @@
 
 	<target name="clean" description="delete all generated files and backups">
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="classes" includes="**/*.class,**/*.*~,org/makumba/db/sql/oql/OQLParser.java" defaultExcludes="no" />
+			<fileset dir="classes" includes="**/*.class,**/*.*~,org/makumba/providers/query/oql/OQLParser.java" defaultExcludes="no" />
 			<fileset dir="doc/api" includes="**/*.html,**/*.css,**/package-list" excludes="API_users_guide.html" defaultExcludes="no" />
 			<fileset dir="doc/api/org" />
 			<fileset dir="doc/hacking/javadoc" />
