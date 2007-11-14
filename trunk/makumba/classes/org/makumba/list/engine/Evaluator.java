@@ -25,9 +25,9 @@ package org.makumba.list.engine;
 
 import javax.servlet.jsp.PageContext;
 
-
-/** 
+/**
  * An evaluator using the EL engine to evaluate all occurences of #{...} in a string
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -37,7 +37,7 @@ public class Evaluator implements ComposedQuery.Evaluator {
     public Evaluator(PageContext pc) {
         this.pc = pc;
     }
-    
+
     public String evaluate(String s) {
         // FIXME: looking for #{....} may have to be rewritten
         StringBuffer ret = new StringBuffer();
@@ -53,7 +53,7 @@ public class Evaluator implements ComposedQuery.Evaluator {
                 throw new org.makumba.ProgrammerError("unpaired #{ in " + s);
             try {
                 ret.append(pc.getExpressionEvaluator().evaluate("$" + s.substring(begin + 1, end + 1), Object.class,
-                        pc.getVariableResolver(), null)); // a:b() functions not supported yet
+                    pc.getVariableResolver(), null)); // a:b() functions not supported yet
             } catch (javax.servlet.jsp.el.ELException ele) {
                 throw new org.makumba.ProgrammerError(ele.toString());
             }
