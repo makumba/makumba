@@ -413,8 +413,8 @@ public class ComposedQuery {
      * 
      * @param qep
      *            the database where the query should be ran
-     * @param a
-     *            the attributes we may need during the execution
+     * @param args
+     *            the arguments we may need during the execution
      * @param v
      *            the evaluator evaluating the expressions
      * @param offset
