@@ -86,13 +86,13 @@
 	</target>
 
 	<target name="compileDebug" depends="OQLParserGeneration" description="compile all java files with full debug info">
-		<javac srcdir="classes" source="1.4" target="1.4" debug="on" debuglevel="lines, vars, source">
+		<javac srcdir="classes" source="1.5" target="1.5" debug="on" debuglevel="lines, vars, source">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
 
 	<target name="compile" depends="OQLParserGeneration" description="compile all java files">
-		<javac srcdir="classes" source="1.4" target="1.4" debug="on">
+		<javac srcdir="classes" source="1.5" target="1.5" debug="on">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
