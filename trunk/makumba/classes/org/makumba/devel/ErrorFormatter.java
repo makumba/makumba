@@ -152,9 +152,11 @@ public class ErrorFormatter {
     }
 
     private boolean isRuntimeJspErrors(ServletException t) {
-        for (int i = 0; i < knownJSPruntimeErrors.length; i++) {
-            if (t.getRootCause().getClass().isAssignableFrom(knownJSPruntimeErrors[i])) {
-                return true;
+        if (t.getRootCause() != null) {
+            for (int i = 0; i < knownJSPruntimeErrors.length; i++) {
+                if (t.getRootCause().getClass().isAssignableFrom(knownJSPruntimeErrors[i])) {
+                    return true;
+                }
             }
         }
         return false;
