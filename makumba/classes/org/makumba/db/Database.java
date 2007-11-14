@@ -134,11 +134,21 @@ public abstract class Database {
             ((SessionFactory)sf).close();
     }
 
+    public DBConnection getDBConnection(String dataSource) {
+        try {
+            //connectionsTrace += ">";
+            //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
+            return new DBConnectionWrapper((DBConnection) connections.get(), dataSource, tp);
+        } catch (Exception e) {
+            throw new DBError(e);
+        }
+    }
+    
     public DBConnection getDBConnection() {
         try {
             //connectionsTrace += ">";
             //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
-            return new DBConnectionWrapper((DBConnection) connections.get(), tp);
+            return new DBConnectionWrapper((DBConnection) connections.get(), getName(), tp);
         } catch (Exception e) {
             throw new DBError(e);
         }
