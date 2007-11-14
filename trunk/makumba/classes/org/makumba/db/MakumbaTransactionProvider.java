@@ -98,7 +98,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     });
     
     public Transaction getConnectionTo(String name) {
-        return getDatabase(name).getDBConnection();
+        return (DBConnectionWrapper) getDatabase(name).getDBConnection(name);
     }
 
     public String getDefaultDataSourceName() {

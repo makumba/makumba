@@ -16,7 +16,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 public abstract class TransactionImplementation implements Transaction {
@@ -26,13 +26,14 @@ public abstract class TransactionImplementation implements Transaction {
     protected Configuration config = new Configuration();
 
     protected DataDefinitionProvider ddp;
+    
+    protected QueryProvider qp;
 
     protected TransactionProviderInterface tp;
 
     public TransactionImplementation(TransactionProviderInterface tp) {
         this.tp = tp;
         this.ddp = new DataDefinitionProvider(config);
-
     }
     
     public abstract void close();
@@ -267,5 +268,7 @@ public abstract class TransactionImplementation implements Transaction {
     }
     
     public abstract String getNullConstant();
+    
+    public abstract String getDataSource();
 
 }

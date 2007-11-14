@@ -44,7 +44,7 @@ public class DBConnectionWrapper extends DBConnection
     public DBConnection getWrapped(){ return wrapped; }
 
     DBConnectionWrapper(TransactionProviderInterface tp){super(tp);}
-    DBConnectionWrapper(DBConnection wrapped, TransactionProviderInterface tp){this(tp); t= new Throwable(); this.wrapped=wrapped;}
+    DBConnectionWrapper(DBConnection wrapped, String dataSource, TransactionProviderInterface tp){this(tp); t= new Throwable(); this.wrapped=wrapped; this.dataSource = dataSource;}
 
 
     public String getName(){ return getWrapped().getName(); }

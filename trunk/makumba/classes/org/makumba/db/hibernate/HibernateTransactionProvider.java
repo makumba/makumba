@@ -2,6 +2,7 @@ package org.makumba.db.hibernate;
 
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
+import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.Configuration;
@@ -22,7 +23,7 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     private Configuration config = new Configuration();
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
-
+    
     public void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
         throw new MakumbaError("Not implemented");
     }
