@@ -34,7 +34,7 @@ public class StringUtils {
 
     /** Checks whether a String is null or has, after trimming, a length == 0. */
     public static boolean isEmpty(String s) {
-        return s == null || s.length() > 0;
+        return s == null || s.length() == 0;
     }
 
     /** Checks whether an Object is null or has, after trimming, a length == 0. */
