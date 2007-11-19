@@ -1,6 +1,7 @@
       <tr>
         <td class="smallText"><mak:value expr="o.indiv.name" /></td>
         <td class="smallText"><mak:value expr="o.indiv.surname" /></td>
+        <td class="smallText"><mak:value expr="o.indiv.person" /></td>
         <td class="smallText"><mak:value expr="o.gender" /></td>
         <td class="smallText"><mak:value expr="o.age" /></td>
         <td class="smallText"><mak:value expr="o.weight" /></td>

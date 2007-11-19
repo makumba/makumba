@@ -1,6 +1,7 @@
   <tr>
     <th>indiv name</th>
     <th>indiv surname</th>
+    <th>indiv person</th>
     <th>gender</th>
     <th>age</th>
     <th>weight</th>
