@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.makumba.FieldDefinition;
 import org.makumba.db.sql.SQLDBConnection;
 
 public class MysqlTableManager extends org.makumba.db.sql.TableManager
@@ -75,6 +76,15 @@ public class MysqlTableManager extends org.makumba.db.sql.TableManager
 	return "tableMissing";
    }
   }
+  
+  protected int getSQLType(String fieldName) {
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+        case FieldDefinition._text:
+            return -1;
+        default:
+            return super.getSQLType(fieldName);
+        }
+    }
 
 
 }
