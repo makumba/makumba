@@ -1,6 +1,7 @@
 package org.makumba.providers;
 
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DBError;
@@ -112,6 +113,10 @@ public class TransactionProvider implements TransactionProviderInterface {
     
     protected synchronized void finalize() {
         close();
+    }
+
+    public Properties getDataSourceConfiguration(String name) {
+        return transactionProviderImplementation.getDataSourceConfiguration(name);
     }
     
 }

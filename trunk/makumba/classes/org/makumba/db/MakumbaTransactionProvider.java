@@ -138,4 +138,8 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
         return singleton;
         
     }
+
+    public Properties getDataSourceConfiguration(String name) {
+        return getDatabase(name).getConfigurationProperties();
+    }
 }
