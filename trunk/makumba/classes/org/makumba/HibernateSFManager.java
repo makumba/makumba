@@ -13,6 +13,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.NameResolver;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
 import org.makumba.providers.TransactionProvider;
@@ -76,8 +77,16 @@ public class HibernateSFManager {
             }
             
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes");
+
+//          FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not two
+            String databaseProperties = cfgFilePath.substring(0, cfgFilePath.indexOf(".cfg.xml"));
+            org.makumba.commons.Configuration c = new org.makumba.commons.Configuration();
+            c.setDefaultTransactionProvider("org.makumba.db.MakumbaTransactionProvider");
+            TransactionProvider tp = new TransactionProvider(c);
+            NameResolver nr = new NameResolver(tp.getDataSourceConfiguration(databaseProperties));
+            
             try {
-                MddToClass jot = new MddToClass(dds, seedDir);
+                MddToClass jot = new MddToClass(dds, seedDir, nr);
             } catch (CannotCompileException e) {
                 e.printStackTrace();
             } catch (NotFoundException e) {
@@ -89,7 +98,7 @@ public class HibernateSFManager {
             
             try {
                 MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager
-                        .findClassesRootFolder(seed), prefix);
+                        .findClassesRootFolder(seed), prefix, nr);
       
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
