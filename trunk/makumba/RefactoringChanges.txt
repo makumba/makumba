@@ -7,9 +7,12 @@ OR simply remove it as it is declared already in the TLDs
   - close() inlined
   - getMakumbaLogger() inlined
   - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
+
+- org.makumba.abstr moved into org.makumba.providers.datadefinition.makumba (affects BEST optimisation which has an import)
   
  - possible behavioural changes (needs testing): 
   
   - in GenericMakumbaTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
   - in ResponseTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
   - filter refactoring: exceptions are passed on, not treatException-ed anymore until the ErrorFilter handles them 
+  
