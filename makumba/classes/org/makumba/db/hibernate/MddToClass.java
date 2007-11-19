@@ -11,6 +11,7 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.Configuration;
+import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 
 import javassist.CannotCompileException;
@@ -22,7 +23,7 @@ import javassist.CtNewMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 
-public class MddToClass extends HibernateUtils {
+public class MddToClass {
     //public static final String generatedClassPath="work/generated-hibernate-classes";
     public String generatedClassPath="";
     private List mddsDone = new ArrayList();
@@ -32,9 +33,11 @@ public class MddToClass extends HibernateUtils {
     private Configuration c = new Configuration();
     
     private DataDefinitionProvider ddp;
+    private NameResolver nr;
 
-    public MddToClass(Vector v, String generationPath)throws CannotCompileException, NotFoundException, IOException{
+    public MddToClass(Vector v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{
       this.ddp = new DataDefinitionProvider(c);
+      this.nr = nr;
       this.generatedClassPath = generationPath;
       for(int i=0; i<v.size(); i++)
         generateClass(ddp.getDataDefinition((String)v.elementAt(i)));
@@ -74,13 +77,13 @@ public class MddToClass extends HibernateUtils {
 		switch (fd.getIntegerType()) {
 			case FieldDefinition._ptr:
 			case FieldDefinition._ptrOne:
-				type = arrowToDoubleUnderscore(fd.getPointedType().getName());
+				type = nr.arrowToDoubleUnderscore(fd.getPointedType().getName());
 				break;
 			case FieldDefinition._set:
 				type = "java.util.Collection";
 				break;
 		}
-        name=checkReserved(name);
+        name=nr.checkReserved(name);
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
@@ -94,7 +97,7 @@ public class MddToClass extends HibernateUtils {
             
             
 			//checks if the class has to be generated
-            File checkFile = new File(arrowToDoubleUnderscore(dd.getName()));
+            File checkFile = new File(generatedClassPath+java.io.File.separator+ nr.dotToUnderscore(nr.arrowToDoubleUnderscore(dd.getName()))+"_.class");
             if(checkFile.exists()) {
                 
                 if(dd.lastModified() < checkFile.lastModified())
@@ -104,7 +107,7 @@ public class MddToClass extends HibernateUtils {
 
 			ClassPool cp = ClassPool.getDefault();
             cp.insertClassPath(new ClassClassPath(this.getClass()));
-			CtClass cc = cp.makeClass(arrowToDoubleUnderscore(dd.getName()));
+			CtClass cc = cp.makeClass(nr.arrowToDoubleUnderscore(dd.getName()));
 
 			String type = null;
 			String name = null;
@@ -112,7 +115,7 @@ public class MddToClass extends HibernateUtils {
 			for (int i = 0; i < dd.getFieldNames().size(); i++) {
 				Object[] append = new Object[2];
 				FieldDefinition fd = dd.getFieldDefinition(i);
-				name = arrowToDoubleUnderscore(fd.getName());
+				name = nr.arrowToDoubleUnderscore(fd.getName());
 				switch (fd.getIntegerType()) {
 					case FieldDefinition._intEnum:
                         //type="enum";
@@ -135,7 +138,7 @@ public class MddToClass extends HibernateUtils {
 					case FieldDefinition._ptr:
 					case FieldDefinition._ptrOne:
 						mddsToDo.add(fd.getPointedType());
-						append[0] = arrowToDoubleUnderscore(dd.getName());
+						append[0] = nr.arrowToDoubleUnderscore(dd.getName());
 						append[1] = fd;
 						appendToClass.add(append);
 						continue;
@@ -222,8 +225,8 @@ public class MddToClass extends HibernateUtils {
 
     }
     private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
-        type= arrowToDoubleUnderscore(type);
-        name= checkReserved(arrowToDoubleUnderscore(name));
+        type= nr.arrowToDoubleUnderscore(type);
+        name= nr.checkReserved(nr.arrowToDoubleUnderscore(name));
 		cc.addField(CtField.make("private "+type+" "+name+";", cc));
 		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
 		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		

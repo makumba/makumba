@@ -23,11 +23,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.hibernate.cfg.Configuration;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-public class MddToMapping extends HibernateUtils {
+public class MddToMapping {
     private List mddsDone = new ArrayList();
 
     private LinkedList mddsToDo = new LinkedList();
@@ -40,9 +41,14 @@ public class MddToMapping extends HibernateUtils {
     
     private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
 
-    public MddToMapping(Vector v, Configuration cfg, String generationPath, String prefix)
+    private NameResolver nr;
+
+    public MddToMapping(Vector v, Configuration cfg, String generationPath, String prefix, NameResolver nr)
             throws TransformerConfigurationException, SAXException {
         managePaths(generationPath, prefix);
+        
+        this.nr = nr;
+        
         for (int i = 0; i < v.size(); i++)
             generateMapping(ddp.getDataDefinition((String) v.elementAt(i)), cfg);
         while (!mddsToDo.isEmpty())
@@ -86,7 +92,7 @@ public class MddToMapping extends HibernateUtils {
 
         takenColumnNames = new HashSet();
         columnNames = new HashMap();
-        String filename = arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
+        String filename = nr.arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
         
         /*
         //checks if the MDD has to be generated
@@ -130,9 +136,9 @@ public class MddToMapping extends HibernateUtils {
 
         /* class definition */
         atts.clear();
-        atts.addAttribute("", "", "name", "", arrowToDoubleUnderscore(dd.getName()));
+        atts.addAttribute("", "", "name", "", nr.arrowToDoubleUnderscore(dd.getName()));
         // TODO: might actually work without toLowerCase()
-        atts.addAttribute("", "", "table", "", dotToUnderscore(arrowToDoubleDot(dd.getName())) + "_");
+        atts.addAttribute("", "", "table", "", nr.resolveTypeName(dd));
         hd.startElement("", "", "class", atts);
 
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
@@ -146,26 +152,26 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._dateModify:
             case FieldDefinition._dateCreate:
             case FieldDefinition._date:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                 hd.startElement("", "", "property", atts);
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._char:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
                 hd.startElement("", "", "property", atts);
                 atts.clear();
-                atts.addAttribute("", "", "name", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
                 atts.addAttribute("", "", "length", "", String.valueOf(fd.getWidth()));
                 hd.startElement("", "", "column", atts);
                 hd.endElement("", "", "column");
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._ptr:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                 atts.addAttribute("", "", "cascade", "", "all");
-                atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "many-to-one", atts);
                 hd.endElement("", "", "many-to-one");
                 /*atts.clear();
@@ -180,8 +186,8 @@ public class MddToMapping extends HibernateUtils {
                 mddsToDo.add(fd.getPointedType());
                 break;
             case FieldDefinition._ptrOne:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                 atts.addAttribute("", "", "cascade", "", "all");
                 atts.addAttribute("", "", "unique", "", "true");
                 hd.startElement("", "", "many-to-one", atts);
@@ -190,7 +196,7 @@ public class MddToMapping extends HibernateUtils {
                 break;
             case FieldDefinition._ptrIndex:
                 atts.addAttribute("", "", "name", "", "primaryKey");
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "column", "", nr.resolveFieldName(dd, fd.getName()));
                 hd.startElement("", "", "id", atts);
                 atts.clear();
                 atts.addAttribute("", "", "class", "", "identity");
@@ -199,47 +205,46 @@ public class MddToMapping extends HibernateUtils {
                 hd.endElement("", "", "id");
                 break;
             case FieldDefinition._text:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
-                atts.addAttribute("", "", "name", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
                 atts.addAttribute("", "", "sql-type", "", "longtext");
                 hd.startElement("", "", "column", atts);
                 hd.endElement("", "", "column");
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._binary:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
                 atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
-                atts.addAttribute("", "", "name", "", columnName(fd.getName()));
+                atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
                 atts.addAttribute("", "", "sql-type", "", "longblob");
                 hd.startElement("", "", "column", atts);
                 hd.endElement("", "", "column");
                 hd.endElement("", "", "property");
                 break;
             case FieldDefinition._set:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
-                atts.addAttribute("", "", "table", "", dd.getName().replaceAll("\\.", "_").replaceAll("->", "__")
-                        + "__" + fd.getName() + "_");
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                atts.addAttribute("", "", "table", "", nr.resolveTypeName(fd.getSubtable()));
                 atts.addAttribute("", "", "cascade", "", "all"); //""
                 atts.addAttribute("", "", "inverse", "", "false"); //"all-delete-orphan"
                 hd.startElement("", "", "bag", atts);
                 atts.clear();
-                atts.addAttribute("", "", "column", "", columnName(dd.getIndexPointerFieldName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, dd.getIndexPointerFieldName()));
                 hd.startElement("", "", "key", atts);
                 hd.endElement("", "", "key");
                 atts.clear();
-                atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
 
                 String pointedName= fd.getPointedType().getIndexPointerFieldName();
                 if(pointedName.equals(dd.getIndexPointerFieldName()))
                     pointedName+="_";
                 // TODO: "formula" works around hibernate bug 572
                 // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
-                atts.addAttribute("", "", "column", "", columnName(pointedName));
+                atts.addAttribute("", "", "column", "", columnName(fd.getPointedType(), fd.getPointedType().getIndexPointerFieldName()));
                 hd.startElement("", "", "many-to-many", atts);
                 hd.endElement("", "", "many-to-many");
                 hd.endElement("", "", "bag");
@@ -248,16 +253,16 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._setComplex:
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
                 atts.addAttribute("", "", "inverse", "", "true");
                 atts.addAttribute("", "", "cascade", "", "none");
                 hd.startElement("", "", "bag", atts);
                 atts.clear();
-                atts.addAttribute("", "", "column", "", columnName(dd.getIndexPointerFieldName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, dd.getIndexPointerFieldName()));
                 hd.startElement("", "", "key", atts);
                 hd.endElement("", "", "key");
                 atts.clear();
-                atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "one-to-many", atts);
                 hd.endElement("", "", "one-to-many");
                 hd.endElement("", "", "bag");
@@ -268,9 +273,9 @@ public class MddToMapping extends HibernateUtils {
             case FieldDefinition._ptrRel:
                 /* do we need to add a mapping to the parent field? */
                 atts.clear();
-                atts.addAttribute("", "", "name", "", checkReserved(fd.getName()));
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
-                atts.addAttribute("", "", "class", "", arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
+                atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "many-to-one", atts);
                 hd.endElement("", "", "many-to-one");
 
@@ -300,7 +305,9 @@ public class MddToMapping extends HibernateUtils {
 
     Map columnNames;
 
-    private String columnName(String name) {
+    private String columnName(DataDefinition dd, String name) {
+        
+        /*
         String cn = (String) columnNames.get(name);
         if (cn != null)
             return cn;
@@ -311,5 +318,9 @@ public class MddToMapping extends HibernateUtils {
         takenColumnNames.add(cn.toLowerCase());
         columnNames.put(name, cn);
         return arrowToDoubleUnderscore(cn);
+        
+        */
+        
+        return nr.resolveFieldName(dd, name);
     }
 }
