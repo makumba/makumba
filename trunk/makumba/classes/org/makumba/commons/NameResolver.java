@@ -181,13 +181,14 @@ public class NameResolver {
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
             String name = (String) e.nextElement();
-
+            
             if (dd.getFieldDefinition(name).getType().startsWith("set"))
                 continue;
 
+            
             String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "#" + name);
             if (resolved == null) {
-                resolved = getFieldNameInSource(name);
+                resolved = checkReserved(getFieldNameInSource(name));
                 while (checkDuplicateFieldName(resolved, dd))
                     resolved = resolved + "_";
             }
@@ -204,5 +205,36 @@ public class NameResolver {
     private int getMaxFieldNameLength() {
         return 64;
     }
+    
+    
+    public String dotToUnderscore(String name) {
+        return name.replaceAll("\\.", "_");
+    }
+
+    public String arrowToDot(String name) {
+        return name.replaceAll("->", ".");
+    }
+
+    public String arrowToDoubleDot(String name) {
+        return name.replaceAll("->", "..");
+    }
+    public String arrowToDoubleUnderscore(String name){
+        return name.replaceAll("->", "__");        
+    }
+    
+    public String checkReserved(String name){
+        // check if this is a java reserved keyword, not to annoy the class generator
+        if(ReservedKeywords.getReservedKeywords().contains(name))
+            return arrowToDoubleUnderscore(name+"_");
+        return arrowToDoubleUnderscore(name);
+    }
+    
+    public String mddToSQLName(String name) {
+        name = dotToUnderscore(name);
+        name = arrowToDoubleUnderscore(name);
+        return name + "_";
+    }
+    
+    
     
 }

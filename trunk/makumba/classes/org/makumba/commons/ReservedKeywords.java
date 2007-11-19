@@ -20,14 +20,14 @@ public class ReservedKeywords {
             "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum",
             "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
             "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float",
-            "native", "super", "while" };
+            "native", "super", "while"};
 
-    private static String[] hibernateReserved = { "id" };
+    private static String[] hibernateReserved = { }; /*"id"*/
 
     // not sure if this list should be including all SQL keywords, or just such that can cause problems in the SQL
     // statements.
     // chose for now to just list those that would cause problems, list is for sure not complete
-    private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum" };
+    private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum"};
 
     static {
         ReservedKeywords.reservedKeywords = new HashSet<String>();
