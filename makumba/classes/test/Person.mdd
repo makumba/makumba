@@ -71,6 +71,9 @@ address=set			 ;Addresses
   address->sth=ptr
   address->sth->aaa=char[20]
 
+toys=set
+  toys->name=char[30]
+
 uniqPtr=unique ptr test.Language	;test ptr uniqness
   
 # comparison validation rules spanning over more than one field
