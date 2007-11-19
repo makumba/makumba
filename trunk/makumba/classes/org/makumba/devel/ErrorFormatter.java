@@ -3,6 +3,8 @@ package org.makumba.devel;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -19,7 +21,6 @@ import org.makumba.Transaction;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.TransactionProvider;
@@ -106,12 +107,11 @@ public class ErrorFormatter {
         logError(t, req);
 
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
-            // see if the exception is servlet container specific
             // TODO: use the interface once this is a provider after mak:refactoring finished
-            boolean servletEngineSpecificError = TomcatJsp.treatException(original, t, wr, req, this.servletContext,
+            boolean jspSpecificError = treatJspException(original, t, wr, req, this.servletContext,
                 printHeaderFooter, title);
 
-            if (!servletEngineSpecificError) {
+            if (!jspSpecificError) {
                 // FIXME the code below of trying to get more info about the exception is not really accurate
                 // ==> not every JSP exception is a compilation error!! i.e. many runtime exceptions are wrapped into
                 // JSP exceptions
@@ -128,7 +128,7 @@ public class ErrorFormatter {
                      */
                     if (rootCause != null) {
                         t = rootCause;
-                        if (t != null && !original.getMessage().equals(t.getMessage())) {
+                        if (t != null && original.getMessage()!=null && !original.getMessage().equals(t.getMessage())) {
                             t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
                             t1.setStackTrace(t.getStackTrace());
                             t = t1;
@@ -512,6 +512,44 @@ public class ErrorFormatter {
             result += "-- Rest of stacktrace cut --\n";
         }
         return result;
+    }
+
+    public static String[] jspReservedWords = { "application", "config", "out", "page", "request", "response", "pageContext"};
+
+    public static ArrayList<String> jspReservedWordList = new ArrayList<String>(Arrays.asList(jspReservedWords));
+
+    boolean treatJspException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
+            ServletContext servletContext, boolean printHeaderFooter, String title) {
+        if (t.getMessage()!=null && t.getMessage().indexOf("Duplicate local variable") != -1) {
+            String message = t.getMessage();
+            String[] split = message.split("\n");
+            String variableName = null;
+            String errorLine = null;
+            for (int i = 0; i < split.length; i++) {
+                if (split[i].startsWith("An error occurred at line:")) {
+                    errorLine = split[i];
+                } else if (split[i].startsWith("Duplicate local variable")) {
+                    variableName = split[i].substring("Duplicate local variable".length()).trim();
+                }
+            }
+            if (variableName != null && jspReservedWordList.contains(variableName)) {
+                String body = errorLine + "\n\n";
+                body += "'" + variableName + "' is a reserverd keyword in the JSP standard!\n";
+                body += "Do not use it as name for your Java variables, or as <mak:value expr=\"...\" var=\""
+                        + variableName + "\" /> resp. <mak:value expr=\"...\" printVar=\"" + variableName + "\" />";
+                String hiddenBody = t.getMessage();
+                title = "Programmer Error - usage of reserved Tomcat keyword";
+                try {
+                    SourceViewer sw = new errorViewer(req, servletContext, title, body, hiddenBody, printHeaderFooter);
+                    sw.parseText(wr);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new org.makumba.commons.RuntimeWrappedException(e);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
 }
