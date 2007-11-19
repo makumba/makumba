@@ -1,5 +1,7 @@
 package org.makumba.db.hibernate;
 
+import java.util.Properties;
+
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
@@ -67,6 +69,10 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     }
 
     public boolean supportsUTF8() {
+        throw new MakumbaError("Not implemented");
+    }
+
+    public Properties getDataSourceConfiguration(String name) {
         throw new MakumbaError("Not implemented");
     }
 
