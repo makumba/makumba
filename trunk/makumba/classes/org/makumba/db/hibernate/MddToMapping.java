@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -29,9 +27,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class MddToMapping {
-    private List mddsDone = new ArrayList();
+    private Set<String> mddsDone = new HashSet<String>();
 
-    private LinkedList mddsToDo = new LinkedList();
+    private LinkedList<DataDefinition> mddsToDo = new LinkedList<DataDefinition>();
 
     private String generatedMappingPath = "";
 
@@ -52,7 +50,7 @@ public class MddToMapping {
         for (int i = 0; i < v.size(); i++)
             generateMapping(ddp.getDataDefinition((String) v.elementAt(i)), cfg);
         while (!mddsToDo.isEmpty())
-            generateMapping((DataDefinition) mddsToDo.removeFirst(), cfg);
+            generateMapping(mddsToDo.removeFirst(), cfg);
     }
 
     public MddToMapping(DataDefinition dd, Configuration cfg, String generationPath, String prefix)
@@ -64,7 +62,7 @@ public class MddToMapping {
 
         /* generate the mappings for the related mdd files */
         while (!mddsToDo.isEmpty()) {
-            generateMapping((DataDefinition) mddsToDo.removeFirst(), cfg);
+            generateMapping(mddsToDo.removeFirst(), cfg);
         }
     }
 
@@ -239,12 +237,10 @@ public class MddToMapping {
                 atts.clear();
                 atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
 
-                String pointedName= fd.getPointedType().getIndexPointerFieldName();
-                if(pointedName.equals(dd.getIndexPointerFieldName()))
-                    pointedName+="_";
                 // TODO: "formula" works around hibernate bug 572
                 // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
-                atts.addAttribute("", "", "column", "", columnName(fd.getPointedType(), fd.getPointedType().getIndexPointerFieldName()));
+                DataDefinition set= fd.getSubtable();
+                atts.addAttribute("", "", "column", "", columnName(set, set.getSetMemberFieldName()));
                 hd.startElement("", "", "many-to-many", atts);
                 hd.endElement("", "", "many-to-many");
                 hd.endElement("", "", "bag");
