@@ -23,17 +23,9 @@
 
 package org.makumba.analyser.engine;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.devel.SourceViewer;
-import org.makumba.devel.errorViewer;
 
 //
 // import javax.servlet.http.HttpServlet;
@@ -52,10 +44,6 @@ import org.makumba.devel.errorViewer;
  * @version $Id: TomcatJsp.java 1482 2007-09-02 23:05:26Z rosso_nero $
  */
 public class TomcatJsp /* extends HttpServlet */{
-
-    public static String[] tomcatKeyWords = { "application", "config", "out", "page" };
-
-    public static ArrayList tomcatKeyWordsList = new ArrayList(Arrays.asList(tomcatKeyWords));
 
     /**
      * Computes the URI to the current JSP
@@ -84,7 +72,7 @@ public class TomcatJsp /* extends HttpServlet */{
      * Computes the path to the directory in which the compiled JSP is
      * 
      * @param context the ServletContext of the running tomcat
-     * @return A Strong containing the path to the directory where JSPs are being compiled
+     * @return A String containing the path to the directory where JSPs are being compiled
      */
     public static String getContextCompiledJSPDir(ServletContext context) {
         return String.valueOf(context.getAttribute("javax.servlet.context.tempdir"));
@@ -94,39 +82,7 @@ public class TomcatJsp /* extends HttpServlet */{
         return "org.apache.jasper";
     }
 
-    public static boolean treatException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
-            ServletContext servletContext, boolean printHeaderFooter, String title) {
-        if (t.getMessage().indexOf("Duplicate local variable") != -1) {
-            String message = t.getMessage();
-            String[] split = message.split("\n");
-            String variableName = null;
-            String errorLine = null;
-            for (int i = 0; i < split.length; i++) {
-                if (split[i].startsWith("An error occurred at line:")) {
-                    errorLine = split[i];
-                } else if (split[i].startsWith("Duplicate local variable")) {
-                    variableName = split[i].substring("Duplicate local variable".length()).trim();
-                }
-            }
-            if (variableName != null && tomcatKeyWordsList.contains(variableName)) {
-                String body = errorLine + "\n\n";
-                body += "'" + variableName + "' is a reserverd keyword in Tomcat!\n";
-                body += "Do not use it as name for your Java variables, or as <mak:value expr=\"...\" var=\""
-                        + variableName + "\" /> resp. <mak:value expr=\"...\" printVar=\"" + variableName + "\" />";
-                String hiddenBody = t.getMessage();
-                title = "Programmer Error - usage of reserved Tomcat keyword";
-                try {
-                    SourceViewer sw = new errorViewer(req, servletContext, title, body, hiddenBody, printHeaderFooter);
-                    sw.parseText(wr);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new org.makumba.commons.RuntimeWrappedException(e);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+    
     //
     // when uncommenting the line below, add jasper-compiler.jar to the compilation classpath
     // 
