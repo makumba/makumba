@@ -302,22 +302,8 @@ public class RecordParser {
     static public java.net.URL findDataDefinition(String s, String ext) {
         // must specify a filename, not a directory (or package), see bug 173
         java.net.URL u = findDataDefinitionOrDirectory(s, ext);
-        if (u != null) {
-            if(u.toString().startsWith("jar:")) {
-                JarEntry je = new JarEntry(u.toString());
-                if(je == null)
-                    je = new JarEntry(u.toString() + "/");
-                JarEntry je2 = new JarEntry(u.toString() + "/");
-                if(je == null)
-                    throw new MakumbaError("Could not retrieve JAR entry "+u.toString());
-                
-                if(je.isDirectory() || (je2 != null && je2.isDirectory()))
-                    return null;
-            }
-            if (u.toString().endsWith("/") || u.toString().startsWith("file:") && new File(u.getPath()).isDirectory()) {
+        if (u != null && (s.endsWith("/") || getResource(s+'/')!=null))
                 return null;
-            }
-        }
         return u;
     }
 
