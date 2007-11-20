@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.jar.JarEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -302,7 +303,18 @@ public class RecordParser {
         // must specify a filename, not a directory (or package), see bug 173
         java.net.URL u = findDataDefinitionOrDirectory(s, ext);
         if (u != null) {
-            if (u.toString().endsWith("/") || new File(u.getPath()).isDirectory()) {
+            if(u.toString().startsWith("jar:")) {
+                JarEntry je = new JarEntry(u.toString());
+                if(je == null)
+                    je = new JarEntry(u.toString() + "/");
+                JarEntry je2 = new JarEntry(u.toString() + "/");
+                if(je == null)
+                    throw new MakumbaError("Could not retrieve JAR entry "+u.toString());
+                
+                if(je.isDirectory() || (je2 != null && je2.isDirectory()))
+                    return null;
+            }
+            if (u.toString().endsWith("/") || u.toString().startsWith("file:") && new File(u.getPath()).isDirectory()) {
                 return null;
             }
         }
