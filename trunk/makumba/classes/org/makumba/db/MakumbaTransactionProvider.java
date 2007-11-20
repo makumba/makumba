@@ -119,10 +119,6 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
         getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, ignoreDbsv);
     }
 
-    public Object getHibernateSessionFactory(String name) {
-        return getDatabase(name).getHibernateSessionFactory();
-    }
-
     public String getDataSourceName(String lookupFile) {
         return Configuration.findDatabaseName(lookupFile);
     }

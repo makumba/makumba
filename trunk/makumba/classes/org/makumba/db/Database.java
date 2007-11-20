@@ -130,8 +130,6 @@ public abstract class Database {
         queries.close();
         updates.close();
         closeConnections();
-        if(sf!=null)
-            ((SessionFactory)sf).close();
     }
 
     public DBConnection getDBConnection(String dataSource) {
@@ -497,15 +495,6 @@ public abstract class Database {
             addTable(((Table) resource).getDataDefinition().getName());
         }
     };
-
-    private Object sf;
-
-    public synchronized Object getHibernateSessionFactory() {
-        if(sf==null && ClassResource.get(getConfiguration()+".cfg.xml")!=null){
-            sf= HibernateSFManager.getSF(getConfiguration()+".cfg.xml", false);
-        }
-        return sf;
-    }
 
     /**
      * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself

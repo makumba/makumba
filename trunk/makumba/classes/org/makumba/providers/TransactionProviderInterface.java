@@ -34,8 +34,5 @@ public interface TransactionProviderInterface {
     
     //FIXME should not be generic, very specific, still needed?
     public void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv);
-
-    //FIXME this is specific to hibernate and should not be here
-    public Object getHibernateSessionFactory(String name);
     
 }
