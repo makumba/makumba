@@ -283,6 +283,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         } catch (RuntimeWrappedException e) {
             if (e.getCause() instanceof DataDefinitionParseError)
                 throw (DataDefinitionParseError) e.getCause();
+            if(e.getCause() instanceof DataDefinitionNotFoundError)
+                throw (DataDefinitionNotFoundError) e.getCause();
             if (e.getCause() instanceof MakumbaError)
                 throw (MakumbaError) e.getCause();
             throw e;
