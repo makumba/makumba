@@ -16,8 +16,6 @@ import org.makumba.LogicException;
  */
 public abstract class QueryProvider {
 
-    private static Map<String, QueryProvider> analysisQueryProviders = new HashMap<String, QueryProvider>();
-
     private static String[] queryProviders = {"oql", "org.makumba.providers.query.oql.OQLQueryProvider", "hql", "org.makumba.providers.query.hql.HQLQueryProvider" };
 
     static final Map<String, Class> providerClasses = new HashMap<String, Class>();
@@ -44,18 +42,14 @@ public abstract class QueryProvider {
      * @return the QueryProvider able of performing analysis for this language
      */
     public static QueryProvider makeQueryAnalzyer(String name) {
-        QueryProvider qp = analysisQueryProviders.get(name);
-        if (qp == null) {
             try {
-                qp = (QueryProvider) providerClasses.get(name).newInstance();
-                analysisQueryProviders.put(name, qp);
+                return (QueryProvider) providerClasses.get(name).newInstance();
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        }
-        return qp;
+            return null;
     }
 
     /**
