@@ -8,7 +8,7 @@ OR simply remove it as it is declared already in the TLDs
   - getMakumbaLogger() inlined
   - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
 
-- org.makumba.abstr moved into org.makumba.providers.datadefinition.makumba (affects BEST optimisation which has an import)
+- org.makumba.abstr moved into org.makumba.providers.datadefinition.makumba
   
  - possible behavioural changes (needs testing): 
   
