@@ -23,9 +23,7 @@ import org.makumba.providers.TransactionProvider;
 public class OQLQueryProvider extends QueryProvider {
 
     private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
-    
+        
     private Transaction tr;
 
     @Override
@@ -41,7 +39,7 @@ public class OQLQueryProvider extends QueryProvider {
     @Override
     public void init(String dataSource) {
         super.init(dataSource);
-        tr = tp.getConnectionTo(dataSource);
+        tr = new TransactionProvider(config).getConnectionTo(dataSource);
 
     }
 
