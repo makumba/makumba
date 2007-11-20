@@ -1605,15 +1605,26 @@ public class TableManager extends Table {
 
     protected void manageForeignKeys(String fieldName, SQLDBConnection dbc, String brief) throws DBError {
         // for foreign keys
-        if (getFieldDefinition(fieldName).isPointer() && !hasForeignKey(fieldName))
+        
+        String type = getFieldDefinition(fieldName).getType();
+        if (((type.equals("ptr") || type.equals("ptrOne")) && !hasForeignKey(fieldName)))
         {
             //System.out.println("We need a foreign key for " + brief);
             
             try {
                 // try creating foreign key index
                 Statement st = dbc.createStatement();
+                
+                String fkTableName = getFieldDefinition(fieldName).getPointedType().getName();
+                String fkFieldName = getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName();
+                
+                if(type.equals("ptrOne")) {
+                    fkTableName = getFieldDefinition(fieldName).getSubtable().getName();
+                    fkFieldName = getFieldDefinition(fieldName).getSubtable().getIndexPointerFieldName();
+                }
+                
                 //System.out.println("testing: "+foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
-                st.executeUpdate(foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+                st.executeUpdate(foreignKeyCreateSyntax(fieldName, fkTableName, fkFieldName));
                 java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                     "FOREIGN KEY ADDED on " + brief);
                 st.close();
