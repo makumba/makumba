@@ -512,11 +512,22 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     /** writes the iterator definitions (FROM part) */
     protected void writeFrom(NameResolver nr, StringBuffer ret) {
         boolean comma = false;
+
+        type:
         for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
+            String label = (String) e.nextElement();
+            
+            // if the label is already defined by an explicit join, we skip it
+            for(Enumeration f= joins.elements(); f.hasMoreElements();){
+                Join j= (Join)f.nextElement();
+                if(j.label2.equals(label))
+                    continue type;
+            }
+                
             if (comma)
                 ret.append(" JOIN ");
             comma = true;
-            String label = (String) e.nextElement();
+
             ret.append(getTableName(label, nr))
             //.append(" AS ")
             .append(" ").append(label);
