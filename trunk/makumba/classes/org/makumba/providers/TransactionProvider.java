@@ -1,10 +1,7 @@
 package org.makumba.providers;
 
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Vector;
 
-import org.makumba.DBError;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 
@@ -24,21 +21,7 @@ public class TransactionProvider implements TransactionProviderInterface {
     
     
     public TransactionProvider() {
-        
-        Configuration config = new Configuration();
-        
-        try {
-            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getTransactionProviderClass()).newInstance();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        this(new Configuration());
     }
     
     public TransactionProvider(Configuration config) {
@@ -56,12 +39,8 @@ public class TransactionProvider implements TransactionProviderInterface {
         }
     }
     
-    private Vector<Transaction> connections = new Vector<Transaction>();
-
     public Transaction getConnectionTo(String name) {
-        Transaction t = transactionProviderImplementation.getConnectionTo(name);
-        connections.add(t);
-        return t;
+        return transactionProviderImplementation.getConnectionTo(name);
     }
 
     public String getDefaultDataSourceName() {
@@ -97,24 +76,6 @@ public class TransactionProvider implements TransactionProviderInterface {
         return transactionProviderImplementation.getCRUD();
     }
     
-    private void close() {
-        Iterator<Transaction> i = connections.iterator();
-        
-        while(i.hasNext()) {
-            Transaction t = i.next();
-            try {
-                t.close();
-                java.util.logging.Logger.getLogger("org.makumba." + "db").severe("Transaction not closed");
-            } catch(DBError e) {
-                // connection was already closed
-            }
-        }
-    }
-    
-    protected synchronized void finalize() {
-        close();
-    }
-
     public Properties getDataSourceConfiguration(String name) {
         return transactionProviderImplementation.getDataSourceConfiguration(name);
     }
