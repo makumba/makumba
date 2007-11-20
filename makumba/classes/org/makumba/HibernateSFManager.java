@@ -14,9 +14,12 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.query.oql.OQLQueryProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,8 +34,6 @@ public class HibernateSFManager {
 
     private static final String SEED = "SEED.txt";
 
-    private static SessionFactory sessionFactory;
-
     public static String findClassesRootFolder(String locatorSeed) {
         String rootFolder = "";
         try {
@@ -43,9 +44,22 @@ public class HibernateSFManager {
         }
         return rootFolder;
     }
+    public static int sessionFactories = NamedResources.makeStaticCache("hibernate session factory", new NamedResourceFactory() {
 
-    public static SessionFactory getSF(String cfgFilePath, boolean schemaUpd) {
-        if (sessionFactory == null) {
+        private static final long serialVersionUID = 1L;
+    
+        protected Object makeResource(Object nm, Object hashName) throws Exception {
+            return makeSF((String)nm);
+        }
+    }, false);
+
+
+    public static SessionFactory getSF(String cfgFilePath) {
+        return (SessionFactory)NamedResources.getStaticCache(sessionFactories).getResource(cfgFilePath);
+    }
+    
+    private static SessionFactory makeSF(String cfgFilePath){
+            cfgFilePath+= ".cfg.xml";
             
             Configuration cfg = new Configuration().configure(cfgFilePath);
             String seed, prefix;
@@ -106,11 +120,11 @@ public class HibernateSFManager {
                 e.printStackTrace();
             }
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("building session factory");
-            sessionFactory = cfg.buildSessionFactory();
+            SessionFactory sessionFactory = cfg.buildSessionFactory();
             
             if("true".equals(cfg.getProperty("makumba.schemaUpdate"))){
-                if(!schemaUpd)
-                    throw new ProgrammerError("Hibernate schema update must be authorized, remove it from cfg.xml!");
+//                if(!schemaUpd)
+//                    throw new ProgrammerError("Hibernate schema update must be authorized, remove it from cfg.xml!");
                 java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Peforming schema update");
                 SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
                 schemaUpdate.execute(true, true);
@@ -118,24 +132,21 @@ public class HibernateSFManager {
             }else
                 java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("skipping schema update");
                 
-        }
+        
         return sessionFactory;
     }
 
     public static synchronized SessionFactory getSF() {
-        if (sessionFactory == null) {
             String configFile;
             org.makumba.commons.Configuration config = new org.makumba.commons.Configuration();
             TransactionProvider tp = new TransactionProvider(config);
             if(tp.getDefaultDataSourceName() == null) {
-                configFile = "default.cfg.xml";
+                configFile = "default";
             } else {
-                configFile = tp.getDefaultDataSourceName() + ".cfg.xml";
+                configFile = tp.getDefaultDataSourceName();
             }
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Initializing configuration from "+configFile);
-            return getSF(configFile, false);
-        }
-        return sessionFactory;
+            return getSF(configFile);
     }
 
     
