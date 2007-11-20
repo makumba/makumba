@@ -365,7 +365,6 @@ public class table extends TestCase {
 		p.put("description", "home");
 
 		set1 = db.insert(ptr, "address", p);
-		db.delete("test.Person->address->sth x", "1=1", null); //delete garbage
 	}
 
 	public void testSubrecordUpdate() {
