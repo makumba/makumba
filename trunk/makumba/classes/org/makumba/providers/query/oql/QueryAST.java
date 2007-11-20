@@ -35,6 +35,7 @@ import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
+import antlr.SemanticException;
 import antlr.collections.AST;
 
 /** an OQL query, writes out the translated SQL query */
@@ -265,11 +266,12 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     }
 
     /** make a new join with the name and associate teh label with the type 
-     * @param leftJoin */
-    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin) {
+     * @param leftJoin 
+     * @throws SemanticException */
+    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin) throws SemanticException {
         joins.addElement(new Join(l1, f1, name, f2, leftJoin));
         joinNames.put(l1 + "." + f1, name);
-        labels.put(name, type);
+        setLabelType(name, type);
         return name;
     }
 
@@ -354,7 +356,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             throw new antlr.RecognitionException(p.getMessage());
         }
         if (type != null) {
-            labels.put(label, type);
+            setLabelType(label, type);
             fromLabels.put(label, type);
             return;
         }
@@ -388,6 +390,12 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             aliases.put(label, frm);
         }
 
+    }
+
+    private void setLabelType(String label, DataDefinition type) throws SemanticException {
+        if(labels.get(label)!=null)
+            throw new antlr.SemanticException("label defined twice: "+label);
+        labels.put(label, type);
     }
 
     /** expressions, for type analysis */
@@ -513,17 +521,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     protected void writeFrom(NameResolver nr, StringBuffer ret) {
         boolean comma = false;
 
-        type:
         for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
             String label = (String) e.nextElement();
-            
-            // if the label is already defined by an explicit join, we skip it
-            for(Enumeration f= joins.elements(); f.hasMoreElements();){
-                Join j= (Join)f.nextElement();
-                if(j.label2.equals(label))
-                    continue type;
-            }
-                
+                            
             if (comma)
                 ret.append(" JOIN ");
             comma = true;
