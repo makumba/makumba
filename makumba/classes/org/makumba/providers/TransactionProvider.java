@@ -60,10 +60,6 @@ public class TransactionProvider implements TransactionProviderInterface {
         transactionProviderImplementation._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
     }
 
-    public Object getHibernateSessionFactory(String name) {
-        return transactionProviderImplementation.getHibernateSessionFactory(name);
-    }
-
     public String getDataSourceName(String lookupFile) {
         return transactionProviderImplementation.getDataSourceName(lookupFile);
     }

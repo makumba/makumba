@@ -57,15 +57,9 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     public String getDefaultDataSourceName() {
         return Configuration.findDatabaseName("MakumbaDatabase.properties");
     }
-
-    private Object sf;
     
     public Object getHibernateSessionFactory(String name) {
-            if(sf==null && ClassResource.get(name+".cfg.xml")!=null){
-                sf= HibernateSFManager.getSF(name+".cfg.xml", true);
-            }
-            return sf;
-        
+        return HibernateSFManager.getSF(name);
     }
 
     public boolean supportsUTF8() {

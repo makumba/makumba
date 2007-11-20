@@ -55,7 +55,7 @@ public class HibernateTransaction extends TransactionImplementation {
         this(tp);
         this.dataSource = dataSource;
         this.ddp = ddp;
-        this.s = ((SessionFactory) tp.getHibernateSessionFactory(dataSource)).openSession();
+        this.s = ((SessionFactory) ((HibernateTransactionProvider)tp).getHibernateSessionFactory(dataSource)).openSession();
         s.setCacheMode(CacheMode.IGNORE);
         beginTransaction();
     }
