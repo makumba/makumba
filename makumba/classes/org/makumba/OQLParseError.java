@@ -36,7 +36,7 @@ public class OQLParseError extends MakumbaError {
 	}
 
 	public OQLParseError(String explanation, Throwable cause) {
-		super(cause, explanation);
+		super(cause, cause.getMessage()+" "+explanation);
 	}
 
 	public OQLParseError(org.hibernate.QueryException qe) {
