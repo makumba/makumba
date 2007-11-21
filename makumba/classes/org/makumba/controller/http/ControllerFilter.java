@@ -51,6 +51,7 @@ public class ControllerFilter implements Filter {
     
     private String handlerClasses= 
             "org.makumba.devel.ErrorControllerHandler,"+
+            "org.makumba.analyser.AnalysisInitControllerHandler,"+
             "org.makumba.controller.FilterConditionControllerHandler,"+
             "org.makumba.commons.attributes.DatabaseConnectionControllerHandler,"+ 
             "org.makumba.commons.attributes.AttributesControllerHandler,"+

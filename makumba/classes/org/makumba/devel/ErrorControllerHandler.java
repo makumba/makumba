@@ -47,7 +47,7 @@ public class ErrorControllerHandler extends ControllerHandler {
     @Override
     public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
         treatException(e, (HttpServletRequest) request, (HttpServletResponse) response);
-        return true; //we still need to make sure the analysis initalisation happens
+        return false; 
     }
     
     /**
