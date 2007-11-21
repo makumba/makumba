@@ -1,4 +1,4 @@
-package org.makumba.db;
+package org.makumba.commons.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -20,8 +20,6 @@ import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 public abstract class TransactionImplementation implements Transaction {
-
-    protected org.makumba.db.Database db;
 
     protected Configuration config = new Configuration();
 
@@ -99,8 +97,6 @@ public abstract class TransactionImplementation implements Transaction {
     public abstract Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
 
     public abstract Vector executeQuery(String OQL, Object parameterValues);
-
-    public abstract Query getQuery(String OQL);
 
     public TransactionProviderInterface getTransactionProvider() {
         return this.tp;

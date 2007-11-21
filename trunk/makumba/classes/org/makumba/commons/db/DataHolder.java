@@ -1,4 +1,4 @@
-package org.makumba.db;
+package org.makumba.commons.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -12,7 +12,6 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
