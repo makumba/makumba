@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.makumba.db.makumba.Database;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
-
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specifc services.
  * It can be seen as a service dispatcher in a way.
@@ -103,17 +100,7 @@ public class Configuration implements Serializable {
         
         return p.getProperty("default");
     }
-
-    //FIXME should be somewhere else
-    public static Database findDatabase(Properties p) {
-        return MakumbaTransactionProvider.getDatabase(findDatabaseName(p));
-    }
-
-    //FIXME should be somewhere else
-    public static Database findDatabase(String s) {
-        return MakumbaTransactionProvider.getDatabase(findDatabaseName(s));
-    }
-
+    
     //FIXME should be somewhere else
     static int dbsel = NamedResources.makeStaticCache("Database selection files", new NamedResourceFactory() {
         

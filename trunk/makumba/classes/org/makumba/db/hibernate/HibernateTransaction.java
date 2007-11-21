@@ -23,8 +23,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.db.DataHolder;
-import org.makumba.commons.db.TransactionImplementation;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.TransactionProviderInterface;
@@ -342,18 +341,6 @@ public class HibernateTransaction extends TransactionImplementation {
         }
     }
     
-    @Override
-    public Pointer insert(String type, Dictionary data) {
-        
-        // TODO: this does not support the DataTransformer possiblilty as for the Makumba DB.
-        // Probably all those Makumba DB features should be placed in another place than the makumba DB.
-        
-        DataHolder dh = new DataHolder(this, data, type);
-        dh.checkInsert();
-        return dh.insert();
-        
-    }
-
     @Override
     public int insertFromQuery(String type, String OQL, Object parameterValues) {
         throw new MakumbaError("Not implemented");

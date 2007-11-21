@@ -11,7 +11,7 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
-import org.makumba.commons.db.TransactionImplementation;
+import org.makumba.db.TransactionImplementation;
 
 /**
  * This interface describes the operations that a simple CRUD provider has to implement.

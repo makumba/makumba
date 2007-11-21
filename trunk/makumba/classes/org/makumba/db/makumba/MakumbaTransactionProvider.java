@@ -144,4 +144,8 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     public Properties getDataSourceConfiguration(String name) {
         return getDatabase(name).getConfigurationProperties();
     }
+
+    public static Database findDatabase(String s) {
+        return getDatabase(Configuration.findDatabaseName(s));
+    }
 }
