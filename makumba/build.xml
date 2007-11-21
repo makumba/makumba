@@ -58,7 +58,7 @@
 					<srcfiles dir="classes/org/makumba/providers/query/oql/" includes="**/OQL-translator.g" />
 				</uptodate>
 				<uptodate targetfile="classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
-					<srcfiles dir="classes/org/makumba/db/hibernate/hql" includes="**/hql-analyze.g" />
+					<srcfiles dir="classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
 				</uptodate>
 			</and>
 		</condition>
