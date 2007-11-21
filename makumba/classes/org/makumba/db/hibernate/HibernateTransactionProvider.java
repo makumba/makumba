@@ -4,16 +4,17 @@ import java.util.Properties;
 
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
-import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
-import org.makumba.commons.ClassResource;
 import org.makumba.commons.Configuration;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
- * FIXME reimplement the hierarchy of this provider, it should extend some TransactionProvider
+ * This class is a Hibernate-specific implementation of a {@link TransactionProviderInterface}.
+ * 
+ * FIXME reimplement the hierarchy of this provider, i.e. fix the Configuration problem.
+ * FIXME see what to do with the old _copy, ... etc. methods
  * 
  * @author Manuel Gay
  * @version $Id: HibernateTransactionProvider.java,v 1.1 06.11.2007 11:01:32 Manuel Exp $
