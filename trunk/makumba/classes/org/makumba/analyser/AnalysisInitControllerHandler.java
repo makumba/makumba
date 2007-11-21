@@ -24,7 +24,7 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
     @Override
     public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
         AnalysableTag.initializeThread();
-        return false;
+        return true;
     }
     
 }
