@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -44,7 +43,6 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResources;
-import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -73,7 +71,7 @@ public class tableHibernate extends TestCase {
 	public void setUp() {
         config.setDefaultTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
         tp = new TransactionProvider(config);
-		db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+		db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
 	}
 
 	public void tearDown() {
@@ -81,8 +79,6 @@ public class tableHibernate extends TestCase {
 	}
     
     private Configuration config = new Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
     
     private TransactionProvider tp;
 
@@ -127,8 +123,46 @@ public class tableHibernate extends TestCase {
 		}
 	}
 
-    // FIXME test valid mdds - take from dbtabe test and adapt in hibernate cfg
-	
+    /*public void testQueryValidMdds() {
+        Vector v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
+        Vector errors = new Vector();
+        for (int i = 0; i < v.size(); i++) {
+            try {
+                Vector v1 = db.executeQuery("SELECT t.id FROM test.validMdds."
+                        + (String) v.elementAt(i) + " t", null);
+                Vector fields = ddp.getDataDefinition(
+                        "test.validMdds." + (String) v.elementAt(i))
+                        .getFieldNames();
+                String what = "";
+                for (Enumeration e = fields.elements(); e.hasMoreElements();) {
+                    String fname = (String) e.nextElement();
+                    String ftype = ddp.getDataDefinition(
+                            "test.validMdds." + (String) v.elementAt(i))
+                            .getFieldDefinition(fname).getDataType();
+                    // System.out.println(fname+": "+ftype);
+                    if (ftype != null && !ftype.equals("null")
+                            && !ftype.startsWith("set")) // skip setComplex
+                        // fields
+                        what = what + (what.length() > 0 ? ", " : "") + "t."
+                                + fname;
+                }
+                // System.out.println(what);
+                if (what.length() > 0)
+                    v1 = db.executeQuery("SELECT " + what
+                            + " FROM test.validMdds." + (String) v.elementAt(i)
+                            + " t", null);
+            } catch (Exception e) {
+                errors.add("\n ." + (errors.size() + 1)
+                        + ") Error querying valid MDD <"
+                        + (String) v.elementAt(i) + ">:\n\t " + e);
+            }
+        }
+        if (errors.size() > 0)
+            fail("\n  Tested " + v.size() + " valid MDDs, of which "
+                    + errors.size() + " cant be used for DB queries:"
+                    + errors.toString());
+    }*/
+    
 	public void testInsert() {
 		Properties p = new Properties();
 		Calendar c = Calendar.getInstance();
