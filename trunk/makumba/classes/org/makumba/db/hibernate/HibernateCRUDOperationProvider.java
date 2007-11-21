@@ -339,10 +339,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         try {
 
             HibernateTransaction ht = (HibernateTransaction) t;
-
-            HibernateUtils utils = new HibernateUtils();
-
-            String name = utils.arrowToDoubleUnderscore(dd.getName());
+            
+            String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             Class recordClass = null;
             recordClass = Class.forName(name);

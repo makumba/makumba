@@ -21,6 +21,7 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.DataHolder;
 import org.makumba.db.Query;
@@ -45,6 +46,8 @@ public class HibernateTransaction extends TransactionImplementation {
     private DataDefinitionProvider ddp;
     
     private String dataSource;
+    
+    private NameResolver nr = new NameResolver();
     
     public HibernateTransaction(TransactionProviderInterface tp) {
         super(tp);
@@ -94,7 +97,7 @@ public class HibernateTransaction extends TransactionImplementation {
             sb.append(" as ").append(s);
             separator = ",";
         }
-        sb.append(" FROM " + (new HibernateUtils()).arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
+        sb.append(" FROM " + nr.arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
         return sb;
     }
     
@@ -112,8 +115,6 @@ public class HibernateTransaction extends TransactionImplementation {
         // in the current implementation, executeUpdate is also used to execute delete-s, depending on the value of "set"
         
         String hql = new String();
-        
-        HibernateUtils utils = new HibernateUtils();
         
         // I have no idea if giving the type directly will work...
         if(set == null) {
@@ -366,9 +367,8 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public String transformTypeName(String name) {
-        HibernateUtils util = new HibernateUtils();
         
-        return util.arrowToDoubleUnderscore(name);
+        return nr.arrowToDoubleUnderscore(name);
     }
     
     @Override
