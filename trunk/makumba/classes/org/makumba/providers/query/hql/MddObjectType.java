@@ -10,43 +10,43 @@ import org.makumba.providers.DataDefinitionProvider;
 import antlr.RecognitionException;
 import antlr.SemanticException;
 
-
 public class MddObjectType implements ObjectType {
-    
+
     private Configuration config = new Configuration();
+
     private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
-    
+
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
-        if(field==null)
-        try{
-            ddp.getDataDefinition(type);
-            return type;
-        }catch(DataDefinitionNotFoundError err){ return null; }
+        if (field == null)
+            try {
+                ddp.getDataDefinition(type);
+                return type;
+            } catch (DataDefinitionNotFoundError err) {
+                return null;
+            }
 
         // System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
         DataDefinition dd = null;
 
         if (field.equals("id")) {
             return type;
-        }  
+        }
         try {
             dd = ddp.getDataDefinition(type);
         } catch (DataDefinitionNotFoundError e) {
-            //throw new SemanticException("No such MDD \"" + type + "\"");
+            // throw new SemanticException("No such MDD \"" + type + "\"");
             throw new ProgrammerError("No such MDD \"" + type + "\"");
         }
-        
-        if(field.equals("enum_") && dd.getFieldDefinition("enum")!=null)
+
+        if (field.equals("enum_") && dd.getFieldDefinition("enum") != null)
             // FIXME: need to check if this is really a setEnum generated type
             return dd.getFieldDefinition("enum");
-            
-            
-        FieldDefinition fi = dd.getFieldDefinition(field);
-                    
-        if(fi==null)           
-            //throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
-            throw new ProgrammerError("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
 
+        FieldDefinition fi = dd.getFieldDefinition(field);
+
+        if (fi == null)
+            // throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
+            throw new ProgrammerError("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
 
         DataDefinition foreign = null, sub = null;
 
@@ -70,19 +70,19 @@ public class MddObjectType implements ObjectType {
             return sub.getName();
 
         } else if (fi.getType().equals("set")) {
-            //System.out.println("In SET: Trying to get field type: " + field + " from type " + type + " ...");
-            //System.out.println(MakumbaSystem.getDataDefinition(foreign.getName()).getName());
-            
+            // System.out.println("In SET: Trying to get field type: " + field + " from type " + type + " ...");
+            // System.out.println(MakumbaSystem.getDataDefinition(foreign.getName()).getName());
+
             return ddp.getDataDefinition(foreign.getName()).getName();
 
         } else
-            //System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
+            // System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
             return ddp.getDataDefinition(type).getFieldDefinition(field);
     }
 
     /** given a type descriptor, resolve it to an integer for type analysis */
-    public int getTypeOf(Object descriptor){
-        return ((FieldDefinition)descriptor).getIntegerType();
+    public int getTypeOf(Object descriptor) {
+        return ((FieldDefinition) descriptor).getIntegerType();
     }
 
 }
