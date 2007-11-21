@@ -17,7 +17,7 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NameResolver;
-import org.makumba.db.sql.SQLPointer;
+import org.makumba.commons.SQLPointer;
 import org.makumba.providers.CRUDOperationProvider;
 
 /**

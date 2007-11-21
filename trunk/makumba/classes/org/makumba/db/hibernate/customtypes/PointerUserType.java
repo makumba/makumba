@@ -9,7 +9,7 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import org.makumba.Pointer;
-import org.makumba.db.sql.SQLPointer;
+import org.makumba.commons.SQLPointer;
 
 public class PointerUserType implements UserType {
 	private static final int[] SQL_TYPES = {Types.INTEGER};
