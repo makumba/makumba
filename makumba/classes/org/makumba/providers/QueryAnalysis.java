@@ -47,6 +47,12 @@ public interface QueryAnalysis {
      * Gets the original query that is analyzed by this object
      */
     String getQuery();
+    
+    /**
+     * Gets the pre-processed query
+     * @return
+     */
+    String getPreProcessedQuery(String query);
 
     /**
      * Gets the type of the fields between SELECT and FROM

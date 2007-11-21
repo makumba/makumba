@@ -1,4 +1,4 @@
-package org.makumba.db.hibernate.hql;
+package org.makumba.providers.query.hql;
 
 import java.util.ArrayList;
 import java.util.HashMap;

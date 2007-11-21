@@ -1,4 +1,4 @@
-package org.makumba.db.hibernate.hql;
+package org.makumba.providers.query.hql;
 import java.lang.reflect.Field;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
