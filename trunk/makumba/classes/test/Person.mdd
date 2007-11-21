@@ -73,6 +73,8 @@ address=set			 ;Addresses
 
 toys=set
   toys->name=char[30]
+  
+groupMembers = set test.Person
 
 uniqPtr=unique ptr test.Language	;test ptr uniqness
   
