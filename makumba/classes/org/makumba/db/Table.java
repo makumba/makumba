@@ -25,7 +25,6 @@ package org.makumba.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -38,31 +37,19 @@ import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
 
 /**
- * This is a generic database table RecordHandler. Upon building, it uses the rules in
- * org.makumba/db/redirectHandler.properties :
+ * This is a generic database table RecordHandler.
  * 
- * <pre>
- *  ptr=foreign
- *  ptrRel=foreign
- *  ptrOne=subtable
- *  set=foreign
- *  setcharEnum=subtable
- *  setintEnum=subtable
- *  setComplex=subtable
- * </pre>
- * 
- * ... where foreignHandler and subtableHandler use different techniques to add their foreign table to this table's
- * foreign table list, and then let the unrelying packages define their own handlers of the respective type, by adding
- * DB to the type name (e.g. ptr will lead to ptrDB).
+ * TODO Document the methods in here
  * 
  * @see org.makumba.db.Database#getTable(org.makumba.abstr.RecordInfo)
- * @see org.makumba.db.foreignHandler
- * @see org.makumba.db.subtableHandler
+ * @author Cristian Bogdan
+ * @author Thomas Laroche
+ * @author Marius Andra
+ * @author Manuel Gay
  */
 public abstract class Table // extends RecordHandler
 {
     protected DataDefinition dd;
-
 
     public Table() {
     }
@@ -88,7 +75,7 @@ public abstract class Table // extends RecordHandler
                 relatedTables.put(name, fd.getSubtable());
         }
     }
-    
+
     public DataDefinition getDataDefinition() {
         return dd;
     }
@@ -186,7 +173,8 @@ public abstract class Table // extends RecordHandler
             return;
         }
 
-        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm + ": starting copying " + v.size() + " records");
+        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(
+            nm + ": starting copying " + v.size() + " records");
 
         System.out.print("|");
         for (int b = 0; b < BAR; b++)
@@ -236,9 +224,8 @@ public abstract class Table // extends RecordHandler
      * Prepares everything needed for database management. identifies the database adapter that will be used, the type
      * of connection manager, etc. Might call create. Looks if secondary tables (from a one-to-many, sets) need to be
      * opened or created. Looks if the opened database actually respects the org.makumba file (if not, provides
-     * functionality to convert the database to the new format).
-     * 
-     * Toto: Your brain is a mess where your stupidity is swimming.
+     * functionality to convert the database to the new format). Toto: Your brain is a mess where your stupidity is
+     * swimming.
      */
     protected abstract void open(Properties p, NameResolver nr);
 

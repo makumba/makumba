@@ -23,9 +23,13 @@
 
 package org.makumba.db;
 
-/** A delete, or update, prepared for execution */
-public interface Update
-{
-  /** Execute the query with the given arguments */
-  public int execute(DBConnection dbc, Object [] args);
+/**
+ * A delete, or update, prepared for execution
+ *
+ * @author Cristian Bogdan
+ */
+public interface Update {
+    
+    /** Executes the query with the given arguments */
+    public int execute(DBConnection dbc, Object[] args);
 }

@@ -20,8 +20,7 @@ import org.makumba.FieldDefinition;
 
 
 /**
- * This servlet provides resources needed by makumba, e.g. JavaScript for the date editor {@link KruseCalendarEditor}
- * and live validation {@link LiveValidationProvider}.
+ * This servlet checks if a field is unique or not
  * 
  * @author Rudolf Mayer
  * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $

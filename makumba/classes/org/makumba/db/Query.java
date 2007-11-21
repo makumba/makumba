@@ -24,7 +24,11 @@
 package org.makumba.db;
 import java.util.Vector;
 
-/** A query prepared for execution. Returns all its results at once, in a Vector */
+/**
+ * A query prepared for execution. Returns all its results at once, in a Vector
+ * 
+ * @author Cristian Bogdan
+ * */
 public interface Query
 {
   /** Execute the query with the given arguments */
