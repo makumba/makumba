@@ -1,4 +1,4 @@
-package org.makumba.controller;
+package org.makumba.commons;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;

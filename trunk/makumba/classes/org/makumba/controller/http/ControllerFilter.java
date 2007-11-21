@@ -33,19 +33,15 @@ import javax.servlet.ServletResponse;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.controller.ControllerHandler;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling.
  * 
  * This filter uses a number of {@link ControllerHandler}-s which each serve a specific purpose.
  * 
- * TODO there should be a simple mechanism of deactivating one of the handlers, e.g. an invocation list
- * read from the filter configuration and by default calling all the handlers
- * 
  * @author Cristian Bogdan
- * @author Rudolf Mayer
  * @author Manuel Gay
  * @version $Id$ *
  */
@@ -54,9 +50,9 @@ public class ControllerFilter implements Filter {
     private FilterConfig conf;
     
     private String handlerClasses= 
-            "org.makumba.controller.ErrorControllerHandler,"+
+            "org.makumba.devel.ErrorControllerHandler,"+
             "org.makumba.controller.FilterConditionControllerHandler,"+
-            "org.makumba.controller.DatabaseConnectionControllerHandler,"+ 
+            "org.makumba.commons.attributes.DatabaseConnectionControllerHandler,"+ 
             "org.makumba.commons.attributes.AttributesControllerHandler,"+
             "org.makumba.forms.responder.ResponseControllerHandler";
     

@@ -6,7 +6,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.LogicException;
-import org.makumba.controller.ControllerHandler;
+import org.makumba.commons.ControllerHandler;
 
 public class AttributesControllerHandler extends ControllerHandler {
 

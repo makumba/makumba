@@ -36,7 +36,7 @@ import org.makumba.LogicException;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
 import org.makumba.commons.Configuration;
-import org.makumba.controller.DbConnectionProvider;
+import org.makumba.commons.DbConnectionProvider;
 import org.makumba.controller.Logic;
 import org.makumba.providers.TransactionProvider;
 

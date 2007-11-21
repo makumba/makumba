@@ -21,14 +21,13 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.controller;
+package org.makumba.commons;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
