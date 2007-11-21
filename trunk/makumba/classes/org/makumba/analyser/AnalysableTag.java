@@ -84,10 +84,15 @@ public abstract class AnalysableTag extends TagSupport {
                 TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(
                 null);
     
-            if ((result instanceof Throwable) && result.getClass().getName().startsWith("org.makumba")) {
-                if (result instanceof MakumbaError)
+            if ((result instanceof Throwable)) {
+                if (result instanceof MakumbaError) {
                     throw (MakumbaError) result;
-                throw (RuntimeException) result;
+                }
+                if (result instanceof RuntimeException) {
+                    throw (RuntimeException) result;
+                } else {
+                    throw new RuntimeException((Throwable) result);
+                }
             }
             pageContext.setAttribute("makumba.parse.cache", pageCache = (PageCache) result);
         }
