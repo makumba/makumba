@@ -32,17 +32,15 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
-import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
-import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.db.DataHolder;
+import org.makumba.commons.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
@@ -57,6 +55,8 @@ public abstract class DBConnection extends TransactionImplementation {
     private QueryProvider qp;
     
     protected String dataSource;
+    
+    protected org.makumba.db.Database db;
     
     protected DBConnection(TransactionProviderInterface tp) {
         super(tp);

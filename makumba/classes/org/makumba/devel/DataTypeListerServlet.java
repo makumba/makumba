@@ -17,6 +17,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
+import org.makumba.db.DBConnection;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
@@ -163,10 +164,10 @@ public class DataTypeListerServlet extends DataServlet {
 
                 writer.println("</table>");
 
-                org.makumba.db.Query oqlQuery = t.getQuery(query);
+                org.makumba.db.Query oqlQuery = ((DBConnection)t).getQuery(query);
                 if (oqlQuery instanceof org.makumba.db.sql.Query) {
                     writer.println("<hr>");
-                    org.makumba.db.sql.Query sqlQuery = (org.makumba.db.sql.Query) t.getQuery(query);
+                    org.makumba.db.sql.Query sqlQuery = (org.makumba.db.sql.Query) ((DBConnection)t).getQuery(query);
                     writer.println("SQL query: " + sqlQuery.getCommand() + ";<br>");
                 }
 

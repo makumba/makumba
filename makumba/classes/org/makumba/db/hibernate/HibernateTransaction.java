@@ -23,9 +23,8 @@ import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.db.DataHolder;
-import org.makumba.db.Query;
-import org.makumba.db.TransactionImplementation;
+import org.makumba.commons.db.DataHolder;
+import org.makumba.commons.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.TransactionProviderInterface;
@@ -343,11 +342,6 @@ public class HibernateTransaction extends TransactionImplementation {
         }
     }
     
-    @Override
-    public Query getQuery(String OQL) {
-        throw new MakumbaError("Not implemented");
-    }
-
     @Override
     public Pointer insert(String type, Dictionary data) {
         
