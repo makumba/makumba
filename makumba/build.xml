@@ -28,10 +28,10 @@
 	</target>
 
 	<target name="detectHqlTokens">
-		<javac srcdir="classes" destdir="classes" includes="org/makumba/db/hibernate/hql/DetectHQLTokenTypes.java">
+		<javac srcdir="classes" destdir="classes" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
 			<classpath refid="project.class.path" />
 		</javac>
-		<java classname="org.makumba.db.hibernate.hql.DetectHQLTokenTypes" failonerror="true" dir="." fork="true" taskname="detecting tokens">
+		<java classname="org.makumba.providers.query.hql.DetectHQLTokenTypes" failonerror="true" dir="." fork="true" taskname="detecting tokens">
 			<classpath>
 				<path refid="project.class.path" />
 				<pathelement path="classes" />
@@ -57,7 +57,7 @@
 
 					<srcfiles dir="classes/org/makumba/providers/query/oql/" includes="**/OQL-translator.g" />
 				</uptodate>
-				<uptodate targetfile="classes/org/makumba/db/hibernate/hql/HqlAnalyzeBaseWalker.java">
+				<uptodate targetfile="classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
 					<srcfiles dir="classes/org/makumba/db/hibernate/hql" includes="**/hql-analyze.g" />
 				</uptodate>
 			</and>
