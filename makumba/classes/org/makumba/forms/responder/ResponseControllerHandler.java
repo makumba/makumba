@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
+import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.StringUtils;
-import org.makumba.controller.ControllerHandler;
 
 public class ResponseControllerHandler extends ControllerHandler {
 

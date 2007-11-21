@@ -7,6 +7,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.commons.ControllerHandler;
+
 public class FilterConditionControllerHandler extends ControllerHandler {
 
     @Override

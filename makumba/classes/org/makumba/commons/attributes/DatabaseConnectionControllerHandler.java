@@ -1,11 +1,12 @@
-package org.makumba.controller;
+package org.makumba.commons.attributes;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.commons.ControllerHandler;
+import org.makumba.commons.DbConnectionProvider;
 
 public class DatabaseConnectionControllerHandler extends ControllerHandler {
     

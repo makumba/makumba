@@ -218,7 +218,7 @@ public class jspViewer extends LineViewer {
         w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
         w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
 
-        String lg = org.makumba.controller.ErrorControllerHandler.getLoginPage(this.request, virtualPath);
+        String lg = org.makumba.devel.ErrorControllerHandler.getLoginPage(this.request, virtualPath);
         if (lg != null) {
             w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
         }

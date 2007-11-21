@@ -43,6 +43,7 @@ import org.makumba.LogicNotFoundException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 

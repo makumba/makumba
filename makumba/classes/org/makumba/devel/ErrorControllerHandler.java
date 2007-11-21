@@ -1,4 +1,4 @@
-package org.makumba.controller;
+package org.makumba.devel;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.MakumbaError;
 import org.makumba.UnauthorizedException;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.devel.ErrorFormatter;
 
 /**
  * This handler lets the request go to the filter chain and then catches all kind of exceptions after it.
@@ -37,7 +37,7 @@ public class ErrorControllerHandler extends ControllerHandler {
 
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
-
+        
         // FIXME should not be here
         AnalysableTag.initializeThread();
         
@@ -50,7 +50,7 @@ public class ErrorControllerHandler extends ControllerHandler {
     @Override
     public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
         treatException(e, (HttpServletRequest) request, (HttpServletResponse) response);
-        return false;
+        return true; //we still need to make sure the analysis initalisation happens
     }
     
     /**
