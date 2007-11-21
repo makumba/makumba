@@ -11,6 +11,12 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
+/**
+ * Makumba-specific implementation of the {@link TransactionProviderInterface}.
+ * 
+ * @author Manuel Gay
+ * @version $Id: MakumbaTransactionProvider.java,v 1.1 21.11.2007 17:06:25 Manuel Exp $
+ */
 public class MakumbaTransactionProvider implements TransactionProviderInterface {
     
     private static CRUDOperationProvider singleton;
