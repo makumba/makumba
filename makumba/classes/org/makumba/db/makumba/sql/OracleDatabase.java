@@ -21,22 +21,30 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba;
+package org.makumba.db.makumba.sql;
+import java.util.Properties;
 
-import org.makumba.db.makumba.sql.SQLUpdate;
+/** the database adapter for PostgreSQL */
+public class OracleDatabase extends org.makumba.db.makumba.sql.Database
+{
+  /** simply calls super */
+  public OracleDatabase(Properties p) 
+    { super(p); }
 
-/**
- * An insert in a certain type has violated a unique constraint.<br>
- * Note: this class has mostly been replaced by {@link NotUniqueException} in combination with
- * {@link CompositeValidationException}, which has more or less the same functionality as this class used to have, but
- * is ready for form annotation. This class is used onyl in
- * {@link SQLUpdate#execute(org.makumba.db.DBConnection, Object[])}, usage there should also be stopped.
- */
-public class NotUniqueError extends DBError {
-    private static final long serialVersionUID = 1L;
+  protected int getMaxTableNameLength() {return 30; }
+  protected int getMaxFieldNameLength() {return 30; }
 
-    public NotUniqueError(java.sql.SQLException se) {
-        super("Not unique exception. " + se.getMessage());
-    }
+//TODO now in sqlEngines.properties -->OK?
+//  /** returns oracle RecordManager */
+//  protected Class getTableClass()
+//  { return org.makumba.db.sql.oracle.RecordManager.class; }
+
+  protected String getJdbcUrl(Properties p)
+  {
+    String host=p.getProperty("#host");
+    if(host.indexOf(':')<0) //no port specified
+	host=host+":1521";  //define default port (must be specified)
+    return "jdbc:oracle:thin:@//"+host+"/"+p.getProperty("#database");
+  }
 
 }

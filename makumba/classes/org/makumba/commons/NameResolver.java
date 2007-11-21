@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.makumba.DataDefinition;
-import org.makumba.db.sql.Database;
+import org.makumba.db.makumba.sql.Database;
 
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes

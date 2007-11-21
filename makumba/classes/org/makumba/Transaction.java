@@ -23,7 +23,7 @@
 
 package org.makumba;
 
-import org.makumba.db.Query;
+import org.makumba.db.makumba.Query;
 import org.makumba.providers.TransactionProviderInterface;
 
 /** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>

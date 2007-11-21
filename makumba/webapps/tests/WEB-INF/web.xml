@@ -20,7 +20,7 @@
 
   <servlet>
     <servlet-name>makumbaUnique</servlet-name>
-    <servlet-class>org.makumba.db.UniquenessServlet</servlet-class>
+    <servlet-class>org.makumba.db.makumba.UniquenessServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

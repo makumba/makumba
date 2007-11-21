@@ -26,8 +26,8 @@ package org.makumba.devel;
 import java.util.Vector;
 
 import org.makumba.commons.Configuration;
-import org.makumba.db.Database;
-import org.makumba.db.MakumbaTransactionProvider;
+import org.makumba.db.makumba.Database;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 
 /**
  * Copies one database to the other.

@@ -95,7 +95,7 @@ public class HibernateSFManager {
 //          FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not two
             String databaseProperties = cfgFilePath.substring(0, cfgFilePath.indexOf(".cfg.xml"));
             org.makumba.commons.Configuration c = new org.makumba.commons.Configuration();
-            c.setDefaultTransactionProvider("org.makumba.db.MakumbaTransactionProvider");
+            c.setDefaultTransactionProvider("org.makumba.db.makumba.MakumbaTransactionProvider");
             TransactionProvider tp = new TransactionProvider(c);
             NameResolver nr = new NameResolver(tp.getDataSourceConfiguration(databaseProperties));
             

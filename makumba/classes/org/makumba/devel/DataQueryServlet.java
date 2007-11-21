@@ -38,7 +38,7 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.db.DBConnection;
+import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -115,10 +115,10 @@ public class DataQueryServlet extends DataServlet {
                 Vector results = t.executeQuery(query, null, 0, limit);
 
                 if (queryLanguage == QUERY_LANGUAGE_OQL) {
-                    org.makumba.db.Query oqlQuery = ((DBConnection)t).getQuery(query);
-                    if (oqlQuery instanceof org.makumba.db.sql.Query) {
+                    org.makumba.db.makumba.Query oqlQuery = ((DBConnection)t).getQuery(query);
+                    if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                         writer.println("<hr>");
-                        org.makumba.db.sql.Query sqlQuery = (org.makumba.db.sql.Query) ((DBConnection)t).getQuery(query);
+                        org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection)t).getQuery(query);
                         writer.println("SQL query: " + sqlQuery.getCommand() + ";<br>");
                         writer.println("<hr>");
                     }
