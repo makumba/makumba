@@ -37,6 +37,7 @@ import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.SQLPointer;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Update;

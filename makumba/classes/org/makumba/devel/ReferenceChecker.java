@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.SQLPointer;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;
 import org.makumba.db.Database;
 import org.makumba.db.MakumbaTransactionProvider;
 import org.makumba.db.sql.SQLDBConnection;
-import org.makumba.db.sql.SQLPointer;
 import org.makumba.db.sql.TableManager;
 import org.makumba.providers.DataDefinitionProvider;
 

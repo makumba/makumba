@@ -20,7 +20,7 @@ import org.makumba.Text;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
-import org.makumba.db.sql.SQLPointer;
+import org.makumba.commons.SQLPointer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;

@@ -38,9 +38,6 @@ public class ErrorControllerHandler extends ControllerHandler {
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
         
-        // FIXME should not be here
-        AnalysableTag.initializeThread();
-        
         if (wasException((HttpServletRequest) request))
             return false;
         
@@ -112,8 +109,6 @@ public class ErrorControllerHandler extends ControllerHandler {
                             + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
                             + "The makumba error message would have been:\n"
                             + new ErrorFormatter().getErrorMessage(req));
-            } finally {
-                AnalysableTag.initializeThread();
             }
         }
         setWasException(req);

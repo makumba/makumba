@@ -48,6 +48,7 @@ import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.SQLPointer;
 import org.makumba.commons.StringUtils;
 import org.makumba.db.DBConnection;
 import org.makumba.db.DBConnectionWrapper;

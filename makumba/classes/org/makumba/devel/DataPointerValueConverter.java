@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.commons.Configuration;
-import org.makumba.db.sql.SQLPointer;
+import org.makumba.commons.SQLPointer;
 import org.makumba.providers.TransactionProvider;
 
 /**
