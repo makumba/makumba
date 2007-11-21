@@ -51,7 +51,7 @@ public class ObjectToRecord {
 
     public ObjectToRecord(Class c, String type) {
         try {
-            Class args[] = { java.util.Hashtable.class, org.makumba.db.Database.class };
+            Class args[] = { java.util.Hashtable.class, org.makumba.db.makumba.Database.class };
             try {
                 transform = c.getMethod("importTransform", args);
             } catch (NoSuchMethodException nsme) {
@@ -134,7 +134,7 @@ public class ObjectToRecord {
 
     boolean cleaned = false;
 
-    public Hashtable importObject(Object o, org.makumba.db.Database db) {
+    public Hashtable importObject(Object o, org.makumba.db.makumba.Database db) {
         try {
             Hashtable h = new Hashtable();
             Object args[] = { h, db };

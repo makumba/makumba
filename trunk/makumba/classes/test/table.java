@@ -235,7 +235,7 @@ public class table extends TestCase {
 	}
 
     public void testForeignKeys() {
-        assertTrue(org.makumba.db.sql.Database.supportsForeignKeys());
+        assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
         
         // try to delete brother = that ID
         // try to delete the other brother

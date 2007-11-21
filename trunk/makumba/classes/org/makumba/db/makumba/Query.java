@@ -21,22 +21,19 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba;
-
-import org.makumba.db.makumba.sql.SQLUpdate;
+package org.makumba.db.makumba;
+import java.util.Vector;
 
 /**
- * An insert in a certain type has violated a unique constraint.<br>
- * Note: this class has mostly been replaced by {@link NotUniqueException} in combination with
- * {@link CompositeValidationException}, which has more or less the same functionality as this class used to have, but
- * is ready for form annotation. This class is used onyl in
- * {@link SQLUpdate#execute(org.makumba.db.DBConnection, Object[])}, usage there should also be stopped.
- */
-public class NotUniqueError extends DBError {
-    private static final long serialVersionUID = 1L;
+ * A query prepared for execution. Returns all its results at once, in a Vector
+ * 
+ * @author Cristian Bogdan
+ * */
+public interface Query
+{
+  /** Execute the query with the given arguments */
+  public Vector execute(Object [] args, DBConnection dbc, int offset, int limit);
 
-    public NotUniqueError(java.sql.SQLException se) {
-        super("Not unique exception. " + se.getMessage());
-    }
+  public int insert(Object[] args, DBConnection dbc);
 
 }

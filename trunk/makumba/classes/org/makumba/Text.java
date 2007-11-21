@@ -139,7 +139,7 @@ public class Text
     }catch(IOException e){ throw new RuntimeWrappedException(e); } 
    
     try {
-      if(org.makumba.db.sql.Database.supportsUTF8())
+      if(org.makumba.db.makumba.sql.Database.supportsUTF8())
        {
     	  /*
     	  String asd = new String(bo.toByteArray(), "UTF-8");

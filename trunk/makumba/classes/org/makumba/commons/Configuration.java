@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.makumba.db.Database;
-import org.makumba.db.MakumbaTransactionProvider;
+import org.makumba.db.makumba.Database;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specifc services.
@@ -20,7 +20,7 @@ public class Configuration implements Serializable {
 
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
     
-    private String defaultTransactionProvider = "org.makumba.db.MakumbaTransactionProvider";
+    private String defaultTransactionProvider = "org.makumba.db.makumba.MakumbaTransactionProvider";
     
     private String getDefaultDataDefinitionProviderClass() {
         return defaultDataDefinitionProvider;

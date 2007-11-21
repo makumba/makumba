@@ -195,7 +195,7 @@ public class MddToMapping {
                 break;
             case FieldDefinition._text:
                 atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
-                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
+                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
                 atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
@@ -206,7 +206,7 @@ public class MddToMapping {
                 break;
             case FieldDefinition._binary:
                 atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
-                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.TextUserType");
+                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.TextUserType");
                 hd.startElement("", "", "property", atts);
                 atts.clear();
                 atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
