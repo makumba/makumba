@@ -24,21 +24,17 @@
 package org.makumba.db;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.hibernate.SessionFactory;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
-import org.makumba.commons.ClassResource;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
@@ -47,7 +43,8 @@ import org.makumba.commons.SoftNamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
-/** 
+/**
+ FIXME what is this comment?
  ptrOne...
  Object[] args={base};
  Vector v= prepareQuery("SELECT p."+field+" FROM "+base.getType()+" p WHERE p=$1").execute(args);
@@ -60,19 +57,27 @@ import org.makumba.providers.TransactionProvider;
  return p;
  */
 
-/** a generic database, that maps RecordInfos to tables */
+/**
+ * A generic Makumba database (used by the {@link MakumbaTransactionProvider}, that maps RecordInfos to tables. It also
+ * takes care of creating and maintaining the schema. FIXME methods in here should get some documentation
+ * 
+ * @author Cristian Bogdan
+ * @author Thomas Laroche
+ * @author Rudolf Mayer
+ * @author Marius Andra
+ * @author Manuel Gay
+ * @author please add if more
+ */
 public abstract class Database {
-    
+
     public String getName() {
         return configName;
     }
-    
-    //public static String connectionsTrace = ">";
-    
+
     private Configuration configuration = new Configuration();
-    
+
     private DataDefinitionProvider ddp = new DataDefinitionProvider(configuration);
-    
+
     protected TransactionProvider tp = new TransactionProvider(configuration);
 
     NamedResources queries;
@@ -82,16 +87,19 @@ public abstract class Database {
     int nconn = 0;
 
     int initConnections = 1;
+
     protected static boolean requestUTF8 = false;
+
     protected static boolean requestForeignKeys = false;
-    
+
     static protected boolean supportsUTF8() {
         return requestUTF8;
     }
+
     static protected boolean supportsForeignKeys() {
         return requestForeignKeys;
     }
-    
+
     protected ResourcePool connections = new ResourcePool() {
         public Object create() {
             nconn++;
@@ -124,8 +132,8 @@ public abstract class Database {
 
     public void close() {
         java.util.logging.Logger.getLogger("org.makumba." + "db.init").info(
-                "closing  " + getConfiguration() + "\n\tat "
-                        + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
+            "closing  " + getConfiguration() + "\n\tat "
+                    + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
         queries.close();
         updates.close();
@@ -134,18 +142,14 @@ public abstract class Database {
 
     public DBConnection getDBConnection(String dataSource) {
         try {
-            //connectionsTrace += ">";
-            //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
             return new DBConnectionWrapper((DBConnection) connections.get(), dataSource, tp);
         } catch (Exception e) {
             throw new DBError(e);
         }
     }
-    
+
     public DBConnection getDBConnection() {
         try {
-            //connectionsTrace += ">";
-            //System.out.println(connectionsTrace + " OPEN at "+new Date() + ": "+new Throwable().fillInStackTrace().getStackTrace()[1].getClassName()+" "+new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName());
             return new DBConnectionWrapper((DBConnection) connections.get(), getName(), tp);
         } catch (Exception e) {
             throw new DBError(e);
@@ -153,15 +157,15 @@ public abstract class Database {
     }
 
     protected abstract DBConnection makeDBConnection();
-    
+
     public abstract boolean isDuplicateException(SQLException e);
 
     // ---------------------------------------------------
 
-    private int dbsv=0;
+    private int dbsv = 0;
 
     private boolean autoIncrement;
-    
+
     Properties config = null;
 
     Class tableclass;
@@ -196,8 +200,6 @@ public abstract class Database {
         return config.getProperty(v);
     }
 
-    
-
     protected Database(Properties config) {
         this.config = config;
         this.nr = new NameResolver(config);
@@ -208,15 +210,15 @@ public abstract class Database {
 
         config.put("jdbc_connections", "0");
         try {
-        	if(config.get("dbsv")!=null && config.get("autoIncrement")!=null)
-	        	throw new org.makumba.ConfigFileError("only one of dbsv and autoIncrement can be specified");
-            if(config.get("dbsv")!=null)
+            if (config.get("dbsv") != null && config.get("autoIncrement") != null)
+                throw new org.makumba.ConfigFileError("only one of dbsv and autoIncrement can be specified");
+            if (config.get("dbsv") != null)
                 dbsv = new Integer((String) config.get("dbsv")).intValue();
-            else 
-                if(config.get("autoIncrement")!=null)
-                    autoIncrement=true;
-                else throw new org.makumba.ConfigFileError("either dbsv or autoIncrement must be specified");
-            
+            else if (config.get("autoIncrement") != null)
+                autoIncrement = true;
+            else
+                throw new org.makumba.ConfigFileError("either dbsv or autoIncrement must be specified");
+
             tableclass = getTableClassConfigured();
 
             // always allow altering/creating/.. of makumba internal tables
@@ -338,7 +340,7 @@ public abstract class Database {
     public void deleteFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv) {
         DataDefinition dd = ddp.getDataDefinition(table);
         java.util.logging.Logger.getLogger("org.makumba." + "db.admin.delete").info(
-                "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
+            "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
         for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
@@ -477,9 +479,7 @@ public abstract class Database {
     }
 
     NamedResourceFactory tableFactory = new NamedResourceFactory() {
-        /**
-         * 
-         */
+
         private static final long serialVersionUID = 1L;
 
         public Object getHashObject(Object name) {
@@ -497,13 +497,14 @@ public abstract class Database {
     };
 
     /**
-     * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself
+     * If this is true, i.e. hibernate is used, makumba will not take care of creating indexes itself FIXME this should
+     * somehow be more separated, e.g. through some schema configuration mechanism
      */
     public boolean usesHibernateIndexes() {
         // TODO: add hibernate schema update authorization
         return false;
     }
-    
+
     public String getTypeNameInSource(DataDefinition dd) {
         String nameInSource = ((org.makumba.db.sql.TableManager) this.getTable(dd)).getDBName();
         return nameInSource;
@@ -513,25 +514,13 @@ public abstract class Database {
         String nameInSource = ((org.makumba.db.sql.TableManager) this.getTable(dd)).getFieldDBName(field);
         return nameInSource;
     }
-    
 
-    public String resolveFieldName(String field) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String resolveTypeName(String type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
     public Properties getConfigurationProperties() {
         return config;
     }
+
     public NameResolver getNameResolver() {
         return nr;
     }
-
-
 
 }
