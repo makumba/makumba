@@ -23,7 +23,7 @@ public class MddObjectType implements ObjectType {
             return type;
         }catch(DataDefinitionNotFoundError err){ return null; }
 
-//        System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
+        // System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
         DataDefinition dd = null;
 
         if (field.equals("id")) {
@@ -35,18 +35,7 @@ public class MddObjectType implements ObjectType {
             //throw new SemanticException("No such MDD \"" + type + "\"");
             throw new ProgrammerError("No such MDD \"" + type + "\"");
         }
-  
-        if (field.startsWith("hibernate_")) {
-            String ptrToCheck = field.substring(field.indexOf("_")+1);
-            FieldDefinition fiPtr = dd.getFieldDefinition(ptrToCheck);
-            if(fiPtr==null)
-                //throw new SemanticException("No such field \"" + field + "\" in type "+type);
-                throw new ProgrammerError("No such field \"" + field + "\" in type "+type);
-            if (fiPtr.getType().equals("ptr")) {
-                return fiPtr.getForeignTable().getName();
-            }
-        }
-
+        
         if(field.equals("enum_") && dd.getFieldDefinition("enum")!=null)
             // FIXME: need to check if this is really a setEnum generated type
             return dd.getFieldDefinition("enum");

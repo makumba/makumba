@@ -91,12 +91,7 @@ public class OQLQueryProvider extends QueryProvider {
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
         return null;
     }
-
-    @Override
-    public String transformPointer(String ptrExpr, String fromSection) {
-        return ptrExpr;
-    }
-
+    
     /**
      * Performs the analysis of an OQL query
      * @param oqlQuery the query to analyse

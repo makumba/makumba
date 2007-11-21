@@ -56,9 +56,6 @@ public class HibernateTest  {
 		//       SELECT p would select the whole test.Person!
         //Query q = session.createQuery("SELECT p.id FROM test.Person p");
         
-        //       SELECT p.indiv would select the whole test.Individual!
-        //Query q = session.createQuery("SELECT p.hibernate_indiv FROM test.Person p");
-        
         //       FROM test.Person p, p.indiv i does not pass the HQL-SQL parser
 		//Query q = session.createQuery("SELECT i.surname, p.weight FROM test.Person p, IN(p.indiv) i WHERE i.name = 'Bart'");
         
