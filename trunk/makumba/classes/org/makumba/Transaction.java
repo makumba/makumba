@@ -51,8 +51,6 @@ public interface Transaction extends Database
     /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
     public String getName();
     
-    public Query getQuery(String OQL);
-    
     /** Execute a parametrized OQL query.   
      * Queries are pre-compiled and cached in the database, so they should be parametrized as much as possible.
      * Database querying is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.query.compilation", "db.query.execution", "db.query.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.query.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br>
