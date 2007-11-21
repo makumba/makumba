@@ -1,4 +1,4 @@
-package org.makumba.db.hibernate.hql;
+package org.makumba.providers.query.hql;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -13,14 +13,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.db.hibernate.HibernateTransaction;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.query.hql.HQLQueryProvider;
 
-import antlr.SemanticException;
 import antlr.collections.AST;
-import antlr.debug.misc.ASTFrame;
 
 public class HqlAnalyzer implements QueryAnalysis {
 
@@ -267,18 +263,13 @@ public class HqlAnalyzer implements QueryAnalysis {
         
         return result;
     }
-    
-    
-    
-    public static void main(String[] args) {
-        String q1 = "SELECT p as bullshit FROM test.Person p)";
-        HqlAnalyzer oA = HibernateTransaction.getHqlAnalyzer(q1);
-        
-        System.out.println(oA.toString());
-    }
 
     public String getQuery() {
         return getOQL();
+    }
+
+    public String getPreProcessedQuery(String query) {
+        return getHackedQuery(query);
     }
 
 }

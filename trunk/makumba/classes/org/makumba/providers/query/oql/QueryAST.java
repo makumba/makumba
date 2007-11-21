@@ -625,4 +625,8 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         return getOQL();
     }
 
+    public String getPreProcessedQuery(String query) {
+        return getQuery();
+    }
+
 }

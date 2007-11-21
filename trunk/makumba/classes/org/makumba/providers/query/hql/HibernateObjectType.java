@@ -1,4 +1,4 @@
-package org.makumba.db.hibernate.hql;
+package org.makumba.providers.query.hql;
 
 /** This class would determine types based on Hibernate metadata info, hence it would be Makumba-independent.
  * It would require a SessionFactory. */
