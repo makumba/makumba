@@ -3,7 +3,6 @@ package org.makumba.db.hibernate;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
@@ -17,6 +16,7 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
+import org.makumba.commons.NameResolver;
 import org.makumba.db.sql.SQLPointer;
 import org.makumba.providers.CRUDOperationProvider;
 
@@ -27,6 +27,8 @@ import org.makumba.providers.CRUDOperationProvider;
  * @version $Id: HibernateCRUDOperationProvider.java,v 1.1 02.11.2007 14:05:40 Manuel Exp $
  */
 public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
+    
+    private NameResolver nr = new NameResolver();
 
     @Override
     public void checkInsert(Transaction t, String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore,
@@ -71,11 +73,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             HibernateTransaction ht = (HibernateTransaction) t;
 
-            HibernateUtils utils = new HibernateUtils();
-
             DataDefinition dd = ddp.getDataDefinition(type);
 
-            String name = utils.arrowToDoubleUnderscore(dd.getName());
+            String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             Class recordClass = null;
             recordClass = Class.forName(name);
@@ -85,7 +85,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             newRecord = recordClass.newInstance();
 
             // we need to iterate over the fields we have and set them through the setters
-            fillObject(t, data, utils, dd, recordClass, newRecord);
+            fillObject(t, data, dd, recordClass, newRecord);
 
             if (data.get("TS_create") == null) {
                 Class[] classes = new Class[] { java.util.Date.class };
@@ -141,14 +141,14 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     }
 
-    private void fillObject(Transaction t, Dictionary data, HibernateUtils utils, DataDefinition dd, Class recordClass,
+    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class recordClass,
             Object newRecord) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException {
         Enumeration<String> fields = data.keys();
         while (fields.hasMoreElements()) {
             String fieldName = fields.nextElement();
 
-            String fieldNameInClass = utils.checkReserved(fieldName);
+            String fieldNameInClass = nr.checkReserved(fieldName);
 
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
@@ -180,12 +180,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     // jackpot! we need to get an instance of the object, not only its pointer
 
                     // first we read its type
-                    fieldType = Class.forName(utils.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                    fieldType = getPointerClass(fd.getPointedType().getName());
 
                     // then, we know its pointer so we can read
                     // System.out.println("Going to load the object of type "+fieldType+" and with primary key
                     // "+((Pointer) fieldValue).getUid());
-                    fieldValue = ((HibernateTransaction) t).s.get(fieldType, ((Pointer) fieldValue).getUid());
+                    Pointer pointer = (Pointer) fieldValue;
+                    fieldValue = getPointedObject(t, fieldType, pointer);
                     break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
@@ -212,6 +213,14 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         }
     }
 
+    private Object getPointedObject(Transaction t, Class pointerClass, Pointer pointer) {
+        return ((HibernateTransaction) t).s.get(pointerClass, pointer.getUid());
+    }
+
+    private Class<?> getPointerClass(String type) throws ClassNotFoundException {
+        return Class.forName(nr.arrowToDoubleUnderscore(type));
+    }
+
     @Override
     public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
 
@@ -224,12 +233,12 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     return;
 
                 HibernateTransaction ht = (HibernateTransaction) t;
-                Class c = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(base.getType()));
+                Class c = getPointerClass(base.getType());
+                Object baseObject = getPointedObject(t, c, base);
+
                 Method m = c.getMethod("get" + fi.getName(), new Class[] {});
 
-                Object baseObject = ht.s.get(c, base.getUid());
-
-                Collection col = (Collection) m.invoke(baseObject, new Object[] {});
+                Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
                 if (col == null) {
                     col = new HashSet();
                     m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
@@ -239,8 +248,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 // we convert all the pointers to objects so Hibernate can handle them
                 for (Iterator i = values.iterator(); i.hasNext();) {
                     Pointer p = (Pointer) i.next();
-                    Class c1 = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(p.getType()));
-                    col.add(ht.s.get(c1, p.getUid()));
+                    Class c1 = getPointerClass(p.getType());
+                    col.add(getPointedObject(t, c1, p));
                 }
 
                 ht.s.saveOrUpdate(baseObject);
@@ -281,15 +290,14 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             try {
                 HibernateTransaction ht = (HibernateTransaction) t;
-                Class c = Class.forName((new HibernateUtils()).arrowToDoubleUnderscore(base.getType()));
-                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
-
-                Object baseObject = ht.s.get(c, base.getUid());
+                Class c = getPointerClass(base.getType());
+                Object baseObject = getPointedObject(t, c, base);
 
                 /*
                  * Collection col = (Collection) m.invoke(baseObject, new Object[] {}); if(col != null)
                  * col.removeAll(col);
                  */
+                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
                 m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
                 m.invoke(baseObject, new Object[] { new ArrayList() });
 
@@ -344,7 +352,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             record = ht.s.get(recordClass, p.getUid());
 
             // we need to iterate over the fields we have and set them through the setters
-            fillObject(t, dic, utils, dd, recordClass, record);
+            fillObject(t, dic, dd, recordClass, record);
 
             Class[] classes = new Class[] { java.util.Date.class };
             Object[] now = new Object[] { new Date() };
