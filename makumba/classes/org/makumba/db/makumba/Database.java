@@ -405,7 +405,7 @@ public abstract class Database {
 
     public void copyFrom(String source, boolean ignoreDbsv) {
         DBConnection c = getDBConnection();
-        DBConnection sourceDB = Configuration.findDatabase(source).getDBConnection();
+        DBConnection sourceDB = MakumbaTransactionProvider.findDatabase(source).getDBConnection();
         try {
             Vector v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
             String[] _tables = new String[v.size()];

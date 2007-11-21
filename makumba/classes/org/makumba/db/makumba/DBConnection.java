@@ -37,8 +37,8 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.db.DataHolder;
-import org.makumba.commons.db.TransactionImplementation;
+import org.makumba.db.DataHolder;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
@@ -141,6 +141,7 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     /** insert a record */
+    @Override
     public Pointer insert(String type, Dictionary data) {
         Table t = db.getTable(type);
         t.computeInsertHook();
@@ -155,9 +156,7 @@ public abstract class DBConnection extends TransactionImplementation {
         }
 
         if (t.insertHook == null || t.insertHook.transform(data, this)) {
-            DataHolder dh = new DataHolder(this, data, type);
-            dh.checkInsert();
-            return dh.insert();
+            return super.insert(type, data);
         }
         return null;
     }

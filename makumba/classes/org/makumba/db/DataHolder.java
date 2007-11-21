@@ -1,4 +1,4 @@
-package org.makumba.commons.db;
+package org.makumba.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;

@@ -25,7 +25,6 @@ package org.makumba.devel;
 
 import java.util.Vector;
 
-import org.makumba.commons.Configuration;
 import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 
@@ -39,7 +38,7 @@ public class open {
         Database d = null;
         try {
             if (argv.length == 0)
-                d = Configuration.findDatabase("MakumbaDatabase.properties");
+                d = MakumbaTransactionProvider.findDatabase("MakumbaDatabase.properties");
             else
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
             String[] tables;

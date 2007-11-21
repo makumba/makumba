@@ -1,4 +1,4 @@
-package org.makumba.commons.db;
+package org.makumba.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -101,9 +101,18 @@ public abstract class TransactionImplementation implements Transaction {
     public TransactionProviderInterface getTransactionProvider() {
         return this.tp;
     }
-
-    public abstract Pointer insert(String type, Dictionary data);
-
+    
+    public Pointer insert(String type, Dictionary data) {
+        
+        // TODO: this does not support the DataTransformer possiblilty as for the Makumba DB.
+        // Probably all those Makumba DB features should be placed in another place than the makumba DB.
+        
+        DataHolder dh = new DataHolder(this, data, type);
+        dh.checkInsert();
+        return dh.insert();
+        
+    }
+    
     /**
      * Insert a record in a subset (1-N set) or subrecord (1-1 pointer) of the given record. For 1-1 pointers, if
      * another subrecord existed, it is deleted.
@@ -267,4 +276,5 @@ public abstract class TransactionImplementation implements Transaction {
     
     public abstract String getDataSource();
 
+    
 }
