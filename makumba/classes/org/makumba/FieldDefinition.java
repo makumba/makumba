@@ -98,12 +98,27 @@ public interface FieldDefinition {
     public String getDescription();
 
     /**
-     * Returns field's internal makumba type. Can be: ptr: normal pointer ptrRel: relational pointer (in automatically
-     * generated types such as middle types in set) ptrOne: pointer to type defined on-the-spot ptrIndex: primary key,
-     * automatically added int: normal integer intEnum: integer defined by enumeration char: normal character charEnum:
-     * character defined by enumeration text: normal text date: normal date dateCreate: creation date, automcatically
-     * added dateModify: last modification date, automatically added set: normal set in another table setComplex: set of
-     * type defined on-the-spot TODO nil and real and timeStamp need to be added???
+     * Returns field's internal makumba type. Can be:
+     * 
+     * <ul>
+     * <li>ptr: normal pointer</li>
+     * <li>ptrRel: relational pointer (in automatically generated types such as middle types in set)</li>
+     * <li>ptrOne: pointer to type defined on-the-spot</li>
+     * <li>ptrIndex: primary key, automatically added</li>
+     * <li>int: normal integer</li>
+     * <li>intEnum: integer defined by enumeration</li>
+     * <li>char: normal character</li>
+     * <li>charEnum: character defined by enumeration</li>
+     * <li>text: normal text</li>
+     * <li>date: normal date</li>
+     * <li>dateCreate: creation date, automatically added</li>
+     * <li>dateModify: last modification date, automatically added</li>
+     * <li>set: normal set in another table</li>
+     * <li>setComplex: set of type defined on-the-spot</li>
+     * <li>binary: binary data type (images, documents...)</li>
+     * </ul>
+     * 
+     * TODO nil and real and timeStamp need to be added???
      */
     public String getType();
 
