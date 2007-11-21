@@ -222,8 +222,8 @@ public abstract class Database {
             tableclass = getTableClassConfigured();
 
             // always allow altering/creating/.. of makumba internal tables
-            config.put("alter#org.makumba.db.Catalog", "true");
-            config.put("alter#org.makumba.db.Lock", "true");
+            config.put("alter#org.makumba.db.makumba.Catalog", "true");
+            config.put("alter#org.makumba.db.makumba.Lock", "true");
             config.put("alter#org.makumba.controller.MultipleSubmit", "true");
             config.put("alter#org.makumba.controller.ErrorLog", "true");
         } catch (Exception e) {
