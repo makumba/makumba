@@ -53,17 +53,8 @@ public class ListFormDataProvider implements FormDataProvider {
     public void onBasicValueStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String ptrExpr) {
             MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
         
-        //we first compute the pointer expression, which depends on the QueryProvider
-        String ptrExpression = new String();
-
-        if (parentListKey == null) { // If there is no enclosing mak:list
-            ptrExpression = ptrExpr;
-        } else {
-            // FIXME this should be provided by the QueryProvider
-            ptrExpression = QueryTag.getQuery(pageCache, parentListKey).qep.transformPointer(ptrExpr, QueryTag.getQuery(pageCache, parentListKey).getFromSection());
-        }
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
-            parentListKey, ptrExpression, pageCache));
+            parentListKey, ptrExpr, pageCache));
     }
 
     private MultipleKey getBasicValueParentListKey(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache) {

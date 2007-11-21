@@ -172,15 +172,6 @@ public class MddToMapping {
                 atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                 hd.startElement("", "", "many-to-one", atts);
                 hd.endElement("", "", "many-to-one");
-                /*atts.clear();
-                atts.addAttribute("", "", "name", "", "hibernate_" + fd.getName());
-                atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.customtypes.PointerUserType");
-                atts.addAttribute("", "", "column", "", columnName(fd.getName()));
-                atts.addAttribute("", "", "insert", "", "false");
-                atts.addAttribute("", "", "update", "", "false");
-                atts.addAttribute("", "", "access", "", "org.makumba.db.hibernate.propertyaccess.HibernatePrimaryKey");
-                hd.startElement("", "", "property", atts);
-                hd.endElement("", "", "property");*/
                 mddsToDo.add(fd.getPointedType());
                 break;
             case FieldDefinition._ptrOne:

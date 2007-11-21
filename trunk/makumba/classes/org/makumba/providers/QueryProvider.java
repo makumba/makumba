@@ -141,16 +141,4 @@ public abstract class QueryProvider {
 
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
 
-    /**
-     * Transforms the pointer into a hibernate pointer if we use hibernate FIXME this should be provide by the
-     * QueryProvider!!
-     * 
-     * @param query
-     *            TODO
-     * @param ptrExpr
-     *            the expression we want to check
-     * @return A modified expression adapted to Hibernate
-     */
-    public abstract String transformPointer(String ptrExpr, String fromSection);
-
 }

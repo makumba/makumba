@@ -81,22 +81,8 @@ public class HQLQueryProvider extends QueryProvider {
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
         if (fn.equals("id"))
             return dd.getFieldDefinition(dd.getIndexPointerFieldName());
-        else if (fn.startsWith("hibernate_"))
-            return dd.getFieldDefinition(fn.substring("hibernate_".length()));
         return null;
 
-    }
-
-    @Override
-    public String transformPointer(String ptrExpr, String fromSection) {
-        if (getQueryAnalysis("SELECT " + ptrExpr + " as gigi FROM " + fromSection).getProjectionType().getFieldDefinition(
-            "gigi").getType().equals("ptr")) {
-            if(ptrExpr.endsWith(".id"))  // FIXME query type analysis does not return ptrIndex for label.id but clearly there we don't need the hibernate_id 
-                return ptrExpr;
-            int dot = ptrExpr.lastIndexOf('.') + 1;
-            return ptrExpr.substring(0, dot) + "hibernate_" + ptrExpr.substring(dot);
-        }
-        return ptrExpr;
     }
     
     static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {

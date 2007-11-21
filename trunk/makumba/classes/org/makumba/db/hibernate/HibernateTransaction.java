@@ -21,15 +21,14 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
-import org.makumba.commons.NamedResourceFactory;
-import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.DataHolder;
 import org.makumba.db.Query;
 import org.makumba.db.TransactionImplementation;
-import org.makumba.db.hibernate.hql.HqlAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.query.hql.HQLQueryProvider;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -187,7 +186,7 @@ public class HibernateTransaction extends TransactionImplementation {
     public Vector execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
 
-        HqlAnalyzer analyzer = (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(query);
+        QueryAnalysis analyzer = HQLQueryProvider.getHqlAnalyzer(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
@@ -196,7 +195,7 @@ public class HibernateTransaction extends TransactionImplementation {
         for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
             FieldDefinition fd = dataDef.getFieldDefinition(i);
             if (fd.getType().equals("ptr")) { // we have a pointer
-                if (!(fd.getDescription().equalsIgnoreCase("ID") || fd.getDescription().startsWith("hibernate_"))) {
+                if (!(fd.getDescription().equalsIgnoreCase("ID"))) {
                     throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
                             + fd.getDescription() + "' in the query '" + query + "'!\nYou have to select '"
                             + fd.getDescription() + ".id' instead.");
@@ -206,7 +205,7 @@ public class HibernateTransaction extends TransactionImplementation {
     
         // workaround for Hibernate bug HHH-2390
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
-        query = analyzer.getHackedQuery(query);
+        query = analyzer.getPreProcessedQuery(query);
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -236,7 +235,7 @@ public class HibernateTransaction extends TransactionImplementation {
      * @param list
      * @return
      */
-    private Vector getConvertedQueryResult(HqlAnalyzer analyzer, List list) {
+    private Vector getConvertedQueryResult(QueryAnalysis analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
         
         Vector results = new Vector(list.size());
@@ -343,16 +342,6 @@ public class HibernateTransaction extends TransactionImplementation {
         }
     }
     
-    public static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
-        new NamedResourceFactory() {
-            private static final long serialVersionUID = 1L;
-        
-            protected Object makeResource(Object nm, Object hashName) throws Exception {
-                return new HqlAnalyzer((String) nm);
-            }
-        }, true);
-
-
     @Override
     public Query getQuery(String OQL) {
         throw new MakumbaError("Not implemented");
@@ -410,9 +399,5 @@ public class HibernateTransaction extends TransactionImplementation {
 
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
-    }
-    
-    static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
-        return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
     }
 }
