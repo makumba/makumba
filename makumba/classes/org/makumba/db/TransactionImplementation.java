@@ -2,7 +2,11 @@ package org.makumba.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -237,6 +241,24 @@ public abstract class TransactionImplementation implements Transaction {
                 + getPrimaryKeyName(ptrDD) + "="+getParameterName(), ptr);
     }
 
+    protected Map<String, Object> paramsToMap(Object args){
+        if(args instanceof Map)
+            return (Map<String, Object>)args;
+        Map<String, Object> ret= new HashMap<String, Object>();
+        if(args==null)
+            return ret;
+        if(args instanceof List)
+            args= ((List)args).toArray();
+        if(args instanceof Object[]){
+            for(int j=0; j<((Object[])args).length; j++){
+                ret.put(""+(j+1), ((Object[])args)[j]);
+            }
+            return ret;
+        }
+        ret.put("1", args);
+        return ret;
+    }
+    
     protected Object[] treatParam(Object args) {
         if (args == null) {
             return new Object[] {};
