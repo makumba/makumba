@@ -1,9 +1,0 @@
-# stores the information of thrown and proccessed errors by ErrorFilter
-page = text
-exception = text
-makumbaParameters = text
-makumbaAttributes = text
-makumbaController = text
-executionDate = date
-url = text
-
