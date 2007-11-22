@@ -23,7 +23,6 @@
 
 package org.makumba.list.engine;
 
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
