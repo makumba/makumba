@@ -15,13 +15,21 @@ rudi: added developer support tools "code generator"
 rudi: added developer support for OQL queries
 rudi: added developer support for pointer value conversion (external form <-> DB)
 rudi & stefan: added developer support for data listing (lists all data of a certain MDD)
+rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
+rudi: fixes for certain runtime exception treating (e.g. NullPointer), giving more info on the exception
+rudi & manu: link to CVS from source code viewer
 
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
+rudi: support for search forms
+rudi: validation rules, fixing bug 312 (data range: int[min..max]) partly, 313 (regexp data validation), 531 (char[minLength...maxLength])
+rudi: fixing bug 513, unique groups of fields
+rudi: fixing bug 962, Edit/Add/New Forms should allow handler attribute
+rudi: fixing bug 957, support for search forms
+rudi: added totalCount() to mak:list
 - add your changes -
-rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
@@ -37,7 +45,6 @@ cristi: fixed bug 963
 cristi: positional parameters for OQL can be multiple
 cristi: <please add more>
 rudi: fixed bug 1000
-rudi: <please add more>
 marius: UTF-8 support, new binary MDD type - NEEDS DOCUMENTATION
 marius: foreign key support - NEEDS DOCUMENTATION
 filip: exceptions are logged in the database
