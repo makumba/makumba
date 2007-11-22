@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.commons.Configuration;
 import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.sql.TableManager;
 import org.makumba.providers.TransactionProvider;
@@ -39,7 +38,7 @@ public class UniquenessServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         
         // get the database
-        TransactionProvider tp = new TransactionProvider(new Configuration());
+        TransactionProvider tp = new TransactionProvider();
         DBConnectionWrapper dbc = (DBConnectionWrapper)tp.getConnectionTo(tp.getDefaultDataSourceName());
         Database db = dbc.getHostDatabase();
         TableManager table = null;

@@ -37,7 +37,6 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.db.DataHolder;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
@@ -65,7 +64,7 @@ public abstract class DBConnection extends TransactionImplementation {
     public DBConnection(Database database, TransactionProviderInterface tp) {
         this(tp);
         this.db = database;
-        this.ddp = new DataDefinitionProvider(config);
+        this.ddp = new DataDefinitionProvider();
     }
 
     public DBConnection(Database database, String dataSource, TransactionProviderInterface tp) {

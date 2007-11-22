@@ -5,7 +5,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
-import org.makumba.commons.Configuration;
 
 /**
  * This class is a facade for creating different kinds of DataDefinitionProviders. Its constructor knows from a
@@ -23,20 +22,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
      * Default constructor, using the default Configuration.
      */
     public DataDefinitionProvider() {
-        Configuration c = new Configuration();
-        try {
-            this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
-                c.getDataDefinitionProviderClass()).newInstance();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        this(new Configuration());
     }
 
     public DataDefinitionProvider(Configuration c) {

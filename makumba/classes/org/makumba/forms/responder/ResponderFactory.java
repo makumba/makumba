@@ -18,7 +18,6 @@ import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
@@ -377,7 +376,7 @@ public class ResponderFactory {
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = new TransactionProvider(new Configuration()).getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = new TransactionProvider().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(

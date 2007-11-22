@@ -36,7 +36,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -50,10 +49,6 @@ import org.makumba.providers.TransactionProvider;
 public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
-
-    private Configuration config = new Configuration();
-
-    private TransactionProvider tp = new TransactionProvider(config);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -69,12 +64,13 @@ public class DataObjectViewerServlet extends DataServlet {
         dataPointer = new Pointer(type, request.getParameter("ptr"));
 
         try {
-            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) {
 
         } else {
+            TransactionProvider tp = new TransactionProvider();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {

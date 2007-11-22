@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 import org.makumba.ConfigFileError;
 import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -50,9 +49,7 @@ public class config extends TestCase
     return new TestSuite(config.class);
   }
   
-  private Configuration config = new Configuration();
-  
-  private TransactionProvider tp = new TransactionProvider(config);
+  private TransactionProvider tp = new TransactionProvider();
 
   public void testBiuldInfo()
   {

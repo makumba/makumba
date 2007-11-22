@@ -37,7 +37,6 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
@@ -68,7 +67,7 @@ public class mddViewer extends LineViewer {
         readFromURL(u);
         virtualPath = virtualPath.substring(1);
         try {
-            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {

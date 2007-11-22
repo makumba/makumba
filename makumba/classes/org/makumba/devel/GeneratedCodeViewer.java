@@ -25,7 +25,6 @@ import org.makumba.DataDefinitionParseError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
@@ -156,7 +155,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** Starts the code generation. */
     public void generateCode() throws IOException {
         try {
-            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(virtualPath);
+            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
 
             // check what code types are selected
             typeParam = request.getParameter("type");
@@ -334,9 +333,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** print links to the generated JSP and java files in the page header. */
     private void printGeneratedCodeLinks(PrintWriter w) {
         
-        Configuration config = new Configuration();
-        
-        TransactionProvider tp = new TransactionProvider(config);
+        TransactionProvider tp = new TransactionProvider();
         
         String cgiParams = "";
 

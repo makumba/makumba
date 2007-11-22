@@ -2,6 +2,7 @@ package org.makumba;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javassist.CannotCompileException;
@@ -19,7 +20,6 @@ import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.oql.OQLQueryProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -93,11 +93,15 @@ public class HibernateSFManager {
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes");
 
 //          FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not two
-            String databaseProperties = cfgFilePath.substring(0, cfgFilePath.indexOf(".cfg.xml"));
-            org.makumba.commons.Configuration c = new org.makumba.commons.Configuration();
-            c.setDefaultTransactionProvider("org.makumba.db.makumba.MakumbaTransactionProvider");
-            TransactionProvider tp = new TransactionProvider(c);
-            NameResolver nr = new NameResolver(tp.getDataSourceConfiguration(databaseProperties));
+            String databaseProperties = cfgFilePath.substring(0, cfgFilePath.indexOf(".cfg.xml"))+".properties";
+            Properties p= new Properties();
+            try {
+                p.load(org.makumba.commons.ClassResource.get(databaseProperties).openStream());
+            } catch (Exception e) {
+                throw new org.makumba.ConfigFileError(databaseProperties);
+            }
+
+            NameResolver nr = new NameResolver(p);
             
             try {
                 MddToClass jot = new MddToClass(dds, seedDir, nr);
@@ -138,12 +142,11 @@ public class HibernateSFManager {
 
     public static synchronized SessionFactory getSF() {
             String configFile;
-            org.makumba.commons.Configuration config = new org.makumba.commons.Configuration();
-            TransactionProvider tp = new TransactionProvider(config);
-            if(tp.getDefaultDataSourceName() == null) {
+            String defaultDataSourceName = new TransactionProvider().getDefaultDataSourceName();
+            if(defaultDataSourceName == null) {
                 configFile = "default";
             } else {
-                configFile = tp.getDefaultDataSourceName();
+                configFile = defaultDataSourceName;
             }
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Initializing configuration from "+configFile);
             return getSF(configFile);

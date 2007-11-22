@@ -34,7 +34,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
@@ -69,7 +68,7 @@ public class FormResponder extends Responder {
 
     Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
 
-    DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getVirtualDataDefinition("Form responder"); // TODO: more precise name
+    DataDefinition dd = new DataDefinitionProvider().getVirtualDataDefinition("Form responder"); // TODO: more precise name
 
     int max = 0;
 
@@ -93,7 +92,7 @@ public class FormResponder extends Responder {
         String colName = ("col" + max);
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
-        dd.addField(new DataDefinitionProvider(new Configuration()).makeFieldWithName(colName, ftype));
+        dd.addField(new DataDefinitionProvider().makeFieldWithName(colName, ftype));
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
         // add client side validation, but only for edit operations (not search)
@@ -239,7 +238,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = new TransactionProvider(new Configuration()).getConnectionTo(database);
+            Transaction db = new TransactionProvider().getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);

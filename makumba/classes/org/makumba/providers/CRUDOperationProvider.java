@@ -10,7 +10,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.db.TransactionImplementation;
 
 /**
@@ -21,7 +20,7 @@ import org.makumba.db.TransactionImplementation;
  */
 public abstract class CRUDOperationProvider {
 
-    protected DataDefinitionProvider ddp = new DataDefinitionProvider(new Configuration());
+    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     /**
      * Inserts data of a given type

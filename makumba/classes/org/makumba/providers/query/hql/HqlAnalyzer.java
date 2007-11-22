@@ -11,7 +11,6 @@ import org.hibernate.hql.ast.HqlParser;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -22,8 +21,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     private DataDefinition projTypes;
     private DataDefinition paramTypes;
-    private Configuration c = new Configuration();
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
     static {

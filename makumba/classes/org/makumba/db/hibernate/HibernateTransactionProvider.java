@@ -5,9 +5,9 @@ import java.util.Properties;
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
@@ -22,10 +22,6 @@ import org.makumba.providers.TransactionProviderInterface;
 public class HibernateTransactionProvider implements TransactionProviderInterface {
     
     private static HibernateCRUDOperationProvider singleton;
-    
-    private Configuration config = new Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
     
     public void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
         throw new MakumbaError("Not implemented");
@@ -44,11 +40,11 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     }
 
     public Transaction getConnectionTo(String name) {
-        return new HibernateTransaction(name, ddp, this);
+        return new HibernateTransaction(name, new DataDefinitionProvider(), this);
     }
 
     public String getDataSourceName(String lookupFile) {
-        return Configuration.findDatabaseName(lookupFile);
+        return TransactionProvider.findDatabaseName(lookupFile);
     }
 
     public String getDatabaseProperty(String name, String propName) {
@@ -56,7 +52,7 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     }
 
     public String getDefaultDataSourceName() {
-        return Configuration.findDatabaseName("MakumbaDatabase.properties");
+        return TransactionProvider.findDatabaseName("MakumbaDatabase.properties");
     }
     
     public Object getHibernateSessionFactory(String name) {
@@ -66,9 +62,4 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     public boolean supportsUTF8() {
         throw new MakumbaError("Not implemented");
     }
-
-    public Properties getDataSourceConfiguration(String name) {
-        throw new MakumbaError("Not implemented");
-    }
-
 }

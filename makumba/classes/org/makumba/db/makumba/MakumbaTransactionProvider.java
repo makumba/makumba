@@ -4,11 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.CRUDOperationProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
@@ -108,7 +108,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     }
 
     public String getDefaultDataSourceName() {
-        return Configuration.findDatabaseName("MakumbaDatabase.properties");
+        return TransactionProvider.findDatabaseName("MakumbaDatabase.properties");
     }
 
 
@@ -126,7 +126,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     }
 
     public String getDataSourceName(String lookupFile) {
-        return Configuration.findDatabaseName(lookupFile);
+        return TransactionProvider.findDatabaseName(lookupFile);
     }
 
     public boolean supportsUTF8() {
@@ -141,11 +141,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
         
     }
 
-    public Properties getDataSourceConfiguration(String name) {
-        return getDatabase(name).getConfigurationProperties();
-    }
-
     public static Database findDatabase(String s) {
-        return getDatabase(Configuration.findDatabaseName(s));
+        return getDatabase(TransactionProvider.findDatabaseName(s));
     }
 }

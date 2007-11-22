@@ -387,7 +387,7 @@ public class MakumbaSystem {
      * 
      * @return filenames as Vector of Strings.
      */
-    public static java.util.Vector mddsInDirectory(String dirInClasspath) {
+    public static java.util.Vector<String> mddsInDirectory(String dirInClasspath) {
         return MDDFactory.getDataDefinitionsInLocation(dirInClasspath);
     }
 

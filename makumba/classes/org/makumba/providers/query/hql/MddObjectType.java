@@ -4,7 +4,6 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.RecognitionException;
@@ -12,9 +11,7 @@ import antlr.SemanticException;
 
 public class MddObjectType implements ObjectType {
 
-    private Configuration config = new Configuration();
-
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     /**
      * Based on a type name and a field name, this method attempts to return the type of the field

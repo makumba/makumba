@@ -14,14 +14,11 @@ import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 public abstract class TransactionImplementation implements Transaction {
-
-    protected Configuration config = new Configuration();
 
     protected DataDefinitionProvider ddp;
     
@@ -31,7 +28,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public TransactionImplementation(TransactionProviderInterface tp) {
         this.tp = tp;
-        this.ddp = new DataDefinitionProvider(config);
+        this.ddp = new DataDefinitionProvider();
     }
     
     public abstract void close();

@@ -35,7 +35,6 @@ import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.controller.Logic;
 import org.makumba.providers.TransactionProvider;
@@ -58,9 +57,7 @@ public class RequestAttributes implements Attributes {
 
     Object controller;
     
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
+    private TransactionProvider tp = new TransactionProvider();
 
     public String getRequestDatabase() {
         return tp.getDefaultDataSourceName();

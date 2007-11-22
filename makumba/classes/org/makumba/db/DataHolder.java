@@ -10,7 +10,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
@@ -42,8 +41,6 @@ public class DataHolder {
     /** all the fields to be processed * */
     private Dictionary fullData;
 
-    private Configuration configuration = new Configuration();
-
     private DataDefinitionProvider ddp;
 
     /** the type of the base object to be worked on * */
@@ -57,7 +54,7 @@ public class DataHolder {
         this.fullData = data;
         this.type = type;
 
-        this.ddp = new DataDefinitionProvider(configuration);
+        this.ddp = new DataDefinitionProvider();
         this.tp = t.getTransactionProvider();
         this.typeDef = ddp.getDataDefinition(type);
 

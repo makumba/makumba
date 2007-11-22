@@ -21,7 +21,6 @@ import org.makumba.Transaction;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.TransactionProvider;
 
@@ -172,7 +171,7 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        TransactionProvider tp = new TransactionProvider(new Configuration());
+        TransactionProvider tp = new TransactionProvider();
         Transaction tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
         try {

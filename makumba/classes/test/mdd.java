@@ -32,7 +32,6 @@ import junit.framework.TestSuite;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -42,9 +41,7 @@ import org.makumba.providers.DataDefinitionProvider;
  */
 public class mdd extends TestCase {
     
-    private Configuration c = new Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
     
 	public mdd(String name) {
 		super(name);
