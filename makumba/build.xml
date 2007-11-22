@@ -20,6 +20,8 @@
 
 	<property name="jar.place" value="." />
 
+	<taskdef resource="svntask.properties" classpathref="project.class.path"/>
+	
 	<target name="install" depends="version">
 		<mkdir dir="work/temp" />
 		<mkdir dir="tomcat/temp" />
@@ -67,7 +69,7 @@
 	<!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
 	<target name="OQLParserGeneration" depends="checkAntlr, install, version, detectHqlTokens" unless="antlr.notRequired">
 
-		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/db/hibernate/hql" failonerror="true" taskname="antlr">
+		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
 			<arg value="hql-analyze.g" />
 		</java>
