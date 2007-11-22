@@ -23,11 +23,11 @@
 
 package org.makumba.db.makumba;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.makumba.LogicException;
 import org.makumba.commons.ArgumentReplacer;
@@ -35,7 +35,7 @@ import org.makumba.commons.ArgumentReplacer;
 /** Map $name to $n */
 public class AttributeParametrizer {
     /** names of all arguments, to keep an order */
-    Vector argumentNames = new Vector();
+    List <String>argumentNames = new ArrayList<String>();
 
     String oql;
 
@@ -47,22 +47,22 @@ public class AttributeParametrizer {
     public AttributeParametrizer(String oql) throws LogicException {
         ArgumentReplacer ar = new ArgumentReplacer(oql);
 
-        for (Enumeration e = ar.getArgumentNames(); e.hasMoreElements();)
-            argumentNames.addElement(e.nextElement());
+        for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
+            argumentNames.add(e.next());
 
-        Dictionary d = new Hashtable();
+        Map<String, Object> d = new HashMap<String, Object>();
         for (int i = 0; i < argumentNames.size(); i++)
-            d.put(argumentNames.elementAt(i), "$" + (i + 1));
+            d.put(argumentNames.get(i), "$" + (i + 1));
 
         this.oql = ar.replaceValues(d);
     }
     
 
     /** execute the query */
-    public Object[] getTansformedParams(Dictionary a) {
+    public Object[] getTansformedParams(Map<String, Object> a) {
         Object args[] = new Object[argumentNames.size()];
         for (int i = 0; i < args.length; i++)
-            args[i] = a.get((String) argumentNames.elementAt(i));
+            args[i] = a.get((String) argumentNames.get(i));
         return args;
     }
 

@@ -25,7 +25,9 @@ package org.makumba.list.engine;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -400,10 +402,10 @@ public class ComposedQuery {
 
         // replace names with numbers
         ArgumentReplacer ar = new ArgumentReplacer(ret);
-        Dictionary<Object, String> d = new Hashtable<Object, String>();
+        Map<String, Object> d = new HashMap<String, Object>();
         int j = 1;
-        for (Enumeration e = ar.getArgumentNames(); e.hasMoreElements();)
-            d.put(e.nextElement(), "$" + (j++));
+        for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
+            d.put(e.next(), "$" + (j++));
         return ar.replaceValues(d);
     }
 
