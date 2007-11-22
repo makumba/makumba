@@ -337,7 +337,7 @@
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<svn>
-		<export srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
+		<export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
 	</svn>
 	<mkdir dir="${jar.place}/lib" />
 
