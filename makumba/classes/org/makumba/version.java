@@ -33,42 +33,51 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-/** Computes the version from cvs Name tag. */
-class version {
+/**
+ * Computes the version from SVN BaseURL tag. If used from a HEAD check-out, this will return "devel-<currentDate>" If
+ * used from a TAG check-out, this will return the version of the tag, e.g. "0.7.1"
+ * 
+ * Note that in order to work, the file needs to have the HeadURL keyword enabled
+ * 
+ * @author Cristian Bogdan
+ * @author Stefan Baebler
+ * @author Frederik Habilis
+ * @author Rudolf Mayer
+ * @author Manuel Gay
+ */
+public class version {
 
     /** @see MakumbaSystem#getVersion() */
     static String getVersion() {
-        //String version = getGlobalSVNRevision();
-
-        // HeadURL will return something like
-        //  https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/ for HEAD
-        //  https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2 for HEAD
-        
         String vs = "$HeadURL$";
-        String version = "1";
-        vs = vs.substring(vs.lastIndexOf("/") + 1); // fetches the last part of the URL
         
-        if(vs.indexOf("tags") > 0) {
-            version= vs.substring(7,vs.length()-2);
-            
-            if(version.indexOf('-')>0)
-                // we have something like "makumba-0_5_10_2"
-                version=version.substring(version.indexOf('-')+1);
+        // HeadURL will return something like
+        // https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java for HEAD
+        // https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2/makumba/classes/org/makumba/version.java
+        // for a tagged version
 
-            if(version.length()>2)
+        String version = "1";
+        vs = vs.substring("$HeadURL: https://makumba.svn.sourceforge.net/svnroot/makumba/".length());
+
+        if (vs.startsWith("tags")) {
+            vs = vs.substring("tags/".length());
+            vs = vs.substring(0, vs.indexOf("/"));
+
+            version = vs.substring(7, vs.length() - 2);
+
+            if (version.indexOf('-') >= 0)
+                // we have something like "makumba-0_5_10_2"
+                version = version.substring(version.indexOf('-') + 1);
+
+            if (version.length() > 2)
                 // we have something like "0_5_10_2"
-                version=version.replace('_','.');
-            
-            // read http://svnbook.red-bean.com/en/1.1/re57.html to understand how svnversion works
-            // here we assume that if we export a JAR, a STABLE release won't use a mixed revision
-            //if (version.indexOf(":")<=  0) {
-            //    version="";
-            //} 
+                version = version.replace('_', '.');
+
         } else {
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-            version="devel-"+df.format(getBuildDate());
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
+            version = "devel-" + df.format(getBuildDate());
         }
-        
+
         return version;
     }
 
@@ -100,7 +109,7 @@ class version {
     public static void main(String[] args) {
         System.out.println("name=Makumba");
         System.out.println("version=" + getVersion());
-        //System.out.println("versionDewey=" + getVersionDewey());
+        // System.out.println("versionDewey=" + getVersionDewey());
         System.out.println("date=" + new java.util.Date());
         try {
             System.out.println("buildhost=" + (java.net.InetAddress.getLocalHost()).getHostName() + " ("
