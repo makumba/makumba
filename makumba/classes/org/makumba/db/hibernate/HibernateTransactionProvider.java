@@ -1,7 +1,5 @@
 package org.makumba.db.hibernate;
 
-import java.util.Properties;
-
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Transaction;
