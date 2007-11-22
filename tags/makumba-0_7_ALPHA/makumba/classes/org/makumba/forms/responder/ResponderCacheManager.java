@@ -1,0 +1,169 @@
+package org.makumba.forms.responder;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Hashtable;
+import java.util.logging.Level;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.controller.Logic;
+
+/**
+ * This class is handling the caching mechanism of the Responder. There are two caches: one memory cache and one cache
+ * on the disk. In case of server failure, responder objects are serialized on the disk so they can be retrieved again
+ * after restart and form data is not lost.
+ * 
+ * @author Manuel Gay
+ * @version $Id: ResponderCacheManager.java,v 1.1 03.10.2007 09:54:18 Manuel Exp $
+ */
+public class ResponderCacheManager {
+
+    private ResponderFactory factory;
+    
+    private static ResponderCacheManager instance = null;
+    
+    public static ResponderCacheManager getInstance() {
+        if(instance == null) {
+            instance = new ResponderCacheManager();
+        }
+        return instance;
+    }
+    
+    static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();
+
+    public static String makumbaResponderBaseDirectory;
+
+    static String validResponderFilename(int responderValue) {
+        return new String(makumbaResponderBaseDirectory + "/")
+                + String.valueOf(responderValue).replaceAll("-", "_");
+    }
+
+    public void setResponderWorkingDir(HttpServletRequest request) {
+        // set the correct working directory for the responders
+        if (makumbaResponderBaseDirectory == null) {
+            System.out.println("had an empty responder dir - working dir ==> "
+                    + request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir"));
+            String baseDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir")
+                    + System.getProperty("file.separator") + "makumba-responders"
+                    + System.getProperty("file.separator");
+            makumbaResponderBaseDirectory = baseDir + request.getContextPath();
+            if (!new File(makumbaResponderBaseDirectory).exists()) {
+                new File(baseDir).mkdir();
+                new File(makumbaResponderBaseDirectory).mkdir();
+            }
+            System.out.println("base dir: " + makumbaResponderBaseDirectory);
+        }
+    }
+
+    /**
+     * Fetches a responder from the cache. If the memory cache is empty we try to get the responder from the disk.
+     * @param code the responder code
+     * @param suffix the responder suffix
+     * @param parentSuffix the suffix of the parent responder (of the parent form)
+     * @return the cached responder object, if any could be found
+     */
+    Responder getResponder(String code, String suffix, String parentSuffix) {
+        Integer i = new Integer(Integer.parseInt(code));
+        Responder fr = ((Responder) indexedCache.get(i));
+        String fileName = validResponderFilename(i.intValue());
+
+        // responder check
+        if (fr == null) { // we do not have responder in cache --> try to get it from disk
+            ObjectInputStream objectIn = null;
+            try {
+                objectIn = new ObjectInputStream(new FileInputStream(fileName));
+                fr = (Responder) objectIn.readObject();
+                fr.postDeserializaton();
+                fr.controller = Logic.getController(fr.controllerClassname);
+            } catch (UnsupportedClassVersionError e) {
+                // if we try to read a responder that was written with a different version of the responder class
+                // we delete it, and throw an exception
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                new File(fileName).delete();
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be re-used due to Makumba version change! Please reload this page.");
+            } catch (InvalidClassException e) {
+                // same as above
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                new File(fileName).delete();
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be re-used due to Makumba version change! Please reload this page.");
+            } catch (IOException e) {
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+            } catch (ClassNotFoundException e) {
+                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                    "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
+            } finally {
+                if (objectIn != null) {
+                    try {
+                        objectIn.close();
+                    } catch (IOException e1) {
+                    }
+                }
+            }
+            if (fr == null) { // we did not find the responder on the disk
+                throw new org.makumba.MakumbaError(
+                        "Responder cannot be found, probably due to server restart. Please reload this page.");
+            }
+        }
+        // end responder check
+        return fr;
+    }
+
+    /**
+     * We cache the responder in the memory because if two forms are the same (often the case in multiple forms), their
+     * responder looks exactly the same.
+     */
+    static NamedResources cache = new NamedResources("controller.responders", new NamedResourceFactory() {
+
+        private static final long serialVersionUID = 1L;
+
+        public Object getHashObject(Object o) {
+            return ((Responder) o).responderKey();
+        }
+
+        public Object makeResource(Object name, Object hashName) {
+            Responder f = (Responder) name;
+            f.identity = hashName.hashCode();
+
+            String fileName = validResponderFilename(f.identity);
+
+            if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
+                try {
+                    if (!new File(fileName).exists()) { // file does not exist
+                        f.controllerClassname = f.controller.getClass().getName();
+                        ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(fileName));
+                        objectOut.writeObject(f); // we write the responder to disk
+                        objectOut.close();
+                    }
+                } catch (IOException e) {
+                    java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                }
+            }
+            indexedCache.put(new Integer(f.identity), name);
+
+            return name;
+        }
+    });
+
+    public ResponderFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(ResponderFactory factory) {
+        this.factory = factory;
+    }
+
+}
