@@ -45,15 +45,18 @@ public class SQLUpdate implements Update {
     
     QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
 
-    SQLUpdate(org.makumba.db.makumba.Database db, String from, String set, String where) {
+    SQLUpdate(org.makumba.db.makumba.Database db, String from, String setWhere, String DELIM) {
+        int whereMark=setWhere.indexOf(DELIM);
+        String set=setWhere.substring(0, whereMark);
+        String where=setWhere.substring(whereMark+DELIM.length());
         debugString = (set == null ? "delete" : "update") + " on type: <" + from + ">"
                 + (set == null ? " " : " setting: <" + set + ">") + " where: <" + where + ">";
 
-        if (set != null && set.trim().length() == 0) {
-            throw new org.makumba.OQLParseError("Invalid empty update 'set' section in " + debugString);
+        if (set.trim().length() == 0) {
+            set=null;
         }
 
-        if (where != null && where.trim().length() == 0) {
+        if (where.trim().length() == 0) {
             where = null;
         }
 
