@@ -23,7 +23,7 @@
 
 package org.makumba;
 
-import org.makumba.providers.query.oql.OQLQueryProvider;
+import org.makumba.db.makumba.OQLQueryProvider;
 
 /**
  * This class is a facade for the internal OQL analyzer. To obtain an instance of this class, use

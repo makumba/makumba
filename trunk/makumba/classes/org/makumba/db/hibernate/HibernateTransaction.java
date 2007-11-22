@@ -26,8 +26,8 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.TransactionProviderInterface;
-import org.makumba.providers.query.hql.HQLQueryProvider;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -125,15 +125,32 @@ public class HibernateTransaction extends TransactionImplementation {
         org.hibernate.Query q = s.createQuery(hql);
         q.setCacheable(false);
         
-        // setting params
-        Object[] argsArray = treatParam(args);
-        for(int i=0; i<argsArray.length; i++) {
-            if(argsArray[i] instanceof Pointer)
-                argsArray[i] = new Integer(((Pointer)argsArray[i]).getUid());
-            q.setParameter(i, argsArray[i]);
+        // FIXME this needs type analysis to accept e.g. Pointers in String (external) form
+        
+        // FIXME a wild quess to detect whether the query has positional or named parameters
+        if(set!=null && set.indexOf('?')!=-1||where!=null && where.indexOf('?')!=-1){
+            Object[] argsArray = treatParam(args);
+            for(int i=0; i<argsArray.length; i++) {
+                q.setParameter(i, weaklyTreatParamType(argsArray[i]));
+            }
         }
+        else{
+            Map<String, Object> args1= paramsToMap(args);
+            for(Iterator<String> i= args1.keySet().iterator(); i.hasNext();){
+                String key= i.next();
+                q.setParameter(key, weaklyTreatParamType(args1.get(key)));
+
+            }
+        }
+                
         
         return q.executeUpdate();
+    }
+
+    private Object weaklyTreatParamType(Object object) {
+        if(object instanceof Pointer)
+            return new Integer(((Pointer)object).getUid());
+        return object;
     }
 
     @Override
@@ -184,8 +201,18 @@ public class HibernateTransaction extends TransactionImplementation {
     
     public Vector execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-
-        QueryAnalysis analyzer = HQLQueryProvider.getHqlAnalyzer(query);
+        QueryAnalysisProvider qap= null;
+        try {
+                qap=(QueryAnalysisProvider) Class.forName(HQLQueryProvider.HQLQUERY_ANALYSIS_PROVIDER).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        QueryAnalysis analyzer = qap.getQueryAnalysis(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();

@@ -91,7 +91,7 @@ public class ArgumentReplacer {
             }
 
             dollar++;
-            if ((doubledollar = s.charAt(dollar) == '$') || !Character.isJavaIdentifierStart(s.charAt(dollar))) {
+            if ((doubledollar = s.charAt(dollar) == '$') || !(Character.isJavaIdentifierStart(s.charAt(dollar)) || Character.isDigit(s.charAt(dollar)))) {
                 prev = s.substring(0, dollar);
                 if (doubledollar)
                     dollar++;

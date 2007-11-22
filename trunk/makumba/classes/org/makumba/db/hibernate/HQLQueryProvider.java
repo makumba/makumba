@@ -1,4 +1,4 @@
-package org.makumba.providers.query.hql;
+package org.makumba.db.hibernate;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,21 +17,23 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.NamedResourceFactory;
-import org.makumba.commons.NamedResources;
 import org.makumba.commons.SQLPointer;
-import org.makumba.db.hibernate.HibernateTransactionProvider;
-import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
 public class HQLQueryProvider extends QueryProvider {
 
+    static final String HQLQUERY_ANALYSIS_PROVIDER = "org.makumba.providers.query.hql.HQLQueryAnalysisProvider";
+
+
     private org.makumba.Transaction transaction;
     
     
     private TransactionProvider tp;
-
+    @Override
+    protected String getQueryAnalysisProviderClass() {
+        return HQLQUERY_ANALYSIS_PROVIDER;
+    }
     @Override
     public void init(String db) {
         super.init(db);
@@ -58,11 +60,6 @@ public class HQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    public QueryAnalysis getQueryAnalysis(String query) {
-        return getHqlAnalyzer(query);
-    }
-
-    @Override
     public String getPrimaryKeyNotation(String label) {
         // this is specific to Hibernate: we add '.id' in order to get the id as in makumba
         if (label.indexOf('.') == -1)
@@ -83,22 +80,6 @@ public class HQLQueryProvider extends QueryProvider {
 
     }
     
-    static public HqlAnalyzer getHqlAnalyzer(String hqlQuery) {
-        return (HqlAnalyzer) NamedResources.getStaticCache(parsedHqlQueries).getResource(hqlQuery);
-    }
-    
-    public static int parsedHqlQueries = NamedResources.makeStaticCache("Hibernate HQL parsed queries",
-        new NamedResourceFactory() {
-            private static final long serialVersionUID = 1L;
-        
-            protected Object makeResource(Object nm, Object hashName) throws Exception {
-                return new HqlAnalyzer((String) nm);
-            }
-        }, true);
-    
-    
-    
-
     /**
      * Method for testing the query runner outside a JSP
      */
