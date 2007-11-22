@@ -23,11 +23,11 @@
 
 package org.makumba.db.makumba;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.makumba.ProgrammerError;
 import org.makumba.LogicException;
@@ -39,7 +39,7 @@ import org.makumba.commons.RuntimeWrappedException;
 /** Take care of multiple parameters, as a "decorator" of AttributeParametrizer which knows nothing about them */
 public class MultipleAttributeParametrizer {
     // all argument names, multiple or not
-    Vector mixedArgumentNames = new Vector();
+    ArrayList<String> mixedArgumentNames = new ArrayList<String>();
 
     String baseOQL;
 
@@ -54,8 +54,8 @@ public class MultipleAttributeParametrizer {
     }
     public MultipleAttributeParametrizer(String oql) {
         parametrizers = new NamedResources("JSP attribute parametrizer objects", parametrizerFactory);
-        for (Enumeration e = new ArgumentReplacer(oql).getArgumentNames(); e.hasMoreElements();)
-            mixedArgumentNames.addElement(e.nextElement());
+        for (Iterator<String> e = new ArgumentReplacer(oql).getArgumentNames(); e.hasNext();)
+            mixedArgumentNames.add((String)e.next());
         baseOQL = oql;
     }
 
@@ -82,11 +82,11 @@ public class MultipleAttributeParametrizer {
         protected Object getHashObject(Object nm) throws Exception {
             StringBuffer sb = new StringBuffer();
             Map args = (Map) nm;
-            for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
-                String name = (String) e.nextElement();
+            for (Iterator<String> e = mixedArgumentNames.iterator(); e.hasNext();) {
+                String name =  e.next();
                 Object o = args.get(name);
-                if (o instanceof Vector)
-                    sb.append(((Vector) o).size());
+                if (o instanceof List)
+                    sb.append(((List) o).size());
                 else
                     sb.append(1);
                 sb.append(" ");
@@ -103,11 +103,11 @@ public class MultipleAttributeParametrizer {
     public String rewriteOQL(Map args) throws LogicException {
         String workingOQL = baseOQL;
 
-        for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
+        for (Iterator<String> e = mixedArgumentNames.iterator(); e.hasNext();) {
+            String name = e.next();
             Object o = args.get(name);
-            if (o instanceof Vector)
-                workingOQL = multiplyParameter(workingOQL, name, ((Vector) o).size());
+            if (o instanceof List)
+                workingOQL = multiplyParameter(workingOQL, name, ((List) o).size());
         }
         return workingOQL;
     }
@@ -134,17 +134,17 @@ public class MultipleAttributeParametrizer {
         }
     }
 
-    public Dictionary rewriteAttributes(Map args) throws LogicException {
-        Dictionary ret = new Hashtable();
+    public Map<String, Object> rewriteAttributes(Map args) throws LogicException {
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-        for (Enumeration e = mixedArgumentNames.elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
+        for (Iterator<String> e = mixedArgumentNames.iterator(); e.hasNext();) {
+            String name = (String) e.next();
             Object o = args.get(name);
             if(o == null) throw new ProgrammerError("The argument '"+name+"' should not be null");
-            if (o instanceof Vector) {
-                Vector v = (Vector) o;
+            if (o instanceof List) {
+                List v = (List) o;
                 for (int i = 1; i <= v.size(); i++)
-                    ret.put(name + "_" + i, v.elementAt(i - 1));
+                    ret.put(name + "_" + i, v.get(i - 1));
             } else
                 ret.put(name, o);
         }

@@ -23,10 +23,11 @@
 
 package org.makumba.commons;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Parses a string and identifies the arguments, to allow operations with them for now, arguments are of the form
@@ -36,17 +37,17 @@ import java.util.Vector;
  * @version $Id$
  */
 public class ArgumentReplacer {
-    Vector<String> text = new Vector<String>();
+    List<String> text = new ArrayList<String>();
 
-    Dictionary<String, String> argumentNames = new Hashtable<String, String>();
+    Map<String, String> argumentNames = new HashMap<String, String>();
 
-    Vector<String> argumentOrder = new Vector<String>();
+    List<String> argumentOrder = new ArrayList<String>();
 
     /** Gets the arguments list 
      *  @return An Enumeration containing the list of arguments
      */
-    public Enumeration getArgumentNames() {
-        return argumentNames.keys();
+    public Iterator<String> getArgumentNames() {
+        return argumentNames.keySet().iterator();
     }
 
     /**
@@ -54,14 +55,14 @@ public class ArgumentReplacer {
      * @param d the dictionary containing the arguments in their original form
      * @return A String with the respective values replaced
      *  */
-    public String replaceValues(Dictionary d) {
+    public String replaceValues(Map<String, Object> d) {
         StringBuffer sb = new StringBuffer();
-        Enumeration f = argumentOrder.elements();
-        Enumeration e = text.elements();
+        Iterator f = argumentOrder.iterator();
+        Iterator e = text.iterator();
         while (true) {
-            sb.append(e.nextElement());
-            if (f.hasMoreElements()) {
-                Object nm = f.nextElement();
+            sb.append(e.next());
+            if (f.hasNext()) {
+                Object nm = f.next();
                 Object o = d.get(nm);
                 if (o == null)
                     throw new RuntimeException(nm + " " + d);
@@ -86,7 +87,7 @@ public class ArgumentReplacer {
         while (true) {
             dollar = s.indexOf('$');
             if (dollar == -1 || s.length() == dollar + 1) {
-                text.addElement(prev + s);
+                text.add(prev + s);
                 break;
             }
 
@@ -99,11 +100,11 @@ public class ArgumentReplacer {
                     s = s.substring(dollar);
                     continue;
                 } else {
-                    text.addElement(prev);
+                    text.add(prev);
                     break;
                 }
             }
-            text.addElement(prev + s.substring(0, dollar - 1));
+            text.add(prev + s.substring(0, dollar - 1));
             prev = "";
 
             // we allow also '.' in the attribute name, which is needed in search forms for searches on subfields
@@ -114,12 +115,12 @@ public class ArgumentReplacer {
             if (n < s.length() && s.charAt(n) == '$')
                 n++;
             argumentNames.put(argname, "");
-            argumentOrder.addElement(argname);
+            argumentOrder.add(argname);
             if (n < s.length()) {
                 s = s.substring(n);
                 continue;
             } else {
-                text.addElement("");
+                text.add("");
                 break;
             }
         }
