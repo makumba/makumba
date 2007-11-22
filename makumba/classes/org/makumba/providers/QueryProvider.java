@@ -16,10 +16,28 @@ import org.makumba.LogicException;
  */
 public abstract class QueryProvider {
 
-    private static String[] queryProviders = {"oql", "org.makumba.providers.query.oql.OQLQueryProvider", "hql", "org.makumba.providers.query.hql.HQLQueryProvider" };
+    private static String[] queryProviders = {"oql", "org.makumba.db.makumba.OQLQueryProvider", "hql", "org.makumba.db.hibernate.HQLQueryProvider" };
 
     static final Map<String, Class> providerClasses = new HashMap<String, Class>();
 
+    public QueryProvider(){
+        try {
+            if(getQueryAnalysisProviderClass()!=null)
+                qap=(QueryAnalysisProvider) Class.forName(getQueryAnalysisProviderClass()).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    protected String getQueryAnalysisProviderClass() {
+        return null;
+    }
     /**
      * Puts the QueryEnvironmentExecutionProviders into a Map
      */
@@ -69,13 +87,7 @@ public abstract class QueryProvider {
 
         return qeep;
     }
-    
-    
-    
-    
-    
-    
-
+ 
     /**
      * Initalises the provider with the datasource
      * 
@@ -124,9 +136,14 @@ public abstract class QueryProvider {
      *            the query we want to analyse
      * @return the {@link QueryAnalysis} for this query and QueryProvider
      */
-    public abstract QueryAnalysis getQueryAnalysis(String query);
+    public QueryAnalysis getQueryAnalysis(String query) {
+        return qap.getQueryAnalysis(query);
+    }
+
 
     private String dataSource;
+
+    private QueryAnalysisProvider qap;
 
     /**
      * Gets the data source of the QueryProvider.
@@ -140,5 +157,6 @@ public abstract class QueryProvider {
     public abstract boolean selectGroupOrOrderAsLabels();
 
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
+
 
 }
