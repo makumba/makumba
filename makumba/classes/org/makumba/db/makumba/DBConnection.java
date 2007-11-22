@@ -36,6 +36,8 @@ import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
@@ -159,41 +161,61 @@ public abstract class DBConnection extends TransactionImplementation {
         }
         return null;
     }
+ 
+    class QueryAndArgs{
+        String query;
+        Object[] args;
+        protected Object[] getArgs() {
+            return args;
+        }
+        protected String getQuery() {
+            return query;
+        }
+        QueryAndArgs(String OQL, Object a){
+            Map args1=paramsToMap(a);
+            MultipleAttributeParametrizer mpa= ((MultipleAttributeParametrizer) queries.getResource(OQL));
+            try {
+                query=mpa.getTransformedQuery(args1);
+                args= mpa.getTransformedParams(args1);
+            } catch (LogicException e) {
+                throw new RuntimeWrappedException(e);
+            }
 
+
+        }
+    }
     /**
      * Execute a parametrized OQL query.
      * 
      * @return a Vector of Dictionaries
      */
     public java.util.Vector executeQuery(String OQL, Object args, int offset, int limit) {
-        
-        Vector results = new Vector();
-        
-        // let's see if this query has named parameters
-        if (args != null && args instanceof Map) {
-            try {
-                results = qp.execute(OQL, (Map)args, offset, limit);
-            } catch(LogicException le) {
-                throw new RuntimeWrappedException(le);
-            }
-        } else {
-            Object[] k = { OQL, "" };
-            results = ((Query) getHostDatabase().queries.getResource(k)).execute(treatParam(args), this, offset, limit);
-        }
-        
-        return results;
-        
-        
-    }
+        QueryAndArgs qa= new QueryAndArgs(OQL, args);
+        Object[] k = { qa.getQuery(), "" };
+        return ((Query) getHostDatabase().queries.getResource(k)).execute(qa.getArgs(), this, offset, limit);
 
+    }
+    NamedResources queries = new NamedResources("OQL query multiple-parametrizers", new NamedResourceFactory() {
+
+        private static final long serialVersionUID = 1L;
+
+        protected Object makeResource(Object nm, Object hashName) {
+
+            return new MultipleAttributeParametrizer((String) nm);
+        }
+    });
+    
     public int insertFromQuery(String type, String OQL, Object args) {
-        Object[] k = { OQL, type };
-        return ((Query) getHostDatabase().queries.getResource(k)).insert(treatParam(args), this);
+        QueryAndArgs qa= new QueryAndArgs(OQL, args);
+        Object[] k = { qa.getQuery(), type };
+        return ((Query) getHostDatabase().queries.getResource(k)).insert(qa.getArgs(), this);
     }
 
     public java.util.Vector executeQuery(String OQL, Object args) {
         return executeQuery(OQL, args, 0, -1);
     }
+ 
+    static final String whereDelim=" ##### ";
 
     /**
      * Execute a parametrized update or delete. A null set means "delete"
@@ -202,9 +224,17 @@ public abstract class DBConnection extends TransactionImplementation {
      */
     @Override
     public int executeUpdate(String type, String set, String where, Object args) {
-        Object[] multi = { type, set, where };
+        if (set != null && set.trim().length() == 0) {
+            throw new org.makumba.OQLParseError("Invalid empty update 'set' section in: UPDATE "+type+" SET (empty!) WHERE "+where);
+        }
 
-        return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, treatParam(args));
+        if (where != null && where.trim().length() == 0) {
+            where = null;
+        }
+        QueryAndArgs qa= new QueryAndArgs((set==null?"":set)+whereDelim+(where==null?"":where), args);
+        Object[] multi = { type, qa.getQuery(), whereDelim };
+
+        return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, qa.getArgs());
     }
     
     public Query getQuery(String OQL) {

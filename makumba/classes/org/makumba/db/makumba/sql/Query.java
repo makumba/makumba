@@ -37,15 +37,14 @@ import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
+import org.makumba.db.makumba.OQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryProvider;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.query.oql.QueryAST;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
-
-    QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
     
     String query;
 
@@ -70,8 +69,19 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     public Query(org.makumba.db.makumba.Database db, String OQLQuery, String insertIn) {
-       
-        QueryAnalysis qA= qP.getQueryAnalysis(OQLQuery);
+        QueryAnalysisProvider qap= null;
+        try {
+           qap=(QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+  
+        QueryAnalysis qA= qap.getQueryAnalysis(OQLQuery);
         
         command = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
             
