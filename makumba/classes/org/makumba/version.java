@@ -24,7 +24,6 @@
 package org.makumba;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -33,23 +32,43 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Vector;
 
 /** Computes the version from cvs Name tag. */
 class version {
 
     /** @see MakumbaSystem#getVersion() */
     static String getVersion() {
-        String version = getGlobalSVNRevision();
+        //String version = getGlobalSVNRevision();
 
-        // read http://svnbook.red-bean.com/en/1.1/re57.html to understand how svnversion works
-        // here we assume that if we export a JAR, a STABLE release won't use a mixed revision
-        if (version.indexOf(":")<=  0) {
-            version="";
-        }
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+        // HeadURL will return something like
+        //  https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/ for HEAD
+        //  https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2 for HEAD
         
-        version += " built on " + df.format(getBuildDate());
+        String vs = "$HeadURL$";
+        String version = "1";
+        vs = vs.substring(vs.lastIndexOf("/") + 1); // fetches the last part of the URL
+        
+        if(vs.indexOf("tags") > 0) {
+            version= vs.substring(7,vs.length()-2);
+            
+            if(version.indexOf('-')>0)
+                // we have something like "makumba-0_5_10_2"
+                version=version.substring(version.indexOf('-')+1);
+
+            if(version.length()>2)
+                // we have something like "0_5_10_2"
+                version=version.replace('_','.');
+            
+            // read http://svnbook.red-bean.com/en/1.1/re57.html to understand how svnversion works
+            // here we assume that if we export a JAR, a STABLE release won't use a mixed revision
+            //if (version.indexOf(":")<=  0) {
+            //    version="";
+            //} 
+        } else {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+            version="devel-"+df.format(getBuildDate());
+        }
+        
         return version;
     }
 
