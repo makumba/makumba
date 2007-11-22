@@ -63,10 +63,10 @@ public class version {
             vs = vs.substring("tags/".length());
             vs = vs.substring(0, vs.indexOf("/"));
 
-            version = vs.substring(7, vs.length() - 2);
+            version = vs.substring(7);
 
             if (version.indexOf('-') >= 0)
-                // we have something like "makumba-0_5_10_2"
+                // we have something like "-0_5_10_2"
                 version = version.substring(version.indexOf('-') + 1);
 
             if (version.length() > 2)
