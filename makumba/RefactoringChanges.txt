@@ -9,6 +9,8 @@ OR simply remove it as it is declared already in the TLDs
   - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
 
 - org.makumba.abstr moved into org.makumba.providers.datadefinition.makumba
+
+- org.makumba.controller.http.ControllerFilter refactored
   
  - possible behavioural changes (needs testing): 
   
