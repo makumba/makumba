@@ -6,6 +6,8 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
+manu: fixing various bugs with hibernate database management
+manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
 rudi: fixing bug 958, reserved tomcat keywords
 rudi: fixing bug 784, adding a null-option to charEnum and intEnum
 rudi: finishing bug 16 (mak:delete as form), fixing problems with the form method and trimming white-space
@@ -20,10 +22,26 @@ NOT TO BE RELEASED YET (need more testing)
 ------------------------------------------
 - add your changes -
 rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
-manu: fixing various bugs with hibernate database management
-manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.7; 22 nov 2007
+manu: refactoring and documenting most of the code, doing a lot of separation work
+manu: Transaction.executeQuery supports named parameters in Maps
+manu: analysis now computes and stores the topological order of form tags in the page
+manu: new taglib definition (for mak: and form:)
+manu & cristi: hibernate CRUD provider
+manu & cristi: controller can be configured, makumba error handling can be disabled
+cristi: fixed bug 982
+cristi: fixed bug 963
+cristi: positional parameters for OQL can be multiple
+cristi: <please add more>
+rudi: fixed bug 1000
+rudi: <please add more>
+marius: UTF-8 support, new binary MDD type - NEEDS DOCUMENTATION
+marius: foreign key support - NEEDS DOCUMENTATION
+filip: exceptions are logged in the database
+
 0.6.1.1; 28 mar 2007
 cristi: fix for HQL case-when
 
