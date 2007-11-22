@@ -136,7 +136,7 @@
 	<target name="clean" description="delete all generated files and backups">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="classes" includes="**/*.class,**/*.*~,org/makumba/providers/query/oql/OQLParser.java" defaultExcludes="no" />
-			<fileset dir="doc/api" includes="**/*.html,**/*.css,**/package-list" excludes="API_users_guide.html" defaultExcludes="no" />
+			<fileset dir="doc/api" includes="**/*.html,**/package-list" excludes="API_users_guide.html" defaultExcludes="no" />
 			<fileset dir="doc/api/org" />
 			<fileset dir="doc/hacking/javadoc" />
 			<fileset dir="META-INF" />
@@ -331,25 +331,11 @@
 </target>
 
 
-<target name="tagJar" depends="compile" if="tag" description="tags a version from the current checked out branch, and jar-s it locally to ./lib">
-	<antcall target="tagThis" />
-	<antcall target="makeJar">
-		<param name="jar.place" value="." />
-	</antcall>
-</target>
-
-
-<target name="tagThis" depends="compile" if="tag" description="tags a version from the current checked out branch, no jar making">
-	<cvs command="tag -d ${tag}" dest="." />
-	<cvs command="tag ${tag}" dest="." />
-</target>
-
-
 <target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<svn>
-		<export srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/" destPath="work/makumba.distrib/" revision="${tag}" />
+		<export srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
 	</svn>
 	<mkdir dir="${jar.place}/lib" />
 
@@ -404,7 +390,7 @@
 <target name="publishJar" depends="compile" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
-	<echo>Warning! publishJar changed semantics. You have to tag the version manually, or use tagThis</echo>
+	<echo>Warning! publishJar changed semantics. You have to tag the version manually</echo>
 	<antcall target="uploadJar">
 	</antcall>
 
