@@ -35,7 +35,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -74,11 +73,9 @@ public abstract class Database {
         return configName;
     }
 
-    private Configuration configuration = new Configuration();
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(configuration);
-
-    protected TransactionProvider tp = new TransactionProvider(configuration);
+    protected TransactionProvider tp = new TransactionProvider();
 
     NamedResources queries;
 

@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -62,7 +61,7 @@ public class ObjectToRecord {
             } catch (NoSuchMethodException nsme) {
             }
 
-            this.type = (new DataDefinitionProvider(new Configuration())).getDataDefinition(type);
+            this.type = new DataDefinitionProvider().getDataDefinition(type);
 
             Field no = null;
             try {

@@ -35,9 +35,7 @@ public class MddToMapping {
 
     private String prefix = "";
     
-    private org.makumba.commons.Configuration c = new org.makumba.commons.Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(c);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     private NameResolver nr;
 

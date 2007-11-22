@@ -35,7 +35,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.HtmlTagEnumerator;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -143,8 +142,7 @@ public class HtmlTableImporter {
      * logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        Configuration config = new Configuration();
-        (new TransactionProvider(config))._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
+        (new TransactionProvider())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
     }
 
     /**
@@ -161,12 +159,8 @@ public class HtmlTableImporter {
     public static void main(String[] argv) throws IOException {
         String[] args = new String[argv.length - 4];
         System.arraycopy(argv, 4, args, 0, args.length);
-        
-        Configuration config = new Configuration();
-        
-        TransactionProvider tp = new TransactionProvider(config);
 
-        new HtmlTableImporter(tp.getConnectionTo(argv[0]), (new DataDefinitionProvider(new Configuration())).getDataDefinition(argv[1]),
+        new HtmlTableImporter(new TransactionProvider().getConnectionTo(argv[0]), new DataDefinitionProvider().getDataDefinition(argv[1]),
                 new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
     }
 }

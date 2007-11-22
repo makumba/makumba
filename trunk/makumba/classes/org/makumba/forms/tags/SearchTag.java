@@ -14,7 +14,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
@@ -183,7 +182,7 @@ public class SearchTag extends FormTagBase {
             Dictionary data = resp.getHttpData(req, suffix);
             RequestAttributes attributes = RequestAttributes.getAttributes(req);
             HttpParameters parameters = RequestAttributes.getParameters(req);
-            DataDefinition dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(resp.getSearchType());
+            DataDefinition dd = new DataDefinitionProvider().getDataDefinition(resp.getSearchType());
 
             // indicate that the form is reloaded, similar as for validation errors
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");

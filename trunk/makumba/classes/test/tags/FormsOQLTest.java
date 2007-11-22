@@ -6,8 +6,6 @@ package test.tags;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,18 +15,15 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
-import org.makumba.Transaction;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.Configuration;
+import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
@@ -70,8 +65,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 		}
 
 		protected void setUp() {
-            Configuration config = new Configuration();
-            TransactionProvider tp = new TransactionProvider(config);
+            TransactionProvider tp = new TransactionProvider();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             insertLanguages(db);
@@ -150,8 +144,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
 		public void tearDown() {
 			// do your one-time tear down here!
-            Configuration config = new Configuration();
-            TransactionProvider tp = new TransactionProvider(config);
+            TransactionProvider tp = new TransactionProvider();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
 			deletePerson(db);

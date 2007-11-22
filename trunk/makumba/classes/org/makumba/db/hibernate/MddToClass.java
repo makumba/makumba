@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -30,13 +29,10 @@ public class MddToClass {
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
     
-    private Configuration c = new Configuration();
-    
-    private DataDefinitionProvider ddp;
+    private DataDefinitionProvider ddp= new DataDefinitionProvider();
     private NameResolver nr;
 
     public MddToClass(Vector v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{
-      this.ddp = new DataDefinitionProvider(c);
       this.nr = nr;
       this.generatedClassPath = generationPath;
       for(int i=0; i<v.size(); i++)
@@ -49,7 +45,6 @@ public class MddToClass {
         }
     }
 	public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException, IOException {
-        this.ddp = new DataDefinitionProvider(c);
         this.generatedClassPath = generationPath;
         generateClass(dd);
 		while (!mddsToDo.isEmpty()) {

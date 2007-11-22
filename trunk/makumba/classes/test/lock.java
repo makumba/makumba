@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -39,11 +38,7 @@ import org.makumba.providers.TransactionProvider;
 */
 public class lock extends TestCase
 {
-    
-   private Configuration config = new Configuration();
-    
-   private TransactionProvider tp = new TransactionProvider(config);
-    
+        
   public lock(String name) {
     super(name);
   }
@@ -60,6 +55,8 @@ public class lock extends TestCase
 
   public void setUp()
   {
+    TransactionProvider tp = new TransactionProvider();
+
     db=tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
   }
 

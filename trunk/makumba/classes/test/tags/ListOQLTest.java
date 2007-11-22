@@ -20,7 +20,6 @@ import org.apache.cactus.Request;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
@@ -71,8 +70,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
 
         protected void setUp() {
-            Configuration config = new Configuration();
-            TransactionProvider tp = new TransactionProvider(config);
+            TransactionProvider tp = new TransactionProvider();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             insertLanguages(db);
@@ -152,8 +150,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
         public void tearDown() {
             // do your one-time tear down here!
-            Configuration config = new Configuration();
-            TransactionProvider tp = new TransactionProvider(config);
+            TransactionProvider tp = new TransactionProvider();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             deletePerson(db);

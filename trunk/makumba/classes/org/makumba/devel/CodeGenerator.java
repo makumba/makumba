@@ -41,7 +41,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -155,7 +154,7 @@ public class CodeGenerator {
 
         try {
             // FIXME - this should get the datadefinition of the MDDs in a given context
-            dd = (new DataDefinitionProvider(new Configuration())).getDataDefinition(object);
+            dd = (new DataDefinitionProvider()).getDataDefinition(object);
         } catch (Throwable t) {
             throw new DataDefinitionNotFoundError("Could not find such a data defintion");
         }

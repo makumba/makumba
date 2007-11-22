@@ -17,10 +17,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.SQLPointer;
+import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
@@ -29,15 +29,13 @@ public class HQLQueryProvider extends QueryProvider {
 
     private org.makumba.Transaction transaction;
     
-    private Configuration config = new Configuration();
     
     private TransactionProvider tp;
 
     @Override
     public void init(String db) {
         super.init(db);
-        config.setDefaultTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
-        tp = new TransactionProvider(config);
+        tp = new TransactionProvider(new HibernateTransactionProvider());
         transaction = tp.getConnectionTo(db);
     }
 
@@ -105,10 +103,7 @@ public class HQLQueryProvider extends QueryProvider {
      * Method for testing the query runner outside a JSP
      */
     public static void main(String[] args) throws LogicException {
-        Configuration config = new Configuration();
-        
-        config.setTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
-        TransactionProvider tp = new TransactionProvider(config);
+        TransactionProvider tp = new TransactionProvider(new HibernateTransactionProvider());
 
         HQLQueryProvider qr = new HQLQueryProvider();
         qr.init("test/localhost_mysql_makumba");

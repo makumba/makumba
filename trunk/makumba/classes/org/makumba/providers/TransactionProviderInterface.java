@@ -27,8 +27,6 @@ public interface TransactionProviderInterface {
     // FIXME moved from MakumbaSystem
     public String getDatabaseProperty(String name, String propName);
     
-    public Properties getDataSourceConfiguration(String name);
-    
     //FIXME should not be generic, very specific, still needed?
     public void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv);
     

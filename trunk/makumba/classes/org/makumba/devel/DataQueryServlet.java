@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.TransactionProvider;
@@ -55,9 +54,6 @@ public class DataQueryServlet extends DataServlet {
 
     public final int QUERY_LANGUAGE_HQL = 20;
 
-    private Configuration config = new Configuration();
-
-    private TransactionProvider tp = new TransactionProvider(config);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
@@ -109,6 +105,7 @@ public class DataQueryServlet extends DataServlet {
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
+            TransactionProvider tp = new TransactionProvider();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {

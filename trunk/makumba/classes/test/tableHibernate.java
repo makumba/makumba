@@ -41,8 +41,8 @@ import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResources;
+import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -69,16 +69,13 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void setUp() {
-        config.setDefaultTransactionProvider("org.makumba.db.hibernate.HibernateTransactionProvider");
-        tp = new TransactionProvider(config);
+        tp = new TransactionProvider(new HibernateTransactionProvider());
 		db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
 	}
 
 	public void tearDown() {
 		db.close();
 	}
-    
-    private Configuration config = new Configuration();
     
     private TransactionProvider tp;
 

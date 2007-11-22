@@ -35,7 +35,6 @@ import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
-import org.makumba.commons.Configuration;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.providers.DataDefinitionProvider;
@@ -47,10 +46,6 @@ import org.makumba.providers.query.oql.QueryAST;
 public class Query implements org.makumba.db.makumba.Query {
 
     QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
-    
-    private Configuration config = new Configuration();
-    
-    DataDefinitionProvider ddp = new DataDefinitionProvider(config);
     
     String query;
 
@@ -151,7 +146,7 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
-        DataDefinition insert = ddp.getDataDefinition(insertIn);
+        DataDefinition insert = new DataDefinitionProvider().getDataDefinition(insertIn);
         for (Iterator i = proj.getFieldNames().iterator(); i.hasNext();) {
             String s = (String) i.next();
             if (insert.getFieldDefinition(s) == null) {

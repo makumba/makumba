@@ -42,7 +42,6 @@ import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -77,12 +76,8 @@ public class table extends TestCase {
 	public void tearDown() {
 		db.close();
 	}
-    
-    private Configuration config = new Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
-    
-    private TransactionProvider tp = new TransactionProvider(config);
+
+    private TransactionProvider tp = new TransactionProvider();
 
 	static Pointer ptr, ptr1;
 
@@ -127,6 +122,8 @@ public class table extends TestCase {
 
 	public void testQueryValidMdds() {
 		Vector v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
+        DataDefinitionProvider ddp = new DataDefinitionProvider();
+           
 		Vector errors = new Vector();
 		for (int i = 0; i < v.size(); i++) {
 			try {

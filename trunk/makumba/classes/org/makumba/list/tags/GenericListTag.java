@@ -27,7 +27,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.analyser.AnalysableTag;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -59,10 +58,6 @@ public abstract class GenericListTag extends GenericMakumbaTag {
     public static final String DS_ATTR = "org.makumba.database";
     
     protected FormDataProvider fdp = new ListFormDataProvider();
-    
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
 
     @Override
     public int doEndTag() throws JspException {
@@ -106,13 +101,9 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      * @return A String containing the name of the database
      */
     public static String getDataSourceName(PageContext pc) {
-        Configuration config = new Configuration();
-        
-        TransactionProvider tp = new TransactionProvider(config);
-
         String ds = (String) pc.getAttribute(DS_ATTR);
         if (ds == null)
-            return tp.getDefaultDataSourceName();
+            return new TransactionProvider().getDefaultDataSourceName();
         return ds;
     }
 

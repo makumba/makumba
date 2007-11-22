@@ -10,10 +10,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.OQLParseError;
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
@@ -22,7 +22,6 @@ import org.makumba.providers.TransactionProvider;
 
 public class OQLQueryProvider extends QueryProvider {
 
-    private Configuration config = new Configuration();
         
     private Transaction tr;
 
@@ -39,7 +38,7 @@ public class OQLQueryProvider extends QueryProvider {
     @Override
     public void init(String dataSource) {
         super.init(dataSource);
-        tr = new TransactionProvider(config).getConnectionTo(dataSource);
+        tr = new TransactionProvider(new MakumbaTransactionProvider()).getConnectionTo(dataSource);
 
     }
 

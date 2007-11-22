@@ -1,9 +1,13 @@
 package org.makumba.providers;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.makumba.Transaction;
-import org.makumba.commons.Configuration;
+import org.makumba.commons.ClassResource;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 
 /**
  * This class is a facade for creating different kinds of TransactionProviders. Its constructor knows from a
@@ -17,11 +21,14 @@ import org.makumba.commons.Configuration;
  */
 public class TransactionProvider implements TransactionProviderInterface {
     
-    private TransactionProviderInterface transactionProviderImplementation;
-    
+    private TransactionProviderInterface transactionProviderImplementation;    
     
     public TransactionProvider() {
         this(new Configuration());
+    }
+    
+    public TransactionProvider(TransactionProviderInterface tpi){
+        this.transactionProviderImplementation=tpi;
     }
     
     public TransactionProvider(Configuration config) {
@@ -72,8 +79,68 @@ public class TransactionProvider implements TransactionProviderInterface {
         return transactionProviderImplementation.getCRUD();
     }
     
-    public Properties getDataSourceConfiguration(String name) {
-        return transactionProviderImplementation.getDataSourceConfiguration(name);
+    public static String findInHostProperties(Properties p, String str){
+        for (Enumeration e = p.keys(); e.hasMoreElements();) {
+            String s = (String) e.nextElement();
+            int i = s.indexOf('#');
+            try {
+                if ((i==-1|| java.net.InetAddress.getByName(s.substring(0, i)).equals(java.net.InetAddress.getLocalHost()))
+                        && str.endsWith(s.substring(i + 1)))
+                    return p.getProperty(s);
+            } catch (java.net.UnknownHostException uhe) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * finds the database name of the server according to the host name and current directory. If none is specified, a
+     * default is used, if available
+     */
+    public static String findDatabaseName(Properties p) {
+        String userDir= System.getProperty("user.dir");
+        String n;
+        java.net.URL u= ClassResource.get("/"); 
+        String wbp= u!=null?u.toString():null;
+        
+        if(
+                (n= TransactionProvider.findInHostProperties(p, userDir))!=null 
+                ||
+                wbp!=null &&((n= TransactionProvider.findInHostProperties(p, wbp))!=null)
+                ||
+                (n= TransactionProvider.findInHostProperties(p, "default"))!=null
+                )
+          
+            return n;
+        
+        return p.getProperty("default");
+    }
+
+    public static String findDatabaseName(String s) {
+        try {
+            return TransactionProvider.findDatabaseName((Properties) NamedResources.getStaticCache(TransactionProvider.dbsel).getResource(s));
+        } catch (RuntimeWrappedException e) {
+            if (e.getCause() instanceof org.makumba.MakumbaError)
+                throw (org.makumba.MakumbaError) e.getCause();
+            throw e;
+        }
     }
     
+    public static int dbsel = NamedResources.makeStaticCache("Database selection files", new NamedResourceFactory() {
+        
+        private static final long serialVersionUID = 1L;
+    
+        protected Object makeResource(Object nm) {
+            Properties p = new Properties();
+            try {
+                java.io.InputStream input = org.makumba.commons.ClassResource.get((String) nm).openStream();
+                p.load(input);
+                input.close();
+            } catch (Exception e) {
+                throw new org.makumba.ConfigFileError((String) nm);
+            }
+            return p;
+        }
+    });
+
 }

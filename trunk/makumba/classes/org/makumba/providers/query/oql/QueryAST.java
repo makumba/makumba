@@ -30,7 +30,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -45,9 +44,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      */
     private static final long serialVersionUID = 1L;
 
-    private Configuration config = new Configuration();
-
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     public QueryAST() {
     }

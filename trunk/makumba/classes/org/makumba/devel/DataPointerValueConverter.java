@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.SQLPointer;
 import org.makumba.providers.TransactionProvider;
 
@@ -51,10 +50,7 @@ public class DataPointerValueConverter extends DataServlet {
     public final static int FROM_DB = 10;
 
     public final static int FROM_EXTERNAL = 20;
-    
-    private Configuration config = new Configuration();
-    
-    private TransactionProvider tp = new TransactionProvider(config);
+   
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -78,7 +74,7 @@ public class DataPointerValueConverter extends DataServlet {
         DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
-        writePageContentHeader(type, writer, tp.getDefaultDataSourceName(), MODE_CONVERTOR);
+        writePageContentHeader(type, writer, new TransactionProvider().getDefaultDataSourceName(), MODE_CONVERTOR);
 
         writer.println("<form>");
         writer.println("<table>");

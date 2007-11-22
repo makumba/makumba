@@ -44,7 +44,6 @@ import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.ClassResource;
-import org.makumba.commons.Configuration;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -84,9 +83,7 @@ public class javaViewer extends LineViewer {
 
     private JavaParseData javaParseData;
     
-    private Configuration config = new Configuration();
-    
-    private DataDefinitionProvider ddp = new DataDefinitionProvider(config);
+    private DataDefinitionProvider ddp = new DataDefinitionProvider();
 
     private URL url;
     
