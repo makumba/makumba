@@ -1838,7 +1838,10 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
           <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a>
-          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
+          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code>. After deletion, makumba will look for
+ 		<code>after_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a>
+          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code> and execute it.
+          </td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
