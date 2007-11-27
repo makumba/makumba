@@ -448,14 +448,17 @@ public class Logic {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] deleteArg = { p, a, db };
         Method delete = null;
+        Method afterDelete=null;
         String upper = upperCase(typename);
 
         if (!(controller instanceof LogicNotFoundException)) {
             delete = getMethod("on_delete" + upper, deleteArgs, controller);
+            afterDelete = getMethod("after_delete" + upper, deleteArgs, controller);
             if (delete == null)
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
+                        + getControllerFile(controller) + ")\n" + "does not define any of the methods\n" + HANDLER_METHOD_HEAD
                         + "on_delete" + upper + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+                        + "after_delete" + upper + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                         + "so it does not allow DELETE operations on the type " + typename
                         + "\nDefine that method (even with an empty body) to allow such operations.");
         }
@@ -464,6 +467,8 @@ public class Logic {
             if (delete != null)
                 delete.invoke(controller, deleteArg);
             db.delete(p);
+            if(afterDelete!=null)
+                afterDelete.invoke(controller, deleteArg);
             return null;
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
