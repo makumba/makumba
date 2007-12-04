@@ -62,4 +62,19 @@ public class Configuration implements Serializable {
         this.defaultTransactionProvider = defaultTransactionProvider;
     }
 
+    public static String getClientSideValidationDefault() {
+        // TODO: get this from some config file
+        return "live";
+    }
+
+    public static boolean getReloadFormOnErrorDefault() {
+        // TODO: get this from some config file
+        return false;
+    }
+
+    public static String getCalendarEditorDefault() {
+        // TODO: get this from some config file
+        return "false";
+    }
+
 }
