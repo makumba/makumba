@@ -96,7 +96,7 @@ public abstract class Responder implements java.io.Serializable {
      * Stores whether we shall reload this form on a validation error or not. Used by {@link ControllerFilter} to decide
      * on the action.
      */
-    private boolean reloadFormOnError;
+    protected boolean reloadFormOnError;
 
     /**
      * Stores whether the form shall be annotated with the validation errors, or not. Used by {@link ControllerFilter}

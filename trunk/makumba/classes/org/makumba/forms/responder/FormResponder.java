@@ -218,8 +218,8 @@ public class FormResponder extends Responder {
 
         // writes the hidden fields
 
-        // write originating page, only for edit operations (not search)
-        if (!operation.equals("search")) {
+        // write originating page if we reload the form, but only for edit operations (not search)
+        if (!operation.equals("search") && reloadFormOnError) {
             String url = request.getRequestURI();
             String queryString = request.getQueryString();
             if (queryString != null) {
