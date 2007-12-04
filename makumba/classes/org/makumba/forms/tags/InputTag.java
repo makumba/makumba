@@ -41,6 +41,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.responder.ResponseControllerHandler;
+import org.makumba.providers.Configuration;
 
 /**
  * mak:input tag
@@ -61,7 +62,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     protected String calendarEditorLink = null;
 
-    protected String calendarEditor = "true";
+    protected String calendarEditor = Configuration.getCalendarEditorDefault();
 
     protected String nullOption;
 
