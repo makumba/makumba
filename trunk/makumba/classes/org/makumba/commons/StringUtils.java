@@ -1,6 +1,9 @@
 package org.makumba.commons;
 
 import java.util.Collection;
+import java.util.Enumeration;
+
+import org.apache.commons.collections.EnumerationUtils;
 
 /**
  * This class provides utility methods for String manipulation.
@@ -161,6 +164,10 @@ public class StringUtils {
         } catch (NumberFormatException nfe) {
             return defaultValue;
         }
+    }
+
+    public static String toString(Enumeration enumeration) {
+        return toString(EnumerationUtils.toList(enumeration));
     }
 
 }
