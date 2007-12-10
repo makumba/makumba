@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+
+<link rel="stylesheet" href="slideshow_files/show.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="slideshow_files/print.css" type="text/css" media="print">
+<link rel="stylesheet" href="slideshow_files/makumba-green.css" type="text/css" media="screen, projection">
+<script src="slideshow_files/slidy.js" type="text/javascript">
+</script><script charset="utf-8" id="injection_graph_func" src="slideshow_files/injection_graph_func.js"></script></head><body style="visibility: visible; font-size: 20pt;"><div style="border-style: solid; border-width: 2px; padding: 1em; background: rgb(240, 240, 240) none repeat scroll 0%; overflow: auto; position: absolute; z-index: 300; width: 60%; max-width: 30em; height: 30em; top: auto; right: auto; left: 4em; bottom: 4em; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; font-size: 60%; visibility: hidden; display: none;" class="toc"><div style="border-bottom: 1px solid rgb(180, 180, 180); margin: 0pt 0pt 1em; text-align: center; width: 100%;" class="toc-heading">Table of Contents</div>1. <a href="#%281%29">HTML Slidy: Slide Shows in XHTML</a><br>2. <a href="#%282%29">HTML Slidy: Slide Shows in XHTML</a><br>3. <a href="#%283%29">What you need to do</a><br>4. <a href="#%284%29">To get the W3C Style</a><br>5. <a href="#%285%29">To use it off-line</a><br>6. <a href="#%286%29">Generate a Title Page</a><br>7. <a href="#%287%29">Incremental display of slide contents</a><br>8. <a href="#%288%29">Make your images scale with the browser window size</a><br>9. <a href="#%289%29">Incremental display of layered images</a><br>10. <a href="#%2810%29">Include SVG Content</a><br>11. <a href="#%2811%29">Caveats with SVG+object</a><br>12. <a href="#%2812%29">Closing Remarks</a></div>
+<div class="background"><img alt="" src="slideshow_files/makumba-logo.gif" align="right"/></div>
+
+<div style="border-style: none; display: block; visibility: visible; position: absolute;" class="slide cover"><img src="slideshow_files/makumba-logo.gif" alt="Cover page image" class="cover"><br clear="all">
+<h1>Makumba: query-centric web-applications for NGOs</h1>
+<p>FSCONS Gothenburg, 07-09 December 2007</p>
+
+<p>Manuel Gay</a>,
+&lt;<a href="mailto:manuel@makumba.org">manuel@makumba.org</a>&gt;</p>
+<br><br></div>
+
+<!-- 
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Agenda</h1>
+
+<ol>
+<li>Introduction</li>
+<li>Makumba Philosophy</li>
+<li>Makumba Data Definitions</li>
+<li>Makumba List</li>
+<li>Makumba Forms</li>
+<li>Makumba Business Logics</li>
+<li>Future</li>
+</ol>
+<br><br></div>
+ -->
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Introduction</h1>
+
+<ul>
+<li>framework for <strong>web-development</strong>, spanning from the data to the interface (JSP)</li>
+<li>developed since 2001, currently version 0.7 (revision 2153)</li>
+<li><strong>basic training takes 2h</strong></li>
+<li>NGO BEST (Board of European Students of Technology)</li>
+<li>textual replacement for Lotus Notes</li>
+<li>BEST IT group:
+<ul>
+<li>approx. 20 amateur developers, high turnover of members (10 new / year)</li>
+<li>loosely coupled group (spread everywhere over Europe)</li>
+</ul>
+</ul>
+<br><br></div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Makumba Philosophy</h1>
+
+<ul>
+<li>be <strong>easy</strong> to learn, yet <strong>powerful</strong> for advanced users</li>
+<li>have easily readable and understandable code</li>
+<li>be <strong>simple</strong> to configure</li>
+<li><strong>query-centric</strong>: SQL-like language, easy to read</li>
+<li><strong>HTML</strong> as a simple language, <strong>familiar</strong> to many
+<li><strong>scale</strong> for large applications and large developement teams
+<ul>
+<li>Karamba! webapp: 2800+ JSPs, 200+ Java Business Logic files, 100+ data structures
+<li>doubled its size since 2002</li>
+</ul>
+</li>
+</ul>
+
+<br><br></div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Makumba Data Definitions (MDDs)</h1>
+<ul>
+<li>each data definition represents one object</li>
+<li>MDDs are <strong>simple propery files</strong></li>
+<li><strong>few types</strong> (char, int, real, text, intEnum, binary) easy to learn</li>
+<li>relational types: ptr (pointer), set</li>
+<li>any language employing these database-like concepts (e.g. Hibernate mappings) can provide data definitions</li>
+</ul>
+<h3>Example:</h3>
+<pre>
+  # Person - simple data for a person
+  name = char[50]          ;Name
+  surname = char[50]       ;Surname or last name
+  gender = int{"Male" = 10, "Female" = 20} ; Gender
+  brother = ptr Person ;the brother
+  cars = set Car       ;Cars of this person
+
+  # Car - simple data for a car
+  name = char[50]    ;Name of the car
+  colour = int{"Green" = 10, "Blue" = 20, "Red" = 30}
+</pre>
+<br><br></div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Displaying data: Makumba List</h1>
+
+<ul>
+<li>query-based iteration</li>
+<li>can be nested and <strong>optimal queries</strong> will be composed</li>
+<li>query languages: OQL (Object Query Language), HQL (Hibernate Query Language)</li>
+</ul>
+<h3>Example:</h3>
+<pre>
+  &lt;<font color='blue'>mak:list</font> from="<font style="color:red;">Person p</font>" where="<font style="color:red;">p.age > 18</font>"&gt;</font>
+    &lt;em&gt;&lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.name</font>" /&gt; &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.surname</font>" /&gt;&lt;/em&gt;&lt;br/&gt;
+    <font style="color: black;">Cars: </font>
+    &lt;<font color='blue'>mak:list</font> from="<font style="color:red;">p.cars c</font>" separator="<font style="color:red;">, </font>"&gt;&lt;mak:value expr="<font style="color:red;">c.name</font>" /&gt;&lt;<font color='blue'>/mak:list</font>&gt;&lt;br/&gt;
+  &lt;<font color='blue'>/mak:list</font>&gt;
+</pre>
+
+<h3>Result:</h3>
+<ul>
+<div class="preview" style="width: 50%">
+  <em>John Doe</em><br>
+  Cars: Audi TT, Audi A6<br>
+  <em>Foo Bar</em><br>
+  Cars: BMW Z3<br>
+</div>
+</ul>
+</div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Entering data: Makumba Forms (1/2)</h1>
+
+<ul>
+<li>build on familiarity with HTML forms</li>
+<li>aim: getting things into the database with a minimum of efforts</li>
+<li>automatically generates the HTML necessary to display the form, depending on the data type of the fields</li>
+</ul>
+
+<h3>Example:</h3>
+<pre>
+  &lt;<font color='blue'>mak:newForm</font> type="<font style="color:red;">Person</font>" action="<font style="color:red;">listPersons.jsp</font>"&gt;
+    <font style="color:black;">Name:    </font>&lt;<font color='blue'>mak:input</font> field="<font style="color:red;">name</font>"/&gt;&lt;br /&gt;
+    <font style="color:black;">Surname: </font>&lt;<font color='blue'>mak:input</font> field="<font style="color:red;">surname</font>"/&gt;&lt;br /&gt;
+    <font style="color:black;">Gender:  </font>&lt;<font color='blue'>mak:input</font> field="<font style="color:red;">gender</font>"/&gt;&lt;br /&gt;
+    &lt;br /&gt;
+    &lt;input type="<font style="color:red;">submit</font>" value="<font style="color:red;">Create</font>" /&gt;
+  &lt;<font color='blue'>/mak:newForm</font>&gt;
+</pre>
+
+<h3>Result:</h3>
+<ul>
+<div style="width: 50%" class="preview">
+  <form>
+  Name:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="name" /><br>
+  Surname:&nbsp;<input type="text" name="surname" /><br>
+  Gender:&nbsp;&nbsp;<select name="gender"><option>Male</option><option>Female</option></select><br>
+  <br>
+  <input type="submit" value="Create new person!">
+  </form>
+</div>
+</ul>
+<div align="right">
+</div>
+
+</div>
+
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Entering data: Makumba Forms (2/2)</h1>
+
+<ul>
+<li>combined list and forms</li>
+<li>can be nested</li>
+</ul>
+
+<h3>Example:</h3>
+<pre>
+&lt;<font color='blue'>mak:form</font> action="<font style="color:red;">editPersonCars.jsp</font>"&gt;
+  &lt;<font color='blue'>mak:list</font> from="<font style="color:red;">Person p</font>"&gt;
+    &lt;em&gt;&lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.name</font>"/&gt; &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.surname</font>"/&gt;&lt;/em&gt;&lt;br/&gt;
+    &lt;<font color='blue'>mak:list</font> from="<font style="color:red;">p.cars c</font>"&gt;
+      &lt;<font color='blue'>mak:editForm</font> object="<font style="color:red;">c</font>"&gt;
+        <font style="color:black;">Car</font> ${<font color='blue'>mak:count()</font>} <font style="color:black;">name:</font> &lt;<font color='blue'>mak:input</font> field="<font style="color:red;">name</font>" /&gt;&lt;br/&gt;
+      &lt;<font color='blue'>/mak:editForm</font>&gt;
+    &lt;<font color='blue'>/mak:list</font>&gt;
+  &lt;<font color='blue'>/mak:list</font>&gt;&lt;br/&gt;
+  &lt;input type="<font style="color:red;">submit</font>" value="<font style="color:red;">Change</font>"&gt;
+&lt;<font color='blue'>/mak:form</font>&gt;
+</pre>
+
+<h3>Result:</h3>
+<ul>
+<div style="width: 50%" class="preview">
+  <em>John Doe</em><br>
+  <form action="#">
+  Car 1 name: <input name="name1" value="Audi TT"><br>
+  Car 2 name: <input name="name2" value="Audi A6"><br>
+  <em>Foo Bar</em><br>
+  Car 1 name: <input name="name3" value="BMW Z3"><br>
+  <br><input type="submit" value="Change">
+  </form>
+</div>
+</ul>
+
+</div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Makumba Developer Support</h1>
+<ul>
+<li>Source Viewer</li>
+<li><a href="http://tequila.best.eu.org/rudi-k/dataDefinitions/general.Person">Code Generator</a></li>
+<li>Query interface</li>
+
+</ul>
+<br><br></div>
+
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Makumba Business Logics & Controller</h1>
+<h2>Business Logics:</h2>
+<ul>
+<li>based on java</li>
+<li>at the moment, "per page" business logic</li>
+<li>makes it possible to perform <strong>validation</strong>, <strong>response actions</strong> (e.g. e-mail sending) and advanced <strong>processing</strong> before and after an object is created/modified/deleted</li>
+</ul>
+<br>
+<h2>Controller:</h2>
+<ul>
+<li>"weak" MVC</li>
+<li><strong>scales</strong> for <strong>large applications</strong> with a <strong>distributed development team</strong> (! Struts, template engines...)</li>
+<li>ensures independence between developers (possibility to easily divide tasks between members)</li>
+</ul>
+
+<br><br></div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Future</h1>
+
+<ul>
+<li>Per-object Business Logic</li>
+<li>Hibernate / POJO-based business logic</li>
+<li><strong>Query Fragments</strong><br>
+<ul><em>query functions</em> in the MDD:<br>
+<pre>
+cars = set Car ;cars of this person
+numberOfRedCars() = count(c) from cars c where c.color = 'Red'
+</pre>
+used in the JSP:<br>
+<pre>
+&lt;<font color='blue'>mak:list</font> from="<font style="color:red;">Person p</font>"&gt;
+  &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.name</font>" /&gt; - &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.numberOfRedCars()</font>" /&gt;
+&lt;<font color='blue'>/mak:list</font>&gt;
+</pre>
+</ul>
+</li>
+<li><strong>Per-object authorisation</strong>
+<ul>
+<pre>
+canEdit(Person p)= p.age > 18 AND p.numberOfCars() > 0
+</pre>
+</li>
+</ul>
+</li>
+
+<li>further integration with Hibernate and Struts</li>
+
+</ul>
+<br><br></div>
+
+<div style="border-style: none; display: block; visibility: visible; position: absolute;" class="slide cover"><img src="slideshow_files/makumba-logo.gif" alt="Cover page image" class="cover"><br clear="all">
+<h1>Thanks for your attention</h1>
+<br>
+<h2>http://www.makumba.org</h2>
+<br><br></div>
+
+
+<div style="display: block; visibility: visible;" class="toolbar"><div style="float: right; text-align: right;"><div>slide 1/12</div></div><div style="text-align: left;"><span style="color: rgb(240, 240, 240);">* </span><a title="Navigate with mouse click, space bar, Cursor Left/Right, or Pg Up and Pg Dn. Use S and B to change font size." href="http://www.w3.org/Talks/Tools/Slidy/help.html">help?</a> <a title="table of contents" href="javascript:toggleTableOfContents()">contents?</a> <a title="restart presentation" href="http://www.w3.org/2005/03/slideshow.html">restart?</a><span style="color: black; margin-left: 4em;">Copyright © 2005 W3C (MIT, ERCIM, Keio)</span></div></div></body></html>
