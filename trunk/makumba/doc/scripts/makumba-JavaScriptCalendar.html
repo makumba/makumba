@@ -149,7 +149,7 @@ function setMultipleValuesbirthdate(y,m,d) {
 &lt;a class="calendarEditor" href="#" onClick="birthdateCalendar.showCalendar('birthdateAnchor', getDateString(document.getElementById('birthdate_2'), document.getElementById('birthdate_1'), document.getElementById('birthdate_0'))); return false;" title="Pick date in calendar" name="birthdateAnchor" ID="birthdateAnchor"&gt; &lt;/a&gt;
 &lt;div id="makCalendarDiv" style="position:absolute; visibility:hidden; background-color:white; layer-background-color:white;"&gt;&lt;/div&gt;
 </pre> You can turn this off by modifying the <code>&lt;mak:input&gt;</code> tag, using the attribute <code>calendarEditor</code>, and
-  setting it to "false": <pre class="example"></b>&lt;mak:input name=&quot;birthDate&quot; <b>calendarEditor="false"</b> /&gt;</pre></li>
+  setting it to "false": <pre class="example">&lt;mak:input name=&quot;birthDate&quot; <b>calendarEditor="false"</b> /&gt;</pre></li>
   <li>The rendering of the inputs will be the same, until you define a style for the class used in the &lt;a&gt; tag, e.g. <pre
     class="example">
 .calendarEditor {
@@ -212,7 +212,7 @@ function setMultipleValuesbirthdate(y,m,d) {
   <p>Please note that the icon might not appear in some browsers, e.g. in Safari.</p>
   </li>
   <li>To add text or other formatting to your calendar link, you can use the <code>calendarEditorLink</code> attribute: <pre
-    class="example"></b>&lt;mak:input name=&quot;birthDate&quot; <b>calendarEditorLink="[calendar]"</b> /&gt;</pre> Which will result
+    class="example">&lt;mak:input name=&quot;birthDate&quot; <b>calendarEditorLink="[calendar]"</b> /&gt;</pre> Which will result
   in the link being generated as <pre class="example">
 &lt;a class="calendarEditor" href="#" onClick="birthdateCalendar.showCalendar('birthdateAnchor', getDateString(document.getElementById('birthdate_2'), document.getElementById('birthdate_1'), document.getElementById('birthdate_0'))); return false;" title="Pick date in calendar" name="birthdateAnchor" ID="birthdateAnchor"&gt; &lt;/a&gt;
 </pre>and will render as:<br>
