@@ -1,0 +1,15 @@
+
+
+<html>
+<head><title>Field types</title></head>
+<body>
+
+
+
+
+
+  testTS_modify!2007-09-26 15:17:04.0!endTS_modify<br>  
+
+
+</body>
+</html>
