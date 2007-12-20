@@ -1,0 +1,16 @@
+
+
+<html>
+<head><title>Field types</title></head>
+<body>
+
+
+
+
+
+  testBirthdate!05 March 1977!endBirthdate<br>
+  testBirthdateFormat!05-00-77!endBirthdateFormat<br>
+
+
+</body>
+</html>
