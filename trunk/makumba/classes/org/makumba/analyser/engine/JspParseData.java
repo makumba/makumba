@@ -66,6 +66,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     /** Indicates whether the JSP file uses the Hibernate implementation or not. * */
     private boolean usingHibernate = false;
 
+    /** the path of the webapp root */
+    private String root;
+
     /** The patterns used to parse the page. */
     static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern,
             JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, Word, TagName;
@@ -81,7 +84,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         public Object getHashObject(Object o) {
             Object[] o1 = (Object[]) o;
-            return ((String) o1[0]) + o1[1].getClass().getName();
+            return ((String) o1[0] + o1[2]) + o1[1].getClass().getName();
         }
 
         public Object makeResource(Object o, Object hashName) throws Throwable {
@@ -170,7 +173,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            JspAnalyzer used to parse the page
      */
     static public JspParseData getParseData(String webappRoot, String path, JspAnalyzer an) {
-        Object arg[] = { webappRoot + path, an, path };
+        Object arg[] = { webappRoot, an, path };
         return (JspParseData) NamedResources.getStaticCache(analyzedPages).getResource(arg);
     }
 
@@ -192,7 +195,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            the uri, for debugging purposes
      */
     private JspParseData(String path, JspAnalyzer an, String uri) {
-        this.file = new File(path);
+        this.root= path;
+        this.file = new File(root + uri);
         this.uri = uri;
         this.analyzer = an;
     }
@@ -285,7 +289,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host) {
         Map m = parseAttributes(includeDirective, -1);
         String fileName = (String) m.get("file");
-        host.include(new File(host.file.getParent(), fileName), position, includeDirective);
+        String dir = fileName.startsWith("/") ? root : host.file.getParent();
+        host.include(new File(dir, fileName), position, includeDirective);
     }
 
     public Pattern[] getCommentPatterns() {
