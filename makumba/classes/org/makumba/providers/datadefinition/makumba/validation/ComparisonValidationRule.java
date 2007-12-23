@@ -260,7 +260,7 @@ public class ComparisonValidationRule extends BasicValidationRule {
         RegExpUtils.evaluate(pattern, rules, false);
     }
 
-    public static Object getOperator() {
+    public static String getOperator() {
         return operator;
     }
 
