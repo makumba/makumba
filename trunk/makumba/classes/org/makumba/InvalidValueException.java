@@ -23,7 +23,7 @@
 
 package org.makumba;
 
-import org.makumba.commons.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /** This exception occurs when an invalid value is passed to a field */
 public class InvalidValueException extends RuntimeException {
@@ -80,7 +80,7 @@ public class InvalidValueException extends RuntimeException {
     }
 
     public String getShortMessage() {
-        if (StringUtils.notEmpty(shortMessage)) {
+        if (StringUtils.isNotEmpty(shortMessage)) {
             return shortMessage;
         } else {
             return getMessage();
