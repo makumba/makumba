@@ -24,7 +24,6 @@
 package org.makumba.providers.datadefinition.makumba;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,10 +33,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.jar.JarEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
@@ -47,7 +46,6 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
-import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
