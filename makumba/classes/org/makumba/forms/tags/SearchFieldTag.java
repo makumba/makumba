@@ -2,12 +2,12 @@ package org.makumba.forms.tags;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.StringUtils;
 
 /**
  * This tag implements an input field to be used within search forms. It slighlty changes some of the functionality of
@@ -39,9 +39,9 @@ public class SearchFieldTag extends InputTag {
         if (!getForm().getOperation().equals("search")) {
             throw new ProgrammerError("'selectMultiple' attribute is only valid inside Makumba Search Forms!");
         }
-        if (!StringUtils.equals(selectMultiple, allowedSelectTypes)) {
+        if (!org.makumba.commons.StringUtils.equals(selectMultiple, allowedSelectTypes)) {
             throw new ProgrammerError("Invalid value for attribute 'selectMultiple': <" + selectMultiple
-                    + ">. Allowed values are " + StringUtils.toString(allowedSelectTypes));
+                    + ">. Allowed values are " + org.makumba.commons.StringUtils.toString(allowedSelectTypes));
         }
         this.selectMultiple = selectMultiple;
         params.put("selectMultiple", selectMultiple);
@@ -98,9 +98,9 @@ public class SearchFieldTag extends InputTag {
     }
 
     public void setRole(String role) {
-        if (!StringUtils.equals(role, allowedRoles)) {
+        if (!org.makumba.commons.StringUtils.equals(role, allowedRoles)) {
             throw new ProgrammerError("Invalid value for attribute 'role': <" + role + ">. Allowed values are "
-                    + StringUtils.toString(allowedRoles));
+                    + org.makumba.commons.StringUtils.toString(allowedRoles));
         }
         // role can be used only within a range type criterion tag
         if (!getCriterionTag().isRange()) {

@@ -29,12 +29,12 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
-import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
@@ -96,7 +96,7 @@ public class FormResponder extends Responder {
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
         // add client side validation, but only for edit operations (not search)
-        if (!operation.equals("search") && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+        if (!operation.equals("search") && org.makumba.commons.StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
             provider.initField(fname, ftype, clientSideValidation.equals("live"));
         }
         max++;
@@ -184,7 +184,7 @@ public class FormResponder extends Responder {
             // if we do client side validation, we need to put an extra formatting parameter for onSubmit
             // but, do it only for edit operations (not search)
             if (!operation.equals("search")
-                    && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+                    && org.makumba.commons.StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
                 StringBuffer onSubmitValidation = provider.getOnSubmitValidation(StringUtils.equals(
                     clientSideValidation, "live"));
                 // we append it only if we actually have data

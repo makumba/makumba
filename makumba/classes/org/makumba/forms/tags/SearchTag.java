@@ -265,8 +265,8 @@ public class SearchTag extends FormTagBase {
             req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_QUERYSTRING, queryString.toString());
             req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_DONE, Boolean.TRUE);
             for (int i = 0; i < allAttributes.length; i++) {
-                Logger.getLogger("org.makumba.searchForm").info(
-                    "Set '" + allAttributes[i] + "': " + req.getAttribute(resp.getFormName() + allAttributes[i]));
+                Logger.getLogger("org.makumba.searchForm").fine(
+                    "Set search form result attribute '" + allAttributes[i] + "': " + req.getAttribute(resp.getFormName() + allAttributes[i]));
             }
             return null;
         }

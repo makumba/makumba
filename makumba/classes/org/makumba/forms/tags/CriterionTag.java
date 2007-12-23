@@ -7,12 +7,12 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.StringUtils;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.providers.FormDataProvider;
 
@@ -185,9 +185,9 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     }
 
     public void setIsRange(String isRange) {
-        if (!StringUtils.equals(isRange, allowedRanges)) {
+        if (!org.makumba.commons.StringUtils.equals(isRange, allowedRanges)) {
             throw new ProgrammerError("Invalid value for attribute 'isRange': <" + isRange + ">. Allowed values are "
-                    + StringUtils.toString(allowedRanges));
+                    + org.makumba.commons.StringUtils.toString(allowedRanges));
         }
         this.isRange = isRange;
     }
