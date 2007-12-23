@@ -26,23 +26,22 @@ public class StringUtils {
     }
 
     /** Checks whether a String is not null and has, after trimming, a length > 0. */
-    public static boolean notEmpty(String s) {
-        return s != null && s.length() > 0;
-    }
-
-    /** Checks whether a String is not null and has, after trimming, a length > 0. */
     public static boolean notEmpty(Object o) {
         return o != null && o instanceof String && o.toString().length() > 0;
     }
 
-    /** Checks whether a String is null or has, after trimming, a length == 0. */
-    public static boolean isEmpty(String s) {
-        return s == null || s.length() == 0;
+    public static boolean notEmpty(String[] o) {
+        for (int i = 0; i < o.length; i++) {
+            if(org.apache.commons.lang.StringUtils.isNotEmpty(o[i])) {
+                return true;
+            }
+        } 
+        return false;
     }
-
+    
     /** Checks whether an Object is null or has, after trimming, a length == 0. */
     public static boolean isEmpty(Object o) {
-        return o == null || (o instanceof String && isEmpty((String) o));
+        return o == null || (o instanceof String && org.apache.commons.lang.StringUtils.isEmpty((String) o));
     }
 
     /**
@@ -105,14 +104,9 @@ public class StringUtils {
         return b.toString();
     }
 
-    /** Checks whether the given Strings are equal. This method can handle null values. */
-    public static boolean equals(String s, String s2) {
-        return s != null && s.equals(s2);
-    }
-
     /** Checks whether the given Object equals the given String. */
     public static boolean equals(String s, Object o) {
-        return o instanceof String && equals(s, (String) o);
+        return o instanceof String && org.apache.commons.lang.StringUtils.equals(s, (String) o);
     }
 
     /** Checks whether the given Object equals the given String. */
