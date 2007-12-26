@@ -98,10 +98,7 @@ public class MatchModeTag extends GenericMakumbaTag {
 
     @Override
     public void setType(String s) {
-        if (!StringUtils.equals(s, allowedTypes)) {
-            throw new ProgrammerError("Invalid value '" + s + "' for attribute 'type'. Accepted values are: "
-                    + StringUtils.toString(allowedTypes));
-        }
+        checkValidAttributeValues("type", s, allowedTypes);
         super.setType(s);
     }
 
@@ -160,7 +157,7 @@ public class MatchModeTag extends GenericMakumbaTag {
 
         String type = (String) params.get("type");
         try {
-            if (StringUtils.equals(type, new String[] { "radio" })) {
+            if (StringUtils.equalsAny(type, new String[] { "radio" })) {
                 if (elementSeparator != null)
                     hcw.setOptionSeparator(elementSeparator);
                 if (labelSeparator != null)
