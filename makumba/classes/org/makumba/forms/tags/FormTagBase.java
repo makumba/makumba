@@ -91,9 +91,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String annotation = "after";
 
-    private static final String[] validAnnotationParams = new String[] { "none", "before", "after", "both" };
+    private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
 
-    private static final String[] validClientSideValidationParams = new String[] { "true", "false", "live" };
+    private static final String[] validClientSideValidationParams = ATTRIBUTE_VALUES_TRUE_FALSE;
 
     String annotationSeparator;
 
@@ -234,10 +234,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     public void setClientSideValidation(String clientSideValidation) {
-        if (!StringUtils.equals(clientSideValidation, validClientSideValidationParams)) {
-            throw new ProgrammerError("Invalid value for attribute 'clientSideValidation': <" + clientSideValidation
-                    + ">. Allowed values are " + StringUtils.toString(validClientSideValidationParams));
-        }
+        checkValidAttributeValues("clientSideValidation", clientSideValidation, validClientSideValidationParams);
         if (extraFormattingParams.get("onSubmit") != null) {
             throw new ProgrammerError(
                     "Forms specifying a 'clientSideValidation' attribute cannot provide an 'onSubmit' attribute");
@@ -247,10 +244,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setAnnotation(String s) {
         checkNoParent("annotation");
-        if (!Arrays.asList(validAnnotationParams).contains(s)) {
-            throw new ProgrammerError("Invalid value for attribute 'annotation': <" + annotation
-                    + ">. Allowed values are " + StringUtils.toString(validAnnotationParams));
-        }
+        checkValidAttributeValues("annotation", s, validAnnotationParams);
         annotation = s;
     }
 
@@ -365,7 +359,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                         "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
         }
         // add needed resources, stored in cache for this page
-        if (clientSideValidation != null && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+        if (clientSideValidation != null && StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
@@ -399,7 +393,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.setMessage(formMessage);
 
         responder.setReloadFormOnError(reloadFormOnError);
-        responder.setShowFormAnnotated(StringUtils.equals(annotation, new String[] { "before", "after", "both" }));
+        responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
 
         if (findParentForm() != null)
@@ -480,7 +474,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             // write client side validation, but only for edit operations (not search)
             if (!getOperation().equals("search")
-                    && StringUtils.equals(clientSideValidation, new String[] { "true", "live" })) {
+                    && StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
                 sb = new StringBuffer();
                 responder.writeClientsideValidation(sb);
                 bodyContent.getEnclosingWriter().print(sb.toString());
