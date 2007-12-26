@@ -33,6 +33,9 @@ rudi: added totalCount() to mak:list
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.7 ALPHA2; 20 Dec 2007
+cristi&rudi: fixing bug with @include not finding absolute paths
+
 0.7; 22 nov 2007
 manu: refactoring and documenting most of the code, doing a lot of separation work
 manu: Transaction.executeQuery supports named parameters in Maps
