@@ -27,7 +27,7 @@ import org.makumba.commons.MultipleKey;
 public class SearchFieldTag extends InputTag {
     private static final String[] allowedRoles = { "rangeBegin", "rangeEnd" };
 
-    private static final String[] allowedSelectTypes = { "true", "false" };
+    private static final String[] allowedSelectTypes = ATTRIBUTE_VALUES_TRUE_FALSE;
 
     private static final long serialVersionUID = 1L;
 
@@ -39,10 +39,7 @@ public class SearchFieldTag extends InputTag {
         if (!getForm().getOperation().equals("search")) {
             throw new ProgrammerError("'selectMultiple' attribute is only valid inside Makumba Search Forms!");
         }
-        if (!org.makumba.commons.StringUtils.equals(selectMultiple, allowedSelectTypes)) {
-            throw new ProgrammerError("Invalid value for attribute 'selectMultiple': <" + selectMultiple
-                    + ">. Allowed values are " + org.makumba.commons.StringUtils.toString(allowedSelectTypes));
-        }
+        checkValidAttributeValues("selectMultiple", selectMultiple, allowedSelectTypes);
         this.selectMultiple = selectMultiple;
         params.put("selectMultiple", selectMultiple);
     }
@@ -98,10 +95,7 @@ public class SearchFieldTag extends InputTag {
     }
 
     public void setRole(String role) {
-        if (!org.makumba.commons.StringUtils.equals(role, allowedRoles)) {
-            throw new ProgrammerError("Invalid value for attribute 'role': <" + role + ">. Allowed values are "
-                    + org.makumba.commons.StringUtils.toString(allowedRoles));
-        }
+        checkValidAttributeValues("role", role, allowedRoles);
         // role can be used only within a range type criterion tag
         if (!getCriterionTag().isRange()) {
             throw new ProgrammerError("'role' can only be specified if the criterion specific range='true'! ");

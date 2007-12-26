@@ -23,7 +23,7 @@ import org.makumba.providers.FormDataProvider;
 public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     private static final long serialVersionUID = 1L;
 
-    private static final String[] allowedRanges = { "true", "false" };
+    private static final String[] allowedRanges = ATTRIBUTE_VALUES_TRUE_FALSE;
 
     private String isRange;
 
@@ -185,10 +185,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     }
 
     public void setIsRange(String isRange) {
-        if (!org.makumba.commons.StringUtils.equals(isRange, allowedRanges)) {
-            throw new ProgrammerError("Invalid value for attribute 'isRange': <" + isRange + ">. Allowed values are "
-                    + org.makumba.commons.StringUtils.toString(allowedRanges));
-        }
+        checkValidAttributeValues("isRange", isRange, allowedRanges);
         this.isRange = isRange;
     }
 }
