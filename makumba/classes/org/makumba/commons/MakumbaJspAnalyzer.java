@@ -38,6 +38,7 @@ import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
+import org.makumba.list.tags.QueryTag;
 
 /**
  * This class analyzes a JSP taking into account the specifics of Makumba tags. When implementing a new Makumba tag, be
@@ -53,7 +54,7 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
 public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
-            "org.makumba.list.tags.ResultListTag" };
+            "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag" };
 
     static String[] oldFormTags = { "form", "org.makumba.forms.tags.FormTagBase", "newForm",
             "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",
@@ -157,6 +158,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                     throw new ProgrammerError(sb.toString());
                 }
                 pageCache.cache(TAG_CACHE, t.getTagKey(), t);
+                // added by rudi: to be able to find a list tag by the ID, we need to cache it twice
+                // FIXME: this seems to be a dirty hack
+                if (t instanceof QueryTag) {
+                    pageCache.cache(TAG_CACHE, t.getId(), t);
+                }
             }
             
             // we also want to cache the dependencies between form tags
