@@ -30,13 +30,22 @@ public class StringUtils {
         return o != null && o instanceof String && o.toString().length() > 0;
     }
 
-    public static boolean notEmpty(String[] o) {
+    public static boolean anyNotEmpty(String[] o) {
         for (int i = 0; i < o.length; i++) {
             if(org.apache.commons.lang.StringUtils.isNotEmpty(o[i])) {
                 return true;
             }
         } 
         return false;
+    }
+    
+    public static boolean allNotEmpty(String[] o) {
+        for (int i = 0; i < o.length; i++) {
+            if(org.apache.commons.lang.StringUtils.isEmpty(o[i])) {
+                return false;
+            }
+        } 
+        return true;
     }
     
     /** Checks whether an Object is null or has, after trimming, a length == 0. */
@@ -116,11 +125,11 @@ public class StringUtils {
 
     /** Checks whether the given Object equals any of the given options. */
     public static boolean equals(Object o, String[] options) {
-        return o instanceof String && equals((String) o, options);
+        return o instanceof String && equalsAny((String) o, options);
     }
 
     /** Checks whether the given String equals any of the given options. */
-    public static boolean equals(String s, String[] options) {
+    public static boolean equalsAny(String s, String[] options) {
         if (s == null) {
             return false;
         }
