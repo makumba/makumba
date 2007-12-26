@@ -287,7 +287,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                     exceptions = errors.getExceptions(fieldName);
                 }
                 // if requested, do annoation before the field
-                if (StringUtils.equals(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
+                if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
                     for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
                         printAnnotation(fieldName, (InvalidValueException) iter.next());
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
@@ -298,7 +298,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 // print the actual form value
                 pageContext.getOut().print(formatted);
                 // if requested, do annoation after the field
-                if (StringUtils.equals(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
+                if (StringUtils.equalsAny(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
                     for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
                             pageContext.getOut().print(getForm().annotationSeparator);
