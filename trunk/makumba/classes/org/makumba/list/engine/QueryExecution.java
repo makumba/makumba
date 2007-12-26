@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
 
+import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.commons.ArrayMap;
@@ -118,6 +119,17 @@ public class QueryExecution {
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit));
         return lqe;
     }
+    
+    /** Like {@link #getFor(MultipleKey, PageContext, String, String)}, but uses the default values for offset/limit from the list tag. */
+    public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit,
+            String defaultLimit) throws LogicException {
+        HashMap executions = (HashMap) pageContext.getAttribute(EXECUTIONS);
+
+        QueryExecution lqe = (QueryExecution) executions.get(key);
+        if (lqe == null)
+            executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit, defaultLimit));
+        return lqe;
+    }
 
     /**
      * Constructs a QueryExection which executes the given query, in the given database, with the given attributes, to
@@ -150,6 +162,25 @@ public class QueryExecution {
         }
     }
 
+    /** Like {@link #QueryExecution(MultipleKey, PageContext, String, String)}, but uses default limit/offset parameters */
+    private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit, String defaultLimit)
+            throws LogicException {
+        currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
+        ComposedQuery cq = QueryTag.getQuery(
+            GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
+            (String) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(
+                MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
+
+        try {
+            Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
+            listData = cq.execute(qep, args, new Evaluator(pageContext), computeLimit(pageContext, offset, 0, 0),
+                computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), -1));
+        } finally {
+            qep.close();
+        }
+    }
+    
     /**
      * Computes the limit from the value passed in the limit tag parameter.
      * 
@@ -157,29 +188,52 @@ public class QueryExecution {
      *            The PageContext object of the current page
      * @param s
      *            The parameter value passed
-     * @param defa
-     *            The default value of the limit
+     * @param defaultNonSpecified
+     *            The default value of the limit/offset if the attribute is not specified in the list tag
+     * @param defaultValue
+     *            The fault value of the limit/offset if the attribute is specified in the list tag, but not present as
+     *            attribute
      * @return The int value of the limit, if a correct one is passed as tag parameter
      * @throws LogicException
      */
-    public static int computeLimit(PageContext pc, String s, int defa) throws LogicException {
-        if (s == null)
-            return defa;
+    public static int computeLimit(PageContext pc, String s, int defaultValue, int defaultNonSpecified) throws LogicException {
+        if (s == null) {
+            return defaultNonSpecified;
+        }
         s = s.trim();
         Object o = s;
-        if (s.startsWith("$"))
-            o = PageAttributes.getAttributes(pc).getAttribute(s.substring(1));
+        if (s.startsWith("$")) {
+            // the limit param is a dynamic value
+            try {
+                o = PageAttributes.getAttributes(pc).getAttribute(s.substring(1));
+            } catch (AttributeNotFoundException e) {
+                // if the limit param cannot be found, we try to use the default value for the param
+                if (defaultValue != Integer.MIN_VALUE) {
+                    return defaultValue;
+                } else {
+                    // if there is no default, we throw on the exception
+                    throw e;
+                }
+            }
+        }
 
         if (o instanceof String) {
             try {
                 return Integer.parseInt((String) o);
             } catch (NumberFormatException nfe) {
-                throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s+", value: "+o+", type: "+o.getClass().getName());
+                throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s + ", value: "
+                        + o + ", type: " + o.getClass().getName());
             }
         }
-        if (!(o instanceof Number) || ((Number) o).intValue()!=((Number) o).doubleValue())
-            throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s+ ", value: "+o+", type: "+o.getClass().getName());
+        if (!(o instanceof Number) || ((Number) o).intValue() != ((Number) o).doubleValue()) {
+            throw new org.makumba.InvalidValueException("Integer expected for OFFSET and LIMIT: " + s + ", value: " + o
+                    + ", type: " + o.getClass().getName());
+        }
         return ((Number) o).intValue();
+    }
+
+    private static int computeLimit(PageContext pc, String s, int defaultNonSpecified) throws LogicException {
+        return computeLimit(pc, s, Integer.MIN_VALUE, defaultNonSpecified);
     }
 
     /**

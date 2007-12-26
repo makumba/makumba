@@ -67,6 +67,10 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     String offset, limit;
 
+    private int defaultOffset = 0;
+
+    private String defaultLimit = "-1";
+
     static String standardCountVar = "org_makumba_view_jsptaglib_countVar";
 
     static String standardMaxCountVar = "org_makumba_view_jsptaglib_maxCountVar";
@@ -123,6 +127,32 @@ public class QueryTag extends GenericListTag implements IterationTag {
         limit = s.trim();
     }
 
+    public void setDefaultLimit(String s) throws JspException {
+        onlyOuterListArgument("defaultLimit");
+        onlyInt("defaultLimit", s);
+        defaultLimit = s.trim();
+    }
+
+    public int getLimitInt() {
+        int limitInt = -1;
+        try {
+            limitInt = QueryExecution.computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), limitInt);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return limitInt;
+    }
+
+    public int getOffsetInt() {
+        int defaultOffsetInt = 0;
+        try {
+            defaultOffsetInt = QueryExecution.computeLimit(pageContext, offset, defaultOffset, defaultOffsetInt);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return defaultOffsetInt;
+    }
+
     protected void onlyOuterListArgument(String s) throws JspException {
         QueryTag t = (QueryTag) findAncestorWithClass(this, QueryTag.class);
         while (t != null && t instanceof ObjectTag)
@@ -130,19 +160,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (t instanceof QueryTag)
             throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
                     + " parameter can only be set for the outermost mak:list tag"));
-    }
-
-    protected void onlyInt(String s, String value) throws JspException {
-        value = value.trim();
-        if (value.startsWith("$"))
-            return;
-        try {
-            Integer.parseInt(value);
-        } catch (NumberFormatException nfe) {
-            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
-                    + " parameter can only be an $attribute or an int"));
-
-        }
     }
 
     // runtime stuff
@@ -243,7 +260,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             upperMaxCount = pageContext.getRequest().getAttribute(standardMaxCountVar);
         }
 
-        execution = QueryExecution.getFor(tagKey, pageContext, offset, limit);
+        execution = QueryExecution.getFor(tagKey, pageContext, offset, limit, defaultLimit);
 
         int n = execution.onParentIteration();
 
@@ -251,8 +268,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // set the total result count, i.e. the count this list would have w/o limit & offset
         int maxResults = Integer.MIN_VALUE;
-        int limitEval = QueryExecution.computeLimit(pageContext, limit, -1);
-        int offsetEval = QueryExecution.computeLimit(pageContext, offset, 0);
+        int limitEval = QueryExecution.computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), -1);
+        int offsetEval = QueryExecution.computeLimit(pageContext, offset, defaultOffset, 0);
         if ((offsetEval == 0 && limitEval == -1) || (offsetEval == 0 && (limitEval > 00 && limitEval < n))) {
             // we can set the total count if there is no limit / offset in the page
             maxResults = n;
