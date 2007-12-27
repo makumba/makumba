@@ -59,7 +59,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jstl-standard.jar"/>
 	<classpathentry kind="lib" path="lib/jstl.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar" sourcepath="lib-src/commons-lang-2.3-sources.jar"/>
 	<classpathentry kind="var" path="ANTLR_HOME/antlr.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
