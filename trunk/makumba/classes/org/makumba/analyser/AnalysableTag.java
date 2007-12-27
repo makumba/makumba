@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
@@ -17,8 +18,6 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.StringUtils;
-import org.makumba.list.tags.MakumbaJspException;
 
 /**
  * Extend this class in order to get analysis support for your tag.
@@ -316,22 +315,18 @@ public abstract class AnalysableTag extends TagSupport {
 
     protected void onlyInt(String s, String value) throws JspException {
         value = value.trim();
-        if (value.startsWith("$"))
-            return;
-        try {
-            Integer.parseInt(value);
-        } catch (NumberFormatException nfe) {
-            throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
-                    + " parameter can only be an $attribute or an int"));
-    
+        if (value.startsWith("$")) {
+			return;
+		} else if (!StringUtils.isNumeric(value)) {
+            throw new ProgrammerError("The attribute '" + s + "' can only be an $attribute or an int");
         }
     }
 
     protected void checkValidAttributeValues(String attributeName, String value, String[] allowedAttributeValues)
             throws ProgrammerError {
-        if (!StringUtils.equalsAny(value, allowedAttributeValues)) {
+        if (!org.makumba.commons.StringUtils.equalsAny(value, allowedAttributeValues)) {
             throw new ProgrammerError("Invalid value for attribute '" + attributeName + "': <" + value
-                    + ">. Allowed values are " + StringUtils.toString(allowedAttributeValues));
+                    + ">. Allowed values are " + org.makumba.commons.StringUtils.toString(allowedAttributeValues));
         }
     }
 
