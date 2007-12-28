@@ -137,13 +137,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      */
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
-        if (expr == null)
-            expr = getForm().getDefaultExpr(name);
         // FIXME: this fix is rather a quick fix, it does not provide any information about the location of the error
         // it may appear e.g. if you put a mak:input inside a mak:object, but not inside a form
         if (getForm() == null) {
             throw new ProgrammerError("input tag must be enclosed by a form tag");
         }
+        if (expr == null)
+            expr = getForm().getDefaultExpr(name);
         Object[] keyComponents = { name, getForm().tagKey };
         tagKey = new MultipleKey(keyComponents);
     }
