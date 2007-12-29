@@ -140,16 +140,18 @@ public class ResponderCacheManager {
             String fileName = validResponderFilename(f.identity);
 
             if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
+                File file = new File(fileName);
                 try {
-                    if (!new File(fileName).exists()) { // file does not exist
+                    if (!file.exists()) { // file does not exist
                         f.controllerClassname = f.controller.getClass().getName();
-                        ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(fileName));
+                        ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(file));
                         objectOut.writeObject(f); // we write the responder to disk
                         objectOut.close();
                     }
                 } catch (IOException e) {
                     java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
-                        "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
+                        "Error while writing responder to HDD, deleting file " + fileName, e);
+                    file.delete();
                 }
             }
             indexedCache.put(new Integer(f.identity), name);
