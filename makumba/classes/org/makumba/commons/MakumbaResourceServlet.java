@@ -3,15 +3,18 @@ package org.makumba.commons;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +40,11 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static final String RESOURCE_PATH_CSS = "css/";
 
+    public static final String RESOURCE_PATH_IMAGES = "image/";
+
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter writer = resp.getWriter();
         String servletPath = req.getServletPath();
         String requestURI = req.getRequestURI();
         String resource = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
@@ -48,6 +52,8 @@ public class MakumbaResourceServlet extends HttpServlet {
         try {
             File file = new File(url.toURI());
             if (file.isDirectory()) {
+                // do a directory viewing
+                PrintWriter writer = resp.getWriter();
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
@@ -80,14 +86,24 @@ public class MakumbaResourceServlet extends HttpServlet {
                 }
                 writer.println("</pre>");
                 DevelUtils.writePageEnd(writer);
+                resp.setHeader("Last-Modified", dfLastModified.format(new Date()));
                 return;
+            } else {
+                resp.setHeader("Last-Modified", dfLastModified.format(new Date(file.lastModified())));
+                resp.setContentType(getContentType(url));
+                Object cachedResource = NamedResources.getStaticCache(makumbaResources).getResource(resource);
+                ServletOutputStream outputStream = resp.getOutputStream();
+                if (isBinary(url)) {
+                    for (int i = 0; i < ((byte[]) cachedResource).length; i++) {
+                        outputStream.write(((byte[]) cachedResource)[i]);
+                    }
+                } else {
+                    outputStream.print(cachedResource.toString());
+                }
             }
-            resp.setHeader("Last-Modified", dfLastModified.format(new Date(file.lastModified())));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        resp.setContentType(getContentType(url));
-        writer.print(NamedResources.getStaticCache(makumbaResources).getResource(resource));
     }
 
     public static String getContentType(URL url) {
@@ -108,6 +124,11 @@ public class MakumbaResourceServlet extends HttpServlet {
         return false;
     }
 
+    private static boolean isBinary(URL url) {
+        // TODO: this should be capable of detecting other types. A solution would be to check for "not text type"
+        return isImageType(url);
+    }
+
     public static int makumbaResources = NamedResources.makeStaticCache("Makumba resources",
         new NamedResourceFactory() {
             private static final long serialVersionUID = 1L;
@@ -123,12 +144,27 @@ public class MakumbaResourceServlet extends HttpServlet {
                 StringBuffer sb = new StringBuffer();
                 URL url = (URL) hashName;
                 // FIXME: we need to handle image types, if we decide we want this
-                BufferedReader bis = new BufferedReader(new InputStreamReader(url.openStream()));
-                byte c;
-                while ((c = (byte) bis.read()) != -1) {
-                    sb.append(String.valueOf((char) c));
+                InputStream stream = url.openStream();
+                if (isBinary(url)) {
+                    ArrayList<Byte> bytesList = new ArrayList<Byte>();
+                    InputStreamReader bis = new InputStreamReader(stream);
+                    byte b;
+                    while ((b = (byte) bis.read()) != -1) {
+                        bytesList.add(b);
+                    }
+                    byte[] bytes = new byte[bytesList.size()];
+                    for (int i = 0; i < bytes.length; i++) {
+                        bytes[i] = bytesList.get(i);
+                    }
+                    return bytes;
+                } else {
+                    BufferedReader bis = new BufferedReader(new InputStreamReader(stream));
+                    byte b;
+                    while ((b = (byte) bis.read()) != -1) {
+                        sb.append(String.valueOf((char) b));
+                    }
+                    return sb;
                 }
-                return sb;
             }
         }, true);
 
