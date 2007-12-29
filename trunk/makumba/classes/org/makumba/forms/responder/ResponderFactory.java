@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -110,19 +111,25 @@ public class ResponderFactory {
         */
         if(order != null)
             return Arrays.asList(order).iterator();
-        else return null;
+        else return new ArrayList<String>().iterator();
         
     }
     
     public void printOrderedResponders(HttpServletRequest req) {
-        Iterator<String> order = getOrderedResponderCodes(req);
+        System.out.println("\nresponders ordered:");
+        printResponderIterator(getOrderedResponderCodes(req));
+        System.out.println("\nresponders normal:");
+        printResponderIterator(getResponderCodes(req));
+    }
+
+    private void printResponderIterator(Iterator<String> order) {
         if(order == null)
             return;
         while(order.hasNext()) {
             String code = order.next();
+            System.out.println("** responder code: "+code);
             if(code == null) break;
             Responder r = getResponder(code);
-            System.out.println("** responder code: "+code);
             System.out.println("** responder form name: "+r.getFormName());
             System.out.println("** responder form key:  "+r.responderKey());
         }
@@ -313,9 +320,12 @@ public class ResponderFactory {
         String message = "";
         
         //printOrderedResponders(req);
+
+        // store the results from each responder, needed for nested new/add forms wanting to refer to newly created objects
+        Hashtable<String, Object> responderResults = new  Hashtable<String, Object>();
         
         // we go over all the responders of this page (hold in the request)
-        for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
+        for (Iterator<String> responderCodes = getOrderedResponderCodes(req); responderCodes.hasNext();) {
 
             // first we need to retrieve the responder from the cache
             String code = responderCodes.next();
@@ -327,6 +337,11 @@ public class ResponderFactory {
                 checkMultipleSubmission(req, formResponder);
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
+                if (formResponder instanceof FormResponder) {
+                    // FIXME: what to do if responder is not a form responder? pull up the result attribute field to
+                    // responder?
+                    responderResults.put(((FormResponder) formResponder).resultAttribute, result);
+                }
                 // display the response message and set attributes
                 message = "<font color=green>" + formResponder.message + "</font>";
                 if (result != null) {
