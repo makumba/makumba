@@ -24,7 +24,6 @@
 package org.makumba.forms.tags;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -200,7 +199,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 // first we add ourselves to the hashMap
                 responders.put(this.getTagKey(), new Integer(this.responder.getPrototype()).toString());
 
-                String[] responderOrder = new String[order.length];
+                String[] responderOrder = new String[responders.size()];
                 for (int i = 0; i < order.length; i++) {
                     if (responders.get(order[i]) != null)
                         responderOrder[i] = responders.get(order[i]);
