@@ -70,7 +70,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
             "org.makumba.forms.tags.OptionTag" };
     
-    static String[] formTagNames = {"form", "newForm", "addForm", "editForm", "deleteLink", "delete", "new", "add", "edit"};
+    static String[] formTagNames = {"form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm", "new", "add", "edit"};
 
     static final Map<String, Class> tagClasses = new HashMap<String, Class>();
     
