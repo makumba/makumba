@@ -47,9 +47,6 @@ public class SearchTag extends FormTagBase {
 
     public static final String ATTRIBUTE_NAME_WHERE = "Where";
 
-    public static final String[] allAttributes = { ATTRIBUTE_NAME_WHERE, ATTRIBUTE_NAME_VARIABLE_FROM,
-            ATTRIBUTE_NAME_QUERYSTRING, ATTRIBUTE_NAME_DONE };
-
     public static final String MATCH_AFTER = "after";
 
     public static final String MATCH_BEFORE = "before";
@@ -106,7 +103,7 @@ public class SearchTag extends FormTagBase {
     }
 
     public ResponderOperation getResponderOperation(String operation) {
-        return new SearchResponderOperation();
+        return searchOp;
     }
 
     /**
@@ -142,7 +139,7 @@ public class SearchTag extends FormTagBase {
         tagKey = new MultipleKey(new Object[] { formName });
     }
 
-    protected class SearchResponderOperation extends ResponderOperation {
+    private final static ResponderOperation searchOp = new ResponderOperation() {
 
         private static final long serialVersionUID = 1L;
 
@@ -259,16 +256,19 @@ public class SearchTag extends FormTagBase {
             appendParams(queryString, FormResponder.responderName, parameters.getParameter(FormResponder.responderName));
 
             // set the attributes, and do logging
-            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_WHERE, where);
-            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_VARIABLE_FROM, StringUtils.toString(variableFroms,
+            Hashtable<String, Object> searchResults = new Hashtable<String, Object>(4);
+            searchResults.put(resp.getFormName() + ATTRIBUTE_NAME_WHERE, where);
+            searchResults.put(resp.getFormName() + ATTRIBUTE_NAME_VARIABLE_FROM, StringUtils.toString(variableFroms,
                 false));
-            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_QUERYSTRING, queryString.toString());
-            req.setAttribute(resp.getFormName() + ATTRIBUTE_NAME_DONE, Boolean.TRUE);
-            for (int i = 0; i < allAttributes.length; i++) {
+            searchResults.put(resp.getFormName() + ATTRIBUTE_NAME_QUERYSTRING, queryString.toString());
+            searchResults.put(resp.getFormName() + ATTRIBUTE_NAME_DONE, Boolean.TRUE);
+
+            for (String key : searchResults.keySet()) {
+                req.setAttribute(key, searchResults.get(key));
                 Logger.getLogger("org.makumba.searchForm").fine(
-                    "Set search form result attribute '" + allAttributes[i] + "': " + req.getAttribute(resp.getFormName() + allAttributes[i]));
+                    "Set search form result attribute '" + key + "': " + req.getAttribute(key));
             }
-            return null;
+            return searchResults;
         }
 
         private void appendParams(StringBuffer link, String inputName, Object value) {
@@ -376,6 +376,6 @@ public class SearchTag extends FormTagBase {
         private String getRangeBeginName(String fieldName) {
             return fieldName.substring(0, fieldName.length() - RANGE_END.length());
         }
-    }
+    };
 
 }
