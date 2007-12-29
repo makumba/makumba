@@ -49,16 +49,11 @@ public class GraphTS {
         return this.sortedArray;
     }
 
-    public void topo() // toplogical sort
-    {
-        int orig_nVerts = numVerts;
-
-        while (numVerts > 0) // while vertices remain,
-        {
+    public void topo() {// toplogical sort
+        while (numVerts > 0) {// while vertices remain,
             // get a vertex with no successors, or -1
             int currentVertex = noSuccessors();
-            if (currentVertex == -1) // must be a cycle
-            {
+            if (currentVertex == -1) {// must be a cycle
                 System.out.println("ERROR: Graph has cycles");
                 return;
             }
@@ -77,21 +72,20 @@ public class GraphTS {
          */
     }
 
-    public int noSuccessors() // returns vert with no successors (or -1 if no such verts)
-    {
+    public int noSuccessors() { // returns vert with no successors (or -1 if no such verts)
         boolean isEdge; // edge from row to column in adjMat
 
         for (int row = 0; row < numVerts; row++) {
             isEdge = false; // check edges
             for (int col = 0; col < numVerts; col++) {
-                if (matrix[row][col] > 0) // if edge to another,
-                {
+                if (matrix[row][col] > 0) {// if edge to another,
                     isEdge = true;
                     break; // this vertex has a successor try another
                 }
             }
-            if (!isEdge) // if no edges, has no successors
+            if (!isEdge) {// if no edges, has no successors
                 return row;
+            }
         }
         return -1; // no
     }
