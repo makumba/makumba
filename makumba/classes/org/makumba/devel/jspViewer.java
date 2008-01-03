@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
@@ -214,7 +215,11 @@ public class jspViewer extends LineViewer {
 
     public void intro(PrintWriter w) throws IOException {
         w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
-        w.println("<a href=\"" + contextPath + virtualPath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
+        String executePath = contextPath + virtualPath;
+        if (StringUtils.isNotEmpty(request.getQueryString())) {
+            executePath += "?" + request.getQueryString();
+        }
+        w.println("<a href=\"" + executePath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
         w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
         w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
 
