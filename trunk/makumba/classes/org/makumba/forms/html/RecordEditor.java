@@ -70,12 +70,12 @@ public class RecordEditor extends RecordFormatter {
         query = new String[ri.getFieldNames().size()];
     }
 
-    public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions, String suffix) {
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
-            Collection exceptions = e.getExceptions(fe.getInputName(this, i, suffix));
+            Collection<InvalidValueException> exceptions = e.getExceptions(fe.getInputName(this, i, suffix));
             if (exceptions != null) {
-                for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
                     unassignedExceptions.remove(iter.next());
                 }
             }
@@ -95,9 +95,9 @@ public class RecordEditor extends RecordFormatter {
         }
     }
 
-    public Dictionary readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
+    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
-        Vector<Exception> exceptions = new Vector<Exception>(); // will collect all exceptions from the field validity checks
+        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>(); // will collect all exceptions from the field validity checks
 
         Hashtable<Integer, Object> validatedFields = new Hashtable<Integer, Object>();
         Hashtable<String, Object> validatedFieldsNameCache = new Hashtable<String, Object>();
@@ -129,7 +129,7 @@ public class RecordEditor extends RecordFormatter {
             }
         }
 
-        ArrayList validatedFieldsOrdered = new ArrayList(validatedFields.keySet());
+        ArrayList<Integer> validatedFieldsOrdered = new ArrayList<Integer>(validatedFields.keySet());
         Collections.sort(validatedFieldsOrdered);
 
         // in the second validation pass, we only validate those fields that passed the first check
@@ -139,10 +139,10 @@ public class RecordEditor extends RecordFormatter {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
-            Collection validationRules = fieldDefinition.getValidationRules();
+            Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
             
             if (validationRules != null && applyValidationRules) {
-                for (Iterator iter = validationRules.iterator(); iter.hasNext();) {
+                for (Iterator<ValidationRule> iter = validationRules.iterator(); iter.hasNext();) {
                     ValidationRule rule = (ValidationRule) iter.next();
                     try { // evaluate each rule separately
                         if (rule instanceof ComparisonValidationRule
