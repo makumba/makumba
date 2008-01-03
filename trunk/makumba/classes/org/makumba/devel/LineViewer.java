@@ -301,26 +301,19 @@ public abstract class LineViewer implements SourceViewer {
         if (versionControlRepositoryURL != null) {
             String path = virtualPath;
             if (this instanceof javaViewer) {
-                path = "WEB-INF/classes/" + replaceDots(path) + ".java";
+                path = "WEB-INF/classes/" + path.replace('.', '/') + ".java";
             } else if (this instanceof mddViewer) {
                 String additionalPath = "WEB-INF/classes/";
                 if (realPath.contains("classes/dataDefinitions")) {
                     additionalPath += "dataDefinitions/";
                 }
-                path = additionalPath + replaceDots(path) + ".mdd";
+                path = additionalPath + path.replace('.', '/') + ".mdd";
             }
             return " (<a title=\"See this file in the version control repository\" href=\""
                     + versionControlRepositoryURL + path + "\">" + versionControlRepositoryLinkText + "</a>)";
         } else {
             return "";
         }
-    }
-
-    private String replaceDots(String path) {
-        while (path.indexOf('.') != -1 && path.indexOf('.') < path.lastIndexOf('.')) {
-            path = path.replace('.', '/');
-        }
-        return path;
     }
 
     protected void writeAdditionalLinks(PrintWriter writer) {
