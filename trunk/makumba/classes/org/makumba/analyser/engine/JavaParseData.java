@@ -45,7 +45,7 @@ import org.makumba.commons.NamedResources;
  */
 public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
-    private class DefinitionPoint implements Comparable {
+    private class DefinitionPoint implements Comparable<DefinitionPoint> {
         String className;
 
         int position;
@@ -55,8 +55,8 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
             this.position = position;
         }
 
-        public int compareTo(Object arg0) {
-            return (new Integer(position).compareTo(new Integer(((DefinitionPoint) arg0).position)));
+        public int compareTo(DefinitionPoint arg0) {
+            return new Integer(position).compareTo(arg0.position);
         }
         
         public String toString() {
@@ -116,7 +116,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     private static Pattern MakumbaFormHandler;
     
-    private static List primitiveTypes = Arrays.asList(new String[] {"char", "byte", "short", "int", "long", "boolean", "float", "double", "void"});
+    private static List<String> primitiveTypes = Arrays.asList(new String[] {"char", "byte", "short", "int", "long", "boolean", "float", "double", "void"});
 
     /** Initialiser for the class variables. */
     static {
@@ -264,7 +264,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     }
 
     public String getDefinedObjectClassName(String objectName, int position) {
-        ArrayList points = (ArrayList) definedObjects.get(objectName);
+        ArrayList<DefinitionPoint> points = definedObjects.get(objectName);
         DefinitionPoint maxPoint = null;
         if (points != null) {
             for (int i = 0; i < points.size(); i++) {
