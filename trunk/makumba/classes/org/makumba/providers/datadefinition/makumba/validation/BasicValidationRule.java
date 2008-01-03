@@ -133,7 +133,7 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
 
     /** Checks if the given statement contains a syntactically correct and <b>known</b> function call. */
     public static boolean isValidFunctionCall(String s) {
-        List validFunctions = Arrays.asList(new String[] { "lower" });
+        List<String> validFunctions = Arrays.asList(new String[] { "lower" });
         return isFunctionCall(s) && validFunctions.contains(extractFunctionNameFromStatement(s));
     }
 
@@ -166,7 +166,7 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
      * We order the rules such that comparison rules come last. This is important for live validation, where first the
      * validity of each field by itself should be checked.
      */
-    public int compareTo(Object o) {
+    public int compareTo(ValidationRule o) {
         if (this instanceof ComparisonValidationRule) {
             return 1;
         } else if (o instanceof ComparisonValidationRule) {

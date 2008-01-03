@@ -41,9 +41,6 @@ public class RegExpValidationRule extends SingleFieldValidationRule {
         }
     }
 
-    private RegExpValidationRule() {
-    }
-
     public boolean validate(Object value) throws InvalidValueException {
         if (!(value instanceof String)) {
             return false;// TODO: think of throwing some "cannot validate exception"

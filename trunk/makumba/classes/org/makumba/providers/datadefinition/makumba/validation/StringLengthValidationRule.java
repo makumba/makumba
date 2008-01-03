@@ -41,9 +41,6 @@ public class StringLengthValidationRule extends RangeValidationRule {
         }
     }
 
-    private StringLengthValidationRule() {
-    }
-
     public boolean validate(Object value) throws InvalidValueException {
         if (!(value instanceof String || value instanceof Text)) {
             return false;// TODO: think of throwing some "cannot validate exception"
