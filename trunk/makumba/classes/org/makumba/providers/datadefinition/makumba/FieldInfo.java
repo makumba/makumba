@@ -1111,9 +1111,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return getIntegerType() == _setComplex;
     }
 
-    public void addValidationRule(Collection rules) {
+    public void addValidationRule(Collection<ValidationRule> rules) {
         if (rules != null) {
-            for (Iterator iter = rules.iterator(); iter.hasNext();) {
+            for (Iterator<ValidationRule> iter = rules.iterator(); iter.hasNext();) {
                 addValidationRule((ValidationRule) iter.next());
             }
         }
@@ -1123,7 +1123,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         validationRules.put(rule.getRuleName(), rule);
     }
 
-    public Collection getValidationRules() {
+    public Collection<ValidationRule> getValidationRules() {
         // we sort the rules, so that comparison rules come in the end
         ArrayList<ValidationRule> arrayList = new ArrayList<ValidationRule>(validationRules.values());
         Collections.sort(arrayList);

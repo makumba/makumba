@@ -46,15 +46,14 @@ public class CompositeValidationException extends RuntimeException {
     }
 
     /** Creates an instance and adds all exceptions from the given {@link Vector} */
-    public CompositeValidationException(Vector exceptions) {
-        for (int i = 0; i < exceptions.size(); i++) {
-            InvalidValueException e = (InvalidValueException) exceptions.get(i);
+    public CompositeValidationException(Vector<InvalidValueException> exceptions) {
+        for (InvalidValueException e : exceptions) {
             exceptionsHash.put(e.getFieldName(), e);
         }
     }
 
-    public ArrayList getExceptions() {
-        return new ArrayList(exceptionsHash.values());
+    public ArrayList<InvalidValueException> getExceptions() {
+        return new ArrayList<InvalidValueException>(exceptionsHash.values());
     }
 
     /** Adds a new exception */
@@ -76,9 +75,10 @@ public class CompositeValidationException extends RuntimeException {
     }
 
     /** Prints the messages of all exceptions gathered */
+    @Override
     public String toString() {
         String message = "";
-        for (Iterator iter = exceptionsHash.values().iterator(); iter.hasNext();) {
+        for (Iterator<InvalidValueException> iter = exceptionsHash.values().iterator(); iter.hasNext();) {
             InvalidValueException e = (InvalidValueException) iter.next();
             message += e.getMessage();
             if (iter.hasNext()) {
@@ -89,12 +89,13 @@ public class CompositeValidationException extends RuntimeException {
     }
 
     /** returns the value of {@link #toString()} */
+    @Override
     public String getMessage() {
         return toString();
     }
 
     /** Gets the exceptions gathered for a specific field name */
-    public Collection getExceptions(String fieldName) {
+    public Collection<InvalidValueException> getExceptions(String fieldName) {
         return (Collection) exceptionsHash.get(fieldName);
     }
 
