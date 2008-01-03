@@ -73,15 +73,15 @@ public class SourceSyntaxPoints {
     long lastChanged;
 
     /** The syntax points, sorted */
-    TreeSet syntaxPoints = new TreeSet();
+    TreeSet<SyntaxPoint> syntaxPoints = new TreeSet<SyntaxPoint>();
 
     /** The line beginnings, added in occuring order */
-    ArrayList lineBeginnings = new ArrayList();
+    ArrayList<SyntaxPoint> lineBeginnings = new ArrayList<SyntaxPoint>();
 
     /** The file beginnings, added in occuring order. When file F includes file I, I begins, then F begins again */
-    ArrayList fileBeginningIndexes = new ArrayList();
+    ArrayList<Integer> fileBeginningIndexes = new ArrayList<Integer>();
 
-    ArrayList fileBeginnings = new ArrayList();
+    ArrayList<SourceSyntaxPoints> fileBeginnings = new ArrayList<SourceSyntaxPoints>();
 
     /** The original text */
     String originalText;
@@ -241,8 +241,8 @@ public class SourceSyntaxPoints {
         content = sb.toString();
 
         // we move the position of all SyntaxPoints that occur after the include
-        for (Iterator i = syntaxPoints.iterator(); i.hasNext();) {
-            SyntaxPoint sp = (SyntaxPoint) i.next();
+        for (Iterator<SyntaxPoint> i = syntaxPoints.iterator(); i.hasNext();) {
+            SyntaxPoint sp = i.next();
             if (sp.position > position+offset)
                 sp.moveByInclude(delta);
         }
@@ -254,7 +254,7 @@ public class SourceSyntaxPoints {
             fileBeginnings.set(n, sf);
         else {
             // add one at the end
-            fileBeginningIndexes.add(new Integer(position));
+            fileBeginningIndexes.add(position);
             fileBeginnings.add(sf);
         }
         fileBeginningIndexes.add(new Integer(position + delta));
@@ -441,8 +441,8 @@ public class SourceSyntaxPoints {
     boolean unchanged() {
         if (file.lastModified() != lastChanged)
             return false;
-        for (Iterator i = fileBeginnings.iterator(); i.hasNext();) {
-            SourceSyntaxPoints ss = (SourceSyntaxPoints) i.next();
+        for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
+            SourceSyntaxPoints ss = i.next();
             if (ss != this && !ss.unchanged())
                 return false;
         }
@@ -488,7 +488,7 @@ public class SourceSyntaxPoints {
      * @return An array of SyntaxPoints
      */
     public SyntaxPoint[] getSyntaxPoints() {
-        ArrayList list = new ArrayList(syntaxPoints);
+        ArrayList<SyntaxPoint> list = new ArrayList<SyntaxPoint>(syntaxPoints);
         Collections.sort(list);
         SyntaxPoint[] result = (SyntaxPoint[]) list.toArray(new SyntaxPoint[syntaxPoints.size()]);
         // the following is needed to pass by a bug occuring to sorting (TextLine begin&end on the same line&column are
