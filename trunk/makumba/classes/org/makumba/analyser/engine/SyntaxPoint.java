@@ -40,7 +40,7 @@ package org.makumba.analyser.engine;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public abstract class SyntaxPoint implements Comparable {
+public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
     /**
      * Default constructor
      * 
@@ -186,8 +186,7 @@ public abstract class SyntaxPoint implements Comparable {
      *            object to be compared with
      * @return -1 if this is before, 1 if after
      */
-    public int compareTo(Object o) {
-        SyntaxPoint sp = (SyntaxPoint) o;
+    public int compareTo(SyntaxPoint sp) {
         int n = position - sp.position;
 
         if (n != 0) // order by position
