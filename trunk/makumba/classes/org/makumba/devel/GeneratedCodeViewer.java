@@ -46,13 +46,13 @@ public class GeneratedCodeViewer extends jspViewer {
 
     private static Hashtable<String, String> selectableCodeTypes = new Hashtable<String, String>();
 
-    private static ArrayList selectableCodeTypesOrdered = new ArrayList();
+    private static ArrayList<String> selectableCodeTypesOrdered = new ArrayList<String>();
 
     /**
      * Contains all templates, indices are defined by {@link #TEMPLATES_ALL}, {@link #TEMPLATES_BUILTIN},
      * {@link #TEMPLATES_USERDEFINED}
      */
-    private static Hashtable[] TEMPLATES = new Hashtable[3];
+    private static Hashtable<String, Properties>[] TEMPLATES = new Hashtable[3];
 
     private static final int TEMPLATES_ALL = 0;
 
@@ -67,7 +67,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** initialise code templates - read properties from file system */
     private static void initTemplates() {
         for (int i = 0; i < TEMPLATES.length; i++) {
-            TEMPLATES[i] = new Hashtable();
+            TEMPLATES[i] = new Hashtable<String, Properties>();
         }
 
         URL[] templatePaths = new URL[2];
@@ -106,7 +106,7 @@ public class GeneratedCodeViewer extends jspViewer {
         selectableCodeTypes.put(CodeGenerator.TYPE_DELETE, "mak:delete");
         selectableCodeTypes.put(CodeGenerator.TYPE_BUSINESS_LOGICS, "Java Business Logics");
         selectableCodeTypes.put("All", "all");
-        selectableCodeTypesOrdered = new ArrayList(Arrays.asList(new String[] { "All", CodeGenerator.TYPE_NEWFORM,
+        selectableCodeTypesOrdered = new ArrayList<String>(Arrays.asList(new String[] { "All", CodeGenerator.TYPE_NEWFORM,
                 CodeGenerator.TYPE_EDITFORM, CodeGenerator.TYPE_LIST, CodeGenerator.TYPE_OBJECT,
                 CodeGenerator.TYPE_DELETE, CodeGenerator.TYPE_BUSINESS_LOGICS }));
     }
@@ -395,7 +395,7 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** prints the list of templates for the code form generator. */
     private void printTemplates(PrintWriter w, int index) {
-        ArrayList templates = new ArrayList(TEMPLATES[index].keySet());
+        ArrayList<String> templates = new ArrayList<String>(TEMPLATES[index].keySet());
         Collections.sort(templates);
         if (templates.size() > 0) {
             for (int i = 0; i < templates.size(); i++) {
