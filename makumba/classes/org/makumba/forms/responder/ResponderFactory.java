@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.CompositeValidationException;
+import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
@@ -254,8 +255,8 @@ public class ResponderFactory {
      *            the request corresponding to the current page
      * @return an ArrayList containing all the unassigned exceptions
      */
-    public ArrayList getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
-        ArrayList unassignedExceptions = e.getExceptions();
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
+        ArrayList<InvalidValueException> unassignedExceptions = e.getExceptions();
         for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
             String responderCode = responderCodes.next();
             String[] suffixes = getSuffixes(responderCode);

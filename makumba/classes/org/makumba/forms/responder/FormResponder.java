@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
 import org.makumba.forms.html.FieldEditor;
@@ -58,7 +59,7 @@ public class FormResponder extends Responder {
             return new Hashtable(1);
     }
 
-    public ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions,
             String suffix) {
         if (editor != null)
             return editor.getUnassignedExceptions(e, unassignedExceptions, suffix);
