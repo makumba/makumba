@@ -89,9 +89,6 @@ public class ComparisonValidationRule extends BasicValidationRule {
         this.compareToExpression = compareToExpression;
     }
 
-    private ComparisonValidationRule() {
-    }
-
     public boolean validate(Object value) throws InvalidValueException {
         boolean validateAgainstExpression = value instanceof Date && compareToExpression != null;
         boolean validateAgaintsField = value instanceof Object[] && ((Object[]) value).length == 2;

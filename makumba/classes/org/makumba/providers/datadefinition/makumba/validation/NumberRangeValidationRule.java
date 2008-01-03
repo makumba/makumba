@@ -41,9 +41,6 @@ public class NumberRangeValidationRule extends RangeValidationRule {
         }
     }
 
-    private NumberRangeValidationRule() {
-    }
-
     public boolean validate(Object value) throws InvalidValueException {
         if (!(value instanceof Number)) {
             return false;// TODO: think of throwing some "cannot validate exception"

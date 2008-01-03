@@ -6,7 +6,7 @@ package org.makumba;
  * @author Rudolf Mayer
  * @version $Id: ValidationRule.java,v 1.1 Sep 4, 2007 2:27:33 AM rudi Exp $
  */
-public interface ValidationRule extends Comparable {
+public interface ValidationRule extends Comparable<ValidationRule> {
     /**
      * Perform the validation process.
      * 
