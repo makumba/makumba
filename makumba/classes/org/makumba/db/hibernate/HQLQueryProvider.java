@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,12 +97,12 @@ public class HQLQueryProvider extends QueryProvider {
         
         
 
-        Vector v = new Vector();
+        Vector<Integer> v = new Vector<Integer>();
         v.add(new Integer(1));
         v.add(new Integer(2));
         v.add(new Integer(3));
         v.add(new Integer(4));
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
         params.put("date", new Timestamp(new GregorianCalendar(1970, 1, 1).getTimeInMillis()));
         params.put("name", "Cristian");
         params.put("someInt", new Integer(1));
@@ -137,8 +138,8 @@ public class HQLQueryProvider extends QueryProvider {
     static Dictionary pc;
     static Vector v;
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
-    static ArrayList languages = new ArrayList();
-    static Object[][] languageData = { { "English", "en" }, { "French", "fr" },
+    static ArrayList<Pointer> languages = new ArrayList<Pointer>();
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" },
             { "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
     
     private static boolean populated = false;
@@ -148,7 +149,7 @@ public class HQLQueryProvider extends QueryProvider {
         populated = true;
         
         languages.clear();
-        Dictionary language = new Hashtable();
+        Dictionary<String, String> language = new Hashtable<String, String>();
         for (int i = 0; i < languageData.length; i++) {
             language.put("name", languageData[i][0]);
             language.put("isoCode", languageData[i][1]);
@@ -179,7 +180,7 @@ public class HQLQueryProvider extends QueryProvider {
 
         p.put("uniqInt", new Integer(255));             
         
-        Vector intSet = new Vector();
+        Vector<Integer> intSet = new Vector<Integer>();
         intSet.addElement(new Integer(1));
         intSet.addElement(new Integer(0));
         p.put("intSet", intSet);
