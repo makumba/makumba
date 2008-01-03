@@ -15,7 +15,7 @@ public interface ValidationDefinition {
     public String getName();
 
     /** Get all validation rules for the given field name. */
-    public Collection getValidationRules(String fieldName);
+    public Collection<ValidationRule> getValidationRules(String fieldName);
 
     /** Get the validation rule with the given rule name. */
     public ValidationRule getValidationRule(String ruledName);
@@ -24,7 +24,7 @@ public interface ValidationDefinition {
     public void addRule(String fieldName, ValidationRule rule);
 
     /** Add several rules for the given field. */
-    public void addRule(String fieldName, Collection rules);
+    public void addRule(String fieldName, Collection<ValidationRule> rules);
 
     /** Get the data definition associated with this validation definition. */
     public DataDefinition getDataDefinition();
