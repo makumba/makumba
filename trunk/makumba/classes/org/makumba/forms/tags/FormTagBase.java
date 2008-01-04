@@ -184,7 +184,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 responders = new HashMap<MultipleKey, String>();
 
             // we add ourselves to the matching map
-            responders.put(this.getTagKey(), new Integer(this.responder.getPrototype()).toString());
+            responders.put(this.getTagKey(), responder.getResponderValue());
 
             // propagate form order to the root form
             parent.setFormOrder(order, responders);
@@ -197,7 +197,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                     responders = new HashMap<MultipleKey, String>();
 
                 // first we add ourselves to the hashMap
-                responders.put(this.getTagKey(), new Integer(this.responder.getPrototype()).toString());
+                responders.put(this.getTagKey(), responder.getResponderValue());
 
                 String[] responderOrder = new String[responders.size()];
                 for (int i = 0; i < order.length; i++) {
