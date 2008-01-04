@@ -25,6 +25,7 @@ package org.makumba.list.html;
 
 import java.util.Dictionary;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlUtils;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.formatters.FieldFormatter;
@@ -70,12 +71,13 @@ public class textViewer extends FieldViewer {
                     "invalid combination of parameters 'html' and 'format'. 'html' is deprecated, please use only 'format'.");
         }
         
-        if (equals(html, "true") || equals(format, "raw") || (equals(html, "auto") && HtmlUtils.detectHtml(txt))
-                || (equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
+        if (StringUtils.equals(html, "true") || StringUtils.equals(format, "raw")
+                || (StringUtils.equals(html, "auto") && HtmlUtils.detectHtml(txt))
+                || (StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
             return txt;
-        } else if (equals(html,"wiki") || equals(format,"wiki")) {
+        } else if (StringUtils.equals(html,"wiki") || StringUtils.equals(format,"wiki")) {
             return MakumbaSystem.getWikiFormatter().wiki2html(txt);
-        } else if (equals(format,"urlencode")) {
+        } else if (StringUtils.equals(format,"urlencode")) {
             return java.net.URLEncoder.encode(txt);
         }
 
