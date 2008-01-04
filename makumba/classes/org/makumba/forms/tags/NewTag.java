@@ -61,7 +61,7 @@ public class NewTag extends FormTagBase {
      * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
-        Object keyComponents[] = { type.getName(), handler, afterHandler, fdp.getParentListKey(this), getClass() };
+        Object keyComponents[] = { type.getName(), handler, afterHandler, fdp.getParentListKey(this), formName, getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
