@@ -59,6 +59,7 @@ public class FormResponder extends Responder {
             return new Hashtable(1);
     }
 
+    @Override
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions,
             String suffix) {
         if (editor != null)
@@ -214,7 +215,7 @@ public class FormResponder extends Responder {
         if (basePointer != null)
             writeInput(sb, basePointerName, basePointer, storedSuffix);
 
-        String responderValue = getPrototype() + storedSuffix + storedParentSuffix;
+        String responderValue = getResponderValue();
         String formSessionValue = responderValue + session; // gets the formSession value
 
         // writes the hidden fields
@@ -252,6 +253,10 @@ public class FormResponder extends Responder {
         if (storedSuffix.equals(""))
             // a root form
             sb.append("\n</form>");
+    }
+
+    public String getResponderValue() {
+        return getPrototype() + storedSuffix + storedParentSuffix;
     }
 
     void writeInput(StringBuffer sb, String name, String value, String suffix) {
