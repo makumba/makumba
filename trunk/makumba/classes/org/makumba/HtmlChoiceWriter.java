@@ -208,7 +208,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
       Iterator itl = _labels;
 
       StringBuffer selectStatement = new StringBuffer(512);
-      selectStatement.append("<SELECT NAME=\"" + _name + "\" SIZE=" + _size + " " + _literalHtml + ">\n");
+      selectStatement.append("<SELECT NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n");
 
       for( ; itv.hasNext() && itl.hasNext() ; ) {
           Object val=itv.next();
@@ -244,7 +244,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
       Iterator itl = _labels;
           
       StringBuffer selectStatement = new StringBuffer(512);
-      String selectString= "<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=" + _size + " " + _literalHtml + ">\n";
+      String selectString= "<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n";
       boolean selectStarted= false;
       
       for( ; itv.hasNext() && itl.hasNext() ; ) {
@@ -471,7 +471,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
       boolean yn_convert2Html = (convert2Html == TXT2HTML);
           
       StringBuffer selectStatement = new StringBuffer(512);
-      selectStatement.append("<SELECT MULTIPLE NAME=\"" + name + "\" SIZE=" + size + " " + literalHtml + ">\n");
+      selectStatement.append("<SELECT MULTIPLE NAME=\"" + name + "\" SIZE=\"" + size + "\" " + literalHtml + ">\n");
       
       for(int i=0 ; i < values.length; i++) {
           String value = values[i];
