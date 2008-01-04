@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
+import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
@@ -343,8 +344,8 @@ public abstract class Responder implements java.io.Serializable {
      */
     public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
 
-    public abstract ArrayList getUnassignedExceptions(CompositeValidationException e, ArrayList unassignedExceptions,
-            String suffix);
+    public abstract ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
+            ArrayList<InvalidValueException> unassignedExceptions, String suffix);
 
     public ResponderFactory getFactory() {
         return factory;
