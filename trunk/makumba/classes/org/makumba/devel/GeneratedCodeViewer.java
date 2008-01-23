@@ -60,6 +60,8 @@ public class GeneratedCodeViewer extends jspViewer {
 
     private static final int TEMPLATES_USERDEFINED = 2;
     
+    private static final String BUILTIN_TEMPLATES_PATH = "/org/makumba/devel/defaultCodeTemplates/";
+    
     static {
         initTemplates();
     }
@@ -69,16 +71,23 @@ public class GeneratedCodeViewer extends jspViewer {
         for (int i = 0; i < TEMPLATES.length; i++) {
             TEMPLATES[i] = new Hashtable<String, Properties>();
         }
-
-        URL[] templatePaths = new URL[2];
-        // default built in templates
-        templatePaths[0] = org.makumba.commons.ClassResource.get("org/makumba/devel/defaultCodeTemplates/");
+        
+        // built-in templates
+        Properties builtinProps = new Properties();
+        try {
+            populateBuiltin(builtinProps, "fieldset");
+            populateBuiltin(builtinProps, "simple");
+            populateBuiltin(builtinProps, "tabular");
+            populateBuiltin(builtinProps, "tabular-fieldset");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        
         // user defined templates
-        templatePaths[1] = org.makumba.commons.ClassResource.get("codeTemplates");
+        URL templatePath = org.makumba.commons.ClassResource.get("codeTemplates");
 
-        for (int i = 0; i < templatePaths.length; i++) {
-            if (templatePaths[i] != null) {
-                File templatePropDirectory = new File(templatePaths[i].getFile());
+            if (templatePath != null) {
+                File templatePropDirectory = new File(templatePath.getFile());
                 if (templatePropDirectory.canRead() && templatePropDirectory.isDirectory()) {
                     File[] files = templatePropDirectory.listFiles(CodeGenerator.getFileFilter());
                     for (int j = 0; j < files.length; j++) {
@@ -87,7 +96,7 @@ public class GeneratedCodeViewer extends jspViewer {
                             props.load(new FileInputStream(files[j]));
                             String name = files[j].getName().substring(0, files[j].getName().lastIndexOf(".properties"));
                             TEMPLATES[TEMPLATES_ALL].put(name, props);
-                            TEMPLATES[i + 1].put(name, props);
+                            TEMPLATES[TEMPLATES_USERDEFINED].put(name, props);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -96,7 +105,6 @@ public class GeneratedCodeViewer extends jspViewer {
                     }
                 }
             }
-        }
         defaultTemplate = (String) TEMPLATES[TEMPLATES_BUILTIN].keys().nextElement();
         selectableCodeTypes = new Hashtable<String, String>();
         selectableCodeTypes.put(CodeGenerator.TYPE_NEWFORM, "mak:newForm");
@@ -109,6 +117,12 @@ public class GeneratedCodeViewer extends jspViewer {
         selectableCodeTypesOrdered = new ArrayList<String>(Arrays.asList(new String[] { "All", CodeGenerator.TYPE_NEWFORM,
                 CodeGenerator.TYPE_EDITFORM, CodeGenerator.TYPE_LIST, CodeGenerator.TYPE_OBJECT,
                 CodeGenerator.TYPE_DELETE, CodeGenerator.TYPE_BUSINESS_LOGICS }));
+    }
+    
+    private static void populateBuiltin(Properties builtinProps, String templateName) throws IOException {
+        builtinProps.load(GeneratedCodeViewer.class.getResourceAsStream(BUILTIN_TEMPLATES_PATH + templateName+ ".properties"));
+        TEMPLATES[TEMPLATES_ALL].put(templateName, builtinProps);
+        TEMPLATES[TEMPLATES_BUILTIN].put(templateName, builtinProps);
     }
 
     private URL classesDirectory;
