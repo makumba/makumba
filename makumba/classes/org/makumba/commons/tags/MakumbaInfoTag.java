@@ -76,8 +76,10 @@ public class MakumbaInfoTag extends TagSupport {
         try {
             Properties projectProperties = new Properties();
             try {
-                projectProperties.load(new FileInputStream(applicationProperties.toString()));
+                if (applicationProperties != null)
+                    projectProperties.load(new FileInputStream(applicationProperties.toString()));
             } catch (IOException e) {
+                System.err.println("IGNORED "+e);
             }
 
             JspWriter out = pageContext.getOut();
@@ -112,7 +114,7 @@ public class MakumbaInfoTag extends TagSupport {
                 password = projectProperties.getProperty("tomcat.manager.pass");
                 if (password != null) {
                     projectProperties.remove("tomcat.manager.pass"); // we don't want to display the password to
-                                                                        // everyone
+                    // everyone
                 }
             }
 
