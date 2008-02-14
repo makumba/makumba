@@ -341,7 +341,8 @@ public class ResponderFactory {
                 if (formResponder instanceof FormResponder) {
                     // FIXME: what to do if responder is not a form responder? pull up the result attribute field to
                     // responder?
-                    responderResults.put(((FormResponder) formResponder).resultAttribute, result);
+                    if(result!=null)
+                        responderResults.put(((FormResponder) formResponder).resultAttribute, result);
                 }
                 // display the response message and set attributes
                 message = "<font color=green>" + formResponder.message + "</font>";
