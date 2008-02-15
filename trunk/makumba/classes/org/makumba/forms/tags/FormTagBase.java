@@ -200,9 +200,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 responders.put(this.getTagKey(), responder.getResponderValue());
 
                 String[] responderOrder = new String[responders.size()];
+                int j=0;
                 for (int i = 0; i < order.length; i++) {
                     if (responders.get(order[i]) != null)
-                        responderOrder[i] = responders.get(order[i]);
+                        responderOrder[j++] = responders.get(order[i]);
                 }
 
                 responder.setResponderOrder(responderOrder);
@@ -494,6 +495,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             setFormOrder(sortedForms, null);
 
+            
         } catch (IOException e) {
             throw new JspException(e.toString());
         } finally {
