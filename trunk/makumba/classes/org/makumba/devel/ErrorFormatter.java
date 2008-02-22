@@ -392,9 +392,9 @@ public class ErrorFormatter {
                     + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-        if (!(traced instanceof NullPointerException)) {
+//        if (!(traced instanceof NullPointerException)) {
             body = formatTagData(req) + body + shortTrace(trace(traced));
-        }
+        
         try {
             SourceViewer sw = new errorViewer(req, servletContext, title, body, null, printeHeaderFooter);
             sw.parseText(wr);
