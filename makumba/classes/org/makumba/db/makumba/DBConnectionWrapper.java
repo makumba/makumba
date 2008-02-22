@@ -25,6 +25,7 @@ package org.makumba.db.makumba;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import org.makumba.Pointer;
 import org.makumba.providers.TransactionProvider;
@@ -45,6 +46,7 @@ public class DBConnectionWrapper extends DBConnection {
     // uncomment this if you want to know where the unclosed connections are created
     // maybe this can become a devel feature?
     Throwable t;
+    Date created;
 
     public DBConnection getWrapped() {
         return wrapped;
@@ -57,6 +59,7 @@ public class DBConnectionWrapper extends DBConnection {
     DBConnectionWrapper(DBConnection wrapped, String dataSource, TransactionProviderInterface tp) {
         this(tp);
         t = new Throwable();
+        created= new Date();
         this.wrapped = wrapped;
         this.dataSource = dataSource;
     }
@@ -134,7 +137,9 @@ public class DBConnectionWrapper extends DBConnection {
 
     public String getCreationStack() {
         StringWriter sbw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sbw));
+        PrintWriter output = new PrintWriter(sbw);
+        output.print("connection created on" +created+ " with stacktrace: ");
+        t.printStackTrace(output);
         return sbw.toString();
     }
 
