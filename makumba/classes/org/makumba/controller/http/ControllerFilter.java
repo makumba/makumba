@@ -78,12 +78,14 @@ public class ControllerFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
         int i=0;
-        int imax=0;
+        int imax=-1;
         try{
-            for(; i<handlers.size(); i++)
+            for(; i<handlers.size(); i++){
+                imax=i;
                 if(!handlers.get(i).beforeFilter(req, resp, conf))
                     break;   
-            imax=i-1;
+            }
+
             for(i=imax; i>=0; i--)
                 handlers.get(i).afterBeforeFilter(req, resp, conf);
             if(imax==handlers.size()-1)
@@ -100,11 +102,15 @@ public class ControllerFilter implements Filter {
         }   
 
         finally {
-            for(i=0;i<=imax;i++)
-                handlers.get(i).finalize(req, resp);           
+            for(i=handlers.size()-1;i>=0;i--)
+                try{
+                    handlers.get(i).finalize(req, resp);
+                }catch(Throwable t){
+                    throw new RuntimeWrappedException(t);
+                }
         }
            
-        }
+    }
 
     public void destroy() {
     
