@@ -23,15 +23,30 @@ that helps you to rapidly develop web applications that keep their data in a dat
 tag library and a Java <abbr title="Application Programmer's Interface">API</abbr> to the web app developer. The technology has been in use since late 2001, and is being further developed, based on users'
 experience and requests.
 </p>
+<h2>Latest news</h2><br>
+<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAA4S0NyQM_MPYFf9-LhtovERTcvXk0HanODBtOBBHGCilvK7z5uBSQnt_0gT9ERxLe3GqYHSt2iE5gKg"></script>
+<script type="text/javascript">
+google.load("feeds", "1");
+function OnLoad() {
+   var feedControl = new google.feeds.FeedControl();
+   feedControl.addFeed("http://makumba.sourceforge.net/blog/?feed=rss2");
+   feedControl.setNumEntries(2);
+   feedControl.draw(document.getElementById("feedControl"));
+}
+google.setOnLoadCallback(OnLoad);
+</script>
+<div id="feedControl">Loading...</div>
+<br>
+
+<h2>Short introduction</h2>
 <p>
-The main elements are:<br>
+Makumba's main elements are:<br>
 <ul>
 <li><b>Makumba List</b>, an intuitive way of iterating over data records and which automatically formats the display according to the data type and the subtype.</li>
 <li><b>Makumba Forms</b>, making it possible to build nested forms without having to worry how the data gets stored or the form gets rendered</li>
 <li><b>Makumba Data Definitions</b>, a very simple yet powerful abstraction of data types which make data modelling very easy</li>
 </ul>
 </p>
-
 <p>
 <b>Makumba</b> is built around <a href="http://www.odmg.org/">OQL</a> (Object Query Language) and we are working on intergrating support for <a href="http://www.hibernate.org/hib_docs/reference/en/html/queryhql.html">HQL</a> (<a href="http://www.hibernate.org/">Hibernate</a> Query Language) as well as <a href="http://www.hibernate.org/hib_docs/reference/en/html/mapping.html">Hibernate mappings</a>.
 </p>
