@@ -123,16 +123,20 @@ public class DBConnectionWrapper extends DBConnection {
     }
 
     public synchronized void close() {
-        commit();
-        getHostDatabase().connections.put(getWrapped());
-        wrapped = ClosedDBConnection.getInstance();
+        try{
+            commit();
+            getHostDatabase().connections.put(getWrapped());
+        } finally{
+            wrapped = ClosedDBConnection.getInstance();
+        }
     }
 
     protected synchronized void finalize() {
-        java.util.logging.Logger.getLogger("org.makumba." + "db").severe(
-            "Makumba connection " + getName() + " not closed\n" + getCreationStack());
-        if (wrapped != ClosedDBConnection.getInstance())
+        if (wrapped != ClosedDBConnection.getInstance()){
+            java.util.logging.Logger.getLogger("org.makumba." + "db").severe(
+                "Makumba connection " + getName() + " not closed\n" + getCreationStack());
             close();
+        }
     }
 
     public String getCreationStack() {
