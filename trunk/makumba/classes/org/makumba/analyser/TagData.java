@@ -14,9 +14,6 @@ import org.makumba.analyser.engine.SyntaxPoint;
 public class TagData implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /** The parse data where this TagData was produced */
-    public JspParseData parseData;
-
     /** Name of the tag */
     public String name;
     
