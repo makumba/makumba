@@ -389,7 +389,6 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         TagData td = null;
         td = new TagData();
         td.name = tagName;
-        td.parseData = this;
         td.start = start;
         td.end = end;
 
@@ -434,7 +433,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         TagData td = new TagData();
         td.name = tag.substring(m1.start(), m1.end());
-        td.parseData = this;
+        //td.parseData = this;
         td.attributes = parseAttributes(tag, m.start());
         td.start = start;
         td.end = end;
