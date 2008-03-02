@@ -47,15 +47,6 @@ public class GenericMakumbaTag extends AnalysableTag {
         initialiseState();
         return super.doStartTag();
     }
-    
-    @Override
-    public int doEndTag() throws JspException {
-        int doEndTag = super.doEndTag();
-        params.clear();
-        extraFormattingParams.clear();
-        extraFormatting = null;
-        return doEndTag;
-    }
 
     public void setStyleId(String s) {
         extraFormattingParams.put("id", s);
@@ -224,6 +215,11 @@ public class GenericMakumbaTag extends AnalysableTag {
         pc.cache(TYPES, key, val2);
     }
 
-
-
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        params.clear();
+        extraFormattingParams.clear();
+        extraFormatting = null;
+    }
 }

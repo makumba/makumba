@@ -238,8 +238,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     Object upperMaxCount = null;
 
-    ValueComputer choiceComputer;
-
     private static ThreadLocal<ServletRequest> servletRequestThreadLocal = new ThreadLocal<ServletRequest>();
 
     /**
@@ -380,10 +378,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (getParentList(this) == null)
             QueryExecution.endListGroup(pageContext);
 
-        execution = null;
-        queryProps[0] = queryProps[1] = queryProps[2] = queryProps[3] = null;
-        countVar = maxCountVar = null;
-        separator = "";
         return EVAL_PAGE;
     }
 
@@ -523,5 +517,14 @@ public class QueryTag extends GenericListTag implements IterationTag {
     @Override
     public boolean canHaveBody() {
         return true;
+    }
+    
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        execution = null;
+        queryProps[0] = queryProps[1] = queryProps[2] = queryProps[3] = null;
+        countVar = maxCountVar = offset= limit= defaultLimit= null;
+        separator = "";
     }
 }

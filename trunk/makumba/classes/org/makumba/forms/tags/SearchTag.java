@@ -378,4 +378,10 @@ public class SearchTag extends FormTagBase {
         }
     };
 
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        in = null;
+    }
+
 }

@@ -114,4 +114,12 @@ public class NewTag extends FormTagBase {
             return null;
         }
     };
+    
+    
+    @Override
+    protected void doAnalyzedCleanup(){
+        super.doAnalyzedCleanup();
+        type= null; 
+        multipleSubmitErrorMsg= null;
+    }
 }

@@ -207,4 +207,10 @@ public class AddTag extends FormTagBase {
             return null;
         }
     };
+
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        field = multipleSubmitErrorMsg = null;
+    }
 }

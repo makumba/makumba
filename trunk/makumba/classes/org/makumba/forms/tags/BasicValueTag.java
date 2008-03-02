@@ -232,7 +232,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         if (val != null)
             val = type.checkValue(val);
-
+        
         return computedValue(val, type);
     }
 
@@ -245,4 +245,10 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
      *            the type of the data
      */
     abstract int computedValue(Object o, FieldDefinition type) throws JspException, LogicException;
+    
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        expr = valueExprOriginal = dataType = null;
+    }
 }

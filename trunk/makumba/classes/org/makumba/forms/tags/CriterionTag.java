@@ -188,4 +188,11 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         checkValidAttributeValues("isRange", isRange, allowedRanges);
         this.isRange = isRange;
     }
+    
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        bodyContent = null;
+        fieldDef = null;
+    }
 }

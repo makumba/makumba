@@ -498,10 +498,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             
         } catch (IOException e) {
             throw new JspException(e.toString());
-        } finally {
-            baseObject = handler = afterHandler = formMethod = formAction = formName = formMessage = basePointer = null;
-            responder = null;
-            bodyContent = null;
         }
         return EVAL_PAGE;
     }
@@ -545,5 +541,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             return null;
         }
     };
+
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = null;
+        responder = null;
+        bodyContent = null;
+    }
 
 }
