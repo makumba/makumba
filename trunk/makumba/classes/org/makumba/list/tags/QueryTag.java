@@ -524,7 +524,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         super.doAnalyzedCleanup();
         execution = null;
         queryProps[0] = queryProps[1] = queryProps[2] = queryProps[3] = null;
-        countVar = maxCountVar = offset= limit= defaultLimit= null;
+        countVar = maxCountVar = offset= limit= null;
         separator = "";
     }
 }
