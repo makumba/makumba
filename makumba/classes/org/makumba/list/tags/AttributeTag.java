@@ -103,4 +103,10 @@ public class AttributeTag extends GenericMakumbaTag {
     public String toString() {
         return "attribute name=" + name + " var=" + var + " exceptionVar=" + exceptionVar;
     }
+
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        name = var = exceptionVar = null;
+    }
 }

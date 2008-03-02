@@ -78,4 +78,9 @@ public class ActionTag extends GenericMakumbaTag implements BodyTag {
         return EVAL_PAGE;
     }
 
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        bodyContent = null;
+    }
 }

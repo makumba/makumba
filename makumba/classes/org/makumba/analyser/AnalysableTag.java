@@ -276,9 +276,18 @@ public abstract class AnalysableTag extends TagSupport {
         } catch (LogicException e) {
             throw new RuntimeWrappedException(e);
         } finally {
-            runningTag.set(null);
-            tagKey = null;
+            doAnalyzedCleanup();
         }
+    }
+
+    /** 
+     * Caled by doEndTag in its finally block. 
+     * Use it to clean references that will not be used next time the servlet container uses the tag object.
+     */
+    protected void doAnalyzedCleanup() {
+        runningTag.set(null);
+        tagKey = null;
+        tagData=null;
     }
 
     /**

@@ -114,7 +114,6 @@ public class ValueTag extends GenericListTag {
             org.makumba.LogicException {
         ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).print(this, pageCache);
 
-        expr = printVar = var = null;
         return EVAL_BODY_INCLUDE;
     }
 
@@ -124,6 +123,12 @@ public class ValueTag extends GenericListTag {
      */
     public String toString() {
         return "VALUE expr=" + expr + " parameters: " + params;
+    }
+    
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        expr= printVar= var= null;
     }
 
 }

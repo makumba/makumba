@@ -329,5 +329,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setCalendarEditor(String calendarEditor) {
         this.calendarEditor = calendarEditor;
     }
+    
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        bodyContent=null;
+        choiceSet=null;
+        name= nameVar= nullOption= display= calendarEditor= calendarEditorLink= null;
+    }
 
 }

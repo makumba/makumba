@@ -101,4 +101,10 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         valueExprOriginal = dataType = expr = null;
         return EVAL_PAGE;
     }
+    
+    @Override
+    protected void doAnalyzedCleanup(){
+        super.doAnalyzedCleanup();
+        bodyContent = null;
+    }
 }
