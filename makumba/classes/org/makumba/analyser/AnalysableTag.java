@@ -181,9 +181,9 @@ public abstract class AnalysableTag extends TagSupport {
         if (tagData == null)
             return "";
         try {
-            return tagData.getStart().getFile().getCanonicalPath() + ":" + tagData.getStart().getLine() + ":"
-                    + tagData.getStart().getColumn() + ":" + tagData.getEnd().getLine() + ":"
-                    + tagData.getEnd().getColumn();
+            return tagData.getSourceSyntaxPoints().getFile().getCanonicalPath() + ":" + tagData.getStartLine() + ":"
+                    + tagData.getStartColumn() + ":" + tagData.getEndLine() + ":"
+                    + tagData.getEndColumn();
         } catch (java.io.IOException e) {
             throw new MakumbaError(e.toString());
         }

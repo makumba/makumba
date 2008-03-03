@@ -265,4 +265,8 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
         }
     }
 
+    public SourceSyntaxPoints getSourceSyntaxPoints() {
+        return sourceFile;
+    }
+
 }

@@ -292,13 +292,13 @@ public class ErrorFormatter {
         String filePath;
         try {
             filePath = "/"
-                    + tagData.getStart().getFile().getAbsolutePath().substring(
+                    + tagData.getSourceSyntaxPoints().getFile().getAbsolutePath().substring(
                         req.getSession().getServletContext().getRealPath("/").length());
         } catch (Exception e) { // we might not have a servlet context available
-            filePath = tagData.getStart().getFile().getAbsolutePath();
+            filePath = tagData.getSourceSyntaxPoints().getFile().getAbsolutePath();
         }
-        return tagExpl + filePath + ":" + tagData.getStart().getLine() + ":" + tagData.getStart().getColumn() + ":"
-                + tagData.getEnd().getLine() + ":" + tagData.getEnd().getColumn() + "\n" + sb.toString() + "\n\n";
+        return tagExpl + filePath + ":" + tagData.getStartLine() + ":" + tagData.getStartColumn() + ":"
+                + tagData.getEndLine() + ":" + tagData.getEndColumn() + "\n" + sb.toString() + "\n\n";
 
     }
 
