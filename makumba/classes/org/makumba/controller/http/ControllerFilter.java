@@ -96,7 +96,7 @@ public class ControllerFilter implements Filter {
         } 
         catch (Throwable t) {
             for(i=imax; i>=0; i--)
-                if(!handlers.get(i).onError(req, resp, t))
+                if(!handlers.get(i).onError(req, resp, t, conf))
                     return;
             throw new RuntimeWrappedException(t);
         }   
