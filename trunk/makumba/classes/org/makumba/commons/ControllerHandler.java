@@ -32,7 +32,7 @@ public abstract class ControllerHandler {
      * Performs an operation when an error occurs
      * @return <code>true</code> if this still is an error, <code>false</code> if it was handled
      */
-    public boolean onError(ServletRequest request, ServletResponse response, Throwable e)
+    public boolean onError(ServletRequest request, ServletResponse response, Throwable e, FilterConfig conf)
     { return true; }
     
     /**
