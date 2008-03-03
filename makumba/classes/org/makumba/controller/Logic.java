@@ -225,7 +225,7 @@ public class Logic {
             }
 
         }
-    }, true);
+    }, false);
 
     static String[] separators = { ".", "->" };
 
