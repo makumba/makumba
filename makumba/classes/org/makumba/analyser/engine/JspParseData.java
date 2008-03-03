@@ -89,9 +89,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         public Object makeResource(Object o, Object hashName) throws Throwable {
             Object[] o1 = (Object[]) o;
-            return new JspParseData((String) o1[0], (JspAnalyzer) o1[1], (String) o1[2]);
+            return new JspParseData((String) o1[0], (String) o1[2], (JspAnalyzer) o1[1]);
         }
-    }, true);
+    }, false);
 
     static String attribute(String attName) {
         return "(" + attribute(attName, "\"") + "|" + attribute(attName, "\'") + ")";
@@ -148,19 +148,27 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            analyzer
      */
     public synchronized Object getAnalysisResult(Object initStatus) {
-        if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged())
-            try {
-                parse(initStatus);
-            } catch (Error e) {
-                holder = e;
-                throw e;
-            } catch (RuntimeException re) {
-                holder = re;
-                throw re;
-            }
-        return holder;
+        try {
+            if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged())
+                getSyntaxPointArray(initStatus);
+            return holder;
+        } finally {
+            syntaxPoints.discardPoints();
+        }
     }
 
+    public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus){
+        try {
+            parse(initStatus);
+            return syntaxPoints.getSyntaxPoints();
+        } catch (Error e) {
+            holder = e;
+            throw e;
+        } catch (RuntimeException re) {
+            holder = re;
+            throw re;
+        }
+    }
     /**
      * Returns the pageData of the page at the given path in the given webapp. This is the only way for clients of this
      * class to obtain instances of JspPageData.
@@ -189,12 +197,12 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * 
      * @param path
      *            the path to the page
-     * @param an
-     *            the analyzer used for analysis
      * @param uri
      *            the uri, for debugging purposes
+     * @param an
+     *            the analyzer used for analysis
      */
-    private JspParseData(String path, JspAnalyzer an, String uri) {
+    public JspParseData(String path, String uri, JspAnalyzer an) {
         this.root= path;
         this.file = new File(root + uri);
         this.uri = uri;
@@ -386,14 +394,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         String tagName = tag.substring(m1.start(), m1.end());
 
-        TagData td = null;
-        td = new TagData();
-        td.name = tagName;
-        td.start = start;
-        td.end = end;
-
-        if (!tagEnd)
-            td.attributes = parseAttributes(tag, m.start());
+        TagData td= new TagData(tagName, start, end, !tagEnd?parseAttributes(tag, m.start()):null);
 
         Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
@@ -431,12 +432,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         syntaxPoints.addSyntaxPoints(m.start() + m1.start(), m.start() + m1.end(), "JSPSystemTagName", null);
         SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
 
-        TagData td = new TagData();
-        td.name = tag.substring(m1.start(), m1.end());
-        //td.parseData = this;
-        td.attributes = parseAttributes(tag, m.start());
-        td.start = start;
-        td.end = end;
+        TagData td = new TagData(tag.substring(m1.start(), m1.end()), start, end, parseAttributes(tag, m.start()) );
 
         if (td.name.equals("taglib")) { // find out whether we have a taglib tag
             if (td.attributes.get("uri") != null
@@ -467,8 +463,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            the StringBuffer used to print out
      */
     public static void tagDataLine(TagData td, StringBuffer sb) {
-        sb.append("\n").append(td.start.sourceFile.getLineText(td.start.getLine())).append('\n');
-        for (int i = 1; i < td.start.getColumn(); i++)
+        sb.append("\n").append(td.getSourceSyntaxPoints().getLineText(td.getStartLine())).append('\n');
+        for (int i = 1; i < td.getStartColumn(); i++)
             sb.append(' ');
         sb.append('^');
     }

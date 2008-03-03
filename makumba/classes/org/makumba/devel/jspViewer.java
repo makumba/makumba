@@ -194,10 +194,10 @@ public class jspViewer extends LineViewer {
         logicPath = contextPath + "/logic" + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
 
-        JspParseData jspParseData = JspParseData.getParseData(sv.getServletContext().getRealPath("/"), thisFile,
+        JspParseData jspParseData = new JspParseData(sv.getServletContext().getRealPath("/"), thisFile,
                 JspxJspAnalyzer.getInstance());
         try {
-            jspParseData.getAnalysisResult(null);
+            sourceSyntaxPoints= jspParseData.getSyntaxPointArray(null);
         
             // set background colour for hibernate code
             if (jspParseData.isUsingHibernate()) {
@@ -205,8 +205,6 @@ public class jspViewer extends LineViewer {
             }
     
             syntaxPoints = jspParseData.getSyntaxPoints();
-    
-            sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
         } catch (ProgrammerError e) {
             caughtError = e;
         }
