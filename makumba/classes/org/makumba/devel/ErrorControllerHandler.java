@@ -45,9 +45,9 @@ public class ErrorControllerHandler extends ControllerHandler {
     }
 
     @Override
-    public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
-        treatException(e, (HttpServletRequest) request, (HttpServletResponse) response);
-        return false; 
+    public boolean onError(ServletRequest request, ServletResponse response, Throwable e, FilterConfig conf) {
+        treatException(e, (HttpServletRequest) request, (HttpServletResponse) response, conf);
+        return false;
     }
     
     /**
@@ -64,7 +64,7 @@ public class ErrorControllerHandler extends ControllerHandler {
      * @param resp
      *            the http response corresponding to the access
      */
-    public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp) {
+    public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp, FilterConfig conf) {
         resp.setContentType("text/html");
         req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
         if(t instanceof RuntimeWrappedException) t = ((RuntimeWrappedException)t).getCause();
@@ -85,9 +85,15 @@ public class ErrorControllerHandler extends ControllerHandler {
                     // FIXME:see if error code thrown gives problems to tests
                     // resp.setStatus(500);
                     req.getRequestDispatcher(errorPage).forward(req, resp);
-                } else
-                    req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
-
+                } else {
+                    // code copied from TagExceptionServlet
+                    resp.setContentType("text/html");
+                    // FIXME:see if error code thrown gives problems to tests
+                    // resp.setStatus(500);
+                    ErrorFormatter er = new ErrorFormatter(req, conf.getServletContext(), resp.getWriter(), true);
+                    resp.getWriter().flush();
+                    // req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
+                }
             }
             // we only catch the improbable ServletException and IOException
             // so if something is rotten in the TagExceptionServlet,
