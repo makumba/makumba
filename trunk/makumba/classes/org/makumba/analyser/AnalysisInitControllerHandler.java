@@ -22,7 +22,7 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
     }
     
     @Override
-    public boolean onError(ServletRequest request, ServletResponse response, Throwable e) {
+    public boolean onError(ServletRequest request, ServletResponse response, Throwable e, FilterConfig conf) {
         AnalysableTag.initializeThread();
         return true;
     }
