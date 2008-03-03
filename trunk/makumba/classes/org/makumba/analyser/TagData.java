@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 
 /**
@@ -26,21 +27,45 @@ public class TagData implements Serializable {
     /** Tag object, if one is created by the analyzer */
     public Object tagObject;
 
-    /** The syntax points where the whole thing begins and ends */
-    public SyntaxPoint start, end;
+    int startLine, startColumn, endLine, endColumn;
+    
+    protected SourceSyntaxPoints sourceSyntaxPoints;
 
     public static final String TAG_DATA_CACHE = "org.makumba.tagData";
 
-    public SyntaxPoint getStart() {
-        return start;
+    public TagData(String name, SyntaxPoint start, SyntaxPoint end, Map<String, String> attributes) {
+        this.name=name;
+        this.sourceSyntaxPoints= start.getSourceSyntaxPoints();
+        this.startLine=start.getLine();
+        this.startColumn= start.getColumn();
+        this.endLine= end.getLine();
+        this.endColumn= end.getColumn();
+        this.attributes=attributes;
     }
 
     public Object getTagObject() {
         return tagObject;
     }
 
-    public SyntaxPoint getEnd() {
-        return end;
+    public int getStartLine() {
+        return startLine;
     }
 
+    public int getStartColumn() {
+        return startColumn;
+    }
+
+    public int getEndLine() {
+        return endLine;
+    }
+
+    public int getEndColumn() {
+        return endColumn;
+    }
+
+    public SourceSyntaxPoints getSourceSyntaxPoints() {
+        return sourceSyntaxPoints;
+    }
+
+    
 }
