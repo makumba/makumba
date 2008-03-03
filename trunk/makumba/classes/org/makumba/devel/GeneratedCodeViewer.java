@@ -274,7 +274,7 @@ public class GeneratedCodeViewer extends jspViewer {
                 writerAllPage.close();
 
                 reader = new StringReader(allPages.toString());
-                jspParseData = JspParseData.getParseData(rootPath, GENERATED_CODE_DIRECTORY + File.separator
+                jspParseData = new JspParseData(rootPath, GENERATED_CODE_DIRECTORY + File.separator
                         + allPagesName, JspxJspAnalyzer.getInstance());
             }
 
@@ -338,9 +338,8 @@ public class GeneratedCodeViewer extends jspViewer {
 
     private void getParseData(JspParseData jspParseData) {
         if (jspParseData != null) {
-            jspParseData.getAnalysisResult(null);
+            sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
             syntaxPoints = jspParseData.getSyntaxPoints();
-            sourceSyntaxPoints = jspParseData.getSyntaxPoints().getSyntaxPoints();
         }
     }
 

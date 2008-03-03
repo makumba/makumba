@@ -185,7 +185,9 @@ public class SourceSyntaxPoints {
     }
 
     /**
-     * Gets the text of the line n
+     * Gets the text of the line n.
+     * This will not work after discardSyntaxPoints because both the text of the file
+     * and the syntax points are gone, to spare memory.
      * 
      * @param n
      *            the line number
@@ -507,4 +509,19 @@ public class SourceSyntaxPoints {
         return result;
     }
 
+    public void discardPoints() {
+        for(Iterator<SourceSyntaxPoints> i= fileBeginnings.iterator(); i.hasNext();){
+            SourceSyntaxPoints s= i.next();
+            if(s!=this)
+                s.discardPoints();
+        }
+        content = originalText= null;
+        fileBeginningIndexes = null;
+        lineBeginnings=null; 
+        syntaxPoints = null;
+    }
+
+    public File getFile() {
+        return file;
+    }
 }// end class
