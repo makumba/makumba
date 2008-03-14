@@ -80,7 +80,7 @@ public class ComposedQuery {
     }
 
     /** The subqueries of this query */
-    Vector<ComposedSubquery> subqueries = new Vector<ComposedSubquery>();
+    int subqueries = 0;
 
     /** The projections made in this query */
     Vector<Object> projections = new Vector<Object>();
@@ -189,16 +189,15 @@ public class ComposedQuery {
     }
 
     /**
-     * Adds a subquery to this query. Makes it aware that it has subqueries at all. Makes it be able to announce its
-     * subqueries about changes (this will be needed when unique=true will be possible)
+     * Adds a subquery to this query. Makes it aware that it has subqueries at all. 
      * 
      * @param q
      *            the subquery
      */
     protected void addSubquery(ComposedSubquery q) {
-        if (subqueries.size() == 0)
+        if (subqueries == 0)
             prependFromToKeyset();
-        subqueries.addElement(q);
+        subqueries++;
     }
 
     /**
