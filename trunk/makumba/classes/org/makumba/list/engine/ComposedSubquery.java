@@ -135,6 +135,9 @@ public class ComposedSubquery extends ComposedQuery {
         for (Enumeration e = keysetLabels.elements(); e.hasMoreElements();)
             addProjection((String) e.nextElement());
         previousKeyset.addElement(superQuery.keyset);
+        
+        // we're all set now, no more need for the super query
+        superQuery=null;
     }
 
 }
