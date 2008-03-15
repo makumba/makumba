@@ -57,7 +57,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
 
     public static final String DS_ATTR = "org.makumba.database";
     
-    protected FormDataProvider fdp = new ListFormDataProvider();
+    protected FormDataProvider fdp = ListFormDataProvider.getInstance();
 
     @Override
     public int doEndTag() throws JspException {
@@ -103,7 +103,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
     public static String getDataSourceName(PageContext pc) {
         String ds = (String) pc.getAttribute(DS_ATTR);
         if (ds == null)
-            return new TransactionProvider().getDefaultDataSourceName();
+            return TransactionProvider.getInstance().getDefaultDataSourceName();
         return ds;
     }
 

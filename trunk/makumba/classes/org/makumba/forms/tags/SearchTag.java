@@ -179,7 +179,7 @@ public class SearchTag extends FormTagBase {
             Dictionary data = resp.getHttpData(req, suffix);
             RequestAttributes attributes = RequestAttributes.getAttributes(req);
             HttpParameters parameters = RequestAttributes.getParameters(req);
-            DataDefinition dd = new DataDefinitionProvider().getDataDefinition(resp.getSearchType());
+            DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(resp.getSearchType());
 
             // indicate that the form is reloaded, similar as for validation errors
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");

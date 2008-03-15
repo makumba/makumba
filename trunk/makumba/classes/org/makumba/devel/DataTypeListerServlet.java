@@ -50,13 +50,13 @@ public class DataTypeListerServlet extends DataServlet {
         }
 
         try {
-            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) { // make a directory listing
             doDirectoryListing(request, response, writer);
         } else { // display data from that MDD
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
@@ -197,7 +197,7 @@ public class DataTypeListerServlet extends DataServlet {
             relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
         }
 
-        writePageContentHeader(type, writer, new TransactionProvider().getDefaultDataSourceName(), MODE_LIST);
+        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(), MODE_LIST);
 
         writer.print("<pre style=\"margin-top:0\">");
         if (!relativeDirectory.equals("dataDefinitions")) {

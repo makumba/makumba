@@ -57,7 +57,7 @@ public class RequestAttributes implements Attributes {
 
     Object controller;
     
-    private TransactionProvider tp = new TransactionProvider();
+    private TransactionProvider tp = TransactionProvider.getInstance();
 
     public String getRequestDatabase() {
         return tp.getDefaultDataSourceName();

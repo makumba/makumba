@@ -32,7 +32,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public TransactionImplementation(TransactionProviderInterface tp) {
         this.tp = tp;
-        this.ddp = new DataDefinitionProvider();
+        this.ddp = DataDefinitionProvider.getInstance();
     }
     
     public abstract void close();

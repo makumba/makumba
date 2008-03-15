@@ -142,7 +142,7 @@ public class HibernateSFManager {
 
     public static synchronized SessionFactory getSF() {
             String configFile;
-            String defaultDataSourceName = new TransactionProvider().getDefaultDataSourceName();
+            String defaultDataSourceName = TransactionProvider.getInstance().getDefaultDataSourceName();
             if(defaultDataSourceName == null) {
                 configFile = "default";
             } else {

@@ -32,7 +32,7 @@ public class CharsetFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        TransactionProvider tp = new TransactionProvider();
+        TransactionProvider tp = TransactionProvider.getInstance();
 
         if (tp.supportsUTF8()) {
             request.setCharacterEncoding("UTF-8");

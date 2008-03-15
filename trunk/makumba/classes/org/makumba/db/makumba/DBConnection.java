@@ -66,7 +66,7 @@ public abstract class DBConnection extends TransactionImplementation {
     public DBConnection(Database database, TransactionProviderInterface tp) {
         this(tp);
         this.db = database;
-        this.ddp = new DataDefinitionProvider();
+        this.ddp = DataDefinitionProvider.getInstance();
     }
 
     public DBConnection(Database database, String dataSource, TransactionProviderInterface tp) {

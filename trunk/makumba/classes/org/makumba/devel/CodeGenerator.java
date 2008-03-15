@@ -154,7 +154,7 @@ public class CodeGenerator {
 
         try {
             // FIXME - this should get the datadefinition of the MDDs in a given context
-            dd = (new DataDefinitionProvider()).getDataDefinition(object);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(object);
         } catch (Throwable t) {
             throw new DataDefinitionNotFoundError("Could not find such a data defintion");
         }

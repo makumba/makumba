@@ -95,7 +95,7 @@ public class copy
  * <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
  */
 public static void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
-    (new TransactionProvider())._copy(sourceDB, destinationDB, typeNames, ignoreDbsv);
+    (TransactionProvider.getInstance())._copy(sourceDB, destinationDB, typeNames, ignoreDbsv);
 }
   
 }

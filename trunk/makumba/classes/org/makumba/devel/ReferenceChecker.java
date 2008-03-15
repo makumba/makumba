@@ -211,7 +211,7 @@ public class ReferenceChecker extends HttpServlet {
 
     private void printBrokenRefsInTable(String contextPath, PrintWriter w, String param, String field)
             throws IOException {
-        DataDefinition dd = new DataDefinitionProvider().getDataDefinition(param);
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(param);
         FieldDefinition fd = dd.getFieldDefinition(field);
         String query = getQueryString(fd.getPointedType(), dd, fd, false);
 

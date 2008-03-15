@@ -36,10 +36,10 @@ import org.makumba.providers.TransactionProvider;
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
     /** DataDefinition provider - FIXME should read which one it is from config */
-    private static DataDefinitionProvider MDDFactory = new DataDefinitionProvider();
+    private static DataDefinitionProvider MDDFactory = DataDefinitionProvider.getInstance();
     
     /** TransactionProvider - FIXME should read which one it is from config */
-    private static TransactionProvider tp = new TransactionProvider();
+    private static TransactionProvider tp = TransactionProvider.getInstance();
 
     /** The date at which makumba is loaded */
     static public final java.util.Date loadingTime = new java.util.Date();
@@ -395,9 +395,14 @@ public class MakumbaSystem {
     public static CalendarEditorProvider getCalendarProvider() {
         return KruseCalendarEditor.getInstance();
     }
+    
+    private static ClientsideValidationProvider clientSideValidationProviderSingleton;
 
     /** Get the default client-side validation provider. FIXME: read this from some config, or so. */
     public static ClientsideValidationProvider getClientsideValidationProvider() {
-        return new LiveValidationProvider();
+        if(clientSideValidationProviderSingleton == null) {
+            clientSideValidationProviderSingleton = new LiveValidationProvider();
+        }
+        return clientSideValidationProviderSingleton;
     }
 }

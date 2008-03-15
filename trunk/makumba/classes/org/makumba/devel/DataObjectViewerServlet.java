@@ -64,13 +64,13 @@ public class DataObjectViewerServlet extends DataServlet {
         dataPointer = new Pointer(type, request.getParameter("ptr"));
 
         try {
-            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) {
 
         } else {
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {

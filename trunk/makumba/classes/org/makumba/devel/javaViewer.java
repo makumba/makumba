@@ -83,7 +83,7 @@ public class javaViewer extends LineViewer {
 
     private JavaParseData javaParseData;
     
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private URL url;
     
