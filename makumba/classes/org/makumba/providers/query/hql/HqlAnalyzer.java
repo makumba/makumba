@@ -21,7 +21,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     private DataDefinition projTypes;
     private DataDefinition paramTypes;
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
     static {

@@ -70,7 +70,7 @@ public class FormResponder extends Responder {
 
     Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
 
-    DataDefinition dd = new DataDefinitionProvider().getVirtualDataDefinition("Form responder"); // TODO: more precise name
+    DataDefinition dd = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Form responder"); // TODO: more precise name
 
     int max = 0;
 
@@ -94,7 +94,7 @@ public class FormResponder extends Responder {
         String colName = ("col" + max);
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
-        dd.addField(new DataDefinitionProvider().makeFieldWithName(colName, ftype));
+        dd.addField(DataDefinitionProvider.getInstance().makeFieldWithName(colName, ftype));
         editor = new RecordEditor(dd, fieldNames, database);
         editor.config();
         // add client side validation, but only for edit operations (not search)
@@ -240,7 +240,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = new TransactionProvider().getConnectionTo(database);
+            Transaction db = TransactionProvider.getInstance().getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);

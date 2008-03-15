@@ -29,7 +29,7 @@ public class MddToClass {
 	private LinkedList mddsToDo = new LinkedList();
 	private LinkedList appendToClass = new LinkedList();
     
-    private DataDefinitionProvider ddp= new DataDefinitionProvider();
+    private DataDefinitionProvider ddp= DataDefinitionProvider.getInstance();
     private NameResolver nr;
 
     public MddToClass(Vector v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{

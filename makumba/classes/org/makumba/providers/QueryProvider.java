@@ -22,8 +22,11 @@ public abstract class QueryProvider {
 
     public QueryProvider(){
         try {
-            if(getQueryAnalysisProviderClass()!=null)
-                qap=(QueryAnalysisProvider) Class.forName(getQueryAnalysisProviderClass()).newInstance();
+            if(getQueryAnalysisProviderClass()!=null) {
+                if(qap == null) {
+                    qap=(QueryAnalysisProvider) Class.forName(getQueryAnalysisProviderClass()).newInstance();
+                }
+            }
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

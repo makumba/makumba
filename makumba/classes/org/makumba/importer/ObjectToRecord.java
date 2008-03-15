@@ -61,7 +61,7 @@ public class ObjectToRecord {
             } catch (NoSuchMethodException nsme) {
             }
 
-            this.type = new DataDefinitionProvider().getDataDefinition(type);
+            this.type = DataDefinitionProvider.getInstance().getDataDefinition(type);
 
             Field no = null;
             try {

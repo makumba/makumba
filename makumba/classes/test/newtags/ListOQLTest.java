@@ -68,7 +68,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
 
         protected void setUp() {
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             insertLanguages(db);
             insertPerson(db);
@@ -147,7 +147,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
         public void tearDown() {
             // do your one-time tear down here!
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             deletePerson(db);
             deleteLanguages(db);

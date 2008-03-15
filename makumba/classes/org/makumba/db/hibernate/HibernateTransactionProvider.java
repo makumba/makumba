@@ -38,7 +38,7 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     }
 
     public Transaction getConnectionTo(String name) {
-        return new HibernateTransaction(name, new DataDefinitionProvider(), this);
+        return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
     }
 
     public String getDataSourceName(String lookupFile) {

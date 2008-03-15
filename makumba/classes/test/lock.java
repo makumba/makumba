@@ -55,7 +55,7 @@ public class lock extends TestCase
 
   public void setUp()
   {
-    TransactionProvider tp = new TransactionProvider();
+    TransactionProvider tp = TransactionProvider.getInstance();
 
     db=tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
   }

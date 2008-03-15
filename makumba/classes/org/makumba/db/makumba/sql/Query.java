@@ -156,7 +156,7 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
-        DataDefinition insert = new DataDefinitionProvider().getDataDefinition(insertIn);
+        DataDefinition insert = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
         for (Iterator i = proj.getFieldNames().iterator(); i.hasNext();) {
             String s = (String) i.next();
             if (insert.getFieldDefinition(s) == null) {

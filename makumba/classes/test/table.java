@@ -77,7 +77,7 @@ public class table extends TestCase {
 		db.close();
 	}
 
-    private TransactionProvider tp = new TransactionProvider();
+    private TransactionProvider tp = TransactionProvider.getInstance();
 
 	static Pointer ptr, ptr1;
 
@@ -122,7 +122,7 @@ public class table extends TestCase {
 
 	public void testQueryValidMdds() {
 		Vector v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
-        DataDefinitionProvider ddp = new DataDefinitionProvider();
+        DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
            
 		Vector errors = new Vector();
 		for (int i = 0; i < v.size(); i++) {

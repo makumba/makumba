@@ -44,7 +44,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      */
     private static final long serialVersionUID = 1L;
 
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public QueryAST() {
     }

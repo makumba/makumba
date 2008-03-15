@@ -2,6 +2,7 @@ package test;
 
 
 import org.makumba.ProgrammerError;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 
@@ -329,7 +330,9 @@ public class hqlanalyzer extends TestCase {
         try{
             QueryAnalysis oA = qP.getQueryAnalysis(q1);
             //fail("ProgrammerError expected" );
-        }catch(ProgrammerError e){assertEquals(e.getMessage(), "No such field \"t\" in Makumba type \"test.Person\""); }
+        }catch(RuntimeWrappedException rwe){
+            assertEquals(rwe.getCause().getMessage(), "No such field \"t\" in Makumba type \"test.Person\"");
+        }
     }
     
     public void test() {

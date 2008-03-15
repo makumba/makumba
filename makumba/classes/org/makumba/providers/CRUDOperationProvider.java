@@ -20,7 +20,7 @@ import org.makumba.db.TransactionImplementation;
  */
 public abstract class CRUDOperationProvider {
 
-    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
+    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     /**
      * Inserts data of a given type
