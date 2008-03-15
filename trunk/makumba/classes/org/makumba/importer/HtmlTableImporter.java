@@ -142,7 +142,7 @@ public class HtmlTableImporter {
      * logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        (new TransactionProvider())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
+        (TransactionProvider.getInstance())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
     }
 
     /**
@@ -160,7 +160,7 @@ public class HtmlTableImporter {
         String[] args = new String[argv.length - 4];
         System.arraycopy(argv, 4, args, 0, args.length);
 
-        new HtmlTableImporter(new TransactionProvider().getConnectionTo(argv[0]), new DataDefinitionProvider().getDataDefinition(argv[1]),
+        new HtmlTableImporter(TransactionProvider.getInstance().getConnectionTo(argv[0]), DataDefinitionProvider.getInstance().getDataDefinition(argv[1]),
                 new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
     }
 }

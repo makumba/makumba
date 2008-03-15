@@ -65,7 +65,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 		}
 
 		protected void setUp() {
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             insertLanguages(db);
@@ -144,7 +144,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
 		public void tearDown() {
 			// do your one-time tear down here!
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
 			deletePerson(db);
@@ -258,4 +258,77 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         assertTrue(compareTest(output));
     }
+    
+    
+    public void testFormMultipleForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakMultipleForms.jsp");
+    }
+    public void endFormMultipleForms(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+    
+    public void testFormNestedForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakNestedForms.jsp");
+    }
+    public void endFormNestedForms(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+    
+    public void testFormMakNewFile() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakNewFormFile.jsp");
+    }
+    public void endFormMakNewFile(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+ 
+    
+    public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/login/loginTest.jsp" );
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // we try to login
+        form.setParameter("username","manu");
+        form.setParameter("password", "secret");
+        // submit the form
+        form.submit();
+    }
+    public void testLogin() throws ServletException, IOException {
+        pageContext.include("login/loginTest.jsp");
+    }
+    public void endLogin(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, true);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        
+        assertTrue(compareTest(output));
+    }
+    
+
+    
+    
+    
+    
+    
 }

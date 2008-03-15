@@ -41,7 +41,7 @@ import org.makumba.providers.DataDefinitionProvider;
  */
 public class mdd extends TestCase {
     
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
     
 	public mdd(String name) {
 		super(name);

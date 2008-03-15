@@ -49,7 +49,7 @@ public class config extends TestCase
     return new TestSuite(config.class);
   }
   
-  private TransactionProvider tp = new TransactionProvider();
+  private TransactionProvider tp = TransactionProvider.getInstance();
 
   public void testBiuldInfo()
   {

@@ -69,7 +69,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
         }
 
         protected void setUp() {
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             insertLanguages(db);
@@ -150,7 +150,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
         public void tearDown() {
             // do your one-time tear down here!
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
             
             deletePerson(db);

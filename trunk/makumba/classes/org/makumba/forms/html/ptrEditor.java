@@ -62,7 +62,7 @@ public class ptrEditor extends choiceEditor {
 
         Vector v = null;
 
-        Transaction dbc = new TransactionProvider().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
+        Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
             v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
         } finally {
@@ -87,7 +87,7 @@ public class ptrEditor extends choiceEditor {
                                 + ") has a null value for the title-field ("
                                 + ptr.getType()
                                 + "."
-                                + new DataDefinitionProvider().getDataDefinition(ptr.getType()).getTitleFieldName()
+                                + DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType()).getTitleFieldName()
                                 + "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
             }
             c.add(d.get("choice"), ttl.toString(), false, false);

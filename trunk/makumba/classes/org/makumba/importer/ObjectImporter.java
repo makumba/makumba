@@ -180,7 +180,7 @@ public class ObjectImporter {
 
     /** imports all files from a directory */
     public static void main(String argv[]) throws Throwable {
-        ObjectImporter ri = new ObjectImporter(new DataDefinitionProvider().getDataDefinition(argv[0]));
+        ObjectImporter ri = new ObjectImporter(DataDefinitionProvider.getInstance().getDataDefinition(argv[0]));
         File dir = new File(argv[1]);
         String[] lst = dir.list();
         char buffer[] = new char[8196];

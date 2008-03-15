@@ -35,7 +35,7 @@ public class MddToMapping {
 
     private String prefix = "";
     
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private NameResolver nr;
 

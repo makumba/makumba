@@ -11,7 +11,7 @@ import antlr.SemanticException;
 
 public class MddObjectType implements ObjectType {
 
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     /**
      * Based on a type name and a field name, this method attempts to return the type of the field

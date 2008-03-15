@@ -393,7 +393,7 @@ public class ResponderFactory {
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = new TransactionProvider().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = TransactionProvider.getInstance().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(
