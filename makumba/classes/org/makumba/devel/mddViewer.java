@@ -67,7 +67,7 @@ public class mddViewer extends LineViewer {
         readFromURL(u);
         virtualPath = virtualPath.substring(1);
         try {
-            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {

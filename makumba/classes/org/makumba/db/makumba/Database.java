@@ -73,9 +73,9 @@ public abstract class Database {
         return configName;
     }
 
-    private DataDefinitionProvider ddp = new DataDefinitionProvider();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
-    protected TransactionProvider tp = new TransactionProvider();
+    protected TransactionProvider tp = TransactionProvider.getInstance();
 
     NamedResources queries;
 

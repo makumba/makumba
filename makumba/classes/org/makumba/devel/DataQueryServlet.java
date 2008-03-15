@@ -105,7 +105,7 @@ public class DataQueryServlet extends DataServlet {
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
-            TransactionProvider tp = new TransactionProvider();
+            TransactionProvider tp = TransactionProvider.getInstance();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {

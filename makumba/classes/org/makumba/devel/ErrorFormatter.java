@@ -171,7 +171,7 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        TransactionProvider tp = new TransactionProvider();
+        TransactionProvider tp = TransactionProvider.getInstance();
         Transaction tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
         try {

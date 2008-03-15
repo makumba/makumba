@@ -74,7 +74,7 @@ public class DataPointerValueConverter extends DataServlet {
         DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
-        writePageContentHeader(type, writer, new TransactionProvider().getDefaultDataSourceName(), MODE_CONVERTOR);
+        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(), MODE_CONVERTOR);
 
         writer.println("<form>");
         writer.println("<table>");

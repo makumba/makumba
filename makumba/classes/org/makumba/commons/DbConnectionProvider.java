@@ -39,7 +39,7 @@ import org.makumba.providers.TransactionProvider;
  */
 public class DbConnectionProvider {
     
-    private TransactionProvider tp = new TransactionProvider();
+    private TransactionProvider tp = TransactionProvider.getInstance();
     
     Map<String, Transaction> connections = new HashMap<String, Transaction>(7);
 

@@ -105,7 +105,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     private ResponderFactory responderFactory = ResponderFactory.getInstance();
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
+    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public FormTagBase() {
         // TODO move this somewhere else

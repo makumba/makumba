@@ -32,6 +32,8 @@ public class ListFormDataProvider implements FormDataProvider {
     
     private static final String[] dummyQuerySections = { null, null, null, null, null };
     
+    private static ListFormDataProvider singleton;
+    
 
     /* (non-Javadoc)
      * @see org.makumba.list.FormDataProvider#onFormStartAnalyze(org.makumba.analyser.AnalysableTag, org.makumba.analyser.PageCache, java.lang.String)
@@ -179,6 +181,17 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public MultipleKey getParentListKey(AnalysableTag tag) {
         return QueryTag.getParentListKey(tag, null);
+    }
+    
+    public static ListFormDataProvider getInstance() {
+        if(singleton == null) {
+            singleton = new ListFormDataProvider();
+        }
+        return singleton;
+    }
+    
+    private ListFormDataProvider() {
+        
     }
 
 }

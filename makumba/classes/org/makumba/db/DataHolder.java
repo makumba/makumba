@@ -54,7 +54,7 @@ public class DataHolder {
         this.fullData = data;
         this.type = type;
 
-        this.ddp = new DataDefinitionProvider();
+        this.ddp = DataDefinitionProvider.getInstance();
         this.tp = t.getTransactionProvider();
         this.typeDef = ddp.getDataDefinition(type);
 

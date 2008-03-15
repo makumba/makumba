@@ -55,7 +55,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     protected static final String INPUT_TYPES = "org.makumba.inputtypes";
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = new DataDefinitionProvider();
+    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     String valueExprOriginal = null;
 

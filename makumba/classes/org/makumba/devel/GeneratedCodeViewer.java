@@ -169,7 +169,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** Starts the code generation. */
     public void generateCode() throws IOException {
         try {
-            dd = (new DataDefinitionProvider()).getDataDefinition(virtualPath);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
 
             // check what code types are selected
             typeParam = request.getParameter("type");
@@ -346,7 +346,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** print links to the generated JSP and java files in the page header. */
     private void printGeneratedCodeLinks(PrintWriter w) {
         
-        TransactionProvider tp = new TransactionProvider();
+        TransactionProvider tp = TransactionProvider.getInstance();
         
         String cgiParams = "";
 

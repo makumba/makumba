@@ -38,7 +38,7 @@ public class UniquenessServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         
         // get the database
-        TransactionProvider tp = new TransactionProvider();
+        TransactionProvider tp = TransactionProvider.getInstance();
         DBConnectionWrapper dbc = (DBConnectionWrapper)tp.getConnectionTo(tp.getDefaultDataSourceName());
         Database db = dbc.getHostDatabase();
         TableManager table = null;
