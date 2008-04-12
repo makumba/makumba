@@ -19,8 +19,10 @@ public class DetectHQLTokenTypes {
         Class c= org.hibernate.hql.antlr.HqlTokenTypes.class;
 
         PrintStream out=null;
+        String HQLTokenPath = "";
         try {
-            out= new PrintStream(new FileOutputStream("classes/"+getClass().getName().substring(0, getClass().getName().lastIndexOf(".")).replace('.', '/')+"/HqlTokenTypes.txt"));
+            HQLTokenPath = getClass().getName().substring(0, getClass().getName().lastIndexOf(".")).replace('.', '/')+"/HqlTokenTypes.txt";
+            out= new PrintStream(new FileOutputStream("classes/"+HQLTokenPath));
         } catch (FileNotFoundException e1) { e1.printStackTrace(); }
         out.println("Hql");
         Field flds[]= c.getFields();
@@ -32,7 +34,7 @@ public class DetectHQLTokenTypes {
         }
        out.close();
        System.out.println("Detected "+flds.length+" token types in the HQL supported by the hibernate.jar included in this version.\n"+
-               "Generated file org/makumba/db/hibernate/hql/HqlTokenTypes.txt\n"+
+               "Generated file "+HQLTokenPath+"\n"+
                "The file is needed for HQL analysis");
     }
 
