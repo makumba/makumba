@@ -139,5 +139,9 @@ public class ComposedSubquery extends ComposedQuery {
         // we're all set now, no more need for the super query
         superQuery=null;
     }
+    
+    public String toString() {
+        return "Composed subquery: "+typeAnalyzerOQL;
+    }
 
 }
