@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
@@ -55,6 +56,15 @@ public class PageCache {
             return null;
         return cache.get(key);
     }
+    
+    /**
+     * Gets a whole cache
+     * @param cacheName the name of the cache
+     * @return a Map with the content of the cache
+     */
+    public Map<Object, Object> retrieveCache(String cacheName) {
+        return caches.get(cacheName);
+    }
 
     /**
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
@@ -72,5 +82,33 @@ public class PageCache {
     /** Retrieves a set from a specific set cache. */
     public HashSet<Object> retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
+    }
+    
+    public String toString() {
+        String result = "== Simple caches\n";
+        for (Iterator iterator = caches.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            result +="  == Key "+key+"\n";
+            
+        }
+        result+="== Set caches\n   Not implemented yet.";
+        
+        return result;
+        
+    }
+    
+    public String toString(String key) {
+        String result = "== Content of cache "+key+"\n";
+        HashMap<Object, Object> cache = caches.get(key);
+        
+        Iterator<Object> it2 = cache.keySet().iterator();
+        while (it2.hasNext()) {
+            Object key2 = (Object) it2.next();
+            if(key2 != null) {
+                result += "  key: "+key2.toString() + "\n    value: "+cache.get(key2).toString()+"\n";
+            }
+        }
+        
+        return result;
     }
 }
