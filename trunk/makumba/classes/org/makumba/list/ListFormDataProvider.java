@@ -190,7 +190,7 @@ public class ListFormDataProvider implements FormDataProvider {
         return singleton;
     }
     
-    private ListFormDataProvider() {
+    public ListFormDataProvider() {
         
     }
 
