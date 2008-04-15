@@ -3,7 +3,6 @@ package org.makumba.analyser;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 
