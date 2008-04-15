@@ -189,7 +189,7 @@ public class ComposedQuery {
     }
 
     /**
-     * Adds a subquery to this query. Makes it aware that it has subqueries at all. 
+     * Adds a subquery to this query. Makes it aware that it has subqueries at all.
      * 
      * @param q
      *            the subquery
@@ -533,5 +533,89 @@ public class ComposedQuery {
      */
     public void addProjection(Object o) {
         projections.add(o);
+    }
+
+    public String toString() {
+        return "Composed query: " + typeAnalyzerOQL;
+    }
+
+    /**
+     * Gets the query string.
+     * 
+     * @return the query string in a form that can be used by a type analyser, in the query language of the
+     *         ComposedQuery
+     */
+    public String getTypeAnalyzerQuery() {
+        return typeAnalyzerOQL;
+    }
+
+    /**
+     * Gets the projections of this query
+     * 
+     * @return a {@link Vector} containing the projections of this ComposedQuery
+     */
+    public Vector<Object> getProjections() {
+        return projections;
+    }
+
+    /**
+     * Gets the type of the fields between SELECT and FROM
+     * 
+     * @return A DataDefinition containing as fields the type and name of the query projections
+     */
+    public DataDefinition getProjectionTypes() {
+        return qep.getQueryAnalysis(typeAnalyzerOQL).getProjectionType();
+    }
+
+    /**
+     * Computes the type that contains the field pointed by an expression, e.g. in the expression
+     * "activity.season.responsible.name", this will return the type of "responsible".<br>
+     * 
+     * @param expr
+     *            the expression of which to evaluate the parent type
+     * @return a {@link DataDefinition} corresponding to the type containing the field. This can also return a
+     *         setComplex, e.g. "general.Person->address"
+     */
+    public DataDefinition getTypeOfExprField(String expr) {
+
+        if (expr.indexOf(".") == -1) {
+            return getLabelType(expr);
+        } else {
+            DataDefinition result;
+            int lastDot = expr.lastIndexOf(".");
+            String beforeLastDot = expr.substring(0, lastDot);
+            if (beforeLastDot.indexOf(".") == -1) {
+                result = getLabelType(beforeLastDot);
+            } else {
+                // compute dummy query for determining pointed type
+                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + derivedSections[FROM];
+                result = qep.getQueryAnalysis(dummyQuery).getProjectionType().getFieldDefinition("projection").getPointedType();
+            }
+            return result;
+
+        }
+    }
+
+    /**
+     * Gets the field pointed by an expression
+     * 
+     * @param expr
+     *            the expression to analyse
+     * @return the last field in an expression of the kind "a.b.c", the expression itself if there's no subfield
+     */
+    public String getFieldOfExpr(String expr) {
+        if (expr.indexOf(".") > -1)
+            return expr.substring(expr.lastIndexOf(".") + 1);
+        else
+            return expr;
+    }
+
+    /**
+     * Gets the types of the labels in the FROM section
+     * 
+     * @return a Map containing the labels and their type
+     */
+    public Map<String, DataDefinition> getFromLabelTypes() {
+        return qep.getQueryAnalysis(fromAnalyzerOQL).getLabelTypes();
     }
 }
