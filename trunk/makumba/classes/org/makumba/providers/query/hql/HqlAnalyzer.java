@@ -270,4 +270,10 @@ public class HqlAnalyzer implements QueryAnalysis {
         return getHackedQuery(query);
     }
 
+    public Map<String, DataDefinition> getLabelTypes() {
+        
+        throw new RuntimeException("Not implemented.");
+        
+    }
+
 }

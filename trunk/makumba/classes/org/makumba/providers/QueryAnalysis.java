@@ -23,6 +23,8 @@
 
 package org.makumba.providers;
 
+import java.util.Map;
+
 import org.makumba.DataDefinition;
 
 /**
@@ -61,6 +63,13 @@ public interface QueryAnalysis {
      *         field the type and name of the second QL projection $2 etc.
      */
     DataDefinition getProjectionType();
+    
+    /**
+     * Gets the type of the fields between FROM and WHERE
+     * @return A DataDefinition containing in the first field the type and name of the first label, the second
+     *         field the type and name of the second label $2 etc.
+     */
+    Map<String, DataDefinition> getLabelTypes();
 
     /**
      * Gets the type of a label used within the query

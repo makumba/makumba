@@ -25,6 +25,8 @@ package org.makumba.providers.query.oql;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -33,6 +35,8 @@ import org.makumba.MakumbaSystem;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 
 import antlr.SemanticException;
 import antlr.collections.AST;
@@ -174,14 +178,14 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             if (labels.get(oneProjectionLabel) == null)
                 throw new antlr.SemanticException("undefined projection label: \"" + oneProjectionLabel + "\"");
         } else {
-            resultInfo = MakumbaSystem.getTemporaryDataDefinition("Result for " + originalQuery);
+            resultInfo = ddp.getVirtualDataDefinition("Result for " + originalQuery);
 
             for (int i = 0; i < projections.size(); i++) {
                 Projection proj = (Projection) projections.elementAt(i);
 
                 if (proj.as == null || proj.as.length() == 0)
                     proj.as = "col" + (i + 1);
-
+                
                 Object type = proj.expr.getMakumbaType();
                 if (type == null) {
                     System.out.println(((char) 7) + "\n\nno type computed for " + proj.expr.getText() + "\n\n");
@@ -195,9 +199,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
                 FieldDefinition fd;
 
                 if (type instanceof String)
-                    fd = MakumbaSystem.makeFieldOfType(proj.as, (String) type);
+                    fd = ddp.makeFieldOfType(proj.as, (String) type, proj.expr.getText());
                 else
-                    fd = MakumbaSystem.makeFieldWithName(proj.as, (FieldDefinition) type);
+                    fd = ddp.makeFieldWithName(proj.as, (FieldDefinition) type, proj.expr.getText());
 
                 resultInfo.addField(fd);
             }
@@ -222,7 +226,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
     }
 
-    /** asssociate each label to its makumba type */
+    /** associate each label to its makumba type */
     Hashtable<String, DataDefinition> labels = new Hashtable<String, DataDefinition>();
 
     /** labels explicitly defined in OQL FROM*/
@@ -624,6 +628,11 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     public String getPreProcessedQuery(String query) {
         return getQuery();
+    }
+
+    public Map<String, DataDefinition> getLabelTypes() {
+        
+        return labels;
     }
 
 }
