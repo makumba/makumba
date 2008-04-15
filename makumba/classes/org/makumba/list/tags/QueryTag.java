@@ -166,7 +166,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     QueryExecution execution;
 
     /**
-     * Computes and set the tagKey. At analisys time, the listQuery is associated with the tagKey, and retrieved at
+     * Computes and set the tagKey. At analysis time, the listQuery is associated with the tagKey, and retrieved at
      * runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey.
      * 
      * @param pageCache
@@ -209,6 +209,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // we make ComposedQuery cache our query
         QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache));
+        
 
         if (countVar != null)
             setType(pageCache, countVar, MakumbaSystem.makeFieldOfType(countVar, "int"));
@@ -440,6 +441,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         ret.init();
         pc.cache(GenericListTag.QUERY, key, ret);
+        
         return ret;
     }
 
