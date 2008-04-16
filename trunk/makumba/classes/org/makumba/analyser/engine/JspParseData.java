@@ -218,9 +218,11 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     void parse(Object initStatus) {
         long start = new java.util.Date().getTime();
+
+        // we need to create the holder before the syntaxPoints, because we need it if there are include directives in the file
+        holder = analyzer.makeStatusHolder(initStatus);
         syntaxPoints = new SourceSyntaxPoints(file, this);
 
-        holder = analyzer.makeStatusHolder(initStatus);
 
         // treat JSP Expression Language
         treatEL(syntaxPoints.getContent(), analyzer);
@@ -294,9 +296,12 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param host
      *            SourceSyntaxPoints object that is going to host this included page
      */
-    public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host) {
-        Map m = parseAttributes(includeDirective, -1);
-        String fileName = (String) m.get("file");
+    public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host) {
+        
+        treatIncludeDirective(includeDirective, start, end, analyzer);
+        
+        Map m1 = parseAttributes(includeDirective, -1);
+        String fileName = (String) m1.get("file");
         String dir = fileName.startsWith("/") ? root : host.file.getParent();
         host.include(new File(dir, fileName), position, includeDirective);
     }
@@ -415,6 +420,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /**
      * Treats a system tag: parses its different parts and stores the analysis.
+     * FIXME this contains mak-specific code and should move together with the makJspAnalyser
      * 
      * @param m
      *            the Matcher used to parse the tag
@@ -452,6 +458,35 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         an.systemTag(td, holder);
     }
+
+    /**
+     * Treats an include directive: parses its different parts and stores the analysis.
+     * 
+     * @param m
+     *            the Matcher used to parse the directive
+     * @param directive
+     *            the content of the page
+     * @param an
+     *            the JspAnalyzer used to analyze the page
+     */
+    void treatIncludeDirective(String directive, SyntaxPoint start, SyntaxPoint end, JspAnalyzer an) {
+        
+        // we don't add a syntax point because this was already done when the include was expanded
+        
+        Matcher m1 = Word.matcher(directive);
+        m1.find();
+
+        TagData td = new TagData("include", start, end, parseAttributes(directive, -1) );
+
+        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
+
+        // we avoid evaluation of the logging expression
+        if (log.isLoggable(Level.FINE))
+            log.fine(uri + ":" + start.line + ":" + start.column + ": " + td.name + " " + td.attributes);
+
+        an.systemTag(td, holder); // change?
+    }
+
 
     /**
      * Prints the line of a tag and points the beginning of the tag. Seems to be a nice illustration for parse-error

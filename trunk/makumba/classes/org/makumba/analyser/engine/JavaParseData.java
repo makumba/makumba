@@ -332,7 +332,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
                 "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
     }
 
-    public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host) {
+    public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host) {
     }
 
     /** Go thru the java import statments in the class. */

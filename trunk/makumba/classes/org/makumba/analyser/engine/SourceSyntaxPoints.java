@@ -45,7 +45,7 @@ import org.makumba.ProgrammerError;
  */
 public class SourceSyntaxPoints {
     static interface PreprocessorClient {
-        public void treatInclude(int position, String includeDirective, SourceSyntaxPoints host);
+        public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host);
 
         public Pattern[] getCommentPatterns();
 
@@ -211,7 +211,12 @@ public class SourceSyntaxPoints {
             Matcher m = client.getIncludePattern().matcher(content);
             if (!m.find())
                 return;
-            client.treatInclude(m.start(), content.substring(m.start(), m.end()), this);
+
+            // we add syntax points for the @include directive
+            SyntaxPoint end = addSyntaxPoints(m.start()+offset, m.end()+offset, "JSPIncludeDirective", content.substring(m.start(), m.end()));
+            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+            
+            client.treatInclude(m.start(), content.substring(m.start(), m.end()), start, end, this);
         }
     }
 
@@ -226,11 +231,9 @@ public class SourceSyntaxPoints {
      *            the directive calling for the inclusion
      */
     public void include(File f, int position, String includeDirective) {
+        
         SourceSyntaxPoints sf = new SourceSyntaxPoints(f, client, this, includeDirective, position+offset);
-
-        // FIXME: add a syntax point for the include
-        // record the next position in this file for @include, also the text
-
+        
         int delta = sf.getContent().length() - includeDirective.length();
 
         StringBuffer sb = new StringBuffer();
@@ -245,7 +248,7 @@ public class SourceSyntaxPoints {
         // we move the position of all SyntaxPoints that occur after the include
         for (Iterator<SyntaxPoint> i = syntaxPoints.iterator(); i.hasNext();) {
             SyntaxPoint sp = i.next();
-            if (sp.position > position+offset)
+            if (sp.position > position+offset && !sp.getType().equals("JSPIncludeDirective"))
                 sp.moveByInclude(delta);
         }
 
