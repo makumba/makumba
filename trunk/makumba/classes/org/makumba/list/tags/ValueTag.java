@@ -26,8 +26,12 @@ package org.makumba.list.tags;
 import javax.servlet.jsp.JspException;
 
 import org.makumba.LogicException;
+import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MultipleKey;
+import org.makumba.devel.relations.RelationsCrawler;
+import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
@@ -87,6 +91,20 @@ public class ValueTag extends GenericListTag {
      */
     public void doStartAnalyze(PageCache pageCache) {
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
+        
+        // if we add a projection to a query, we also cache this so that we know where the projection comes from (for the relation analysis)
+        ComposedQuery query = null;
+        try {
+            query = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(this, pageCache));
+        } catch(MakumbaError me) {
+            // this happens when there is no query for this mak:value
+            // we ignore it, query will stay null anyway
+        }
+        
+        if(query != null) {
+            pageCache.cache(RelationsCrawler.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
+        }
+
     }
 
     /** 

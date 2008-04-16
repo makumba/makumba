@@ -1,0 +1,9 @@
+# Details about a relation
+
+startcol = int
+endcol = int
+startline = int
+endline = int
+tagname = char[255] ;the name of the tag which generates this relation (for a JSP)
+expr = char[255] ;the expression which generates this dependency, in case of a query (JSP or else)
+field = char[255] ;the name of the field of a MDD used by a JSP

@@ -37,6 +37,7 @@ import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.devel.relations.RelationsCrawler;
 import org.makumba.forms.html.dateEditor;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
@@ -52,7 +53,7 @@ import org.makumba.providers.FormDataProvider;
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {
 
-    protected static final String INPUT_TYPES = "org.makumba.inputtypes";
+    public static final String INPUT_TYPES = "org.makumba.inputtypes";
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();

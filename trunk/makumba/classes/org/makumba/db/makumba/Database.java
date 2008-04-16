@@ -223,6 +223,10 @@ public abstract class Database {
             config.put("alter#org.makumba.db.makumba.Lock", "true");
             config.put("alter#org.makumba.controller.MultipleSubmit", "true");
             config.put("alter#org.makumba.controller.ErrorLog", "true");
+            config.put("alter#org.makumba.devel.relations.Relation", "true");
+            config.put("alter#org.makumba.devel.relations.WebappDatabase", "true");
+            config.put("alter#org.makumba.devel.relations.RelationOrigin", "true");
+            
         } catch (Exception e) {
             throw new org.makumba.MakumbaError(e);
         }

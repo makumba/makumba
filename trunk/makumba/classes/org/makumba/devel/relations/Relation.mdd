@@ -1,0 +1,7 @@
+# Relations between files
+
+fromFile = char[255]
+toFile = char[255]
+type = char[255]
+origin = not null set org.makumba.devel.relations.RelationOrigin
+webapp = not null ptr org.makumba.devel.relations.WebappDatabase
