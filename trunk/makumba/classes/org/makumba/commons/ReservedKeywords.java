@@ -27,7 +27,7 @@ public class ReservedKeywords {
     // not sure if this list should be including all SQL keywords, or just such that can cause problems in the SQL
     // statements.
     // chose for now to just list those that would cause problems, list is for sure not complete
-    private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum", "database"};
+    private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum", "database", "from"};
 
     static {
         ReservedKeywords.reservedKeywords = new HashSet<String>();
