@@ -85,34 +85,41 @@ public class RelationsCrawler {
     }
 
     public static void main(String[] args) {
+        
+        if(args.length == 0) {
+            // composing example start arguments
+            String webappPath = "/home/manu/workspace/karamba/public_html/";
 
+            Vector<String> arguments = new Vector<String>();
+            arguments.add(webappPath);
+            arguments.add("localhost_mysql_makumba");
+            arguments.add("forcetarget");
+            File dir = new File(webappPath + "archive/");
+            String[] files = dir.list();
+            for (int i = 0; i < files.length; i++) {
+                if (new File(webappPath + "archive/" + files[i]).isFile()) {
+                    arguments.add("/archive/" + files[i]);
+                }
+            }
+
+            File dir2 = new File(webappPath + "WEB-INF/classes/dataDefinitions/best");
+            String[] files2 = dir2.list();
+            for (int i = 0; i < files2.length; i++) {
+                if (new File(webappPath + "WEB-INF/classes/dataDefinitions/best/" + files2[i]).isFile()) {
+                    arguments.add("/WEB-INF/classes/dataDefinitions/best/" + files2[i]);
+                }
+            }
+
+            // String[] args1 = { "/home/manu/workspace/karamba/public_html", "localhost_mysql_makumba", "forcetarget",
+            // "/archive/documentEdit.jsp" };
+            // args = args1;
+
+            args = (String[]) arguments.toArray(new String[arguments.size()]);
+        }
+
+        
+        
         System.out.println("RelationsCrawler main");
-
-        Vector<String> arguments = new Vector<String>();
-        arguments.add("/home/manu/workspace/karamba/public_html");
-        arguments.add("localhost_mysql_makumba");
-        arguments.add("forcetarget");
-        File dir = new File("/home/manu/workspace/karamba/public_html/archive/");
-        String[] files = dir.list();
-        for (int i = 0; i < files.length; i++) {
-            if (new File("/home/manu/workspace/karamba/public_html/archive/" + files[i]).isFile()) {
-                arguments.add("/archive/" + files[i]);
-            }
-        }
-
-        File dir2 = new File("/home/manu/workspace/karamba/public_html/WEB-INF/classes/dataDefinitions/best");
-        String[] files2 = dir2.list();
-        for (int i = 0; i < files2.length; i++) {
-            if (new File("/home/manu/workspace/karamba/public_html/WEB-INF/classes/dataDefinitions/best/" + files2[i]).isFile()) {
-                arguments.add("/WEB-INF/classes/dataDefinitions/best/" + files2[i]);
-            }
-        }
-
-        // String[] args1 = { "/home/manu/workspace/karamba/public_html", "localhost_mysql_makumba", "forcetarget",
-        // "/archive/documentEdit.jsp" };
-        // args = args1;
-
-        args = (String[]) arguments.toArray(new String[arguments.size()]);
 
         String webappRoot = args[0];
         String targetDatabase = args[1];
@@ -162,7 +169,7 @@ public class RelationsCrawler {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("We have the right CP");
+            System.out.println("We have the right classpath");
 
             RelationsCrawler rc = new RelationsCrawler(webappRoot, targetDatabase, forceDatabase != null);
 
