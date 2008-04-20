@@ -1,5 +1,6 @@
 package org.makumba.providers.query.hql;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -197,14 +198,15 @@ public class HqlAnalyzer implements QueryAnalysis {
         return result;
     }
     
-    private AST getOrderBy() {
+    
+    private AST getSection(String sectionName) {
         boolean found = false;
         AST child = parsedHQL.getFirstChild();
         if(child == null) return null;
-        while(!child.getText().equals("order") || !found) {
+        while(!child.getText().equals(sectionName) || !found) {
             child = child.getNextSibling();
             if(child == null) return null;
-            if (child.getText().equals("order")) {
+            if (child.getText().equals(sectionName)) {
                 found = true;
             }
         }
@@ -217,7 +219,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     public String getHackedQuery(String query) {
         
         // first we check if there's actually an orderBy in this query, if not return the initial one
-        if(getOrderBy() == null) {
+        if(getSection("order") == null) {
             return query;
         }
         
@@ -243,7 +245,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         String newOrderBy = new String();
         
         boolean done = false;
-        AST arg = getOrderBy().getFirstChild();
+        AST arg = getSection("order").getFirstChild();
         while(!done) {
             newOrderBy += translator.get(arg.getText());
             arg = arg.getNextSibling();
@@ -275,5 +277,47 @@ public class HqlAnalyzer implements QueryAnalysis {
         throw new RuntimeException("Not implemented.");
         
     }
+
+    public DataDefinition getTypeOfExprField(String expr) {
+
+        if (expr.indexOf(".") == -1) {
+            return getLabelType(expr);
+        } else {
+            DataDefinition result;
+            int lastDot = expr.lastIndexOf(".");
+            String beforeLastDot = expr.substring(0, lastDot);
+            if (beforeLastDot.indexOf(".") == -1) {
+                result = getLabelType(beforeLastDot);
+            } else {
+                // compute dummy query for determining pointed type
+                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM "+getFrom();
+                result = HQLQueryAnalysisProvider.getHqlAnalyzer(dummyQuery).getProjectionType().getFieldDefinition("projection").getPointedType();
+            }
+            return result;
+
+        }
+
+    }
+    
+    private String getFrom() {
+
+        String[] splitAtFrom = query.split("\\s[f|F][r|R][o|O][m|M]\\s");
+        String[] splitAtWhere = splitAtFrom[1].split("\\s[w|W][h|H][e|E][r|R][e|E]\\s");
+        
+        return splitAtWhere[0];
+        
+    }
+
+    public Dictionary<String, String> getProjections() {
+        throw new RuntimeException("not implemented");
+    }
+
+    public String getFieldOfExpr(String expr) {
+        if (expr.indexOf(".") > -1)
+            return expr.substring(expr.lastIndexOf(".") + 1);
+        else
+            return expr;
+    }
+
 
 }

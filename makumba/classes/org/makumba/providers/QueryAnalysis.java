@@ -23,6 +23,7 @@
 
 package org.makumba.providers;
 
+import java.util.Dictionary;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
@@ -102,4 +103,32 @@ public interface QueryAnalysis {
      * @see #parameterNumber()
      */
     public int parameterAt(int index);
+    
+    /**
+     * Computes the type that contains the field pointed by an expression, e.g. in the expression
+     * "activity.season.responsible.name", this will return the type of "responsible".<br>
+     * 
+     * @param expr
+     *            the expression of which to evaluate the parent type
+     * @return a {@link DataDefinition} corresponding to the type containing the field. This can also return a
+     *         setComplex, e.g. "general.Person->address"
+     */
+    public DataDefinition getTypeOfExprField(String expr);
+    
+    /**
+     * Gets the projections of the query
+     * @return a Dictionary containing the projection name and its alias
+     */
+    public Dictionary<String, String> getProjections();
+
+
+
+    /**
+     * Gets the field pointed by an expression
+     * 
+     * @param expr
+     *            the expression to analyse
+     * @return the last field in an expression of the kind "a.b.c", the expression itself if there's no subfield
+     */
+    String getFieldOfExpr(String expr);
 }
