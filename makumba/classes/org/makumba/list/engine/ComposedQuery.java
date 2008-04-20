@@ -577,23 +577,8 @@ public class ComposedQuery {
      *         setComplex, e.g. "general.Person->address"
      */
     public DataDefinition getTypeOfExprField(String expr) {
-
-        if (expr.indexOf(".") == -1) {
-            return getLabelType(expr);
-        } else {
-            DataDefinition result;
-            int lastDot = expr.lastIndexOf(".");
-            String beforeLastDot = expr.substring(0, lastDot);
-            if (beforeLastDot.indexOf(".") == -1) {
-                result = getLabelType(beforeLastDot);
-            } else {
-                // compute dummy query for determining pointed type
-                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + derivedSections[FROM];
-                result = qep.getQueryAnalysis(dummyQuery).getProjectionType().getFieldDefinition("projection").getPointedType();
-            }
-            return result;
-
-        }
+ 
+        return qep.getQueryAnalysis(typeAnalyzerOQL).getTypeOfExprField(expr);
     }
 
     /**
@@ -604,10 +589,7 @@ public class ComposedQuery {
      * @return the last field in an expression of the kind "a.b.c", the expression itself if there's no subfield
      */
     public String getFieldOfExpr(String expr) {
-        if (expr.indexOf(".") > -1)
-            return expr.substring(expr.lastIndexOf(".") + 1);
-        else
-            return expr;
+        return qep.getQueryAnalysis(typeAnalyzerOQL).getFieldOfExpr(expr);
     }
 
     /**
