@@ -23,6 +23,7 @@
 
 package org.makumba.providers.query.oql;
 
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -33,11 +34,13 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
+import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;
 
@@ -185,7 +188,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
                 if (proj.as == null || proj.as.length() == 0)
                     proj.as = "col" + (i + 1);
-                
+
                 Object type = proj.expr.getMakumbaType();
                 if (type == null) {
                     System.out.println(((char) 7) + "\n\nno type computed for " + proj.expr.getText() + "\n\n");
@@ -229,7 +232,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     /** associate each label to its makumba type */
     Hashtable<String, DataDefinition> labels = new Hashtable<String, DataDefinition>();
 
-    /** labels explicitly defined in OQL FROM*/
+    /** labels explicitly defined in OQL FROM */
     Hashtable<String, DataDefinition> fromLabels = new Hashtable<String, DataDefinition>();
 
     /** support aliases in query */
@@ -258,7 +261,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             label2 = l2;
             field1 = f1;
             field2 = f2;
-            this.leftJoin= leftJoin;
+            this.leftJoin = leftJoin;
         }
 
         public String toString() {
@@ -266,10 +269,14 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
     }
 
-    /** make a new join with the name and associate teh label with the type 
-     * @param leftJoin 
-     * @throws SemanticException */
-    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin) throws SemanticException {
+    /**
+     * make a new join with the name and associate teh label with the type
+     * 
+     * @param leftJoin
+     * @throws SemanticException
+     */
+    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin)
+            throws SemanticException {
         joins.addElement(new Join(l1, f1, name, f2, leftJoin));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type);
@@ -280,7 +287,8 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      * produce a new label out of label.field, with the indicated labelf name for the result check if the indicated
      * field exists in the type of the label determine the type of the result label if more joins are necesary inbetween
      * (e.g. for sets), add these joins as well
-     * @param leftJoin 
+     * 
+     * @param leftJoin
      */
     String join(String label, String field, String labelf, boolean leftJoin) throws antlr.RecognitionException {
         String s = (String) joinNames.get(label + "." + field);
@@ -336,7 +344,8 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             while (labels.get(label3) != null)
                 label3 += "x";
 
-            return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign , leftJoin);
+            return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign,
+                leftJoin);
         } else
             throw new antlr.RecognitionException("\"" + field + "\" is not a set or pointer in makumba type \""
                     + type.getName() + "\"");
@@ -394,8 +403,8 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     }
 
     private void setLabelType(String label, DataDefinition type) throws SemanticException {
-        if(labels.get(label)!=null)
-            throw new antlr.SemanticException("label defined twice: "+label);
+        if (labels.get(label) != null)
+            throw new antlr.SemanticException("label defined twice: " + label);
         labels.put(label, type);
     }
 
@@ -479,7 +488,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
                                 + "\" contains reference to \"" + ri.getName() + "->" + field + "\"");
                     if (i == -1)
                         break;
-                    
+
                     // FIXME: in fact it'd be better to have left join on "true" here!
                     // but we preserve backwards compatibility
                     label = join(label, field, null, false);
@@ -524,13 +533,13 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
         for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
             String label = (String) e.nextElement();
-                            
+
             if (comma)
                 ret.append(" JOIN ");
             comma = true;
 
             ret.append(getTableName(label, nr))
-            //.append(" AS ")
+            // .append(" AS ")
             .append(" ").append(label);
         }
     }
@@ -539,7 +548,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     protected String getTableName(String label, NameResolver nr) {
         DataDefinition ri = (DataDefinition) labels.get(label);
         try {
-//            return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
+            // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
             return nr.resolveTypeName(ri);
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -547,11 +556,11 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         }
     }
 
-    /** return the database-level name of the given field of the given label*/
+    /** return the database-level name of the given field of the given label */
     protected String getFieldName(String label, String field, NameResolver nr) {
         DataDefinition ri = (DataDefinition) labels.get(label);
         try {
-            //return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
+            // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
             return nr.resolveFieldName(ri, field);
         } catch (NullPointerException e) {
             return field;
@@ -560,22 +569,22 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** write the translator-generated joins */
     protected void writeJoins(NameResolver nr, StringBuffer ret) {
-        //boolean and = false;
+        // boolean and = false;
         for (Enumeration e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
-//            if (and)
-//                ret.append(" AND ");
-//            and = true;
-            
-            if(j.leftJoin)
+            // if (and)
+            // ret.append(" AND ");
+            // and = true;
+
+            if (j.leftJoin)
                 ret.append(" LEFT");
             ret.append(" JOIN ");
             ret.append(getTableName(j.label2, nr))
-            //.append(" AS ")
+            // .append(" AS ")
             .append(" ").append(j.label2);
             ret.append(" ON ");
             ret.append(j.label1).append(".").append(getFieldName(j.label1, j.field1, nr)).append("= ").append(j.label2).append(
-               ".").append(getFieldName(j.label2, j.field2, nr));
+                ".").append(getFieldName(j.label2, j.field2, nr));
         }
     }
 
@@ -601,7 +610,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
         computeParameterTypes();
     }
 
-    /** write in SQL query, calling the methods for the sections*/
+    /** write in SQL query, calling the methods for the sections */
     @Override
     public String writeInSQLQuery(NameResolver nr) {
         StringBuffer sb = new StringBuffer();
@@ -613,26 +622,110 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             writeFrom(nr, sb);
         }
         writeJoins(nr, sb);
-        
-        if (whereAST != null ) {
+
+        if (whereAST != null) {
             sb.append(" WHERE ");
-                writeConditions(nr, sb);
+            writeConditions(nr, sb);
         }
         writeAfterWhere(nr, sb);
         return sb.toString();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getQuery()
+     */
     public String getQuery() {
         return getOQL();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getPreProcessedQuery(java.lang.String)
+     */
     public String getPreProcessedQuery(String query) {
         return getQuery();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getLabelTypes()
+     */
     public Map<String, DataDefinition> getLabelTypes() {
-        
+
         return labels;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getTypeOfExprField(java.lang.String)
+     */
+    public DataDefinition getTypeOfExprField(String expr) {
+
+        if (expr.indexOf(".") == -1) {
+            return getLabelType(expr);
+        } else {
+            DataDefinition result;
+            int lastDot = expr.lastIndexOf(".");
+            String beforeLastDot = expr.substring(0, lastDot);
+            if (beforeLastDot.indexOf(".") == -1) {
+                result = getLabelType(beforeLastDot);
+            } else {
+                // compute dummy query for determining pointed type
+
+                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + getFrom();
+                try {
+                    result = OQLQueryAnalysisProvider.parseQueryFundamental(dummyQuery).getProjectionType().getFieldDefinition(
+                        "projection").getPointedType();
+                } catch (RecognitionException e) {
+                    throw new RuntimeWrappedException(e);
+                }
+            }
+            return result;
+
+        }
+
+    }
+
+    private String getFrom() {
+
+        String[] splitAtFrom = originalQuery.split("\\s[f|F][r|R][o|O][m|M]\\s");
+        String[] splitAtWhere = splitAtFrom[1].split("\\s[w|W][h|H][e|E][r|R][e|E]\\s");
+
+        return splitAtWhere[0];
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getProjections()
+     */
+    public Dictionary<String, String> getProjections() {
+
+        Dictionary<String, String> result = new Hashtable<String, String>();
+        for (int i = 0; i < projections.size(); i++) {
+            String expr = projections.get(i).expr.getText();
+            if (expr.indexOf("count(") > -1 || expr.indexOf("max(") > -1 || expr.indexOf("min(") > -1
+                    || expr.indexOf("avg(") > -1 || expr.indexOf("sum(") > -1) {
+                expr = (String) projections.get(i).expr.extraInfo;
+            }
+
+            result.put(projections.get(i).as == null ? "col" + i : projections.get(i).as, expr);
+        }
+
+        return result;
+
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.makumba.providers.QueryAnalysis#getFieldOfExpr(java.lang.String)
+     */
+    public String getFieldOfExpr(String expr) {
+        if (expr.indexOf(".") > -1)
+            return expr.substring(expr.lastIndexOf(".") + 1);
+        else
+            return expr;
     }
 
 }

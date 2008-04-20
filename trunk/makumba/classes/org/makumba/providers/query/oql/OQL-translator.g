@@ -824,22 +824,37 @@ aggregateExpr :
             |   mx:"max"{#mx.setText("max("); }
             |   av:"avg"{#av.setText("avg(0.0+"); }
             )
-            l:TOK_LPAREN {#l.setText("");} q:query TOK_RPAREN  
+            l:TOK_LPAREN {#l.setText("");} q:query
+            TOK_RPAREN  
 
 	{
         AggregateAST ag= new AggregateAST();
         ag.setText(#aggregateExpr.getText());
 		ag.setExpr((OQLAST)#q);
+		String expr = #aggregateExpr.getText();
+		if(expr.indexOf("sum(") > -1) {
+			ag.extraInfo = "sum("+#q.getText()+")";
+		} else if (expr.indexOf("min(") > -1) {
+			ag.extraInfo = "min("+#q.getText()+")";
+		} else if (expr.indexOf("max(") > -1) {
+			ag.extraInfo = "max("+#q.getText()+")";
+		} else if (expr.indexOf("avg(") > -1) {
+			ag.extraInfo = "avg("+#q.getText()+")";
+		}
         #aggregateExpr=ag;
 	}
 
         |   c:"count" {#c.setText("count("); }
-            lp:TOK_LPAREN{#lp.setText("");}
+            lp:TOK_LPAREN {#lp.setText("");}
             (
-                query
+                //query
+                qu:query {((OQLAST)#c).extraInfo="count("+#qu.getText()+")";}
             |   TOK_STAR
             )
-            TOK_RPAREN   { ((OQLAST)#aggregateExpr).makumbaType="int";}
+            TOK_RPAREN   {
+            	((OQLAST)#aggregateExpr).makumbaType="int";
+            	
+            	}
         )
     ;
 

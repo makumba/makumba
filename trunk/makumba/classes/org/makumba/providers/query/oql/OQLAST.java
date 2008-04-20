@@ -39,6 +39,8 @@ public OQLAST(){};
 
   /* used in expressions */
   Object makumbaType;
+  
+  Object extraInfo;
 
   AnalysisTree tree;
 
