@@ -27,13 +27,13 @@ public class JspRelationsAnalyzer extends MakumbaJspAnalyzer implements JspAnaly
 
     @Override
     public Object makeStatusHolder(Object initialStatus) {
-        return new RelationsParseStatus();
+        return new RelationParseStatus();
     }
     
     @Override
     protected void handleNonMakumbaTags(TagData td, Object status) {
         if(td.name.indexOf("jsp:include") > -1) {
-            ((RelationsParseStatus)status).addTag(td);
+            ((RelationParseStatus)status).addTag(td);
         }
         
     }
@@ -41,7 +41,7 @@ public class JspRelationsAnalyzer extends MakumbaJspAnalyzer implements JspAnaly
     @Override
     protected void handleNonMakumbaSystemTags(TagData td, Object status) {
         if(td.name.indexOf("include") > -1) {
-            ((RelationsParseStatus)status).addTag(td);
+            ((RelationParseStatus)status).addTag(td);
         }
     }
     
