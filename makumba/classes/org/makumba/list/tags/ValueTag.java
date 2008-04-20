@@ -30,7 +30,7 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
-import org.makumba.devel.relations.RelationsCrawler;
+import org.makumba.devel.relations.JSPRelationMiner;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 
@@ -102,7 +102,7 @@ public class ValueTag extends GenericListTag {
         }
         
         if(query != null) {
-            pageCache.cache(RelationsCrawler.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
+            pageCache.cache(JSPRelationMiner.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
         }
 
     }

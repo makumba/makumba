@@ -16,6 +16,6 @@
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;/home/manu/workspace/karamba/public_html/WEB-INF/classes/dataDefinitions&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.devel.relations.RelationsCrawler"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.devel.relations.RelationCrawler"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba"/>
 </launchConfiguration>
