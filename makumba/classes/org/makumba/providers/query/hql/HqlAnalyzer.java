@@ -1,5 +1,6 @@
 package org.makumba.providers.query.hql;
 
+import java.sql.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -54,6 +55,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     private AST parsedHQL;
 
     public HqlAnalyzer(String query1) {
+        java.util.Date d = new java.util.Date();
         this.query = query1;
 
         HqlParser parser = HqlParser.getInstance(query1);
@@ -93,6 +95,10 @@ public class HqlAnalyzer implements QueryAnalysis {
         } catch (antlr.ANTLRException f) {
             throw new OQLParseError("during analysis of query: " + query1, f);
         }
+        
+        long diff = new java.util.Date().getTime() - d.getTime();
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("HQL to SQL: " + diff + " ms: " + query);
+
     }
 
     public String getOQL() {
