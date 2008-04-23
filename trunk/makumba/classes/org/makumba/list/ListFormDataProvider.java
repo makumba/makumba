@@ -142,7 +142,7 @@ public class ListFormDataProvider implements FormDataProvider {
         Object o = ((ValueComputer) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(GenericListTag.VALUE_COMPUTERS,
             tagKey)).getValue(pageContext);
         if (!(o instanceof Pointer))
-            throw new RuntimeException("Pointer expected");
+            throw new RuntimeException("Pointer expected, got instead "+o);
         return ((Pointer) o).toExternalForm();
     }
 
