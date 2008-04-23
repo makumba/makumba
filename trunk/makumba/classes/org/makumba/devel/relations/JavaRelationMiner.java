@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -49,9 +48,7 @@ public class JavaRelationMiner extends RelationMiner {
         Vector<String> queries = jqp.getQueries();
 
         // let's try to analyse the queries and extract the relations due to projections and labels
-        for (Iterator<String> iterator = queries.iterator(); iterator.hasNext();) {
-            String query = iterator.next();
-
+        for (String query : queries) {
             // FIXME for the moment, we only have OQL queries in BL. but this won't be necessarily true in the future.
             QueryAnalysis qA = null;
             try {
@@ -86,9 +83,14 @@ public class JavaRelationMiner extends RelationMiner {
                         dd = qA.getTypeOfExprField(realExpr);
                     }
                 }
-
-
-                addJava2MDDRelation(path, dd.getName(), expr, field, query);
+                
+                String type = dd.getName();
+                if (type.indexOf("->") > -1) {
+                    field = type.substring(type.indexOf("->") + 2) + "." + field;
+                    type = type.substring(0, type.indexOf("->"));
+                }
+                
+                addJava2MDDRelation(path, type, expr, field, query);
             }
 
             Map<String, DataDefinition> labelTypes = qA.getLabelTypes();
@@ -117,9 +119,7 @@ public class JavaRelationMiner extends RelationMiner {
         }
 
         Hashtable<String, String> importedClasses = jpd.getImportedClasses();
-        Set<String> keys = importedClasses.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
+        for (String key : importedClasses.keySet()) {
             String className = importedClasses.get(key);
 
             // let's see if this class is in one package of the webapp
