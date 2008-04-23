@@ -37,7 +37,7 @@ import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.devel.relations.RelationsCrawler;
+import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.forms.html.dateEditor;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
