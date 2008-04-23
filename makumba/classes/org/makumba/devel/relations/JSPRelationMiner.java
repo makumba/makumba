@@ -236,8 +236,7 @@ public class JSPRelationMiner extends RelationMiner {
 
         Map<String, DataDefinition> labelTypes = cq.getFromLabelTypes();
         Set<String> labels = labelTypes.keySet();
-        for (Iterator<String> iterator = labels.iterator(); iterator.hasNext();) {
-            String labelName = iterator.next();
+        for (String labelName : labels) {            
             TagData td = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, (MultipleKey) queryKey);
 
             // if td is null it means that we have a dummy query, not interesting to us
