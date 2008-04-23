@@ -11,16 +11,18 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.TransactionProvider;
 
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
- * It is ran with the following arguments: RelationCrawler webappRoot destinationDb [fileList]<br>
- * where destinationDb is the database (e.g. localhost_mysql_karamba) to which the relations table should be written.
- * FIXME currently this needs to have the webapp's dataDefinitions folder in the classpath in order to run
- *
+ * FIXME currently this needs to have the webapp's dataDefinitions folder in the classpath in order to run<br>
+ * TODO keep a list of things that could not be analyzed (may it be entire files, or query strings etc<br>
+ * TODO make a way of getting the query analysis errors from a list of files
+ * 
  * @author Manuel Gay
  * @version $Id: RelationsCrawler.java,v 1.1 Apr 13, 2008 4:16:16 PM manu Exp $
  */
@@ -44,7 +46,18 @@ public class RelationCrawler {
 
     private Map<String, Dictionary<String, Object>> detectedRelations = new HashMap<String, Dictionary<String, Object>>();
 
-    public RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
+    private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
+
+    public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
+        RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget);
+        if (instance == null) {
+            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget);
+            relationCrawlers.put(webappRoot + targetDatabase + forcetarget, instance);
+        }
+        return instance;
+    }
+
+    private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
         this.forceDatabase = forcetarget;
@@ -55,7 +68,7 @@ public class RelationCrawler {
         this.JavaRelationMiner = new JavaRelationMiner(this);
     }
 
-    public Map<String, Dictionary<String, Object>> getDetectedRelations() {
+    private Map<String, Dictionary<String, Object>> getDetectedRelations() {
         return this.detectedRelations;
     }
 
@@ -63,61 +76,33 @@ public class RelationCrawler {
         return targetDatabase;
     }
 
-    public void setRelationDatabase(String relationDatabase) {
-        this.targetDatabase = relationDatabase;
-    }
-
-    public String getWebappRoot() {
+    protected String getWebappRoot() {
         return this.webappRoot;
     }
 
+    /**
+     * Extracts relations from a set of files
+     * 
+     * @param args
+     *            the arguments needed to crawl: webappRoot destinationDb forceDatabase [fileList]<br>
+     *            where:
+     *            <ul>
+     *            <li>webappRoot is the absolute path to the webapp root on the disk</li>
+     *            <li>destinationDb is the database (e.g. localhost_mysql_karamba) to which the relations table should
+     *            be written</li>
+     *            <li>forceDatabase indicates whether relations should be written to the indicated database, even if
+     *            there's already an existing table for this webapp indicated somewhere. in order to be enabled, the
+     *            value should be "forceDatabase", any other value disabling it. this should not be used for standalone
+     *            makumba webapps, but may be used in an environment where all makumba webapps should have their
+     *            relations saved in the same table of one database.</li>
+     *            <li>fileList is a list of files to be crawled</li>
+     *            </ul>
+     */
     public static void main(String[] args) {
 
         if (args.length == 0) {
-
-            // composing example start arguments
-
-            // some JSPs
-            String webappPath = "/home/manu/workspace/karamba/public_html/";
-
-            Vector<String> arguments = new Vector<String>();
-            arguments.add(webappPath);
-            arguments.add("localhost_mysql_makumba");
-            arguments.add("forceTargetDb");
-            File dir = new File(webappPath + "archive/");
-            String[] files = dir.list();
-            for (int i = 0; i < files.length; i++) {
-                if (new File(webappPath + "archive/" + files[i]).isFile()) {
-                    arguments.add("/archive/" + files[i]);
-                }
-            }
-
-            // some MDDs
-            File dir2 = new File(webappPath + "WEB-INF/classes/dataDefinitions/best");
-            String[] files2 = dir2.list();
-            for (int i = 0; i < files2.length; i++) {
-                if (new File(webappPath + "WEB-INF/classes/dataDefinitions/best/" + files2[i]).isFile()) {
-                    arguments.add("/WEB-INF/classes/dataDefinitions/best/" + files2[i]);
-                }
-            }
-
-            // some Java-s
-            File dir3 = new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea");
-            String[] files3 = dir3.list();
-            for (int i = 0; i < files3.length; i++) {
-                if (new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea/" + files3[i]).isFile()) {
-                    arguments.add("/WEB-INF/classes/org/eu/best/privatearea/" + files3[i]);
-                }
-            }
-
-            //String[] args1 = { "/home/manu/workspace/karamba/public_html", "localhost_mysql_makumba", "forcetarget",
-            //        "/WEB-INF/classes/org/eu/best/general/AccessControlLogic.java" };
-            //args = args1;
-
-            args = arguments.toArray(new String[arguments.size()]);
+            args = generateExampleArguments();
         }
-
-        System.out.println("RelationsCrawler main");
 
         String webappRoot = args[0];
         String targetDatabase = args[1];
@@ -130,6 +115,7 @@ public class RelationCrawler {
         }
 
         // this if when we run the guy from the command line directly with the right CP
+        // FIXME make this work, or find a better way
         boolean rightClassPath = RelationCrawler.class.getClassLoader().getResource("general/Person.mdd") != null;
         if (!rightClassPath && !subProcess) {
             subProcess = true;
@@ -168,10 +154,8 @@ public class RelationCrawler {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("We have the right classpath");
 
-            RelationCrawler rc = new RelationCrawler(webappRoot, targetDatabase,
-                    forceDatabase.equals("forceTargetDb"));
+            RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"));
 
             for (int i = 0; i < path.length; i++) {
                 rc.crawl(path[i]);
@@ -181,9 +165,54 @@ public class RelationCrawler {
         }
     }
 
+    private static String[] generateExampleArguments() {
+        String[] args;
+        // composing example start arguments
+
+        // some JSPs
+        String webappPath = "/home/manu/workspace/karamba/public_html/";
+
+        Vector<String> arguments = new Vector<String>();
+        arguments.add(webappPath);
+        arguments.add("localhost_mysql_makumba");
+        arguments.add("forceTargetDb");
+        File dir = new File(webappPath + "archive/");
+        String[] files = dir.list();
+        for (int i = 0; i < files.length; i++) {
+            if (new File(webappPath + "archive/" + files[i]).isFile()) {
+                arguments.add("/archive/" + files[i]);
+            }
+        }
+
+        // some MDDs
+        File dir2 = new File(webappPath + "WEB-INF/classes/dataDefinitions/best");
+        String[] files2 = dir2.list();
+        for (int i = 0; i < files2.length; i++) {
+            if (new File(webappPath + "WEB-INF/classes/dataDefinitions/best/" + files2[i]).isFile()) {
+                arguments.add("/WEB-INF/classes/dataDefinitions/best/" + files2[i]);
+            }
+        }
+
+        // some Java-s
+        File dir3 = new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea");
+        String[] files3 = dir3.list();
+        for (int i = 0; i < files3.length; i++) {
+            if (new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea/" + files3[i]).isFile()) {
+                arguments.add("/WEB-INF/classes/org/eu/best/privatearea/" + files3[i]);
+            }
+        }
+
+        // String[] args1 = { "/home/manu/workspace/karamba/public_html", "localhost_mysql_makumba", "forcetarget",
+        // "/WEB-INF/classes/org/eu/best/general/AccessControlLogic.java" };
+        // args = args1;
+
+        args = arguments.toArray(new String[arguments.size()]);
+        return args;
+    }
+
     /**
      * Crawls through a file using the relation miners
-     *
+     * 
      * @param path
      *            the path to the file
      */
@@ -204,13 +233,13 @@ public class RelationCrawler {
 
     /**
      * Adds a relation which will later on be written to the database
-     *
+     * 
      * @param toFile
      *            the path to the file there is a relation with
      * @param relationData
      *            the relation data
      */
-    public void addRelation(String toFile, Dictionary<String, Object> relationData) {
+    protected void addRelation(String toFile, Dictionary<String, Object> relationData) {
 
         Dictionary<String, Object> rel;
         if ((rel = detectedRelations.get(toFile)) != null) {
@@ -231,13 +260,13 @@ public class RelationCrawler {
             relationData.put("origin", origin);
 
             detectedRelations.put(toFile, relationData);
+
         }
 
     }
 
     /**
-     * Writes the relations to the database TODO make sure the previous data is removed, before writing the new
-     * relations
+     * Writes the relations to the database. This should be called after crawling is done.
      */
     public void writeRelationsToDb() {
         // here we save all the computed relations to the relations database
@@ -315,7 +344,7 @@ public class RelationCrawler {
     /**
      * Figures out the relations database, i.e. to which database relations should be written to, and if there's none,
      * creates an entry in the default database (per webappRoot).
-     *
+     * 
      * @param tp
      *            the TransactionProvider that makes it possible to run the determination query
      * @param forceDestination
@@ -364,5 +393,156 @@ public class RelationCrawler {
 
         return webappPointer;
 
+    }
+
+    private String getRelationsDatabaseName(TransactionProvider tp) {
+        Transaction tr = null;
+        try {
+            tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
+            Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(
+                "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1",
+                new String[] { webappRoot });
+            if (databaseLocation.size() > 1) {
+                // that's too much
+                throw new RuntimeException("Too many possible locations for the relations database of webapp "
+                        + webappRoot);
+            } else if (databaseLocation.size() == 1) {
+                return (String) databaseLocation.firstElement().get("relationDatabase");
+            }
+        } finally {
+            tr.close();
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Gets the dependencies of a file, i.e. the JSP, Java and MDD files this file depends on
+     * 
+     * @param relativePath
+     *            the relative path to the file, within the webapp root
+     * @return a {@link FileRelations} object containing all the dependencies, as well as their origin detail
+     */
+    public FileRelations getFileDependencies(String relativePath) {
+
+        String relationQuery = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
+
+        return getFileRelations(relativePath, relationQuery);
+
+    }
+
+    /**
+     * Gets the dependents of a file, i.e. the JSP, Java and MDD files that depend on this file
+     * 
+     * @param relativePath
+     *            the relative path to the file, within the webapp root
+     * @return a {@link FileRelations} object containing all the dependents, as well as their origin detail
+     */
+    public FileRelations getFileDependents(String relativePath) {
+
+        String relationQuery = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = $1";
+
+        return getFileRelations(relativePath, relationQuery);
+
+    }
+
+    /**
+     * Gets the relations of a file, depending on the query to get the relations
+     * 
+     * @param relativePath
+     *            the relative path to the file, within the webapp root
+     * @param relationQuery
+     *            the query used to get the relations
+     * @return the {@link FileRelations} object containing all the dependents, as well as their origin detail
+     * @throws MakumbaError
+     *             if the file is not found
+     */
+    private FileRelations getFileRelations(String relativePath, String relationQuery) throws MakumbaError {
+        FileRelations result = null;
+
+        if (!new File(webappRoot + File.separator + relativePath).exists()) {
+            throw new MakumbaError("File " + relativePath + " does not exist in webapp " + webappRoot);
+        }
+
+        // let's fetch the files this file depends on
+        TransactionProvider tp = TransactionProvider.getInstance();
+
+        Transaction t = null;
+        try {
+            String relationDatabase = getRelationsDatabaseName(tp);
+            if (tp == null) {
+                // TODO replace this with mechanism to launch crawling
+                throw new MakumbaError("No relations table in database. Should crawl first.");
+            }
+            t = tp.getConnectionTo(relationDatabase);
+            Vector<Dictionary<Object, Object>> dependencies = t.executeQuery(relationQuery,
+                new Object[] { relativePath });
+            result = buildFileRelations(relativePath, dependencies, t);
+        } finally {
+            t.close();
+        }
+
+        return result;
+    }
+
+    /**
+     * Builds a {@link FileRelations} object based on a number of relations
+     * 
+     * @param path
+     *            the path of the file we want to know the relations of
+     * @param relations
+     *            a Vector containing the path of the pointed file, as well as the pointer to the Relation
+     * @param t
+     *            a Transaction needed to fetch the relation origin
+     * @return the {@link FileRelations} object, filled with the detail
+     */
+    private FileRelations buildFileRelations(String path, Vector<Dictionary<Object, Object>> relations, Transaction t) {
+
+        Map<String, Vector<FileRelations.RelationOrigin>> jspRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
+        Map<String, Vector<FileRelations.RelationOrigin>> javaRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
+        Map<String, Vector<FileRelations.RelationOrigin>> mddRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
+
+        FileRelations fr = new FileRelations(path, jspRelations, javaRelations, mddRelations);
+
+        for (Dictionary<Object, Object> dictionary : relations) {
+            String file = (String) dictionary.get("file");
+            Pointer relation = (Pointer) dictionary.get("relation");
+
+            // fetch the origin of the relation
+            Vector<Dictionary<Object, Object>> relationOrigin = t.executeQuery(
+                "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1",
+                new Object[] { relation });
+
+            Vector<RelationOrigin> relationOriginVector = new Vector<RelationOrigin>();
+
+            for (Dictionary<Object, Object> dictionary2 : relationOrigin) {
+                Object startcol = dictionary2.get("startcol");
+                Object endcol = dictionary2.get("endcol");
+                Object startline = dictionary2.get("startline");
+                Object endline = dictionary2.get("endline");
+                Object tagname = dictionary2.get("tagname");
+                Object expr = dictionary2.get("expr");
+                Object field = dictionary2.get("field");
+                Object reason = dictionary2.get("reason");
+
+                RelationOrigin ro = fr.new RelationOrigin(startcol == null ? -1 : (Integer) startcol,
+                        endcol == null ? -1 : (Integer) endcol, startline == null ? -1 : (Integer) startline,
+                        endline == null ? -1 : (Integer) endline, tagname == null ? null : (String) tagname,
+                        expr == null ? null : (String) expr, field == null ? null : (String) field,
+                        reason == null ? null : (String) reason);
+                relationOriginVector.add(ro);
+            }
+
+            if (file.endsWith(".mdd")) {
+                mddRelations.put(file, relationOriginVector);
+            } else if (file.endsWith(".jsp")) {
+                jspRelations.put(file, relationOriginVector);
+            } else if (file.endsWith(".java")) {
+                javaRelations.put(file, relationOriginVector);
+            }
+        }
+
+        return fr;
     }
 }
