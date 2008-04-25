@@ -24,10 +24,12 @@
 package org.makumba.providers.datadefinition.makumba;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -300,24 +302,55 @@ public class RecordParser {
     static public java.net.URL findDataDefinition(String s, String ext) {
         // must specify a filename, not a directory (or package), see bug 173
         java.net.URL u = findDataDefinitionOrDirectory(s, ext);
-        if (u != null && (s.endsWith("/") || getResource(s+'/')!=null))
-                return null;
+        if (u != null && (s.endsWith("/") || getResource(s + '/') != null))
+            return null;
         return u;
     }
 
+    /**
+     * Looks up a data definition. First tries to see if an arbitrary webapp root path was passed, if not uses the
+     * classpath
+     * 
+     * @param s the name of the type
+     * @param ext the extension (e.g. mdd)
+     * @return a URL to the MDD file, null if none was found
+     */
     static public java.net.URL findDataDefinitionOrDirectory(String s, String ext) {
         java.net.URL u = null;
         if (s.startsWith("/"))
             s = s.substring(1);
         if (s.endsWith(".") || s.endsWith("//"))
             return null;
-        u = getResource(s.replace('.', '/') + "." + ext);
+
+        // if a webappRoot was passed, we fetch the MDDs from there, not using the CP
+        if (RecordInfo.webappRoot != null) {
+            File f = new File(RecordInfo.webappRoot);
+            if (!f.exists() || (f.exists() && !f.isDirectory())) {
+                throw new MakumbaError("webappRoot " + RecordInfo.webappRoot
+                        + " does not appear to be a valid directory");
+            }
+            String mddPath = RecordInfo.webappRoot + "/WEB-INF/classes/dataDefinitions/" + s.replace('.', '/') + "."
+                    + ext;
+            File mdd = new File(mddPath.replaceAll("/", File.separator));
+            if (mdd.exists()) {
+                try {
+                    u = new java.net.URL("file://" + mdd.getAbsolutePath());
+                } catch (MalformedURLException e) {
+                    throw new MakumbaError("internal error while trying to retrieve URL for MDD "
+                            + mdd.getAbsolutePath());
+                }
+            }
+        }
+
         if (u == null) {
-            u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
+            u = getResource(s.replace('.', '/') + "." + ext);
             if (u == null) {
-                u = getResource("dataDefinitions/" + s.replace('.', '/'));
+                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
                 if (u == null) {
-                    u = getResource(s.replace('.', '/'));
+                    u = getResource("dataDefinitions/" + s.replace('.', '/'));
+                    if (u == null) {
+                        u = getResource(s.replace('.', '/'));
+                    }
                 }
             }
         }

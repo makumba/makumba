@@ -56,6 +56,12 @@ import org.makumba.providers.datadefinition.makumba.validation.StringLengthValid
  */
 public class RecordInfo implements java.io.Serializable, DataDefinition, ValidationDefinition {
     private static final long serialVersionUID = 1L;
+    
+    protected static String webappRoot;
+    
+    public static void setWebappRoot(String s) {
+        webappRoot = s;
+    }
 
     static ArrayList<String> operators = new ArrayList<String>();
 
@@ -188,7 +194,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         subfieldPtr = papa.subfieldPtr + subfield + "->";
     }
 
-    static int infos = NamedResources.makeStaticCache("Data definitions parsed", new NamedResourceFactory() {
+    public static int infos = NamedResources.makeStaticCache("Data definitions parsed", new NamedResourceFactory() {
         /**
          * 
          */
