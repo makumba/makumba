@@ -1,8 +1,6 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -14,12 +12,13 @@ import java.util.logging.Logger;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.NamedResources;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
- * FIXME currently this needs to have the webapp's dataDefinitions folder in the classpath in order to run<br>
  * TODO keep a list of things that could not be analyzed (may it be entire files, or query strings etc<br>
  * TODO make a way of getting the query analysis errors from a list of files
  * 
@@ -66,6 +65,7 @@ public class RelationCrawler {
         this.JSPRelationMiner = new JSPRelationMiner(this);
         this.MDDRelationMiner = new MDDRelationMiner(this);
         this.JavaRelationMiner = new JavaRelationMiner(this);
+
     }
 
     private Map<String, Dictionary<String, Object>> getDetectedRelations() {
@@ -81,7 +81,7 @@ public class RelationCrawler {
     }
 
     /**
-     * Extracts relations from a set of files
+     * Extracts relations from a set of files.
      * 
      * @param args
      *            the arguments needed to crawl: webappRoot destinationDb forceDatabase [fileList]<br>
@@ -113,56 +113,21 @@ public class RelationCrawler {
         for (int i = 3; i < args.length; i++) {
             path[i - 3] = args[i];
         }
+        RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"));
 
-        // this if when we run the guy from the command line directly with the right CP
-        // FIXME make this work, or find a better way
-        boolean rightClassPath = RelationCrawler.class.getClassLoader().getResource("general/Person.mdd") != null;
-        if (!rightClassPath && !subProcess) {
-            subProcess = true;
-            System.out.println("subprocess is " + subProcess);
-            System.out.println("right class path " + rightClassPath);
-            Runtime r = Runtime.getRuntime();
-            Vector<String> cmd = new Vector<String>();
-            cmd.add("java");
-            cmd.add("-cp");
-            cmd.add(webappRoot + "/WEB-INF/classes/dataDefinitions/:.");
-            cmd.add("org.makumba.devel.relations.RelationsCrawler");
-            for (int i = 0; i < args.length; i++) {
-                if (args[i] != null) {
-                    cmd.add(args[i]);
-                }
-            }
-            String[] cmds = cmd.toArray(new String[cmd.size()]);
-
-            File f = new File("./classes");
-            System.out.println(f.getAbsolutePath());
-            System.out.println(Arrays.toString(cmds));
-
-            try {
-                Process p = r.exec(cmds, null, f);
-                p.waitFor();
-                System.out.println("Executed.");
-                int c;
-                while ((c = p.getInputStream().read()) != -1) {
-                    System.out.write(c);
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        } else {
-
-            RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"));
-
-            for (int i = 0; i < path.length; i++) {
-                rc.crawl(path[i]);
-            }
-
-            rc.writeRelationsToDb();
+        // while we crawl, we adjust the MDD provider root to the webapp root
+        RecordInfo.setWebappRoot(webappRoot);
+        
+        for (int i = 0; i < path.length; i++) {
+            rc.crawl(path[i]);
         }
+        
+        // we set it back to null after the crawling and clean the cache
+        RecordInfo.setWebappRoot(null);
+        NamedResources.cleanStaticCache(RecordInfo.infos);
+   
+
+        rc.writeRelationsToDb();
     }
 
     private static String[] generateExampleArguments() {
@@ -207,6 +172,7 @@ public class RelationCrawler {
         // args = args1;
 
         args = arguments.toArray(new String[arguments.size()]);
+
         return args;
     }
 
@@ -217,6 +183,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
+        
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -229,7 +196,8 @@ public class RelationCrawler {
 
             this.JavaRelationMiner.crawl(path);
         }
-    }
+
+      }
 
     /**
      * Adds a relation which will later on be written to the database
