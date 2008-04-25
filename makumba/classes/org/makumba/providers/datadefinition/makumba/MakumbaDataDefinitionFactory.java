@@ -9,64 +9,86 @@ import org.makumba.FieldDefinition;
 import org.makumba.providers.DataDefinitionProviderInterface;
 
 /**
- * This class is the Makumba implementation of a data definition provider, based on MDD files. TODO refactor together
- * with RecordInfo to build objects (and not use static methods)
+ * This class is the Makumba implementation of a data definition provider, based on MDD files.<br>
+ * TODO refactor together with RecordInfo to build objects (and not use static methods)
  * 
  * @author Manuel Gay
  * @version $Id$
  */
 public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInterface {
 
-    /**
-     * {@inheritdoc} The type a.b.C will generate a lookup for the file CLASSPATH/a/b/C.mdd and then for
-     * CLASSPATH/dataDefinitions/a/b/C.mdd
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#getDataDefinition(java.lang.String)
      */
     public DataDefinition getDataDefinition(String typeName) {
         return RecordInfo.getRecordInfo(typeName.replaceAll("__", "->"));
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#getVirtualDataDefinition(java.lang.String)
      */
     public DataDefinition getVirtualDataDefinition(String name) {
         return new RecordInfo(name.replaceAll("__", "->"));
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldDefinition(java.lang.String,
+     *      java.lang.String)
      */
     public FieldDefinition makeFieldDefinition(String name, String definition) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), definition.replaceAll("__", "->"), true);
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldOfType(java.lang.String, java.lang.String)
      */
     public FieldDefinition makeFieldOfType(String name, String type) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false);
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldOfType(java.lang.String, java.lang.String,
+     *      java.lang.String)
      */
     public FieldDefinition makeFieldOfType(String name, String type, String description) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false, description);
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldWithName(java.lang.String,
+     *      org.makumba.FieldDefinition)
      */
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type) {
         return FieldInfo.getFieldInfo(name, type, false);
     }
 
-    /**
-     * {@inheritdoc}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldWithName(java.lang.String,
+     *      org.makumba.FieldDefinition, java.lang.String)
      */
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return FieldInfo.getFieldInfo(name, type, false, description);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.makumba.providers.DataDefinitionProviderInterface#getDataDefinitionsInLocation(java.lang.String)
+     */
     public Vector getDataDefinitionsInLocation(String location) {
         return mddsInDirectory(location);
     }
