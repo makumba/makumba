@@ -79,11 +79,10 @@ public class IfTag extends GenericListTag implements BodyTag {
      * 
      */
     public void doStartAnalyze(PageCache pageCache) {
-        if((Boolean) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE).equals("hql")) {
-            pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), new String("case when " + testExpr +" then 1 else 0 end"), pageCache));
-        } else {
-            pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), testExpr, pageCache));
-        }
+        String te= testExpr;
+        if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) 
+            te="case when " + testExpr +" then 1 else 0 end";
+        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), te, pageCache));
     }
 
     /** 

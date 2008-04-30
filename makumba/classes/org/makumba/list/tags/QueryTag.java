@@ -280,8 +280,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             simpleQueryProps[ComposedQuery.ORDERBY] = "";
             MultipleKey maxResultsKey = getMaxResultsKey(tagKey);
             MultipleKey parentKey = getParentListKey(this, pageCache);
-            String ql = (String) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                MakumbaJspAnalyzer.QUERY_LANGUAGE);
+            String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
             query = parentKey == null ? new ComposedQuery(simpleQueryProps, ql) : new ComposedSubquery(
                     simpleQueryProps, QueryTag.getQuery(pageCache, parentKey), ql);
             query.addProjection("count(*)");
@@ -435,7 +434,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
         if (ret != null)
             return ret;
-        String ql = (String) pc.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE);
+        String ql = MakumbaJspAnalyzer.getQueryLanguage(pc);
         ret = parentKey == null ? new ComposedQuery(sections, ql) : new ComposedSubquery(sections, QueryTag.getQuery(
             pc, parentKey), ql);
 
