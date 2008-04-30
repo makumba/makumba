@@ -37,6 +37,7 @@ import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
+import org.makumba.providers.QueryAnalysis;
 
 /**
  * Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running
@@ -197,5 +198,14 @@ public class ValueComputer {
 
     public FieldDefinition getType() {
         return type;
+    }
+
+    public static boolean isPointer(PageCache pageCache, MultipleKey parentListKey, String expr) {
+        ComposedQuery cq=  QueryTag.getQuery(pageCache, parentListKey);  
+        // if it's a set, it's gonna be treated later
+        if(cq.checkExprSetOrNullable(expr) instanceof FieldDefinition)
+            return false;
+        return cq.qep.getQueryAnalysis("SELECT "+expr+" FROM "+cq.getFromSection()).
+            getProjectionType().getFieldDefinition(0).getType().equals("ptr");
     }
 }

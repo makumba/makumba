@@ -9,6 +9,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
@@ -44,17 +45,19 @@ public class SetValueComputer extends QueryValueComputer {
      *            the page cache of the current page
      */
     SetValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, FieldDefinition set, String setExpr, PageCache pageCache) {
+        boolean hql= MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql");
+        
         type = set;
         String label = setExpr.replace('.', '_');
         String queryProps[] = new String[5];
-        queryProps[ComposedQuery.FROM] = setExpr + " " + label;
+        queryProps[ComposedQuery.FROM] = (hql?"JOIN ":"")+ setExpr + " " + label;
 
         if (analyzed instanceof ValueTag) {
             name = label + "." + set.getForeignTable().getTitleFieldName();
             queryProps[ComposedQuery.ORDERBY] = name;
         }
 
-        makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label, pageCache);
+        makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label+(hql?".id":""), pageCache);
 
         if (analyzed instanceof ValueTag)
             QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name);

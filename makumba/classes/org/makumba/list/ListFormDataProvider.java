@@ -39,14 +39,10 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormStartAnalyze(org.makumba.analyser.AnalysableTag, org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
-        ValueComputer vc;
-        if ((Boolean) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE).equals("hql")) {
-            // if we use hibernate, we have to use select object.id, not the whole object
-            vc = ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr + ".id", pageCache);
-        } else {
-            vc = ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr, pageCache);
-        }
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), vc);
+        if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
+            ptrExpr+=".id";
+        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(),
+            ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr, pageCache));
     }
 
     /* (non-Javadoc)
@@ -76,8 +72,16 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onNonQueryStartAnalyze(org.makumba.analyser.AnalysableTag, boolean, org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onNonQueryStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String expr) {
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
-            getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache), expr, pageCache));
+        MultipleKey parentListKey= getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache); 
+
+        // we're trying to make sure we don't produce a bad HQL query
+        if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql") 
+                && ValueComputer.isPointer(pageCache, parentListKey, expr) 
+                && !expr.endsWith(".id"))
+            expr+=".id";     
+       
+        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), 
+            ValueComputer.getValueComputerAtAnalysis(tag, parentListKey, expr, pageCache));
     }
 
     /* (non-Javadoc)
