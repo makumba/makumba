@@ -161,8 +161,7 @@ public class JSPRelationMiner extends RelationMiner {
                             + " AS type FROM " + baseObjectType + " typeLabel";
                     // we create the query analysis, based on the QL of the page
                     QueryAnalysis qA = null;
-                    String ql = (String) pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                        MakumbaJspAnalyzer.QUERY_LANGUAGE);
+                    String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
                     if (ql.equals("oql")) {
                         try {
                             qA = OQLQueryAnalysisProvider.parseQueryFundamental(typeDeterminationQuery);

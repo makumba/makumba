@@ -151,7 +151,7 @@ public class QueryExecution {
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
         currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
         ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
-        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), (String) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())));
         
         try {
             Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
@@ -169,9 +169,7 @@ public class QueryExecution {
         ComposedQuery cq = QueryTag.getQuery(
             GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
-            (String) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(
-                MakumbaJspAnalyzer.QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE));
-
+            MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())));
         try {
             Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
             listData = cq.execute(qep, args, new Evaluator(pageContext), computeLimit(pageContext, offset, 0, 0),

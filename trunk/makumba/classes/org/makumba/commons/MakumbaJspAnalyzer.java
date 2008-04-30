@@ -30,6 +30,7 @@ import java.util.Map;
 
 
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 
@@ -106,7 +107,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         static final JspAnalyzer singleton = new MakumbaJspAnalyzer();
     }
 
-    public static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
+    static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
 
     protected MakumbaJspAnalyzer() {
     }
@@ -138,8 +139,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 if (URI.equals("http://www.makumba.org/presentation") || URI.equals("http://www.makumba.org/list")) {
                     ((ParseStatus) status).makumbaPrefix = prefix;
                     ((ParseStatus) status).makumbaURI = URI;
-                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                        MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
+                    ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
 
                     // if this is a hibernate tag or HQL list
                 } else if (URI.equals("http://www.makumba.org/view-hql")
@@ -147,8 +147,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                         || URI.equals("http://www.makumba.org/list-hql")) {
                     ((ParseStatus) status).makumbaPrefix = prefix;
                     ((ParseStatus) status).makumbaURI = URI;
-                    ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                        MakumbaJspAnalyzer.QUERY_LANGUAGE, "hql");
+                    ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "hql");
 
                     // if this is a forms declaration
                 } else if (URI.equals("http://www.makumba.org/forms")) {
@@ -159,10 +158,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                     // however if there's a page that doesn't use lists but only forms, we have to do it because
                     // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
 
-                    if (((ParseStatus) status).pageCache.retrieve(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                        MakumbaJspAnalyzer.QUERY_LANGUAGE) == null) {
-                        ((ParseStatus) status).pageCache.cache(MakumbaJspAnalyzer.QUERY_LANGUAGE,
-                            MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
+                    if (((ParseStatus) status).pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE) == null) {
+                        ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
                     }
 
                 }
@@ -266,6 +263,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     public Object endPage(Object status) {
         ((ParseStatus) status).endPage();
         return ((ParseStatus) status).pageCache;
+    }
+
+    public static String getQueryLanguage(PageCache pageCache) {
+        return (String)pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE);
     }
     
 }
