@@ -112,7 +112,7 @@ public class dateEditor extends FieldEditor {
 
         String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
         String calendarEditor = (String) formatParams.get("calendarEditor");
-        if (!calendarEditor.equals("false")) {
+        if (calendarEditor!=null && !"false".equals(calendarEditor)) {
             sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName,
                 (String) formatParams.get("calendarEditorLink")));
         }
