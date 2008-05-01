@@ -201,7 +201,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
                 String[] responderOrder = new String[responders.size()];
                 int j=0;
-                for (int i = 0; i < order.length; i++) {
+                for (int i = 0; i < order.length && j<responderOrder.length; i++) {
                     if (responders.get(order[i]) != null)
                         responderOrder[j++] = responders.get(order[i]);
                 }
