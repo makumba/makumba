@@ -1,6 +1,8 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -117,15 +119,14 @@ public class RelationCrawler {
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
-        
+
         for (int i = 0; i < path.length; i++) {
             rc.crawl(path[i]);
         }
-        
+
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
-   
 
         rc.writeRelationsToDb();
     }
@@ -183,7 +184,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
-        
+
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -197,7 +198,7 @@ public class RelationCrawler {
             this.JavaRelationMiner.crawl(path);
         }
 
-      }
+    }
 
     /**
      * Adds a relation which will later on be written to the database
@@ -513,4 +514,32 @@ public class RelationCrawler {
 
         return fr;
     }
+
+    /** Return all jsp, mdd and java files in any subdir of the given root directory. */
+    public static ArrayList<String> getAllFilesInDirectory(String root) {
+        File f = new File(root);
+        ArrayList<String> allFiles = new ArrayList<String>();
+        processFilesInDirectory(f, allFiles);
+        return allFiles;
+    }
+
+    /** Process files in one directory. */
+    private static void processFilesInDirectory(File f, ArrayList<String> allFiles) {
+        final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
+        for (int i = 0; i < fileList.length; i++) {
+            if (fileList[i].isDirectory()) {
+                allFiles.add(fileList[i].getAbsolutePath());
+            } else {
+                processFilesInDirectory(fileList[i], allFiles);
+            }
+        }
+    }
+
+    /** A filenameFilter that accepts .jsp, .mdd and .java files. */
+    private static final class MakumbaRelatedFileFilter implements FilenameFilter {
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".jsp") || name.endsWith(".java") || name.endsWith(".mdd") || name.endsWith(".idd");
+        }
+    }
+
 }
