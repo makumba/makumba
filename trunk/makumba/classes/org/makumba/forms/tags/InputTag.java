@@ -264,7 +264,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (!type.isDateType()) {
             extraFormatting.append("id=\"").append(name).append("\" ");
         } else { // but for dates we add info about calendarEditor
-            params.put("calendarEditor", calendarEditor);
+            if(calendarEditor!=null)
+                params.put("calendarEditor", calendarEditor);
             if (calendarEditorLink != null) {
                 params.put("calendarEditorLink", calendarEditorLink);
             }
