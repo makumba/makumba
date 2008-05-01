@@ -54,10 +54,13 @@ public class JavaRelationMiner extends RelationMiner {
             try {
                 qA = OQLQueryAnalysisProvider.parseQueryFundamental(query);
             } catch (RecognitionException e) {
-                logger.warning("Could not parse query "+query+" from file "+path);
+                String s = "Could not parse query "+query+" from file "+path+": "+e.getCause().getMessage();
+                logger.warning(s);
+                rc.addJavaAnalysisError(s);
                 continue;
             } catch(MakumbaError me) {
-                logger.warning("Could not parse query "+query+" from file "+path);
+                String s = "Could not parse query "+query+" from file "+path+": "+me.getCause().getMessage();
+                logger.warning(s);
                 continue;
             }
             

@@ -22,7 +22,6 @@ import org.makumba.providers.datadefinition.makumba.RecordInfo;
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
  * TODO keep a list of things that could not be analyzed (may it be entire files, or query strings etc<br>
- * TODO make a way of getting the query analysis errors from a list of files
  * 
  * @author Manuel Gay
  * @version $Id: RelationsCrawler.java,v 1.1 Apr 13, 2008 4:16:16 PM manu Exp $
@@ -44,7 +43,11 @@ public class RelationCrawler {
     private MDDRelationMiner MDDRelationMiner;
 
     private JavaRelationMiner JavaRelationMiner;
-
+    
+    private Vector<Throwable> JSPAnalysisErrors = new Vector<Throwable>();
+    
+    private Vector<String> JavaAnalysisErrors = new Vector<String>();
+    
     private Map<String, Dictionary<String, Object>> detectedRelations = new HashMap<String, Dictionary<String, Object>>();
 
     private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
@@ -57,7 +60,7 @@ public class RelationCrawler {
         }
         return instance;
     }
-
+    
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
@@ -80,6 +83,22 @@ public class RelationCrawler {
 
     protected String getWebappRoot() {
         return this.webappRoot;
+    }
+    
+    public Vector<Throwable> getJSPAnalysisErrors() {
+        return JSPAnalysisErrors;
+    }
+
+    public Vector<String> getJavaAnalysisErrors() {
+        return JavaAnalysisErrors;
+    }
+    
+    protected void addJSPAnalysisError(Throwable t) {
+        this.JSPAnalysisErrors.add(t);
+    }
+    
+    protected void addJavaAnalysisError(String s) {
+        this.JavaAnalysisErrors.add(s);
     }
 
     /**
@@ -119,14 +138,15 @@ public class RelationCrawler {
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
-
+        
         for (int i = 0; i < path.length; i++) {
             rc.crawl(path[i]);
         }
-
+        
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
+   
 
         rc.writeRelationsToDb();
     }
@@ -184,7 +204,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
-
+        
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -198,7 +218,7 @@ public class RelationCrawler {
             this.JavaRelationMiner.crawl(path);
         }
 
-    }
+      }
 
     /**
      * Adds a relation which will later on be written to the database
@@ -522,6 +542,7 @@ public class RelationCrawler {
         processFilesInDirectory(f, allFiles);
         return allFiles;
     }
+
 
     /** Process files in one directory. */
     private static void processFilesInDirectory(File f, ArrayList<String> allFiles) {
