@@ -151,8 +151,6 @@ public class RelationCrawler {
      */
     public static void main(String[] args) {
 
-        System.out.println(getAllFilesInDirectory("/home/manu/workspace/karamba/").size());
-        
         if (args.length == 0) {
             args = generateExampleArguments();
         }
