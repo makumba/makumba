@@ -1,6 +1,9 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -30,7 +33,7 @@ public class RelationCrawler {
 
     protected static boolean subProcess = false;
 
-    private Logger logger = Logger.getLogger("org.makumba.relationCrawler");
+    private static Logger logger = Logger.getLogger("org.makumba.relationCrawler");
 
     private String webappRoot;
 
@@ -43,8 +46,8 @@ public class RelationCrawler {
     private MDDRelationMiner MDDRelationMiner;
 
     private JavaRelationMiner JavaRelationMiner;
-
-    private Vector<Throwable> JSPAnalysisErrors = new Vector<Throwable>();
+    
+    private Hashtable<String, Throwable> JSPAnalysisErrors = new Hashtable<String, Throwable>();
     
     private Vector<String> JavaAnalysisErrors = new Vector<String>();
     
@@ -60,7 +63,7 @@ public class RelationCrawler {
         }
         return instance;
     }
-
+    
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
@@ -84,8 +87,8 @@ public class RelationCrawler {
     protected String getWebappRoot() {
         return this.webappRoot;
     }
-
-    public Vector<Throwable> getJSPAnalysisErrors() {
+    
+    public Hashtable<String, Throwable> getJSPAnalysisErrors() {
         return JSPAnalysisErrors;
     }
 
@@ -93,12 +96,39 @@ public class RelationCrawler {
         return JavaAnalysisErrors;
     }
     
-    protected void addJSPAnalysisError(Throwable t) {
-        this.JSPAnalysisErrors.add(t);
+    protected void addJSPAnalysisError(String s, Throwable t) {
+        this.JSPAnalysisErrors.put(s, t);
     }
     
     protected void addJavaAnalysisError(String s) {
         this.JavaAnalysisErrors.add(s);
+    }
+    
+    public void writeJSPAnalysisError(String fileName) {
+        
+        File f = new File(fileName);
+        PrintWriter pw = null;
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+                pw = new PrintWriter(new FileOutputStream(f));
+                
+                for (String file : JSPAnalysisErrors.keySet()) {
+                    pw.println(file+"\n\n");
+                    JSPAnalysisErrors.get(file).printStackTrace(pw);
+                    pw.println("******************************************************************************\n");
+                
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                pw.close();
+            }
+        }
+        
+        
+
+        
     }
 
     /**
@@ -121,6 +151,8 @@ public class RelationCrawler {
      */
     public static void main(String[] args) {
 
+        System.out.println(getAllFilesInDirectory("/home/manu/workspace/karamba/").size());
+        
         if (args.length == 0) {
             args = generateExampleArguments();
         }
@@ -138,14 +170,15 @@ public class RelationCrawler {
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
-
+        
         for (int i = 0; i < path.length; i++) {
             rc.crawl(path[i]);
         }
-
+        
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
+   
 
         rc.writeRelationsToDb();
     }
@@ -203,7 +236,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
-
+        
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -217,7 +250,7 @@ public class RelationCrawler {
             this.JavaRelationMiner.crawl(path);
         }
 
-    }
+      }
 
     /**
      * Adds a relation which will later on be written to the database
@@ -544,6 +577,10 @@ public class RelationCrawler {
 
     /** Process files in one directory. */
     private static void processFilesInDirectory(File f, ArrayList<String> allFiles) {
+        if(!f.exists()) {
+            logger.warning("Couldn't read files of directory "+f.getAbsolutePath() + ": file does not exist");
+            return;
+        }
         final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
         for (int i = 0; i < fileList.length; i++) {
             if (fileList[i].isDirectory()) {

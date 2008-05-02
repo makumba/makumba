@@ -46,7 +46,7 @@ public class JSPRelationMiner extends RelationMiner {
             // page analysis failed
             logger.warning(
                 "Page analysis for page " + path + " failed due to error: " + t.getMessage());
-            rc.addJSPAnalysisError(t);
+            rc.addJSPAnalysisError(path, t);
             return;
         }
 
