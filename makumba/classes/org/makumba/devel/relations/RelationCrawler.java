@@ -1,7 +1,7 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class RelationCrawler {
     private MDDRelationMiner MDDRelationMiner;
 
     private JavaRelationMiner JavaRelationMiner;
-    
+
     private Vector<Throwable> JSPAnalysisErrors = new Vector<Throwable>();
     
     private Vector<String> JavaAnalysisErrors = new Vector<String>();
@@ -60,7 +60,7 @@ public class RelationCrawler {
         }
         return instance;
     }
-    
+
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
@@ -84,7 +84,7 @@ public class RelationCrawler {
     protected String getWebappRoot() {
         return this.webappRoot;
     }
-    
+
     public Vector<Throwable> getJSPAnalysisErrors() {
         return JSPAnalysisErrors;
     }
@@ -138,15 +138,14 @@ public class RelationCrawler {
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
-        
+
         for (int i = 0; i < path.length; i++) {
             rc.crawl(path[i]);
         }
-        
+
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
-   
 
         rc.writeRelationsToDb();
     }
@@ -204,7 +203,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
-        
+
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -218,7 +217,7 @@ public class RelationCrawler {
             this.JavaRelationMiner.crawl(path);
         }
 
-      }
+    }
 
     /**
      * Adds a relation which will later on be written to the database
@@ -543,23 +542,25 @@ public class RelationCrawler {
         return allFiles;
     }
 
-
     /** Process files in one directory. */
     private static void processFilesInDirectory(File f, ArrayList<String> allFiles) {
         final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
         for (int i = 0; i < fileList.length; i++) {
             if (fileList[i].isDirectory()) {
-                allFiles.add(fileList[i].getAbsolutePath());
-            } else {
                 processFilesInDirectory(fileList[i], allFiles);
+            } else {
+                allFiles.add(fileList[i].getAbsolutePath());
             }
         }
     }
 
-    /** A filenameFilter that accepts .jsp, .mdd and .java files. */
-    private static final class MakumbaRelatedFileFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".jsp") || name.endsWith(".java") || name.endsWith(".mdd") || name.endsWith(".idd");
+    /** A filenameFilter that accepts .jsp, .mdd and .java files, or directories. */
+    private static final class MakumbaRelatedFileFilter implements FileFilter {
+
+        public boolean accept(File pathname) {
+            return pathname.getAbsolutePath().endsWith(".jsp") || pathname.getAbsolutePath().endsWith(".java")
+                    || pathname.getAbsolutePath().endsWith(".mdd") || pathname.getAbsolutePath().endsWith(".idd")
+                    || pathname.isDirectory();
         }
     }
 
