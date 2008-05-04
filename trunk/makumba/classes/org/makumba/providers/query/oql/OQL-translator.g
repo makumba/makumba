@@ -849,7 +849,8 @@ aggregateExpr :
             (
                 //query
                 qu:query {((OQLAST)#c).extraInfo="count("+#qu.getText()+")";}
-            |   TOK_STAR
+            |   distinct:"distinct" que:query {((OQLAST)#c).extraInfo="count("+#que.getText()+")";}
+            |   TOK_STAR {((OQLAST)#c).extraInfo="count(*)";}
             )
             TOK_RPAREN   {
             	((OQLAST)#aggregateExpr).makumbaType="int";
