@@ -371,7 +371,11 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
             } else if (s.equals("extends") && superClass == null) {
                 String c = content.substring(m.start()).trim();                
                 c = c.substring(c.indexOf(" ")).trim();
-                c = c.substring(0, c.indexOf(" "));
+                int n = c.indexOf(" ");
+                if(n == -1) {
+                    n = c.indexOf("{");
+                }
+                c = c.substring(0, n);
                 superClass = c;
             }
         }
