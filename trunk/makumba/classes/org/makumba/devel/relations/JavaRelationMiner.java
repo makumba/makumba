@@ -38,6 +38,11 @@ public class JavaRelationMiner extends RelationMiner {
 
     @Override
     public void crawl(String path) {
+        
+        if(!new File(rc.getWebappRoot() + File.separator + path).exists()) {
+            logger.warning("MDD "+path + " does not exist in webapp "+rc.getWebappRoot());
+            return;
+        }
 
         computeJava2JavaRelations(path);
         computeJava2MDDRelations(path);
@@ -54,12 +59,12 @@ public class JavaRelationMiner extends RelationMiner {
             try {
                 qA = OQLQueryAnalysisProvider.parseQueryFundamental(query);
             } catch (RecognitionException e) {
-                String s = "Could not parse query "+query+" from file "+path+": "+e.getCause().getMessage();
+                String s = "Could not parse query "+query+" from file "+path+": "+e.getMessage();
                 logger.warning(s);
                 rc.addJavaAnalysisError(s);
                 continue;
             } catch(MakumbaError me) {
-                String s = "Could not parse query "+query+" from file "+path+": "+me.getCause().getMessage();
+                String s = "Could not parse query "+query+" from file "+path+": "+me.getMessage();
                 logger.warning(s);
                 continue;
             }

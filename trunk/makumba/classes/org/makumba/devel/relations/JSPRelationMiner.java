@@ -16,6 +16,7 @@ import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.forms.tags.BasicValueTag;
 import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.tags.InputTag;
@@ -167,7 +168,9 @@ public class JSPRelationMiner extends RelationMiner {
                         try {
                             qA = OQLQueryAnalysisProvider.parseQueryFundamental(typeDeterminationQuery);
                         } catch (RecognitionException e) {
-                            e.printStackTrace();
+                            logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
+                            return;
+                            
                         }
                     } else if (ql.equals("hql")) {
                         qA = HQLQueryAnalysisProvider.getHqlAnalyzer(typeDeterminationQuery);
@@ -284,7 +287,14 @@ public class JSPRelationMiner extends RelationMiner {
 
                 String field = cq.getFieldOfExpr(projectionExpr);
                 String realExpr = null;
-                DataDefinition projectionParentType = cq.getTypeOfExprField(projectionExpr);
+                DataDefinition projectionParentType = null;
+                try {
+                    projectionParentType = cq.getTypeOfExprField(projectionExpr);
+                    
+                } catch(RuntimeWrappedException e) {
+                    rc.addJSPAnalysisError(fromFile, e.getCause());
+                    continue;
+                }
 
                 // this is due to a count(something) or sum(something) etc.
                 // let's see if we can get the guy inside
@@ -306,6 +316,7 @@ public class JSPRelationMiner extends RelationMiner {
                         "Error while crawling file " + fromFile
                                 + ": could not figure out type of the parent of field pointed by expression "
                                 + projectionExpr);
+                    continue;
                 }
 
                 String type = projectionParentType.getName();

@@ -40,6 +40,8 @@ public class RelationCrawler {
     private String targetDatabase;
 
     private boolean forceDatabase;
+    
+    private int JSPCrawlCount = 0;
 
     private JSPRelationMiner JSPRelationMiner;
 
@@ -108,27 +110,35 @@ public class RelationCrawler {
         
         File f = new File(fileName);
         PrintWriter pw = null;
-        if(!f.exists()) {
             try {
                 f.createNewFile();
                 pw = new PrintWriter(new FileOutputStream(f));
-                
+                pw.println("Total number of page crawled: "+this.JSPCrawlCount);
+                pw.println("Total number of JSP page analysis errors: "+JSPAnalysisErrors.size());
+                pw.println("\nError summary\n");
+
+                int n = 0;
                 for (String file : JSPAnalysisErrors.keySet()) {
-                    pw.println(file+"\n\n");
+                    pw.println(n+".\t"+file);
+                    pw.println("\t"+JSPAnalysisErrors.get(file).getMessage()+"\n");
+                    n++;
+                }
+
+                pw.println("\nError detail\n");
+                
+                n = 0;
+                for (String file : JSPAnalysisErrors.keySet()) {
+                    pw.println(n+".\t"+file+"\n\n");
                     JSPAnalysisErrors.get(file).printStackTrace(pw);
                     pw.println("******************************************************************************\n");
-                
+                    n++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                pw.flush();
                 pw.close();
             }
-        }
-        
-        
-
-        
     }
 
     /**
@@ -150,7 +160,7 @@ public class RelationCrawler {
      *            </ul>
      */
     public static void main(String[] args) {
-
+        
         if (args.length == 0) {
             args = generateExampleArguments();
         }
@@ -179,51 +189,22 @@ public class RelationCrawler {
    
 
         rc.writeRelationsToDb();
+        rc.writeJSPAnalysisError("analysis-errors.txt");
     }
 
     private static String[] generateExampleArguments() {
-        String[] args;
-        // composing example start arguments
-
-        // some JSPs
-        String webappPath = "/home/manu/workspace/karamba/public_html/";
+        String webappPath = "/home/manu/workspace/karamba/public_html";
 
         Vector<String> arguments = new Vector<String>();
         arguments.add(webappPath);
         arguments.add("localhost_mysql_makumba");
         arguments.add("forceTargetDb");
-        File dir = new File(webappPath + "archive/");
-        String[] files = dir.list();
-        for (int i = 0; i < files.length; i++) {
-            if (new File(webappPath + "archive/" + files[i]).isFile()) {
-                arguments.add("/archive/" + files[i]);
-            }
-        }
-
-        // some MDDs
-        File dir2 = new File(webappPath + "WEB-INF/classes/dataDefinitions/best");
-        String[] files2 = dir2.list();
-        for (int i = 0; i < files2.length; i++) {
-            if (new File(webappPath + "WEB-INF/classes/dataDefinitions/best/" + files2[i]).isFile()) {
-                arguments.add("/WEB-INF/classes/dataDefinitions/best/" + files2[i]);
-            }
-        }
-
-        // some Java-s
-        File dir3 = new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea");
-        String[] files3 = dir3.list();
-        for (int i = 0; i < files3.length; i++) {
-            if (new File(webappPath + "WEB-INF/classes/org/eu/best/privatearea/" + files3[i]).isFile()) {
-                arguments.add("/WEB-INF/classes/org/eu/best/privatearea/" + files3[i]);
-            }
-        }
-
-        // String[] args1 = { "/home/manu/workspace/karamba/public_html", "localhost_mysql_makumba", "forcetarget",
-        // "/WEB-INF/classes/org/eu/best/general/AccessControlLogic.java" };
-        // args = args1;
-
-        args = arguments.toArray(new String[arguments.size()]);
-
+        
+        
+        ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/karamba/public_html");
+        arguments.addAll(some);
+        //arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
+        String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
         return args;
     }
 
@@ -238,6 +219,7 @@ public class RelationCrawler {
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
+            this.JSPCrawlCount++;
 
         } else if (path.endsWith(".mdd")) {
 
@@ -569,12 +551,12 @@ public class RelationCrawler {
     public static ArrayList<String> getAllFilesInDirectory(String root) {
         File f = new File(root);
         ArrayList<String> allFiles = new ArrayList<String>();
-        processFilesInDirectory(f, allFiles);
+        processFilesInDirectory(root, f, allFiles);
         return allFiles;
     }
 
     /** Process files in one directory. */
-    private static void processFilesInDirectory(File f, ArrayList<String> allFiles) {
+    private static void processFilesInDirectory(String root, File f, ArrayList<String> allFiles) {
         if(!f.exists()) {
             logger.warning("Couldn't read files of directory "+f.getAbsolutePath() + ": file does not exist");
             return;
@@ -582,9 +564,9 @@ public class RelationCrawler {
         final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
         for (int i = 0; i < fileList.length; i++) {
             if (fileList[i].isDirectory()) {
-                processFilesInDirectory(fileList[i], allFiles);
+                processFilesInDirectory(root, fileList[i], allFiles);
             } else {
-                allFiles.add(fileList[i].getAbsolutePath());
+                allFiles.add(fileList[i].getAbsolutePath().substring(root.length()));
             }
         }
     }

@@ -1,5 +1,6 @@
 package org.makumba.devel.relations;
 
+import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -20,7 +21,14 @@ public class MDDRelationMiner extends RelationMiner {
     @Override
     public void crawl(String path) {
         DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-
+        
+        String mddPath = path.substring(MDD_PATH.length(), path.length());
+        
+        if(!new File(rc.getWebappRoot() + File.separator + mddPath).exists()) {
+            logger.warning("MDD "+mddPath + " does not exist in webapp "+rc.getWebappRoot());
+            return;
+        }
+        
         String type = path.substring(MDD_PATH.length(), path.length() - 4).replace('/', '.');
 
         DataDefinition dd = ddp.getDataDefinition(type);
