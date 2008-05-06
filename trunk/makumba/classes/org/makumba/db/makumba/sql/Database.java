@@ -23,6 +23,7 @@
 
 package org.makumba.db.makumba.sql;
 
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.ClassResource;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
@@ -97,8 +99,7 @@ public class Database extends org.makumba.db.makumba.Database {
 	static {
 		sqlDrivers = new Properties();
 		try {
-			sqlDrivers.load(org.makumba.commons.ClassResource.get(
-					"org/makumba/db/makumba/sql/sqlEngines.properties").openStream());
+			sqlDrivers.load(ClassResource.getResourceAsStream("org/makumba/db/makumba/sql/sqlEngines.properties"));
 		} catch (Exception e) {
 			throw new org.makumba.MakumbaError(e);
 		}
