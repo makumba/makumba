@@ -148,13 +148,14 @@
 		</delete>
 	</target>
 
-	<target name="checkManifest" depends="compileCommons">
+	<!--
+	<target name="checkManifest" depends="compile">
 		<condition property="meta-inf.ok">
 				<uptodate srcfile="manifest.template" targetfile="manifest.mf" />
 		</condition>
 	</target>
-
-	<target name="makeManifest" depends="checkManifest" unless="meta-inf.ok">
+    -->
+	<target name="makeManifest"> <!-- depends="checkManifest" unless="meta-inf.ok" -->
 		<antcall target="version" />
 		<java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
 			<classpath>
@@ -169,12 +170,6 @@
 
 		<!-- Copy the manifest in order to replace the version token filter -->
 		<copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true" />
-		<!-- We don't do this copying anymore since the TLDs are in classes/META-INF with the right name
-         <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
-         <copy file="servlet_context/WEB-INF/makumba-hibernate.tld" todir="META-INF" filtering="on" overwrite="true"/>
-         <copy file="META-INF/makumba.tld" tofile="META-INF/taglib.tld" filtering="off" overwrite="true"/>
-         <copy file="META-INF/makumba-hibernate.tld" tofile="META-INF/taglib-hibernate.tld" filtering="off" overwrite="true"/>
-         -->
 	</target>
 
 
