@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import org.makumba.commons.ClassResource;
+
 /**
  * Computes the version from SVN BaseURL tag. If used from a HEAD check-out, this will return "devel-<currentDate>" If
  * used from a TAG check-out, this will return the version of the tag, e.g. "0.7.1"
@@ -96,7 +98,7 @@ public class version {
         Date buildDate = null;
 
         try {
-            prop.load(org.makumba.commons.ClassResource.get(filename).openStream());
+            prop.load(ClassResource.getResourceAsStream(filename));
             buildDate = df.parse(prop.getProperty("buildDate"), new java.text.ParsePosition(0));
         } catch (Exception e) {
             // TODO: throw an exception (needs to adapt some other classes / methods, as doStartTag in MakumbaInfoTag
