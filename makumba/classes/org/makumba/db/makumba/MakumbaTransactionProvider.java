@@ -84,7 +84,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
                 }
                 p.put("db.name", (String) name);
                 Object pr[] = { p };
-                
+
                 try {
                     Database d = (Database) Class.forName(dbclass).getConstructor(theProp).newInstance(pr);
                     d.configName = (String) name;

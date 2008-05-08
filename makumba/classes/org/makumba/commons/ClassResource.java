@@ -23,57 +23,23 @@
 
 package org.makumba.commons;
 
-import java.io.InputStream;
 import java.net.URL;
 
 /**
  * This is a utility class which simply returns the URL of a java resource.
- * 
  * @author Cristian Bogdan
  * @version $Id$
  */
 public class ClassResource {
     public static URL get(String s) {
         URL u = null;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader != null) {
-            return classLoader.getResource(s);
-        }
-
         try {
-            u = ClassResource.class.getResource(s);
+            u = ClassResource.class.getClassLoader().getResource(s);
         } catch (RuntimeException e) {
         }
-        
-        if(u == null) {
-            try {
-                u = ClassResource.class.getClassLoader().getResource(s);
-            } catch (RuntimeException e) {
-            }
-        }
-        
-        
         if (u == null)
             u = ClassLoader.getSystemResource(s);
         // new Throwable().printStackTrace();
         return u;
-    }
-
-    public static InputStream getResourceAsStream(String resource) {
-        String stripped = resource.startsWith("/") ? resource.substring(1) : resource;
-
-        InputStream stream = null;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader != null) {
-            stream = classLoader.getResourceAsStream(stripped);
-        }
-        if (stream == null) {
-            stream = ClassResource.class.getResourceAsStream(resource);
-        }
-        if (stream == null) {
-            stream = ClassResource.class.getClassLoader().getResourceAsStream(stripped);
-        }
-
-        return stream;
     }
 }
