@@ -29,12 +29,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -166,7 +170,7 @@ public class RecordParser {
             dd.addStandardFields(dd.name.substring(dd.name.lastIndexOf('.') + 1));
             parse();
         } catch (RuntimeException e) {
-            throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName());
+            throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName() + " from "+dd.origin);
         }
         if (!mpe.isSingle() && !(dd.getParentField() != null))
             throw mpe;
@@ -511,7 +515,22 @@ public class RecordParser {
     }
 
     void read(OrderedProperties op, java.net.URL u) throws IOException {
-        read(op, new BufferedReader(new InputStreamReader((InputStream) u.getContent())));
+        Object o = u.getContent();
+
+        URLConnection uconn = u.openConnection();
+     
+        if (uconn.getClass().getName().endsWith("FileURLConnection")) {
+            read(op, new BufferedReader(new InputStreamReader((InputStream)o)));
+        } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
+          JarFile jf = ((JarURLConnection)uconn).getJarFile();
+          
+          // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation.mdd
+          String[] jarURL = u.toExternalForm().split("!");
+          
+          JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
+          
+          read(op, new BufferedReader(new InputStreamReader(jf.getInputStream(je))));
+        }
     }
 
     void read(OrderedProperties op, BufferedReader rd) throws IOException {
