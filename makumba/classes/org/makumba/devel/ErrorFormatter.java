@@ -80,6 +80,16 @@ public class ErrorFormatter {
         Throwable t1 = null;
 
         Throwable original = t;
+        
+        // sometimes tomcat wraps the exception in a JasperException (which extends ServletException) and then again in a ServletException
+        if(t.getClass().getSuperclass().isAssignableFrom(ServletException.class) &&
+                ((ServletException)t).getRootCause() != null &&
+                ((ServletException)t).getRootCause().getClass().isAssignableFrom(ServletException.class) &&
+                t.getMessage().startsWith("Exception in JSP:")) {
+            
+            t = ((ServletException)((ServletException)t).getRootCause()).getRootCause();
+            
+        }
 
         while (true) {
             if (t instanceof LogicException)
