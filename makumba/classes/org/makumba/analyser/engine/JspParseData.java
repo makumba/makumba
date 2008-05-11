@@ -153,7 +153,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 getSyntaxPointArray(initStatus);
             return holder;
         } finally {
-            syntaxPoints.discardPoints();
+            if(syntaxPoints!=null)
+                syntaxPoints.discardPoints();
         }
     }
 
