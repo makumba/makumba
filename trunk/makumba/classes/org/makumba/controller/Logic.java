@@ -126,20 +126,22 @@ public class Logic {
 
     static int logix = NamedResources.makeStaticCache("Business logic classes", new NamedResourceFactory() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
         {
             supplementary = new Hashtable();
         }
 
+        @Override
         protected Object makeResource(Object p) {
             String path = (String) p;
             String msg = "Searching for business logic for " + path + ":";
             String className = "";
             int n = path.lastIndexOf(".");
-            if (n != -1)
+            if (n != -1) {
                 path = path.substring(0, n);
+            }
 
             String defa = "";
             String maxKey = "";
@@ -156,8 +158,9 @@ public class Logic {
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
                         className = controllerConfig.getProperty(k);
-                        if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1)
+                        if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1) {
                             className += ".";
+                        }
                     }
                 }
 
@@ -181,7 +184,7 @@ public class Logic {
 
             loop: while (true) {
                 String base = className;
-                for (int i = 1; i <= dir.length(); i++)
+                for (int i = 1; i <= dir.length(); i++) {
                     if (i == dir.length() || Character.isUpperCase(dir.charAt(i))) {
                         className = base + dir.substring(0, i).trim();
                         try {
@@ -196,11 +199,12 @@ public class Logic {
                             msg += "... abstract class";
                         }
                     }
+                }
                 while (st.hasMoreTokens()) {
                     dir = st.nextToken();
-                    if (dir.length() == 0)
+                    if (dir.length() == 0) {
                         continue;
-                    else {
+                    } else {
                         dir = firstUpper(dir);
                         continue loop;
                     }
@@ -212,8 +216,9 @@ public class Logic {
             if (lastFound == null) {
                 msg += "\nNo matching class found for " + p + "!";
                 lastFound = new LogicNotFoundException(msg);
-            } else
+            } else {
                 msg += "\nFound class " + lastFound.getClass().getName();
+            }
 
             java.util.logging.Logger.getLogger("org.makumba." + "controller").info(msg);
             ((Hashtable) supplementary).put(p, msg);
@@ -243,16 +248,18 @@ public class Logic {
             }
 
             ret += firstUpper(a.substring(0, minimum));
-            if (imin == -1)
+            if (imin == -1) {
                 return ret;
+            }
             a = a.substring(minimum + separators[imin].length());
         }
     }
 
     static String firstUpper(String a) {
         char f = Character.toUpperCase(a.charAt(0));
-        if (a.length() > 1)
+        if (a.length() > 1) {
             return f + a.substring(1);
+        }
         return "" + f;
     }
 
@@ -265,11 +272,12 @@ public class Logic {
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
-        if (controller instanceof LogicNotFoundException)
+        if (controller instanceof LogicNotFoundException) {
             throw new NoSuchMethodException("no controller=> no attribute method");
+        }
         // this will throw nosuchmethodexception if the findXXX method is missing so this method will kinda finish here
-        Method m= (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
-        
+        Method m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
+
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
         try {
@@ -279,8 +287,9 @@ public class Logic {
         } catch (InvocationTargetException f) {
             d.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
@@ -296,8 +305,9 @@ public class Logic {
     public static String getControllerFile(Object controller) {
         String ctrlClass = controller.getClass().getName();
         java.net.URL u = org.makumba.commons.ClassResource.get(ctrlClass.replace('.', '/') + ".java");
-        if (u != null)
+        if (u != null) {
             return getFilePath(u);
+        }
         return org.makumba.commons.ClassResource.get(ctrlClass.replace('.', '/') + ".class").toString();
     }
 
@@ -312,8 +322,9 @@ public class Logic {
     public static Method getMethod(String name, Class[] args, Object controller) {
         try {
             Method m = controller.getClass().getMethod(name, args);
-            if (!Modifier.isPublic(m.getModifiers()))
+            if (!Modifier.isPublic(m.getModifiers())) {
                 return null;
+            }
             return m;
         } catch (NoSuchMethodException e) {
             return null;
@@ -322,13 +333,15 @@ public class Logic {
 
     public static void doInit(Object controller, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
-        if (controller instanceof LogicNotFoundException)
+        if (controller instanceof LogicNotFoundException) {
             return;
+        }
         Transaction db = dbcp.getConnectionTo(dbName);
         Method init = getMethod("checkAttributes", argDb, controller);
         Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
-        if (init == null && oldInit == null)
+        if (init == null && oldInit == null) {
             return;
+        }
         if (init != null) {
             Object[] args = { a, db };
             try {
@@ -338,8 +351,9 @@ public class Logic {
             } catch (InvocationTargetException f) {
                 db.rollback();
                 Throwable g = f.getTargetException();
-                if (g instanceof LogicException)
+                if (g instanceof LogicException) {
                     throw (LogicException) g;
+                }
                 throw new LogicInvocationError(g);
             }
         } else {
@@ -353,19 +367,22 @@ public class Logic {
             } catch (InvocationTargetException f) {
                 db.rollback();
                 Throwable g = f.getTargetException();
-                if (g instanceof LogicException)
+                if (g instanceof LogicException) {
                     throw (LogicException) g;
+                }
                 throw new LogicInvocationError(g);
             }
-            if (attrs == null)
+            if (attrs == null) {
                 return;
+            }
             if (attrs instanceof String) {
                 a.getAttribute((String) attrs);
                 return;
             }
             if (attrs instanceof String[]) {
-                for (int i = 0; i < ((String[]) attrs).length; i++)
+                for (int i = 0; i < ((String[]) attrs).length; i++) {
                     a.getAttribute(((String[]) attrs)[i]);
+                }
                 return;
             }
             return;
@@ -374,20 +391,23 @@ public class Logic {
 
     public static Object doOp(Object controller, String opName, Dictionary data, Attributes a, String dbName,
             DbConnectionProvider dbcp) throws LogicException {
-        if (opName == null)
+        if (opName == null) {
             return null;
-        if ((controller instanceof LogicNotFoundException))
+        }
+        if ((controller instanceof LogicNotFoundException)) {
             throw new ProgrammerError("there is no controller object to look for the Form handler method " + opName);
+        }
 
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { data, a, db };
         Method op = null;
         op = getMethod(opName, opArgs, controller);
-        if (op == null)
+        if (op == null) {
             throw new ProgrammerError("Class " + controller.getClass().getName() + " (" + getControllerFile(controller)
                     + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD + opName
                     + "(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                     + "The method is declared as a makumba form handler, so it has to be defined");
+        }
 
         try {
             return op.invoke(controller, editArg);
@@ -396,10 +416,12 @@ public class Logic {
         } catch (InvocationTargetException f) {
             db.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
-            if (g instanceof CompositeValidationException)
+            }
+            if (g instanceof CompositeValidationException) {
                 throw (CompositeValidationException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
@@ -413,12 +435,13 @@ public class Logic {
         if (!(controller instanceof LogicNotFoundException)) {
             edit = getMethod(handlerName, editArgs, controller);
             afterEdit = getMethod(afterHandlerName, editArgs, controller);
-            if (edit == null)
+            if (edit == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
                         + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END
                         + "\n" + "so it does not allow EDIT operations on the type " + typename
                         + "\nDefine that method (even with an empty body) to allow such operations.");
+            }
         }
 
         try {
@@ -435,8 +458,9 @@ public class Logic {
         } catch (InvocationTargetException f) {
             db.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
@@ -448,35 +472,39 @@ public class Logic {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] deleteArg = { p, a, db };
         Method delete = null;
-        Method afterDelete=null;
+        Method afterDelete = null;
         String upper = upperCase(typename);
 
         if (!(controller instanceof LogicNotFoundException)) {
             delete = getMethod("on_delete" + upper, deleteArgs, controller);
             afterDelete = getMethod("after_delete" + upper, deleteArgs, controller);
-            if (delete == null)
+            if (delete == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define any of the methods\n" + HANDLER_METHOD_HEAD
-                        + "on_delete" + upper + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                        + "after_delete" + upper + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                        + "so it does not allow DELETE operations on the type " + typename
+                        + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
+                        + HANDLER_METHOD_HEAD + "on_delete" + upper + "(Pointer p, Attributes a, Database db)"
+                        + HANDLER_METHOD_END + "\n" + "after_delete" + upper + "(Pointer p, Attributes a, Database db)"
+                        + HANDLER_METHOD_END + "\n" + "so it does not allow DELETE operations on the type " + typename
                         + "\nDefine that method (even with an empty body) to allow such operations.");
+            }
         }
 
         try {
-            if (delete != null)
+            if (delete != null) {
                 delete.invoke(controller, deleteArg);
+            }
             db.delete(p);
-            if(afterDelete!=null)
+            if (afterDelete != null) {
                 afterDelete.invoke(controller, deleteArg);
+            }
             return null;
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
         } catch (InvocationTargetException f) {
             db.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
@@ -495,7 +523,7 @@ public class Logic {
             on = getMethod(handlerName, editArgs, controller);
             after = getMethod(afterHandlerName, editArgs, controller);
 
-            if (on == null && after == null)
+            if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
                         + HANDLER_METHOD_HEAD + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)"
@@ -503,22 +531,26 @@ public class Logic {
                         + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                         + "so it does not allow ADD operations on the type " + typename + ", field " + field
                         + "\nDefine any of the methods (even with an empty body) to allow such operations.");
+            }
         }
 
         try {
-            if (on != null)
+            if (on != null) {
                 on.invoke(controller, addArg);
+            }
             addArg[0] = db.insert(p, field, data);
-            if (after != null)
+            if (after != null) {
                 after.invoke(controller, addArg);
+            }
             return (Pointer) addArg[0];
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
         } catch (InvocationTargetException f) {
             db.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
@@ -536,7 +568,7 @@ public class Logic {
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, newArgs, controller);
             after = getMethod(afterHandlerName, editArgs, controller);
-            if (on == null && after == null)
+            if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
                         + HANDLER_METHOD_HEAD + handlerName + "(Dictionary d, Attributes a, Database db)"
@@ -544,21 +576,25 @@ public class Logic {
                         + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                         + "so it does not allow NEW operations on the type " + typename
                         + ".\nDefine any of the methods (even with an empty body) to allow such operations.");
+            }
         }
         try {
-            if (on != null)
+            if (on != null) {
                 on.invoke(controller, onArgs);
+            }
             afterArgs[0] = db.insert(typename, data);
-            if (after != null)
+            if (after != null) {
                 after.invoke(controller, afterArgs);
+            }
             return (Pointer) afterArgs[0];
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
         } catch (InvocationTargetException f) {
             db.rollback();
             Throwable g = f.getTargetException();
-            if (g instanceof LogicException)
+            if (g instanceof LogicException) {
                 throw (LogicException) g;
+            }
             throw new LogicInvocationError(g);
         }
     }
