@@ -116,7 +116,7 @@ public class ErrorFormatter {
                 // JSP exceptions
                 // ==> as a quick fix, we treat those as unknown errors
                 if (isRuntimeJspErrors((ServletException) t)) {
-                    unknownError(original, t, wr, req);
+                    treatJspRuntimeException(original, (ServletException)t, wr, req, this.servletContext, printHeaderFooter);
                     return;
                 } else {
                     Throwable rootCause = ((ServletException) t).getRootCause();
@@ -516,6 +516,32 @@ public class ErrorFormatter {
     public static String[] jspReservedWords = { "application", "config", "out", "page", "request", "response", "pageContext"};
 
     public static ArrayList<String> jspReservedWordList = new ArrayList<String>(Arrays.asList(jspReservedWords));
+    
+    boolean treatJspRuntimeException(Throwable original, ServletException t, PrintWriter wr, HttpServletRequest req,
+            ServletContext servletContext, boolean printHeaderFooter) {
+        
+        Throwable rootCause =  t.getRootCause();
+        String exceptionName = rootCause.getClass().toString().substring("class ".length());
+        String message = rootCause.getMessage();
+        String body = "A "+exceptionName.substring(exceptionName.lastIndexOf(".")+1) +" occured (most likely because of a programmation error in the JSP):\n\n" + message;
+        
+        StringWriter swriter = new StringWriter();
+        PrintWriter p = new PrintWriter(swriter);
+        rootCause.printStackTrace(p);
+        swriter.flush();
+        String hiddenBody = swriter.toString();
+        
+        
+        try {
+            SourceViewer sw = new errorViewer(req, servletContext, exceptionName, body, hiddenBody, printHeaderFooter);
+            sw.parseText(wr);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new org.makumba.commons.RuntimeWrappedException(e);
+        }
+        return true;
+        
+    }
 
     boolean treatJspException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter, String title) {
