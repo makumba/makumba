@@ -43,7 +43,7 @@ public class HQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    public Vector execute(String query, Map args, int offset, int limit) throws LogicException {
+    public Vector execute(String query, Map args, int offset, int limit) {
         return transaction.executeQuery(query, args, offset, limit);
     }
 
