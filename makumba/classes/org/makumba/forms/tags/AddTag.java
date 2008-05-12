@@ -172,7 +172,7 @@ public class AddTag extends FormTagBase {
             return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getNewType() + "->"
                     + resp.getAddField(), (Pointer) resultFromNew, resp.getHttpData(req, suffix),
                 new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {
@@ -200,7 +200,7 @@ public class AddTag extends FormTagBase {
             return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType() + "->"
                     + resp.getAddField(), resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix),
                 new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {

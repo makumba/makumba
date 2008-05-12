@@ -1,4 +1,4 @@
-<%@ taglib uri="http://www.makumba.org/forms" prefix="mak" %>
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
 <mak:login>
   Username: <td><input type="text" name="username"><br>

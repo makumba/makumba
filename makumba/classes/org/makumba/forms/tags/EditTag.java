@@ -81,7 +81,7 @@ public class EditTag extends FormTagBase {
             return Logic.doEdit(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType(),
                 resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
                         resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {

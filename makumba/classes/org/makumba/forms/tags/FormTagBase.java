@@ -534,7 +534,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 throws LogicException {
             return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
                 new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {

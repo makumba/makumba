@@ -46,6 +46,8 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.providers.Configuration;
+import org.makumba.providers.TransactionProviderInterface;
 
 /** busines logic administration */
 public class Logic {
@@ -54,6 +56,9 @@ public class Logic {
     static java.net.URL controllerURL;
 
     static HashMap<String, Object> nameToObject = new HashMap<String, Object>();
+    
+    /** for the default transaction provider **/
+    static Configuration configuration = new Configuration();
 
     private static final String HANDLER_METHOD_HEAD = "public void ";
 
@@ -321,7 +326,12 @@ public class Logic {
 
     public static Method getMethod(String name, Class[] args, Object controller) {
         try {
-            Method m = controller.getClass().getMethod(name, args);
+            Method m = null;
+            if(args != null) {
+                m = controller.getClass().getMethod(name, args);  
+            } else {
+                m = controller.getClass().getMethod(name);
+            }
             if (!Modifier.isPublic(m.getModifiers())) {
                 return null;
             }
@@ -336,6 +346,41 @@ public class Logic {
         if (controller instanceof LogicNotFoundException) {
             return;
         }
+        
+        // we try to figure which transaction provider to use from the BL itself
+        Method connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
+        String transactionProviderClass = null;
+        if (connectionProvider != null) {
+            try {
+                transactionProviderClass = (String)connectionProvider.invoke(controller);
+            } catch (IllegalAccessException g) {
+                throw new LogicInvocationError(g);
+            } catch (InvocationTargetException f) {
+                Throwable g = f.getTargetException();
+                throw new LogicInvocationError(g);
+            }
+        }
+        
+        if(transactionProviderClass == null) {
+            transactionProviderClass = configuration.getDefaultTransactionProviderClass();
+        }
+        
+        TransactionProviderInterface tp = null;
+        try {
+            tp = (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
+        } catch (InstantiationException e) {
+            LogicException le = new LogicException("Could not instantiate transaction provider "+transactionProviderClass);
+            throw new LogicInvocationError(le);
+        } catch (IllegalAccessException e) {
+            LogicException le = new LogicException("Illegal access for transaction provider "+transactionProviderClass);
+            throw new LogicInvocationError(le);
+        } catch (ClassNotFoundException e) {
+            LogicException le = new LogicException("Could not find transaction provider "+transactionProviderClass);
+            throw new LogicInvocationError(le);
+        }
+        
+        dbcp.setTransactionProvider(tp);
+        
         Transaction db = dbcp.getConnectionTo(dbName);
         Method init = getMethod("checkAttributes", argDb, controller);
         Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
