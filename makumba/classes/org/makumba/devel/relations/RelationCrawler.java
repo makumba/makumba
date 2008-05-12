@@ -55,21 +55,38 @@ public class RelationCrawler {
     
     private Map<String, Dictionary<String, Object>> detectedRelations = new HashMap<String, Dictionary<String, Object>>();
 
+    private String URLprefix;
+
+    private String URLroot;
+
     private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
 
-    public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
-        RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget);
+    /**
+     * Gets a RelationCrawler instance.
+     * 
+     * @param webappRoot the path to the root of the webapp that should be crawled
+     * @param targetDatabase the makumba name of the database the relations should be written to 
+     * @param forcetarget indicates whether the target database should be forced: if set to true, even if relations were previously written to another database, this will force writing them to the indicated database
+     * @param URLprefix the prefix of the relation URL, e.g. "file://"
+     * @param URLroot the root of the relation, e.g. a webapp name
+     * @return a {@link RelationCrawler} instance
+     */
+    public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix, String URLroot) {
+        RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot);
         if (instance == null) {
-            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget);
-            relationCrawlers.put(webappRoot + targetDatabase + forcetarget, instance);
+            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot);
+            relationCrawlers.put(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot, instance);
         }
         return instance;
     }
     
-    private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget) {
+    
+    private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix, String URLroot) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
         this.forceDatabase = forcetarget;
+        this.URLprefix = URLprefix;
+        this.URLroot = URLroot;
 
         // initalise relation miners
         this.JSPRelationMiner = new JSPRelationMiner(this);
@@ -145,7 +162,7 @@ public class RelationCrawler {
      * Extracts relations from a set of files.
      * 
      * @param args
-     *            the arguments needed to crawl: webappRoot destinationDb forceDatabase [fileList]<br>
+     *            the arguments needed to crawl: webappRoot destinationDb forceDatabase URLprefix URLroot [fileList]<br>
      *            where:
      *            <ul>
      *            <li>webappRoot is the absolute path to the webapp root on the disk</li>
@@ -156,6 +173,8 @@ public class RelationCrawler {
      *            value should be "forceDatabase", any other value disabling it. this should not be used for standalone
      *            makumba webapps, but may be used in an environment where all makumba webapps should have their
      *            relations saved in the same table of one database.</li>
+     *            <li>URLprefix is the prefix given to the file URL, e.g. "file://"</li>
+     *            <li>URLroot is the root of the URL, e.g. the name of the crawled webapp</li>
      *            <li>fileList is a list of files to be crawled</li>
      *            </ul>
      */
@@ -168,13 +187,17 @@ public class RelationCrawler {
         String webappRoot = args[0];
         String targetDatabase = args[1];
         String forceDatabase = args[2];
+        String URLprefix = args[3];
+        String URLroot = args[4];
 
-        String[] path = new String[args.length - 3];
+        String[] path = new String[args.length - 5];
 
-        for (int i = 3; i < args.length; i++) {
-            path[i - 3] = args[i];
+        for (int i = 5; i < args.length; i++) {
+            path[i - 5] = args[i];
         }
-        RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"));
+        
+        
+        RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"), URLprefix == null ? "" : URLprefix, URLroot == null? "" : URLroot);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
@@ -192,6 +215,11 @@ public class RelationCrawler {
         rc.writeJSPAnalysisError("analysis-errors.txt");
     }
 
+    /**
+     * Generates example arguments to test the crawler.<br>
+     * Note that you need to have a MakumbaDatabase.properties file in the classpath in order to run this example.
+     * @return a list of arguments the crawler can be launched with
+     */
     private static String[] generateExampleArguments() {
         String webappPath = "/home/manu/workspace/karamba/public_html";
 
@@ -199,11 +227,13 @@ public class RelationCrawler {
         arguments.add(webappPath);
         arguments.add("localhost_mysql_makumba");
         arguments.add("forceTargetDb");
+        arguments.add("file:/");
+        arguments.add("karamba/public_html");
         
         
         ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/karamba/public_html");
-        arguments.addAll(some);
-        //arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
+        //arguments.addAll(some);
+        arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
         String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
         return args;
     }
@@ -284,8 +314,11 @@ public class RelationCrawler {
             Dictionary<String, Object> relationInfo = relations.get(toFile);
             String relationType = (String) relationInfo.get("type");
             String fromFile = (String) relationInfo.get("fromFile");
+            
+            String fromURL = this.URLprefix + this.URLroot + fromFile;
+            String toURL = this.URLprefix + this.URLroot + toFile;
 
-            System.out.println(fromFile + " -(" + relationType + ")-> " + toFile);
+            System.out.println(fromURL + " -(" + relationType + ")-> " + toURL);
 
             // now we insert the records into the relations table, in the right database
             Transaction tr2 = null;
@@ -320,6 +353,8 @@ public class RelationCrawler {
                 }
 
                 relationInfo.put("toFile", toFile);
+                relationInfo.put("fromURL", fromURL);
+                relationInfo.put("toURL", toURL);
                 relationInfo.put("webapp", webappPointer);
 
                 Vector<Pointer> originSet = new Vector<Pointer>();
@@ -477,7 +512,7 @@ public class RelationCrawler {
                 throw new MakumbaError("No relations table in database. Should crawl first.");
             }
             t = tp.getConnectionTo(relationDatabase);
-            Vector<Dictionary<Object, Object>> dependencies = t.executeQuery(relationQuery,
+            Vector<Dictionary<String, Object>> dependencies = t.executeQuery(relationQuery,
                 new Object[] { relativePath });
             result = buildFileRelations(relativePath, dependencies, t);
         } finally {
@@ -498,7 +533,7 @@ public class RelationCrawler {
      *            a Transaction needed to fetch the relation origin
      * @return the {@link FileRelations} object, filled with the detail
      */
-    private FileRelations buildFileRelations(String path, Vector<Dictionary<Object, Object>> relations, Transaction t) {
+    private FileRelations buildFileRelations(String path, Vector<Dictionary<String, Object>> relations, Transaction t) {
 
         Map<String, Vector<FileRelations.RelationOrigin>> jspRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
         Map<String, Vector<FileRelations.RelationOrigin>> javaRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
@@ -506,18 +541,18 @@ public class RelationCrawler {
 
         FileRelations fr = new FileRelations(path, jspRelations, javaRelations, mddRelations);
 
-        for (Dictionary<Object, Object> dictionary : relations) {
+        for (Dictionary<String, Object> dictionary : relations) {
             String file = (String) dictionary.get("file");
             Pointer relation = (Pointer) dictionary.get("relation");
 
             // fetch the origin of the relation
-            Vector<Dictionary<Object, Object>> relationOrigin = t.executeQuery(
+            Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(
                 "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1",
                 new Object[] { relation });
 
             Vector<RelationOrigin> relationOriginVector = new Vector<RelationOrigin>();
 
-            for (Dictionary<Object, Object> dictionary2 : relationOrigin) {
+            for (Dictionary<String, Object> dictionary2 : relationOrigin) {
                 Object startcol = dictionary2.get("startcol");
                 Object endcol = dictionary2.get("endcol");
                 Object startline = dictionary2.get("startline");
