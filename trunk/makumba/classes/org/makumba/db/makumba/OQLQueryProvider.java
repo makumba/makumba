@@ -5,7 +5,6 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
 import org.makumba.Transaction;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
@@ -23,7 +22,7 @@ public class OQLQueryProvider extends QueryProvider {
 
     
     @Override
-    public Vector execute(String query, Map args, int offset, int limit) throws LogicException {
+    public Vector execute(String query, Map args, int offset, int limit) {
        return tr.executeQuery(query, args, offset, limit);
     }
 

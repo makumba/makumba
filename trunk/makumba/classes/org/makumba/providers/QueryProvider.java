@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
 
 /**
  * This provider makes it possible to run queries against a data source.
@@ -113,10 +112,9 @@ public abstract class QueryProvider {
      * @param limit
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
-     * @throws LogicException
      *
      */
-    public abstract Vector execute(String query, Map args, int offset, int limit) throws LogicException;
+    public abstract Vector execute(String query, Map args, int offset, int limit);
 
     /**
      * Closes the environment, when all queries were executed
