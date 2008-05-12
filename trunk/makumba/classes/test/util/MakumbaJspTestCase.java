@@ -32,7 +32,8 @@ public class MakumbaJspTestCase extends JspTestCase {
 
     /**
      * Compares a test output to its stored (expected) result. The method detects automatically the name of the test
-     * based on the invoking method, so all there's to do is to pass it the new result. TODO this should be much more
+     * based on the invoking method, so all there's to do is to pass it the new result.<br>
+     * TODO this should be much more
      * verbose
      * 
      * @param result

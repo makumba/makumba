@@ -55,7 +55,7 @@ public class DeleteTag extends EditTag {
                 throws LogicException {
             return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
                 new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {
@@ -107,7 +107,7 @@ public class DeleteTag extends EditTag {
                 throws LogicException {
             return Logic.doDelete(resp.getController(), resp.getBasePointerType(), resp.getHttpBasePointer(req, suffix),
                 new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {

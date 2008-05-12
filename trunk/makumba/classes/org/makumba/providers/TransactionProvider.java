@@ -42,7 +42,7 @@ public class TransactionProvider implements TransactionProviderInterface {
     
     public TransactionProvider(Configuration config) {
         try {
-            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getTransactionProviderClass()).newInstance();
+            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getDefaultTransactionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

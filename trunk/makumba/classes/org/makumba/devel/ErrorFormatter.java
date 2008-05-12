@@ -22,7 +22,8 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * The class that performs exception handling. Receives errors in any makumba page and treats them meant to be friendly
@@ -181,7 +182,7 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        TransactionProvider tp = TransactionProvider.getInstance();
+        TransactionProviderInterface tp = (TransactionProviderInterface) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
         Transaction tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
         try {

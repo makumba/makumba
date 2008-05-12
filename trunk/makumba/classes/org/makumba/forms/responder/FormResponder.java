@@ -36,11 +36,13 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Transaction;
+import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 public class FormResponder extends Responder {
 
@@ -240,7 +242,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = TransactionProvider.getInstance().getConnectionTo(database);
+            Transaction db = ((TransactionProviderInterface)request.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);

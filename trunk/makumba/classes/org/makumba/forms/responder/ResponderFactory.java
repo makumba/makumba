@@ -24,6 +24,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
@@ -393,7 +394,7 @@ public class ResponderFactory {
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = TransactionProvider.getInstance().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = ((TransactionProviderInterface)req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(

@@ -107,7 +107,7 @@ public class NewTag extends FormTagBase {
             }
             return Logic.doNew(resp.getController(), handlerName, afterHandlerName, resp.getNewType(), resp.getHttpData(req,
                 suffix), new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                RequestAttributes.getConnectionProvider(req));
+                getConnectionProvider(req, resp.getController()));
         }
 
         public String verify(Responder resp) {
