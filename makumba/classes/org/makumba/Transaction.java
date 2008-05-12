@@ -23,7 +23,8 @@
 
 package org.makumba;
 
-import org.makumba.db.makumba.Query;
+import java.util.Dictionary;
+
 import org.makumba.providers.TransactionProviderInterface;
 
 /** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>
@@ -46,7 +47,7 @@ public interface Transaction extends Database
      * @exception org.makumba.DBError if a fatal database error occurs
      * @exception IllegalStateException if the connection was already closed
      */
-    public java.util.Dictionary read(Pointer ptr, Object fields);
+    public java.util.Dictionary<String, Object> read(Pointer ptr, Object fields);
 
     /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
     public String getName();
@@ -64,12 +65,12 @@ public interface Transaction extends Database
      * @exception InvalidValueException in case of makumba type conflict between a pointer value passed as parameter and the type expected in the respective OQL expression
      * @exception IllegalStateException if the connection was already closed
      */
-    public java.util.Vector executeQuery(String query, Object arguments, int offset, int limit);
+    public java.util.Vector<Dictionary<String, Object>> executeQuery(String query, Object arguments, int offset, int limit);
     
     /** Execute query without limiting the results. 
      * @see org.makumba.Transaction#executeQuery(java.lang.String,java.lang.Object,int,int)
      */
-    public java.util.Vector executeQuery(String query, Object arguments);
+    public java.util.Vector<Dictionary<String, Object>> executeQuery(String query, Object arguments);
 
     /** Insert a record of the given type. <BR>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.
@@ -93,7 +94,7 @@ public interface Transaction extends Database
      * @exception java.lang.ClassCastException in case of java type conflict between a value passed and the definition of the respective field
      * @exception IllegalStateException if the connection was already closed
      */ 
-    public Pointer insert(String type, java.util.Dictionary data);
+    public Pointer insert(String type, java.util.Dictionary<String, Object> data);
 
     /** Insert a record in a subset (1-N set) of the given record. <br>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br
@@ -116,7 +117,7 @@ public interface Transaction extends Database
      * @exception java.lang.ClassCastException in case of java type conflict between a value passed and the definition of the respective field
      * @exception IllegalStateException if the connection was already closed
      */ 
-    public Pointer insert(Pointer host, String subsetField, java.util.Dictionary data);
+    public Pointer insert(Pointer host, String subsetField, java.util.Dictionary<String, Object> data);
 
     /** Insert the results of the query in the given type. Generates an INSERT...SELECT. The labels of the OQL query must match field names of the given type.
      * @param type the type where to insert
@@ -151,7 +152,7 @@ public interface Transaction extends Database
      * @see Pointer#NullDate
      * @see Pointer#NullSet
      */
-    public void update(Pointer ptr, java.util.Dictionary fieldsToChange);
+    public void update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange);
 
     /** Update in the form <code>update("general.Person p", "p.birthdate=$1", "p=$2", params)</code> . <br>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br>
@@ -214,6 +215,3 @@ public interface Transaction extends Database
     public String getDataSource();
     
 }
-
-
-
