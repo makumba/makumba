@@ -51,7 +51,7 @@ public class FileRelations {
      * @author Manuel Gay
      * @version $Id: FileRelations.java,v 1.1 Apr 23, 2008 2:59:44 PM manu Exp $
      */
-    class RelationOrigin {
+    public class RelationOrigin {
 
         private int startCol;
 
