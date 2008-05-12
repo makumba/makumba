@@ -861,6 +861,8 @@ public class TableManager extends Table {
                     return get_text_Value(fieldName, rs, i);
                 case FieldDefinition._binary:
                     return get_binary_Value(fieldName, rs, i);
+                case FieldDefinition._boolean:
+                    return get_boolean_Value(fieldName, rs, i);
                 case FieldDefinition._date:
                     return get_dateTime_Value(fieldName, rs, i);
                 case FieldDefinition._dateCreate:
@@ -962,6 +964,13 @@ public class TableManager extends Table {
         /*
          * InputStream is= rs.getBinaryStream(i); if(is==null ) return null; return new Text(is);
          */
+    }
+    
+    public Object get_boolean_Value(String fieldName, ResultSet rs, int i) throws SQLException {
+        boolean b = rs.getBoolean(i);
+        if (rs.wasNull())
+            return null;
+        return b;
     }
 
     // moved from dateTimeManager
@@ -1080,6 +1089,8 @@ public class TableManager extends Table {
                 return get_char_SQLType(fieldName);
             case FieldDefinition._binary:
                 return get_binary_SQLType(fieldName);
+            case FieldDefinition._boolean:
+                return get_boolean_SQLType(fieldName);
             case FieldDefinition._date:
                 return get_dateTime_SQLType(fieldName);
             case FieldDefinition._real:
@@ -1107,9 +1118,12 @@ public class TableManager extends Table {
         return java.sql.Types.VARCHAR;
     }
 
-    // moved from textManager
     protected int get_binary_SQLType(String fieldName) {
         return java.sql.Types.LONGVARBINARY;
+    }
+
+    protected int get_boolean_SQLType(String fieldName) {
+        return java.sql.Types.BIT;
     }
 
     // moved from dateTimeManager
@@ -1174,6 +1188,8 @@ public class TableManager extends Table {
             case FieldDefinition._char:
             case FieldDefinition._charEnum:
                 return in_char_Create(fieldName, d);
+            case FieldDefinition._boolean:
+                return in_boolean_Create(fieldName, d);
             case FieldDefinition._ptrIndex:
                 return in_primaryKeyCreate(fieldName, d);
             default:
@@ -1199,6 +1215,11 @@ public class TableManager extends Table {
                 + getFieldDefinition(fieldName).getWidth() + ")" + s;
         // return
         // super.inCreate(d)+"("+getFieldDefinition(fieldName).getWidth()()+")"+s;
+    }
+    
+    /** write in CREATE, in the form name BIT(1) */
+    public String in_boolean_Create(String fieldName, Database d) {
+        return getFieldDBName(fieldName) + " " + getFieldDBType(fieldName, d) + "(1)";
     }
 
     // moved from FieldManager
@@ -1228,6 +1249,8 @@ public class TableManager extends Table {
                 return get_text_FieldDBType(fieldName);
             case FieldDefinition._binary:
                 return get_binary_FieldDBType(fieldName);
+            case FieldDefinition._boolean:
+                return get_boolean_FieldDBType(fieldName);
             case FieldDefinition._date:
                 return get_dateTime_FieldDBType(fieldName);
             case FieldDefinition._dateCreate:
@@ -1264,10 +1287,13 @@ public class TableManager extends Table {
         return "LONGTEXT";
     }
 
-    // moved from textManager
     /** returns text */
     protected String get_binary_FieldDBType(String fieldName) {
         return "LONG VARBINARY";
+    }
+    
+    protected String get_boolean_FieldDBType(String fieldName) {
+        return "BIT";
     }
 
     // moved from dateTimeManager
@@ -1400,6 +1426,8 @@ public class TableManager extends Table {
                 return write_text_Constant(fieldName, o);
             case FieldDefinition._binary:
                 return write_binary_Constant(fieldName, o);
+            case FieldDefinition._boolean:
+                return write_boolean_Constant(fieldName, o);
             case FieldDefinition._date:
                 return write_dateTime_Constant(fieldName, o);
             case FieldDefinition._dateCreate:
@@ -1431,11 +1459,15 @@ public class TableManager extends Table {
         return org.makumba.db.makumba.sql.Database.SQLEscape(o.toString());
     }
 
-    // moved from textManager
     /** does apostrophe escape */
     public String write_binary_Constant(String fieldName, Object o) {
         return org.makumba.db.makumba.sql.Database.SQLEscape(o.toString());
     }
+    
+    public String write_boolean_Constant(String fieldName, Object o) {
+        return ((Boolean)o) ? "1" : "0";
+    }
+
 
     // moved from dateTimeManager
     /** writes the date between apostrophes */
@@ -1858,7 +1890,7 @@ public class TableManager extends Table {
 
     // moved from FieldManager
     /**
-     * check if the column from the SQL database (read from the catalog) still coresponds with the abstract definition
+     * check if the column from the SQL database (read from the catalog) still corresponds with the abstract definition
      * of this field
      */
     protected boolean unmodified(String fieldName, int type, int size, Vector columns, int index) throws SQLException {

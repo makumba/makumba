@@ -153,6 +153,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         integerTypeMap.put("charEnum", new Integer(FieldDefinition._charEnum));
         integerTypeMap.put("text", new Integer(FieldDefinition._text));
         integerTypeMap.put("binary", new Integer(FieldDefinition._binary));
+        integerTypeMap.put("boolean", new Integer(FieldDefinition._boolean));
         integerTypeMap.put("date", new Integer(FieldDefinition._date));
         integerTypeMap.put("dateCreate", new Integer(FieldDefinition._dateCreate));
         integerTypeMap.put("dateModify", new Integer(FieldDefinition._dateModify));
@@ -331,6 +332,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._text:
             case FieldDefinition._binary:
                 return "";
+            case FieldDefinition._boolean:
+                return false; //FIXME check if this is true
             case FieldDefinition._date:
             case FieldDefinition._dateCreate:
             case FieldDefinition._dateModify:
@@ -373,6 +376,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._text:
             case FieldDefinition._binary:
                 return Pointer.NullText;
+            case FieldDefinition._boolean:
+                return Pointer.NullBoolean;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -464,6 +469,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
                 return "text";
             case FieldDefinition._binary:
                 return "binary";
+            case FieldDefinition._boolean:
+                return "boolean";
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -498,6 +505,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._text:
             case FieldDefinition._binary:
                 return org.makumba.Text.class;
+            case FieldDefinition._boolean:
+                return java.lang.Boolean.class;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -724,6 +733,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
                 return check_text_ValueImpl(value);
             case FieldDefinition._binary:
                 return check_binary_ValueImpl(value);
+            case FieldDefinition._boolean:
+                return check_boolean_ValueImpl(value);
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -876,13 +887,20 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         }
     }
 
-    // moved from textHandler
     public Object check_binary_ValueImpl(Object value) {
         try {
             return Text.getText(value);
         } catch (InvalidValueException e) {
             throw new InvalidValueException(this, e.getMessage());
         }
+    }
+    
+    public Object check_boolean_ValueImpl(Object value) {
+        if(value instanceof Boolean) {
+            return value;
+        }
+        return normalCheck(value);
+        
     }
 
     // moved from setcharEnumHandler and setintEnumHandler
