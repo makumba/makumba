@@ -45,6 +45,7 @@
         <li class="sectionLevel2"><a href="#int">int</a></li>
         <li class="sectionLevel2"><a href="#real">real</a></li>
         <li class="sectionLevel2"><a href="#char">char</a></li>
+        <li class="sectionLevel2"><a href="#boolean">boolean</a></li>
         <li class="sectionLevel2"><a href="#text">text</a></li>
         <li class="sectionLevel2"><a href="#date">date</a></li>
       </ul>
@@ -171,6 +172,12 @@
     <pre class="example">gender= char{ "male", "female" }; Sex<br></pre>
     <p>This will help the presentation layer to present a suitable input control (e.g. a HTML SELECT)</p>
     <div class="internals note">in the present implementation, this type is called "charEnum" internally</div>
+    
+    <h4><a name="real" id="boolean">boolean</a></h4>
+    <p>A boolean, that can take as values true or false. For example:</p>
+    <pre class="example">hasChildren= true; whether this person has children</pre>
+    
+    
     <h4><a name="text">text</a></h4>
     <p>An unlimited-length string of bytes or characters. This type was designed to accomodate large text or binary
     content. It is implemented with LONGVARBINARY or its counterparts, depending on the underlying DB engine.</p>
