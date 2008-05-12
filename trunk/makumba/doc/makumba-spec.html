@@ -2051,6 +2051,9 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     case of mismatches, <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>
     is usually thrown), can load attributes that are absolutely needed for page execution (<span class="oldfeat">formerly
     given by the requiredAttributes() method</span>), etc.</p>
+    <h4>Transaction provider configuration</h4>
+    <p>Most handlers provide a <a href="api/org/makumba/Transaction.html">Transaction</a> that can be used to perform addition database operations in the Business Logic.
+    The class of this handler can be configured by providing a getTransactionProvider() String, that returns the fully-qualified name of the transaction provider implementation. For the moment, possible values are <code>org.makumba.db.makumba.MakumbaTransactionProvider</code> (native Makumba database layer) and <code>org.makumba.db.hibernate.HibernateTransactionProvider</code> (Hibernate-driven database layer)</p>
     <h3><a name="Login">Login</a></h3>
     Login is done as a result of a missing attribute (possibly invoked in <b><code>checkAttributes</code></b>), when a <code>find{AttributeName}</code>
     method is called. The missing attribute is the principal that needs to log in.
