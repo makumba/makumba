@@ -444,6 +444,8 @@ public class RelationCrawler {
                         + webappRoot);
             } else if (databaseLocation.size() == 1) {
                 return (String) databaseLocation.firstElement().get("relationDatabase");
+            } else if (databaseLocation.size() == 0) {
+                return tp.getDefaultDataSourceName();
             }
         } finally {
             tr.close();
