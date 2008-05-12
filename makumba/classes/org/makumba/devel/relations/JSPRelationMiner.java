@@ -64,7 +64,11 @@ public class JSPRelationMiner extends RelationMiner {
                     // System.out.println("Projections for query "+cq.getTypeAnalyzerQuery());
 
                     computeJSPMDDProjectionRelations(path, pageCache, queryKey, cq);
-                    computeJSPMDDLabelRelations(path, pageCache, queryKey, cq);
+                    try {
+                        computeJSPMDDLabelRelations(path, pageCache, queryKey, cq);
+                    } catch (RuntimeException e) {
+                        System.out.println("Could not compute JSP<->MDD label relation for " + path + ": " + e.getMessage());
+                    }
                 }
             }
         }
