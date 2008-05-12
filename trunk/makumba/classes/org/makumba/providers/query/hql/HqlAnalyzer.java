@@ -1,6 +1,5 @@
 package org.makumba.providers.query.hql;
 
-import java.sql.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -280,7 +279,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     public Map<String, DataDefinition> getLabelTypes() {
         
-        throw new RuntimeException("Not implemented.");
+        throw new RuntimeException("'getLabelTypes' not implemented for '" + getClass().getName() + "' .");
         
     }
 
