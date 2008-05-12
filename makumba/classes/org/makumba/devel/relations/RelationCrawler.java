@@ -190,20 +190,24 @@ public class RelationCrawler {
         String URLprefix = args[3];
         String URLroot = args[4];
 
-        String[] path = new String[args.length - 5];
-
-        for (int i = 5; i < args.length; i++) {
-            path[i - 5] = args[i];
-        }
-        
+        String[] files;
+        if (args.length > 5) {
+            files = new String[args.length - 5];
+            for (int i = 5; i < args.length; i++) {
+                files[i - 5] = args[i];
+            }
+        } else {
+            ArrayList<String> allFilesInDirectory = getAllFilesInDirectory(webappRoot);
+            files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+        }        
         
         RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"), URLprefix == null ? "" : URLprefix, URLroot == null? "" : URLroot);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
         
-        for (int i = 0; i < path.length; i++) {
-            rc.crawl(path[i]);
+        for (int i = 0; i < files.length; i++) {
+            rc.crawl(files[i]);
         }
         
         // we set it back to null after the crawling and clean the cache
@@ -231,7 +235,7 @@ public class RelationCrawler {
         arguments.add("karamba/public_html");
         
         
-        ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/karamba/public_html");
+        //ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/karamba/public_html");
         //arguments.addAll(some);
         arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
         String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
@@ -518,7 +522,9 @@ public class RelationCrawler {
                 new Object[] { relativePath });
             result = buildFileRelations(relativePath, dependencies, t);
         } finally {
-            t.close();
+            if (t != null) {
+                t.close();
+            }
         }
 
         return result;
