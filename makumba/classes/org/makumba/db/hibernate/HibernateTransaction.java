@@ -294,6 +294,8 @@ public class HibernateTransaction extends TransactionImplementation {
                             resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getUid());
                         } else if (resultFields[j] instanceof Integer) { // we have an integer
                             resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
+                        } else if(resultFields[j] instanceof Long) { // we have a Long
+                            resultFields[j] = new HibernatePointer(ddName, (Long)resultFields[j]);
                         } else {
                             throw new RuntimeWrappedException(new org.makumba.LogicException(
                                     "Internal Makumba error: Detected an unknown type returned by a query. "
