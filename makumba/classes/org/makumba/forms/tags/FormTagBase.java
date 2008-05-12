@@ -92,7 +92,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
 
-    private static final String[] validClientSideValidationParams = ATTRIBUTE_VALUES_TRUE_FALSE;
+    private static final String[] validClientSideValidationParams = { "true", "false", "live" };
 
     String annotationSeparator;
 
