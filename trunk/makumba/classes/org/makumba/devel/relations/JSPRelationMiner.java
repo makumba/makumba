@@ -21,6 +21,7 @@ import org.makumba.forms.tags.BasicValueTag;
 import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.tags.InputTag;
 import org.makumba.forms.tags.NewTag;
+import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.providers.QueryAnalysis;
@@ -146,7 +147,7 @@ public class JSPRelationMiner extends RelationMiner {
             }
 
             // we only look at the input tags
-            if (tag instanceof InputTag) {
+            if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) { // skip search field tags. FIXME: at least for now
                 MultipleKey formTagKey = ((InputTag) tag).getForm().getTagKey();
 
                 String baseObjectType = (String) pageCache.retrieve(FormTagBase.BASE_POINTER_TYPES, formTagKey);
