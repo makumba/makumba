@@ -11,11 +11,9 @@ testNewFormStart!<script type="text/javascript" src="/tests-new/makumbaResources
         testName!<input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name" >!endName
         testAdd!
           testAddEmail!<input name="email_1" type="text" value="" maxlength="40" id="email" >!endAddEmail
-        <input type="hidden" name="__makumba__originatingPage__" value="/tests-new/JspRedirector?Cactus_TestMethod=testFormNestedForms&Cactus_TestClass=test.newtags.FormsOQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="-1501796618_1">!endAdd
+        <input type="hidden" name="__makumba__responder__" value="-1501796618_1">!endAdd
         testSubmit!<input type="submit">!endSubmit
-testNewFormEnd!<input type="hidden" name="__makumba__originatingPage__" value="/tests-new/JspRedirector?Cactus_TestMethod=testFormNestedForms&Cactus_TestClass=test.newtags.FormsOQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="2040295464">
+testNewFormEnd!<input type="hidden" name="__makumba__responder__" value="2040295464">
 </form>!endNewFormEnd
 
 
