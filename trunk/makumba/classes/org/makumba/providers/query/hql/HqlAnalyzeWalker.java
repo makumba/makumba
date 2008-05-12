@@ -223,7 +223,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
     
     
-    public Map getLabelTypes() {
+    public Map<String, String> getLabelTypes() {
         return aliasTypes;
     }
 

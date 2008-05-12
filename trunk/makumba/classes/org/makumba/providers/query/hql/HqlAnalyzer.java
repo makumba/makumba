@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import org.hibernate.hql.ast.HqlParser;
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
@@ -22,6 +23,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     private DataDefinition projTypes;
     private DataDefinition paramTypes;
+    private Map<String, DataDefinition> computedLabelTypes;
     private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private final static Map<Integer, String> integerTypeMap = new HashMap<Integer, String>();
@@ -278,8 +280,21 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     public Map<String, DataDefinition> getLabelTypes() {
+        if(computedLabelTypes != null) {
+            return computedLabelTypes;
+        }
+        computedLabelTypes = new HashMap<String, DataDefinition>();
+        for(String label : walker.getLabelTypes().keySet()) {
+            DataDefinition type = null;
+            try {
+                type = ddp.getDataDefinition(walker.getLabelTypes().get(label));
+            } catch(DataDefinitionNotFoundError ddnfe) {
+                throw new RuntimeException("Could not find data definition for type "+walker.getLabelTypes().get(label) + " of label "+label+" in query "+getQuery());
+            }
+            computedLabelTypes.put(label, type);
+        }
         
-        throw new RuntimeException("'getLabelTypes' not implemented for '" + getClass().getName() + "' .");
+        return computedLabelTypes;
         
     }
 
@@ -296,7 +311,8 @@ public class HqlAnalyzer implements QueryAnalysis {
             } else {
                 // compute dummy query for determining pointed type
                 String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM "+getFrom();
-                result = HQLQueryAnalysisProvider.getHqlAnalyzer(dummyQuery).getProjectionType().getFieldDefinition("projection").getPointedType();
+                FieldDefinition fieldDefinition = HQLQueryAnalysisProvider.getHqlAnalyzer(dummyQuery).getProjectionType().getFieldDefinition("projection");
+                result = fieldDefinition.getPointedType();
             }
             return result;
 
