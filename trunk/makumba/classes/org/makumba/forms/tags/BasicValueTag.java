@@ -32,6 +32,7 @@ import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
@@ -202,6 +203,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     }
 
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
+        params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
         Object val = null;
 
