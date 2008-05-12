@@ -103,7 +103,7 @@ public class SourceViewServlet extends HttpServlet {
                         dir.getAbsolutePath().indexOf("dataDefinitions"));
                 }
                 res.setContentType("text/html");
-                printDirlistingHeader(w, dir, relativeDirectory);
+                printDirlistingHeader(w, dir.getCanonicalPath(), relativeDirectory);
 
                 if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
                     w.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -173,14 +173,14 @@ public class SourceViewServlet extends HttpServlet {
         return false;
     }
 
-    public static void printDirlistingHeader(PrintWriter w, File dir, String relativeDirectory) throws IOException {
+    public static void printDirlistingHeader(PrintWriter w, String dir, String relativeDirectory) throws IOException {
         w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         w.println("<html><head><title>" + relativeDirectory + "</title>");
         w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
 
         w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
         w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">" + relativeDirectory + "</font></a></font>");
-        w.print("<font size=\"-1\"><br>" + dir.getCanonicalPath() + "</font>");
+        w.print("<font size=\"-1\"><br>" + dir + "</font>");
         w.print("</td>");
 
         w.print("</tr></table>\n<pre style=\"margin-top:0\">");
