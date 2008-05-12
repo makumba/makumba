@@ -9,8 +9,7 @@
 testNewFormStart!<form action="testMakNewForm.jsp" method="post" enctype="multipart/form-data" >!endNewFormStart
         testFile!<INPUT name="picture" type="file" id="picture"  >!endFile
         testSubmit!<input type="submit">!endSubmit
-testNewFormEnd!<input type="hidden" name="__makumba__originatingPage__" value="/tests-new/JspRedirector?Cactus_TestMethod=testFormMakNewFile&Cactus_TestClass=test.newtags.FormsOQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="-851673740">
+testNewFormEnd!<input type="hidden" name="__makumba__responder__" value="-851673740">
 </form>!endNewFormEnd
 
 </body>
