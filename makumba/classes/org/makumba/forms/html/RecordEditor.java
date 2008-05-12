@@ -211,6 +211,9 @@ public class RecordEditor extends RecordFormatter {
                 case FieldDefinition._binary:
                     formatterArray[i] = textEditor.getInstance();
                     break;
+                case FieldDefinition._boolean:
+                    formatterArray[i] = booleanEditor.getInstance();
+                    break;
                 case FieldDefinition._date:
                     formatterArray[i] = dateEditor.getInstance();
                     break;

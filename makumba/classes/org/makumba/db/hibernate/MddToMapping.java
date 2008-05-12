@@ -213,6 +213,15 @@ public class MddToMapping {
                 hd.endElement("", "", "column");
                 hd.endElement("", "", "property");
                 break;
+            case FieldDefinition._boolean:
+                atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                hd.startElement("", "", "property", atts);
+                atts.clear();
+                atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
+                hd.startElement("", "", "column", atts);
+                hd.endElement("", "", "column");
+                hd.endElement("", "", "property");
+                break;
             case FieldDefinition._set:
                 atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
                 atts.addAttribute("", "", "table", "", nr.resolveTypeName(fd.getSubtable()));

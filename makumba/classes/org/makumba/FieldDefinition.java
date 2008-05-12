@@ -73,6 +73,9 @@ public interface FieldDefinition {
 
     public static final int _binary = 18;
 
+    public static final int _boolean = 19;
+
+    
     public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
 
     public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
@@ -116,6 +119,7 @@ public interface FieldDefinition {
      * <li>set: normal set in another table</li>
      * <li>setComplex: set of type defined on-the-spot</li>
      * <li>binary: binary data type (images, documents...)</li>
+     * <li>boolean: boolean, can only take two values</li>
      * </ul>
      * 
      * TODO nil and real and timeStamp need to be added???

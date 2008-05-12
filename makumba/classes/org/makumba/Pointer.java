@@ -65,6 +65,10 @@ public class Pointer implements java.io.Serializable {
 
     /** null constant for external sets */
     public static Object NullSet = new NullObject("null set");
+    
+    /** null constant for booleans */
+    public static final Object NullBoolean = new NullObject("null boolean");
+
 
     private static final List<Object> NullTypes = Arrays.asList(new Object[] { Null, NullDate, NullInteger, NullReal,
             NullSet, NullString, NullText });

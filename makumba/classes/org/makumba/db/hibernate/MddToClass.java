@@ -149,6 +149,9 @@ public class MddToClass {
 					case FieldDefinition._binary:
 						type = "org.makumba.Text";
 						break;
+					case FieldDefinition._boolean:
+					    type = "java.lang.Boolean";
+					    break;
 					case FieldDefinition._set:
 						type = "java.util.Collection";
 						mddsToDo.add(fd.getPointedType());

@@ -196,6 +196,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     // FIXME
                     fieldType = Text.class;
                     break;
+                case FieldDefinition._boolean:
+                    fieldType = Boolean.class;
                 default:
                     throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
 

@@ -74,6 +74,9 @@ public class RecordViewer extends RecordFormatter {
 			case FieldDefinition._text:
 				formatterArray[i] = textViewer.getInstance();
 				break;
+			case FieldDefinition._boolean:
+			    formatterArray[i] = booleanViewer.getInstance();
+			    break;
 			case FieldDefinition._date:
 				formatterArray[i] = dateFormatter.getInstance();
 				break;
