@@ -24,14 +24,18 @@
 package org.makumba.forms.html;
 
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.LogicException;
 import org.makumba.Transaction;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
 public class ptrEditor extends choiceEditor {
@@ -50,23 +54,43 @@ public class ptrEditor extends choiceEditor {
 
     public void onStartup(RecordFormatter rf, int fieldIndex) {
         ((RecordEditor) rf).db[fieldIndex] = ((RecordEditor) rf).database;
-        ((RecordEditor) rf).query[fieldIndex] = "SELECT choice as choice, choice."
-                + rf.dd.getFieldDefinition(fieldIndex).getTitleField() + " as title FROM "
-                + rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName() + " choice ORDER BY title";
+        Map<String, String> m= new HashMap<String, String>();
+        
+        ((RecordEditor) rf).query[fieldIndex] = m;
+        String titleExpr = "choice."+rf.dd.getFieldDefinition(fieldIndex).getTitleField();
+        String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
+        m.put("oql",
+            "SELECT choice as choice, "
+                + titleExpr + " as title FROM "
+                + choiceType + " choice "
+                +"ORDER BY title"
+                );
+        m.put("hql",
+            "SELECT choice.id as choice, "
+                + titleExpr + " as title FROM "
+                + choiceType + " choice "
+                +"ORDER BY " +titleExpr
+                );
+ 
     }
 
     public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+
         ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
         if (c != null)
             return c;
 
         Vector v = null;
-
-        Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
+        String queryLang = (String)formatParams.get("org.makumba.forms.queryLanguage");
+        QueryProvider qp= QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
+        
+        //Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
-            v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
-        } finally {
-            dbc.close();
+           // v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
+            v=qp.execute(((RecordEditor) rf).query[fieldIndex].get(queryLang), null, 0, -1);
+        } 
+        finally {
+            qp.close();
         }
         c = new ChoiceSet();
         if (nullOption != null) {

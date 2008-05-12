@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +59,7 @@ public class RecordEditor extends RecordFormatter {
 
     String[] db;
 
-    String[] query;
+    Map<String, String>[] query;
 
     protected RecordEditor() {
     }
@@ -67,7 +68,7 @@ public class RecordEditor extends RecordFormatter {
         super(ri, h);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
-        query = new String[ri.getFieldNames().size()];
+        query = new Map[ri.getFieldNames().size()];
     }
 
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
