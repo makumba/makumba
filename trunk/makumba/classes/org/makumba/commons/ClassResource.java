@@ -32,6 +32,14 @@ import java.net.URL;
  */
 public class ClassResource {
     public static URL get(String s) {
+        /*
+        try {
+            ShowResources.main(new String[] {"mdd"});
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        */
         URL u = null;
         try {
             u = ClassResource.class.getClassLoader().getResource(s);
