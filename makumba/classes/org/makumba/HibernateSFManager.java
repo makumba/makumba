@@ -115,7 +115,15 @@ public class HibernateSFManager {
             "Generating mappings under " + seedDir + File.separator + prefix);
 
         String mddList;
-        Vector dds;
+        Vector dds = new Vector();
+        
+        // internal makumba MDDs are there by default
+        dds.add("org.makumba.controller.ErrorLog");
+        dds.add("org.makumba.controller.MultipleSubmit");
+        dds.add("org.makumba.devel.relations.Relation");
+        dds.add("org.makumba.devel.relations.RelationOrigin");
+        dds.add("org.makumba.devel.relations.WebappDatabase");
+        
         if ((mddList = cfg.getProperty("makumba.mdd.list")) != null) {
             dds = new Vector();
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Working with the MDDs " + mddList);
