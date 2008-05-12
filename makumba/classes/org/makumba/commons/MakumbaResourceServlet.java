@@ -123,12 +123,10 @@ public class MakumbaResourceServlet extends HttpServlet {
                 while (entries.hasMoreElements()) {
                     JarEntry entry = (JarEntry) entries.nextElement();
                     if (entry.getName().startsWith(relativeDirectory)) {
-                        System.out.println("entry name: " + entry.getName());
                         String s = entry.getName().substring(relativeDirectory.length());
                         while (s.length() > 0 && s.startsWith("/")) {
                             s = s.substring(1);
                         }
-                        System.out.println(s);
                         if (s.indexOf("/") == -1) { // we have an entry
                             if (s.length() > 0) {
                                 files.add(s);
@@ -228,7 +226,6 @@ public class MakumbaResourceServlet extends HttpServlet {
                     String[] jarURL = url.toExternalForm().split("!");
                     JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
                     stream = jf.getInputStream(je);
-                    System.out.println("\n\n\nopened jar url: " + je.getName());
                 } else { // for files, simply open a stream
                     stream = url.openStream();
                 }
