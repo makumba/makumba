@@ -69,5 +69,12 @@ public class DbConnectionProvider {
     public void setTransactionProvider(TransactionProviderInterface tp) {
         this.tp = tp;
     }
+    
+    public TransactionProviderInterface getTransactionProvider() {
+        if(tp == null) {
+            tp = TransactionProvider.getInstance();
+        }
+        return tp;
+    }
 
 }

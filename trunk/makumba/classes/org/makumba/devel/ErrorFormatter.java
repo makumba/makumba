@@ -21,6 +21,7 @@ import org.makumba.Transaction;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.providers.TransactionProviderInterface;
@@ -81,15 +82,16 @@ public class ErrorFormatter {
         Throwable t1 = null;
 
         Throwable original = t;
-        
-        // sometimes tomcat wraps the exception in a JasperException (which extends ServletException) and then again in a ServletException
-        if(t.getClass().getSuperclass().isAssignableFrom(ServletException.class) &&
-                ((ServletException)t).getRootCause() != null &&
-                ((ServletException)t).getRootCause().getClass().isAssignableFrom(ServletException.class) &&
-                t.getMessage().startsWith("Exception in JSP:")) {
-            
-            t = ((ServletException)((ServletException)t).getRootCause()).getRootCause();
-            
+
+        // sometimes tomcat wraps the exception in a JasperException (which extends ServletException) and then again in
+        // a ServletException
+        if (t.getClass().getSuperclass().isAssignableFrom(ServletException.class)
+                && ((ServletException) t).getRootCause() != null
+                && ((ServletException) t).getRootCause().getClass().isAssignableFrom(ServletException.class)
+                && t.getMessage().startsWith("Exception in JSP:")) {
+
+            t = ((ServletException) ((ServletException) t).getRootCause()).getRootCause();
+
         }
 
         while (true) {
@@ -118,8 +120,8 @@ public class ErrorFormatter {
 
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
             // TODO: use the interface once this is a provider after mak:refactoring finished
-            boolean jspSpecificError = treatJspException(original, t, wr, req, this.servletContext,
-                printHeaderFooter, title);
+            boolean jspSpecificError = treatJspException(original, t, wr, req, this.servletContext, printHeaderFooter,
+                title);
 
             if (!jspSpecificError) {
                 // FIXME the code below of trying to get more info about the exception is not really accurate
@@ -127,7 +129,8 @@ public class ErrorFormatter {
                 // JSP exceptions
                 // ==> as a quick fix, we treat those as unknown errors
                 if (isRuntimeJspErrors((ServletException) t)) {
-                    treatJspRuntimeException(original, (ServletException)t, wr, req, this.servletContext, printHeaderFooter);
+                    treatJspRuntimeException(original, (ServletException) t, wr, req, this.servletContext,
+                        printHeaderFooter);
                     return;
                 } else {
                     Throwable rootCause = ((ServletException) t).getRootCause();
@@ -138,7 +141,7 @@ public class ErrorFormatter {
                      */
                     if (rootCause != null) {
                         t = rootCause;
-                        if (t != null && original.getMessage()!=null && !original.getMessage().equals(t.getMessage())) {
+                        if (t != null && original.getMessage() != null && !original.getMessage().equals(t.getMessage())) {
                             t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
                             t1.setStackTrace(t.getStackTrace());
                             t = t1;
@@ -182,8 +185,10 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        TransactionProviderInterface tp = (TransactionProviderInterface) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
-        Transaction tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
+        
+        // we re-use the transaction provider of the request to do our logging
+        DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
+        Transaction tr = dbc.getTransactionProvider().getConnectionTo(dbc.getTransactionProvider().getDefaultDataSourceName());
 
         try {
             Dictionary<String, Comparable> d = new Hashtable<String, Comparable>();
@@ -403,9 +408,9 @@ public class ErrorFormatter {
                     + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-//        if (!(traced instanceof NullPointerException)) {
-            body = formatTagData(req) + body + shortTrace(trace(traced));
-        
+        // if (!(traced instanceof NullPointerException)) {
+        body = formatTagData(req) + body + shortTrace(trace(traced));
+
         try {
             SourceViewer sw = new errorViewer(req, servletContext, title, body, null, printeHeaderFooter);
             sw.parseText(wr);
@@ -524,25 +529,26 @@ public class ErrorFormatter {
         return result;
     }
 
-    public static String[] jspReservedWords = { "application", "config", "out", "page", "request", "response", "pageContext"};
+    public static String[] jspReservedWords = { "application", "config", "out", "page", "request", "response",
+            "pageContext" };
 
     public static ArrayList<String> jspReservedWordList = new ArrayList<String>(Arrays.asList(jspReservedWords));
-    
+
     boolean treatJspRuntimeException(Throwable original, ServletException t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter) {
-        
-        Throwable rootCause =  t.getRootCause();
+
+        Throwable rootCause = t.getRootCause();
         String exceptionName = rootCause.getClass().toString().substring("class ".length());
         String message = rootCause.getMessage();
-        String body = "A "+exceptionName.substring(exceptionName.lastIndexOf(".")+1) +" occured (most likely because of a programmation error in the JSP):\n\n" + message;
-        
+        String body = "A " + exceptionName.substring(exceptionName.lastIndexOf(".") + 1)
+                + " occured (most likely because of a programmation error in the JSP):\n\n" + message;
+
         StringWriter swriter = new StringWriter();
         PrintWriter p = new PrintWriter(swriter);
         rootCause.printStackTrace(p);
         swriter.flush();
         String hiddenBody = swriter.toString();
-        
-        
+
         try {
             SourceViewer sw = new errorViewer(req, servletContext, exceptionName, body, hiddenBody, printHeaderFooter);
             sw.parseText(wr);
@@ -551,12 +557,12 @@ public class ErrorFormatter {
             throw new org.makumba.commons.RuntimeWrappedException(e);
         }
         return true;
-        
+
     }
 
     boolean treatJspException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter, String title) {
-        if (t.getMessage()!=null && t.getMessage().indexOf("Duplicate local variable") != -1) {
+        if (t.getMessage() != null && t.getMessage().indexOf("Duplicate local variable") != -1) {
             String message = t.getMessage();
             String[] split = message.split("\n");
             String variableName = null;
