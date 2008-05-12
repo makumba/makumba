@@ -225,7 +225,7 @@ public class RelationCrawler {
      * @return a list of arguments the crawler can be launched with
      */
     private static String[] generateExampleArguments() {
-        String webappPath = "/home/manu/workspace/karamba/public_html";
+        String webappPath = "/home/manu/workspace/makumba/webapps/tests";
 
         Vector<String> arguments = new Vector<String>();
         arguments.add(webappPath);
@@ -235,9 +235,9 @@ public class RelationCrawler {
         arguments.add("karamba/public_html");
         
         
-        //ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/karamba/public_html");
-        //arguments.addAll(some);
-        arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
+//        ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/makumba/webapps/tests/");
+//        arguments.addAll(some);
+//        arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
         String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
         return args;
     }

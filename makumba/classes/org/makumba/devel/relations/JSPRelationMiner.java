@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -37,6 +39,9 @@ public class JSPRelationMiner extends RelationMiner {
     }
 
     public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
+    
+    private Pattern expression = Pattern.compile("[a-zA-Z]" + "\\w" + "*" + "(?:\\.\\w+)?");
+
 
     @Override
     public void crawl(String path) {
@@ -156,6 +161,11 @@ public class JSPRelationMiner extends RelationMiner {
                 if (baseObjectType == null) {
                     baseObjectType = ((TagData) tagDataCache.get(formTagKey)).attributes.get("type");
                 }
+                
+                // this may be the case when a mak:input is used inside of a mak:form - there we can't really get the type so we ignore it
+                if(baseObjectType == null) {
+                    return;
+                }
 
                 FieldDefinition tagFieldType = (FieldDefinition) pageCache.retrieve(BasicValueTag.INPUT_TYPES, tagKey);
                 String expr = tagData.attributes.get("field") == null ? tagData.attributes.get("name")
@@ -178,7 +188,12 @@ public class JSPRelationMiner extends RelationMiner {
                             
                         }
                     } else if (ql.equals("hql")) {
+                        try {
                         qA = HQLQueryAnalysisProvider.getHqlAnalyzer(typeDeterminationQuery);
+                        } catch (RuntimeWrappedException e) {
+                            logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
+                            return;
+                        }
                     }
 
                     baseObjectType = qA.getProjectionType().getFieldDefinition("type").getPointedType().getName();
@@ -295,10 +310,10 @@ public class JSPRelationMiner extends RelationMiner {
                 DataDefinition projectionParentType = null;
                 try {
                     projectionParentType = cq.getTypeOfExprField(projectionExpr);
-                    
                 } catch(RuntimeWrappedException e) {
-                    rc.addJSPAnalysisError(fromFile, e.getCause());
-                    continue;
+                    rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
+                } catch (RuntimeException e1) {
+                    rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1: e1.getCause());
                 }
 
                 // this is due to a count(something) or sum(something) etc.
@@ -313,6 +328,17 @@ public class JSPRelationMiner extends RelationMiner {
                         }
                         field = cq.getFieldOfExpr(realExpr);
                         projectionParentType = cq.getTypeOfExprField(realExpr);
+                    } else {
+                        // this is something like p.indiv.age + 3
+                        projectionExpr = getAnalysableExpression(projectionExpr);
+                        try {
+                            projectionParentType = cq.getTypeOfExprField(projectionExpr);
+                        } catch(RuntimeWrappedException e) {
+                            rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
+                        } catch (RuntimeException e1) {
+                            rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1: e1.getCause());
+                        }
+
                     }
                 }
 
@@ -345,6 +371,21 @@ public class JSPRelationMiner extends RelationMiner {
 
             }
         }
+    }
+    
+    /**
+     * Gets a "pure" expression in a complex expression string, e.g. "p.inidiv.name * 3.0"
+     * @param expr the expression to clean
+     * @return an expression that can be analysed further on
+     */
+    private String getAnalysableExpression(String expr) {
+        Matcher m = expression.matcher(expr);
+        String match = "";
+        while (m.find()) {
+            match = expr.substring(m.start(), m.end());
+        }
+        return match;
+        
     }
     
 
