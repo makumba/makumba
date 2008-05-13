@@ -57,8 +57,12 @@ public class ptrEditor extends choiceEditor {
         Map<String, String> m= new HashMap<String, String>();
         
         ((RecordEditor) rf).query[fieldIndex] = m;
-        String titleExpr = "choice."+rf.dd.getFieldDefinition(fieldIndex).getTitleField();
+        String titleField = rf.dd.getFieldDefinition(fieldIndex).getTitleField();
+        String titleExpr = "choice."+titleField;
+        
         String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
+        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldDefinition(titleField).getType().equals("ptr"))
+            titleExpr+=".id";
         m.put("oql",
             "SELECT choice as choice, "
                 + titleExpr + " as title FROM "
@@ -67,7 +71,7 @@ public class ptrEditor extends choiceEditor {
                 );
         m.put("hql",
             "SELECT choice.id as choice, "
-                + titleExpr + " as title FROM "
+                + titleExpr +" as title FROM "
                 + choiceType + " choice "
                 +"ORDER BY " +titleExpr
                 );
