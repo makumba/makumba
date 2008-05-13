@@ -41,7 +41,7 @@ public class StringUtils {
     
     public static boolean allNotEmpty(String[] o) {
         for (int i = 0; i < o.length; i++) {
-            if(org.apache.commons.lang.StringUtils.isEmpty(o[i])) {
+            if(org.apache.commons.lang.StringUtils.isBlank(o[i])) {
                 return false;
             }
         } 
