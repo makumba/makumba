@@ -36,26 +36,26 @@ import org.makumba.providers.TransactionProviderInterface;
  * @version $Id: HibernateTransaction.java,v 1.1 02.11.2007 14:08:53 Manuel Exp $
  */
 public class HibernateTransaction extends TransactionImplementation {
-    
+
     public org.hibernate.Transaction t;
-    
+
     public Session s;
-    
+
     private DataDefinitionProvider ddp;
-    
+
     private String dataSource;
-    
+
     private NameResolver nr = new NameResolver();
-    
+
     public HibernateTransaction(TransactionProviderInterface tp) {
         super(tp);
     }
-    
+
     public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, TransactionProviderInterface tp) {
         this(tp);
         this.dataSource = dataSource;
         this.ddp = ddp;
-        this.s = ((SessionFactory) ((HibernateTransactionProvider)tp).getHibernateSessionFactory(dataSource)).openSession();
+        this.s = ((SessionFactory) ((HibernateTransactionProvider) tp).getHibernateSessionFactory(dataSource)).openSession();
         s.setCacheMode(CacheMode.IGNORE);
         beginTransaction();
     }
@@ -69,7 +69,7 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public void commit() {
         t.commit();
-        t=s.beginTransaction();
+        t = s.beginTransaction();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class HibernateTransaction extends TransactionImplementation {
                 throw new org.makumba.NoSuchFieldException(r, (String) o);
             String s = (String) o;
             sb.append(separator).append("p.").append(s);
-            if(fieldDefinition.getType().startsWith(("ptr"))) {
+            if (fieldDefinition.getType().startsWith(("ptr"))) {
                 sb.append(".id");
             }
             sb.append(" as ").append(s);
@@ -98,58 +98,55 @@ public class HibernateTransaction extends TransactionImplementation {
         sb.append(" FROM " + nr.arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
         return sb;
     }
-    
+
     @Override
     protected Vector executeReadQuery(Pointer p, StringBuffer sb) {
-        
+
         return executeQuery(sb.toString(), p);
     }
 
-    
-
     @Override
     protected int executeUpdate(String type, String set, String where, Object args) {
-        
-        // in the current implementation, executeUpdate is also used to execute delete-s, depending on the value of "set"
-        
+
+        // in the current implementation, executeUpdate is also used to execute delete-s, depending on the value of
+        // "set"
+
         String hql = new String();
-        
+
         // I have no idea if giving the type directly will work...
-        if(set == null) {
-            hql = "DELETE FROM "+type.replaceAll("->", "__")+" WHERE "+where;
+        if (set == null) {
+            hql = "DELETE FROM " + type.replaceAll("->", "__") + " WHERE " + where;
         } else {
-            hql = "UPDATE "+type.replaceAll("->", "__")+" SET "+set+" WHERE "+where;
+            hql = "UPDATE " + type.replaceAll("->", "__") + " SET " + set + " WHERE " + where;
         }
-        //System.out.println("HQL: "+hql);
-        
+        // System.out.println("HQL: "+hql);
+
         org.hibernate.Query q = s.createQuery(hql);
         q.setCacheable(false);
-        
+
         // FIXME this needs type analysis to accept e.g. Pointers in String (external) form
-        
+
         // FIXME a wild quess to detect whether the query has positional or named parameters
-        if(set!=null && set.indexOf('?')!=-1||where!=null && where.indexOf('?')!=-1){
+        if (set != null && set.indexOf('?') != -1 || where != null && where.indexOf('?') != -1) {
             Object[] argsArray = treatParam(args);
-            for(int i=0; i<argsArray.length; i++) {
+            for (int i = 0; i < argsArray.length; i++) {
                 q.setParameter(i, weaklyTreatParamType(argsArray[i]));
             }
-        }
-        else{
-            Map<String, Object> args1= paramsToMap(args);
-            for(Iterator<String> i= args1.keySet().iterator(); i.hasNext();){
-                String key= i.next();
+        } else {
+            Map<String, Object> args1 = paramsToMap(args);
+            for (Iterator<String> i = args1.keySet().iterator(); i.hasNext();) {
+                String key = i.next();
                 q.setParameter(key, weaklyTreatParamType(args1.get(key)));
 
             }
         }
-                
-        
+
         return q.executeUpdate();
     }
 
     private Object weaklyTreatParamType(Object object) {
-        if(object instanceof Pointer)
-            return new Integer(((Pointer)object).getId());
+        if (object instanceof Pointer)
+            return new Integer(((Pointer) object).getId());
         return object;
     }
 
@@ -171,16 +168,21 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public void unlock(String symbol) {
         throw new MakumbaError("Not implemented");
-        
+
     }
 
-    
     /**
      * Executes a query with the given parameters.
-     * @param query the HQL query
-     * @param args the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object for not named parameters.
-     * @param offset the offset from which the results should be returned
-     * @param limit the maximum number of results to be returned
+     * 
+     * @param query
+     *            the HQL query
+     * @param args
+     *            the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object
+     *            for not named parameters.
+     * @param offset
+     *            the offset from which the results should be returned
+     * @param limit
+     *            the maximum number of results to be returned
      * @return a Vector of Dictionaries containing the results
      */
     @Override
@@ -190,20 +192,24 @@ public class HibernateTransaction extends TransactionImplementation {
 
     /**
      * Executes a query with the given parameters.
-     * @param query the HQL query
-     * @param args the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object for not named parameters.
+     * 
+     * @param query
+     *            the HQL query
+     * @param args
+     *            the parameters of the query. Can be a Map containing named parameters, or a Vector, Object[] or Object
+     *            for not named parameters.
      * @return a Vector of Dictionaries containing the results
      */
     @Override
     public Vector executeQuery(String query, Object parameterValues) {
         return execute(query, parameterValues, 0, -1);
     }
-    
+
     public Vector execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        QueryAnalysisProvider qap= null;
+        QueryAnalysisProvider qap = null;
         try {
-                qap=(QueryAnalysisProvider) Class.forName(HQLQueryProvider.HQLQUERY_ANALYSIS_PROVIDER).newInstance();
+            qap = (QueryAnalysisProvider) Class.forName(HQLQueryProvider.HQLQUERY_ANALYSIS_PROVIDER).newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -216,7 +222,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
-        
+
         // check the query for correctness (we do not allow "select p from Person p", only "p.id")
         for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
             FieldDefinition fd = dataDef.getFieldDefinition(i);
@@ -228,7 +234,7 @@ public class HibernateTransaction extends TransactionImplementation {
                 }
             }
         }
-    
+
         // workaround for Hibernate bug HHH-2390
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
         query = analyzer.getPreProcessedQuery(query);
@@ -242,28 +248,35 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
         if (args != null && args instanceof Map) {
-            setNamedParameters((Map)args, paramsDef, q);
-        } else if(args != null) {
+            setNamedParameters((Map) args, paramsDef, q);
+        } else if (args != null) {
             setOrderedParameters(args, paramsDef, q);
         }
 
-        Vector results = getConvertedQueryResult(analyzer, q.list());
+        Vector results = null;
+        try {
+            results = getConvertedQueryResult(analyzer, q.list());
+
+        } catch (Exception e) {
+            throw new ProgrammerError(
+                    "Error while trying to compute the results for query "
+                            + q.getQueryString()
+                            + ": are you sure you did not try to compare two incompatible types? (remember, in HQL you need to select an object's id for comparison)\n"+e.getMessage());
+        }
         return results;
     }
 
-
     /**
-     * TODO: find a way to not fetch the results all by one, but row by row, to reduce the memory used in both the
-     * list returned from the query and the Vector composed out of.
-     * see also bug
-     *  
+     * TODO: find a way to not fetch the results all by one, but row by row, to reduce the memory used in both the list
+     * returned from the query and the Vector composed out of. see also bug
+     * 
      * @param analyzer
      * @param list
      * @return
      */
     private Vector getConvertedQueryResult(QueryAnalysis analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
-        
+
         Vector results = new Vector(list.size());
 
         Object[] projections = dataDef.getFieldNames().toArray();
@@ -294,8 +307,8 @@ public class HibernateTransaction extends TransactionImplementation {
                             resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getId());
                         } else if (resultFields[j] instanceof Integer) { // we have an integer
                             resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
-                        } else if(resultFields[j] instanceof Long) { // we have a Long
-                            resultFields[j] = new HibernatePointer(ddName, (Long)resultFields[j]);
+                        } else if (resultFields[j] instanceof Long) { // we have a Long
+                            resultFields[j] = new HibernatePointer(ddName, (Long) resultFields[j]);
                         } else {
                             throw new RuntimeWrappedException(new org.makumba.LogicException(
                                     "Internal Makumba error: Detected an unknown type returned by a query. "
@@ -317,43 +330,42 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private void setOrderedParameters(Object parameterValues, DataDefinition paramsDef, org.hibernate.Query q) {
         Object[] argsArray = treatParam(parameterValues);
-        for(int i=0; i<argsArray.length; i++) {
-            
+        for (int i = 0; i < argsArray.length; i++) {
+
             Object paramValue = argsArray[i];
-            
+
             FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
-            
+
             if (paramValue instanceof Date) {
-                q.setDate(i, (Date)paramValue);
+                q.setDate(i, (Date) paramValue);
             } else if (paramValue instanceof Integer) {
-                q.setInteger(i, (Integer)paramValue);
+                q.setInteger(i, (Integer) paramValue);
             } else if (paramValue instanceof Pointer) {
-                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getId()));
+                q.setParameter(i, new Integer(((Pointer) argsArray[i]).getId()));
             } else { // we have any param type (most likely String)
-                if(paramDef != null) {
-                    if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
-                        Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                if (paramDef != null) {
+                    if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
+                        Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
                         q.setInteger(i, new Integer((int) p.longValue()));
                     } else {
-                      q.setParameter(i, paramValue);
-                    } 
+                        q.setParameter(i, paramValue);
+                    }
                 } else {
                     q.setParameter(i, paramValue);
                 }
             }
         }
     }
-    
 
     private void setNamedParameters(Map args, DataDefinition paramsDef, org.hibernate.Query q) {
         String[] queryParams = q.getNamedParameters();
         for (int i = 0; i < queryParams.length; i++) {
-            String paramName = queryParams[i];               
+            String paramName = queryParams[i];
             Object paramValue = args.get(paramName);
-            
-            FieldDefinition paramDef= paramsDef.getFieldDefinition(paramName);
-            
-            //FIXME: check if the type of the actual parameter is in accordance with paramDef
+
+            FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);
+
+            // FIXME: check if the type of the actual parameter is in accordance with paramDef
             if (paramValue instanceof Vector) {
                 q.setParameterList(paramName, (Collection) paramValue);
             } else if (paramValue instanceof Date) {
@@ -361,19 +373,17 @@ public class HibernateTransaction extends TransactionImplementation {
             } else if (paramValue instanceof Integer) {
                 q.setParameter(paramName, paramValue, Hibernate.INTEGER);
             } else if (paramValue instanceof Pointer) {
-                q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()),
-                    Hibernate.INTEGER);
+                q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()), Hibernate.INTEGER);
             } else { // we have any param type (most likely String)
-                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
-                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
-                    q.setParameter(paramName, new Integer(p.getId()),
-                        Hibernate.INTEGER);
-                }else
+                if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
+                    Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
+                    q.setParameter(paramName, new Integer(p.getId()), Hibernate.INTEGER);
+                } else
                     q.setParameter(paramName, paramValue);
             }
         }
     }
-    
+
     @Override
     public int insertFromQuery(String type, String OQL, Object parameterValues) {
         throw new MakumbaError("Not implemented");
@@ -381,35 +391,34 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public String transformTypeName(String name) {
-        
+
         return nr.arrowToDoubleUnderscore(name);
     }
-    
+
     @Override
     public String getParameterName() {
         return "?";
     }
-    
+
     @Override
     public String getPrimaryKeyName() {
         return ".id";
     }
-    
+
     @Override
     public String getPrimaryKeyName(String s) {
         return "id";
     }
-    
+
     @Override
     public String getNullConstant() {
         return "null";
     }
-    
+
     @Override
     public String getDataSource() {
         return this.dataSource;
     }
-    
 
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
