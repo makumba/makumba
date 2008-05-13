@@ -681,6 +681,7 @@ primaryExpr :
             conversionExpr
         |   collectionExpr
         |   aggregateExpr
+        |   functionExpr
         |   undefinedExpr
         |   objectConstruction
         |   structConstruction
@@ -753,6 +754,19 @@ aggregateExpr :
         )
     ;
 
+functionExpr :
+		(
+			"lower"^
+		|	"upper"^
+		|	"trim"^
+		|	"ltrim"^
+		|	"rtrim"^
+		|	"char"^
+		|	"ascii"^
+		)
+		TOK_LPAREN! query TOK_RPAREN!
+	;
+	
 undefinedExpr :
 
         (

@@ -65,7 +65,7 @@
 **   java antlr.Tool oql.g
 */
 
-header {package org.makumba.providers.query.oql; }
+header {package org.makumba.providers.query.oql; import org.makumba.commons.StringUtils; }
 options {
     language="Java";
 }
@@ -747,6 +747,7 @@ primaryExpr :
 
         |   collectionConstruction{ ((OQLAST)#primaryExpr).makumbaType="inSet";} 
         |   a:aggregateExpr  
+        |   functionExpr
 	|   !mi: makumbaIdentifier
 	{ 
 		#primaryExpr=new IdAST();
@@ -859,6 +860,39 @@ aggregateExpr :
         )
     ;
 
+functionExpr :
+
+        (
+            (
+                lower:"lower"{#lower.setText("lower("); }
+            |   upper:"upper"{#upper.setText("upper("); }
+            |   trim:"trim"{#trim.setText("trim("); }
+            |   ltrim:"ltrim"{#ltrim.setText("ltrim("); }
+            |   rtrim:"rtrim"{#rtrim.setText("rtrim("); }
+            |   ascii:"ascii"{#ascii.setText("ascii("); }
+            |   char_:"char"{#char_.setText("char("); }
+            )
+            l:TOK_LPAREN {#l.setText("");} q:query
+            TOK_RPAREN  
+
+	{
+        FunctionAST ag= new FunctionAST();
+        ag.setText(#functionExpr.getText());
+		ag.setExpr((OQLAST)#q);
+		String expr = #functionExpr.getText();
+		if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.simpleStringFunctions, "("))) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.simpleStringFunctions) + "("+#q.getText()+")";
+		} else if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.intToStringFunctions, "("))) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.intToStringFunctions) + "("+#q.getText()+")";
+		} else if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.StringToIntFunctions, "("))) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.StringToIntFunctions) + "("+#q.getText()+")";
+		}
+		
+        #functionExpr=ag;
+	}
+        )
+    ;
+    
 undefinedExpr :
 	//* we take away is_defined and is_undefined and we replace them with SQL is null and is not null...
 	{String s; }
