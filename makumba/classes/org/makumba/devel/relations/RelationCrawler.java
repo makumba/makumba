@@ -58,6 +58,9 @@ public class RelationCrawler {
     private String URLprefix;
 
     private String URLroot;
+    
+    private TransactionProvider tp = TransactionProvider.getInstance();
+
 
     private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
 
@@ -308,8 +311,6 @@ public class RelationCrawler {
 
         Map<String, Dictionary<String, Object>> relations = getDetectedRelations();
 
-        TransactionProvider tp = TransactionProvider.getInstance();
-
         Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase);
 
         Iterator<String> it = relations.keySet().iterator();
@@ -332,19 +333,19 @@ public class RelationCrawler {
 
                 // we check if there's already such a relation in the database
 
+                String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2";
+                String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = ? AND relation.fromFile = ?";
                 Object[] args = { toFile, fromFile };
-                Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(
-                    "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2",
-                    args);
+                Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery,args);
 
                 if (previousRelation.size() > 0) {
                     // we delete the previous relation origin
 
                     Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
 
-                    Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(
-                        "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1",
-                        new Object[] { previousRelationPtr });
+                    String oqlQuery1 = "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1";
+                    String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = ?";
+                    Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery, new Object[] { previousRelationPtr });
 
                     for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
                         Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
@@ -400,9 +401,7 @@ public class RelationCrawler {
         Transaction tr = null;
         try {
             tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
-            Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(
-                "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1",
-                new String[] { webappRoot });
+            Vector<Dictionary<String, Object>> databaseLocation = getWebappDatabasePointer(tp, tr);
             if (databaseLocation.size() > 1) {
                 // that's too much
                 throw new RuntimeException("Too many possible locations for the relations database of webapp "
@@ -435,13 +434,20 @@ public class RelationCrawler {
 
     }
 
+
+    private Vector<Dictionary<String, Object>> getWebappDatabasePointer(TransactionProvider tp, Transaction tr) {
+        String oqlQuery = "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1";
+        String hqlQuery = "SELECT wdb.id AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = ?";
+        Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery,
+            new String[] { webappRoot });
+        return databaseLocation;
+    }
+
     private String getRelationsDatabaseName(TransactionProvider tp) {
         Transaction tr = null;
         try {
             tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
-            Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(
-                "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1",
-                new String[] { webappRoot });
+            Vector<Dictionary<String, Object>> databaseLocation = getWebappDatabasePointer(tp, tr);
             if (databaseLocation.size() > 1) {
                 // that's too much
                 throw new RuntimeException("Too many possible locations for the relations database of webapp "
@@ -468,9 +474,10 @@ public class RelationCrawler {
      */
     public FileRelations getFileDependencies(String relativePath) {
 
-        String relationQuery = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
+        String relationQueryOQL = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
+        String relationQueryHQL = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
 
-        return getFileRelations(relativePath, relationQuery);
+        return getFileRelations(relativePath, tp.getQueryLanguage().equals("oql") ? relationQueryOQL : relationQueryHQL);
 
     }
 
@@ -483,9 +490,10 @@ public class RelationCrawler {
      */
     public FileRelations getFileDependents(String relativePath) {
 
-        String relationQuery = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = $1";
+        String relationQueryOQL = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = $1";
+        String relationQueryHQL = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = ?";
 
-        return getFileRelations(relativePath, relationQuery);
+        return getFileRelations(relativePath, tp.getQueryLanguage().equals("oql") ? relationQueryOQL : relationQueryHQL);
 
     }
 

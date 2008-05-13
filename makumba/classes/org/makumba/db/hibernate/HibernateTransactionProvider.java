@@ -60,4 +60,8 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     public boolean supportsUTF8() {
         throw new MakumbaError("Not implemented");
     }
+
+    public String getQueryLanguage() {
+        return "hql";
+    }
 }

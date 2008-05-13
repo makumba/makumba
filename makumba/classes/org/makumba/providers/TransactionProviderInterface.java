@@ -1,7 +1,5 @@
 package org.makumba.providers;
 
-import java.util.Properties;
-
 import org.makumba.Transaction;
 
 /**
@@ -21,6 +19,8 @@ public interface TransactionProviderInterface {
     public String getDataSourceName(String lookupFile);
     
     public CRUDOperationProvider getCRUD();
+    
+    public String getQueryLanguage();
     
     public boolean supportsUTF8();
     
