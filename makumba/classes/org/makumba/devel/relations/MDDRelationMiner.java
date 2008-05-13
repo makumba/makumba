@@ -24,7 +24,7 @@ public class MDDRelationMiner extends RelationMiner {
         
         String mddPath = path.substring(MDD_PATH.length(), path.length());
         
-        if(!new File(rc.getWebappRoot() + File.separator + mddPath).exists()) {
+        if(!new File(rc.getWebappRoot() + File.separator + path).exists()) {
             logger.warning("MDD "+mddPath + " does not exist in webapp "+rc.getWebappRoot());
             return;
         }
@@ -80,7 +80,4 @@ public class MDDRelationMiner extends RelationMiner {
 
         rc.addRelation(toFile, relation);
     }
-    
-
-
 }
