@@ -562,8 +562,9 @@ public class RelationCrawler {
             Pointer relation = (Pointer) dictionary.get("relation");
 
             // fetch the origin of the relation
-            Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(
-                "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1",
+            String queryOQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1";
+            String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = ?";
+            Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(tp.getQueryLanguage().equals("oql") ? queryOQL : queryHQL,
                 new Object[] { relation });
 
             Vector<RelationOrigin> relationOriginVector = new Vector<RelationOrigin>();
