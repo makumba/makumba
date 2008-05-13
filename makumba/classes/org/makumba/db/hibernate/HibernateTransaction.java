@@ -321,7 +321,7 @@ public class HibernateTransaction extends TransactionImplementation {
             
             Object paramValue = argsArray[i];
             
-            FieldDefinition paramDef= paramsDef.getFieldDefinition(i);
+            FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
             
             if (paramValue instanceof Date) {
                 q.setDate(i, (Date)paramValue);
@@ -330,13 +330,17 @@ public class HibernateTransaction extends TransactionImplementation {
             } else if (paramValue instanceof Pointer) {
                 q.setParameter(i, new Integer(((Pointer)argsArray[i]).getId()));
             } else { // we have any param type (most likely String)
-                if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
-                    Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
-                    q.setInteger(i, new Integer((int) p.longValue()));
-                }else
+                if(paramDef != null) {
+                    if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
+                        Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
+                        q.setInteger(i, new Integer((int) p.longValue()));
+                    } else {
+                      q.setParameter(i, paramValue);
+                    } 
+                } else {
                     q.setParameter(i, paramValue);
+                }
             }
-            
         }
     }
     
