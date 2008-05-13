@@ -57,7 +57,7 @@ public class ErrorFormatter {
             { org.makumba.NoSuchFieldException.class, "no such field" },
             { org.makumba.LogicException.class, "business logic" } };
 
-    static final Class[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class };
+    static final Class[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class, ClassCastException.class };
 
     protected ServletContext servletContext;
 
@@ -82,16 +82,16 @@ public class ErrorFormatter {
         Throwable t1 = null;
 
         Throwable original = t;
-
+        
         // sometimes tomcat wraps the exception in a JasperException (which extends ServletException) and then again in
         // a ServletException
         if (t.getClass().getSuperclass().isAssignableFrom(ServletException.class)
                 && ((ServletException) t).getRootCause() != null
                 && ((ServletException) t).getRootCause().getClass().isAssignableFrom(ServletException.class)
                 && t.getMessage().startsWith("Exception in JSP:")) {
-
-            t = ((ServletException) ((ServletException) t).getRootCause()).getRootCause();
-
+            
+            t = ((ServletException)((ServletException)t).getRootCause()).getRootCause();
+            
         }
 
         while (true) {
@@ -141,7 +141,7 @@ public class ErrorFormatter {
                      */
                     if (rootCause != null) {
                         t = rootCause;
-                        if (t != null && original.getMessage() != null && !original.getMessage().equals(t.getMessage())) {
+                        if (t != null && original.getMessage()!=null && !original.getMessage().equals(t.getMessage())) {
                             t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
                             t1.setStackTrace(t.getStackTrace());
                             t = t1;
@@ -185,7 +185,7 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        
+
         // we re-use the transaction provider of the request to do our logging
         DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
         Transaction tr = dbc.getTransactionProvider().getConnectionTo(dbc.getTransactionProvider().getDefaultDataSourceName());
@@ -408,9 +408,9 @@ public class ErrorFormatter {
                     + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-        // if (!(traced instanceof NullPointerException)) {
-        body = formatTagData(req) + body + shortTrace(trace(traced));
-
+//        if (!(traced instanceof NullPointerException)) {
+            body = formatTagData(req) + body + shortTrace(trace(traced));
+        
         try {
             SourceViewer sw = new errorViewer(req, servletContext, title, body, null, printeHeaderFooter);
             sw.parseText(wr);
@@ -533,22 +533,23 @@ public class ErrorFormatter {
             "pageContext" };
 
     public static ArrayList<String> jspReservedWordList = new ArrayList<String>(Arrays.asList(jspReservedWords));
-
+    
     boolean treatJspRuntimeException(Throwable original, ServletException t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter) {
-
-        Throwable rootCause = t.getRootCause();
+        
+        Throwable rootCause =  t.getRootCause();
         String exceptionName = rootCause.getClass().toString().substring("class ".length());
         String message = rootCause.getMessage();
         String body = "A " + exceptionName.substring(exceptionName.lastIndexOf(".") + 1)
                 + " occured (most likely because of a programmation error in the JSP):\n\n" + message;
-
+        
         StringWriter swriter = new StringWriter();
         PrintWriter p = new PrintWriter(swriter);
         rootCause.printStackTrace(p);
         swriter.flush();
         String hiddenBody = swriter.toString();
-
+        
+        
         try {
             SourceViewer sw = new errorViewer(req, servletContext, exceptionName, body, hiddenBody, printHeaderFooter);
             sw.parseText(wr);
@@ -557,12 +558,12 @@ public class ErrorFormatter {
             throw new org.makumba.commons.RuntimeWrappedException(e);
         }
         return true;
-
+        
     }
 
     boolean treatJspException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter, String title) {
-        if (t.getMessage() != null && t.getMessage().indexOf("Duplicate local variable") != -1) {
+        if (t.getMessage()!=null && t.getMessage().indexOf("Duplicate local variable") != -1) {
             String message = t.getMessage();
             String[] split = message.split("\n");
             String variableName = null;
