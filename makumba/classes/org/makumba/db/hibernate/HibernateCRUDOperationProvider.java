@@ -216,7 +216,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     private Object getPointedObject(Transaction t, Class pointerClass, Pointer pointer) {
-        return ((HibernateTransaction) t).s.get(pointerClass, pointer.getUid());
+        return ((HibernateTransaction) t).s.get(pointerClass, pointer.getId());
     }
 
     private Class<?> getPointerClass(String type) throws ClassNotFoundException {
@@ -349,7 +349,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
             Object record = null;
-            record = ht.s.get(recordClass, new Long(p.longValue()).intValue());
+            record = ht.s.get(recordClass, p.getId());
 
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, dic, dd, recordClass, record);
