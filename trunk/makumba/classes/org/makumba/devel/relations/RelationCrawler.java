@@ -344,8 +344,8 @@ public class RelationCrawler {
                     Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
 
                     String oqlQuery1 = "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1";
-                    String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = ?";
-                    Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery, new Object[] { previousRelationPtr });
+                    String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation JOIN relation.origin origin WHERE relation.id = ?";
+                    Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery1:hqlQuery1, new Object[] { previousRelationPtr });
 
                     for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
                         Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
@@ -563,7 +563,7 @@ public class RelationCrawler {
 
             // fetch the origin of the relation
             String queryOQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1";
-            String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = ?";
+            String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r.id = ?";
             Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(tp.getQueryLanguage().equals("oql") ? queryOQL : queryHQL,
                 new Object[] { relation });
 
