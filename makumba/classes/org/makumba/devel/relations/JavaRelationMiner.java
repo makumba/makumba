@@ -40,7 +40,7 @@ public class JavaRelationMiner extends RelationMiner {
     public void crawl(String path) {
         
         if(!new File(rc.getWebappRoot() + File.separator + path).exists()) {
-            logger.warning("MDD "+path + " does not exist in webapp "+rc.getWebappRoot());
+            logger.warning("Java file "+path + " does not exist in webapp "+rc.getWebappRoot());
             return;
         }
 
