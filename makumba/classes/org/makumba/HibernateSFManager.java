@@ -117,13 +117,6 @@ public class HibernateSFManager {
         String mddList;
         Vector dds = new Vector();
         
-        // internal makumba MDDs are there by default
-        dds.add("org.makumba.controller.ErrorLog");
-        dds.add("org.makumba.controller.MultipleSubmit");
-        dds.add("org.makumba.devel.relations.Relation");
-        dds.add("org.makumba.devel.relations.RelationOrigin");
-        dds.add("org.makumba.devel.relations.WebappDatabase");
-        
         if ((mddList = cfg.getProperty("makumba.mdd.list")) != null) {
             dds = new Vector();
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Working with the MDDs " + mddList);
@@ -143,6 +136,15 @@ public class HibernateSFManager {
             dds = getDefaultMDDs(cfg);
         }
 
+        // internal makumba MDDs are there by default
+        dds.add("org.makumba.controller.ErrorLog");
+        dds.add("org.makumba.controller.MultipleSubmit");
+
+// please uncomment these if you think they are needed. I think they should only take effect in developer environments
+//        dds.add("org.makumba.devel.relations.Relation");
+//        dds.add("org.makumba.devel.relations.RelationOrigin");
+//        dds.add("org.makumba.devel.relations.WebappDatabase");
+        
         java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes");
 
         // FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not
