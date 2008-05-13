@@ -243,7 +243,7 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = TransactionProvider.getInstance().getConnectionTo(database);
+            Transaction db = ((DbConnectionProvider) request.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);
