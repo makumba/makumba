@@ -160,6 +160,11 @@ public class Pointer implements java.io.Serializable {
     public long longValue() {
         return n;
     }
+    
+    /** gets the int value of the db-level id **/
+    public int getId() {
+        return new Long(n).intValue();
+    }
 
 }
 

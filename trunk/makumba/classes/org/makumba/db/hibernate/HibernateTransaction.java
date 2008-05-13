@@ -149,7 +149,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private Object weaklyTreatParamType(Object object) {
         if(object instanceof Pointer)
-            return new Integer(((Pointer)object).getUid());
+            return new Integer(((Pointer)object).getId());
         return object;
     }
 
@@ -291,7 +291,7 @@ public class HibernateTransaction extends TransactionImplementation {
                         String ddName = fd.getPointedType().getName();
                         // FIXME: once we do not get dummy pointers from hibernate queries, take this out
                         if (resultFields[j] instanceof Pointer) { // we have a dummy pointer
-                            resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getUid());
+                            resultFields[j] = new HibernatePointer(ddName, ((Pointer) resultFields[j]).getId());
                         } else if (resultFields[j] instanceof Integer) { // we have an integer
                             resultFields[j] = new HibernatePointer(ddName, ((Integer) resultFields[j]).intValue());
                         } else if(resultFields[j] instanceof Long) { // we have a Long
@@ -328,7 +328,7 @@ public class HibernateTransaction extends TransactionImplementation {
             } else if (paramValue instanceof Integer) {
                 q.setInteger(i, (Integer)paramValue);
             } else if (paramValue instanceof Pointer) {
-                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getUid()));
+                q.setParameter(i, new Integer(((Pointer)argsArray[i]).getId()));
             } else { // we have any param type (most likely String)
                 if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
                     Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
@@ -357,12 +357,12 @@ public class HibernateTransaction extends TransactionImplementation {
             } else if (paramValue instanceof Integer) {
                 q.setParameter(paramName, paramValue, Hibernate.INTEGER);
             } else if (paramValue instanceof Pointer) {
-                q.setParameter(paramName, new Integer((int) ((Pointer) paramValue).longValue()),
+                q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()),
                     Hibernate.INTEGER);
             } else { // we have any param type (most likely String)
                 if(paramDef.getIntegerType()==FieldDefinition._ptr && paramValue instanceof String){
                     Pointer p= new Pointer(paramDef.getPointedType().getName(), (String)paramValue);
-                    q.setParameter(paramName, new Integer((int) p.longValue()),
+                    q.setParameter(paramName, new Integer(p.getId()),
                         Hibernate.INTEGER);
                 }else
                     q.setParameter(paramName, paramValue);
