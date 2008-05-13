@@ -154,6 +154,18 @@ public class StringUtils {
         return false;
     }
 
+    public static String getStartsWith(String s, String[] options) {
+        if (s == null) {
+            return null;
+        }
+        for (int i = 0; i < options.length; i++) {
+            if (s.startsWith(options[i])) {
+                return options[i];
+            }
+        }
+        return null;
+    }
+
     /**
      * Convert a <code>String</code> to an <code>int</code>, returning a default value if the conversion fails or
      * if the string is <code>null</code>.
@@ -171,6 +183,14 @@ public class StringUtils {
 
     public static String toString(Enumeration enumeration) {
         return toString(EnumerationUtils.toList(enumeration));
+    }
+    
+    public static String[] append(String[] functionNames, String toAppend) {
+        String[] s = new String[functionNames.length];
+        for (int i = 0; i < s.length; i++) {
+            s[i] = functionNames[i] + toAppend;
+        }
+        return s;
     }
 
 }
