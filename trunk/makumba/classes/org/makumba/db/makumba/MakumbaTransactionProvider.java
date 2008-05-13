@@ -133,6 +133,10 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
         return Database.supportsUTF8();
     }
 
+    public String getQueryLanguage() {
+        return "oql";
+    }
+    
     public CRUDOperationProvider getCRUD() {
         if(singleton == null) {
             singleton = new MakumbaCRUDOperationProvider();
@@ -144,4 +148,5 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     public static Database findDatabase(String s) {
         return getDatabase(TransactionProvider.findDatabaseName(s));
     }
+
 }

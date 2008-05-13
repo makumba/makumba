@@ -88,6 +88,10 @@ public class TransactionProvider implements TransactionProviderInterface {
         return transactionProviderImplementation.getCRUD();
     }
     
+    public String getQueryLanguage() {
+        return transactionProviderImplementation.getQueryLanguage();
+    }
+    
     public static String findInHostProperties(Properties p, String str){
         for (Enumeration e = p.keys(); e.hasMoreElements();) {
             String s = (String) e.nextElement();
