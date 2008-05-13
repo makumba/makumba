@@ -349,7 +349,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
             Object record = null;
-            record = ht.s.get(recordClass, p.getUid());
+            record = ht.s.get(recordClass, new Long(p.longValue()).intValue());
 
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, dic, dd, recordClass, record);
