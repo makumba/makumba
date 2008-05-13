@@ -320,8 +320,8 @@ public class RelationCrawler {
             String relationType = (String) relationInfo.get("type");
             String fromFile = (String) relationInfo.get("fromFile");
             
-            String fromURL = this.URLprefix + this.URLroot + fromFile;
-            String toURL = this.URLprefix + this.URLroot + toFile;
+            String fromURL = this.URLprefix + this.URLroot + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
+            String toURL = this.URLprefix + this.URLroot + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
             System.out.println(fromURL + " -(" + relationType + ")-> " + toURL);
 
