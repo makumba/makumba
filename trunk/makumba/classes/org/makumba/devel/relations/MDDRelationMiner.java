@@ -16,7 +16,7 @@ public class MDDRelationMiner extends RelationMiner {
         super(rc);
     }
 
-    private static final String MDD_PATH = "/WEB-INF/classes/dataDefinitions/";
+    private static final String MDD_PATH = "WEB-INF/classes/dataDefinitions/";
 
     @Override
     public void crawl(String path) {
