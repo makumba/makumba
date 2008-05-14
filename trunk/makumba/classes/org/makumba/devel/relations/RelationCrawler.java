@@ -228,7 +228,7 @@ public class RelationCrawler {
      * @return a list of arguments the crawler can be launched with
      */
     private static String[] generateExampleArguments() {
-        String webappPath = "/home/manu/workspace/makumba/webapps/tests";
+        String webappPath = "/home/manu/workspace/karamba/public_html";
 
         Vector<String> arguments = new Vector<String>();
         arguments.add(webappPath);
@@ -343,17 +343,7 @@ public class RelationCrawler {
 
                     Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
 
-                    String oqlQuery1 = "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1";
-                    String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation JOIN relation.origin origin WHERE relation.id = ?";
-                    Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery1:hqlQuery1, new Object[] { previousRelationPtr });
-
-                    for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
-                        Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
-                        tr2.delete((Pointer) dictionary.get("origin"));
-                    }
-
-                    // we now delete the relation itself
-                    tr2.delete(previousRelationPtr);
+                    deleteRelation(tr2, previousRelationPtr);
 
                 }
 
@@ -378,11 +368,23 @@ public class RelationCrawler {
             } finally {
                 tr2.close();
             }
-            
         }
         relations.clear();
+    }
 
 
+    private void deleteRelation(Transaction tr2, Pointer previousRelationPtr) {
+        String oqlQuery1 = "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1";
+        String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation JOIN relation.origin origin WHERE relation.id = ?";
+        Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery1:hqlQuery1, new Object[] { previousRelationPtr });
+
+        for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
+            Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
+            tr2.delete((Pointer) dictionary.get("origin"));
+        }
+
+        // we now delete the relation itself
+        tr2.delete(previousRelationPtr);
     }
 
     /**
@@ -487,7 +489,7 @@ public class RelationCrawler {
         
         Vector<Dictionary<String, Object>> res = t.executeQuery(tp.getQueryLanguage().equals("oql")? relationQueryOQL : relationQueryHQL, new Object[] {relativePath});
         for (Dictionary<String, Object> dictionary : res) {
-            t.delete((Pointer)dictionary.get("rel"));
+            deleteRelation(t, (Pointer)dictionary.get("rel"));
         }
         
         t.close();
