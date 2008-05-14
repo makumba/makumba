@@ -888,16 +888,8 @@ functionExpr :
 		        fun.setText(#functionExpr.getText());
 				fun.setExpr((OQLAST)#q);
 				String expr = #functionExpr.getText();
-				if (StringUtils.startsWith(expr, FunctionAST.simpleStringFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.simpleStringFunctions) + "("+#q.getText()+")";
-				} else if (StringUtils.startsWith(expr, FunctionAST.intToStringFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.intToStringFunctions) + "("+#q.getText()+")";
-				} else if (StringUtils.startsWith(expr, FunctionAST.stringToIntFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.stringToIntFunctions) + "("+#q.getText()+")";
-				} else if (StringUtils.startsWith(expr, FunctionAST.dateToIntFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToIntFunctions) + "("+#q.getText()+")";
-				} else if (StringUtils.startsWith(expr, FunctionAST.dateToStringFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToStringFunctions) + "("+#q.getText()+")";
+				if (StringUtils.startsWith(expr, FunctionAST.allSingleParameterFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.allSingleParameterFunctions) + "("+#q.getText()+")";
 				}
 				
 		        #functionExpr=fun;
@@ -906,7 +898,7 @@ functionExpr :
         |
         (
         	(
-               current_date:"current_date"{#current_date.setText("current_date("); }
+                current_date:"current_date"{#current_date.setText("current_date("); }
             |   current_time:"current_time"{#current_time.setText("current_time("); }
             |   current_timestamp:"current_timestamp"{#current_timestamp.setText("current_timestamp("); }
             )
@@ -916,8 +908,8 @@ functionExpr :
 		        fun.setText(#functionExpr.getText());
 				fun.setExpr((OQLAST)#q);
 				String expr = #functionExpr.getText();
-				if (StringUtils.startsWith(expr, FunctionAST.nonParametricDateFunctions)) {
-					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.nonParametricDateFunctions) + "()";
+				if (StringUtils.startsWith(expr, FunctionAST.allNonParametricFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.allNonParametricFunctions) + "()";
 				}
 				
 		        #functionExpr=fun;

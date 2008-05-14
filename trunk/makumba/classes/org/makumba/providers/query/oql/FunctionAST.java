@@ -57,20 +57,27 @@ public class FunctionAST extends OQLAST {
     public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp" };
 
     public static final String[] allNonParametricFunctions;
+    
+    public static final String[] allSingleParameterFunctions;
 
     /** All known functions. */
     public static final String[] allFunctions;
 
     static {
-        ArrayList<String> all = new ArrayList<String>();
-        CollectionUtils.addAll(all, simpleStringFunctions);
-        CollectionUtils.addAll(all, intToStringFunctions);
-        CollectionUtils.addAll(all, stringToIntFunctions);
-        allFunctions = (String[]) all.toArray(new String[all.size()]);
+        ArrayList<String> allSingleParameter = new ArrayList<String>();
+        CollectionUtils.addAll(allSingleParameter, simpleStringFunctions);
+        CollectionUtils.addAll(allSingleParameter, intToStringFunctions);
+        CollectionUtils.addAll(allSingleParameter, stringToIntFunctions);
+        allSingleParameterFunctions = (String[]) allSingleParameter.toArray(new String[allSingleParameter.size()]);
 
         ArrayList<String> allNonParemtric = new ArrayList<String>();
         CollectionUtils.addAll(allNonParemtric, nonParametricDateFunctions);
         allNonParametricFunctions = (String[]) allNonParemtric.toArray(new String[allNonParemtric.size()]);
+        
+        ArrayList<String> all = new ArrayList<String>();
+        CollectionUtils.addAll(all, allNonParametricFunctions);
+        CollectionUtils.addAll(all, allSingleParameterFunctions);
+        allFunctions = (String[]) all.toArray(new String[all.size()]);
     }
 
     private static final long serialVersionUID = 1L;
