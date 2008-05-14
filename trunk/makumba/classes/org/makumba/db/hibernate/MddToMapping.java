@@ -243,6 +243,7 @@ public class MddToMapping {
                 hd.endElement("", "", "many-to-many");
                 hd.endElement("", "", "bag");
                 mddsToDo.add(fd.getPointedType());
+                mddsToDo.add(set);
                 break;
             case FieldDefinition._setComplex:
             case FieldDefinition._setCharEnum:
