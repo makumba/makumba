@@ -63,6 +63,8 @@ public class HibernateSFManager {
     private static Configuration configuredConfiguration;
 
     private static SessionFactory sf;
+    
+    private static Vector<String> generatedDataDefinitions;
 
     public static String findClassesRootFolder(String locatorSeed) {
         String rootFolder = "";
@@ -115,10 +117,10 @@ public class HibernateSFManager {
             "Generating mappings under " + seedDir + File.separator + prefix);
 
         String mddList;
-        Vector dds = new Vector();
+        Vector<String> dds = new Vector<String>();
         
         if ((mddList = cfg.getProperty("makumba.mdd.list")) != null) {
-            dds = new Vector();
+            dds = new Vector<String>();
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Working with the MDDs " + mddList);
             for (StringTokenizer st = new StringTokenizer(mddList, ","); st.hasMoreTokens();) {
                 dds.addElement(st.nextToken().trim());
@@ -193,12 +195,14 @@ public class HibernateSFManager {
             java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("skipping schema update");
 
         configuredConfiguration = cfg;
+        
+        generatedDataDefinitions = dds;
 
         return sessionFactory;
     }
 
-    private static Vector getDefaultMDDs(Configuration cfg) {
-        Vector dds;
+    private static Vector<String> getDefaultMDDs(Configuration cfg) {
+        Vector<String> dds;
         String mddRoot;
         if ((mddRoot = cfg.getProperty("makumba.mdd.root")) == null)
             mddRoot = "dataDefinitions";
@@ -248,6 +252,14 @@ public class HibernateSFManager {
      */
     public static void setHibernateSessionFactory(SessionFactory sessionFactory) {
         sf = sessionFactory;
+    }
+    
+    public static String getFullyQualifiedName(String className) {
+        return (String) configuredConfiguration.getImports().get(className);
+    }
+    
+    public static Vector<String> getGeneratedDataDefinitions() {
+        return generatedDataDefinitions;
     }
 
 }

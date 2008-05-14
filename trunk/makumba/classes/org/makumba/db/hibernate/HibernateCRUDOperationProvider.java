@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Text;
@@ -78,7 +80,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             Class recordClass = null;
-            recordClass = Class.forName(name);
+            recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
             Object newRecord = null;
@@ -149,6 +151,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             String fieldName = fields.nextElement();
 
             String fieldNameInClass = nr.checkReserved(fieldName);
+            
+
 
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
@@ -209,6 +213,16 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             Method m = null;
             // System.out.println("Getting setter set" + fieldNameInClass + " of class " + recordClass.getName()
             // + ", trying to pass new value of type " + parameterTypes[0]);
+            
+            if(!isGenerated(recordClass)) {
+                for(Method met : recordClass.getMethods()) {
+                    if(met.getName().toLowerCase().equals("set"+fieldNameInClass)) {
+                        fieldNameInClass = met.getName().substring(3);
+                        break;
+                    }
+                }
+            }
+            
             m = recordClass.getMethod("set" + fieldNameInClass, parameterTypes);
             m.invoke(newRecord, fieldValue);
 
@@ -216,11 +230,11 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     private Object getPointedObject(Transaction t, Class pointerClass, Pointer pointer) {
-        return ((HibernateTransaction) t).s.get(pointerClass, pointer.getId());
+        return ((HibernateTransaction) t).s.get(pointerClass, getId(pointerClass, pointer));
     }
 
     private Class<?> getPointerClass(String type) throws ClassNotFoundException {
-        return Class.forName(nr.arrowToDoubleUnderscore(type));
+        return Class.forName(nr.arrowToDoubleUnderscore(HibernateSFManager.getFullyQualifiedName(type)));
     }
 
     @Override
@@ -345,19 +359,22 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             Class recordClass = null;
-            recordClass = Class.forName(name);
+            recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
             Object record = null;
-            record = ht.s.get(recordClass, p.getId());
+            
+            record = ht.s.get(recordClass, getId(recordClass, p));
 
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, dic, dd, recordClass, record);
 
-            Class[] classes = new Class[] { java.util.Date.class };
-            Object[] now = new Object[] { new Date() };
-            Method m = recordClass.getMethod("setTS_modify", classes);
-            m.invoke(record, now);
+            if(isGenerated(recordClass)) {
+                Class[] classes = new Class[] { java.util.Date.class };
+                Object[] now = new Object[] { new Date() };
+                Method m = recordClass.getMethod("setTS_modify", classes);
+                m.invoke(record, now);
+            }
 
             ht.s.saveOrUpdate(record);
             ht.s.flush();
@@ -381,6 +398,34 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             e.printStackTrace();
         }
 
+    }
+    
+    private Serializable getId(Class clazz, Pointer p) {
+        
+        for (String s : HibernateSFManager.getGeneratedDataDefinitions()) {
+            if(s.equals(clazz.getCanonicalName())) {
+                return p.getUid();
+            }
+        }
+        return p.longValue();
+    }
+    
+    private boolean isGenerated(Class clazz) {
+        for (String s : HibernateSFManager.getGeneratedDataDefinitions()) {
+            if(s.equals(clazz.getCanonicalName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private String getIdType(Class clazz) {
+        for(Method m : clazz.getMethods()) {
+            if(m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
+                return m.getReturnType().getName();
+            }
+        }
+        return "int";
     }
 
 }
