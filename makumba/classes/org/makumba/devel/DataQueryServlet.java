@@ -99,7 +99,7 @@ public class DataQueryServlet extends DataServlet {
         writer.println("    <td><input name=\"limit\" type=\"text\" value=\"" + limit + "\"></td>");
         writer.println("  </tr>");
         writer.println("  <tr>");
-        writer.println("    <td colspan=\"2\"><input type=\"submit\" value=\"Translate & Execute\"></td>");
+        writer.println("    <td colspan=\"2\"><input type=\"submit\" accesskey=\"e\" value=\"Translate & (E)xecute\"></td>");
         writer.println("  <tr>");
         writer.println("</table>");
         writer.println("</form>");
