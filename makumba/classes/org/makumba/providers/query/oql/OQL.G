@@ -756,24 +756,35 @@ aggregateExpr :
 
 functionExpr :
 		(
-			"lower"^
-		|	"upper"^
-		|	"trim"^
-		|	"ltrim"^
-		|	"rtrim"^
-		|	"char"^
-		|	"ascii"^
-		|	"length"^
-		|	"dayOfMonth"^
-		|	"dayOfWeek"^
-		|	"dayOfYear"^
-		|	"hour"^
-		|	"minute"^
-		|	"second"^
-		|	"monthName"^
-		|	"dayName"^
+			(
+				"current_date"^
+			|	"current_time"^
+			|	"current_timestamp"^
+			)
+			TOK_LPAREN!TOK_RPAREN!
 		)
-		TOK_LPAREN! query TOK_RPAREN!
+		|
+		(
+			(
+				"lower"^
+			|	"upper"^
+			|	"trim"^
+			|	"ltrim"^
+			|	"rtrim"^
+			|	"char"^
+			|	"ascii"^
+			|	"length"^
+			|	"dayOfMonth"^
+			|	"dayOfWeek"^
+			|	"dayOfYear"^
+			|	"hour"^
+			|	"minute"^
+			|	"second"^
+			|	"monthName"^
+			|	"dayName"^
+			)
+			TOK_LPAREN! query TOK_RPAREN!
+		)
 	;
 	
 undefinedExpr :

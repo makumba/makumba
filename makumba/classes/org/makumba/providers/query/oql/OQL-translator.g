@@ -882,27 +882,46 @@ functionExpr :
             |   monthName:"monthName"{#monthName.setText("monthName("); }
             |   dayName:"dayName"{#dayName.setText("dayName("); }
             )
-            l:TOK_LPAREN {#l.setText("");} q:query
-            TOK_RPAREN  
-	{
-        FunctionAST ag= new FunctionAST();
-        ag.setText(#functionExpr.getText());
-		ag.setExpr((OQLAST)#q);
-		String expr = #functionExpr.getText();
-		if (StringUtils.startsWith(expr, FunctionAST.simpleStringFunctions)) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.simpleStringFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, FunctionAST.intToStringFunctions)) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.intToStringFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, FunctionAST.stringToIntFunctions)) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.stringToIntFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, FunctionAST.dateToIntFunctions)) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToIntFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, FunctionAST.dateToStringFunctions)) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToStringFunctions) + "("+#q.getText()+")";
-		}
-		
-        #functionExpr=ag;
-	}
+            l:TOK_LPAREN {#l.setText("");} q:query TOK_RPAREN  
+			{
+		        FunctionAST fun= new FunctionAST();
+		        fun.setText(#functionExpr.getText());
+				fun.setExpr((OQLAST)#q);
+				String expr = #functionExpr.getText();
+				if (StringUtils.startsWith(expr, FunctionAST.simpleStringFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.simpleStringFunctions) + "("+#q.getText()+")";
+				} else if (StringUtils.startsWith(expr, FunctionAST.intToStringFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.intToStringFunctions) + "("+#q.getText()+")";
+				} else if (StringUtils.startsWith(expr, FunctionAST.stringToIntFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.stringToIntFunctions) + "("+#q.getText()+")";
+				} else if (StringUtils.startsWith(expr, FunctionAST.dateToIntFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToIntFunctions) + "("+#q.getText()+")";
+				} else if (StringUtils.startsWith(expr, FunctionAST.dateToStringFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToStringFunctions) + "("+#q.getText()+")";
+				}
+				
+		        #functionExpr=fun;
+			}
+        )
+        |
+        (
+        	(
+               current_date:"current_date"{#current_date.setText("current_date("); }
+            |   current_time:"current_time"{#current_time.setText("current_time("); }
+            |   current_timestamp:"current_timestamp"{#current_timestamp.setText("current_timestamp("); }
+            )
+            l2:TOK_LPAREN {#l2.setText("");} TOK_RPAREN  
+			{
+		        FunctionAST fun= new FunctionAST();
+		        fun.setText(#functionExpr.getText());
+				fun.setExpr((OQLAST)#q);
+				String expr = #functionExpr.getText();
+				if (StringUtils.startsWith(expr, FunctionAST.nonParametricDateFunctions)) {
+					fun.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.nonParametricDateFunctions) + "()";
+				}
+				
+		        #functionExpr=fun;
+			}
         )
     ;
     
