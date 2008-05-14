@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -15,10 +16,12 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
@@ -41,7 +44,7 @@ public class RelationCrawler {
     private String targetDatabase;
 
     private boolean forceDatabase;
-    
+
     private int JSPCrawlCount = 0;
 
     private JSPRelationMiner JSPRelationMiner;
@@ -49,33 +52,39 @@ public class RelationCrawler {
     private MDDRelationMiner MDDRelationMiner;
 
     private JavaRelationMiner JavaRelationMiner;
-    
+
     private Hashtable<String, Throwable> JSPAnalysisErrors = new Hashtable<String, Throwable>();
-    
+
     private Vector<String> JavaAnalysisErrors = new Vector<String>();
-    
+
     private Map<String, Dictionary<String, Object>> detectedRelations = new HashMap<String, Dictionary<String, Object>>();
 
     private String URLprefix;
 
     private String URLroot;
-    
-    private TransactionProvider tp = TransactionProvider.getInstance();
 
+    private TransactionProvider tp = TransactionProvider.getInstance();
 
     private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
 
     /**
      * Gets a RelationCrawler instance.
      * 
-     * @param webappRoot the path to the root of the webapp that should be crawled
-     * @param targetDatabase the makumba name of the database the relations should be written to 
-     * @param forcetarget indicates whether the target database should be forced: if set to true, even if relations were previously written to another database, this will force writing them to the indicated database
-     * @param URLprefix the prefix of the relation URL, e.g. "file://"
-     * @param URLroot the root of the relation, e.g. a webapp name
+     * @param webappRoot
+     *            the path to the root of the webapp that should be crawled
+     * @param targetDatabase
+     *            the makumba name of the database the relations should be written to
+     * @param forcetarget
+     *            indicates whether the target database should be forced: if set to true, even if relations were
+     *            previously written to another database, this will force writing them to the indicated database
+     * @param URLprefix
+     *            the prefix of the relation URL, e.g. "file://"
+     * @param URLroot
+     *            the root of the relation, e.g. a webapp name
      * @return a {@link RelationCrawler} instance
      */
-    public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix, String URLroot) {
+    public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget,
+            String URLprefix, String URLroot) {
         RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot);
         if (instance == null) {
             instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot);
@@ -83,9 +92,9 @@ public class RelationCrawler {
         }
         return instance;
     }
-    
-    
-    private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix, String URLroot) {
+
+    private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix,
+            String URLroot) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
         this.forceDatabase = forcetarget;
@@ -110,7 +119,7 @@ public class RelationCrawler {
     protected String getWebappRoot() {
         return this.webappRoot;
     }
-    
+
     public Hashtable<String, Throwable> getJSPAnalysisErrors() {
         return JSPAnalysisErrors;
     }
@@ -118,48 +127,48 @@ public class RelationCrawler {
     public Vector<String> getJavaAnalysisErrors() {
         return JavaAnalysisErrors;
     }
-    
+
     protected void addJSPAnalysisError(String s, Throwable t) {
         this.JSPAnalysisErrors.put(s, t);
     }
-    
+
     protected void addJavaAnalysisError(String s) {
         this.JavaAnalysisErrors.add(s);
     }
-    
+
     public void writeJSPAnalysisError(String fileName) {
-        
+
         File f = new File(fileName);
         PrintWriter pw = null;
-            try {
-                f.createNewFile();
-                pw = new PrintWriter(new FileOutputStream(f));
-                pw.println("Total number of page crawled: "+this.JSPCrawlCount);
-                pw.println("Total number of JSP page analysis errors: "+JSPAnalysisErrors.size());
-                pw.println("\nError summary\n");
+        try {
+            f.createNewFile();
+            pw = new PrintWriter(new FileOutputStream(f));
+            pw.println("Total number of page crawled: " + this.JSPCrawlCount);
+            pw.println("Total number of JSP page analysis errors: " + JSPAnalysisErrors.size());
+            pw.println("\nError summary\n");
 
-                int n = 0;
-                for (String file : JSPAnalysisErrors.keySet()) {
-                    pw.println(n+".\t"+file);
-                    pw.println("\t"+JSPAnalysisErrors.get(file).getMessage()+"\n");
-                    n++;
-                }
-
-                pw.println("\nError detail\n");
-                
-                n = 0;
-                for (String file : JSPAnalysisErrors.keySet()) {
-                    pw.println(n+".\t"+file+"\n\n");
-                    JSPAnalysisErrors.get(file).printStackTrace(pw);
-                    pw.println("******************************************************************************\n");
-                    n++;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                pw.flush();
-                pw.close();
+            int n = 0;
+            for (String file : JSPAnalysisErrors.keySet()) {
+                pw.println(n + ".\t" + file);
+                pw.println("\t" + JSPAnalysisErrors.get(file).getMessage() + "\n");
+                n++;
             }
+
+            pw.println("\nError detail\n");
+
+            n = 0;
+            for (String file : JSPAnalysisErrors.keySet()) {
+                pw.println(n + ".\t" + file + "\n\n");
+                JSPAnalysisErrors.get(file).printStackTrace(pw);
+                pw.println("******************************************************************************\n");
+                n++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            pw.flush();
+            pw.close();
+        }
     }
 
     /**
@@ -183,7 +192,7 @@ public class RelationCrawler {
      *            </ul>
      */
     public static void main(String[] args) {
-        
+
         if (args.length == 0) {
             args = generateExampleArguments();
         }
@@ -201,6 +210,8 @@ public class RelationCrawler {
         System.out.println("\tURLprefix: " + URLprefix);
         System.out.println("\tURLroot: " + URLroot);
         System.out.println("\t(from : " + Arrays.toString(args) + ")");
+        Date beginDate = new Date();
+        System.out.println("\nCrawling starts at " + beginDate + "\n");
 
         String[] files;
         if (args.length > 5) {
@@ -211,29 +222,37 @@ public class RelationCrawler {
         } else {
             ArrayList<String> allFilesInDirectory = getAllFilesInDirectory(webappRoot);
             files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
-        }        
-        
-        RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"), URLprefix == null ? "" : URLprefix, URLroot == null? "" : URLroot);
+        }
+
+        RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase.equals("forceTargetDb"),
+            URLprefix == null ? "" : URLprefix, URLroot == null ? "" : URLroot);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
-        
+
         for (int i = 0; i < files.length; i++) {
             rc.crawl(files[i]);
         }
-        
+
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
-   
+
+        System.out.println("\n\nCrawling finished, took: "
+                + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
+
+        rc.writeJSPAnalysisError("analysis-errors.txt");
 
         rc.writeRelationsToDb();
-        rc.writeJSPAnalysisError("analysis-errors.txt");
+
+        System.out.println("\n\nWriting finished, total time: "
+                + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
     }
 
     /**
      * Generates example arguments to test the crawler.<br>
      * Note that you need to have a MakumbaDatabase.properties file in the classpath in order to run this example.
+     * 
      * @return a list of arguments the crawler can be launched with
      */
     private static String[] generateExampleArguments() {
@@ -245,11 +264,10 @@ public class RelationCrawler {
         arguments.add("forceTargetDb");
         arguments.add("file:/");
         arguments.add("karamba/public_html");
-        
-        
-//        ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/makumba/webapps/tests/");
-//        arguments.addAll(some);
-//        arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
+
+        // ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/makumba/webapps/tests/");
+        // arguments.addAll(some);
+        // arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
         String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
         return args;
     }
@@ -261,7 +279,7 @@ public class RelationCrawler {
      *            the path to the file
      */
     public void crawl(String path) {
-        
+
         if (path.endsWith(".jsp")) {
 
             this.JSPRelationMiner.crawl(path);
@@ -276,7 +294,7 @@ public class RelationCrawler {
             this.JavaRelationMiner.crawl(path);
         }
 
-      }
+    }
 
     /**
      * Adds a relation which will later on be written to the database
@@ -328,9 +346,11 @@ public class RelationCrawler {
             Dictionary<String, Object> relationInfo = relations.get(toFile);
             String relationType = (String) relationInfo.get("type");
             String fromFile = (String) relationInfo.get("fromFile");
-            
-            String fromURL = this.URLprefix + this.URLroot + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
-            String toURL = this.URLprefix + this.URLroot + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
+
+            String fromURL = this.URLprefix + this.URLroot
+                    + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
+            String toURL = this.URLprefix + this.URLroot
+                    + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
             System.out.println(fromURL + " -(" + relationType + ")-> " + toURL);
 
@@ -345,7 +365,8 @@ public class RelationCrawler {
                 String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2";
                 String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = ? AND relation.fromFile = ?";
                 Object[] args = { toFile, fromFile };
-                Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery,args);
+                Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(tp.getQueryLanguage().equals(
+                    "oql") ? oqlQuery : hqlQuery, args);
 
                 if (previousRelation.size() > 0) {
                     // we delete the previous relation origin
@@ -381,11 +402,11 @@ public class RelationCrawler {
         relations.clear();
     }
 
-
     private void deleteRelation(Transaction tr2, Pointer previousRelationPtr) {
         String oqlQuery1 = "SELECT origin AS origin FROM org.makumba.devel.relations.Relation relation, relation.origin origin WHERE relation = $1";
         String hqlQuery1 = "SELECT origin.id AS origin FROM org.makumba.devel.relations.Relation relation JOIN relation.origin origin WHERE relation.id = ?";
-        Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery1:hqlQuery1, new Object[] { previousRelationPtr });
+        Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(
+            tp.getQueryLanguage().equals("oql") ? oqlQuery1 : hqlQuery1, new Object[] { previousRelationPtr });
 
         for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
             Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
@@ -448,22 +469,21 @@ public class RelationCrawler {
 
     }
 
-
     private Vector<Dictionary<String, Object>> getWebappDatabasePointer(TransactionProvider tp, Transaction tr) {
         String oqlQuery = "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1";
         String hqlQuery = "SELECT wdb.id AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = ?";
-        Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(tp.getQueryLanguage().equals("oql")?oqlQuery:hqlQuery,
-            new String[] { webappRoot });
+        Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(
+            tp.getQueryLanguage().equals("oql") ? oqlQuery : hqlQuery, new String[] { webappRoot });
         return databaseLocation;
     }
-    
+
     private String relationDatabaseName = null;
 
     private String getRelationsDatabaseName(TransactionProvider tp) {
-        if(relationDatabaseName != null) {
+        if (relationDatabaseName != null) {
             return relationDatabaseName;
         }
-        
+
         Transaction tr = null;
         try {
             tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
@@ -485,22 +505,25 @@ public class RelationCrawler {
         return null;
 
     }
-    
+
     /**
      * Deletes the dependency relations of this file
-     * @param relativePath the relative path to the file
+     * 
+     * @param relativePath
+     *            the relative path to the file
      */
     public void deleteFileRelations(String relativePath) {
         String relationQueryOQL = "SELECT r AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
         String relationQueryHQL = "SELECT r.id AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
-        
+
         Transaction t = tp.getConnectionTo(getRelationDatabase());
-        
-        Vector<Dictionary<String, Object>> res = t.executeQuery(tp.getQueryLanguage().equals("oql")? relationQueryOQL : relationQueryHQL, new Object[] {relativePath});
+
+        Vector<Dictionary<String, Object>> res = t.executeQuery(tp.getQueryLanguage().equals("oql") ? relationQueryOQL
+                : relationQueryHQL, new Object[] { relativePath });
         for (Dictionary<String, Object> dictionary : res) {
-            deleteRelation(t, (Pointer)dictionary.get("rel"));
+            deleteRelation(t, (Pointer) dictionary.get("rel"));
         }
-        
+
         t.close();
     }
 
@@ -603,8 +626,8 @@ public class RelationCrawler {
             // fetch the origin of the relation
             String queryOQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1";
             String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r.id = ?";
-            Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(tp.getQueryLanguage().equals("oql") ? queryOQL : queryHQL,
-                new Object[] { relation });
+            Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(
+                tp.getQueryLanguage().equals("oql") ? queryOQL : queryHQL, new Object[] { relation });
 
             Vector<RelationOrigin> relationOriginVector = new Vector<RelationOrigin>();
 
@@ -648,8 +671,8 @@ public class RelationCrawler {
 
     /** Process files in one directory. */
     private static void processFilesInDirectory(String root, File f, ArrayList<String> allFiles) {
-        if(!f.exists()) {
-            logger.warning("Couldn't read files of directory "+f.getAbsolutePath() + ": file does not exist");
+        if (!f.exists()) {
+            logger.warning("Couldn't read files of directory " + f.getAbsolutePath() + ": file does not exist");
             return;
         }
         final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
@@ -660,7 +683,7 @@ public class RelationCrawler {
                 try {
                     allFiles.add(fileList[i].getCanonicalPath().substring(root.length()));
                 } catch (IOException e) {
-                    logger.warning("Could not compute canonical path for "+fileList[i].getAbsolutePath());
+                    logger.warning("Could not compute canonical path for " + fileList[i].getAbsolutePath());
                 }
             }
         }
