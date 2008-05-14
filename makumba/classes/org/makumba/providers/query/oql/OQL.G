@@ -763,6 +763,15 @@ functionExpr :
 		|	"rtrim"^
 		|	"char"^
 		|	"ascii"^
+		|	"length"^
+		|	"dayOfMonth"^
+		|	"dayOfWeek"^
+		|	"dayOfYear"^
+		|	"hour"^
+		|	"minute"^
+		|	"second"^
+		|	"monthName"^
+		|	"dayName"^
 		)
 		TOK_LPAREN! query TOK_RPAREN!
 	;

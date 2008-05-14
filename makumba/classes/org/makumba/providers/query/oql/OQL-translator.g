@@ -870,22 +870,35 @@ functionExpr :
             |   ltrim:"ltrim"{#ltrim.setText("ltrim("); }
             |   rtrim:"rtrim"{#rtrim.setText("rtrim("); }
             |   ascii:"ascii"{#ascii.setText("ascii("); }
+            |   length:"length"{#length.setText("length("); }
             |   char_:"char"{#char_.setText("char("); }
+            |   dayOfMonth:"dayOfMonth"{#dayOfMonth.setText("dayOfMonth("); }
+            |   dayOfWeek:"dayOfWeek"{#dayOfWeek.setText("dayOfWeek("); }
+            |   dayOfYear:"dayOfYear"{#dayOfYear.setText("dayOfYear("); }
+            |   month:"month"{#month.setText("month("); }
+            |   hour:"hour"{#hour.setText("hour("); }
+            |   minute:"minute"{#minute.setText("minute("); }
+            |   second:"second"{#second.setText("second("); }
+            |   monthName:"monthName"{#monthName.setText("monthName("); }
+            |   dayName:"dayName"{#dayName.setText("dayName("); }
             )
             l:TOK_LPAREN {#l.setText("");} q:query
             TOK_RPAREN  
-
 	{
         FunctionAST ag= new FunctionAST();
         ag.setText(#functionExpr.getText());
 		ag.setExpr((OQLAST)#q);
 		String expr = #functionExpr.getText();
-		if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.simpleStringFunctions, "("))) {
+		if (StringUtils.startsWith(expr, FunctionAST.simpleStringFunctions)) {
 			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.simpleStringFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.intToStringFunctions, "("))) {
+		} else if (StringUtils.startsWith(expr, FunctionAST.intToStringFunctions)) {
 			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.intToStringFunctions) + "("+#q.getText()+")";
-		} else if (StringUtils.startsWith(expr, StringUtils.append(FunctionAST.StringToIntFunctions, "("))) {
-			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.StringToIntFunctions) + "("+#q.getText()+")";
+		} else if (StringUtils.startsWith(expr, FunctionAST.stringToIntFunctions)) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.stringToIntFunctions) + "("+#q.getText()+")";
+		} else if (StringUtils.startsWith(expr, FunctionAST.dateToIntFunctions)) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToIntFunctions) + "("+#q.getText()+")";
+		} else if (StringUtils.startsWith(expr, FunctionAST.dateToStringFunctions)) {
+			ag.extraInfo = StringUtils.getStartsWith(expr, FunctionAST.dateToStringFunctions) + "("+#q.getText()+")";
 		}
 		
         #functionExpr=ag;
