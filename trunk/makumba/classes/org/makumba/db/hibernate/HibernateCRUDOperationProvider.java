@@ -230,7 +230,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     private Object getPointedObject(Transaction t, Class pointerClass, Pointer pointer) {
-        return ((HibernateTransaction) t).s.get(pointerClass, getId(pointerClass, pointer));
+        return ((HibernateTransaction) t).s.get(pointerClass, pointer.getId());
     }
 
     private Class<?> getPointerClass(String type) throws ClassNotFoundException {
@@ -364,7 +364,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             Object record = null;
             
-            record = ht.s.get(recordClass, getId(recordClass, p));
+            record = ht.s.get(recordClass, p.getId());
 
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, dic, dd, recordClass, record);
@@ -398,16 +398,6 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             e.printStackTrace();
         }
 
-    }
-    
-    private Serializable getId(Class clazz, Pointer p) {
-        
-        for (String s : HibernateSFManager.getGeneratedDataDefinitions()) {
-            if(s.equals(clazz.getCanonicalName())) {
-                return p.getUid();
-            }
-        }
-        return p.longValue();
     }
     
     private boolean isGenerated(Class clazz) {
