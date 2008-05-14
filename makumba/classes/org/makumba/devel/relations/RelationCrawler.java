@@ -445,8 +445,14 @@ public class RelationCrawler {
             new String[] { webappRoot });
         return databaseLocation;
     }
+    
+    private String relationDatabaseName = null;
 
     private String getRelationsDatabaseName(TransactionProvider tp) {
+        if(relationDatabaseName != null) {
+            return relationDatabaseName;
+        }
+        
         Transaction tr = null;
         try {
             tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
@@ -456,6 +462,7 @@ public class RelationCrawler {
                 throw new RuntimeException("Too many possible locations for the relations database of webapp "
                         + webappRoot);
             } else if (databaseLocation.size() == 1) {
+                relationDatabaseName = (String) databaseLocation.firstElement().get("relationDatabase");
                 return (String) databaseLocation.firstElement().get("relationDatabase");
             } else if (databaseLocation.size() == 0) {
                 return tp.getDefaultDataSourceName();
@@ -466,6 +473,24 @@ public class RelationCrawler {
 
         return null;
 
+    }
+    
+    /**
+     * Deletes the dependency relations of this file
+     * @param relativePath the relative path to the file
+     */
+    public void deleteFileRelations(String relativePath) {
+        String relationQueryOQL = "SELECT r AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
+        String relationQueryHQL = "SELECT r.id AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
+        
+        Transaction t = tp.getConnectionTo(getRelationDatabase());
+        
+        Vector<Dictionary<String, Object>> res = t.executeQuery(tp.getQueryLanguage().equals("oql")? relationQueryOQL : relationQueryHQL, new Object[] {relativePath});
+        for (Dictionary<String, Object> dictionary : res) {
+            t.delete((Pointer)dictionary.get("rel"));
+        }
+        
+        t.close();
     }
 
     /**
@@ -621,7 +646,11 @@ public class RelationCrawler {
             if (fileList[i].isDirectory()) {
                 processFilesInDirectory(root, fileList[i], allFiles);
             } else {
-                allFiles.add(fileList[i].getAbsolutePath().substring(root.length()));
+                try {
+                    allFiles.add(fileList[i].getCanonicalPath().substring(root.length()));
+                } catch (IOException e) {
+                    logger.warning("Could not compute canonical path for "+fileList[i].getAbsolutePath());
+                }
             }
         }
     }

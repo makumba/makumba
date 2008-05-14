@@ -22,6 +22,10 @@ public class MDDRelationMiner extends RelationMiner {
     public void crawl(String path) {
         DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
         
+        if(path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        
         String mddPath = path.substring(MDD_PATH.length(), path.length());
         
         if(!new File(rc.getWebappRoot() + File.separator + path).exists()) {
