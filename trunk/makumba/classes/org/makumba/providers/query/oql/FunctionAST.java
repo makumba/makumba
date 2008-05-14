@@ -39,21 +39,29 @@ import antlr.collections.AST;
  */
 public class FunctionAST extends OQLAST {
     /** Simple string-to-string functions with one argument. */
-    public static final String[] simpleStringFunctions = { "lower", "upper", "trim", "rtrim", "ltrim" };
+    public static String[] simpleStringFunctions = { "lower(", "upper(", "trim(", "rtrim(", "ltrim(" };
 
     /** int-to-string functions. */
-    public static final String[] intToStringFunctions = { "char" };
+    public static String[] intToStringFunctions = { "char(" };
 
     /** string-to-int functions. */
-    public static final String[] StringToIntFunctions = { "ascii" };
+    public static String[] stringToIntFunctions = { "ascii(", "length(" };
+
+    /** date-to-int functions. */
+    public static String[] dateToIntFunctions = { "dayOfMonth(", "dayOfWeek(", "dayOfYear(", "month(", "hour(",
+            "minute(", "second(" };
+
+    /** date-to-String functions. */
+    public static String[] dateToStringFunctions = { "monthName(", "dayName(" };
 
     /** All known functions. */
     public static final String[] allFunctions;
+
     static {
         ArrayList<String> all = new ArrayList<String>();
         CollectionUtils.addAll(all, simpleStringFunctions);
         CollectionUtils.addAll(all, intToStringFunctions);
-        CollectionUtils.addAll(all, StringToIntFunctions);
+        CollectionUtils.addAll(all, stringToIntFunctions);
         allFunctions = (String[]) all.toArray(new String[all.size()]);
     }
 
@@ -84,18 +92,18 @@ public class FunctionAST extends OQLAST {
     public Object getMakumbaType() throws antlr.RecognitionException {
         Object o = expr.getMakumbaType();
         String os = o.toString();
-        if (StringUtils.startsWith(getText(), simpleStringFunctions)) { // check for simple string functions
+        if (StringUtils.startsWith(getText(), simpleStringFunctions)) { // string functions
             if (os.startsWith("char") || os.startsWith("text")) {
                 return o;
             } else {
                 throw new antlr.SemanticException("cannot " + printOptions(simpleStringFunctions) + " a '" + os
                         + "' type");
             }
-        } else if (StringUtils.startsWith(getText(), StringToIntFunctions)) { // string to int
+        } else if (StringUtils.startsWith(getText(), stringToIntFunctions)) { // string to int
             if (os.startsWith("char") || os.startsWith("text")) {
                 return "int";
             } else {
-                throw new antlr.SemanticException("cannot " + printOptions(StringToIntFunctions) + " a '" + os
+                throw new antlr.SemanticException("cannot " + printOptions(stringToIntFunctions) + " a '" + os
                         + "' type");
             }
         } else if (StringUtils.startsWith(getText(), intToStringFunctions)) { // int to string
@@ -105,6 +113,19 @@ public class FunctionAST extends OQLAST {
                 throw new antlr.SemanticException("cannot " + printOptions(intToStringFunctions) + " a '" + os
                         + "' type");
             }
+        } else if (StringUtils.startsWith(getText(), dateToIntFunctions)) { // date to int
+            if (os.startsWith("date")) {
+                return "int";
+            } else {
+                throw new antlr.SemanticException("cannot " + printOptions(dateToIntFunctions) + " a '" + os + "' type");
+            }
+        } else if (StringUtils.startsWith(getText(), dateToStringFunctions)) { // date to string
+            if (os.startsWith("date")) {
+                return "text";
+            } else {
+                throw new antlr.SemanticException("cannot " + printOptions(dateToStringFunctions) + " a '" + os
+                        + "' type");
+            }
         }
         throw new antlr.SemanticException("function expressions can be " + StringUtils.toString(allFunctions, false));
     }
@@ -112,7 +133,7 @@ public class FunctionAST extends OQLAST {
     public static String printOptions(String[] functions) {
         String s = "";
         for (int i = 0; i < functions.length; i++) {
-            s += functions[i] + "()";
+            s += functions[i] + ")";
             if (i < functions.length - 1) {
                 s += " or ";
             }
