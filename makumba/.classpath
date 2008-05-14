@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="classes"/>
+	<classpathentry excluding="*.class" kind="src" path="classes"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/antlr.jar"/>
 	<classpathentry kind="lib" path="lib/asm.jar"/>
@@ -60,6 +60,7 @@
 	<classpathentry kind="lib" path="lib/jstl-standard.jar"/>
 	<classpathentry kind="lib" path="lib/jstl.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar" sourcepath="lib-src/commons-lang-2.3-sources.jar"/>
+	<classpathentry kind="lib" path="lib/JSAP-2.1.jar" sourcepath="lib-src/JSAP-2.1-src.zip"/>
 	<classpathentry kind="var" path="ANTLR_HOME/antlr.jar" sourcepath="ANTLR_HOME/antlrsrc.zip"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
