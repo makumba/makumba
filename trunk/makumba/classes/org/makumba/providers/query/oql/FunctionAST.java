@@ -54,6 +54,10 @@ public class FunctionAST extends OQLAST {
     /** date-to-String functions. */
     public static String[] dateToStringFunctions = { "monthName(", "dayName(" };
 
+    public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp" };
+
+    public static final String[] allNonParametricFunctions;
+
     /** All known functions. */
     public static final String[] allFunctions;
 
@@ -63,6 +67,10 @@ public class FunctionAST extends OQLAST {
         CollectionUtils.addAll(all, intToStringFunctions);
         CollectionUtils.addAll(all, stringToIntFunctions);
         allFunctions = (String[]) all.toArray(new String[all.size()]);
+
+        ArrayList<String> allNonParemtric = new ArrayList<String>();
+        CollectionUtils.addAll(allNonParemtric, nonParametricDateFunctions);
+        allNonParametricFunctions = (String[]) allNonParemtric.toArray(new String[allNonParemtric.size()]);
     }
 
     private static final long serialVersionUID = 1L;
@@ -80,9 +88,11 @@ public class FunctionAST extends OQLAST {
     public String writeInSQLQuery(NameResolver nr) {
         StringBuffer sb = new StringBuffer();
         sb.append(getText());
-        sb.append(expr.writeInSQLQuery(nr));
-        for (AST a = expr.getNextSibling(); !a.getText().equals(")"); a = a.getNextSibling())
-            sb.append(((OQLAST) a).writeInSQLQuery(nr));
+        if (expr != null) { // non-parametric functions don't have an expression
+            sb.append(expr.writeInSQLQuery(nr));
+            for (AST a = expr.getNextSibling(); !a.getText().equals(")"); a = a.getNextSibling())
+                sb.append(((OQLAST) a).writeInSQLQuery(nr));
+        }
 
         sb.append(")");
         return sb.toString();
@@ -90,43 +100,54 @@ public class FunctionAST extends OQLAST {
 
     @Override
     public Object getMakumbaType() throws antlr.RecognitionException {
-        Object o = expr.getMakumbaType();
-        String os = o.toString();
-        if (StringUtils.startsWith(getText(), simpleStringFunctions)) { // string functions
-            if (os.startsWith("char") || os.startsWith("text")) {
-                return o;
-            } else {
-                throw new antlr.SemanticException("cannot " + printOptions(simpleStringFunctions) + " a '" + os
-                        + "' type");
+        if (expr != null) { // functions with parameters
+            Object o = expr.getMakumbaType();
+            String os = o.toString();
+            if (StringUtils.startsWith(getText(), simpleStringFunctions)) { // string functions
+                if (os.startsWith("char") || os.startsWith("text")) {
+                    return o;
+                } else {
+                    throw new antlr.SemanticException("cannot " + printOptions(simpleStringFunctions) + " a '" + os
+                            + "' type");
+                }
+            } else if (StringUtils.startsWith(getText(), stringToIntFunctions)) { // string to int
+                if (os.startsWith("char") || os.startsWith("text")) {
+                    return "int";
+                } else {
+                    throw new antlr.SemanticException("cannot " + printOptions(stringToIntFunctions) + " a '" + os
+                            + "' type");
+                }
+            } else if (StringUtils.startsWith(getText(), intToStringFunctions)) { // int to string
+                if (os.startsWith("int")) {
+                    return "char";
+                } else {
+                    throw new antlr.SemanticException("cannot " + printOptions(intToStringFunctions) + " a '" + os
+                            + "' type");
+                }
+            } else if (StringUtils.startsWith(getText(), dateToIntFunctions)) { // date to int
+                if (os.startsWith("date")) {
+                    return "int";
+                } else {
+                    throw new antlr.SemanticException("cannot " + printOptions(dateToIntFunctions) + " a '" + os
+                            + "' type");
+                }
+            } else if (StringUtils.startsWith(getText(), dateToStringFunctions)) { // date to string
+                if (os.startsWith("date")) {
+                    return "text";
+                } else {
+                    throw new antlr.SemanticException("cannot " + printOptions(dateToStringFunctions) + " a '" + os
+                            + "' type");
+                }
             }
-        } else if (StringUtils.startsWith(getText(), stringToIntFunctions)) { // string to int
-            if (os.startsWith("char") || os.startsWith("text")) {
-                return "int";
+        } else { // functions without paraemters
+            if (StringUtils.startsWith(getText(), nonParametricDateFunctions)) { // non-parametric date
+                return "date";
             } else {
-                throw new antlr.SemanticException("cannot " + printOptions(stringToIntFunctions) + " a '" + os
-                        + "' type");
-            }
-        } else if (StringUtils.startsWith(getText(), intToStringFunctions)) { // int to string
-            if (os.startsWith("int")) {
-                return "char";
-            } else {
-                throw new antlr.SemanticException("cannot " + printOptions(intToStringFunctions) + " a '" + os
-                        + "' type");
-            }
-        } else if (StringUtils.startsWith(getText(), dateToIntFunctions)) { // date to int
-            if (os.startsWith("date")) {
-                return "int";
-            } else {
-                throw new antlr.SemanticException("cannot " + printOptions(dateToIntFunctions) + " a '" + os + "' type");
-            }
-        } else if (StringUtils.startsWith(getText(), dateToStringFunctions)) { // date to string
-            if (os.startsWith("date")) {
-                return "text";
-            } else {
-                throw new antlr.SemanticException("cannot " + printOptions(dateToStringFunctions) + " a '" + os
-                        + "' type");
+                throw new antlr.SemanticException("non-parametric functions are: "
+                        + StringUtils.toString(allNonParametricFunctions, false));
             }
         }
+
         throw new antlr.SemanticException("function expressions can be " + StringUtils.toString(allFunctions, false));
     }
 
