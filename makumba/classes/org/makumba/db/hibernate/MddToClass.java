@@ -155,7 +155,8 @@ public class MddToClass {
 					case FieldDefinition._set:
 						type = "java.util.Collection";
 						mddsToDo.add(fd.getPointedType());
-						break;
+                        mddsToDo.add(fd.getSubtable());
+                        break;
 					case FieldDefinition._setComplex:
 					case FieldDefinition._setCharEnum:
 					case FieldDefinition._setIntEnum:
