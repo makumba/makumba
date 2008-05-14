@@ -20,6 +20,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
@@ -394,11 +395,13 @@ public class ResponderFactory {
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = TransactionProvider.getInstance().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+
+                String param= ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getQueryLanguage().equals("oql")?"$1":"?";
 
                 // check to see if the ticket is valid... if it exists in the db
                 Vector v = db.executeQuery(
-                    "SELECT ms FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=$1", reqFormSession);
+                    "SELECT ms"+(param.equals("$1")?"":".id")+" FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession="+param, reqFormSession);
                 if (v.size() == 0) { // the ticket does not exist... error
                     throw new LogicException(fr.multipleSubmitErrorMsg);
 
@@ -409,7 +412,7 @@ public class ResponderFactory {
 
                     Object[] params = { reqFormSession, c.getTime() };
                     // delete the currently used ticked and the expired ones
-                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=$1 OR ms.TS_create<$2",
+                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession="+param+" OR ms.TS_create<"+(param.equals("$1")?"$2":"?"),
                         params);
                 }
             } finally {
