@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -193,6 +194,14 @@ public class RelationCrawler {
         String URLprefix = args[3];
         String URLroot = args[4];
 
+        System.out.println("Starting relation crawler, config:");
+        System.out.println("\twebappRoot: " + webappRoot);
+        System.out.println("\ttargetDatabase: " + targetDatabase);
+        System.out.println("\tforceDatabase: " + forceDatabase);
+        System.out.println("\tURLprefix: " + URLprefix);
+        System.out.println("\tURLroot: " + URLroot);
+        System.out.println("\t(from : " + Arrays.toString(args) + ")");
+
         String[] files;
         if (args.length > 5) {
             files = new String[args.length - 5];
@@ -228,7 +237,7 @@ public class RelationCrawler {
      * @return a list of arguments the crawler can be launched with
      */
     private static String[] generateExampleArguments() {
-        String webappPath = "/home/manu/workspace/karamba/public_html";
+        String webappPath = ".";
 
         Vector<String> arguments = new Vector<String>();
         arguments.add(webappPath);
