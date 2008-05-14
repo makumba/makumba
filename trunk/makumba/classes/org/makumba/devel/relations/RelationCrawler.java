@@ -378,7 +378,10 @@ public class RelationCrawler {
             } finally {
                 tr2.close();
             }
+            
         }
+        relations.clear();
+
 
     }
 
