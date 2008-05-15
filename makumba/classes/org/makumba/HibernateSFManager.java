@@ -64,7 +64,7 @@ public class HibernateSFManager {
 
     private static SessionFactory sf;
     
-    private static Vector<String> generatedDataDefinitions;
+    private static Vector<String> generatedClasses;
 
     public static String findClassesRootFolder(String locatorSeed) {
         String rootFolder = "";
@@ -196,7 +196,8 @@ public class HibernateSFManager {
 
         configuredConfiguration = cfg;
         
-        generatedDataDefinitions = dds;
+        generatedClasses = dds;
+        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generated the classes " + dds);
 
         return sessionFactory;
     }
@@ -258,8 +259,8 @@ public class HibernateSFManager {
         return (String) configuredConfiguration.getImports().get(className);
     }
     
-    public static Vector<String> getGeneratedDataDefinitions() {
-        return generatedDataDefinitions;
+    public static Vector<String> getGeneratedClasses() {
+        return generatedClasses;
     }
 
 }

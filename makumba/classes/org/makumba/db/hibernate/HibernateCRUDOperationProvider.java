@@ -407,7 +407,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
      * @return <code>true</code> if it was generated, <code>false</code> otherwise
      */
     private boolean isGenerated(Class clazz) {
-        for (String s : HibernateSFManager.getGeneratedDataDefinitions()) {
+        for (String s : HibernateSFManager.getGeneratedClasses()) {
             if(s.equals(clazz.getCanonicalName())) {
                 return true;
             }
