@@ -165,18 +165,26 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     // break;
                 case FieldDefinition._int:
                     fieldType = Integer.class;
+                    if(fieldValue==Pointer.NullInteger)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._real:
                     fieldType = Double.class;
+                    if(fieldValue==Pointer.NullReal)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._charEnum:
                 case FieldDefinition._char:
                     fieldType = String.class;
+                    if(fieldValue==Pointer.NullString)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._dateModify:
                 case FieldDefinition._dateCreate:
                 case FieldDefinition._date:
                     fieldType = Date.class;
+                    if(fieldValue==Pointer.NullDate)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._ptr:
                 case FieldDefinition._ptrOne:
@@ -185,7 +193,10 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                     // first we read its type
                     fieldType = getPointerClass(fd.getPointedType().getName());
-
+                    if(fieldValue==Pointer.Null){
+                        fieldValue=null;
+                        break;
+                    }
                     // then, we know its pointer so we can read
                     // System.out.println("Going to load the object of type "+fieldType+" and with primary key
                     // "+((Pointer) fieldValue).getUid());
@@ -194,14 +205,20 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
+                    if(fieldValue==Pointer.Null)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._text:
                 case FieldDefinition._binary:
                     // FIXME
                     fieldType = Text.class;
+                    if(fieldValue==Pointer.NullText)
+                        fieldValue=null;
                     break;
                 case FieldDefinition._boolean:
                     fieldType = Boolean.class;
+                    if(fieldValue==Pointer.NullBoolean)
+                        fieldValue=null;
                 default:
                     throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
 
