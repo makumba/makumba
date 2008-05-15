@@ -32,13 +32,20 @@ public class MddToClass {
     private DataDefinitionProvider ddp= DataDefinitionProvider.getInstance();
     private NameResolver nr;
 
-    public MddToClass(Vector v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{
+    public MddToClass(Vector<String> v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{
       this.nr = nr;
       this.generatedClassPath = generationPath;
-      for(int i=0; i<v.size(); i++)
-        generateClass(ddp.getDataDefinition((String)v.elementAt(i)));
-      while (!mddsToDo.isEmpty()) 
-            generateClass((DataDefinition)mddsToDo.removeFirst());
+      for(int i=0; i<v.size(); i++){
+          generateClass(ddp.getDataDefinition((String)v.elementAt(i)));
+          v.set(i, nr.arrowToDoubleUnderscore(v.get(i)));
+      }
+      while (!mddsToDo.isEmpty()) {
+            DataDefinition first = (DataDefinition)mddsToDo.removeFirst();
+            String name = nr.arrowToDoubleUnderscore(first.getName());
+            if(!v.contains(name))
+                v.add(name);
+            generateClass(first);
+      }
         while (!appendToClass.isEmpty()) {
             Object[] append = (Object[]) appendToClass.removeFirst();
             appendClass((String)append[0], (FieldDefinition)append[1]);
