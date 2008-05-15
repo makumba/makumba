@@ -61,14 +61,15 @@ public class ptrEditor extends choiceEditor {
         String titleExpr = "choice."+titleField;
         
         String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
-        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldDefinition(titleField).getType().equals("ptr"))
-            titleExpr+=".id";
+
         m.put("oql",
             "SELECT choice as choice, "
                 + titleExpr + " as title FROM "
                 + choiceType + " choice "
                 +"ORDER BY title"
                 );
+        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldDefinition(titleField).getType().equals("ptr"))
+            titleExpr+=".id";
         m.put("hql",
             "SELECT choice.id as choice, "
                 + titleExpr +" as title FROM "
@@ -87,6 +88,7 @@ public class ptrEditor extends choiceEditor {
         Vector v = null;
         String queryLang = (String)formatParams.get("org.makumba.forms.queryLanguage");
         QueryProvider qp= QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
+        System.out.println(queryLang+" "+((RecordEditor) rf).query[fieldIndex].get(queryLang));
         
         //Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
