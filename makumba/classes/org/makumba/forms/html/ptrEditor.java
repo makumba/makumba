@@ -88,7 +88,6 @@ public class ptrEditor extends choiceEditor {
         Vector v = null;
         String queryLang = (String)formatParams.get("org.makumba.forms.queryLanguage");
         QueryProvider qp= QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
-        System.out.println(queryLang+" "+((RecordEditor) rf).query[fieldIndex].get(queryLang));
         
         //Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
