@@ -369,7 +369,7 @@ public class HibernateTransaction extends TransactionImplementation {
             if (paramValue instanceof Vector) {
                 q.setParameterList(paramName, (Collection) paramValue);
             } else if (paramValue instanceof Date) {
-                q.setParameter(paramName, paramValue, Hibernate.DATE);
+                q.setParameter(paramName, paramValue, Hibernate.TIMESTAMP);
             } else if (paramValue instanceof Integer) {
                 q.setParameter(paramName, paramValue, Hibernate.INTEGER);
             } else if (paramValue instanceof Pointer) {
