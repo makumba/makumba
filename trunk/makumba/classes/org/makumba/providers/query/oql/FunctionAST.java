@@ -45,7 +45,7 @@ public class FunctionAST extends OQLAST {
     public static String[] intToStringFunctions = { "char(" };
 
     /** string-to-int functions. */
-    public static String[] stringToIntFunctions = { "ascii(", "length(" };
+    public static String[] stringToIntFunctions = { "ascii(", "character_length(" };
 
     /** date-to-int functions. */
     public static String[] dateToIntFunctions = { "dayOfMonth(", "dayOfWeek(", "dayOfYear(", "month(", "hour(",
