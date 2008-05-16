@@ -17,6 +17,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.NullObject;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
@@ -374,6 +375,16 @@ public class HibernateTransaction extends TransactionImplementation {
                 q.setParameter(paramName, paramValue, Hibernate.INTEGER);
             } else if (paramValue instanceof Pointer) {
                 q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()), Hibernate.INTEGER);
+            } else if(paramValue instanceof NullObject) {
+                NullObject n = (NullObject)paramValue;
+                if(n.equals(Pointer.Null)) {
+                    q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
+                } else if(n.equals(Pointer.NullInteger)) {
+                    q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
+                } else {
+                    q.setParameter(paramName, null);
+                }
+                
             } else { // we have any param type (most likely String)
                 if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
                     Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);

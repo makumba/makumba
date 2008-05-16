@@ -167,15 +167,3 @@ public class Pointer implements java.io.Serializable {
     }
 
 }
-
-class NullObject {
-    String s;
-
-    NullObject(String s) {
-        this.s = s;
-    }
-
-    public String toString() {
-        return s;
-    }
-}
