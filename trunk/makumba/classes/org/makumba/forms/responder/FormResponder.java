@@ -223,20 +223,6 @@ public class FormResponder extends Responder {
 
         // writes the hidden fields
 
-        // write originating page if we reload the form, but only for edit operations (not search)
-        if (!operation.equals("search") && reloadFormOnError) {
-            String url = request.getRequestURI();
-            String queryString = request.getQueryString();
-            if (queryString != null) {
-                if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
-                    queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
-                }
-                url += "?" + queryString;
-            }
-            writeInput(sb, originatingPageName, url, "");
-            sb.append('\n');
-        }
-
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
             sb.append('\n');
@@ -253,7 +239,21 @@ public class FormResponder extends Responder {
             }
         }
 
-        if (storedSuffix.equals(""))
+        // write originating page if we reload the form, but only for edit operations (not search)
+        if (!operation.equals("search") && reloadFormOnError) {
+            String url = request.getRequestURI();
+            String queryString = request.getQueryString();
+            if (queryString != null) {
+                if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
+                    queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
+                }
+                url += "?" + queryString;
+            }
+            writeInput(sb, originatingPageName, url, "");
+            sb.append('\n');
+        }
+
+	        if (storedSuffix.equals(""))
             // a root form
             sb.append("\n</form>");
     }
