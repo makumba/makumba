@@ -870,7 +870,7 @@ functionExpr :
             |   ltrim:"ltrim"{#ltrim.setText("ltrim("); }
             |   rtrim:"rtrim"{#rtrim.setText("rtrim("); }
             |   ascii:"ascii"{#ascii.setText("ascii("); }
-            |   length:"length"{#length.setText("length("); }
+            |   character_length:"character_length"{#character_length.setText("character_length("); }
             |   char_:"char"{#char_.setText("char("); }
             |   dayOfMonth:"dayOfMonth"{#dayOfMonth.setText("dayOfMonth("); }
             |   dayOfWeek:"dayOfWeek"{#dayOfWeek.setText("dayOfWeek("); }

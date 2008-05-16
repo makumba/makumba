@@ -773,7 +773,7 @@ functionExpr :
 			|	"rtrim"^
 			|	"char"^
 			|	"ascii"^
-			|	"length"^
+			|	"character_length"^
 			|	"dayOfMonth"^
 			|	"dayOfWeek"^
 			|	"dayOfYear"^
