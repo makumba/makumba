@@ -215,13 +215,13 @@ public class FormResponder extends Responder {
             sb.append("\"/>");
         }
 
+        // writes the hidden fields
+
         if (basePointer != null)
             writeInput(sb, basePointerName, basePointer, storedSuffix);
 
         String responderValue = getResponderValue();
         String formSessionValue = responderValue + session; // gets the formSession value
-
-        // writes the hidden fields
 
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
