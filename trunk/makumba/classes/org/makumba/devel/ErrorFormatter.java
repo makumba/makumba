@@ -193,7 +193,7 @@ public class ErrorFormatter {
         try {
             Dictionary<String, Comparable> d = new Hashtable<String, Comparable>();
 
-            // TODO: read and store the soruce of the submited page
+            // TODO: read and store the source of the submited page
             // d.put("page", "");
             if (t != null && t.getMessage() != null)
                 d.put("exception", t.getMessage());
