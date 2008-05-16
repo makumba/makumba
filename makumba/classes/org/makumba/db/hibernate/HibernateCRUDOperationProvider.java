@@ -89,7 +89,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, data, dd, recordClass, newRecord);
 
-            if (data.get("TS_create") == null) {
+            if (isGenerated(recordClass) && data.get("TS_create") == null) {
                 Class[] classes = new Class[] { java.util.Date.class };
                 Object[] now = new Object[] { new Date() };
 
@@ -107,15 +107,23 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             Object pointerId = null;
 
             Class[] noParam = {};
-            Method getId = recordClass.getMethod("getprimaryKey", noParam);
+            
+            String idMethodName = "getprimaryKey";
+            if(!isGenerated(recordClass)) {
+                idMethodName = "getId";
+            }
+            Method getId = recordClass.getMethod(idMethodName, noParam);
 
             Object[] args = {};
             pointerId = getId.invoke(newRecord, args);
-
-            if (pointerId != null)
-                return new SQLPointer(type, new Long((Integer) pointerId));
-            else
+            
+            String returnType = getId.getReturnType().getName();
+            
+            if (pointerId != null) {
+                return new SQLPointer(type, isInteger(returnType) ? new Long( (Integer) pointerId ) : (Long) pointerId);
+            } else {
                 throw new MakumbaError("Unexpected return type while trying to get ID of inserted record");
+            }
 
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
@@ -235,6 +243,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 for(Method met : recordClass.getMethods()) {
                     if(met.getName().toLowerCase().equals("set"+fieldNameInClass.toLowerCase())) {
                         fieldNameInClass = met.getName().substring(3);
+                        parameterTypes = new Class[] { met.getParameterTypes()[0] };
                         break;
                     }
                 }
@@ -435,14 +444,22 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     private Serializable getTypedId(Class clazz, Pointer p) {
         for(Method m : clazz.getMethods()) {
             if(m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
-                if(m.getReturnType().getName().equals("int") || m.getReturnType().getName().indexOf("Integer") > -1) {
+                if(isInteger(m.getReturnType().getName())) {
                     return p.getId();
-                } else if(m.getReturnType().getName().equals("long") || m.getReturnType().getName().indexOf("Long") > -1) {
+                } else if(isLong(m.getReturnType().getName())) {
                     return p.longValue();
                 }
             }
         }
         return p.getId();
+    }
+    
+    private boolean isInteger(String name) {
+        return name.equals("int") || name.indexOf("Integer") > -1;
+    }
+    
+    private boolean isLong(String name) {
+        return name.equals("long") || name.indexOf("Long") > -1;
     }
 
 }
