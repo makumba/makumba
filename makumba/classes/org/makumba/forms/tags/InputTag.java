@@ -283,13 +283,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 // check for a possible composite validation error set, and do form annotation if needed
                 CompositeValidationException errors = (CompositeValidationException) pageContext.getRequest().getAttribute(
                     ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
-                Collection exceptions = null;
+                Collection<InvalidValueException> exceptions = null;
                 if (errors != null) { // get the exceptions for this field
                     exceptions = errors.getExceptions(fieldName);
                 }
-                // if requested, do annoation before the field
+                // if requested, do annotation before the field
                 if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
-                    for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                    for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
                         printAnnotation(fieldName, (InvalidValueException) iter.next());
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
                             pageContext.getOut().print(getForm().annotationSeparator);
@@ -298,9 +298,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 }
                 // print the actual form value
                 pageContext.getOut().print(formatted);
-                // if requested, do annoation after the field
+                // if requested, do annotation after the field
                 if (StringUtils.equalsAny(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
-                    for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                    for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
                             pageContext.getOut().print(getForm().annotationSeparator);
                         }
