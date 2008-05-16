@@ -233,7 +233,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             
             if(!isGenerated(recordClass)) {
                 for(Method met : recordClass.getMethods()) {
-                    if(met.getName().toLowerCase().equals("set"+fieldNameInClass)) {
+                    if(met.getName().toLowerCase().equals("set"+fieldNameInClass.toLowerCase())) {
                         fieldNameInClass = met.getName().substring(3);
                         break;
                     }
