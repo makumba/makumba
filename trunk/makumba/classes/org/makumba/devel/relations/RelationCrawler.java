@@ -1,10 +1,10 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,15 +15,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.FileUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.ReadableFormatter;
-import org.makumba.commons.StringUtils;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
@@ -34,7 +32,6 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
-import com.martiansoftware.jsap.stringparsers.StringStringParser;
 
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
@@ -46,8 +43,6 @@ import com.martiansoftware.jsap.stringparsers.StringStringParser;
 public class RelationCrawler {
 
     protected static boolean subProcess = false;
-
-    private static Logger logger = Logger.getLogger("org.makumba.relationCrawler");
 
     private String webappRoot;
 
@@ -146,30 +141,32 @@ public class RelationCrawler {
         this.JavaAnalysisErrors.add(s);
     }
 
-    public void writeJSPAnalysisError(String fileName) {
+    public static void writeJSPAnalysisError(String fileName, Hashtable<String, Throwable> analysisErrors,
+            int JSPCrawlCount) {
 
         File f = new File(fileName);
         PrintWriter pw = null;
         try {
             f.createNewFile();
             pw = new PrintWriter(new FileOutputStream(f));
-            pw.println("Total number of page crawled: " + this.JSPCrawlCount);
-            pw.println("Total number of JSP page analysis errors: " + JSPAnalysisErrors.size());
+            pw.println("Date of crawling: " + new Date());
+            pw.println("Total number of page crawled: " + JSPCrawlCount);
+            pw.println("Total number of JSP page analysis errors: " + analysisErrors.size());
             pw.println("\nError summary\n");
 
             int n = 0;
-            for (String file : JSPAnalysisErrors.keySet()) {
+            for (String file : analysisErrors.keySet()) {
                 pw.println(n + ".\t" + file);
-                pw.println("\t" + JSPAnalysisErrors.get(file).getMessage() + "\n");
+                pw.println("\t" + analysisErrors.get(file).getMessage() + "\n");
                 n++;
             }
 
             pw.println("\nError detail\n");
 
             n = 0;
-            for (String file : JSPAnalysisErrors.keySet()) {
+            for (String file : analysisErrors.keySet()) {
                 pw.println(n + ".\t" + file + "\n\n");
-                JSPAnalysisErrors.get(file).printStackTrace(pw);
+                analysisErrors.get(file).printStackTrace(pw);
                 pw.println("******************************************************************************\n");
                 n++;
             }
@@ -237,8 +234,9 @@ public class RelationCrawler {
         boolean forceDatabase = result.getBoolean("forceDatabase");
         String URLprefix = result.getString("urlPrefix");
         String URLroot = result.getString("urlRoot");
-        String[] skipPaths = result.getStringArray("skipPaths");
-        String[] files = result.getStringArray("path");
+        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
+                : new String[] {};
+        String[] files = result.getString("path") != null ? result.getString("path").split(",") : new String[] {};
 
         System.out.println("Starting relation crawler, config:");
         System.out.println("\twebappRoot: " + webappRoot);
@@ -254,7 +252,8 @@ public class RelationCrawler {
 
         if (files == null || files.length == 0) {
             System.out.println("\nNo paths indicated, crawling all files in webapp\n");
-            ArrayList<String> allFilesInDirectory = getAllFilesInDirectory(webappRoot, skipPaths);
+            ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths,
+                new MakumbaRelatedFileFilter());
             Collections.sort(allFilesInDirectory);
             files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
         }
@@ -276,7 +275,7 @@ public class RelationCrawler {
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
-        rc.writeJSPAnalysisError("analysis-errors.txt");
+        RelationCrawler.writeJSPAnalysisError("analysis-errors.txt", rc.JSPAnalysisErrors, rc.JSPCrawlCount);
 
         rc.writeRelationsToDb();
 
@@ -694,44 +693,6 @@ public class RelationCrawler {
         }
 
         return fr;
-    }
-
-    /**
-     * Return all jsp, mdd and java files in any subdir of the given root directory.
-     */
-    public static ArrayList<String> getAllFilesInDirectory(String root, String[] skipPaths) {
-        File f = new File(root);
-        ArrayList<String> allFiles = new ArrayList<String>();
-        processFilesInDirectory(root, skipPaths, f, allFiles);
-        return allFiles;
-    }
-
-    /**
-     * Process files in one directory.
-     */
-    private static void processFilesInDirectory(String root, String[] skipPaths, File f, ArrayList<String> allFiles) {
-        if (!f.exists()) {
-            logger.warning("Couldn't read files of directory " + f.getAbsolutePath() + ": file does not exist");
-            return;
-        }
-        final File[] fileList = f.listFiles(new MakumbaRelatedFileFilter());
-        for (int i = 0; i < fileList.length; i++) {
-            if (fileList[i].isDirectory()) {
-                processFilesInDirectory(root, skipPaths, fileList[i], allFiles);
-            } else {
-                try {
-                    String fileName = fileList[i].getCanonicalPath().substring(root.length());
-                    if (StringUtils.startsWith(fileName, skipPaths)) {
-                        logger.info("Skipping file " + fileName + ", indicated in skip-list "
-                                + Arrays.toString(skipPaths));
-                    } else {
-                        allFiles.add(fileName);
-                    }
-                } catch (IOException e) {
-                    logger.warning("Could not compute canonical path for " + fileList[i].getAbsolutePath());
-                }
-            }
-        }
     }
 
     /** A filenameFilter that accepts .jsp, .mdd and .java files, or directories. */
