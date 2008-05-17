@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 
 /**
@@ -80,6 +81,10 @@ public class LoginTag extends BodyTagSupport {
 
             HttpServletRequest req = (HttpServletRequest) pageContext.getRequest().getAttribute(
                 org.makumba.devel.ErrorControllerHandler.ORIGINAL_REQUEST);
+            
+            if (req == null && ((HttpServletRequest) pageContext.getRequest()).getRequestURI().endsWith("login.jsp")) {
+                throw new JspException(new LogicException("You cannot access/run a login.jsp page directly!"));                
+            }
 
             // retrieve the path info on original request
             String pathInfo = req.getPathInfo();
