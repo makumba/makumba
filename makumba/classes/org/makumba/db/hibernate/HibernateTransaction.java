@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
@@ -15,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.NullObject;
@@ -146,8 +148,38 @@ public class HibernateTransaction extends TransactionImplementation {
     }
 
     private Object weaklyTreatParamType(Object object) {
-        if (object instanceof Pointer)
-            return new Integer(((Pointer) object).getId());
+        if (object instanceof Pointer) {
+            Pointer p = (Pointer)object;
+            // let's figure the correct type for this guy
+            // if it is a generated class, it will be an integer
+            for (String s : HibernateSFManager.getGeneratedClasses()) {
+                if(s.equals(p.getType())) {
+                    return new Integer(p.getId());
+                }                    
+            }
+            
+            // otherwise it may be a long
+            Class recordClass = null;
+            try {
+                recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(p.getType()));
+                Method m = recordClass.getMethod("getId", new Class[] {});
+                if(HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
+                    return new Integer(p.getId());
+                } else if(HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
+                    return (Long) (p.longValue());
+                }
+                
+                
+            } catch (ClassNotFoundException cnfe) {
+                cnfe.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            
+            
+        }
         return object;
     }
 

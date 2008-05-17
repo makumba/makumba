@@ -454,11 +454,11 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         return p.getId();
     }
     
-    private boolean isInteger(String name) {
+    public static boolean isInteger(String name) {
         return name.equals("int") || name.indexOf("Integer") > -1;
     }
     
-    private boolean isLong(String name) {
+    public static boolean isLong(String name) {
         return name.equals("long") || name.indexOf("Long") > -1;
     }
 
