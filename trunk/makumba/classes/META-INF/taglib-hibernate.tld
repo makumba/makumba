@@ -90,6 +90,12 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>defaultLimit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
   </tag>
 
 
@@ -2139,5 +2145,41 @@
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int lastCount()</function-signature>
   </function>
+
+  <function>
+    <name>maxResults</name>
+    <description>
+      the maximum count of the enclosing mak:list, disregarding potential limit and offset values
+    </description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int maxResults()</function-signature>
+  </function>
+  
+  <tag>
+    <name>pagination</name>
+    <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
+    <bodycontent>EMPTY</bodycontent>
+    <info>Prints links for pagination navigation</info>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>itemName</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+    </attribute>
+  </tag>
 
 </taglib>
