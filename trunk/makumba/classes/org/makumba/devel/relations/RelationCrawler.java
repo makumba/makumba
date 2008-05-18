@@ -284,29 +284,6 @@ public class RelationCrawler {
     }
 
     /**
-     * Generates example arguments to test the crawler.<br>
-     * Note that you need to have a MakumbaDatabase.properties file in the classpath in order to run this example.
-     * 
-     * @return a list of arguments the crawler can be launched with
-     */
-    private static String[] generateExampleArguments() {
-        String webappPath = ".";
-
-        Vector<String> arguments = new Vector<String>();
-        arguments.add(webappPath);
-        arguments.add("localhost_mysql_makumba");
-        arguments.add("forceTargetDb");
-        arguments.add("file:/");
-        arguments.add("karamba/public_html");
-
-        // ArrayList<String> some = getAllFilesInDirectory("/home/manu/workspace/makumba/webapps/tests/");
-        // arguments.addAll(some);
-        // arguments.add("/WEB-INF/classes/com/ecyrd/jspwiki/providers/MakumbaPageProvider.java");
-        String[] args = (String[]) arguments.toArray(new String[arguments.size()]);
-        return args;
-    }
-
-    /**
      * Crawls through a file using the relation miners
      * 
      * @param path
@@ -339,8 +316,6 @@ public class RelationCrawler {
      *            the relation data
      */
     protected void addRelation(String fromFile, String toFile, Dictionary<String, Object> relationData) {
-
-//        String fromFile = (String) relationData.get("fromFile");
         Map<String, Vector<Dictionary<String, Object>>> dic;
         Vector<Dictionary<String, Object>> v;
         if ((dic = detectedRelations.get(toFile)) != null) {
@@ -372,8 +347,8 @@ public class RelationCrawler {
 
         for (String toFile : relations.keySet()) {
             Map<String, Vector<Dictionary<String, Object>>> map = relations.get(toFile);
-            for (String fromFile: map.keySet()) {
-                Vector<Dictionary<String, Object>> origins = map.get(fromFile);    
+            for (String fromFile : map.keySet()) {
+                Vector<Dictionary<String, Object>> origins = map.get(fromFile);
                 Dictionary<String, Object> relationInfo = new Hashtable<String, Object>();
                 relationInfo.put("type", "dependsOn");
                 relationInfo.put("fromFile", fromFile);
@@ -437,8 +412,7 @@ public class RelationCrawler {
         Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(
             tp.getQueryLanguage().equals("oql") ? oqlQuery1 : hqlQuery1, new Object[] { previousRelationPtr });
 
-        for (Iterator iterator = previousRelationOrigin.iterator(); iterator.hasNext();) {
-            Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
+        for (Dictionary<String, Object> dictionary : previousRelationOrigin) {
             tr2.delete((Pointer) dictionary.get("origin"));
         }
 
@@ -653,8 +627,8 @@ public class RelationCrawler {
             Pointer relation = (Pointer) dictionary.get("relation");
 
             // fetch the origin of the relation
-            String queryOQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1";
-            String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r.id = ?";
+            String queryOQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r = $1 order by ro.startline, ro.startcol";
+            String queryHQL = "SELECT ro.startcol AS startcol, ro.endcol AS endcol, ro.startline AS startline, ro.endline AS endline, ro.tagname AS tagname, ro.expr AS expr, ro.field AS field, ro.reason AS reason FROM org.makumba.devel.relations.Relation r, r.origin ro WHERE r.id = ? order by ro.startline, ro.startcol";
             Vector<Dictionary<String, Object>> relationOrigin = t.executeQuery(
                 tp.getQueryLanguage().equals("oql") ? queryOQL : queryHQL, new Object[] { relation });
 
