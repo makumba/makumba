@@ -6,7 +6,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.commons.ControllerHandler;
-import org.makumba.commons.DbConnectionProvider;
 
 public class DatabaseConnectionControllerHandler extends ControllerHandler {
 
