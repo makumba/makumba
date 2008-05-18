@@ -38,15 +38,15 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private static final String ALL_ATTRIBUTES = "all of the attributes 'limit', 'offset' and 'totalCount'";
 
-    private static final String FIRST = "<<";
+    private static final String FIRST = "&lt;&lt;";
 
-    private static final String NEXT = ">";
+    private static final String NEXT = "&gt;";
 
-    private static final String LAST = ">>";
+    private static final String LAST = "&gt;&gt;";
 
     private static final String LIMIT = "limit";
 
-    private static final String PREVIOUS = "<";
+    private static final String PREVIOUS = "&lt;";
 
     private static Hashtable<String, String> navigationLinkStyle = new Hashtable<String, String>(4);
 
@@ -131,7 +131,7 @@ public class PaginationTag extends GenericMakumbaTag {
                     sb.append(getLink(FIRST, navigationNALinkStyle)).append("\n    ");
                     sb.append(getLink(PREVIOUS, navigationNALinkStyle));
                 }
-                sb.append("  </div>\n");
+                sb.append("\n  </div>\n");
 
                 sb.append("  <div style=\"float: left; width: 50%; margin: 0 15px;\" align=\"center\">\n    ");
 
@@ -167,11 +167,11 @@ public class PaginationTag extends GenericMakumbaTag {
         navigationLinkStyle.put(FIRST, "<img border=\"0\" src=\"" + contextPath
                 + "/makumbaResources/image/resultset_first.gif\" alt=\"" + FIRST + "\">");
         navigationLinkStyle.put(NEXT, "<img border=\"0\" src=\"" + contextPath
-                + "/makumbaResources/image/resultset_next.gif\" alt=\"" + NEXT + "\"");
+                + "/makumbaResources/image/resultset_next.gif\" alt=\"" + NEXT + "\">");
         navigationLinkStyle.put(LAST, "<img border=\"0\" src=\"" + contextPath
-                + "/makumbaResources/image/resultset_last.gif\" alt=\"" + LAST + "\"");
+                + "/makumbaResources/image/resultset_last.gif\" alt=\"" + LAST + "\">");
         navigationLinkStyle.put(PREVIOUS, "<img border=\"0\" src=\"" + contextPath
-                + "/makumbaResources/image/resultset_previous.gif\" alt=\"" + PREVIOUS + "\"");
+                + "/makumbaResources/image/resultset_previous.gif\" alt=\"" + PREVIOUS + "\">");
 
         navigationNALinkStyle.put(FIRST, "<img border=\"0\" src=\"" + contextPath
                 + "/makumbaResources/image/resultset_first_na.gif\"");
