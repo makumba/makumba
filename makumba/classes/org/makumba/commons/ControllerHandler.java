@@ -12,14 +12,14 @@ import javax.servlet.ServletResponse;
  * @version $Id: ControllerHandler.java,v 1.1 22.10.2007 13:38:15 Manuel Exp $
  */
 public abstract class ControllerHandler {
-
     /**
      * Performs an operation before the doFilterChain() method is called
      * 
      * @return <code>true</code> if the operation worked out successfully, <code>false</code> otherwise
      * @throws Exception
      */
-    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws Exception {
+    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
+            ServletObjects httpServletObjects) throws Exception {
         return true;
     }
 

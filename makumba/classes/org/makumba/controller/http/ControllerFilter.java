@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.ServletObjects;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling. This filter
@@ -78,10 +79,11 @@ public class ControllerFilter implements Filter {
             java.io.IOException {
         int i = 0;
         int imax = -1;
+        ServletObjects servletObjects = new ServletObjects(req, resp);
         try {
             for (; i < handlers.size(); i++) {
                 imax = i;
-                if (!handlers.get(i).beforeFilter(req, resp, conf)) {
+                if (!handlers.get(i).beforeFilter(req, resp, conf, servletObjects)) {
                     break;
                 }
             }
@@ -89,8 +91,9 @@ public class ControllerFilter implements Filter {
             for (i = imax; i >= 0; i--) {
                 handlers.get(i).afterBeforeFilter(req, resp, conf);
             }
-            if (imax == handlers.size() - 1) {
-                chain.doFilter(req, resp);
+
+            if (imax == handlers.size() - 1) { // continue filtering if all handlers have returned true
+                chain.doFilter(servletObjects.getRequest(), servletObjects.getResponse());
             }
 
             for (i = imax; i >= 0; i--) {
