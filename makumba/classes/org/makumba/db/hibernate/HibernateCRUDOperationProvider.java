@@ -265,8 +265,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                         fieldValue = null;
                     break;
                 case FieldDefinition._text:
+                    fieldType = String.class;
+                    fieldValue = ((Text)fieldValue).toString();
+                    if (fieldValue == Pointer.NullText)
+                        fieldValue = null;
+                    break;
                 case FieldDefinition._binary:
-                    // FIXME
+                    // FIXME this might not work since we need a byte[] as type
                     fieldType = Text.class;
                     if (fieldValue == Pointer.NullText)
                         fieldValue = null;
@@ -296,7 +301,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     }
                 }
             }
-
+            
             m = recordClass.getMethod("set" + fieldNameInClass, parameterTypes);
             m.invoke(newRecord, fieldValue);
 
