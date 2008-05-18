@@ -183,17 +183,9 @@ public class JavaRelationMiner extends RelationMiner {
      */
     private void addJava2JavaRelation(String fromFile, String className, String reason) {
         String toFile = "/WEB-INF/classes/" + className.replace(".", File.separator);
-
-        Dictionary<String, Object> relation = new Hashtable<String, Object>();
-        relation.put("fromFile", fromFile);
-        relation.put("type", "dependsOn");
-
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("reason", reason);
-
-        relation.put("origin", relationOrigin);
-
-        rc.addRelation(toFile, relation);
+        rc.addRelation(fromFile, toFile, relationOrigin);
     }
 
     /**
@@ -211,21 +203,12 @@ public class JavaRelationMiner extends RelationMiner {
      *            the query this relation originates from
      */
     private void addJava2MDDRelation(String fromFile, String type, String expr, String field, String query) {
-        String fileName = "/WEB-INF/classes/dataDefinitions/" + type.replace(".", "/") + ".mdd";
-
-        Dictionary<String, Object> relation = new Hashtable<String, Object>();
-        relation.put("fromFile", fromFile);
-        relation.put("type", "dependsOn");
-
+        String toFile = "/WEB-INF/classes/dataDefinitions/" + type.replace(".", "/") + ".mdd";
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("expr", expr);
         relationOrigin.put("field", field);
         relationOrigin.put("reason", query);
-
-        relation.put("origin", relationOrigin);
-
-        rc.addRelation(fileName, relation);
-
+        rc.addRelation(fromFile, toFile, relationOrigin);
     }
 
 }

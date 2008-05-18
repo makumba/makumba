@@ -86,16 +86,8 @@ public class MDDRelationMiner extends RelationMiner {
      *            the field responsible for the relation
      */
     private void addMDD2MDDRelation(String fromFile, String toFile, String fromField) {
-
-        Dictionary<String, Object> relation = new Hashtable<String, Object>();
-        relation.put("fromFile", fromFile);
-        relation.put("type", "dependsOn");
-
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("field", fromField);
-
-        relation.put("origin", relationOrigin);
-
-        rc.addRelation(toFile, relation);
+        rc.addRelation(fromFile, toFile, relationOrigin);
     }
 }
