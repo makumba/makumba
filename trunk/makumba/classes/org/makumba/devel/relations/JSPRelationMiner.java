@@ -402,15 +402,7 @@ public class JSPRelationMiner extends RelationMiner {
      *            the field of the MDD pointed by the relation
      */
     private void addJSP2MDDRelation(String fromFile, String type, TagData originTagData, String expr, String field) {
-
-        // System.out.println(originTagData.name + " at line " + originTagData.getStartLine()
-        // + " is responsible for expression " + expr + " affecting field "+field+" of type "+type);
-
-        String fileName = "/WEB-INF/classes/dataDefinitions/" + type.replace(".", "/") + ".mdd";
-
-        Dictionary<String, Object> relation = new Hashtable<String, Object>();
-        relation.put("fromFile", fromFile);
-        relation.put("type", "dependsOn");
+        String toFile = "/WEB-INF/classes/dataDefinitions/" + type.replace(".", "/") + ".mdd";
 
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("startcol", originTagData.getStartColumn());
@@ -421,9 +413,7 @@ public class JSPRelationMiner extends RelationMiner {
         relationOrigin.put("expr", expr);
         relationOrigin.put("field", field);
 
-        relation.put("origin", relationOrigin);
-
-        rc.addRelation(fileName, relation);
+        rc.addRelation(fromFile, toFile, relationOrigin);
     }
 
     /**
@@ -437,20 +427,12 @@ public class JSPRelationMiner extends RelationMiner {
      *            the tagData of the tag responsible for the relation
      */
     private void addJSP2JSPRelation(String fromFile, String toFile, TagData originTagData) {
-
-        Dictionary<String, Object> relation = new Hashtable<String, Object>();
-        relation.put("fromFile", fromFile);
-        relation.put("type", "dependsOn");
-
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("startcol", originTagData.getStartColumn());
         relationOrigin.put("endcol", originTagData.getEndColumn());
         relationOrigin.put("startline", originTagData.getStartLine());
         relationOrigin.put("endline", originTagData.getEndLine());
         relationOrigin.put("tagname", originTagData.name);
-
-        relation.put("origin", relationOrigin);
-
-        rc.addRelation(toFile, relation);
+        rc.addRelation(fromFile, toFile, relationOrigin);
     }
 }

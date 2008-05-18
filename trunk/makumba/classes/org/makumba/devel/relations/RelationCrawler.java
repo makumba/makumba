@@ -62,7 +62,7 @@ public class RelationCrawler {
 
     private Vector<String> JavaAnalysisErrors = new Vector<String>();
 
-    private Map<String, Dictionary<String, Object>> detectedRelations = new HashMap<String, Dictionary<String, Object>>();
+    private Map<String, Map<String, Vector<Dictionary<String, Object>>>> detectedRelations = new HashMap<String, Map<String, Vector<Dictionary<String, Object>>>>();
 
     private String URLprefix;
 
@@ -113,7 +113,7 @@ public class RelationCrawler {
 
     }
 
-    private Map<String, Dictionary<String, Object>> getDetectedRelations() {
+    private Map<String, Map<String, Vector<Dictionary<String, Object>>>> getDetectedRelations() {
         return this.detectedRelations;
     }
 
@@ -338,28 +338,24 @@ public class RelationCrawler {
      * @param relationData
      *            the relation data
      */
-    protected void addRelation(String toFile, Dictionary<String, Object> relationData) {
+    protected void addRelation(String fromFile, String toFile, Dictionary<String, Object> relationData) {
 
-        Dictionary<String, Object> rel;
-        if ((rel = detectedRelations.get(toFile)) != null) {
-
-            // we just add the detail
-            Vector<Dictionary<String, Object>> origin = (Vector<Dictionary<String, Object>>) rel.get("origin");
-            origin.add((Dictionary<String, Object>) relationData.get("origin"));
-            rel.put("origin", origin);
-
-            detectedRelations.put(toFile, rel);
-
+//        String fromFile = (String) relationData.get("fromFile");
+        Map<String, Vector<Dictionary<String, Object>>> dic;
+        Vector<Dictionary<String, Object>> v;
+        if ((dic = detectedRelations.get(toFile)) != null) {
+            v = dic.get(fromFile);
+            if (v == null) {
+                v = new Vector<Dictionary<String, Object>>();
+            }
+            v.add(relationData);
+            dic.put(fromFile, v);
         } else {
-            // we extract the relation detail, and add it to a detail Vector of Dictionaries
-            Dictionary<String, Object> originData = (Dictionary<String, Object>) relationData.get("origin");
-            Vector<Dictionary<String, Object>> origin = new Vector<Dictionary<String, Object>>();
-            origin.add(originData);
-
-            relationData.put("origin", origin);
-
-            detectedRelations.put(toFile, relationData);
-
+            dic = new Hashtable<String, Vector<Dictionary<String, Object>>>();
+            v = new Vector<Dictionary<String, Object>>();
+            v.add(relationData);
+            dic.put(fromFile, v);
+            detectedRelations.put(toFile, dic);
         }
 
     }
@@ -370,67 +366,66 @@ public class RelationCrawler {
     public void writeRelationsToDb() {
         // here we save all the computed relations to the relations database
 
-        Map<String, Dictionary<String, Object>> relations = getDetectedRelations();
+        Map<String, Map<String, Vector<Dictionary<String, Object>>>> relations = getDetectedRelations();
 
         Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase);
 
-        Iterator<String> it = relations.keySet().iterator();
-        while (it.hasNext()) {
-            String toFile = it.next();
-            Dictionary<String, Object> relationInfo = relations.get(toFile);
-            String relationType = (String) relationInfo.get("type");
-            String fromFile = (String) relationInfo.get("fromFile");
+        for (String toFile : relations.keySet()) {
+            Map<String, Vector<Dictionary<String, Object>>> map = relations.get(toFile);
+            for (String fromFile: map.keySet()) {
+                Vector<Dictionary<String, Object>> origins = map.get(fromFile);    
+                Dictionary<String, Object> relationInfo = new Hashtable<String, Object>();
+                relationInfo.put("type", "dependsOn");
+                relationInfo.put("fromFile", fromFile);
 
-            String fromURL = this.URLprefix + this.URLroot
-                    + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
-            String toURL = this.URLprefix + this.URLroot
-                    + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
+                String fromURL = this.URLprefix + this.URLroot
+                        + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
+                String toURL = this.URLprefix + this.URLroot
+                        + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
-            System.out.println(fromURL + " -(" + relationType + ")-> " + toURL);
+                System.out.println(fromURL + " -(" + "dependsOn" + ")-> " + toURL);
 
-            // now we insert the records into the relations table, in the right database
-            Transaction tr2 = null;
+                // now we insert the records into the relations table, in the right database
+                Transaction tr2 = null;
 
-            try {
-                tr2 = tp.getConnectionTo(targetDatabase);
+                try {
+                    tr2 = tp.getConnectionTo(targetDatabase);
 
-                // we check if there's already such a relation in the database
+                    // we check if there's already such a relation in the database
 
-                String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2";
-                String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = ? AND relation.fromFile = ?";
-                Object[] args = { toFile, fromFile };
-                Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(tp.getQueryLanguage().equals(
-                    "oql") ? oqlQuery : hqlQuery, args);
+                    String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2";
+                    String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = ? AND relation.fromFile = ?";
+                    Object[] args = { toFile, fromFile };
+                    Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(
+                        tp.getQueryLanguage().equals("oql") ? oqlQuery : hqlQuery, args);
 
-                if (previousRelation.size() > 0) {
-                    // we delete the previous relation origin
+                    if (previousRelation.size() > 0) {
+                        // we delete the previous relation origin
 
-                    Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
+                        Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
 
-                    deleteRelation(tr2, previousRelationPtr);
+                        deleteRelation(tr2, previousRelationPtr);
 
+                    }
+
+                    relationInfo.put("toFile", toFile);
+                    relationInfo.put("fromURL", fromURL);
+                    relationInfo.put("toURL", toURL);
+                    relationInfo.put("webapp", webappPointer);
+
+                    Vector<Pointer> originSet = new Vector<Pointer>();
+
+                    for (Dictionary<String, Object> origin : origins) {
+                        originSet.add(tr2.insert("org.makumba.devel.relations.RelationOrigin", origin));
+                    }
+
+                    relationInfo.put("origin", originSet);
+
+                    tr2.insert("org.makumba.devel.relations.Relation", relationInfo);
+
+                } finally {
+                    tr2.close();
                 }
-
-                relationInfo.put("toFile", toFile);
-                relationInfo.put("fromURL", fromURL);
-                relationInfo.put("toURL", toURL);
-                relationInfo.put("webapp", webappPointer);
-
-                Vector<Pointer> originSet = new Vector<Pointer>();
-
-                Vector<Dictionary<String, Object>> relationOrigins = (Vector<Dictionary<String, Object>>) relationInfo.get("origin");
-
-                for (Iterator iterator = relationOrigins.iterator(); iterator.hasNext();) {
-                    Dictionary<String, Object> dictionary = (Dictionary<String, Object>) iterator.next();
-                    originSet.add(tr2.insert("org.makumba.devel.relations.RelationOrigin", dictionary));
-                }
-
-                relationInfo.put("origin", originSet);
-
-                tr2.insert("org.makumba.devel.relations.Relation", relationInfo);
-
-            } finally {
-                tr2.close();
             }
         }
         relations.clear();
