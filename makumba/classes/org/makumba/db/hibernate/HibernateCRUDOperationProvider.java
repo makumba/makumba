@@ -25,11 +25,13 @@ import org.makumba.providers.CRUDOperationProvider;
 /**
  * Hibernate-specific implementation of a {@link CRUDOperationProvider}
  * 
+ * FIXME there are probably more bugs with the collections of non-generated mappings
+ * 
  * @author Manuel Gay
  * @version $Id: HibernateCRUDOperationProvider.java,v 1.1 02.11.2007 14:05:40 Manuel Exp $
  */
 public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
-    
+
     private NameResolver nr = new NameResolver();
 
     @Override
@@ -79,52 +81,101 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
-            Class recordClass = null;
-            recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
-            // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
+            if (dd.getName().indexOf("->") > -1 && HibernateSFManager.getFullyQualifiedName(name) == null) {
+                
+                // we have a non-generated mapping that has a set
+                // this is evil
+                FieldDefinition fi = dd.getParentField();
+                
+                Pointer base = (Pointer) data.get(dd.getParentField().getDataDefinition().getName());
+                
+                Class c = getPointerClass(base.getType());
+                Object baseObject = getPointedObject(t, c, base);
+                
+                String fieldNameInClass = fi.getName();
+                
+                for (Method met : c.getMethods()) {
+                    if (met.getName().toLowerCase().equals("get" + fieldNameInClass.toLowerCase())) {
+                        fieldNameInClass = met.getName().substring(3);
+                        break;
+                    }
+                }
 
-            Object newRecord = null;
-            newRecord = recordClass.newInstance();
+                Method m = c.getMethod("get" + fieldNameInClass, new Class[] {});
 
-            // we need to iterate over the fields we have and set them through the setters
-            fillObject(t, data, dd, recordClass, newRecord);
+                Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
+                if (col == null) {
+                    col = new HashSet();
+                    m = c.getMethod("set" + fieldNameInClass, new Class[] { Collection.class });
+                    m.invoke(baseObject, new Object[] { col });
+                }
+                
+                // now we add our new data
+                Enumeration<Object> e = data.elements();
+                while (e.hasMoreElements()) {
+                    Object o = e.nextElement();
+                    if(!(o instanceof Pointer && ((Pointer)o).equals(base))) {
+                        
+                        if(o instanceof Text) {
+                            o = ((Text)o).toString();
+                        }
+                        
+                        col.add(o);
+                    }
+                }    
+                
+                ht.s.saveOrUpdate(baseObject);
+                ht.s.flush();
 
-            if (isGenerated(recordClass) && data.get("TS_create") == null) {
-                Class[] classes = new Class[] { java.util.Date.class };
-                Object[] now = new Object[] { new Date() };
-
-                Method m = recordClass.getMethod("setTS_create", classes);
-                m.invoke(newRecord, now);
-
-                m = recordClass.getMethod("setTS_modify", classes);
-                m.invoke(newRecord, now);
-
-            }
-
-            ht.s.persist(newRecord);
-            ht.s.flush();
-
-            Object pointerId = null;
-
-            Class[] noParam = {};
-            
-            String idMethodName = "getprimaryKey";
-            if(!isGenerated(recordClass)) {
-                idMethodName = "getId";
-            }
-            Method getId = recordClass.getMethod(idMethodName, noParam);
-
-            Object[] args = {};
-            pointerId = getId.invoke(newRecord, args);
-            
-            String returnType = getId.getReturnType().getName();
-            
-            if (pointerId != null) {
-                return new SQLPointer(type, isInteger(returnType) ? new Long( (Integer) pointerId ) : (Long) pointerId);
             } else {
-                throw new MakumbaError("Unexpected return type while trying to get ID of inserted record");
-            }
 
+                Class recordClass = null;
+                recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
+                // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
+
+                Object newRecord = null;
+                newRecord = recordClass.newInstance();
+
+                // we need to iterate over the fields we have and set them through the setters
+                fillObject(t, data, dd, recordClass, newRecord);
+
+                if (isGenerated(recordClass) && data.get("TS_create") == null) {
+                    Class[] classes = new Class[] { java.util.Date.class };
+                    Object[] now = new Object[] { new Date() };
+
+                    Method m = recordClass.getMethod("setTS_create", classes);
+                    m.invoke(newRecord, now);
+
+                    m = recordClass.getMethod("setTS_modify", classes);
+                    m.invoke(newRecord, now);
+
+                }
+
+                ht.s.persist(newRecord);
+                ht.s.flush();
+
+                Object pointerId = null;
+
+                Class[] noParam = {};
+
+                String idMethodName = "getprimaryKey";
+                if (!isGenerated(recordClass)) {
+                    idMethodName = "getId";
+                }
+                Method getId = recordClass.getMethod(idMethodName, noParam);
+
+                Object[] args = {};
+                pointerId = getId.invoke(newRecord, args);
+
+                String returnType = getId.getReturnType().getName();
+
+                if (pointerId != null) {
+                    return new SQLPointer(type, isInteger(returnType) ? new Long((Integer) pointerId)
+                            : (Long) pointerId);
+                } else {
+                    throw new MakumbaError("Unexpected return type while trying to get ID of inserted record");
+                }
+            }
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -151,16 +202,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     }
 
-    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class recordClass,
-            Object newRecord) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException {
+    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class recordClass, Object newRecord)
+            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Enumeration<String> fields = data.keys();
         while (fields.hasMoreElements()) {
             String fieldName = fields.nextElement();
 
             String fieldNameInClass = nr.checkReserved(fieldName);
-            
-
 
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
@@ -173,26 +221,26 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     // break;
                 case FieldDefinition._int:
                     fieldType = Integer.class;
-                    if(fieldValue==Pointer.NullInteger)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullInteger)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._real:
                     fieldType = Double.class;
-                    if(fieldValue==Pointer.NullReal)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullReal)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._charEnum:
                 case FieldDefinition._char:
                     fieldType = String.class;
-                    if(fieldValue==Pointer.NullString)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullString)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._dateModify:
                 case FieldDefinition._dateCreate:
                 case FieldDefinition._date:
                     fieldType = Date.class;
-                    if(fieldValue==Pointer.NullDate)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullDate)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._ptr:
                 case FieldDefinition._ptrOne:
@@ -201,8 +249,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                     // first we read its type
                     fieldType = getPointerClass(fd.getPointedType().getName());
-                    if(fieldValue==Pointer.Null){
-                        fieldValue=null;
+                    if (fieldValue == Pointer.Null) {
+                        fieldValue = null;
                         break;
                     }
                     // then, we know its pointer so we can read
@@ -213,20 +261,20 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
-                    if(fieldValue==Pointer.Null)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.Null)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._text:
                 case FieldDefinition._binary:
                     // FIXME
                     fieldType = Text.class;
-                    if(fieldValue==Pointer.NullText)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullText)
+                        fieldValue = null;
                     break;
                 case FieldDefinition._boolean:
                     fieldType = Boolean.class;
-                    if(fieldValue==Pointer.NullBoolean)
-                        fieldValue=null;
+                    if (fieldValue == Pointer.NullBoolean)
+                        fieldValue = null;
                 default:
                     throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
 
@@ -237,18 +285,18 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // maybe we need an uppercase here, not sure
             Method m = null;
             // System.out.println("Getting setter set" + fieldNameInClass + " of class " + recordClass.getName()
-            // + ", trying to pass new value of type " + parameterTypes[0]);
-            
-            if(!isGenerated(recordClass)) {
-                for(Method met : recordClass.getMethods()) {
-                    if(met.getName().toLowerCase().equals("set"+fieldNameInClass.toLowerCase())) {
+            // + ", trying to pass new value of type " + parameterTypes[0])fi.getName();
+
+            if (!isGenerated(recordClass)) {
+                for (Method met : recordClass.getMethods()) {
+                    if (met.getName().toLowerCase().equals("set" + fieldNameInClass.toLowerCase())) {
                         fieldNameInClass = met.getName().substring(3);
                         parameterTypes = new Class[] { met.getParameterTypes()[0] };
                         break;
                     }
                 }
             }
-            
+
             m = recordClass.getMethod("set" + fieldNameInClass, parameterTypes);
             m.invoke(newRecord, fieldValue);
 
@@ -381,7 +429,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         try {
 
             HibernateTransaction ht = (HibernateTransaction) t;
-            
+
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             Class recordClass = null;
@@ -389,13 +437,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
             Object record = null;
-            
+
             record = ht.s.get(recordClass, getTypedId(recordClass, p));
 
             // we need to iterate over the fields we have and set them through the setters
             fillObject(t, dic, dd, recordClass, record);
 
-            if(isGenerated(recordClass)) {
+            if (isGenerated(recordClass)) {
                 Class[] classes = new Class[] { java.util.Date.class };
                 Object[] now = new Object[] { new Date() };
                 Method m = recordClass.getMethod("setTS_modify", classes);
@@ -425,39 +473,40 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         }
 
     }
-        
-    
+
     /**
      * Figures whether a class was generated by Makumba
-     * @param clazz the class
+     * 
+     * @param clazz
+     *            the class
      * @return <code>true</code> if it was generated, <code>false</code> otherwise
      */
     private boolean isGenerated(Class clazz) {
         for (String s : HibernateSFManager.getGeneratedClasses()) {
-            if(s.equals(clazz.getCanonicalName())) {
+            if (s.equals(clazz.getCanonicalName())) {
                 return true;
             }
         }
         return false;
     }
-    
+
     private Serializable getTypedId(Class clazz, Pointer p) {
-        for(Method m : clazz.getMethods()) {
-            if(m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
-                if(isInteger(m.getReturnType().getName())) {
+        for (Method m : clazz.getMethods()) {
+            if (m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
+                if (isInteger(m.getReturnType().getName())) {
                     return p.getId();
-                } else if(isLong(m.getReturnType().getName())) {
+                } else if (isLong(m.getReturnType().getName())) {
                     return p.longValue();
                 }
             }
         }
         return p.getId();
     }
-    
+
     public static boolean isInteger(String name) {
         return name.equals("int") || name.indexOf("Integer") > -1;
     }
-    
+
     public static boolean isLong(String name) {
         return name.equals("long") || name.indexOf("Long") > -1;
     }
