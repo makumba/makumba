@@ -280,6 +280,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         return classname.substring(m + 1).toLowerCase();
     }
 
+    /**
+     * Indicates whether the base pointer should be computed or not
+     * @return <code>false</code> if we are at runtime (i.e. the baseObject has been set by JSP), <code>true</code> if we are at analysis time
+     */
     public boolean shouldComputeBasePointer() {
         return baseObject != null;
     }
