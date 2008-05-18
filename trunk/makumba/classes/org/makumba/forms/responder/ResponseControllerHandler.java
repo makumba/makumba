@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.commons.ControllerHandler;
+import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
 
 public class ResponseControllerHandler extends ControllerHandler {
@@ -25,7 +26,7 @@ public class ResponseControllerHandler extends ControllerHandler {
     private ResponderFactory factory = ResponderFactory.getInstance();
 
     @Override
-    public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf) throws Exception {
+    public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf, ServletObjects httpServletObjects) throws Exception {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
 
@@ -45,8 +46,8 @@ public class ResponseControllerHandler extends ControllerHandler {
 
                 final String root = conf.getInitParameter(req.getServerName());
 
-                req = getFormReloadRequest(req);
-                resp = getFormReloadResponse(resp, root);
+                httpServletObjects.setRequest(getFormReloadRequest(req));
+                httpServletObjects.setResponse(getFormReloadResponse(resp, root));
 
                 java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
                     "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());

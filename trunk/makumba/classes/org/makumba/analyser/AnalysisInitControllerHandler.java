@@ -5,6 +5,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.makumba.commons.ControllerHandler;
+import org.makumba.commons.ServletObjects;
 
 /**
  * This {@link ControllerHandler} ensures that the analysis is initialised correctly at each access
@@ -15,7 +16,7 @@ import org.makumba.commons.ControllerHandler;
 public class AnalysisInitControllerHandler extends ControllerHandler {
 
     @Override
-    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
+    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf, ServletObjects httpServletObjects) {
 
         AnalysableTag.initializeThread();
         return true;

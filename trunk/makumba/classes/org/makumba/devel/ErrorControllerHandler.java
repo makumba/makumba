@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.MakumbaError;
 import org.makumba.UnauthorizedException;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.ServletObjects;
 
 /**
  * This handler lets the request go to the filter chain and then catches all kind of exceptions after it.
@@ -36,7 +36,7 @@ public class ErrorControllerHandler extends ControllerHandler {
     public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
 
     @Override
-    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
+    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf, ServletObjects httpServletObjects) {
         
         if (wasException((HttpServletRequest) request))
             return false;
