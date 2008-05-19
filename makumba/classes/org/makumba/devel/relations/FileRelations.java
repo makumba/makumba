@@ -1,5 +1,6 @@
 package org.makumba.devel.relations;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -11,14 +12,11 @@ import java.util.Vector;
  */
 public class FileRelations {
 
-    public FileRelations(String relativeFilePath, Map<String, Vector<FileRelations.RelationOrigin>> jspRelations,
-            Map<String, Vector<FileRelations.RelationOrigin>> mddRelations,
-            Map<String, Vector<FileRelations.RelationOrigin>> javaRelations) {
-
+    public FileRelations(String relativeFilePath) {
         this.path = relativeFilePath;
-        this.jspRelations = jspRelations;
-        this.javaRelations = javaRelations;
-        this.mddRelations = mddRelations;
+        this.jspRelations = new HashMap<String, Vector<RelationOrigin>>();
+        this.javaRelations = new HashMap<String, Vector<RelationOrigin>>();;
+        this.mddRelations = new HashMap<String, Vector<RelationOrigin>>();;
     }
 
     private String path;

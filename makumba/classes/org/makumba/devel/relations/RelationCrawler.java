@@ -615,12 +615,7 @@ public class RelationCrawler {
      * @return the {@link FileRelations} object, filled with the detail
      */
     private FileRelations buildFileRelations(String path, Vector<Dictionary<String, Object>> relations, Transaction t) {
-
-        Map<String, Vector<FileRelations.RelationOrigin>> jspRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
-        Map<String, Vector<FileRelations.RelationOrigin>> javaRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
-        Map<String, Vector<FileRelations.RelationOrigin>> mddRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
-
-        FileRelations fr = new FileRelations(path, jspRelations, mddRelations, javaRelations);
+        FileRelations fr = new FileRelations(path);
 
         for (Dictionary<String, Object> dictionary : relations) {
             String file = (String) dictionary.get("file");
@@ -653,11 +648,11 @@ public class RelationCrawler {
             }
 
             if (file.endsWith(".mdd")) {
-                mddRelations.put(file, relationOriginVector);
+                fr.getMddRelations().put(file, relationOriginVector);
             } else if (file.endsWith(".jsp")) {
-                jspRelations.put(file, relationOriginVector);
+                fr.getJspRelations().put(file, relationOriginVector);
             } else if (file.endsWith(".java")) {
-                javaRelations.put(file, relationOriginVector);
+                fr.getJavaRelations().put(file, relationOriginVector);
             }
         }
 
