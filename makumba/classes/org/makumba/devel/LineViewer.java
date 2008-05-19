@@ -316,7 +316,7 @@ public abstract class LineViewer implements SourceViewer {
             printRelations(writer, fileDependents.getMddRelations(), TYPE_MDD, maxDisplay);
             printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
             printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
-            if (!fileDependents.isEmpty()) {
+            if (fileDependents.isEmpty()) {
                 writer.println("No relations found for this file!");
             }
         } else {
