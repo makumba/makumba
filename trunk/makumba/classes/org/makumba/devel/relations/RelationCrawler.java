@@ -620,7 +620,7 @@ public class RelationCrawler {
         Map<String, Vector<FileRelations.RelationOrigin>> javaRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
         Map<String, Vector<FileRelations.RelationOrigin>> mddRelations = new Hashtable<String, Vector<FileRelations.RelationOrigin>>();
 
-        FileRelations fr = new FileRelations(path, jspRelations, javaRelations, mddRelations);
+        FileRelations fr = new FileRelations(path, jspRelations, mddRelations, javaRelations);
 
         for (Dictionary<String, Object> dictionary : relations) {
             String file = (String) dictionary.get("file");
