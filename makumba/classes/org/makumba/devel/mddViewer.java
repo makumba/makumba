@@ -121,6 +121,8 @@ public class mddViewer extends LineViewer {
         String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
+        printFileRelations(w);
+        w.println("&nbsp;&nbsp;&nbsp;");
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
 
         // link to code generator

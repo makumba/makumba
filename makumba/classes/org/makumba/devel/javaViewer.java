@@ -420,7 +420,10 @@ public class javaViewer extends LineViewer {
     }
 
     public void intro(PrintWriter w) {
-        w.print("<td align=\"center\" bgcolor=\"darkblue\"><font color=\"lightblue\">Java</font></td>");
+        w.println("<td align=\"center\" bgcolor=\"darkblue\">");
+        printFileRelations(w);
+        w.println("&nbsp;&nbsp;&nbsp;");
+        w.println("<font color=\"lightblue\">Java</font></td>");
         String path = contextPath + "/classes/" + virtualPath.substring(0, virtualPath.lastIndexOf('/') + 1);
         if (path.startsWith("/")) {
             path = path.substring(1);

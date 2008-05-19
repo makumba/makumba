@@ -32,11 +32,15 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +49,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.analyser.engine.JavaParseData;
+import org.makumba.devel.relations.FileRelations;
+import org.makumba.devel.relations.RelationCrawler;
+import org.makumba.devel.relations.FileRelations.RelationOrigin;
 
 /**
  * a viewer that shows everything per line
@@ -54,6 +61,12 @@ import org.makumba.analyser.engine.JavaParseData;
  * @author Rudolf Mayer
  */
 public abstract class LineViewer implements SourceViewer {
+    private static final String TYPE_JAVA = "Java";
+
+    private static final String TYPE_JSP = "JSPs";
+
+    private static final String TYPE_MDD = "MDD";
+
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
 
     protected static final String PARAM_HIDE_LINES = "hideLines";
@@ -285,6 +298,103 @@ public abstract class LineViewer implements SourceViewer {
             writer.println("</table>");
         }
         writer.print("<pre class=\"code\">");
+    }
+
+    protected void printFileRelations(PrintWriter writer) {
+        writer.println("<a href=\"javascript:toggleFileRelationsDisplay();\">Relations</a>");
+        writer.println("<div id=\"fileRelations\" style=\"display:none; padding: 5px; position: absolute; top: 88px; background-color: lightblue\">");
+        String webAppRoot = servletContext.getRealPath("/");
+        int maxDisplay = 10;
+        if (webAppRoot.endsWith("/")) {
+            webAppRoot = webAppRoot.substring(0, webAppRoot.length() - 1);
+        }
+        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, "", false, "", "");
+        if (realPath.startsWith(webAppRoot)) {
+            String filePath = realPath.substring(webAppRoot.length());
+            FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
+
+            printRelations(writer, fileDependents.getMddRelations(), TYPE_MDD, maxDisplay);
+            printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
+            printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
+            if (!fileDependents.isEmpty()) {
+                writer.println("No relations found for this file!");
+            }
+        } else {
+            writer.println("Could not crawl relations, file not in webapp root!");
+        }
+        writer.println("</div>");
+    }
+
+    private void printRelations(PrintWriter writer, Map<String, Vector<RelationOrigin>> map, String fileType,
+            int maxDisplay) {
+        if (map.size() > 0) {
+            writer.println("<b>" + fileType + "</b><br>");
+            int count = 0;
+            for (String key : map.keySet()) {
+                count++;
+                if (maxDisplay != -1 && count > maxDisplay) {
+                    writer.print("<a href=\"\" style=\"color:grey; font-size:smaller\">" + (map.size() - maxDisplay)
+                            + " more ...</a><br>");
+                    break;
+                }
+                Vector<RelationOrigin> occurrences = map.get(key);
+                RelationOrigin firstElement = occurrences.firstElement();
+                String path = getPath(key, fileType);
+                String display = getDisplay(key, fileType);
+                if (fileType.equals(TYPE_JSP)) { // only JSPs have line info
+                    writer.println("<a href=\"" + path + "#" + firstElement.getStartLine()
+                            + "\" style=\"font-size:smaller\">" + display + " #" + firstElement.getStartLine() + "</a>");
+                    for (int i = 1; i < occurrences.size(); i++) {
+                        RelationOrigin origin = occurrences.elementAt(i);
+                        writer.println("<a href=\"" + path + "#" + origin.getStartLine()
+                                + "\" style=\"font-size:smaller\">" + "#" + origin.getStartLine() + "</a>");
+                    }
+                } else {
+                    writer.println("<a href=\"" + path + "\" style=\"font-size:smaller\">" + display + "</a> ("
+                            + occurrences.size() + " occurrences)");
+                }
+                writer.println("<br>");
+            }
+        }
+    }
+
+    private String getPath(String fileName, String fileType) {
+        if (fileType.equals(TYPE_JSP)) {
+            return contextPath + "/" + fileName + "x";
+        } else if (fileType.equals(TYPE_MDD)) {
+            fileName = removeFilenamePrefixes(fileName);
+            return contextPath + "/dataDefinitions/" + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
+        } else if (fileType.equals(TYPE_JAVA)) {
+            fileName = removeFilenamePrefixes(fileName);
+            return contextPath + "/classes/" + fileName;
+        }
+        return fileName;
+    }
+
+    private String getDisplay(String fileName, String fileType) {
+        if (fileType.equals("JSP")) {
+            return fileName;
+        } else if (fileType.equals(TYPE_MDD)) {
+            fileName = removeFilenamePrefixes(fileName);
+            return fileName.replaceAll(".mdd", "").replaceAll("/", ".");
+        } else if (fileType.equals(TYPE_JAVA)) {
+            fileName = removeFilenamePrefixes(fileName);
+            return fileName.replaceAll(".java", "").replaceAll("/", ".");
+        }
+        return fileName;
+    }
+
+    private String removeFilenamePrefixes(String fileName) {
+        if (fileName.startsWith("WEB-INF/")) {
+            fileName = fileName.substring("WEB-INF/".length());
+        }
+        if (fileName.startsWith("classes/")) {
+            fileName = fileName.substring("classes/".length());
+        }
+        if (fileName.startsWith("dataDefinitions/")) {
+            fileName = fileName.substring("dataDefinitions/".length());
+        }
+        return fileName;
     }
 
     /**
