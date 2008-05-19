@@ -213,6 +213,8 @@ public class jspViewer extends LineViewer {
 
     public void intro(PrintWriter w) throws IOException {
         w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
+        printFileRelations(w);
+        w.println("&nbsp;&nbsp;&nbsp;");
         String executePath = contextPath + virtualPath;
         if (StringUtils.isNotEmpty(request.getQueryString())) {
             executePath += "?" + request.getQueryString();
