@@ -385,8 +385,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 String fieldNameInClass = fi.getName();
 
-                Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
-                m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
+                Method m = c.getMethod("set" + getFieldNameInClass(c, fi.getName()), new Class[] { Collection.class });
                 m.invoke(baseObject, new Object[] { new ArrayList() });
 
                 ht.s.saveOrUpdate(baseObject);
