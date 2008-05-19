@@ -180,8 +180,8 @@ public class FileRelations {
             for (RelationOrigin relationOrigin : origin) {
                 result += relationOrigin.toString();
             }
-            result +="\n";
-            }
+            result += "\n";
+        }
 
         result += "  == Java relations\n";
         for (String java : javaRelations.keySet()) {
@@ -190,7 +190,7 @@ public class FileRelations {
             for (RelationOrigin relationOrigin : origin) {
                 result += relationOrigin.toString();
             }
-            result +="\n";
+            result += "\n";
         }
 
         result += "  == MDD relations\n";
@@ -200,13 +200,17 @@ public class FileRelations {
             for (RelationOrigin relationOrigin : origin) {
                 result += relationOrigin.toString();
             }
-            result +="\n";
+            result += "\n";
         }
-        
+
         result += "\n";
 
         return result;
 
+    }
+
+    public boolean isEmpty() {
+        return getMddRelations().size() == 0 && getJspRelations().size() == 0 && getMddRelations().size() == 0;
     }
 
 }
