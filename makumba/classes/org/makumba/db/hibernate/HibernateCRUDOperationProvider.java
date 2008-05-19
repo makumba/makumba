@@ -23,9 +23,8 @@ import org.makumba.commons.SQLPointer;
 import org.makumba.providers.CRUDOperationProvider;
 
 /**
- * Hibernate-specific implementation of a {@link CRUDOperationProvider}
- * 
- * FIXME there are probably more bugs with the collections of non-generated mappings
+ * Hibernate-specific implementation of a {@link CRUDOperationProvider} FIXME there are probably more bugs with the
+ * collections of non-generated mappings
  * 
  * @author Manuel Gay
  * @version $Id: HibernateCRUDOperationProvider.java,v 1.1 02.11.2007 14:05:40 Manuel Exp $
@@ -82,25 +81,18 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
             if (dd.getName().indexOf("->") > -1 && HibernateSFManager.getFullyQualifiedName(name) == null) {
-                
+
                 // we have a non-generated mapping that has a set
                 // this is evil
                 FieldDefinition fi = dd.getParentField();
-                
+
                 Pointer base = (Pointer) data.get(dd.getParentField().getDataDefinition().getName());
-                
+
                 Class c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
-                
-                String fieldNameInClass = fi.getName();
-                
-                for (Method met : c.getMethods()) {
-                    if (met.getName().toLowerCase().equals("get" + fieldNameInClass.toLowerCase())) {
-                        fieldNameInClass = met.getName().substring(3);
-                        break;
-                    }
-                }
 
+                String fieldNameInClass = getFieldNameInClass(c, fi.getName());
+                
                 Method m = c.getMethod("get" + fieldNameInClass, new Class[] {});
 
                 Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
@@ -109,21 +101,21 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     m = c.getMethod("set" + fieldNameInClass, new Class[] { Collection.class });
                     m.invoke(baseObject, new Object[] { col });
                 }
-                
+
                 // now we add our new data
                 Enumeration<Object> e = data.elements();
                 while (e.hasMoreElements()) {
                     Object o = e.nextElement();
-                    if(!(o instanceof Pointer && ((Pointer)o).equals(base))) {
-                        
-                        if(o instanceof Text) {
-                            o = ((Text)o).toString();
+                    if (!(o instanceof Pointer && ((Pointer) o).equals(base))) {
+
+                        if (o instanceof Text) {
+                            o = ((Text) o).toString();
                         }
-                        
+
                         col.add(o);
                     }
-                }    
-                
+                }
+
                 ht.s.saveOrUpdate(baseObject);
                 ht.s.flush();
 
@@ -265,9 +257,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                         fieldValue = null;
                     break;
                 case FieldDefinition._text:
-                    if(!isGenerated(recordClass)) {
+                    if (!isGenerated(recordClass)) {
                         fieldType = String.class;
-                        fieldValue = ((Text)fieldValue).toString();
+                        fieldValue = ((Text) fieldValue).toString();
                         if (fieldValue == Pointer.NullText)
                             fieldValue = null;
                         break;
@@ -304,7 +296,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     }
                 }
             }
-            
+
             m = recordClass.getMethod("set" + fieldNameInClass, parameterTypes);
             m.invoke(newRecord, fieldValue);
 
@@ -334,8 +326,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 Class c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
 
-                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
-
+                Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
+                
                 Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
                 if (col == null) {
                     col = new HashSet();
@@ -391,11 +383,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 Class c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
 
-                /*
-                 * Collection col = (Collection) m.invoke(baseObject, new Object[] {}); if(col != null)
-                 * col.removeAll(col);
-                 */
-                Method m = c.getMethod("get" + fi.getName(), new Class[] {});
+                String fieldNameInClass = fi.getName();
+
+                Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
                 m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
                 m.invoke(baseObject, new Object[] { new ArrayList() });
 
@@ -498,6 +488,31 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         return false;
     }
 
+    /**
+     * Figures the name of a field in a class (meaning the right capitalisation)
+     * @param clazz the class
+     * @param fieldName the name of the field 
+     * @return the fieldName, with the right capitals
+     */
+    private String getFieldNameInClass(Class clazz, String fieldName) {
+        if (!isGenerated(clazz)) {
+            for (Method met : clazz.getMethods()) {
+                if (met.getName().toLowerCase().equals("get" + fieldName.toLowerCase())) {
+                    return met.getName().substring(3);
+                }
+            }
+        }
+
+        return fieldName;
+    }
+
+
+    /**
+     * Figures the pointer value of a hibernate object, with the right type of the primary key (hibernate id) field
+     * @param clazz the class
+     * @param p the Pointer
+     * @return a long or int value, depending on the type of the field in the class
+     */
     private Serializable getTypedId(Class clazz, Pointer p) {
         for (Method m : clazz.getMethods()) {
             if (m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
