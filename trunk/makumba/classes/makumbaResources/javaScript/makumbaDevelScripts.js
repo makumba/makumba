@@ -12,6 +12,14 @@ function toggleStackTrace() {
     }
 }
 
+function toggleFileRelationsDisplay() {
+    if (document.getElementById('fileRelations').style.display == 'none') {
+        document.getElementById('fileRelations').style.display = 'block';
+    } else {
+        document.getElementById('fileRelations').style.display = 'none';
+    }
+}
+
 /** toggles reference SQL details visibility on and off */
 function toggleSQLDisplay(element, link) {
     if (element.style.display == 'none') {
