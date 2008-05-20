@@ -231,9 +231,8 @@ public class MakumbaResourceServlet extends HttpServlet {
                 }
                 if (isBinary(url)) {
                     ArrayList<Byte> bytesList = new ArrayList<Byte>();
-                    InputStreamReader bis = new InputStreamReader(stream);
                     byte b;
-                    while ((b = (byte) bis.read()) != -1) {
+                    while ((b = (byte) stream.read()) != -1) {
                         bytesList.add(b);
                     }
                     byte[] bytes = new byte[bytesList.size()];
