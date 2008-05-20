@@ -124,7 +124,7 @@ public class StringUtils {
     }
 
     /** Checks whether the given Object equals any of the given options. */
-    public static boolean equals(Object o, String[] options) {
+    public static boolean equalsAny(Object o, String[] options) {
         return o instanceof String && equalsAny((String) o, options);
     }
 

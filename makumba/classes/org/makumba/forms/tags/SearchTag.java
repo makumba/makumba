@@ -235,7 +235,7 @@ public class SearchTag extends FormTagBase {
                             // if we are having a multi-field match, we might need to combine rules
                             whereThisField = " OR " + whereThisField;
                         }
-                        if (StringUtils.equals(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
+                        if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
                             // range comparison
                             whereThisField += computeRangeQuery(parameters, objectName, fieldName, attributeName,
                                 matchMode);
@@ -361,10 +361,10 @@ public class SearchTag extends FormTagBase {
                         where += " LIKE $" + keyLike + "";
                     } else if (fd.isDateType() || fd.isNumberType()) { // matches for numbers & dates
                         // before or < match
-                        if (StringUtils.equals(advancedMatch, SearchTag.MATCH_BEFORE_LESS)) {
+                        if (StringUtils.equalsAny(advancedMatch, SearchTag.MATCH_BEFORE_LESS)) {
                             where += "<$" + attributeName;
                             // after or > match
-                        } else if (StringUtils.equals(advancedMatch, SearchTag.MATCH_AFTER_GREATER)) {
+                        } else if (StringUtils.equalsAny(advancedMatch, SearchTag.MATCH_AFTER_GREATER)) {
                             where += ">$" + attributeName;
                         }
                     }
