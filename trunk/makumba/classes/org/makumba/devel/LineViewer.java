@@ -351,7 +351,7 @@ public abstract class LineViewer implements SourceViewer {
                     }
                 } else {
                     writer.println("<a href=\"" + path + "\" style=\"font-size:smaller\">" + display + "</a> ("
-                            + occurrences.size() + " occurrences)");
+                            + occurrences.size() + "x)");
                 }
                 writer.println("<br>");
             }
