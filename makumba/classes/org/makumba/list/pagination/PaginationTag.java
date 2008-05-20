@@ -188,8 +188,8 @@ public class PaginationTag extends GenericMakumbaTag {
             Logger.getLogger("org.makumba.list.pagination").info(
                 "Loading alternative properties for pagination links from "
                         + alternateLinkPropertiesURL.toExternalForm());
+            linkStyleProperties.load((alternateLinkPropertiesURL).openConnection().getInputStream());
         }
-        linkStyleProperties.load((alternateLinkPropertiesURL).openConnection().getInputStream());
         String[] s = { FIRST, NEXT, LAST, PREVIOUS };
         for (int i = 0; i < s.length; i++) {
             navigationLinkStyle.put(s[i], linkStyleProperties.getProperty(s[i], navigationLinkStyle.get(s[i])));
@@ -248,14 +248,13 @@ public class PaginationTag extends GenericMakumbaTag {
             return null;
         }
         StringBuffer sb = new StringBuffer();
-        Iterator<Object> iterator = map.keySet().iterator();
-        String obj = null;
-        while (iterator.hasNext()) {
-            obj = (String) iterator.next();
+        for (Object obj : map.keySet()) {
             if (!org.makumba.commons.StringUtils.equalsAny(obj, new String[] { LIMIT, OFFSET })) {
                 String[] strings = (String[]) map.get(obj);
                 for (int i = 0; i < strings.length; i++) {
-                    sb.append(obj).append("=").append((strings)[i]).append("&");
+                    if (StringUtils.isNotBlank(strings[i])) {
+                        sb.append(obj).append("=").append(strings[i]).append("&");
+                    }
                 }
             }
         }
