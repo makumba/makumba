@@ -328,7 +328,7 @@ public class ResponderFactory {
         Hashtable<String, Object> responderResults = new  Hashtable<String, Object>();
         
         // we go over all the responders of this page (hold in the request)
-        for (Iterator<String> responderCodes = getOrderedResponderCodes(req); responderCodes.hasNext();) {
+        for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
 
             // first we need to retrieve the responder from the cache
             String code = responderCodes.next();
