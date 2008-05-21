@@ -172,8 +172,7 @@
 		<copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true" />
 	</target>
 
-
-	<target name="jar" description="make a jar in ./lib" depends="compile">
+	<target name="jarOnly" description="make a jar in ./lib w/o compiling" >
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
@@ -183,7 +182,11 @@
 		</jar>
 	</target>
 
-	<target name="jarList" description="make a jar for the list in ./lib" depends="compileList">
+	<target name="jar" description="make a jar in ./lib" depends="compile">
+		<antcall target="jarOnly" />
+	</target>
+
+    <target name="jarList" description="make a jar for the list in ./lib" depends="compileList">
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba-list.jar" manifest="manifest.mf">
