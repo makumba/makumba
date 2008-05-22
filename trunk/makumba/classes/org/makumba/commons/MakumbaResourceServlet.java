@@ -231,9 +231,12 @@ public class MakumbaResourceServlet extends HttpServlet {
                 }
                 if (isBinary(url)) {
                     ArrayList<Byte> bytesList = new ArrayList<Byte>();
-                    byte b;
-                    while ((b = (byte) stream.read()) != -1) {
-                        bytesList.add(b);
+                    byte[] b = new byte[16];
+                    int readBytes = -1;
+                    while ((readBytes = stream.read(b)) != -1) {
+                        for (int i = 0; i < readBytes; i++) {
+                            bytesList.add(b[i]);
+                        }
                     }
                     byte[] bytes = new byte[bytesList.size()];
                     for (int i = 0; i < bytes.length; i++) {
