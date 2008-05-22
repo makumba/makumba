@@ -1,0 +1,2 @@
+#$Id$
+n=int { "aa"=5, "bb"=-, "cc"=10}	;should be broken
