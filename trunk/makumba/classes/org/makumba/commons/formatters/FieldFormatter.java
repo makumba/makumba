@@ -27,6 +27,8 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.apache.commons.lang.ArrayUtils;
+
 /**
  * Formats a specific field. Subclasses of this class are handling the different kind of fields.
  * @author Cristian Bogdan
@@ -97,7 +99,7 @@ public class FieldFormatter {
             return;
         if (h.get(val) == null)
             throw new InvalidValueException(rf.expr[fieldIndex], "invalid value for format parameter \'" + name
-                    + "\': <" + val + ">");
+                    + "\': <" + val + ">. Allowed values are: " + ArrayUtils.toString(h.keySet()));
     }
 
     /**
