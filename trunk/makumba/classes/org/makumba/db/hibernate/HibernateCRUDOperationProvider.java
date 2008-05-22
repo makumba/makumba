@@ -384,8 +384,19 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 Object baseObject = getPointedObject(t, c, base);
 
                 String fieldNameInClass = fi.getName();
+                Class[] parameterTypes = new Class[] { Collection.class };
+                
+                if (!isGenerated(c)) {
+                    for (Method met : c.getMethods()) {
+                        if (met.getName().toLowerCase().equals("set" + fieldNameInClass.toLowerCase())) {
+                            fieldNameInClass = met.getName().substring(3);
+                            parameterTypes = new Class[] { met.getParameterTypes()[0] };
+                            break;
+                        }
+                    }
+                }
 
-                Method m = c.getMethod("set" + getFieldNameInClass(c, fi.getName()), new Class[] { Collection.class });
+                Method m = c.getMethod("set" + fieldNameInClass, parameterTypes);
                 m.invoke(baseObject, new Object[] { new ArrayList() });
 
                 ht.s.saveOrUpdate(baseObject);
