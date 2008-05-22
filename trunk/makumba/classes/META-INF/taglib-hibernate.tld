@@ -1861,7 +1861,7 @@
     </attribute>
 
     <attribute>
-      <name>selectMultiple</name>
+      <name>forceSelectMode</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
