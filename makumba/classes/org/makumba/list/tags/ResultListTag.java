@@ -24,6 +24,8 @@ public class ResultListTag extends QueryTag {
 
     private String resultsFrom;
 
+    private boolean noResultsPresent = false; // indicates whether we execute the list, or not
+
     public void setResultsFrom(String s) {
         this.resultsFrom = s;
     }
@@ -31,17 +33,13 @@ public class ResultListTag extends QueryTag {
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         setFieldsFromSearchFormInfo(pageCache);
-        // make sure we have the attributes from the search form set, otherwise we assume that there is no correct
-        // search form and throw a programmer error.
-        // FIXME: maybe in this case we should just not do the tag body.
+        // check whether we have the attributes from the search present, if not, don't process the list
         String[] attributesToCheck = { SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM, SearchTag.ATTRIBUTE_NAME_WHERE };
         for (int i = 0; i < attributesToCheck.length; i++) {
             String thisAttribute = resultsFrom + attributesToCheck[i];
             if (pageContext.getRequest().getAttribute(thisAttribute) == null) {
-                throw new ProgrammerError(
-                        "Attribute '"
-                                + thisAttribute
-                                + "' not found. Please make sure you have a correct 'searchForm' tag before this 'resultList' tag.");
+                this.noResultsPresent = true;
+                return SKIP_BODY;
             }
         }
         return super.doAnalyzedStartTag(pageCache);
@@ -81,6 +79,14 @@ public class ResultListTag extends QueryTag {
     public void setTagKey(PageCache pageCache) {
         setFieldsFromSearchFormInfo(pageCache);
         super.setTagKey(pageCache);
+    }
+
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
+        if (noResultsPresent) { // no results ==> skip the list
+            return SKIP_BODY;
+        } else {
+            return super.doAnalyzedEndTag(pageCache);
+        }
     }
 
 }
