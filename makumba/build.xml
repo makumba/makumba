@@ -176,7 +176,7 @@
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.gif, org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt"/>
+			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt"/>
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
@@ -335,6 +335,7 @@
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<svn>
+		<copy message="Creating new tag ${tag}" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/" destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
 		<export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
 	</svn>
 	<mkdir dir="${jar.place}/lib" />
