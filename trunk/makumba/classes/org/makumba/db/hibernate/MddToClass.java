@@ -110,6 +110,8 @@ public class MddToClass {
 			ClassPool cp = ClassPool.getDefault();
             cp.insertClassPath(new ClassClassPath(this.getClass()));
 			CtClass cc = cp.makeClass(nr.arrowToDoubleUnderscore(dd.getName()));
+			cc.stopPruning(true);
+	        
 
 			String type = null;
 			String name = null;
