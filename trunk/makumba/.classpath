@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry excluding="*.class" kind="src" path="classes"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/antlr.jar" sourcepath="lib-src/antlr-2.7.6.zip"/>
 	<classpathentry kind="lib" path="lib/asm.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt.jar"/>
 	<classpathentry kind="lib" path="lib/cactus.jar"/>
@@ -10,8 +9,6 @@
 	<classpathentry kind="lib" path="lib/commons-daemon.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-api.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j.jar"/>
-	<classpathentry kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar" sourcepath="lib-src/hibernate-3.2.4.sp1.zip"/>
 	<classpathentry kind="lib" path="lib/httpunit.jar" sourcepath="lib-src/httpunit-1.6.2.zip">
 		<attributes>
@@ -31,7 +28,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jta.jar"/>
-	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/mysql.jar" sourcepath="lib-src/mysql-connector-java-3.1.8-src.zip"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar" sourcepath="lib-src/apache-tomcat-5.5.23-src.zip">
 		<attributes>
@@ -61,5 +57,9 @@
 	<classpathentry kind="lib" path="lib/jstl.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar" sourcepath="lib-src/commons-lang-2.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/JSAP-2.1.jar" sourcepath="lib-src/JSAP-2.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar" sourcepath="lib-src/antlr-2.7.6.zip"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache-1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
