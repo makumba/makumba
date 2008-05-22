@@ -1,0 +1,16 @@
+
+
+<html>
+<head><title>Field types</title></head>
+<body>
+
+
+
+testNewFormStart!<form action="testMakNewForm.jsp" method="post">!endNewFormStart
+        testName!<input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name" >!endName
+        testSubmit!<input type="submit">!endSubmit
+testNewFormEnd!<input type="hidden" name="__makumba__responder__" value="-2018638732">
+</form>!endNewFormEnd
+
+</body>
+</html>

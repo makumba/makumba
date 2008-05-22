@@ -1,0 +1,4 @@
+#$Id$
+id=char[2];
+someSet = set
+someSet->id = char[2];
