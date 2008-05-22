@@ -26,6 +26,11 @@ public class ChoiceSet extends java.util.ArrayList {
         public String getTitle() {
             return title;
         }
+        
+        @Override
+        public String toString() {
+            return "Choice, title: '" + getTitle() + "', value: '" + getValue() + "'";
+        }
     }
 
     java.util.Map<Object, Choice> m = new java.util.HashMap<Object, Choice>();
