@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlChoiceWriter;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -37,10 +38,10 @@ import org.makumba.commons.formatters.RecordFormatter;
 public abstract class choiceEditor extends FieldEditor {
 
     static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
-            "selectMultiple" };
+            "forceSelectMode" };
 
     static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
-            null, { "true", "false" } };
+            null, { "single", "multiple" } };
 
     protected String nullOption = null;
 
@@ -91,8 +92,8 @@ public abstract class choiceEditor extends FieldEditor {
         boolean yn_radio = "radio".equals(type);
         boolean yn_checkbox = "checkbox".equals(type);
         boolean yn_tickbox = "tickbox".equals(type);
-        boolean selectMultiple = "true".equals(formatParams.get("selectMultiple"));
-        formatParams.remove("selectMultiple");
+        String forceSelectMode = (String) formatParams.get("forceSelectMode");
+        formatParams.remove("forceSelectMode");
 
         // check whether the enum Editor should have a null value option.
         // doing this from here seems a bit dirty, but the formatParams are not available in the subclass.
@@ -125,11 +126,21 @@ public abstract class choiceEditor extends FieldEditor {
             }
         if (!hidden) {
             HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
+
+            boolean forceSingleSelect = StringUtils.equals(forceSelectMode, "single");
+            boolean forceMultipleSelect = StringUtils.equals(forceSelectMode, "multiple");
+
             int size = getIntParam(rf, fieldIndex, formatParams, "size");
-            if (size == -1)
-                size = getDefaultSize(rf, fieldIndex);
+
+            if (size == -1) {
+                if (forceSingleSelect) { // if we force a set to be single select, use 1 as size
+                    size = 1;
+                } else {
+                    size = getDefaultSize(rf, fieldIndex);
+                }
+            }
             hcw.setSize(size);
-            hcw.setMultiple(isMultiple(rf, fieldIndex) || selectMultiple);
+            hcw.setMultiple(!forceSingleSelect && (isMultiple(rf, fieldIndex) || forceMultipleSelect));
             hcw.setLiteralHtml(getExtraFormatting(rf, fieldIndex, formatParams));
 
             Object opt = getOptions(rf, fieldIndex, formatParams);
