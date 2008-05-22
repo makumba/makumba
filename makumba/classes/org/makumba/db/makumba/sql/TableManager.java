@@ -67,7 +67,7 @@ public class TableManager extends Table {
 
     protected long primaryKeyCurrentIndex;
 
-    protected int dbsv; 
+    protected int dbsv;
 
     boolean alter;
 
@@ -965,7 +965,7 @@ public class TableManager extends Table {
          * InputStream is= rs.getBinaryStream(i); if(is==null ) return null; return new Text(is);
          */
     }
-    
+
     public Object get_boolean_Value(String fieldName, ResultSet rs, int i) throws SQLException {
         boolean b = rs.getBoolean(i);
         if (rs.wasNull())
@@ -1216,7 +1216,7 @@ public class TableManager extends Table {
         // return
         // super.inCreate(d)+"("+getFieldDefinition(fieldName).getWidth()()+")"+s;
     }
-    
+
     /** write in CREATE, in the form name BIT(1) */
     public String in_boolean_Create(String fieldName, Database d) {
         return getFieldDBName(fieldName) + " " + getFieldDBType(fieldName, d) + "(1)";
@@ -1291,7 +1291,7 @@ public class TableManager extends Table {
     protected String get_binary_FieldDBType(String fieldName) {
         return "LONG VARBINARY";
     }
-    
+
     protected String get_boolean_FieldDBType(String fieldName) {
         return "BIT";
     }
@@ -1463,11 +1463,10 @@ public class TableManager extends Table {
     public String write_binary_Constant(String fieldName, Object o) {
         return org.makumba.db.makumba.sql.Database.SQLEscape(o.toString());
     }
-    
-    public String write_boolean_Constant(String fieldName, Object o) {
-        return ((Boolean)o) ? "1" : "0";
-    }
 
+    public String write_boolean_Constant(String fieldName, Object o) {
+        return ((Boolean) o) ? "1" : "0";
+    }
 
     // moved from dateTimeManager
     /** writes the date between apostrophes */
@@ -1638,25 +1637,26 @@ public class TableManager extends Table {
 
     protected void manageForeignKeys(String fieldName, SQLDBConnection dbc, String brief) throws DBError {
         // for foreign keys
-        
+
         String type = getFieldDefinition(fieldName).getType();
-        if (((type.equals("ptr") || type.equals("ptrOne")) && !hasForeignKey(fieldName)))
-        {
-            //System.out.println("We need a foreign key for " + brief);
-            
+        if (((type.equals("ptr") || type.equals("ptrOne")) && !hasForeignKey(fieldName))) {
+            // System.out.println("We need a foreign key for " + brief);
+
             try {
                 // try creating foreign key index
                 Statement st = dbc.createStatement();
-                
+
                 String fkTableName = getFieldDefinition(fieldName).getPointedType().getName();
                 String fkFieldName = getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName();
-                
-                if(type.equals("ptrOne")) {
+
+                if (type.equals("ptrOne")) {
                     fkTableName = getFieldDefinition(fieldName).getSubtable().getName();
                     fkFieldName = getFieldDefinition(fieldName).getSubtable().getIndexPointerFieldName();
                 }
-                
-                //System.out.println("testing: "+foreignKeyCreateSyntax(fieldName, getFieldDefinition(fieldName).getPointedType().getName(), getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
+
+                // System.out.println("testing: "+foreignKeyCreateSyntax(fieldName,
+                // getFieldDefinition(fieldName).getPointedType().getName(),
+                // getFieldDefinition(fieldName).getPointedType().getIndexPointerFieldName()));
                 st.executeUpdate(foreignKeyCreateSyntax(fieldName, fkTableName, fkFieldName));
                 java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").info(
                     "FOREIGN KEY ADDED on " + brief);
@@ -1669,10 +1669,9 @@ public class TableManager extends Table {
                     // name
                     "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                             + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
-                throw new DBError("Error adding foreign key for " + brief 
-                    + ": " + e.getMessage());
+                throw new DBError("Error adding foreign key for " + brief + ": " + e.getMessage());
             }
-            
+
         }
     }
 
@@ -2003,9 +2002,13 @@ public class TableManager extends Table {
 
     /**
      * Checks if a set of values can be inserted in the database
-     * @param fieldsToCheck the values to be checked
-     * @param fieldsToIgnore the values of toCheck not to be checked
-     * @param allFields the entire data to be inserted
+     * 
+     * @param fieldsToCheck
+     *            the values to be checked
+     * @param fieldsToIgnore
+     *            the values of toCheck not to be checked
+     * @param allFields
+     *            the entire data to be inserted
      */
     public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
         dd.checkFieldNames(fieldsToCheck);
@@ -2014,40 +2017,43 @@ public class TableManager extends Table {
             if (fieldsToIgnore.get(name) == null) {
                 Object o = fieldsToCheck.get(name);
                 if (o != null) {
-                
+
                     boolean isDateCreate = getFieldDefinition(name).getIntegerType() == FieldDefinition._dateCreate;
                     boolean isDataModify = getFieldDefinition(name).getIntegerType() == FieldDefinition._dateModify;
                     boolean isPtrIndex = getFieldDefinition(name).getIntegerType() == FieldDefinition._ptrIndex;
-                
+
                     if (isDateCreate || isDataModify || isPtrIndex) {
                         checkCopyRights(name);
                     } else {
                         getFieldDefinition(name).checkInsert(fieldsToCheck);
                     }
-                
+
                     fieldsToCheck.put(name, getFieldDefinition(name).checkValue(o));
                 }
             }
         }
-        
+
         // check multi-field multi-table uniqueness
         checkMultiFieldMultiTableUniqueness(null, allFields);
     }
-    
+
     /**
      * Checks if a set of values can be updated in the database
      * 
-     * @param pointer the pointer to the record to be updated
-     * @param fieldsToCheck the values to be checked
-     * @param fieldsToIgnore the values of toCheck not to be checked
-     * @param allFields the entire data to be inserted
+     * @param pointer
+     *            the pointer to the record to be updated
+     * @param fieldsToCheck
+     *            the values to be checked
+     * @param fieldsToIgnore
+     *            the values of toCheck not to be checked
+     * @param allFields
+     *            the entire data to be inserted
      */
     public void checkUpdate(Pointer pointer, Dictionary allFields) {
-        
+
         // check multi-field key uniqueness that span over more than one table
         checkMultiFieldMultiTableUniqueness(pointer, allFields);
     }
-    
 
     private void checkCopyRights(String fieldName) {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
@@ -2070,7 +2076,7 @@ public class TableManager extends Table {
             o = new Timestamp(((java.util.Date) o).getTime());
         return o;
     }
-    
+
     /**
      * Checks all mult-field unique indices that span over more than one table. Other unique indices will be checked by
      * the database, and we just need to find them if something fails
@@ -2078,10 +2084,10 @@ public class TableManager extends Table {
      */
     private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData)
             throws CompositeValidationException {
-        
+
         DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
         SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
-        
+
         // we use a try to make sure that in any case in the end, our connection gets closed
         try {
             MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
@@ -2103,14 +2109,13 @@ public class TableManager extends Table {
                 }
             }
             notUnique.throwCheck();
-            
-        } catch(Exception e) {
+
+        } catch (Exception e) {
             throw new RuntimeWrappedException(e);
         } finally {
             dbcw.close();
         }
-        
-        
+
     }
 
 }
