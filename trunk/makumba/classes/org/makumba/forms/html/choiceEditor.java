@@ -34,14 +34,15 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlChoiceWriter;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.forms.tags.SearchFieldTag;
 
 public abstract class choiceEditor extends FieldEditor {
 
     static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
-            "forceSelectMode" };
+            "forceInputStyle" };
 
     static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
-            null, { "single", "multiple" } };
+            null, SearchFieldTag.allowedSelectTypes };
 
     protected String nullOption = null;
 
@@ -92,8 +93,8 @@ public abstract class choiceEditor extends FieldEditor {
         boolean yn_radio = "radio".equals(type);
         boolean yn_checkbox = "checkbox".equals(type);
         boolean yn_tickbox = "tickbox".equals(type);
-        String forceSelectMode = (String) formatParams.get("forceSelectMode");
-        formatParams.remove("forceSelectMode");
+        String forceInputStyle = (String) formatParams.get("forceInputStyle");
+        formatParams.remove("forceInputStyle");
 
         // check whether the enum Editor should have a null value option.
         // doing this from here seems a bit dirty, but the formatParams are not available in the subclass.
@@ -127,8 +128,8 @@ public abstract class choiceEditor extends FieldEditor {
         if (!hidden) {
             HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
 
-            boolean forceSingleSelect = StringUtils.equals(forceSelectMode, "single");
-            boolean forceMultipleSelect = StringUtils.equals(forceSelectMode, "multiple");
+            boolean forceSingleSelect = StringUtils.equals(forceInputStyle, "single");
+            boolean forceMultipleSelect = StringUtils.equals(forceInputStyle, "multiple");
 
             int size = getIntParam(rf, fieldIndex, formatParams, "size");
 
