@@ -26,8 +26,10 @@ package org.makumba.forms.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
+import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.forms.tags.SearchFieldTag;
 
 public class textEditor extends FieldEditor {
 	
@@ -35,16 +37,18 @@ public class textEditor extends FieldEditor {
 		static final FieldEditor singleton = new textEditor();
 	}
 
+    private boolean forceInput;
+
 	private textEditor() {}
 
 	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
 	}
 
-	static String[] _params = { "default", "empty", "type", "rows", "cols" };
+	static String[] _params = { "default", "empty", "type", "rows", "cols", "forceInputStyle" };
 
 	static String[][] _paramValues = { null, null, { "textarea", "file" },
-			null, null };
+			null, null, SearchFieldTag.allowedSelectTypes };
 
 	public String[] getAcceptedParams() {
 		return _params;
@@ -54,26 +58,31 @@ public class textEditor extends FieldEditor {
 		return _paramValues;
 	}
 
-	public String getParams(RecordFormatter rf, int fieldIndex,
-			Dictionary formatParams) {
-		return getIntParamString(rf, fieldIndex, formatParams, "rows")
-				+ getIntParamString(rf, fieldIndex, formatParams, "cols");
-	}
+	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+        return getIntParamString(rf, fieldIndex, formatParams, "rows")
+                + getIntParamString(rf, fieldIndex, formatParams, "cols");
+    }
+    
+    @Override
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        forceInput = StringUtils.equals(formatParams.get("forceInputStyle"), "input");
+        formatParams.remove("forceInputStyle");
+        return super.format(rf, fieldIndex, o, formatParams);
+    }
 
-	public String formatNull(RecordFormatter rf, int fieldIndex,
-			Dictionary formatParams) {
-		return formatNotNull(rf, fieldIndex, null, formatParams);
-	}
+	public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+        return formatNotNull(rf, fieldIndex, null, formatParams);
+    }
 
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
 		if (isTextArea(rf, fieldIndex, formatParams)) {
-			return "<TEXTAREA name=\""
+			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + "name=\""
 					+ getInputName(rf, fieldIndex, formatParams) + "\" "
 					+ getParams(rf, fieldIndex, formatParams)
 					+ getExtraFormatting(rf, fieldIndex, formatParams) + " >"
 					+ formatValue(rf, fieldIndex, o, formatParams)
-					+ "</TEXTAREA>";
+					+ (forceInput ? "</INPUT>" : "</TEXTAREA>");
 		} else {
 			return fileInput(rf, fieldIndex, formatParams);
 		}
@@ -101,9 +110,10 @@ public class textEditor extends FieldEditor {
 	}
 
 	boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
-		String s = (String) formatParams.get("type");
-		if (s == null)
-			return true;
-		return s.equals("textarea");
-	}
+        String s = (String) formatParams.get("type");
+        if (s == null) {
+            return true;
+        }
+        return s.equals("textarea");
+    }
 }
