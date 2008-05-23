@@ -325,7 +325,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n");
             }
         }
-        selectStatement.append("</SELECT>");
+        selectStatement.append("</SELECT>"); // FIXME: add only if the string is not empty, i.e. the select was started
 
         return selectStatement.toString();
     }
