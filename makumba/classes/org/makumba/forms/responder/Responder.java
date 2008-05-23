@@ -139,6 +139,12 @@ public abstract class Responder implements java.io.Serializable {
     
     /** order of the forms in the page **/
     protected String[] formOrder;
+    
+    /**
+     * Names of the forms in the page, needed for nested forms that depend on each other, e.g. two nested new forms,
+     * where one wants to store the result of the new operation of the other.
+     */
+    protected ArrayList<String> formNames;
 
     public String getHandler() {
         return handler;
@@ -175,10 +181,13 @@ public abstract class Responder implements java.io.Serializable {
     public String getFormName() {
         return formName;
     }
-    
-    
+
     public String[] getFormOrder() {
         return formOrder;
+    }
+
+    public ArrayList<String> getFormNames() {
+        return formNames;
     }
 
     // --------------- form time, responder preparation -------------------
@@ -265,6 +274,10 @@ public abstract class Responder implements java.io.Serializable {
     
     public void setResponderOrder(String[] formOrder) {
         this.formOrder = formOrder;
+    }
+    
+    public void setFormNames(ArrayList<String> formNames) {
+        this.formNames = formNames;
     }
 
     abstract protected void postDeserializaton();
