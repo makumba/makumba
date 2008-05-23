@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Properties;
 
+import org.makumba.commons.MakumbaResourceServlet;
+
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specifc
  * services. It can be seen as a service dispatcher in a way.
@@ -12,6 +14,18 @@ import java.util.Properties;
  * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
  */
 public class Configuration implements Serializable {
+
+    private static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
+
+    public static String defaultClientSideValidation = "live";
+
+    public static boolean defaultReloadFormOnError = true;
+
+    private static boolean defaultCalendarEditor = true;
+
+    private static String defaultCalendarEditorLink = "<img border=\"0\" src=\"" + PLACEHOLDER_CONTEXT_PATH + "/"
+            + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_IMAGES
+            + "calendar.gif\">";
 
     private static final long serialVersionUID = 1L;
 
@@ -33,10 +47,19 @@ public class Configuration implements Serializable {
 
     public Configuration() {
         if (controllerConfig != null) {
-            String defaultTransactionProvider = (String) controllerConfig.get("defaultTransactionProvider");
-            if (defaultTransactionProvider != null) {
-                this.defaultTransactionProvider = defaultTransactionProvider;
-            }
+            defaultTransactionProvider = controllerConfig.getProperty("defaultTransactionProvider",
+                defaultTransactionProvider);
+
+            // FIXME: these other config details should most likely be loaded from a different config file
+            defaultClientSideValidation = controllerConfig.getProperty("defaultClientSideValidation",
+                defaultClientSideValidation);
+            defaultReloadFormOnError = Boolean.parseBoolean(controllerConfig.getProperty("defaultReloadFormOnError",
+                String.valueOf(defaultReloadFormOnError)));
+
+            defaultCalendarEditorLink = controllerConfig.getProperty("defaultCalendarEditorLink",
+                defaultCalendarEditorLink);
+            defaultCalendarEditor = Boolean.parseBoolean(controllerConfig.getProperty("defaultCalendarEditor",
+                String.valueOf(defaultCalendarEditor)));
         }
     }
 
@@ -75,18 +98,19 @@ public class Configuration implements Serializable {
     }
 
     public static String getClientSideValidationDefault() {
-        // TODO: get this from some config file
-        return "live";
+        return defaultClientSideValidation;
     }
 
     public static boolean getReloadFormOnErrorDefault() {
-        // TODO: get this from some config file
-        return false;
+        return defaultReloadFormOnError;
     }
 
-    public static String getCalendarEditorDefault() {
-        // TODO: get this from some config file
-        return "false";
+    public static boolean getCalendarEditorDefault() {
+        return defaultCalendarEditor;
+    }
+
+    public static String getDefaultCalendarEditorLink(String contextPath) {
+        return defaultCalendarEditorLink.replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
     }
 
 }

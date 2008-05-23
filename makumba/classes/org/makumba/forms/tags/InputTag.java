@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
@@ -62,7 +63,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     protected String calendarEditorLink = null;
 
-    protected String calendarEditor = Configuration.getCalendarEditorDefault();
+    protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
 
     protected String nullOption;
 
@@ -136,6 +137,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * {@inheritDoc}
      */
     public void setTagKey(PageCache pageCache) {
+        if (calendarEditorLink == null && pageContext != null) { // initialise default calendar link text
+            calendarEditorLink = Configuration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
+        }
         expr = valueExprOriginal;
         // FIXME: this fix is rather a quick fix, it does not provide any information about the location of the error
         // it may appear e.g. if you put a mak:input inside a mak:object, but not inside a form
@@ -182,7 +186,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         boolean dataTypeIsDate = dataType != null && ddp.makeFieldDefinition("dummyName", dataType) != null
                 && ddp.makeFieldDefinition("dummyName", dataType).isDateType();
         boolean contextTypeIsDate = contextType != null && contextType.isDateType();
-        if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor != null && calendarEditor.equals("true")) {
+        if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
@@ -252,7 +256,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
             FieldDefinition fd = getTypeFromContext(getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
-            if (!fd.isEnumType() && !fd.isPointer()) {
+            if (!fd.isEnumType()
+                    && !fd.isPointer()
+                    && !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals(
+                        ((SearchFieldTag) this).forceInputStyle, "single"))) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum', 'intEnum' and 'ptr' types, but input '"
                                 + fd.getName() + "' is of type '" + fd.getType() + "'!");
@@ -264,13 +271,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (!type.isDateType()) {
             extraFormatting.append("id=\"").append(name).append("\" ");
         } else { // but for dates we add info about calendarEditor
-            if(calendarEditor!=null)
-                params.put("calendarEditor", calendarEditor);
+            if(calendarEditor) {
+                params.put("calendarEditor", String.valueOf(calendarEditor));
+            }
             if (calendarEditorLink != null) {
                 params.put("calendarEditorLink", calendarEditorLink);
             }
         }
-
+        
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
         String fieldName = name + getForm().responder.getSuffix();
 
@@ -328,7 +336,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     }
 
     public void setCalendarEditor(String calendarEditor) {
-        this.calendarEditor = calendarEditor;
+        this.calendarEditor = Boolean.parseBoolean(calendarEditor);
     }
     
     @Override
@@ -336,7 +344,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         super.doAnalyzedCleanup();
         bodyContent=null;
         choiceSet=null;
-        name= nameVar= nullOption= display= calendarEditor= calendarEditorLink= null;
+        name= nameVar= nullOption= display=calendarEditorLink= null;
+        calendarEditor= Configuration.getCalendarEditorDefault();
     }
 
 }
