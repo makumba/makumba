@@ -135,6 +135,11 @@ public class RecordParser {
 
     private ArrayList<String> unparsedValidationDefinitions = new ArrayList<String>();
 
+    private String titleExpressionToEvaluate; // title field expression to be evaluated later, after all subfields
+                                                // were found
+
+    private String titleExpressionToEvaluateOrigCmd;
+
     public static boolean isValidationRule(String s) {
         return validationDefinitionPattern.matcher(s).matches();
     }
@@ -170,7 +175,7 @@ public class RecordParser {
             dd.addStandardFields(dd.name.substring(dd.name.lastIndexOf('.') + 1));
             parse();
         } catch (RuntimeException e) {
-            throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName() + " from "+dd.origin);
+            throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName() + " from " + dd.origin);
         }
         if (!mpe.isSingle() && !(dd.getParentField() != null))
             throw mpe;
@@ -233,12 +238,30 @@ public class RecordParser {
         // call solveAll() on all subfields
         treatSubfields();
 
+        evaluateTitleExpressionInPointedType();
+
         // parse validation definition
         parseValidationDefinition();
 
         // after all fields are processed, process the multi field indices & check for field existance
         checkMultipleUniqueFields();
 
+    }
+
+    private void evaluateTitleExpressionInPointedType() {
+        if (titleExpressionToEvaluate != null) {
+            try {
+                FieldDefinition fieldDef = dd.getFieldOrPointedFieldDefinition(titleExpressionToEvaluate);
+                if (fieldDef == null) {
+                    mpe.add(fail("no such field in a pointed type for title", makeLine(
+                        titleExpressionToEvaluateOrigCmd, titleExpressionToEvaluate)));
+                    return;
+                }
+                ((RecordInfo) dd).title = titleExpressionToEvaluate;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /** Check whether all fields used in multiple uniqueness checks are defined in the data definition. */
@@ -285,7 +308,12 @@ public class RecordParser {
         String ttl = (String) text.remove("!title");
         String ttlt = null;
         if (ttl != null) {
-            if (fields.get(ttlt = ttl.trim()) == null) {
+            if (ttl.contains(".")) { // we point to a field in a ptd type ==> need to evaluate it later, after all
+                                        // fields are evaluated
+                titleExpressionToEvaluateOrigCmd = origCmd;
+                titleExpressionToEvaluate = ttl;
+                return;
+            } else if (fields.get(ttlt = ttl.trim()) == null) {
                 mpe.add(fail("no such field for title", makeLine(origCmd, ttl)));
                 return;
             }
@@ -315,8 +343,10 @@ public class RecordParser {
      * Looks up a data definition. First tries to see if an arbitrary webapp root path was passed, if not uses the
      * classpath
      * 
-     * @param s the name of the type
-     * @param ext the extension (e.g. mdd)
+     * @param s
+     *            the name of the type
+     * @param ext
+     *            the extension (e.g. mdd)
      * @return a URL to the MDD file, null if none was found
      */
     static public java.net.URL findDataDefinitionOrDirectory(String s, String ext) {
@@ -518,18 +548,18 @@ public class RecordParser {
         Object o = u.getContent();
 
         URLConnection uconn = u.openConnection();
-     
+
         if (uconn.getClass().getName().endsWith("FileURLConnection")) {
-            read(op, new BufferedReader(new InputStreamReader((InputStream)o)));
+            read(op, new BufferedReader(new InputStreamReader((InputStream) o)));
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
-          JarFile jf = ((JarURLConnection)uconn).getJarFile();
-          
-          // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation.mdd
-          String[] jarURL = u.toExternalForm().split("!");
-          
-          JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
-          
-          read(op, new BufferedReader(new InputStreamReader(jf.getInputStream(je))));
+            JarFile jf = ((JarURLConnection) uconn).getJarFile();
+
+            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation.mdd
+            String[] jarURL = u.toExternalForm().split("!");
+
+            JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
+
+            read(op, new BufferedReader(new InputStreamReader(jf.getInputStream(je))));
         }
     }
 
