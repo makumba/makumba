@@ -1110,7 +1110,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     public boolean isStringType() {
-        return getIntegerType() == _char || getIntegerType() == _intEnum;
+        return getIntegerType() == _char || getIntegerType() == _text;
     }
 
     public boolean isInternalSet() {
