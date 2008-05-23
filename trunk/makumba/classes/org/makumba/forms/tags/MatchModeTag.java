@@ -108,8 +108,8 @@ public class MatchModeTag extends GenericMakumbaTag {
             throw new ProgrammerError("\'matchMode\' tag must be enclosed in a 'criterion' tag");
         }
         FieldDefinition fd = getCriterionTag().getTypeFromContext(pageCache);
-        // string search mode is only allowed for string types, i.e. char and text
-        if (matchModes != null && fd != null && (!fd.isStringType() && !fd.isNumberType() && !fd.isDateType())) {
+        // match modes are only allowed for string types, i.e. char and text, and number (real, int) and dates
+        if (matchModes != null && fd != null && !(fd.isStringType() || fd.isNumberType() || fd.isDateType())) {
             throw new ProgrammerError(
                     "'matchModes' tag is only valid for 'char', 'text', 'int', 'real' and 'date' types, field is of type '"
                             + fd.getType() + "'!");
