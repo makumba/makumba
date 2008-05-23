@@ -41,7 +41,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -303,8 +302,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     /** returns all the field names */
-    public Vector getFieldNames() {
-        return (Vector) fieldOrder.clone();
+    public Vector<String> getFieldNames() {
+        return (Vector<String>) fieldOrder.clone();
     }
 
     public Vector<FieldDefinition> getReferenceFields() {
@@ -321,6 +320,24 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     /** returns the field info associated with a name */
     public FieldDefinition getFieldDefinition(String nm) {
         return (FieldDefinition) fields.get(nm);
+    }
+
+    /** returns the field info associated with a name */
+    public FieldDefinition getFieldOrPointedFieldDefinition(String nm) {
+        if (getFieldDefinition(nm) != null) {
+            return getFieldDefinition(nm);
+        }
+        String fieldName = nm;
+        DataDefinition dd = this;
+
+        int indexOf = -1;
+        while ((indexOf = fieldName.indexOf(".")) != -1) {
+            String subFieldName = fieldName.substring(0, indexOf);
+            fieldName = fieldName.substring(indexOf + 1);
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
+            dd = fieldDefinition.getPointedType();
+        }
+        return dd.getFieldDefinition(fieldName);
     }
 
     /**
