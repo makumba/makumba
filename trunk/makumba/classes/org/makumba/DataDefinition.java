@@ -44,13 +44,16 @@ public interface DataDefinition {
     public String getName();
 
     /** the names of the fields declared in this data definition, in the order of declaration */
-    public java.util.Vector getFieldNames();
+    public java.util.Vector<String> getFieldNames();
 
     /** the field with the respective name, null if such a field doesn't exist */
     public FieldDefinition getFieldDefinition(String name);
 
     /** the field with the respective index, null if such a field doesn't exist */
     public FieldDefinition getFieldDefinition(int n);
+    
+    /** Returns a field definition that is either contained in this data definition, or in a pointed type. */
+    public FieldDefinition getFieldOrPointedFieldDefinition(String nm);
 
     /**
      * tells whether this data definition was generated temporarily to depict a query result as opposed to being read
