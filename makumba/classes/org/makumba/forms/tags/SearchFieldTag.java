@@ -15,7 +15,7 @@ import org.makumba.commons.MultipleKey;
  * <ul>
  * <li>Not needing the name field, but getting the name & type of the input from the first argument in the fields
  * attribute of {@link CriterionTag}, using {@link CriterionTag#getInputName()}</>
- * <li>Allows to change a select input to be forced to a single/multiple select using the 'forceSelectMode'
+ * <li>Allows to change a select input to be forced to a single/multiple select using the 'forceInputStyle'
  * attribute.</li>
  * <li>Allows for range searching, triggered by the the 'role' attribute, requiring 'isRange' attribute in
  * {@link CriterionTag} to be set to 'true'</li>
@@ -27,21 +27,21 @@ import org.makumba.commons.MultipleKey;
 public class SearchFieldTag extends InputTag {
     private static final String[] allowedRoles = { "rangeBegin", "rangeEnd" };
 
-    private static final String[] allowedSelectTypes = { "single", "multiple" };
+    public static final String[] allowedSelectTypes = { "single", "multiple", "input" };
 
     private static final long serialVersionUID = 1L;
 
-    private String forceSelectMode = null;
+    protected String forceInputStyle = null;
 
     private String role = null;
 
-    public void setForceSelectMode(String forceSelectMode) {
+    public void setForceInputStyle(String forceInputStyle) {
         if (!getForm().getOperation().equals("search")) {
-            throw new ProgrammerError("'forceSelectMode' attribute is only valid inside Makumba Search Forms!");
+            throw new ProgrammerError("'forceInputStyle' attribute is only valid inside Makumba Search Forms!");
         }
-        checkValidAttributeValues("forceSelectMode", forceSelectMode, allowedSelectTypes);
-        this.forceSelectMode = forceSelectMode;
-        params.put("forceSelectMode", forceSelectMode);
+        checkValidAttributeValues("forceInputStyle", forceInputStyle, allowedSelectTypes);
+        this.forceInputStyle = forceInputStyle;
+        params.put("forceInputStyle", forceInputStyle);
     }
 
     protected CriterionTag getCriterionTag() {
@@ -63,23 +63,23 @@ public class SearchFieldTag extends InputTag {
         name = getCriterionTag().getInputName();
 
         FieldDefinition fd = getCriterionTag().getFieldDefinition(pageCache);
-        // forceSelectMode 'multiple' is only allowed for single-select inputs
-        if (StringUtils.equals("forceSelectMode", "multiple") && fd != null && !(fd.isEnumType() || fd.isPointer())) {
+        // forceInputStyle 'multiple' is only allowed for single-select inputs
+        if (StringUtils.equals("forceInputStyle", "multiple") && fd != null && !(fd.isEnumType() || fd.isPointer())) {
             throw new ProgrammerError(
-                    "'forceSelectMode' attribute with value 'multiple' is only valid for 'ptr' and 'intEnum'/'charEnum' types, field is of type '"
+                    "'forceInputStyle' attribute with value 'multiple' is only valid for 'ptr' and 'intEnum'/'charEnum' types, field is of type '"
                             + fd.getType() + "'!");
         }
-        if (StringUtils.equals("forceSelectMode", "single") && fd != null && !(fd.isSetType())) {
+        if (StringUtils.equals("forceInputStyle", "single") && fd != null && !(fd.isSetType())) {
             throw new ProgrammerError(
-                    "'forceSelectMode' attribute with value 'single' is only valid for 'set' and 'setIntEnum'/'setCharEnum' types, field is of type '"
+                    "'forceInputStyle' attribute with value 'single' is only valid for 'set' and 'setIntEnum'/'setCharEnum' types, field is of type '"
                             + fd.getType() + "'!");
         }
 
         if (isValue()) {
             fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
         }
-        if (StringUtils.equals(forceSelectMode, "multiple") && nullOption != null) {
-            throw new ProgrammerError("'forceSelectMode' attribute with value 'multiple' cannot be used in combination with 'nullOption'");
+        if (StringUtils.equals(forceInputStyle, "multiple") && nullOption != null) {
+            throw new ProgrammerError("'forceInputStyle' attribute with value 'multiple' cannot be used in combination with 'nullOption'");
         }
     }
 

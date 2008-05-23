@@ -1867,7 +1867,7 @@
     </attribute>
 
     <attribute>
-      <name>forceSelectMode</name>
+      <name>forceInputStyle</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
