@@ -68,7 +68,7 @@ public class ptrEditor extends choiceEditor {
                 + choiceType + " choice "
                 +"ORDER BY title"
                 );
-        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldDefinition(titleField).getType().equals("ptr"))
+        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(titleField).getType().equals("ptr"))
             titleExpr+=".id";
         m.put("hql",
             "SELECT choice.id as choice, "
@@ -148,7 +148,7 @@ public class ptrEditor extends choiceEditor {
     }
 
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return "" + ((ChoiceSet.Choice) ((ChoiceSet) options).get(i)).getTitle();
+        return ((ChoiceSet.Choice) ((ChoiceSet) options).get(i)).getTitle();
     }
 
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
