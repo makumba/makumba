@@ -94,7 +94,8 @@ public class FieldFormatter {
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
         Hashtable h = (Hashtable) validParams.get(name);
         if (h == null)
-            throw new InvalidValueException(rf.expr[fieldIndex], "invalid format parameter \'" + name + "\'");
+            throw new InvalidValueException(rf.expr[fieldIndex], "invalid format parameter \'" + name
+                    + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
         if (h.size() == 0)
             return;
         if (h.get(val) == null)
