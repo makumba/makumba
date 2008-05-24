@@ -77,7 +77,7 @@ public class textEditor extends FieldEditor {
 	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
 		if (isTextArea(rf, fieldIndex, formatParams)) {
-			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + "name=\""
+			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + " name=\""
 					+ getInputName(rf, fieldIndex, formatParams) + "\" "
 					+ getParams(rf, fieldIndex, formatParams)
 					+ getExtraFormatting(rf, fieldIndex, formatParams) + " >"
