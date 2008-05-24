@@ -370,22 +370,24 @@
 </target>
 
 <target name="uploadMadeJar" description="uplads a jar and a src tarball of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version">
-	<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes">
+	<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
 		<fileset dir="lib/">
 			<include name="${tag}.jar" />
 			<include name="${tag}-src.zip" />
 		</fileset>
 	</ftp>
-	<ftp server="upload.sourceforge.net" userid="anonymous" password="makumba.developer@makumba.org" remotedir="incoming" binary="yes">
-		<fileset dir="lib/">
-			<include name="${tag}.jar" />
-			<include name="${tag}-src.zip" />
-		</fileset>
-	</ftp>
+
+    <scp todir="${user}:${password}@frs.sourceforge.net:uploads" sftp="true" verbose="true" trust="yes">
+	    <fileset dir="lib/">
+	        <include name="${tag}.jar" />
+	        <include name="${tag}-src.zip" />
+	    </fileset>
+	</scp>
+
 	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
-			http://sourceforge.net/project/admin/qrs.php?group_id=25704
-			within the next 24 hours.
-		</echo>
+			http://sourceforge.net/project/admin/newrelease.php?group_id=25704
+            and create a release with the given tag name (no leading "makumba" in the name)
+	</echo>
 </target>
 
 <target name="publishJar" depends="compile" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web">
