@@ -70,7 +70,7 @@ public class AddTag extends FormTagBase {
      *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
-        Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), getClass() };
+        Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), formName, getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
