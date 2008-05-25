@@ -316,23 +316,26 @@ public class RelationCrawler {
      *            the relation data
      */
     protected void addRelation(String fromFile, String toFile, Dictionary<String, Object> relationData) {
-        Map<String, Vector<Dictionary<String, Object>>> dic;
-        Vector<Dictionary<String, Object>> v;
-        if ((dic = detectedRelations.get(toFile)) != null) {
-            v = dic.get(fromFile);
-            if (v == null) {
+        
+        if(!fromFile.equals(toFile)) {
+            
+            Map<String, Vector<Dictionary<String, Object>>> dic;
+            Vector<Dictionary<String, Object>> v;
+            if ((dic = detectedRelations.get(toFile)) != null) {
+                v = dic.get(fromFile);
+                if (v == null) {
+                    v = new Vector<Dictionary<String, Object>>();
+                }
+                v.add(relationData);
+                dic.put(fromFile, v);
+            } else {
+                dic = new Hashtable<String, Vector<Dictionary<String, Object>>>();
                 v = new Vector<Dictionary<String, Object>>();
+                v.add(relationData);
+                dic.put(fromFile, v);
+                detectedRelations.put(toFile, dic);
             }
-            v.add(relationData);
-            dic.put(fromFile, v);
-        } else {
-            dic = new Hashtable<String, Vector<Dictionary<String, Object>>>();
-            v = new Vector<Dictionary<String, Object>>();
-            v.add(relationData);
-            dic.put(fromFile, v);
-            detectedRelations.put(toFile, dic);
         }
-
     }
 
     /**
