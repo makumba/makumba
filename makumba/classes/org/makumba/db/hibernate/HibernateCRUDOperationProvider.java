@@ -275,6 +275,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     fieldType = Boolean.class;
                     if (fieldValue == Pointer.NullBoolean)
                         fieldValue = null;
+                    break;
                 default:
                     throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
 
