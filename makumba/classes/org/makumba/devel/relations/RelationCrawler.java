@@ -540,7 +540,7 @@ public class RelationCrawler {
     public FileRelations getFileDependencies(String relativePath) {
 
         String relationQueryOQL = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
-        String relationQueryHQL = "SELECT r.toFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
+        String relationQueryHQL = "SELECT r.toFile AS file, r.id AS relation FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
 
         return getFileRelations(relativePath, tp.getQueryLanguage().equals("oql") ? relationQueryOQL : relationQueryHQL);
 
@@ -556,7 +556,7 @@ public class RelationCrawler {
     public FileRelations getFileDependents(String relativePath) {
 
         String relationQueryOQL = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = $1";
-        String relationQueryHQL = "SELECT r.fromFile AS file, r AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = ?";
+        String relationQueryHQL = "SELECT r.fromFile AS file, r.id AS relation FROM org.makumba.devel.relations.Relation r WHERE r.toFile = ?";
 
         return getFileRelations(relativePath, tp.getQueryLanguage().equals("oql") ? relationQueryOQL : relationQueryHQL);
 
