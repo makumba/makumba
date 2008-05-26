@@ -8,11 +8,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 
 import org.apache.cactus.JspTestCase;
+
+import bmsi.util.Diff;
+import bmsi.util.DiffPrint;
 
 /**
  * Utility class which enables it to quickly write tests based on the execution of a JSP. Since we know the expected
@@ -59,6 +64,8 @@ public class MakumbaJspTestCase extends JspTestCase {
         String fileIntoString = "";
         BufferedReader fileIn = null;
         BufferedReader stringIn = null;
+        ArrayList<String> expectedResult = new ArrayList<String>();
+        ArrayList<String> realResult = new ArrayList<String>();
 
         try {
             fileIn = new BufferedReader(new FileReader(f));
@@ -70,6 +77,11 @@ public class MakumbaJspTestCase extends JspTestCase {
                 fileIntoString += strFile + "\n";
                 strStr = stringIn.readLine();
                 testOk = strFile.equals(strStr);
+                expectedResult.add(strFile);
+                realResult.add(strStr);
+            }
+            while ((strStr = stringIn.readLine()) != null) { // read possible rest of result page
+                realResult.add(strStr);
             }
 
         } catch (IOException e) {
@@ -85,12 +97,23 @@ public class MakumbaJspTestCase extends JspTestCase {
         }
 
         if (!testOk) {
-            System.out.println("************************ Test " + testName + " failed! ************************");
-            System.out.println("======================== Expected ========================");
-            System.out.println(fileIntoString);
-            System.out.println("======================== Actual ========================");
-            System.out.println(result);
+            System.out.println("\n************************ Test " + testName + " failed! ************************");
+            System.out.println("> marks lines added in the test result, < lines in the expected result");
+            StringWriter stringWriter = new StringWriter();
 
+            String[] a = (String[]) expectedResult.toArray(new String[expectedResult.size()]);
+            String[] b = (String[]) realResult.toArray(new String[realResult.size()]);
+            Diff d = new Diff(a, b);
+            Diff.change script = d.diff_2(false);
+            DiffPrint.NormalPrint p = new DiffPrint.NormalPrint(a, b);
+            p.setOutput(stringWriter);
+            p.print_script(script);
+            System.out.println(stringWriter.toString());
+
+            // System.out.println("======================== Expected ========================");
+            // System.out.println(fileIntoString);
+            // System.out.println("======================== Actual ========================");
+            // System.out.println(result);
         }
 
         return testOk;
