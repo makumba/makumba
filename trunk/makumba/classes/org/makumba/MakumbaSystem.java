@@ -23,13 +23,19 @@
 
 package org.makumba;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.jar.Manifest;
 
+import org.hibernate.Hibernate;
 import org.makumba.commons.JspWikiFormatter;
 import org.makumba.commons.WikiFormatter;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.forms.validation.LiveValidationProvider;
+import org.makumba.importer.HtmlTableImporter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -37,7 +43,7 @@ import org.makumba.providers.TransactionProvider;
 public class MakumbaSystem {
     /** DataDefinition provider - FIXME should read which one it is from config */
     private static DataDefinitionProvider MDDFactory = DataDefinitionProvider.getInstance();
-    
+
     /** TransactionProvider - FIXME should read which one it is from config */
     private static TransactionProvider tp = TransactionProvider.getInstance();
 
@@ -166,6 +172,7 @@ public class MakumbaSystem {
     /**
      * Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file
      * CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd
+     * 
      * @deprecated Use {@link DataDefinitionProvider#getDataDefinition(String)} instead
      */
     @Deprecated
@@ -211,12 +218,10 @@ public class MakumbaSystem {
     /**
      * Get the DataDefinition of the records returned by the given OQL query
      * 
-     * @deprecated use {@link OQLQueryProvider#getOQLAnalyzer} for better OQL functionality
-     
-    public static DataDefinition getResultDataDefinition(String OQL) {
-        return OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType();
-    }
-    */
+     * @deprecated use {@link OQLQueryProvider#getOQLAnalyzer} for better OQL functionality public static DataDefinition
+     *             getResultDataDefinition(String OQL) { return
+     *             OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType(); }
+     */
 
     /** Returns a Makumba version (derived from a CVS tag) */
     public static String getVersion() {
@@ -395,14 +400,41 @@ public class MakumbaSystem {
     public static CalendarEditorProvider getCalendarProvider() {
         return KruseCalendarEditor.getInstance();
     }
-    
+
     private static ClientsideValidationProvider clientSideValidationProviderSingleton;
 
     /** Get the default client-side validation provider. FIXME: read this from some config, or so. */
     public static ClientsideValidationProvider getClientsideValidationProvider() {
-        if(clientSideValidationProviderSingleton == null) {
+        if (clientSideValidationProviderSingleton == null) {
             clientSideValidationProviderSingleton = new LiveValidationProvider();
         }
         return clientSideValidationProviderSingleton;
     }
+
+    /**
+     * Returns the hibernate version used, read from the MANIFEST file of the jar containing the class file for
+     * {@link Hibernate}.
+     */
+    public static String getHibernateVersionNumber() {
+        String version = "unknown";
+
+        String resourceName = "/" + Hibernate.class.getName().replaceAll("\\.", "/") + ".class";
+        URL resource = Hibernate.class.getResource(resourceName);
+        String pathToThisClass = resource.toString();
+        String manifestPath = pathToThisClass.substring(0, pathToThisClass.lastIndexOf("!") + 1)
+                + "/META-INF/MANIFEST.MF";
+        Manifest manifest;
+        try {
+            manifest = new Manifest(new URL(manifestPath).openStream());
+            if (manifest != null && manifest.getMainAttributes() != null
+                    && manifest.getMainAttributes().getValue("Hibernate-Version") != null) {
+                version = manifest.getMainAttributes().getValue("Hibernate-Version");
+
+            }
+        } catch (MalformedURLException e) {
+        } catch (IOException e) {
+        }
+        return version;
+    }
+
 }
