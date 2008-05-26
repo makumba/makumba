@@ -48,13 +48,16 @@ public class RecordFormatter implements Serializable {
 
     protected transient FieldFormatter[] formatterArray;
 
+    protected boolean isSearchForm;
+
     public RecordFormatter() {
     }
 
     private static final long serialVersionUID = 1L;
 
-    public RecordFormatter(DataDefinition dd, java.util.Hashtable names) {
+    public RecordFormatter(DataDefinition dd, java.util.Hashtable names, boolean isSearchForm) {
         this.dd = dd;
+        this.isSearchForm = isSearchForm;
         initFormatters();
 
         expr = new String[dd.getFieldNames().size()];

@@ -96,7 +96,7 @@ public class FormResponder extends Responder {
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
         dd.addField(DataDefinitionProvider.getInstance().makeFieldWithName(colName, ftype));
-        editor = new RecordEditor(dd, fieldNames, database);
+        editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"));
         editor.config();
         // add client side validation, but only for edit operations (not search)
         if (!operation.equals("search") && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {

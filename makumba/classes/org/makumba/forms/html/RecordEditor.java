@@ -64,8 +64,8 @@ public class RecordEditor extends RecordFormatter {
     protected RecordEditor() {
     }
 
-    public RecordEditor(DataDefinition ri, Hashtable h, String database) {
-        super(ri, h);
+    public RecordEditor(DataDefinition ri, Hashtable h, String database, boolean isSearchForm) {
+        super(ri, h, isSearchForm);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
         query = new Map[ri.getFieldNames().size()];
@@ -235,6 +235,12 @@ public class RecordEditor extends RecordFormatter {
                     break;
                 case FieldDefinition._dateCreate:
                 case FieldDefinition._dateModify:
+                    if (isSearchForm) { // in search forms, we allow to have inputs on TS_create/modify
+                        formatterArray[i] = dateEditor.getInstance();
+                    } else {
+                        formatterArray[i] = errorEditor.getInstance();
+                    }
+                    break;
                 case FieldDefinition._ptrIndex:
                 case FieldDefinition._ptrRel:
                     formatterArray[i] = errorEditor.getInstance();
