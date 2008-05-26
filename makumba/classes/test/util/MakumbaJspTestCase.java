@@ -79,7 +79,9 @@ public class MakumbaJspTestCase extends JspTestCase {
                 strStr = stringIn.readLine();
                 testOk = strFile.equals(strStr);
                 expectedResult.add(strFile);
-                realResult.add(strStr);
+                if (strStr != null) { // we need to check if the expected line is not null
+                    realResult.add(strStr);
+                }
             }
             while ((strStr = stringIn.readLine()) != null) { // read possible rest of result page
                 realResult.add(strStr);
