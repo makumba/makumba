@@ -1796,6 +1796,8 @@ public class TableManager extends Table {
             for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
                     setUpdateArgument(fields[i], ps, (i + 1), values[i]);
+                } else {
+                    setNullArgument(fields[i], ps, (i + 1));
                 }
             }
             return ps.executeQuery().next();
