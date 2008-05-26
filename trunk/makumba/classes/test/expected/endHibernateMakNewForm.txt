@@ -9,8 +9,7 @@
 testNewFormStart!<form action="testHibernateMakNewForm.jsp" method="post">!endNewFormStart
         testName!<input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name" >!endName
         testSubmit!<input type="submit">!endSubmit
-testNewFormEnd!<input type="hidden" name="__makumba__originatingPage__" value="/tests/JspRedirector?Cactus_TestMethod=testHibernateMakNewForm&Cactus_TestClass=test.http.FormsHQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="-2018638732">
+testNewFormEnd!<input type="hidden" name="__makumba__responder__" value="-2018638732">
 </form>!endNewFormEnd
 
 </body>
