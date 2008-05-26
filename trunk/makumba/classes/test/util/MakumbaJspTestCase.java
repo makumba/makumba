@@ -23,7 +23,7 @@ import org.apache.cactus.JspTestCase;
  * @version $Id: MakumbaJSPTest.java,v 1.1 25.09.2007 16:08:26 Manuel Exp $
  */
 public class MakumbaJspTestCase extends JspTestCase {
-    
+
     private static final class Suite extends TestSetup {
         private Suite(Test arg0) {
             super(arg0);
@@ -33,13 +33,13 @@ public class MakumbaJspTestCase extends JspTestCase {
     /**
      * Compares a test output to its stored (expected) result. The method detects automatically the name of the test
      * based on the invoking method, so all there's to do is to pass it the new result.<br>
-     * TODO this should be much more
-     * verbose
+     * TODO this should be much more verbose
      * 
      * @param result
      *            the new result, from the currently running test
      * @return <code>true</code> if this worked out, <code>false</code> otherwise.
-     * @throws FileNotFoundException in case the comparison basis file is not found, this indicates it
+     * @throws FileNotFoundException
+     *             in case the comparison basis file is not found, this indicates it
      */
     protected boolean compareTest(String result) throws Exception {
 
@@ -51,10 +51,11 @@ public class MakumbaJspTestCase extends JspTestCase {
         // based on the method name, we retrieve the file used as comparison basis
 
         File f = new File("classes/test/expected/" + testName + ".txt");
-        
-        if(!f.exists()) throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
-            + ".txt - create it first using the fetchValidTestResult(String result) method!");
-        
+
+        if (!f.exists())
+            throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
+                    + ".txt - create it first using the fetchValidTestResult(String result) method!");
+
         String fileIntoString = "";
         BufferedReader fileIn = null;
         BufferedReader stringIn = null;
@@ -64,7 +65,7 @@ public class MakumbaJspTestCase extends JspTestCase {
             stringIn = new BufferedReader(new StringReader(result));
             String strFile = "";
             String strStr = "";
-            
+
             while ((strFile = fileIn.readLine()) != null) {
                 fileIntoString += strFile + "\n";
                 strStr = stringIn.readLine();
@@ -82,14 +83,14 @@ public class MakumbaJspTestCase extends JspTestCase {
                 e.printStackTrace();
             }
         }
-        
-        if(!testOk) {
-            System.out.println("************************ Test "+testName +" failed! ************************");
+
+        if (!testOk) {
+            System.out.println("************************ Test " + testName + " failed! ************************");
             System.out.println("======================== Expected ========================");
             System.out.println(fileIntoString);
             System.out.println("======================== Actual ========================");
             System.out.println(result);
-            
+
         }
 
         return testOk;
@@ -101,11 +102,13 @@ public class MakumbaJspTestCase extends JspTestCase {
      * 
      * @param output
      *            the result (HTML code) of the page that was ran correctly.
-     * @param record TODO
+     * @param record
+     *            TODO
      */
     protected void fetchValidTestResult(String output, boolean record) {
-        
-        if(!record) return;
+
+        if (!record)
+            return;
 
         // first we retrieve the name of the method which calls us
         String testName = new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName();
