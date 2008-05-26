@@ -40,15 +40,6 @@ public class Configuration implements Serializable {
         try {
             URL controllerURL = org.makumba.commons.ClassResource.get("MakumbaController.properties");
             controllerConfig.load(controllerURL.openStream());
-        } catch (Exception e) {
-            controllerConfig = null;
-        }
-    }
-
-    public Configuration() {
-        if (controllerConfig != null) {
-            defaultTransactionProvider = controllerConfig.getProperty("defaultTransactionProvider",
-                defaultTransactionProvider);
 
             // FIXME: these other config details should most likely be loaded from a different config file
             defaultClientSideValidation = controllerConfig.getProperty("defaultClientSideValidation",
@@ -60,6 +51,16 @@ public class Configuration implements Serializable {
                 defaultCalendarEditorLink);
             defaultCalendarEditor = Boolean.parseBoolean(controllerConfig.getProperty("defaultCalendarEditor",
                 String.valueOf(defaultCalendarEditor)));
+            
+        } catch (Exception e) {
+            controllerConfig = null;
+        }
+    }
+
+    public Configuration() {
+        if (controllerConfig != null) {
+            defaultTransactionProvider = controllerConfig.getProperty("defaultTransactionProvider",
+                defaultTransactionProvider);
         }
     }
 
