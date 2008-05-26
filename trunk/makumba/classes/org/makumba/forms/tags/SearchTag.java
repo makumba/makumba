@@ -237,7 +237,7 @@ public class SearchTag extends FormTagBase {
                         }
                         if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
                             // range comparison
-                            whereThisField += computeRangeQuery(parameters, objectName, fieldName, attributeName,
+                            whereThisField += computeRangeQuery(attributes, objectName, fieldName, attributeName,
                                 matchMode);
                         } else {
                             // other comparison
@@ -295,13 +295,20 @@ public class SearchTag extends FormTagBase {
             }
         }
 
-        private String computeRangeQuery(HttpParameters parameters, String objectName, String fieldName,
+        private String computeRangeQuery(RequestAttributes attributes, String objectName, String fieldName,
                 String attributeName, Object advancedMatch) {
             String where = "";
             String attributeNameEnd = attributeName + RANGE_END;
             boolean haveBegin = true;
-            boolean haveEnd = fieldName.endsWith(RANGE_END) || notEmpty(parameters.getParameter(attributeNameEnd));
-            if (!notEmpty(parameters.getParameter(fieldName))) {
+            Object attributeValueBegin = null;
+            Object attributeValueEnd = null;
+            try {
+                attributeValueBegin = attributes.getAttribute(fieldName);
+                attributeValueEnd = attributes.getAttribute(attributeNameEnd);
+            } catch (LogicException e) {
+            }
+            boolean haveEnd = fieldName.endsWith(RANGE_END) || notEmpty(attributeValueEnd);
+            if (!notEmpty(attributeValueBegin)) {
                 haveBegin = false;
             }
             // only compare with lower end if we have it
