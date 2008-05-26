@@ -24,8 +24,7 @@ testMakFormStart!<form action="testHibernateMakAddForm.jsp" method="post">!endMa
 	<OPTION value="34dqslv">test.Individual[0:176]</OPTION>
 </SELECT>!endPtrInput
 	<input type="submit">
-testMakFormEnd!<input type="hidden" name="__makumba__originatingPage__" value="/tests/JspRedirector?Cactus_TestMethod=testHibernateMakForm&Cactus_TestClass=test.http.FormsHQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="-1234988579">
+testMakFormEnd!<input type="hidden" name="__makumba__responder__" value="-1234988579">
 </form>!endMakFormEnd
 
 
@@ -39,8 +38,7 @@ testMakFormEnd!<input type="hidden" name="__makumba__originatingPage__" value="/
 	<OPTION value="34dqsls" SELECTED>test.Individual[0:175]</OPTION>
 	<OPTION value="34dqslv">test.Individual[0:176]</OPTION>
 </SELECT>!endPtrInputValue
-    testMakFormValueEnd!<input type="hidden" name="__makumba__originatingPage__" value="/tests/JspRedirector?Cactus_TestMethod=testHibernateMakForm&Cactus_TestClass=test.http.FormsHQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
-<input type="hidden" name="__makumba__responder__" value="-988740471">
+    testMakFormValueEnd!<input type="hidden" name="__makumba__responder__" value="-988740471">
 </form>!endMakFormValueEnd
 
 
