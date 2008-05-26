@@ -98,7 +98,7 @@ public class MakumbaJspTestCase extends JspTestCase {
 
         if (!testOk) {
             System.out.println("\n************************ Test " + testName + " failed! ************************");
-            System.out.println("> marks lines added in the test result, < lines in the expected result");
+            System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result *****");
             StringWriter stringWriter = new StringWriter();
 
             String[] a = (String[]) expectedResult.toArray(new String[expectedResult.size()]);
