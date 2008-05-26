@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -98,22 +99,26 @@ public class MakumbaJspTestCase extends JspTestCase {
 
         if (!testOk) {
             System.out.println("\n************************ Test " + testName + " failed! ************************");
-            System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result *****");
-            StringWriter stringWriter = new StringWriter();
 
-            String[] a = (String[]) expectedResult.toArray(new String[expectedResult.size()]);
-            String[] b = (String[]) realResult.toArray(new String[realResult.size()]);
-            Diff d = new Diff(a, b);
-            Diff.change script = d.diff_2(false);
-            DiffPrint.NormalPrint p = new DiffPrint.NormalPrint(a, b);
-            p.setOutput(stringWriter);
-            p.print_script(script);
-            System.out.println(stringWriter.toString());
-
-            // System.out.println("======================== Expected ========================");
-            // System.out.println(fileIntoString);
-            // System.out.println("======================== Actual ========================");
-            // System.out.println(result);
+            try {
+                StringWriter stringWriter = new StringWriter();
+                String[] a = (String[]) expectedResult.toArray(new String[expectedResult.size()]);
+                String[] b = (String[]) realResult.toArray(new String[realResult.size()]);
+                // System.out.println(Arrays.toString(a));
+                // System.out.println(Arrays.toString(b));
+                Diff d = new Diff(a, b);
+                Diff.change script = d.diff_2(false);
+                DiffPrint.NormalPrint p = new DiffPrint.NormalPrint(a, b);
+                p.setOutput(stringWriter);
+                p.print_script(script);
+                System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result *****");
+                System.out.println(stringWriter.toString());
+            } catch (Exception e) { // if there is an error in the Diff calculation, we fall back to the old display
+                System.out.println("======================== Expected ========================");
+                System.out.println(fileIntoString);
+                System.out.println("======================== Actual ========================");
+                System.out.println(result);
+            }
         }
 
         return testOk;
