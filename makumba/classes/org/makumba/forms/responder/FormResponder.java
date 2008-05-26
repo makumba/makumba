@@ -42,8 +42,6 @@ import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.TransactionProviderInterface;
 
 public class FormResponder extends Responder {
 
@@ -121,6 +119,9 @@ public class FormResponder extends Responder {
     StringBuffer extraFormatting;
 
     private ClientsideValidationProvider provider = MakumbaSystem.getClientsideValidationProvider();
+
+    /** Values of inputs that could not be resolved (yet), e.g. from nested form operations. */
+    private Hashtable<String, String> unresolvedInputValues;
 
     public void setAction(String action) {
         this.action = action;
@@ -253,7 +254,7 @@ public class FormResponder extends Responder {
             sb.append('\n');
         }
 
-	        if (storedSuffix.equals(""))
+        if (storedSuffix.equals(""))
             // a root form
             sb.append("\n</form>");
     }
@@ -275,6 +276,14 @@ public class FormResponder extends Responder {
 
     public void writeClientsideValidation(StringBuffer sb) {
         sb.append(provider.getClientValidation(clientSideValidation.equals("live")));
+    }
+    
+    public void setUnresolvedInputValues(Hashtable<String, String> unresolvedInputValues) {
+        this.unresolvedInputValues = unresolvedInputValues;
+    }
+
+    public Hashtable<String, String> getUnresolvedInputValues() {
+        return unresolvedInputValues;
     }
 
 }
