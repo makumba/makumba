@@ -50,14 +50,17 @@ public class RecordFormatter implements Serializable {
 
     protected boolean isSearchForm;
 
+    private String formResponderValue;
+
     public RecordFormatter() {
     }
 
     private static final long serialVersionUID = 1L;
 
-    public RecordFormatter(DataDefinition dd, java.util.Hashtable names, boolean isSearchForm) {
+    public RecordFormatter(DataDefinition dd, java.util.Hashtable names, boolean isSearchForm, String formResponderValue) {
         this.dd = dd;
         this.isSearchForm = isSearchForm;
+        this.formResponderValue = formResponderValue;
         initFormatters();
 
         expr = new String[dd.getFieldNames().size()];
@@ -101,5 +104,9 @@ public class RecordFormatter implements Serializable {
                 formatterArray[i] = FieldFormatter.getInstance();
             }
         }
+    }
+
+    public String getFormResponderValue() {
+        return formResponderValue;
     }
 }

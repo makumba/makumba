@@ -48,7 +48,7 @@ public class RecordViewer extends RecordFormatter {
             expr[i] = q.getProjectionAt(i);
     }
 	public RecordViewer(DataDefinition ri, Hashtable h) {
-		super(ri, h, false);
+		super(ri, h, false, null); // false = no searchform, null = no responder value
 	}
 
 	protected String applyParameters(FieldFormatter ff,

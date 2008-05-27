@@ -64,8 +64,8 @@ public class RecordEditor extends RecordFormatter {
     protected RecordEditor() {
     }
 
-    public RecordEditor(DataDefinition ri, Hashtable h, String database, boolean isSearchForm) {
-        super(ri, h, isSearchForm);
+    public RecordEditor(DataDefinition ri, Hashtable h, String database, boolean isSearchForm, String formResponderValue) {
+        super(ri, h, isSearchForm, formResponderValue);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
         query = new Map[ri.getFieldNames().size()];
@@ -184,6 +184,7 @@ public class RecordEditor extends RecordFormatter {
         }
     }
 
+    @Override
     public void initFormatters() {
         formatterArray = new FieldFormatter[dd.getFieldNames().size()];
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
