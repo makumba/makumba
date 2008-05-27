@@ -98,8 +98,10 @@ public class HibernateSFManager {
 
         cfgFilePath += ".cfg.xml";
 
-        Configuration cfg = new Configuration().configure(cfgFilePath);
+        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Makumba Hibernate SessionFactory manager, Hibernate "+MakumbaSystem.getHibernateVersionNumber()+ ", configuration in "+cfgFilePath);
 
+        Configuration cfg = new Configuration().configure(cfgFilePath);
+        
         for (String res : externalConfigurationResources) {
             cfg.addResource(res);
         }
