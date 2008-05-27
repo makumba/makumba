@@ -33,75 +33,72 @@ import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class textViewer extends FieldViewer {
-	static String[] params = { "default", "empty", "lineSeparator",
-			"longLineLength", "html", "format" };
+    static String[] params = { "default", "empty", "lineSeparator", "longLineLength", "html", "format" };
 
-	static String[][] paramValues = { null, null, null, null,
-			{ "true", "false", "auto" },{ "raw", "htmlescape", "urlencode", "wiki", "auto" } };
+    static String[][] paramValues = { null, null, null, null, { "true", "false", "auto" },
+            { "raw", "htmlescape", "urlencode", "wiki", "auto" } };
 
-	public String[] getAcceptedParams() {
-		return params;
-	}
+    public String[] getAcceptedParams() {
+        return params;
+    }
 
-	public String[][] getAcceptedValue() {
-		return paramValues;
-	}
+    public String[][] getAcceptedValue() {
+        return paramValues;
+    }
 
-	static int screenLength = 30;
+    static int screenLength = 30;
 
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new textViewer();
-	}
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new textViewer();
+    }
 
-	private textViewer() {
-	}
+    private textViewer() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
-			Dictionary formatParams) {
-		String txt = o.toString();
-		String html = (String) formatParams.get("html");
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        String txt = o.toString();
+        String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");
 
         if (html != null && format != null) {
             throw new InvalidValueException(rf.expr[fieldIndex],
                     "invalid combination of parameters 'html' and 'format'. 'html' is deprecated, please use only 'format'.");
         }
-        
+
         if (StringUtils.equals(html, "true") || StringUtils.equals(format, "raw")
                 || (StringUtils.equals(html, "auto") && HtmlUtils.detectHtml(txt))
                 || (StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
             return txt;
-        } else if (StringUtils.equals(html,"wiki") || StringUtils.equals(format,"wiki")) {
+        } else if (StringUtils.equals(html, "wiki") || StringUtils.equals(format, "wiki")) {
             return MakumbaSystem.getWikiFormatter().wiki2html(txt);
-        } else if (StringUtils.equals(format,"urlencode")) {
+        } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);
         }
 
-		String startSeparator = "<p>";
-		String endSeparator = "</p>";
-		String s = (String) formatParams.get("lineSeparator");
-		if (s != null) {
-			startSeparator = s;
-			endSeparator = "";
-		}
+        String startSeparator = "<p>";
+        String endSeparator = "</p>";
+        String s = (String) formatParams.get("lineSeparator");
+        if (s != null) {
+            startSeparator = s;
+            endSeparator = "";
+        }
 
-		int n = getIntParam(rf, fieldIndex, formatParams, "longLineLength");
-		if (n == -1)
-			n = screenLength;
+        int n = getIntParam(rf, fieldIndex, formatParams, "longLineLength");
+        if (n == -1)
+            n = screenLength;
 
-		if (HtmlUtils.maxLineLength(txt) > n)
-			// special text formatting
-			return HtmlUtils.text2html(txt, startSeparator, endSeparator);
-		else if (txt.indexOf('\n') < 0)
-			// single, short line of text
-			return HtmlUtils.string2html(txt);
-		else
-			// else: text preformatted
-			return "<pre style=\"margin:0px\">" + HtmlUtils.string2html(txt)
-					+ "</pre>";
-	}
+        if (HtmlUtils.maxLineLength(txt) > n)
+            // special text formatting
+            return HtmlUtils.text2html(txt, startSeparator, endSeparator);
+        else if (txt.indexOf('\n') < 0)
+            // single, short line of text
+            return HtmlUtils.string2html(txt);
+        else
+            // else: text preformatted
+            return "<pre style=\"margin:0px\">" + HtmlUtils.string2html(txt) + "</pre>";
+    }
 }

@@ -33,35 +33,32 @@ import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class charViewer extends FieldViewer {
-	static String[] params = { "default", "empty", "urlEncode", "html", "format",
-			"maxLength", "ellipsis", "ellipsisLength", "addTitle" };
+    static String[] params = { "default", "empty", "urlEncode", "html", "format", "maxLength", "ellipsis",
+            "ellipsisLength", "addTitle" };
 
-	static String[][] paramValues = { null, null, { "true", "false" },
-            { "true", "false", "auto" }, { "raw", "htmlescape", "urlencode", "wiki", "auto" }, null, null, null,
-			{ "true", "false", "auto" } };
+    static String[][] paramValues = { null, null, { "true", "false" }, { "true", "false", "auto" },
+            { "raw", "htmlescape", "urlencode", "wiki", "auto" }, null, null, null, { "true", "false", "auto" } };
 
-	public String[] getAcceptedParams() {
-		return params;
-	}
+    public String[] getAcceptedParams() {
+        return params;
+    }
 
-	public String[][] getAcceptedValue() {
-		return paramValues;
-	}
+    public String[][] getAcceptedValue() {
+        return paramValues;
+    }
 
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new charViewer();
-	}
-    
-    
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new charViewer();
+    }
 
-	private charViewer() {
-	}
+    private charViewer() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
-	
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
+
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String txt = o.toString();
         String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");
@@ -75,13 +72,13 @@ public class charViewer extends FieldViewer {
                 || (StringUtils.equals(html, "auto") && HtmlUtils.detectHtml(txt))
                 || (StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
             return txt;
-        } else if (StringUtils.equals(html,"wiki") || StringUtils.equals(format,"wiki")) {
+        } else if (StringUtils.equals(html, "wiki") || StringUtils.equals(format, "wiki")) {
             return MakumbaSystem.getWikiFormatter().wiki2html(txt);
-        } else if (StringUtils.equals(format,"urlencode")) {
+        } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);
         } else {
             return formatMaxLengthEllipsis(rf, fieldIndex, txt, formatParams);
         }
     }
-    
+
 }
