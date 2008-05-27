@@ -23,6 +23,12 @@
 
 package org.makumba.commons;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
 import javax.servlet.ServletContextEvent;
 
 public class NamedResourcesContextListener implements javax.servlet.ServletContextListener {
@@ -37,5 +43,26 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
     public void contextDestroyed(ServletContextEvent sce) {
         java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
         NamedResources.cleanup();
+        JDBCUnload();
+    }
+
+    private void JDBCUnload() {
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        ArrayList<Driver> driversToUnload=new ArrayList<Driver>();
+        while (drivers.hasMoreElements()) {
+                Driver driver = drivers.nextElement();
+                if (driver.getClass().getClassLoader().equals(getClass().getClassLoader())) {
+                        driversToUnload.add(driver);
+                }
+        }
+        for (Driver driver : driversToUnload) {
+            try {
+                DriverManager.deregisterDriver(driver);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
     }
 }
