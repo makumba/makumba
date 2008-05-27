@@ -87,6 +87,7 @@ public abstract class choiceEditor extends FieldEditor {
     }
 
     // height? orderBy? where?
+    @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String type = (String) formatParams.get("type");
         boolean hidden = "hidden".equals(type);
@@ -143,6 +144,7 @@ public abstract class choiceEditor extends FieldEditor {
             hcw.setSize(size);
             hcw.setMultiple(!forceSingleSelect && (isMultiple(rf, fieldIndex) || forceMultipleSelect));
             hcw.setLiteralHtml(getExtraFormatting(rf, fieldIndex, formatParams));
+            hcw.setFormResponderValue(rf.getFormResponderValue());
 
             Object opt = getOptions(rf, fieldIndex, formatParams);
             List values = new ArrayList(getOptionsLength(rf, fieldIndex, opt));
