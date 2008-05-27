@@ -53,6 +53,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     private String[] _optionSeparator = { " " }; // separator between different options
 
+    private String formResponderValue; // the responder value of the form; used for radio button / checbox auto values
+
     /*******************************************************************************************************************
      * PUBLIC CONSTANTS
      ******************************************************************************************************************/
@@ -344,6 +346,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
         StringBuffer inputStatement = new StringBuffer(512);
         int j = -1; // j cycles through optionSeparator[]
         String sep = "";
+        int optionCount = 0;
         for (; itv.hasNext() && itl.hasNext();) {
             inputStatement.append(sep);
             String label = (String) itl.next();
@@ -364,12 +367,12 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 j = (j + 1) % _optionSeparator.length;
                 sep = _optionSeparator[j];
 
-                String id = "AutoLabel_"
-                        + java.lang.Long.toString(java.lang.Math.round(java.lang.Math.random() * 100000000));
+                String id = "AutoLabel_" + formResponderValue + "_" + _name + "_" + optionCount;
                 inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
                 inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\"" + id + "\">"
                         + _tickLabelSeparator + "<LABEL for=\"" + id + "\">" + label + "</LABEL>");
             }
+            optionCount++;
         }
 
         return inputStatement.toString();
@@ -664,6 +667,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
         String[] optionSeparatorArray = { optionSeparator };
         return makeHtmlCheckboxSelect(name, values, labels, selectedValues, checkboxLabelSeparator,
             optionSeparatorArray, literalHtml, convert2Html);
+    }
+
+    public void setFormResponderValue(String formResponderValue) {
+        this.formResponderValue = formResponderValue;
     }
 
 } // end class
