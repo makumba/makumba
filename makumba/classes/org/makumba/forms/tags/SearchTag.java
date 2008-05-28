@@ -235,18 +235,29 @@ public class SearchTag extends FormTagBase {
                             // if we are having a multi-field match, we might need to combine rules
                             whereThisField = " OR " + whereThisField;
                         }
+                        String finalFieldName = fieldName;
+
+                        if (fd.getDataDefinition() != dd) { // we are searching on a sub-field
+                            finalFieldName = fd.getName();
+                            final int lastIndexOf = inputName.lastIndexOf(finalFieldName);
+                            // FIXME: this takes into account only one level of subfields
+                            String subfieldName = inputName.substring(0, lastIndexOf - 1);
+                            objectName = OBJECT_NAME + "_" + subfieldName;
+                            variableFroms.add(OBJECT_NAME + "." + subfieldName + " " + objectName);
+                        }
+
                         if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
                             // range comparison
-                            whereThisField += computeRangeQuery(attributes, objectName, fieldName, attributeName,
+                            whereThisField += computeRangeQuery(attributes, objectName, finalFieldName, attributeName,
                                 matchMode);
                         } else {
                             // other comparison
-                            whereThisField += computeTypeSpecificQuery(req, parameters, objectName, fieldName,
+                            whereThisField += computeTypeSpecificQuery(req, parameters, objectName, finalFieldName,
                                 attributeName, fd);
                         }
                     }
                     if (whereThisField.trim().length() > 0) {
-                        where += " ( " + whereThisField + " ) ";
+                        where += " (" + whereThisField + ") ";
                         if (fd.isSetType()) { // enhance the variableFrom part if we select sets
                             variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName);
                         }
@@ -303,10 +314,14 @@ public class SearchTag extends FormTagBase {
             Object attributeValueBegin = null;
             Object attributeValueEnd = null;
             try {
-                attributeValueBegin = attributes.getAttribute(fieldName);
-                attributeValueEnd = attributes.getAttribute(attributeNameEnd);
+                attributeValueBegin = attributes.getAttribute(attributeName);
             } catch (LogicException e) {
             }
+            try {
+                attributeValueEnd = attributes.getAttribute(attributeName + RANGE_END);
+            } catch (LogicException e) {
+            }
+
             boolean haveEnd = fieldName.endsWith(RANGE_END) || notEmpty(attributeValueEnd);
             if (!notEmpty(attributeValueBegin)) {
                 haveBegin = false;
@@ -323,9 +338,6 @@ public class SearchTag extends FormTagBase {
             if (haveEnd) {
                 where += objectName + "." + fieldName + MATCH_BETWEEN_OPERATORS.get(advancedMatch)[1] + "$"
                         + attributeNameEnd;
-            }
-            if (haveBegin && haveEnd) { // need extra parantheses only if we have both range ends
-                where = " ( " + where + " ) ";
             }
             return where;
         }
