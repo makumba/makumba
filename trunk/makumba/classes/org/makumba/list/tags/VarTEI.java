@@ -29,16 +29,15 @@ import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
 
-
 /**
  * Extra information for the variables
+ * 
  * @author Cristian Bogdan
  * @version $Id$
- *
  */
 public class VarTEI extends TagExtraInfo {
     public VariableInfo[] getVariableInfo(TagData data) {
-        Vector v = new Vector();
+        Vector<VariableInfo> v = new Vector<VariableInfo>();
 
         String var = data.getAttributeString("var");
         if (var != null)
@@ -48,7 +47,7 @@ public class VarTEI extends TagExtraInfo {
         if (var != null)
             v.addElement(new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN));
 
-        return CountTEI.vector2VarInfo(v);
+        return (VariableInfo[]) v.toArray(new VariableInfo[v.size()]);
     }
 
 }
