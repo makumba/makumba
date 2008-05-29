@@ -31,12 +31,13 @@ import javax.servlet.jsp.tagext.VariableInfo;
 
 /**
  * Extra information for count, to be more specific countVar, maxCountVar, ...
+ * 
  * @author Cristian Bogdan
  */
 public class CountTEI extends TagExtraInfo {
-    
+
     public VariableInfo[] getVariableInfo(TagData data) {
-        Vector v = new Vector();
+        Vector<VariableInfo> v = new Vector<VariableInfo>();
 
         String var = data.getAttributeString("countVar");
         if (var != null)
@@ -52,20 +53,7 @@ public class CountTEI extends TagExtraInfo {
         if (var != null)
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
 
-        return vector2VarInfo(v);
+        return (VariableInfo[]) v.toArray(new VariableInfo[v.size()]);
     }
 
-    /**
-     * Converts a Vector into a VariableInfo[]
-     * @param v the vector to be converted
-     * @return the VariableInfo[] filled in with values from the vector
-     */
-    public static VariableInfo[] vector2VarInfo(Vector v) {
-        if (v.size() == 0)
-            return null;
-        VariableInfo vi[] = new VariableInfo[v.size()];
-        for (int i = 0; i < v.size(); i++)
-            vi[i] = (VariableInfo) v.elementAt(i);
-        return vi;
-    }
 }
