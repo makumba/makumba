@@ -1,5 +1,7 @@
 package org.makumba.forms.html;
 
+import java.io.Serializable;
+
 /**
  * An ordered set of chooser choices
  * @author Cristian Bogdan
@@ -10,7 +12,7 @@ public class ChoiceSet extends java.util.ArrayList {
 
     public static final String PARAMNAME = "org.makumba.ChoiceSet";
 
-    public class Choice {
+    public class Choice implements Serializable{
         Object value;
 
         String title;
