@@ -165,6 +165,19 @@ public class StringUtils {
         }
         return null;
     }
+    
+    /** Checks whether the given String ends with any of the given options. */
+    public static boolean endsWith(String s, String[] options) {
+        if (s == null) {
+            return false;
+        }
+        for (int i = 0; i < options.length; i++) {
+            if (s.endsWith(options[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Convert a <code>String</code> to an <code>int</code>, returning a default value if the conversion fails or
