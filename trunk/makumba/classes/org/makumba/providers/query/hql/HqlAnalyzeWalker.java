@@ -101,36 +101,17 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
             paramTypes.put(firstValue.getText(), secondValue);
         }
     }
-
-    AST deriveFunctionCallExpr(AST fc, AST e) {
-        //FIXME put the initialization stuff in another class
-        //FIXME if a function parameter is a query parameter, assign its type
-        Map methodTypes = new HashMap();
-        String functionCall = fc.getText().toUpperCase();
-        //String arguments = e.getFirstChild().getClass().getName();
-        //System.out.println("FC: "+functionCall+"args: "+arguments);
+    
+    private static Map<String, Integer> methodTypes = new HashMap<String, Integer>();
+    
+    static {
         
-        /* determining the type returned by the method */
         String[] methodReal = {"COS","COSH","EXP","LN","LOG","SIN","SINH","SQRT","TAN","TANH","ACOS","ASIN","ATAN"};
-
-        for(int i=0; i<methodReal.length;i++) {
-            methodTypes.put(methodReal[i],new Integer(ExprTypeAST.DOUBLE));
-        }
-        
-        //return new ExprTypeAST(ExprTypeAST.DOUBLE);
         
         String[] methodChar = {"CHR","CONCAT","INITCAP","LOWER","LPAD","LTRIM","NLS_INITCAP","NLS_LOWER","NLSSORT","NLS_UPPER",
                 "RPAD","RTRIM","SOUNDEX","SUBSTR","TRANSLATE","TREAT","TRIM","UPPER"};
         
-        for(int i=0; i<methodChar.length;i++) {
-            methodTypes.put(methodChar[i],new Integer(ExprTypeAST.STRING));
-        }
-        
-        String[] methodInt = {"ASCII","INSTR","LENGTH"};
-        
-        for(int i=0; i<methodInt.length;i++) {
-            methodTypes.put(methodInt[i],new Integer(ExprTypeAST.INT));
-        }
+        String[] methodInt = {"ASCII","INSTR","LENGTH", "DAY", "MONTH", "YEAR"};
         
         String[] methodDate = {"ADD_MONTHS","CURRENT_DATE","CURRENT_TIMESTAMP","DBTIMEZONE","EXTRACT","FROM_TZ",
                 "LAST_DAY","LOCALTIMESTAMP","MONTHS_BETWEEN","NEW_TIME","NEXT_DAY","NUMTODSINTERVAL","NUMTOYMINTERVAL",
@@ -140,10 +121,26 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
                 "DATE_ADD","DATE_SUB","ADDDATE","SUBDATE","TO_DAYS","FROM_DAYS","DATE_FORMAT","TIME_FORMAT","CURDATE",
                 "NOW","UNIX_TIMESTAMP","SEC_TO_TIME","TIME_TO_SEC"};
         
-        for(int i=0; i<methodDate.length;i++) {
-            methodTypes.put(methodDate[i],new Integer(ExprTypeAST.DATE));
+        for(String method : methodReal) {
+            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+        }
+        for(String method : methodChar) {
+            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+        }
+        for(String method : methodInt) {
+            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+        }
+        for(String method : methodDate) {
+            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
         }
 
+    }
+
+    //FIXME if a function parameter is a query parameter, assign its type
+    AST deriveFunctionCallExpr(AST fc, AST e) {
+
+        String functionCall = fc.getText().toUpperCase();
+        
         return new ExprTypeAST(((Integer)methodTypes.get(functionCall)).intValue());
         
     }
