@@ -421,6 +421,9 @@ public class HibernateTransaction extends TransactionImplementation {
                 if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
                     Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
                     q.setParameter(paramName, new Integer(p.getId()), Hibernate.INTEGER);
+                } else if(paramDef.getIntegerType() == FieldDefinition._int) {
+                    Integer val = paramValue instanceof String ? Integer.parseInt((String)paramValue) : (Integer) paramValue;
+                    q.setParameter(paramName, val);
                 } else
                     q.setParameter(paramName, paramValue);
             }
