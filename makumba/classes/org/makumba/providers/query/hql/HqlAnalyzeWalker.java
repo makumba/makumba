@@ -125,13 +125,13 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
             methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
         }
         for(String method : methodChar) {
-            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+            methodTypes.put(method, new Integer(ExprTypeAST.STRING));
         }
         for(String method : methodInt) {
-            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+            methodTypes.put(method, new Integer(ExprTypeAST.INT));
         }
         for(String method : methodDate) {
-            methodTypes.put(method, new Integer(ExprTypeAST.DOUBLE));
+            methodTypes.put(method, new Integer(ExprTypeAST.DATE));
         }
 
     }
