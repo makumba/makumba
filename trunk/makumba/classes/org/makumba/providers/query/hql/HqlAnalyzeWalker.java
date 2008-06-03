@@ -113,11 +113,12 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         
         String[] methodInt = {"ASCII","INSTR","LENGTH", "DAY", "MONTH", "YEAR"};
         
+        // FIXME there's a bunch of those methods that aren't actual DATEs but INTs and STRINGs
         String[] methodDate = {"ADD_MONTHS","CURRENT_DATE","CURRENT_TIMESTAMP","DBTIMEZONE","EXTRACT","FROM_TZ",
                 "LAST_DAY","LOCALTIMESTAMP","MONTHS_BETWEEN","NEW_TIME","NEXT_DAY","NUMTODSINTERVAL","NUMTOYMINTERVAL",
                 "ROUND","SESSIONTIMEZONE","SYS_EXTRACT_UTC","SYSDATE","SYSTIMESTAMP","TO_DSINTERVAL","TO_TIMESTAMP",
                 "TO_TIMESTAMP_TZ","TO_YMINTERVAL","TRUNC","TZ_OFFSET","DAYOFWEEK","WEEKDAY","DAYOFMONTH","DAYOFYEAR",
-                "MONTH","DAYNAME","MONTHNAME","QUARTER","WEEK","YEARWEEK","HOUR","MINUTE","SECOND","PERIOD_ADD","PERIOD_DIFF",
+                "DAYNAME","MONTHNAME","QUARTER","WEEK","YEARWEEK","HOUR","MINUTE","SECOND","PERIOD_ADD","PERIOD_DIFF",
                 "DATE_ADD","DATE_SUB","ADDDATE","SUBDATE","TO_DAYS","FROM_DAYS","DATE_FORMAT","TIME_FORMAT","CURDATE",
                 "NOW","UNIX_TIMESTAMP","SEC_TO_TIME","TIME_TO_SEC"};
         
