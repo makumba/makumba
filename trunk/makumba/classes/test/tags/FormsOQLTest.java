@@ -318,31 +318,45 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
-    // public void beginMakAddToNewForm(Request request) throws MalformedURLException, IOException, SAXException {
-    // WebConversation wc = new WebConversation();
-    // WebResponse resp = wc.getResponse( System.getProperty("cactus.contextURL") +
-    // "/forms-oql/beginMakAddToNewForm.jsp" );
-    //
-    // // we get the first form in the jsp
-    // WebForm form = resp.getForms()[0];
-    // // set the inputs in the add-to-new form
-    // form.setParameter("description_1","addToNewDescription");
-    // form.setParameter("email_1","addToNew@makumba.org");
-    // // submit the form
-    // form.submit();
-    // }
-    // public void testMakAddToNewForm() throws ServletException, IOException {
-    // pageContext.include("forms-oql/testMakAddToNewForm.jsp");
-    // }
-    // public void endMakAddToNewForm(WebResponse response) throws Exception {
-    // try {
-    // output = response.getText(); fetchValidTestResult(output, record);
-    // } catch (IOException e) {
-    // fail("JSP output error: " + response.getResponseMessage());
-    // }
-    //        
-    // assertTrue(compareTest(output));
-    // }
+    public void beginMakAddToNewForm(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/beginMakAddToNewForm.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", "addToNewPerson");
+        form.setParameter("description_1", "addToNewDescription");
+        form.setParameter("email_1", "addToNew@makumba.org");
+        // submit the form
+        form.submit();
+    }
+
+    public void testMakAddToNewForm() throws ServletException, IOException {
+        pageContext.include("forms-oql/testMakAddToNewForm.jsp");
+    }
+
+    public void endMakAddToNewForm(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
 
     public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
         WebConversation wc = new WebConversation();
