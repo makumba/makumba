@@ -159,13 +159,13 @@ public class AddTag extends FormTagBase {
             if (resp.getHandler() != null) {
                 handlerName = resp.getHandler();
             } else {
-                handlerName = "on_add" + Logic.upperCase(resp.getBasePointerType());
+                handlerName = "on_add" + Logic.upperCase(resp.getNewType());
             }
             String afterHandlerName;
             if (resp.getAfterHandler() != null) {
                 afterHandlerName = resp.getAfterHandler();
             } else {
-                afterHandlerName = "after_add" + Logic.upperCase(resp.getBasePointerType());
+                afterHandlerName = "after_add" + Logic.upperCase(resp.getNewType());
             }
 
             // otherwise, we add to the new object
