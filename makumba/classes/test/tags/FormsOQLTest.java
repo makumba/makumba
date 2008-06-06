@@ -67,7 +67,17 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     static Object[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
 
+    private final static String namePersonIndivName_AddToNew = "addToNewPerson";
+
+    private static final String namePersonIndivName_Bart = "bart";
+
+    private static final String namePersonIndivName_John = "john";
+
+    private static final String[] namesPersonIndivName = { namePersonIndivName_AddToNew, namePersonIndivName_Bart,
+            namePersonIndivName_John };
+
     private static final class Suite extends TestSetup {
+
         private Suite(Test arg0) {
             super(arg0);
         }
@@ -91,11 +101,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         protected void insertPerson(Transaction db) {
             Properties p = new Properties();
 
-            p.put("indiv.name", "bart");
+            p.put("indiv.name", namePersonIndivName_Bart);
             brother = db.insert("test.Person", p);
 
             p.clear();
-            p.put("indiv.name", "john");
+            p.put("indiv.name", namePersonIndivName_John);
 
             Calendar c = Calendar.getInstance();
             c.clear();
@@ -135,6 +145,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             db.delete(person);
             // brother is referenced by person so we delete it after person
             db.delete(brother);
+            Vector<Dictionary<String, Object>> v = db.executeQuery(
+                "SELECT p AS p FROM test.Person p WHERE p.indiv.name=$1", namePersonIndivName_AddToNew);
+            db.delete((Pointer) v.firstElement().get("p"));
         }
 
         protected void insertLanguages(Transaction db) {
@@ -152,6 +165,14 @@ public class FormsOQLTest extends MakumbaJspTestCase {
                 db.delete((Pointer) languages.get(i));
         }
 
+        protected void deleteIndividuals(Transaction db) {
+            for (int i = 0; i < namesPersonIndivName.length; i++) {
+                Vector<Dictionary<String, Object>> v = db.executeQuery(
+                    "SELECT i AS i FROM test.Individual i WHERE i.name=$1", namesPersonIndivName[i]);
+                db.delete((Pointer) v.firstElement().get("i"));
+            }
+        }
+
         public void tearDown() {
             // do your one-time tear down here!
             TransactionProvider tp = TransactionProvider.getInstance();
@@ -159,6 +180,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
             deletePerson(db);
             deleteLanguages(db);
+            deleteIndividuals(db);
             db.close();
         }
     }
@@ -200,9 +222,19 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     }
 
-    public void beginMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
+    public void beginMakAddForm(Request request) throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakAddForm.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
 
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
@@ -336,7 +368,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", "addToNewPerson");
+        form.setParameter("indiv.name", namePersonIndivName_AddToNew);
         form.setParameter("description_1", "addToNewDescription");
         form.setParameter("email_1", "addToNew@makumba.org");
         // submit the form
