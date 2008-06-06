@@ -180,6 +180,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
         // if we have a parent, we append the key of the parent
         tagKey.setAt(getParentListKey(this, pageCache), queryProps.length);
         tagKey.setAt(id, queryProps.length + 1);
+        // FIXME: add limit and offset to tag key if they are not null; requires initial length to be >
+        // (queryProps.length + 2)
     }
 
     /**
@@ -209,7 +211,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // we make ComposedQuery cache our query
         QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache));
-        
 
         if (countVar != null)
             setType(pageCache, countVar, MakumbaSystem.makeFieldOfType(countVar, "int"));
@@ -239,6 +240,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     Object upperMaxCount = null;
 
+    Object upperMaxResults = null;
+
     private static ThreadLocal<ServletRequest> servletRequestThreadLocal = new ThreadLocal<ServletRequest>();
 
     /**
@@ -257,6 +260,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         else {
             upperCount = pageContext.getRequest().getAttribute(standardCountVar);
             upperMaxCount = pageContext.getRequest().getAttribute(standardMaxCountVar);
+            upperMaxResults = pageContext.getRequest().getAttribute(standardMaxResultsVar);
         }
 
         execution = QueryExecution.getFor(tagKey, pageContext, offset, limit, defaultLimit);
@@ -373,6 +377,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         pageContext.getRequest().setAttribute(standardCountVar, upperCount);
         pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
+        pageContext.getRequest().setAttribute(standardMaxResultsVar, upperMaxResults);
         execution.endIterationGroup();
 
         if (getParentList(this) == null)
@@ -440,7 +445,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         ret.init();
         pc.cache(GenericListTag.QUERY, key, ret);
-        
+
         return ret;
     }
 
@@ -453,9 +458,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
         Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
         if (countAttr == null) {
             // throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
+            // FIXME: above error throwing led to some not-yet-known-anymore errors (manu might know more)
+            // however, it is a good indication to the user -> should be tried again
             return -1;
         }
-        return ((Integer) countAttr).intValue();
+        return (Integer) countAttr;
     }
 
     /**
@@ -467,9 +474,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
         Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
         if (maxAttr == null) {
             // throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
+            // FIXME: above error throwing led to some not-yet-known-anymore errors (manu might know more)
+            // however, it is a good indication to the user -> should be tried again
             return -1;
         }
-        return ((Integer) maxAttr).intValue();
+        return (Integer) maxAttr;
     }
 
     /**
@@ -484,6 +493,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
         Object totalAttr = servletRequest.getAttribute(standardMaxResultsVar);
         if (totalAttr == null) {
             // throw new ProgrammerError("mak:maxResults() can only be used inside a <mak:list> tag");
+            // FIXME: above error throwing led to some not-yet-known-anymore errors (manu might know more)
+            // however, it is a good indication to the user -> should be tried again
             return -1;
         }
 
@@ -519,13 +530,13 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public boolean canHaveBody() {
         return true;
     }
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         execution = null;
         queryProps[0] = queryProps[1] = queryProps[2] = queryProps[3] = null;
-        countVar = maxCountVar = offset= limit= null;
+        countVar = maxCountVar = offset = limit = null;
         separator = "";
     }
 }
