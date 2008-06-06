@@ -222,6 +222,20 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakListMaxResults() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListMaxResults.jsp");
+    }
+
+    public void endMakListMaxResults(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
     public void testMakValueChar() throws ServletException, IOException {
         pageContext.include("list-oql/testMakValueChar.jsp");
     }
