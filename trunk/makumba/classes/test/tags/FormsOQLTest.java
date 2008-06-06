@@ -50,21 +50,15 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     static Pointer address;
 
-    static Dictionary pc;
-
     static Suite setup;
-
-    static Vector v;
 
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 
     private String output;
 
-    private String line;
+    static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
-    static ArrayList languages = new ArrayList();
-
-    static Object[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
 
     private final static String namePersonIndivName_AddToNew = "addToNewPerson";
@@ -123,7 +117,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
             p.put("uniqInt", new Integer(255));
 
-            Vector intSet = new Vector();
+            Vector<Integer> intSet = new Vector<Integer>();
             intSet.addElement(new Integer(1));
             intSet.addElement(new Integer(0));
             p.put("intSet", intSet);
@@ -152,7 +146,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         protected void insertLanguages(Transaction db) {
             languages.clear();
-            Dictionary p = new Hashtable();
+            Dictionary<String, String> p = new Hashtable<String, String>();
             for (int i = 0; i < languageData.length; i++) {
                 p.put("name", languageData[i][0]);
                 p.put("isoCode", languageData[i][1]);
@@ -194,7 +188,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         WebConversation wc = new WebConversation();
         WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
         try {
-            WebResponse resp = wc.getResponse(req);
+            wc.getResponse(req);
         } catch (MalformedURLException e) {
         } catch (IOException e) {
             setup.tearDown();
