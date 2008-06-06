@@ -12,8 +12,6 @@
       <mak:input name="description"/>
       <mak:input name="email"/>
     </mak:addForm>
-<%--    
---%>    
     <input type="submit" name="addemail" value="Add!">    
 </mak:newForm>
 
