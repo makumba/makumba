@@ -135,4 +135,17 @@ public class HtmlUtils {
                 return formatted + endSeparator;
         }
     }
+    
+    /**
+     * removes HTML tags and replaces double quotes by the corresponding HTML entity, so that the passed text can safely be included in HTML
+     * attributes (such as the &lt;A&gt; TITLE attribute)
+     */
+    public static String stripHTMLTags(String str) {
+        // remove quotes
+        str = str.replaceAll("\"", "&quot;");
+        // zap all tags
+        str = str.replaceAll("<[^>]*>", "");
+        return str;
+    }
+    
 }
