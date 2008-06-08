@@ -371,9 +371,9 @@ public class RelationCrawler {
 
                     // we check if there's already such a relation in the database
 
-                    String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2";
-                    String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = ? AND relation.fromFile = ?";
-                    Object[] args = { toFile, fromFile };
+                    String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2 and relation.webapp.webappRoot = $3";
+                    String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation JOIN relation.webapp webapp WHERE relation.toFile = ? AND relation.fromFile = ? AND webapp.webappRoot = ?";
+                    Object[] args = { toFile, fromFile, webappRoot };
                     Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(
                         tp.getQueryLanguage().equals("oql") ? oqlQuery : hqlQuery, args);
 
