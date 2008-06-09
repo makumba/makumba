@@ -2177,7 +2177,7 @@
       <rtexprvalue>yes</rtexprvalue>
     </attribute>
     <attribute>
-      <name>title</name>
+      <name>paginationLinkTitle</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
     </attribute>
