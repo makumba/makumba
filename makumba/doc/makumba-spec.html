@@ -20,8 +20,9 @@
   <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_ql" title="...getting data from the database"><b>[Query Languages]</b></a></span>
   <b><span title="...viewing/editing data though HTML pages">[JSP tag library</span>:</b>
   <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_intro" title="...controller &amp; response"><b>Intro</b></a></span>| 
-  <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_list" title="...viewing data thru HTML pages"><b>Listing</b></a></span>|
-  <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_forms" title="...editing data thru HTML pages"><b>Forms</b></a>]</span>
+  <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_list" title="...viewing data through HTML pages"><b>Listing</b></a></span>|
+  <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_forms" title="...editing data through HTML pages"><b>Forms</b></a></span>|
+  <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_search" title="...searching in data through HTML pages"><b>Search</b></a>]</span>
   <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_bl" title="...adding logic to basic operations"><b>[Business Logics]</b></a></span>
   <span class="menu_item"> <a class="tab" name="tabmenu" href="#tab_summary" title="...Presentation and internal representation principles"><b>[Summary]</b></a></span>
 </div>
@@ -1917,6 +1918,199 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 </div>
 
 
+
+<div id="tab_search" class="content">
+<h2><a name="Presentation">JSP taglib - Search</a></h2>
+<table width="100%">
+  <tr>
+    <td valign="top">
+    <div class="navbarPage">
+    <ul class="navbarPage">
+      <li class="section">
+        <a href="#search">&lt;mak:searchForm&gt;</a>
+        <ul>
+          <li class="section"><a href="#criterion">&lt;mak:criterion&gt;</a></li>          
+          <li class="section"><a href="#searchField">&lt;mak:searchField&gt;</a></li>          
+          <li class="section"><a href="#matchMode">&lt;mak:matchMode&gt;</a></li>
+        </ul>
+      </li>
+      <li class="section"><a href="#resultList">&lt;mak:resultList&gt;</a></li>
+    </ul>
+    </div>
+    </td>
+    <td>
+
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:searchForm ===================== -->
+    <h3><a name="searchForm">&lt;mak:searchForm&gt;...&lt;/mak:searchForm&gt;</a></h3>
+    <p>Produces a form to search in the datbase. In principal related to <a href="tab_forms">mak:forms</a>, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>in</tt></td>
+          <td>The MDD to search in</td>
+          <td>Fixed, mandatory</td>
+        </tr>
+        <tr>
+          <td><tt>name</tt></td>
+          <td>Name of the form</td>
+          <td>As in mak:forms, but mandatory. Name is used in connection with <a href="#resultList">mak:resultList</a>, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:searchForm in="general.Person" name="searchPerson"&gt;
+  ....
+&lt;/mak:searchForm&gt;
+</pre>
+
+
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:criterion ===================== -->
+    <h3><a name="criterion">&lt;mak:criterion&gt;...&lt;/mak:criterion&gt;</a></h3>
+    <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>fields</tt></td>
+          <td>The MDD fields to apply this criterion upon</td>
+          <td>Fixed, mandatory; for multiple fields, provide a comma-separated list.</td>
+        </tr>
+        <tr>
+          <td><tt>isRange</tt></td>
+          <td>Toggles range searching on the field(s)</td>
+          <td>Fixed. Values are <code>true</code> or <code>false</code>; defaults to <code>false</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:searchForm in="best.Student" name="searchPerson"&gt;
+  &lt;mak:criterion fields="name"&gt; ... &lt;/mak:criterion&gt;
+&lt;/mak:searchForm&gt;
+</pre>
+    <div class="note futfeat">In the future, a &lt;mak:criterion .. /&gt; without a body might by default behave like having a single &lt;mak:searchField/&gt; inside
+    </div>
+
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:searchField ==================== -->
+    <h3><a name="searchField">&lt;mak:searchField/&gt;</a></h3>
+    <p>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the <a href="#input">&lt;mak:input/&gt</a> tag, and provides additionally the following attributes:</p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>forceInputStyle</tt></td>
+          <td>Changes the style/type of the input as it would be normally computed for the data type.</td>
+          <td>
+            Fixed; applicable for the following data types:
+            <ul>
+              <li>text: '<code>input</code>' forces an &lt;input&gt; tag rather than a &lt;textArea&gt;.</li>
+              <li>ptr: '<code>multiple</code>' forces a multiple-select rather than a single-select, and check-boxes rather than radio-buttons.</li>
+              <li>set: '<code>single</code>' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes.</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:searchForm in="best.Student" name="searchPerson"&gt;
+  &lt;mak:criterion fields="name"&gt; &lt;mak:searchField /&gt; &lt;/mak:criterion&gt;
+  &lt;mak:criterion fields="place"&gt; &lt;mak:searchField forceInputStyle="single" /&gt; &lt;/mak:criterion&gt;  
+&lt;/mak:searchForm&gt;
+</pre>
+
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:matchMode ====================== -->
+    <h3><a name="matchMode">&lt;mak:matchMode/&gt;</a></h3>
+    <p>Enclosed inside a &lt;mak:criterion&gt;, generates a select input to specify how that criterion should be matched. Applies only to char, text for string matching; int, real for number comparisons; date types for date comparisons; and int, real and date for range matching.</p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>type</tt></td>
+          <td>
+            HTML INPUT type to be used:
+            <ul>
+              <li>"select" (drop-down).</li>
+              <li>"radio" (radio buttons).</li>
+            </ul>
+          </td>
+          <td>Fixed</td>
+        </tr>
+        <tr>
+          <td><tt>matchModes</tt></td>
+          <td>
+            Defines how the search terms shall be matched. Can be a comma-separated list of operations; allowed values depend on the data types: 
+            <ul>
+              <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+              <li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+              <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+              <li>for date comparisons: 'equals', 'before', 'after'</li>
+            </ul>
+          </td>
+          <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'between' for range comparisons.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:searchForm in="best.Student" name="searchPerson"&gt;
+  &lt;mak:criterion fields="name"&gt; &lt;mak:matchMode matchModes="contains, equals, begins, ends"&gt; &lt;mak:searchField /&gt; &lt;/mak:criterion&gt;
+&lt;/mak:searchForm&gt;
+</pre>
+
+
+    <!-- ========================================================= --> 
+    <!-- ==================== mak:resultList ===================== -->
+    <h3><a name="matchMode">&lt;mak:resultList&gt;...&lt;/mak:resultList&gt;</a></h3>
+    <p>Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>resultsFrom</tt></td>
+          <td>The name of the search form the results are taken from.</td>
+          <td>Fixed</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <div class="note">The name of the object selected in the list is fixed to 'o', sub-sets get selected as 'o_subFieldName'.</div>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:resultList resultsFrom="searchPerson"&gt;
+  Name: &lt;mak:value expr="o.name"/&gt; &lt;br/&gt;
+&lt;/mak:searchForm&gt;
+</pre>
+    </td>
+  </tr>
+</table>
+</div> 
 
 
 <div id="tab_bl" class="content">
