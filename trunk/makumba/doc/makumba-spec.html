@@ -610,8 +610,9 @@
       &lt;mak:object&gt;</a></li>
       <li class="section"><a href="#makvalue">&lt;mak:value/&gt;</a></li>
       <li class="section"><a href="#makcount">mak:count(), mak:maxCount(), mak:lastCount()</a></li>
+      <li class="section"><a href="#pagination">&lt;mak:pagination&gt;</a></li>
       <li class="section"><a href="#makif">&lt;mak:if&gt;</a></li>
-      <li><a href="#mak_attrib">&lt;mak:attribute&gt;</a></li>
+      <li class="section"><a href="#mak_attrib">&lt;mak:attribute&gt;</a></li>
     </ul>
     </div>
     </td>
@@ -677,17 +678,22 @@
           <td style="vertical-align: top;"><tt>offset</tt></td>
           <td style="vertical-align: top;">the offset of the result to show (0 for starting from the first result)<br>
           </td>
-          <td style="vertical-align: top;">Fixed ($attribute allowed). Only allowed for the outermost mak:list<br>
+          <td style="vertical-align: top;">Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list<br>
           </td>
         </tr>
         <tr>
           <td style="vertical-align: top;"><tt>limit</tt></td>
           <td style="vertical-align: top;">the maximum numbers of results to show (-1 for all results)<br>
           </td>
-          <td style="vertical-align: top;">Fixed ($attribute allowed). Only allowed for the outermost mak:list. <br>
+          <td style="vertical-align: top;">Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found, defaults to the value of <code>defaultLimit</code>, if present, or -1 otherwise.<br>
           <span class="futfeat">LIMIT can limit the query time dramatically, but the children mak:lists are not
           yet limited.</span><br>
           </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><tt>defaultLimit</tt></td>
+          <td style="vertical-align: top;">the default value for limit, if the $attribute in limit="$attribute" is not present.</td>
+          <td style="vertical-align: top;">Fixed ($attribute allowed). Only allowed for the outermost mak:list.<br>
         </tr>
         <tr>
           <td><tt class="oldfeat">countVar</tt></td>
@@ -886,6 +892,9 @@
     Example using the Java Standard Tag Library (<a href="http://java.sun.com/products/jsp/jstl/">JSTL</a>, prefix "c"):
     <br>
     <pre class="example">&lt;mak:list ...&gt;<br>   &lt;c:if test="${mak:count()==1}"&gt;These are the list elements: &lt;/c:if&gt;<br>   &lt;tr bgcolor="${mak:count()%2==1?"white":"grey"}"&gt;<br>       &lt;td&gt;this shows in alternative colors&lt;/td&gt;<br>   ...<br>   &lt;c:if test="${mak:count()!=mak:maxCount()}"&gt;<br>       a separator where we can have any &lt;b&gt;tag&lt;/b&gt; <br>       we don't want separators to be shown after the last element <br>   &lt;/c:if&gt;<br>&lt;/mak:list&gt;<br>&lt;c:if test="${mak:lastCount()==0}"&gt;These are no elements &lt;/c:if&gt;<br></pre>
+
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:if =========================== -->
     <h4><a name="makif">&lt;mak:if&nbsp; ...&gt; ... &lt;/mak:if&gt;</a></h4>
     <p>Displays the body of the tag only if the OQL expression evaluates to true.</p>
     <p>Example :</p>
@@ -909,6 +918,52 @@
           <td>Fixed, Mandatory. <br>
           <i>(in first implementation, this was called <code>expr</code>, but changed to reflect practice in XSL and
           <a href="http://java.sun.com/products/jsp/jstl/" title="JSP Standard Tag Library">JSTL</a>)</i></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ========================================================= --> 
+    <!-- ====================== mak:pagination =================== -->
+    <h4><a name="pagination">&lt;mak:pagination&nbsp; ...&gt; ... &lt;/mak:pagination&gt;</a></h4>
+    <p>Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in
+    the result set, and the page number currently displayed.<br />
+    To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically
+    computes the total of rows that would be returned by the list, if no limit was specified.</p>
+    <p>Example:</p>
+    <pre class="example">
+&lt;mak:list from="best.Student s" offset="$offset" limit="$limit" defaultLimit="25" orderBy="s.name"&gt;
+  &lt;mak:pagination action="studentList.jsp" title="true" itemName="Students" /&gt;
+  &lt;mak:value expr="s.person.name"/&gt;, born on &lt;mak:value expr="s.person.birthdate" /&gt;
+  &lt;mak:pagination action="studentList.jsp" title="true" itemName="Students" /&gt;
+&lt;/mak:list&gt;
+</pre>
+    <br>
+    <p></p>
+    <table class="tagParamDef">
+      <tbody>
+        <tr>
+          <th>tag parameter</th>
+          <th>description</th>
+          <th>comments</th>
+        </tr>
+        <tr>
+          <td><tt>action</tt></td>
+          <td>The target page to go to when clicking on a pagination link.</td>
+          <td>Rtexpr.</td>
+        </tr>
+        <tr>
+          <td><tt>itemName</tt></td>
+          <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
+          <td>Rtexpr.</td>
+        </tr>
+        <tr>
+          <td><tt>paginationLinkTitle</tt></td>
+          <td>Whether or not to display title="..." elements on the pagination links.</td>
+          <td>Fixed; defaults to <code>true</code></td>
+        </tr>
+        <tr>
+          <td><tt>styleClass</tt></td>
+          <td rowspan="14" colspan="2">Generic html tag attribute, see <a href="#maknew"><code>newForm</code></a></td>
         </tr>
       </tbody>
     </table>
