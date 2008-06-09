@@ -162,8 +162,10 @@
     <p>A char field contains a number of characters. Maximal width must be specified and is limited to 255. <span
       class="futfeat">(Optionally a minimal number of characters (lesser than max) can be indicated).</span> Both must
     be positive integers. For example:</p>
-    <pre class="example">#<i>fieldName</i>= char[<i>maxWidth</i>]<br>name= unique char[80]; Username<br>#<span
-      class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span><br><span class="futfeat">password= encrypted char[6..10]; Secret password</span></pre>
+    <pre class="example">
+#<i>fieldName</i>= char[<i>maxWidth</i>]<br>name= unique char[80]; Username
+<span class="futfeat">password= encrypted char[6..10]; Secret password</span>
+</pre>
     <p>"<code>unique</code>" and "<code>encrypted</code>" are <a href="#FieldAttributes">field attributes</a>,
     explained below.</p>
     <div class="note">Pay close attention to the character set (charset) for encoding the characters. In Java the
