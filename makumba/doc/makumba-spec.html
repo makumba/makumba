@@ -600,7 +600,6 @@
 
 <div id="tab_list" class="content">
 <h2><a name="Presentation">JSP taglib - listing</a></h2>
-<h3><a name="maklist">&lt;mak:list...&gt;...&lt;/mak:list&gt;</a></h3>
 <table width="100%">
   <tr>
     <td valign="top">
@@ -617,6 +616,7 @@
     </div>
     </td>
     <td>
+    <h3><a name="maklist">&lt;mak:list...&gt;...&lt;/mak:list&gt;</a></h3>
     <p>Performs a query on the database. The body of the list, if present, is run once for every item in the
     resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</p>
     <p>Example:</p>
@@ -1942,7 +1942,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:searchForm ===================== -->
-    <h3><a name="searchForm">&lt;mak:searchForm&gt;...&lt;/mak:searchForm&gt;</a></h3>
+    <h4><a name="searchForm">&lt;mak:searchForm&gt;...&lt;/mak:searchForm&gt;</a></h4>
     <p>Produces a form to search in the datbase. In principal related to <a href="tab_forms">mak:forms</a>, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
     <table class="tagParamDef">
       <tbody>
@@ -1973,7 +1973,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:criterion ===================== -->
-    <h3><a name="criterion">&lt;mak:criterion&gt;...&lt;/mak:criterion&gt;</a></h3>
+    <h4><a name="criterion">&lt;mak:criterion&gt;...&lt;/mak:criterion&gt;</a></h4>
     <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
     <table class="tagParamDef">
       <tbody>
@@ -2005,7 +2005,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:searchField ==================== -->
-    <h3><a name="searchField">&lt;mak:searchField/&gt;</a></h3>
+    <h4><a name="searchField">&lt;mak:searchField/&gt;</a></h4>
     <p>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the <a href="#input">&lt;mak:input/&gt</a> tag, and provides additionally the following attributes:</p>
     <table class="tagParamDef">
       <tbody>
@@ -2038,7 +2038,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:matchMode ====================== -->
-    <h3><a name="matchMode">&lt;mak:matchMode/&gt;</a></h3>
+    <h4><a name="matchMode">&lt;mak:matchMode/&gt;</a></h4>
     <p>Enclosed inside a &lt;mak:criterion&gt;, generates a select input to specify how that criterion should be matched. Applies only to char, text for string matching; int, real for number comparisons; date types for date comparisons; and int, real and date for range matching.</p>
     <table class="tagParamDef">
       <tbody>
@@ -2083,7 +2083,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:resultList ===================== -->
-    <h3><a name="matchMode">&lt;mak:resultList&gt;...&lt;/mak:resultList&gt;</a></h3>
+    <h4><a name="matchMode">&lt;mak:resultList&gt;...&lt;/mak:resultList&gt;</a></h4>
     <p>Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</p>
     <table class="tagParamDef">
       <tbody>
