@@ -3,7 +3,6 @@ package org.makumba.list.pagination;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -70,7 +69,7 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private String styleClass = "makumbaPagination";
 
-    private String title;
+    private String paginationLinkTitle = "true";
 
     private String totalCount;
 
@@ -203,7 +202,7 @@ public class PaginationTag extends GenericMakumbaTag {
     private String getAnchor(String baseUrl, int start, int range, String page) {
         StringBuffer link = new StringBuffer("<a href=\"").append(baseUrl).append(OFFSET).append("=").append(start).append(
             "&").append(LIMIT).append("=").append(range).append("\"");
-        if (StringUtils.equals(title, "true")) {
+        if (StringUtils.equals(paginationLinkTitle, "true")) {
             link.append(" title=\"");
             if (page.equals(PREVIOUS)) {
                 link.append("Previous page");
@@ -296,9 +295,9 @@ public class PaginationTag extends GenericMakumbaTag {
         this.styleClass = styleClass;
     }
 
-    public void setTitle(String title) {
-        checkValidAttributeValues("title", title, ATTRIBUTE_VALUES_TRUE_FALSE);
-        this.title = title.trim();
+    public void setPaginationLinkTitle(String paginationLinkTitle) {
+        checkValidAttributeValues("paginationLinkTitle", paginationLinkTitle, ATTRIBUTE_VALUES_TRUE_FALSE);
+        this.paginationLinkTitle = paginationLinkTitle.trim();
     }
 
     public void setTotalCount(String totalCount) throws JspException {
