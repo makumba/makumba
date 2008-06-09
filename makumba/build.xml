@@ -412,7 +412,7 @@
 
 <target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publisDoc">
 	<echo>updating zip for distribution</echo>
-	<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes">
+	<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
 		<fileset dir="lib" includes="makumbadoc.zip" />
 	</ftp>
 </target>
