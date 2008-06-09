@@ -131,108 +131,108 @@ Please note that you may not want to enable all developer support tools in a pro
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     version="2.4"&gt;
 
-&nbsp;&nbsp;&lt;!-- Makumba Controller Filter, needed to invoke e.g. form responders --&gt;
-&nbsp;&nbsp;&lt;filter&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;filter-name&gt;makumba_controller&lt;/filter-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;filter-class&gt;org.makumba.controller.http.ControllerFilter&lt;/filter-class&gt;
-&nbsp;&nbsp;&lt;/filter&gt;
+  &lt;!-- Makumba Controller Filter, needed to invoke e.g. form responders --&gt;
+  &lt;filter&gt;
+    &lt;filter-name&gt;makumba_controller&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.makumba.controller.http.ControllerFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
 
-&nbsp;&nbsp;&lt;filter-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;filter-name&gt;makumba_controller&lt;/filter-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/filter-mapping&gt;
-
-
-&nbsp;&nbsp;&lt;!-- Developer support - MDD & Business logic browser & viewer --&gt;
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.makumba.devel.SourceViewServlet&lt;/servlet-class&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
-
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;*.jspx&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
-
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;*.jspxp&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
-
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;/dataDefinitions/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
-
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;/classes/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
-
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;/logic/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;filter-mapping&gt;
+    &lt;filter-name&gt;makumba_controller&lt;/filter-name&gt;
+    &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
 
 
-&nbsp;&nbsp;&lt;!-- Developer support - query tool --&gt;
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataQuery&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.makumba.devel.DataQueryServlet&lt;/servlet-class&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataQuery&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern>/dataQuery/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;!-- Developer support - MDD & Business logic browser & viewer --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.makumba.devel.SourceViewServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;*.jspx&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;*.jspxp&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/dataDefinitions/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/classes/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;mddLinker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/logic/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
 
 
-&nbsp;&nbsp;&lt;!-- Developer support - single data object viewer --&gt;
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataViewer&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.makumba.devel.DataObjectViewerServlet&lt;/servlet-class&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataViewer&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern>/dataView/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;!-- Developer support - query tool --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;dataQuery&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.makumba.devel.DataQueryServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dataQuery&lt;/servlet-name&gt;
+    &lt;url-pattern>/dataQuery/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
 
 
-&nbsp;&nbsp;&lt;!--  Developer support - data lister --&gt;
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataLister&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.makumba.devel.DataTypeListerServlet&lt;/servlet-class&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataLister&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern>/dataList/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;!-- Developer support - single data object viewer --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;dataViewer&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.makumba.devel.DataObjectViewerServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dataViewer&lt;/servlet-name&gt;
+    &lt;url-pattern>/dataView/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+
+  &lt;!--  Developer support - data lister --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;dataLister&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.makumba.devel.DataTypeListerServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dataLister&lt;/servlet-name&gt;
+    &lt;url-pattern>/dataList/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
 
   
-&nbsp;&nbsp;&lt;!--  Developer support - pointer value converter --&gt;
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataValueConverter&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.makumba.devel.DataPointerValueConverter&lt;/servlet-class&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;dataValueConverter&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern>/valueConverter/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;!--  Developer support - pointer value converter --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;dataValueConverter&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.makumba.devel.DataPointerValueConverter&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dataValueConverter&lt;/servlet-name&gt;
+    &lt;url-pattern>/valueConverter/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
 
 
-&nbsp;&nbsp;&lt;servlet&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;invoker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-class&gt;org.apache.catalina.servlets.InvokerServlet&lt;/servlet-class&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;init-param&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;param-name&gt;debug&lt;/param-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;param-value&gt;0&lt;/param-value&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/init-param&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
-&nbsp;&nbsp;&lt;/servlet&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;invoker&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.apache.catalina.servlets.InvokerServlet&lt;/servlet-class&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;debug&lt;/param-name&gt;
+      &lt;param-value&gt;0&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
 	
-&nbsp;&nbsp;&lt;servlet-mapping&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet-name&gt;invoker&lt;/servlet-name&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;url-pattern&gt;/servlet/*&lt;/url-pattern&gt;
-&nbsp;&nbsp;&lt;/servlet-mapping&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;invoker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/servlet/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
 
 &lt;/web-app&gt;
 </pre>
