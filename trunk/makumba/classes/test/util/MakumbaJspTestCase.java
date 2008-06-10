@@ -30,6 +30,8 @@ import bmsi.util.DiffPrint;
  */
 public class MakumbaJspTestCase extends JspTestCase {
 
+    private static final String EXPECTED_RESULT_EXTENSION = ".html";
+
     private static final class Suite extends TestSetup {
         private Suite(Test arg0) {
             super(arg0);
@@ -56,7 +58,7 @@ public class MakumbaJspTestCase extends JspTestCase {
 
         // based on the method name, we retrieve the file used as comparison basis
 
-        File f = new File("classes/test/expected/" + testName + ".txt");
+        File f = new File("classes/test/expected/" + testName + EXPECTED_RESULT_EXTENSION);
 
         if (!f.exists())
             throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
@@ -143,7 +145,7 @@ public class MakumbaJspTestCase extends JspTestCase {
         // first we retrieve the name of the method which calls us
         String testName = new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName();
 
-        File f = new File("classes/test/expected/" + testName + ".txt");
+        File f = new File("classes/test/expected/" + testName + EXPECTED_RESULT_EXTENSION);
         if (!f.exists())
             try {
                 f.createNewFile();
