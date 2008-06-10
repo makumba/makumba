@@ -172,8 +172,9 @@ public class QueryExecution {
             MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())));
         try {
             Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
+            int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
             listData = cq.execute(qep, args, new Evaluator(pageContext), computeLimit(pageContext, offset, 0, 0),
-                computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), -1));
+                computeLimit(pageContext, limit, defaultLimitInt, -1));
         } finally {
             qep.close();
         }
