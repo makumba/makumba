@@ -342,4 +342,17 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakPagination() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakPaginationTag.jsp");
+    }
+
+    public void endMakPagination(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
 }
