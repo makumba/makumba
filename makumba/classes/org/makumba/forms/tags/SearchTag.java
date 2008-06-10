@@ -233,7 +233,7 @@ public class SearchTag extends FormTagBase {
 
                         if (whereThisField.length() > 0) {
                             // if we are having a multi-field match, we might need to combine rules
-                            whereThisField = " OR " + whereThisField;
+                            whereThisField = whereThisField + " OR ";
                         }
                         String finalFieldName = fieldName;
 
