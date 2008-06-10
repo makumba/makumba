@@ -435,7 +435,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     public void endLogin(WebResponse response) throws Exception {
         try {
             output = response.getText();
-            fetchValidTestResult(output, true);
+            fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
