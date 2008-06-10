@@ -70,6 +70,8 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     private static final String[] namesPersonIndivName = { namePersonIndivName_AddToNew, namePersonIndivName_Bart,
             namePersonIndivName_John };
 
+    private WebResponse submissionResponse;
+
     private static final class Suite extends TestSetup {
 
         private Suite(Test arg0) {
@@ -382,6 +384,50 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
 
         assertTrue(compareTest(output));
+    }
+
+    public void beginMakSearchForm(Request request) throws Exception {
+        record = true;
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakSearchForm.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", "a");
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakSearchForm() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakSearchForm(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+        record = false;
     }
 
     public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
