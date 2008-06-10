@@ -2,7 +2,9 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -24,8 +26,6 @@ import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
@@ -66,10 +66,11 @@ public class ResponderFactory {
         
         Object o = RequestAttributes.getParameters(req).getParameter(Responder.responderName);
         if (o != null) {
-            if (o instanceof String)
+            if (o instanceof String) {
                 set.add((String)o);
-            else
+            } else {
                 set.addAll((Vector) o);
+            }
         }
         
          
@@ -112,9 +113,11 @@ public class ResponderFactory {
             }
         }
         */
-        if(order != null)
+        if(order != null) {
             return Arrays.asList(order).iterator();
-        else return new ArrayList<String>().iterator();
+        } else {
+            return new ArrayList<String>().iterator();
+        }
         
     }
     
@@ -126,12 +129,15 @@ public class ResponderFactory {
     }
 
     private void printResponderIterator(Iterator<String> order) {
-        if(order == null)
+        if(order == null) {
             return;
+        }
         while(order.hasNext()) {
             String code = order.next();
             System.out.println("** responder code: "+code);
-            if(code == null) break;
+            if(code == null) {
+                break;
+            }
             Responder r = getResponder(code);
             System.out.println("** responder form name: "+r.getFormName());
             System.out.println("** responder form key:  "+r.responderKey());
@@ -146,6 +152,7 @@ public class ResponderFactory {
             return suffix((String) o1).compareTo(suffix((String) o2));
         }
 
+        @Override
         public boolean equals(Object o) {
             return false;
         }
@@ -187,12 +194,14 @@ public class ResponderFactory {
      */
     private Integer suffix(String code) {
         int n = code.indexOf(Responder.suffixSeparator);
-        if (n == -1)
+        if (n == -1) {
             return ZERO;
+        }
         code = code.substring(n + 1);
         n = code.indexOf(Responder.suffixSeparator);
-        if (n != -1)
+        if (n != -1) {
             code = code.substring(0, n);
+        }
         return new Integer(Integer.parseInt(code));
     }
 
@@ -212,8 +221,9 @@ public class ResponderFactory {
     public Responder getResponder(String code) {
         String suffix = getSuffixes(code)[0];
         String parentSuffix = getSuffixes(code)[1];
-        if(suffix != "")
+        if(suffix != "") {
             code = code.substring(0, code.indexOf(suffix));
+        }
         return cacheManager.getResponder(code, suffix, parentSuffix);
     }
 
@@ -227,9 +237,9 @@ public class ResponderFactory {
      * @return the first responder fitting the request.
      */
     public Responder getFirstResponder(ServletRequest req) {
-        Iterator responderCodes = getResponderCodes((HttpServletRequest) req);
+        Iterator<String> responderCodes = getResponderCodes((HttpServletRequest) req);
         if (responderCodes.hasNext()) {
-            String code = (String) responderCodes.next();
+            String code = responderCodes.next();
             String suffix = "";
             String parentSuffix = null;
             int n = code.indexOf(Responder.suffixSeparator);
@@ -317,8 +327,9 @@ public class ResponderFactory {
         
         setResponderWorkingDir(req);
 
-        if (req.getAttribute(RESPONSE_STRING_NAME) != null)
+        if (req.getAttribute(RESPONSE_STRING_NAME) != null) {
             return null;
+        }
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
         
@@ -343,8 +354,9 @@ public class ResponderFactory {
                 if (formResponder instanceof FormResponder) {
                     // FIXME: what to do if responder is not a form responder? pull up the result attribute field to
                     // responder?
-                    if(result!=null)
+                    if(result!=null) {
                         responderResults.put(((FormResponder) formResponder).resultAttribute, result);
+                    }
                 }
                 // display the response message and set attributes
                 message = "<font color=green>" + formResponder.message + "</font>";
@@ -372,8 +384,9 @@ public class ResponderFactory {
                 throw new RuntimeWrappedException(t);
             }
             // messages of inner forms are ignored
-            if (suffix.equals(""))
+            if (suffix.equals("")) {
                 req.setAttribute(RESPONSE_STRING_NAME, message);
+            }
         }
         return null;
     }
@@ -400,7 +413,7 @@ public class ResponderFactory {
                 String param= ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getQueryLanguage().equals("oql")?"$1":"?";
 
                 // check to see if the ticket is valid... if it exists in the db
-                Vector v = db.executeQuery(
+                Vector<Dictionary<String, Object>> v = db.executeQuery(
                     "SELECT ms"+(param.equals("$1")?"":".id")+" FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession="+param, reqFormSession);
                 if (v.size() == 0) { // the ticket does not exist... error
                     throw new LogicException(fr.multipleSubmitErrorMsg);
@@ -408,7 +421,7 @@ public class ResponderFactory {
                 } else if (v.size() >= 1) { // the ticket exists... continue
                     // garbage collection of old tickets
                     GregorianCalendar c = new GregorianCalendar();
-                    c.add(GregorianCalendar.HOUR, -5); // how many hours of history do we want?
+                    c.add(Calendar.HOUR, -5); // how many hours of history do we want?
 
                     Object[] params = { reqFormSession, c.getTime() };
                     // delete the currently used ticked and the expired ones
