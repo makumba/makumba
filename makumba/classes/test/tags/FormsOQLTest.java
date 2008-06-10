@@ -215,7 +215,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             fail("JSP output error: " + response.getResponseMessage());
         }
         assertTrue(compareTest(output));
-
     }
 
     public void beginMakAddForm(Request request) throws Exception {
@@ -229,7 +228,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + resp.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
 
         // we get the first form in the jsp
@@ -251,7 +249,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -267,7 +264,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             fail("JSP output error: " + response.getResponseMessage());
         }
         assertTrue(compareTest(output));
-
     }
 
     public void testMakForm() throws ServletException, IOException, SAXException {
@@ -281,9 +277,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
-
     }
 
     public void testBug946() throws ServletException, IOException, SAXException {
@@ -297,7 +291,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -327,7 +320,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -342,7 +334,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -358,7 +349,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + resp.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
 
         // we get the first form in the jsp
@@ -382,7 +372,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -397,7 +386,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + resp.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
 
         // we get the first form in the jsp
@@ -424,7 +412,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
@@ -452,7 +439,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-
         assertTrue(compareTest(output));
     }
 
