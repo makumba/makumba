@@ -72,6 +72,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     private WebResponse submissionResponse;
 
+    private static final Integer uniqInt = new Integer(255);
+
+    private static final String uniqChar = new String("testing \" character field");
+
+    private static Date birthdate;
+
     private static final class Suite extends TestSetup {
 
         private Suite(Test arg0) {
@@ -106,18 +112,18 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             Calendar c = Calendar.getInstance();
             c.clear();
             c.set(1977, 2, 5);
-            Date birthdate = c.getTime();
+            birthdate = c.getTime();
             p.put("birthdate", birthdate);
 
             p.put("uniqDate", birthdate);
             p.put("gender", new Integer(1));
-            p.put("uniqChar", new String("testing \" character field"));
+            p.put("uniqChar", uniqChar);
 
             p.put("weight", new Double(85.7d));
 
             p.put("comment", new Text("This is a text field. It's a comment about this person."));
 
-            p.put("uniqInt", new Integer(255));
+            p.put("uniqInt", uniqInt);
 
             Vector<Integer> intSet = new Vector<Integer>();
             intSet.addElement(new Integer(1));
@@ -406,6 +412,64 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void beginFormAnnotation(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/beginFormAnnotation.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", "name");
+        form.setParameter("indiv.surname", "surname");
+        form.setParameter("age", "invalidInt");
+        form.setParameter("weight", "invalidReal");
+        form.setParameter("email", "invalidEmail");
+        final Date first = new Date(90, 0, 1);
+        form.setParameter("firstSex_0", String.valueOf(first.getDate()));
+        form.setParameter("firstSex_1", String.valueOf(first.getMonth()));
+        form.setParameter("firstSex_2", String.valueOf(first.getYear() + 1900));
+        form.setParameter("birthdate_0", String.valueOf(birthdate.getDate()));
+        form.setParameter("birthdate_1", String.valueOf(birthdate.getMonth()));
+        form.setParameter("birthdate_2", String.valueOf(birthdate.getYear() + 1800));
+        form.setParameter("uniqDate_0", String.valueOf(birthdate.getDate()));
+        form.setParameter("uniqDate_1", String.valueOf(birthdate.getMonth()));
+        form.setParameter("uniqDate_2", String.valueOf(birthdate.getYear() + 1900));
+        form.setParameter("hobbies", " ");
+        form.setParameter("uniqInt", uniqInt.toString());
+        form.setParameter("uniqChar", uniqChar);
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testFormAnnotation() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endFormAnnotation(WebResponse response) throws Exception {
         try {
             output = submissionResponse.getText();
             fetchValidTestResult(output, record);
