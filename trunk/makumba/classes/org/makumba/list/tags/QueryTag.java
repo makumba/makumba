@@ -136,7 +136,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public int getLimitInt() {
         int limitInt = -1;
         try {
-            limitInt = QueryExecution.computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), limitInt);
+            int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
+            limitInt = QueryExecution.computeLimit(pageContext, limit, defaultLimitInt, limitInt);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -271,7 +272,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // set the total result count, i.e. the count this list would have w/o limit & offset
         int maxResults = Integer.MIN_VALUE;
-        int limitEval = QueryExecution.computeLimit(pageContext, limit, Integer.parseInt(defaultLimit), -1);
+        int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
+        int limitEval = QueryExecution.computeLimit(pageContext, limit, defaultLimitInt, -1);
         int offsetEval = QueryExecution.computeLimit(pageContext, offset, defaultOffset, 0);
         if ((offsetEval == 0 && limitEval == -1) || (offsetEval == 0 && (limitEval > 00 && limitEval < n))) {
             // we can set the total count if there is no limit / offset in the page
