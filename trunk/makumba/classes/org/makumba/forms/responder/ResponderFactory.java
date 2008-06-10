@@ -63,64 +63,65 @@ public class ResponderFactory {
      */
     public Iterator<String> getResponderCodes(HttpServletRequest req) {
         TreeSet<String> set = new TreeSet<String>(bySuffix);
-        
+
         Object o = RequestAttributes.getParameters(req).getParameter(Responder.responderName);
         if (o != null) {
             if (o instanceof String) {
-                set.add((String)o);
+                set.add((String) o);
             } else {
                 set.addAll((Vector) o);
             }
         }
-        
-         
+
         return set.iterator();
     }
-    
+
     /**
      * Returns the responders in the page in a topological order
-     * @param req the request corresponding to the current page
+     * 
+     * @param req
+     *            the request corresponding to the current page
      * @return an Iterator iterating over a sorted array of responder codes
      */
     public Iterator<String> getOrderedResponderCodes(HttpServletRequest req) {
-        
+
         // let's fetch the List containing the order of the forms in the page
         // for this we need to fetch a root form responder
-        
+
         Iterator<String> responderCodes = getResponderCodes(req);
-        //Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
+        // Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
         String[] order = null;
-        
-        while(responderCodes.hasNext()) {
+
+        while (responderCodes.hasNext()) {
             String responderCode = responderCodes.next();
-            if(responderCode == null) {
+            if (responderCode == null) {
                 continue;
             }
             Responder responder = getResponder(responderCode);
-            if(responder.getFormOrder() != null) {
+            if (responder.getFormOrder() != null) {
                 order = responder.getFormOrder();
-            } 
-        }
-        
-        /* now we can order the responders
-        List<String> orderedResponderCodes = new LinkedList<String>();
-        
-        if(order != null ) {
-            
-            for(int i = 0; i < order.length; i++) {
-                if(order[i] != null)
-                    orderedResponderCodes.add(formKeyToResponderCode.get(order[i]));
             }
         }
-        */
-        if(order != null) {
+
+        // // now we can order the responders
+        // List<String> orderedResponderCodes = new LinkedList<String>();
+        //        
+        // if(order != null ) {
+        //            
+        // for(int i = 0; i < order.length; i++) {
+        // if(order[i] != null)
+        // orderedResponderCodes.add(formKeyToResponderCode.get(order[i]));
+        // }
+        // }
+
+        if (order != null) {
             return Arrays.asList(order).iterator();
         } else {
             return new ArrayList<String>().iterator();
         }
-        
+
     }
-    
+
     public void printOrderedResponders(HttpServletRequest req) {
         System.out.println("\nresponders ordered:");
         printResponderIterator(getOrderedResponderCodes(req));
@@ -129,18 +130,18 @@ public class ResponderFactory {
     }
 
     private void printResponderIterator(Iterator<String> order) {
-        if(order == null) {
+        if (order == null) {
             return;
         }
-        while(order.hasNext()) {
+        while (order.hasNext()) {
             String code = order.next();
-            System.out.println("** responder code: "+code);
-            if(code == null) {
+            System.out.println("** responder code: " + code);
+            if (code == null) {
                 break;
             }
             Responder r = getResponder(code);
-            System.out.println("** responder form name: "+r.getFormName());
-            System.out.println("** responder form key:  "+r.responderKey());
+            System.out.println("** responder form name: " + r.getFormName());
+            System.out.println("** responder form key:  " + r.responderKey());
         }
     }
 
@@ -187,10 +188,8 @@ public class ResponderFactory {
      * 
      * @param code
      *            the responder code
-     * @return the responder suffix, ZERO if none found
-     * 
-     * FIXME maybe this goes just 2 levels, so forms in forms in forms
-     * aren't working?
+     * @return the responder suffix, ZERO if none found<br>
+     *         FIXME maybe this goes just 2 levels, so forms in forms in forms aren't working?
      */
     private Integer suffix(String code) {
         int n = code.indexOf(Responder.suffixSeparator);
@@ -221,7 +220,7 @@ public class ResponderFactory {
     public Responder getResponder(String code) {
         String suffix = getSuffixes(code)[0];
         String parentSuffix = getSuffixes(code)[1];
-        if(suffix != "") {
+        if (suffix != "") {
             code = code.substring(0, code.indexOf(suffix));
         }
         return cacheManager.getResponder(code, suffix, parentSuffix);
@@ -267,7 +266,8 @@ public class ResponderFactory {
      *            the request corresponding to the current page
      * @return an ArrayList containing all the unassigned exceptions
      */
-    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, HttpServletRequest req) {
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
+            HttpServletRequest req) {
         ArrayList<InvalidValueException> unassignedExceptions = e.getExceptions();
         for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
             String responderCode = responderCodes.next();
@@ -305,17 +305,19 @@ public class ResponderFactory {
 
     /**
      * Should compute the {@link Response} based on all the responders of one page, but for now just computes an
-     * Exception
-     * 
-     * FIXME this code is not taking into account multiple forms: it iterates through all the responders of a
-     * page, but directly treats the exception of the first form responder, which means that errors in the nested forms
-     * are ignored. this should be fixed, in doing something like this:
-     * - iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance
-     * - for each form responder, store the message, errors, request and response (containing modified attributes) into
-     *   a Response object
-     * - generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
-     *   an ArrayList of Response objects)
-     * - the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors get ignored)
+     * Exception.<br>
+     * FIXME this code is not taking into account multiple forms: it iterates through all the responders of a page, but
+     * directly treats the exception of the first form responder, which means that errors in the nested forms are
+     * ignored. this should be fixed, in doing something like this:
+     * <ul>
+     * <li> iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance</li>
+     * <li> for each form responder, store the message, errors, request and response (containing modified attributes)
+     * into a Response object</li>
+     * <li> generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
+     * an ArrayList of Response objects)</li>
+     * <li> the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors
+     * get ignored)
+     * </ul>
      * 
      * @param req
      *            the {@link HttpServletRequest} corresponding to the current page
@@ -324,7 +326,7 @@ public class ResponderFactory {
      * @return a response object holding all necessary information for the {@link ControllerFilter}
      */
     public Exception getResponse(HttpServletRequest req, HttpServletResponse resp) {
-        
+
         setResponderWorkingDir(req);
 
         if (req.getAttribute(RESPONSE_STRING_NAME) != null) {
@@ -332,12 +334,13 @@ public class ResponderFactory {
         }
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
-        
-        //printOrderedResponders(req);
 
-        // store the results from each responder, needed for nested new/add forms wanting to refer to newly created objects
-        Hashtable<String, Object> responderResults = new  Hashtable<String, Object>();
-        
+        // printOrderedResponders(req);
+
+        // store the results from each responder, needed for nested new/add forms wanting to refer to newly created
+        // objects
+        Hashtable<String, Object> responderResults = new Hashtable<String, Object>();
+
         // we go over all the responders of this page (hold in the request)
         for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
 
@@ -354,7 +357,7 @@ public class ResponderFactory {
                 if (formResponder instanceof FormResponder) {
                     // FIXME: what to do if responder is not a form responder? pull up the result attribute field to
                     // responder?
-                    if(result!=null) {
+                    if (result != null) {
                         responderResults.put(((FormResponder) formResponder).resultAttribute, result);
                     }
                 }
@@ -408,13 +411,16 @@ public class ResponderFactory {
         if (fr.multipleSubmitErrorMsg != null && !fr.multipleSubmitErrorMsg.equals("") && reqFormSession != null) {
             Transaction db = null;
             try {
-                db = ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(RequestAttributes.getAttributes(req).getRequestDatabase());
+                db = ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(
+                    RequestAttributes.getAttributes(req).getRequestDatabase());
 
-                String param= ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getQueryLanguage().equals("oql")?"$1":"?";
+                String param = ((DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getQueryLanguage().equals(
+                    "oql") ? "$1" : "?";
 
                 // check to see if the ticket is valid... if it exists in the db
-                Vector<Dictionary<String, Object>> v = db.executeQuery(
-                    "SELECT ms"+(param.equals("$1")?"":".id")+" FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession="+param, reqFormSession);
+                Vector<Dictionary<String, Object>> v = db.executeQuery("SELECT ms" + (param.equals("$1") ? "" : ".id")
+                        + " FROM org.makumba.controller.MultipleSubmit ms WHERE ms.formSession=" + param,
+                    reqFormSession);
                 if (v.size() == 0) { // the ticket does not exist... error
                     throw new LogicException(fr.multipleSubmitErrorMsg);
 
@@ -425,8 +431,8 @@ public class ResponderFactory {
 
                     Object[] params = { reqFormSession, c.getTime() };
                     // delete the currently used ticked and the expired ones
-                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession="+param+" OR ms.TS_create<"+(param.equals("$1")?"$2":"?"),
-                        params);
+                    db.delete("org.makumba.controller.MultipleSubmit ms", "ms.formSession=" + param
+                            + " OR ms.TS_create<" + (param.equals("$1") ? "$2" : "?"), params);
                 }
             } finally {
                 db.close();
