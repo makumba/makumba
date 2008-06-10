@@ -62,7 +62,8 @@ public class MakumbaJspTestCase extends JspTestCase {
 
         if (!f.exists())
             throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
-                    + ".txt - create it first using the fetchValidTestResult(String result) method!");
+                    + EXPECTED_RESULT_EXTENSION
+                    + " - create it first using the fetchValidTestResult(String result) method!");
 
         String fileIntoString = "";
         BufferedReader fileIn = null;
