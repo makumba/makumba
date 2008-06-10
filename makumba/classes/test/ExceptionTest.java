@@ -72,7 +72,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     public void testCompilationError() throws ServletException, IOException {
         pageContext.include("exceptions/testCompilationError.jsp");        
     }
-    public void endComplicationError(WebResponse response) throws Exception {
+    public void endCompilationError(WebResponse response) throws Exception {
         try {
             output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
