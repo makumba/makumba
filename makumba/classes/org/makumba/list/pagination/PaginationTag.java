@@ -110,10 +110,15 @@ public class PaginationTag extends GenericMakumbaTag {
         int offset = this.offset != null ? Integer.parseInt(this.offset) : getParentListTag().getOffsetInt();
         int limit = this.limit != null ? Integer.parseInt(this.limit) : getParentListTag().getLimitInt();
         int maxResults = this.totalCount != null ? Integer.parseInt(this.totalCount) : QueryTag.maxResults();
-        int pages = (maxResults / limit);
-        pages = maxResults % limit == 0 ? pages : pages + 1;
+
+        int pages = (int) Math.ceil(maxResults / (double) limit);
+
+        if (maxResults < limit) { // no pagination needed
+            pages = 0;
+        }
+
         if (pages >= 1) {
-            int currentIndex = (offset / limit); // current index
+            int currentIndex = (int) Math.ceil(offset / (double) limit); // current index
             boolean hasPreviousPage = currentIndex > 0 ? true : false;
             boolean hasNextPage = currentIndex < pages - 1 ? true : false;
             StringBuffer sb = new StringBuffer();
@@ -134,8 +139,8 @@ public class PaginationTag extends GenericMakumbaTag {
 
                 sb.append("  <div style=\"float: left; width: 50%; margin: 0 15px;\" align=\"center\">\n    ");
 
-                int itemCountLower = (currentIndex * limit) + 1;
-                int itemCountUpper = Math.min(maxResults, (currentIndex + 1 * limit));
+                int itemCountLower = offset + 1;
+                int itemCountUpper = Math.min(maxResults, (currentIndex + 1) * limit);
                 sb.append("Showing ").append(itemName).append(" ").append(itemCountLower).append(" to ").append(
                     itemCountUpper).append("").append(" out of ").append(maxResults).append(" (Page ").append(
                     (currentIndex + 1)).append(" out of ").append(pages).append(")\n");
