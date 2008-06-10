@@ -387,7 +387,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void beginMakSearchForm(Request request) throws Exception {
-        record = true;
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakSearchForm.jsp");
 
@@ -427,7 +426,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
 
         assertTrue(compareTest(output));
-        record = false;
     }
 
     public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
