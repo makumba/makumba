@@ -348,23 +348,22 @@ public class ResponderFactory {
             String code = responderCodes.next();
             String suffix = getSuffixes(code)[0];
             String parentSuffix = getSuffixes(code)[1];
-            Responder formResponder = getResponder(code);
+            Responder responder = getResponder(code);
 
             try {
-                checkMultipleSubmission(req, formResponder);
+                checkMultipleSubmission(req, responder);
                 // respond, depending on the operation (new, add, edit, delete)
-                Object result = formResponder.op.respondTo(req, formResponder, suffix, parentSuffix);
-                if (formResponder instanceof FormResponder) {
-                    // FIXME: what to do if responder is not a form responder? pull up the result attribute field to
-                    // responder?
+                Object result = responder.op.respondTo(req, responder, suffix, parentSuffix);
+                if (responder instanceof FormResponder) {
                     if (result != null) {
-                        responderResults.put(((FormResponder) formResponder).resultAttribute, result);
+                        // FIXME: what to do if responder is not a form responder? pull up the result attribute field?
+                        responderResults.put(((FormResponder) responder).resultAttribute, result);
                     }
                 }
                 // display the response message and set attributes
-                message = "<font color=green>" + formResponder.message + "</font>";
+                message = "<font color=green>" + responder.message + "</font>";
                 if (result != null) {
-                    req.setAttribute(formResponder.resultAttribute, result);
+                    req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);
                 }
                 req.setAttribute("makumba.successfulResponse", "yes");
@@ -373,14 +372,14 @@ public class ResponderFactory {
                 // attribute not found is a programmer error and is reported
                 throw new RuntimeWrappedException(anfe);
             } catch (CompositeValidationException e) {
-                req.setAttribute(formResponder.resultAttribute, Pointer.Null);
+                req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
                 // we do nothing, cause we will treat that from the ControllerFilter.doFilter
                 return e;
             } catch (LogicException e) {
                 java.util.logging.Logger.getLogger("org.makumba." + "logic.error").log(Level.INFO, "error", e);
                 message = Responder.errorMessage(e);
-                req.setAttribute(formResponder.resultAttribute, Pointer.Null);
+                req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
             } catch (Throwable t) {
                 // all included error types should be considered here
