@@ -153,7 +153,7 @@ public class MatchModeTag extends GenericMakumbaTag {
         hcw.setLabels(matchModes[1]);
         hcw.setValues(Arrays.asList(matchModes[0]).iterator());
         hcw.setLabels(Arrays.asList(matchModes[1]).iterator());
-        hcw.setSelectedValues(matchMode);
+        hcw.setSelectedValues(org.apache.commons.lang.StringUtils.isNotBlank(matchMode) ? matchMode : matchModes[0][0]);
 
         String type = (String) params.get("type");
         try {
