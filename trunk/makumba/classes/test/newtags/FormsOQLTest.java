@@ -166,7 +166,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         WebConversation wc = new WebConversation();
         WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
         try {
-            wc.getResponse(req);
+            WebResponse resp = wc.getResponse(req);
         } catch (MalformedURLException e) {
         } catch (IOException e) {
             setup.tearDown();
@@ -184,7 +184,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormNewForm(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void beginMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
@@ -204,7 +209,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormAddForm(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormEditForm() throws ServletException, IOException {
@@ -212,7 +223,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormEditForm(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormForm() throws ServletException, IOException, SAXException {
@@ -220,7 +237,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormForm(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormBug946() throws ServletException, IOException, SAXException {
@@ -228,7 +251,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormBug946(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormMultipleForms() throws ServletException, IOException, SAXException {
@@ -236,7 +265,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormMultipleForms(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormNestedForms() throws ServletException, IOException, SAXException {
@@ -244,7 +279,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormNestedForms(WebResponse response) throws Exception {
-        compareResults(response);
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
     }
 
     public void testFormMakNewFile() throws ServletException, IOException, SAXException {
@@ -252,10 +293,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormMakNewFile(WebResponse response) throws Exception {
-        compareResults(response);
-    }
-
-    protected void compareResults(WebResponse response) throws Exception {
         try {
             output = response.getText();
             fetchValidTestResult(output, record);
