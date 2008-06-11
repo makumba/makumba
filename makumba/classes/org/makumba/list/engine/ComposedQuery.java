@@ -500,8 +500,9 @@ public class ComposedQuery {
         } catch (NumberFormatException e) {
         }
         DataDefinition dd = qep.getQueryAnalysis(fromAnalyzerOQL).getLabelType(substring);
-        if (dd == null)
-            throw new org.makumba.InvalidValueException("no such label " + substring);
+        if (dd == null) {
+            throw new org.makumba.NoSuchLabelException("no such label '" + substring + "'.");
+        }
         while (true) {
             int dot1 = referenceSequence.indexOf(".", dot + 1);
             if (dot1 == -1) {
