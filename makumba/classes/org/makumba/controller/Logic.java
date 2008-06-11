@@ -527,7 +527,7 @@ public class Logic {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
                         + HANDLER_METHOD_HEAD + "on_delete" + upper + "(Pointer p, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + "after_delete" + upper + "(Pointer p, Attributes a, Database db)"
+                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_delete" + upper + "(Pointer p, Attributes a, Database db)"
                         + HANDLER_METHOD_END + "\n" + "so it does not allow DELETE operations on the type " + typename
                         + "\nDefine that method (even with an empty body) to allow such operations.");
             }
