@@ -48,6 +48,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.relations.FileRelations;
 import org.makumba.devel.relations.RelationCrawler;
@@ -241,7 +242,7 @@ public abstract class LineViewer implements SourceViewer {
     public void printPageBegin(PrintWriter writer) throws IOException {
         if (realPath != null && virtualPath != null)
             title = virtualPath + "";
-        else if (title == null || title != null && title.equals(""))
+        else if (StringUtils.isBlank(title))
             title = "";
         if (printHeaderFooter) {
             DevelUtils.writePageBegin(writer);
@@ -770,7 +771,7 @@ public abstract class LineViewer implements SourceViewer {
         String p4 = "c:set var=\"viewStatsPage\" value=\"viewStatistics.jsp?survey=";
 
         String[] patterns = new String[] { p1, p2, p3, p4 };
-        // patterns=new String[] {w1,w2};
+        // patternLineNumbers=new String[] {w1,w2};
         System.out.println("pattern: " + patternUrl.pattern());
         for (int i = 0; i < patterns.length; i++) {
             System.out.println("\n!!!trying\n---" + patterns[i] + " ---");
