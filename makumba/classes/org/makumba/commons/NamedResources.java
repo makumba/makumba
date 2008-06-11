@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-
 /**
  * An instance of this class holds a cache of resources. If a resource is requested but is not present, it is produced
  * using the associated NamedResourceFactory, in a thread-safe way
@@ -50,8 +49,9 @@ public class NamedResources implements java.io.Serializable {
             soft = System.getProperty("makumba.soft-static-caches");
         } catch (SecurityException se) {
         } // for applets
-        if (soft != null)
+        if (soft != null) {
             soft = soft.trim();
+        }
         soft_static_caches = "true".equals(soft);
     }
 
@@ -71,21 +71,27 @@ public class NamedResources implements java.io.Serializable {
      * Cleans-up all the static and soft caches
      */
     static public void cleanup() {
-        for (int i = 0; i < staticCaches.size(); i++)
+        for (int i = 0; i < staticCaches.size(); i++) {
             ((NamedResources) staticCaches.get(i)).close();
+        }
         staticCaches.clear();
-        for (int i = 0; i < allCaches.size(); i++)
+        for (int i = 0; i < allCaches.size(); i++) {
             ((java.lang.ref.WeakReference) allCaches.elementAt(i)).clear();
+        }
         allCaches.clear();
-        staticCaches=null;
-        allCaches=null;
+        staticCaches = null;
+        allCaches = null;
     }
 
     /**
      * Creates a static cache
-     * @param name the name of the cache
-     * @param fact the {@link NamdedResourceFactory} used to create the cache
-     * @param soft <code>true</code> if this should be a soft cache
+     * 
+     * @param name
+     *            the name of the cache
+     * @param fact
+     *            the {@link NamdedResourceFactory} used to create the cache
+     * @param soft
+     *            <code>true</code> if this should be a soft cache
      * @return The identifier of this cache
      */
     public synchronized static int makeStaticCache(String name, NamedResourceFactory fact, boolean soft) {
@@ -95,8 +101,11 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Creates a static cache
-     * @param name the name of the cache
-     * @param fact the NamdedResourceFactory used to create the cache
+     * 
+     * @param name
+     *            the name of the cache
+     * @param fact
+     *            the NamdedResourceFactory used to create the cache
      * @return The identifier of this cache
      */
     public synchronized static int makeStaticCache(String name, NamedResourceFactory fact) {
@@ -105,7 +114,9 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Gets the static cache identified by n
-     * @param n the index of the cached object in the cache
+     * 
+     * @param n
+     *            the index of the cached object in the cache
      * @return The cache of resources
      */
     public static NamedResources getStaticCache(int n) {
@@ -114,7 +125,9 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Cleans the given cache. Use this for developping purposes.
-     * @param n the index of the cache to be cleaned
+     * 
+     * @param n
+     *            the index of the cache to be cleaned
      */
     public static void cleanStaticCache(int n) {
         ((NamedResources) staticCaches.get(n)).values = new HashMap();
@@ -122,14 +135,17 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Wraps information about the cache into a Map
-     * @return A Map having as keys the names of the caches and as value an array of int containing the size, hits and misses of each cache
+     * 
+     * @return A Map having as keys the names of the caches and as value an array of int containing the size, hits and
+     *         misses of each cache
      */
     public static Map getCacheInfo() {
         Map m = new HashMap();
         for (int i = 0; i < allCaches.size(); i++) {
             NamedResources nr = (NamedResources) ((java.lang.ref.WeakReference) allCaches.elementAt(i)).get();
-            if (nr == null)
+            if (nr == null) {
                 continue;
+            }
             int[] n = (int[]) m.get(nr.getName());
             if (n == null) {
                 m.put(nr.getName(), n = new int[3]);
@@ -141,10 +157,13 @@ public class NamedResources implements java.io.Serializable {
         return m;
     }
 
-    /** 
+    /**
      * Initializes using the given factory
-     * @param name the name of the NamedResources object to initalise
-     * @param f the {@link NamedResourceFactory} used to construct the NamedResource
+     * 
+     * @param name
+     *            the name of the NamedResources object to initalise
+     * @param f
+     *            the {@link NamedResourceFactory} used to construct the NamedResource
      */
     public NamedResources(String name, NamedResourceFactory f) {
         this.name = name;
@@ -154,7 +173,9 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Checks if a resource is known
-     * @param name the name of the resource to be checked
+     * 
+     * @param name
+     *            the name of the resource to be checked
      * @return <code>true</code> if the resource is known, <code>false</code> otherwise
      */
     public boolean knowResource(Object name) {
@@ -167,15 +188,18 @@ public class NamedResources implements java.io.Serializable {
 
     /**
      * Whatever supplementary stuff the factory wants to keep
+     * 
      * @return An object with the supplementary things the factory may need
      */
     public Object getSupplementary() {
         return f.supplementary;
     }
 
-    /** 
+    /**
      * Gets a specific resource. If it doesn't exist, calls the NamedResourceFactory to produce it
-     * @param name the name of the resource to get
+     * 
+     * @param name
+     *            the name of the resource to get
      * @return The resource
      */
     public Object getResource(Object name) {
@@ -198,8 +222,9 @@ public class NamedResources implements java.io.Serializable {
         if (nv == null) {
             misses++;
             values.put(hash, nv = new NameValue(name, hash, f));
-        } else
+        } else {
             hits++;
+        }
         return nv;
     }
 
@@ -211,7 +236,7 @@ public class NamedResources implements java.io.Serializable {
         return name;
     }
 
-    /** 
+    /**
      * Closes each contained object by calling its close() method, if any
      */
     public void close() {
@@ -219,18 +244,21 @@ public class NamedResources implements java.io.Serializable {
             Object nvo = values.get(i.next());
             if (nvo instanceof java.lang.ref.Reference) {
                 nvo = ((java.lang.ref.Reference) nvo).get();
-                if (nvo == null)
+                if (nvo == null) {
                     continue;
+                }
             }
 
-            if (!(((NameValue) nvo).returner instanceof NameValue))
+            if (!(((NameValue) nvo).returner instanceof NameValue)) {
                 continue;
+            }
 
             Object o = ((NameValue) nvo).getResource();
 
             java.lang.reflect.Method m = null;
-            if (o == null)
+            if (o == null) {
                 continue;
+            }
             try {
                 m = o.getClass().getMethod("close", ((java.lang.Class[]) null));
             } catch (NoSuchMethodException e) {
