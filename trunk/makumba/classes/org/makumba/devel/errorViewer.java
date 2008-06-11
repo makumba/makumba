@@ -27,9 +27,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.analyser.engine.TomcatJsp;
@@ -40,14 +41,24 @@ import org.makumba.analyser.engine.TomcatJsp;
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
- *  
  */
 public class errorViewer extends LineViewer {
+
+    private static final String patternLineNumber1 = "\\(.+:(\\d+)\\).*"; // (someClass.jave:96)
+
+    private static final String patternLineNumber2 = ":(\\d+).*"; // :96
+
+    private static final String patternLineNumber3 = "\\((\\d+),\\d+\\).*"; // (96,2)
+
+    private static final String[] patternLineNumberStrings = { patternLineNumber1, patternLineNumber2, patternLineNumber3 };
+
+    Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]), Pattern.compile(patternLineNumberStrings[1]),
+            Pattern.compile(patternLineNumberStrings[2]) };
+
     private String hiddenBody;
 
-    public errorViewer(HttpServletRequest request, ServletContext servletContext, String title, String body, String hiddenBody,
-            boolean printHeaderFooter)
-            throws IOException {
+    public errorViewer(HttpServletRequest request, ServletContext servletContext, String title, String body,
+            String hiddenBody, boolean printHeaderFooter) throws IOException {
         super(false, request, servletContext);
         realPath = servletContext.getRealPath("/");
         this.printHeaderFooter = printHeaderFooter;
@@ -77,21 +88,23 @@ public class errorViewer extends LineViewer {
             if (token.indexOf(".") != -1) {
                 Integer lineNumber = null;
 
-                //FIXME should not depend directly on RecordParser
+                // FIXME should not depend directly on RecordParser
                 if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
                         || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
-                    String substring = source.substring(indexAfter);
+                    String substring = source.substring(indexAfter).trim();
                     lineNumber = findLineNumber(substring);
                     result.append(formatClassLink(javaClass.getName(), token, lineNumber));
                 } else if ((javaClass = findClass(token)) != null) {
                     result.append(formatClassLink(javaClass, null, token));
                 } else if (searchJSPPages && (jspPage = findPage(token)) != null) {
-                    lineNumber = findLineNumber(source.toString());
+                    String substring = source.substring(indexAfter).trim();
+                    lineNumber = findLineNumber(substring);
                     result.append(formatJSPLink(jspPage, token, lineNumber));
                 } else if (searchCompiledJSPClasses && (jspClass = findCompiledJSP(token)) != null) {
-                    lineNumber = findLineNumber(source.toString());
+                    String substring = source.substring(indexAfter).trim();
+                    lineNumber = findLineNumber(substring);
                     result.append(formatClassLink(jspClass, token, lineNumber));
                 } else {
                     result.append(token);
@@ -105,31 +118,13 @@ public class errorViewer extends LineViewer {
     }
 
     private Integer findLineNumber(String s) {
-        String beginToken = ":";
-        Integer lineNr = null;
-        int indexNumberBegin = s.indexOf(beginToken);
-        
-        if (indexNumberBegin == -1) { // try if we have a line number after a '('
-            indexNumberBegin = s.indexOf("(");
-        }
-        
-        if (indexNumberBegin != -1) {
-            indexNumberBegin = indexNumberBegin + 1;
-            int indexNumberEnd = indexNumberBegin;
-            while (s.length() > indexNumberEnd && Character.isDigit(s.charAt(indexNumberEnd))) {
-                indexNumberEnd++;
-            }
-            String lineNumberText = s.substring(indexNumberBegin, indexNumberEnd).trim();
-            if (lineNumberText.length() > 0) {
-                try {
-                    lineNr = Integer.valueOf(lineNumberText);
-                } catch (NumberFormatException e) {
-                    java.util.logging.Logger.getLogger("org.makumba." + "devel").warning("Error in error viewer: " + e.getMessage());
-                    e.printStackTrace();
-                }
+        for (int i = 0; i < patternLineNumbers.length; i++) {
+            Matcher m = patternLineNumbers[i].matcher(s);
+            if (m.matches()) {
+                return Integer.parseInt(m.group(1));
             }
         }
-        return lineNr;
+        return null;
     }
 
     /**
@@ -149,4 +144,3 @@ public class errorViewer extends LineViewer {
     }
 
 }
-
