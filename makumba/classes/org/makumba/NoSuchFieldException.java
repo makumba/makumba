@@ -38,7 +38,7 @@ public class NoSuchFieldException extends RuntimeException {
         super("type " + dd.getName() + " : " + message);
     }
 
-    public NoSuchFieldException(String label) {
-        super("label " + label);
+    public NoSuchFieldException(String message) {
+        super(message);
     }
 }
