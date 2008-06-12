@@ -4,13 +4,17 @@
  */
 package test.tags;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -21,15 +25,19 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
+import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
@@ -43,10 +51,6 @@ import com.meterware.httpunit.WebResponse;
 public class FormsOQLTest extends MakumbaJspTestCase {
 
     private boolean record = false;
-
-    static Pointer person;
-
-    static Pointer brother;
 
     static Pointer address;
 
@@ -67,8 +71,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     private static final String namePersonIndivName_John = "john";
 
-    private static final String[] namesPersonIndivName = { namePersonIndivName_AddToNew, namePersonIndivName_Bart,
-            namePersonIndivName_John };
+    /** All names of individuals to be deleted. bart is referenced by john, so we delete him afterwards. */
+    private static final String[] namesPersonIndivName = { namePersonIndivName_John, namePersonIndivName_Bart,
+            namePersonIndivName_AddToNew };
 
     private WebResponse submissionResponse;
 
@@ -104,7 +109,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             Properties p = new Properties();
 
             p.put("indiv.name", namePersonIndivName_Bart);
-            brother = db.insert("test.Person", p);
+            Pointer brother = db.insert("test.Person", p);
 
             p.clear();
             p.put("indiv.name", namePersonIndivName_John);
@@ -132,7 +137,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
             p.put("brother", brother);
             p.put("uniqPtr", languages.get(0));
-            person = db.insert("test.Person", p);
+            Pointer person = db.insert("test.Person", p);
 
             p.clear();
             p.put("description", "");
@@ -142,14 +147,14 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         }
 
-        protected void deletePerson(Transaction db) {
+        protected void deletePersonsAndIndividuals(Transaction db) {
             db.delete(address);
-            db.delete(person);
-            // brother is referenced by person so we delete it after person
-            db.delete(brother);
-            Vector<Dictionary<String, Object>> v = db.executeQuery(
-                "SELECT p AS p FROM test.Person p WHERE p.indiv.name=$1", namePersonIndivName_AddToNew);
-            db.delete((Pointer) v.firstElement().get("p"));
+            for (int i = 0; i < namesPersonIndivName.length; i++) {
+                Vector<Dictionary<String, Object>> v = db.executeQuery(
+                    "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name=$1", namesPersonIndivName[i]);
+                db.delete((Pointer) v.firstElement().get("p"));
+                db.delete((Pointer) v.firstElement().get("i"));
+            }
         }
 
         protected void insertLanguages(Transaction db) {
@@ -167,22 +172,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
                 db.delete((Pointer) languages.get(i));
         }
 
-        protected void deleteIndividuals(Transaction db) {
-            for (int i = 0; i < namesPersonIndivName.length; i++) {
-                Vector<Dictionary<String, Object>> v = db.executeQuery(
-                    "SELECT i AS i FROM test.Individual i WHERE i.name=$1", namesPersonIndivName[i]);
-                db.delete((Pointer) v.firstElement().get("i"));
-            }
-        }
-
         public void tearDown() {
             // do your one-time tear down here!
             TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
 
-            deletePerson(db);
+            deletePersonsAndIndividuals(db);
             deleteLanguages(db);
-            deleteIndividuals(db);
             db.close();
         }
     }
@@ -477,6 +473,71 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             fail("JSP output error: " + response.getResponseMessage());
         }
         assertTrue(compareTest(output));
+    }
+
+    public void beginFormResponderOrder(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/beginMakNestedNewForms.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // read all the inputs with responder codes, store them in an array
+        HTMLElement[] responderElements = resp.getElementsWithAttribute("name", "__makumba__responder__");
+        String[] responderCodesString = new String[responderElements.length];
+        for (int i = 0; i < responderElements.length; i++) {
+            responderCodesString[i] = responderElements[i].getAttribute("value");
+
+        }
+
+        // we will have subsequently a new instance of responderFactory (the one used until now is in tomcat-mak)
+        // thus, we need to prepare the responder working dir
+        // we don't have an HTTPServletRequest at hand, so we have to do this manually / partly hardcoded
+        String contextPath = "tests";
+        String tempDir = new File(getClass().getResource("/").toURI()).getParent() + "/tomcat/work/Catalina/localhost/"
+                + contextPath;
+        ResponderFactory responderFactory = ResponderFactory.getInstance();
+        responderFactory.setResponderWorkingDir(tempDir, contextPath);
+
+        // we need the codes as iterator; we could do an iterator ourselves, but let's do it as if we got them from the
+        // attributes, i.e. as vector
+        List<String> list = Arrays.asList(responderCodesString);
+        Vector<String> v = new Vector<String>();
+        v.addAll(list);
+        Iterator<String> responderCodes = responderFactory.getResponderCodes(v);
+
+        Iterator<String> orderedResponderCodes = responderFactory.getOrderedResponderCodes(list.iterator());
+
+        // debug info
+        System.out.println("Responder codes read from form inputs: " + Arrays.toString(responderCodesString));
+
+        ArrayList<String> responderCodesAsList = new ArrayList<String>();
+        CollectionUtils.addAll(responderCodesAsList, responderCodes);
+        System.out.println("Responder codes as passed through responderFactory.getResponderCodes(..): "
+                + ArrayUtils.toString(responderCodesAsList));
+
+        ArrayList<String> orderedResponderCodesAsList = new ArrayList<String>();
+        CollectionUtils.addAll(orderedResponderCodesAsList, orderedResponderCodes);
+        System.out.println("Ordered responder codes:" + ArrayUtils.toString(orderedResponderCodesAsList));
+
+        // TODO
+        // - define an Iterator / something else with the expected responder codes
+        // - define an Iterator / something else with the expected ordered responder codes
+        // - compare them
+    }
+
+    public void testFormResponderOrder() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endFormResponderOrder(WebResponse response) throws Exception {
     }
 
     public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
