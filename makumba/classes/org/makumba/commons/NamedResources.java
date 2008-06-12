@@ -23,6 +23,7 @@
 
 package org.makumba.commons;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,16 +64,16 @@ public class NamedResources implements java.io.Serializable {
 
     int hits, misses;
 
-    static List staticCaches = new ArrayList();
+    static List<NamedResources> staticCaches = new ArrayList<NamedResources>();
 
-    static Vector allCaches = new Vector();
+    static Vector<WeakReference<NamedResources>> allCaches = new Vector<WeakReference<NamedResources>>();
 
     /**
      * Cleans-up all the static and soft caches
      */
     static public void cleanup() {
         for (int i = 0; i < staticCaches.size(); i++) {
-            ((NamedResources) staticCaches.get(i)).close();
+            staticCaches.get(i).close();
         }
         staticCaches.clear();
         for (int i = 0; i < allCaches.size(); i++) {
@@ -120,7 +121,7 @@ public class NamedResources implements java.io.Serializable {
      * @return The cache of resources
      */
     public static NamedResources getStaticCache(int n) {
-        return (NamedResources) staticCaches.get(n);
+        return staticCaches.get(n);
     }
 
     /**
@@ -130,7 +131,7 @@ public class NamedResources implements java.io.Serializable {
      *            the index of the cache to be cleaned
      */
     public static void cleanStaticCache(int n) {
-        ((NamedResources) staticCaches.get(n)).values = new HashMap();
+        staticCaches.get(n).values = new HashMap();
     }
 
     /**
@@ -139,14 +140,14 @@ public class NamedResources implements java.io.Serializable {
      * @return A Map having as keys the names of the caches and as value an array of int containing the size, hits and
      *         misses of each cache
      */
-    public static Map getCacheInfo() {
-        Map m = new HashMap();
+    public static Map<String, int[]> getCacheInfo() {
+        Map<String, int[]> m = new HashMap<String, int[]>();
         for (int i = 0; i < allCaches.size(); i++) {
-            NamedResources nr = (NamedResources) ((java.lang.ref.WeakReference) allCaches.elementAt(i)).get();
+            NamedResources nr = allCaches.elementAt(i).get();
             if (nr == null) {
                 continue;
             }
-            int[] n = (int[]) m.get(nr.getName());
+            int[] n = m.get(nr.getName());
             if (n == null) {
                 m.put(nr.getName(), n = new int[3]);
             }
