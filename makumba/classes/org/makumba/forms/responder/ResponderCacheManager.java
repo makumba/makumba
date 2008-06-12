@@ -39,6 +39,7 @@ public class ResponderCacheManager {
     
     static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();
 
+    /** The directory where makumba will store to and load responders from. */
     public static String makumbaResponderBaseDirectory;
 
     static String validResponderFilename(int responderValue) {
@@ -46,28 +47,39 @@ public class ResponderCacheManager {
                 + String.valueOf(responderValue).replaceAll("-", "_");
     }
 
+    /** Sets the responder working directory from the "javax.servlet.context.tempdir" variable. */
     public void setResponderWorkingDir(HttpServletRequest request) {
         // set the correct working directory for the responders
         if (makumbaResponderBaseDirectory == null) {
-            System.out.println("had an empty responder dir - working dir ==> "
-                    + request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir"));
-            String baseDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir")
-                    + System.getProperty("file.separator") + "makumba-responders"
-                    + System.getProperty("file.separator");
-            makumbaResponderBaseDirectory = baseDir + request.getContextPath();
-            if (!new File(makumbaResponderBaseDirectory).exists()) {
-                new File(baseDir).mkdir();
-                new File(makumbaResponderBaseDirectory).mkdir();
-            }
-            System.out.println("base dir: " + makumbaResponderBaseDirectory);
+            Object tempDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
+            String contextPath = request.getContextPath();
+            setResponderWorkingDir(tempDir, contextPath);
         }
     }
 
+    /** Sets the responder working directory from the given temp directory and context path. */
+    public void setResponderWorkingDir(Object tempDir, String contextPath) {
+        System.out.println("had an empty responder dir - working dir ==> " + tempDir);
+        String baseDir = tempDir + System.getProperty("file.separator") + "makumba-responders"
+                + System.getProperty("file.separator");
+        makumbaResponderBaseDirectory = baseDir + contextPath;
+        if (!new File(makumbaResponderBaseDirectory).exists()) {
+            new File(baseDir).mkdir();
+            new File(makumbaResponderBaseDirectory).mkdir();
+        }
+        System.out.println("base dir: " + makumbaResponderBaseDirectory);
+    }
+
+
     /**
      * Fetches a responder from the cache. If the memory cache is empty we try to get the responder from the disk.
-     * @param code the responder code
-     * @param suffix the responder suffix
-     * @param parentSuffix the suffix of the parent responder (of the parent form)
+     * 
+     * @param code
+     *            the responder code
+     * @param suffix
+     *            the responder suffix
+     * @param parentSuffix
+     *            the suffix of the parent responder (of the parent form)
      * @return the cached responder object, if any could be found
      */
     Responder getResponder(String code, String suffix, String parentSuffix) {
