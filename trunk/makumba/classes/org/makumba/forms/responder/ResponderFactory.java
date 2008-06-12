@@ -27,6 +27,8 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 
+import test.newtags.FormsOQLTest;
+
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
  * 
@@ -62,9 +64,11 @@ public class ResponderFactory {
      * @return the enumeration of responder codes
      */
     public Iterator<String> getResponderCodes(HttpServletRequest req) {
-        TreeSet<String> set = new TreeSet<String>(bySuffix);
+        return getResponderCodes(RequestAttributes.getParameters(req).getParameter(Responder.responderName));
+    }
 
-        Object o = RequestAttributes.getParameters(req).getParameter(Responder.responderName);
+    public Iterator<String> getResponderCodes(Object o) {
+        TreeSet<String> set = new TreeSet<String>(bySuffix);
         if (o != null) {
             if (o instanceof String) {
                 set.add((String) o);
@@ -84,11 +88,13 @@ public class ResponderFactory {
      * @return an Iterator iterating over a sorted array of responder codes
      */
     public Iterator<String> getOrderedResponderCodes(HttpServletRequest req) {
+        return getOrderedResponderCodes(getResponderCodes(req));
+    }
 
+    public Iterator<String> getOrderedResponderCodes(Iterator<String> responderCodes) {
         // let's fetch the List containing the order of the forms in the page
         // for this we need to fetch a root form responder
 
-        Iterator<String> responderCodes = getResponderCodes(req);
         // Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
         String[] order = null;
 
@@ -206,8 +212,17 @@ public class ResponderFactory {
 
     static Integer ZERO = new Integer(0);
 
+    /** Set the responder directory according from information taken from the {@link HttpServletRequest} */
     public void setResponderWorkingDir(HttpServletRequest request) {
         cacheManager.setResponderWorkingDir(request);
+    }
+
+    /**
+     * Additional method to set a responder directory, used in the JUnit tests in
+     * {@link FormsOQLTest#beginFormResponderOrder}.
+     */
+    public void setResponderWorkingDir(String tempDir, String contextPath) {
+        cacheManager.setResponderWorkingDir(tempDir, contextPath);
     }
 
     /**
@@ -358,6 +373,16 @@ public class ResponderFactory {
                     if (result != null) {
                         // FIXME: what to do if responder is not a form responder? pull up the result attribute field?
                         responderResults.put(((FormResponder) responder).resultAttribute, result);
+                        // FormResponder formResponder2 = ((FormResponder) formResponder);
+                        // String resultAttribute = formResponder2.resultAttribute;
+                        // if (result != null) {
+                        // responderResults.put(resultAttribute, result);
+                        // req.setAttribute(resultAttribute, result);
+                        // HttpParameters params = (HttpParameters)
+                        // req.getAttribute(RequestAttributes.PARAMETERS_NAME);
+                        // params.
+                        // }
+                        // formResponder2.resolveInputValue
                     }
                 }
                 // display the response message and set attributes
