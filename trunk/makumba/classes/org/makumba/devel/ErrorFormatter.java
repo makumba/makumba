@@ -24,7 +24,6 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * The class that performs exception handling. Receives errors in any makumba page and treats them meant to be friendly
@@ -55,6 +54,7 @@ public class ErrorFormatter {
             { org.makumba.InvalidValueException.class, "invalid value" },
             { org.makumba.InvalidFieldTypeException.class, "invalid field type" },
             { org.makumba.NoSuchFieldException.class, "no such field" },
+            { org.makumba.NoSuchLabelException.class, "no such label" },
             { org.makumba.LogicException.class, "business logic" } };
 
     static final Class[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class,
@@ -90,9 +90,7 @@ public class ErrorFormatter {
                 && ((ServletException) t).getRootCause() != null
                 && ((ServletException) t).getRootCause().getClass().isAssignableFrom(ServletException.class)
                 && t.getMessage().startsWith("Exception in JSP:")) {
-
             t = ((ServletException) ((ServletException) t).getRootCause()).getRootCause();
-
         }
 
         while (true) {
@@ -143,17 +141,50 @@ public class ErrorFormatter {
                     if (rootCause != null) {
                         t = rootCause;
                         if (t != null && original.getMessage() != null && !original.getMessage().equals(t.getMessage())) {
-                            t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
-                            t1.setStackTrace(t.getStackTrace());
-                            t = t1;
+                            try {
+                                // make new throwable, but keep original class just in case
+                                // need to use reflection - no methods to clone or set message available in Throwable
+                                String message = t.getMessage() + "\n\n" + original.getMessage();
+                                t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
+                                t1.setStackTrace(t.getStackTrace());
+                                t = t1;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                    title = "JSP compilation error";
+                    title = "JSP Compilation error";
+                    for (int i = 0; i < errors.length; i++) {
+                        if ((((Class) errors[i][0])).isInstance(t) || t1 != null
+                                && (((Class) errors[i][0])).isInstance(t = t1)) {
+                            title = "Makumba " + errors[i][1] + " error";
+                        }
+                    }
                     knownError(title, t, original, req, wr);
                 }
 
             }
             return;
+        } else if (original.getClass().getName().startsWith(
+            org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
+            // FIXME this is most probably tomcat-specific
+            // FIXME optimise this duplicate code
+            /*
+             * after JSP compilation, the actual JSP problem is in getRootCause, yet the exception is also very
+             * informative (includes code context). So we need to show both.
+             */
+            if (t != null && original.getMessage() != null && !original.getMessage().equals(t.getMessage())) {
+                try {
+                    // make new throwable, but keep original class just in case
+                    // need to use reflection - no methods to clone or set message available in Throwable class.
+                    String message = t.getMessage() + "\n\n" + original.getMessage();
+                    t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
+                    t1.setStackTrace(t.getStackTrace());
+                    t = t1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         for (int i = 0; i < errors.length; i++)
@@ -285,7 +316,7 @@ public class ErrorFormatter {
             tagData = AnalysableTag.getRunningTag();
         }
         if (tagData == null) {
-            tagExpl = "While executing inside this body tag, but most probably <b>not</b> due to the tag:";
+            tagExpl = "While executing inside this body tag, but most probably *not* due to the tag:";
             tagData = AnalysableTag.getCurrentBodyTag();
         }
         if (tagData == null) {
@@ -386,9 +417,8 @@ public class ErrorFormatter {
         if (original instanceof LogicInvocationError) {
             title = "Error in business logic code";
         } else if (traced instanceof NullPointerException) {
-            title = "Internal Makumba error";
-            body = "Please report to the Makumba developers.\n";
-            body += formatTagData(req) + body + trace(traced);
+            title = "Null pointer exception";
+            body = "Please report to the developers.\n\n";
         } else if (trace(traced).indexOf("org.makumba") != -1) {
             title = "Internal Makumba error";
             body = "Please report to the developers.\n";
@@ -414,7 +444,7 @@ public class ErrorFormatter {
         body = formatTagData(req) + body + shortTrace(trace(traced));
 
         try {
-            SourceViewer sw = new errorViewer(req, servletContext, title, body, null, printeHeaderFooter);
+            SourceViewer sw = new errorViewer(req, servletContext, title, body, trace(traced), printeHeaderFooter);
             sw.parseText(wr);
         } catch (IOException e) {
             e.printStackTrace();
@@ -540,19 +570,20 @@ public class ErrorFormatter {
             ServletContext servletContext, boolean printHeaderFooter) {
 
         Throwable rootCause = t.getRootCause();
-        String exceptionName = rootCause.getClass().toString().substring("class ".length());
-        String message = rootCause.getMessage();
-        String body = "A " + exceptionName.substring(exceptionName.lastIndexOf(".") + 1)
-                + " occured (most likely because of a programmation error in the JSP):\n\n" + message;
 
-        StringWriter swriter = new StringWriter();
-        PrintWriter p = new PrintWriter(swriter);
-        rootCause.printStackTrace(p);
-        swriter.flush();
-        String hiddenBody = swriter.toString();
+        String title = rootCause.getClass().getSimpleName();
+        String message = rootCause.getMessage();
+        String body = "A " + rootCause.getClass().getName()
+                + " occured (most likely because of a programming error in the JSP):\n\n" + message;
+
+        if (t != null && original.getStackTrace() != null && !original.getStackTrace().equals(t.getStackTrace())) {
+            body += "\n\n" + trace(rootCause);
+        }
+
+        String hiddenBody = trace(rootCause);
 
         try {
-            SourceViewer sw = new errorViewer(req, servletContext, exceptionName, body, hiddenBody, printHeaderFooter);
+            SourceViewer sw = new errorViewer(req, servletContext, title, body, hiddenBody, printHeaderFooter);
             sw.parseText(wr);
         } catch (IOException e) {
             e.printStackTrace();
