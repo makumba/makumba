@@ -2,11 +2,9 @@ package org.makumba.forms.responder;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -27,24 +25,23 @@ import org.makumba.controller.Logic;
 public class ResponderCacheManager {
 
     private ResponderFactory factory;
-    
+
     private static ResponderCacheManager instance = null;
-    
+
     public static ResponderCacheManager getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new ResponderCacheManager();
         }
         return instance;
     }
-    
+
     static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();
 
     /** The directory where makumba will store to and load responders from. */
     public static String makumbaResponderBaseDirectory;
 
     static String validResponderFilename(int responderValue) {
-        return new String(makumbaResponderBaseDirectory + "/")
-                + String.valueOf(responderValue).replaceAll("-", "_");
+        return new String(makumbaResponderBaseDirectory + "/") + String.valueOf(responderValue).replaceAll("-", "_");
     }
 
     /** Sets the responder working directory from the "javax.servlet.context.tempdir" variable. */
@@ -69,7 +66,6 @@ public class ResponderCacheManager {
         }
         System.out.println("base dir: " + makumbaResponderBaseDirectory);
     }
-
 
     /**
      * Fetches a responder from the cache. If the memory cache is empty we try to get the responder from the disk.
@@ -149,22 +145,8 @@ public class ResponderCacheManager {
             Responder f = (Responder) name;
             f.identity = hashName.hashCode();
 
-            String fileName = validResponderFilename(f.identity);
-
             if (indexedCache.get(new Integer(f.identity)) == null) { // responder not in cache
-                File file = new File(fileName);
-                try {
-                    if (!file.exists()) { // file does not exist
-                        f.controllerClassname = f.controller.getClass().getName();
-                        ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(file));
-                        objectOut.writeObject(f); // we write the responder to disk
-                        objectOut.close();
-                    }
-                } catch (IOException e) {
-                    java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
-                        "Error while writing responder to HDD, deleting file " + fileName, e);
-                    file.delete();
-                }
+                f.saveResponderToDisc();
             }
             indexedCache.put(new Integer(f.identity), name);
 

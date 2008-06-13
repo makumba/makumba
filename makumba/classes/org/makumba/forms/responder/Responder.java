@@ -23,9 +23,14 @@
 
 package org.makumba.forms.responder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -124,7 +129,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the name of the form we operate on (only needed for search forms). */
     protected String formName;
-    
+
     /** the type where the new operation is made */
     protected String newType;
 
@@ -136,10 +141,10 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
-    
-    /** order of the forms in the page **/
+
+    /** order of the forms in the page * */
     protected String[] formOrder;
-    
+
     /**
      * Names of the forms in the page, needed for nested forms that depend on each other, e.g. two nested new forms,
      * where one wants to store the result of the new operation of the other.
@@ -197,7 +202,7 @@ public abstract class Responder implements java.io.Serializable {
         database = RequestAttributes.getAttributes(req).getRequestDatabase();
     }
 
-    /** pass the operation **/
+    /** pass the operation * */
     public void setOperation(String operation, ResponderOperation op) {
         this.operation = operation;
         this.op = op;
@@ -271,11 +276,11 @@ public abstract class Responder implements java.io.Serializable {
     public void setFormName(String formName) {
         this.formName = formName;
     }
-    
+
     public void setResponderOrder(String[] formOrder) {
         this.formOrder = formOrder;
     }
-    
+
     public void setFormNames(ArrayList<String> formNames) {
         this.formNames = formNames;
     }
@@ -327,7 +332,7 @@ public abstract class Responder implements java.io.Serializable {
     }
 
     // ----------------- response section ------------------
- 
+
     /** formats an error message */
     public static String errorMessage(Throwable t) {
         return errorMessage(t.getMessage());
@@ -375,4 +380,24 @@ public abstract class Responder implements java.io.Serializable {
     public String[] getMultiFieldSearchCriterion(String name) {
         return multiFieldSearchMapping.get(name);
     }
+
+    /**
+     * Save this responder instance as a binary object to the disc; persist it so it can be read from the disc into the
+     * cache on a server reload / restart.
+     */
+    public void saveResponderToDisc() {
+        String fileName = ResponderCacheManager.validResponderFilename(identity);
+        File file = new File(fileName);
+        try {
+            controllerClassname = controller.getClass().getName();
+            ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(file));
+            objectOut.writeObject(this); // we write the responder to disk
+            objectOut.close();
+        } catch (IOException e) {
+            java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                "Error while writing responder to HDD, deleting file " + fileName, e);
+            file.delete();
+        }
+    }
+
 }
