@@ -60,7 +60,7 @@ public class errorViewer extends LineViewer {
     public errorViewer(HttpServletRequest request, ServletContext servletContext, String title, String body,
             String hiddenBody, boolean printHeaderFooter) throws IOException {
         super(false, request, servletContext);
-        realPath = servletContext.getRealPath("/");
+        realPath = servletContext.getRealPath(request.getServletPath());
         this.printHeaderFooter = printHeaderFooter;
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(servletContext);
         super.title = title;
