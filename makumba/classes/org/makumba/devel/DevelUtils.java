@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.providers.TransactionProvider;
@@ -76,7 +77,7 @@ public class DevelUtils {
         writer.println("<tr>");
         writer.println("<td rowspan=\"2\">");
 
-        if (title != null && !title.equals("") && !title.equals(virtualPath)) {
+        if (!StringUtils.isBlank(title) && !title.equals(virtualPath)) {
             writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
         } else if (virtualPath != null) {
             writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
