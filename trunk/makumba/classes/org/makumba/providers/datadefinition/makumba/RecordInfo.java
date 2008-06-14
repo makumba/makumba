@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -167,8 +166,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /** only meant for building of temporary types */
     public void addField(FieldDefinition fi) {
-        if (!isTemporary())
+        if (!isTemporary()) {
             throw new RuntimeException("can't add field to non-temporary type");
+        }
         addField1(fi);
         // the field cannot be of set type...
         // if(fieldIndexes==null)
@@ -199,6 +199,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
          */
         private static final long serialVersionUID = 1L;
 
+        @Override
         protected Object getHashObject(Object name) {
             java.net.URL u = RecordParser.findDataDefinition((String) name, "mdd");
             if (u == null) {
@@ -207,13 +208,16 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             return u;
         }
 
+        @Override
         protected Object makeResource(Object name, Object hashName) {
             String nm = (String) name;
-            if (nm.indexOf('/') != -1)
+            if (nm.indexOf('/') != -1) {
                 nm = nm.replace('/', '.').substring(1);
+            }
             return new RecordInfo((java.net.URL) hashName, nm);
         }
 
+        @Override
         protected void configureResource(Object name, Object hashName, Object resource) {
             new RecordParser().parse((RecordInfo) resource);
         }
@@ -234,8 +238,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
                 return getSimpleRecordInfo(name);
             } catch (DataDefinitionNotFoundError e) {
                 n = name.lastIndexOf(".");
-                if (n == -1)
+                if (n == -1) {
                     throw e;
+                }
                 try {
                     return getRecordInfo(name.substring(0, n) + "->" + name.substring(n + 1));
                 } catch (DataDefinitionParseError f) {
@@ -248,8 +253,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         while (true) {
             name = name.substring(n + 2);
             n = name.indexOf("->");
-            if (n == -1)
+            if (n == -1) {
                 break;
+            }
             ri = ri.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
         ri = ri.getFieldDefinition(name).getSubtable();
@@ -261,43 +267,52 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         boolean dot = false;
         for (int i = 0; i < path.length(); i++) {
             if (path.charAt(i) == '.') {
-                if (dot)
+                if (dot) {
                     throw new DataDefinitionParseError("two consecutive dots not allowed in type name");
+                }
                 dot = true;
-            } else
+            } else {
                 dot = false;
+            }
 
             // check if type name looks valid (no weird characters or
             // spaces)
-            if (path.charAt(i) != '/' && path.charAt(i) != '.')
+            if (path.charAt(i) != '/' && path.charAt(i) != '.') {
                 if (i == 0 && !Character.isJavaIdentifierStart(path.charAt(i)) || i > 0
-                        && !Character.isJavaIdentifierPart(path.charAt(i)))
+                        && !Character.isJavaIdentifierPart(path.charAt(i))) {
                     throw new DataDefinitionParseError("Invalid character \"" + path.charAt(i) + "\" in type name \""
                             + path + "\"");
+                }
+            }
         }
 
         if (path.indexOf('/') != -1) {
             path = path.replace('/', '.');
-            if (path.charAt(0) == '.')
+            if (path.charAt(0) == '.') {
                 path = path.substring(1);
+            }
         }
 
         DataDefinition ri = null;
         try {
             ri = (DataDefinition) NamedResources.getStaticCache(infos).getResource(path);
         } catch (RuntimeWrappedException e) {
-            if (e.getCause() instanceof DataDefinitionParseError)
+            if (e.getCause() instanceof DataDefinitionParseError) {
                 throw (DataDefinitionParseError) e.getCause();
-            if(e.getCause() instanceof DataDefinitionNotFoundError)
+            }
+            if(e.getCause() instanceof DataDefinitionNotFoundError) {
                 throw (DataDefinitionNotFoundError) e.getCause();
-            if (e.getCause() instanceof MakumbaError)
+            }
+            if (e.getCause() instanceof MakumbaError) {
                 throw (MakumbaError) e.getCause();
+            }
             throw e;
         }
-        if (path.indexOf("./") == -1)
+        if (path.indexOf("./") == -1) {
             ((RecordInfo) ri).name = path;
-        else
+        } else {
             java.util.logging.Logger.getLogger("org.makumba." + "debug.abstr").severe("shit happens: " + path);
+        }
         return ri;
     }
 
@@ -308,8 +323,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public Vector<FieldDefinition> getReferenceFields() {
         Vector<FieldDefinition> v = new Vector<FieldDefinition>();
-        for (Iterator iter = fields.values().iterator(); iter.hasNext();) {
-            FieldDefinition fd = (FieldDefinition) iter.next();
+        for (FieldDefinition fieldDefinition : fields.values()) {
+            FieldDefinition fd = fieldDefinition;
             if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
                 v.add(fd);
             }
@@ -319,7 +334,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /** returns the field info associated with a name */
     public FieldDefinition getFieldDefinition(String nm) {
-        return (FieldDefinition) fields.get(nm);
+        return fields.get(nm);
     }
 
     /** returns the field info associated with a name */
@@ -344,9 +359,10 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
      * the field with the respective index, null if such a field doesn't exist
      */
     public FieldDefinition getFieldDefinition(int n) {
-        if (n < 0 || n >= fieldOrder.size())
+        if (n < 0 || n >= fieldOrder.size()) {
             return null;
-        return getFieldDefinition((String) fieldOrder.elementAt(n));
+        }
+        return getFieldDefinition(fieldOrder.elementAt(n));
     }
 
     public QueryFragmentFunction getFunction(String name) {
@@ -417,8 +433,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
      * null
      */
     public FieldDefinition getParentField() {
-        if (papa == null)
+        if (papa == null) {
             return null;
+        }
         return papa.getFieldDefinition(subfield);
     }
 
@@ -433,15 +450,18 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     public void checkFieldNames(Dictionary d) {
         for (Enumeration e = d.keys(); e.hasMoreElements();) {
             Object o = e.nextElement();
-            if (!(o instanceof String))
+            if (!(o instanceof String)) {
                 throw new org.makumba.NoSuchFieldException(this,
                         "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
                                 + "> is of type " + o.getClass() + getName());
-            if (this.getFieldDefinition((String) o) == null)
+            }
+            if (this.getFieldDefinition((String) o) == null) {
                 throw new org.makumba.NoSuchFieldException(this, (String) o);
+            }
         }
     }
 
+    @Override
     public String toString() {
         return getName();
     }
@@ -467,7 +487,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return validationRuleNames.get(ruleName);
     }
 
-    public void addRule(String fieldName, Collection rules) {
+    public void addRule(String fieldName, Collection<ValidationRule> rules) {
         getFieldDefinition(fieldName).addValidationRule(rules);
     }
 
@@ -475,7 +495,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         getFieldDefinition(fieldName).addValidationRule(rule);
     }
 
-    public Collection getValidationRules(String fieldName) {
+    public Collection<ValidationRule> getValidationRules(String fieldName) {
         return getFieldDefinition(fieldName).getValidationRules();
     }
 
@@ -483,7 +503,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return this;
     }
 
-    public ArrayList getRulesSyntax() {
+    public ArrayList<String> getRulesSyntax() {
         return operators;
     }
 
@@ -493,7 +513,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     // Mutliple unique keys methods
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys() {
-        return (MultipleUniqueKeyDefinition[]) multiFieldUniqueList.values().toArray(
+        return multiFieldUniqueList.values().toArray(
             new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
     }
 
@@ -507,7 +527,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public void checkUpdate(String fieldName, Dictionary d) {
         Object o = d.get(fieldName);
-        if (o != null)
+        if (o != null) {
             switch (getFieldDefinition(fieldName).getIntegerType()) {
                 case FieldDefinition._dateCreate:
                     throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
@@ -521,6 +541,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
                 default:
                     base_checkUpdate(fieldName, d);
             }
+        }
     }
 
     private void base_checkUpdate(String fieldName, Dictionary d) {
