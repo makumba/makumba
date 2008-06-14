@@ -2,18 +2,15 @@ package org.makumba.commons.tags;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.RuntimeWrappedException;
 
 public class GenericMakumbaTag extends AnalysableTag {
     
@@ -36,8 +33,7 @@ public class GenericMakumbaTag extends AnalysableTag {
     public void initialiseState() {
         extraFormatting = new StringBuffer();
     
-        for (Iterator it = extraFormattingParams.entrySet().iterator(); it.hasNext();) {
-            Map.Entry me = (Map.Entry) it.next();
+        for (Entry<String, String> me : extraFormattingParams.entrySet()) {
             extraFormatting.append(" ").append(me.getKey()).append("=\"").append(me.getValue()).append("\" ");
         }
     }
@@ -176,11 +172,12 @@ public class GenericMakumbaTag extends AnalysableTag {
         params.put("elementSeparator", s);
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + " " + params + "\n" + getPageTextInfo();
     }
 
-    public Hashtable getParams() {
+    public Hashtable<String, Object> getParams() {
         return params;
     }
 
@@ -198,17 +195,20 @@ public class GenericMakumbaTag extends AnalysableTag {
         Object[] val1 = (Object[]) pc.retrieve(TYPES, key);
         FieldDefinition fd = null;
     
-        if (val1 != null)
+        if (val1 != null) {
             fd = (FieldDefinition) val1[0];
+        }
         // if we get nil here, we keep the previous, richer type information
-        if (fd != null && value.getType().equals("nil"))
+        if (fd != null && value.getType().equals("nil")) {
             return;
+        }
     
         AnalysableTag.analyzedTag.set(tagData);
-        if (fd != null && !value.isAssignableFrom(fd))
+        if (fd != null && !value.isAssignableFrom(fd)) {
             throw new ProgrammerError("Attribute type changing within the page: in tag\n"
                     + ((AnalysableTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type " + fd
                     + " and the from this tag results the incompatible type " + value);
+        }
         AnalysableTag.analyzedTag.set(null);
     
         Object[] val2 = { value, this };
