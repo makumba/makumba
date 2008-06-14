@@ -89,7 +89,7 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
      * 
      * @see org.makumba.providers.DataDefinitionProviderInterface#getDataDefinitionsInLocation(java.lang.String)
      */
-    public Vector getDataDefinitionsInLocation(String location) {
+    public Vector<String> getDataDefinitionsInLocation(String location) {
         return mddsInDirectory(location);
     }
 
@@ -98,8 +98,8 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
      * 
      * @return filenames as Vector of Strings.
      */
-    private java.util.Vector mddsInDirectory(String dirInClasspath) {
-        java.util.Vector mdds = new java.util.Vector();
+    private Vector<String> mddsInDirectory(String dirInClasspath) {
+        Vector<String> mdds = new java.util.Vector<String>();
         try {
             java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
             // we need to create the file path with this methode. rather than u.getFile(), as that method would keep

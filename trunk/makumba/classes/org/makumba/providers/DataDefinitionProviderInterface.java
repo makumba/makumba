@@ -74,6 +74,6 @@ public interface DataDefinitionProviderInterface {
      * @param location the location where the data definitions should be
      * @return a vector with references to the data definitions in the location
      */
-    public Vector getDataDefinitionsInLocation(String location);
+    public Vector<String> getDataDefinitionsInLocation(String location);
 
 }

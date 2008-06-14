@@ -55,7 +55,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
         return dataDefinitionProviderImplementation.getDataDefinition(typeName);
     }
 
-    public Vector getDataDefinitionsInLocation(String location) {
+    public Vector<String> getDataDefinitionsInLocation(String location) {
         return dataDefinitionProviderImplementation.getDataDefinitionsInLocation(location);
     }
 
