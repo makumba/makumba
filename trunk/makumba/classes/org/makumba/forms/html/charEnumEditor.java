@@ -39,10 +39,12 @@ public class charEnumEditor extends choiceEditor {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public Object getOptions(RecordFormatter rf, int fieldIndex, java.util.Dictionary fP) {
         return null;
     }
 
+    @Override
     public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
         int enumeratorSize = rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
         if (nullOption != null) {
@@ -52,6 +54,7 @@ public class charEnumEditor extends choiceEditor {
         }
     }
 
+    @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
         if (nullOption != null) {
             if (i == 0) {
@@ -63,14 +66,17 @@ public class charEnumEditor extends choiceEditor {
         return rf.dd.getFieldDefinition(fieldIndex).getStringAt(i);
     }
 
+    @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
         return val.toString();
     }
 
+    @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object opts, int i, Object val) {
         return val.toString();
     }
 
+    @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
         if (nullOption != null) {
             if (i == 0) {
@@ -82,14 +88,17 @@ public class charEnumEditor extends choiceEditor {
         return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
     }
 
+    @Override
     public String getMultiple(RecordFormatter rf, int fieldIndex) {
         return "";
     }
 
+    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return false;
     }
 
+    @Override
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
     }

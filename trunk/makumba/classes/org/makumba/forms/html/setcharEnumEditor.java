@@ -39,15 +39,18 @@ public class setcharEnumEditor extends charEnumEditor {
 		return SingletonHolder.singleton;
 	}
 
-	public String getMultiple(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public String getMultiple(RecordFormatter rf, int fieldIndex) {
 		return " multiple";
 	}
 
-	public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
 		return true;
 	}
 
-	public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
 		return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
 	}
 }

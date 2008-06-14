@@ -54,11 +54,13 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 
 	static String[][] paramValues = { null, null, { "hidden" } };
 
-	public String[] getAcceptedParams() {
+	@Override
+    public String[] getAcceptedParams() {
 		return params;
 	}
 
-	public String[][] getAcceptedValue() {
+	@Override
+    public String[][] getAcceptedValue() {
 		return paramValues;
 	}
 
@@ -72,18 +74,23 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 		formatParams.put(suffixName, suffix);
 	}
 
-	public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
-		if (name.equals(extraFormattingParam))
-			return;
-		if (name.equals("type") && val.equals("hidden"))
-			return;
+	@Override
+    public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
+		if (name.equals(extraFormattingParam)) {
+            return;
+        }
+		if (name.equals("type") && val.equals("hidden")) {
+            return;
+        }
 		super.checkParam(rf, fieldIndex, name, val);
 	}
 
-	public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	@Override
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		String s = (String) formatParams.get("type");
-		if (s != null && s.equals("hidden"))
-			return formatHidden(rf, fieldIndex, o, formatParams);
+		if (s != null && s.equals("hidden")) {
+            return formatHidden(rf, fieldIndex, o, formatParams);
+        }
 		return formatShow(rf, fieldIndex, o, formatParams);
 	}
 
@@ -140,11 +147,13 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	}
 
 	protected Integer toInt(RecordFormatter rf, int fieldIndex, Object o) {
-		if (o == null)
-			return null;
+		if (o == null) {
+            return null;
+        }
 		String s = ("" + o).trim();
-		if (s.length() == 0)
-			return null;
+		if (s.length() == 0) {
+            return null;
+        }
 		try {
 			return new Integer(Integer.parseInt(s));
 		} catch (NumberFormatException e) {
@@ -153,8 +162,9 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	}
 	
 	protected Boolean toBoolean(RecordFormatter rf, int fieldIndex, Object o) {
-        if (o == null)
+        if (o == null) {
             return null;
+        }
         if(o.toString().equalsIgnoreCase("true") || o.toString().equalsIgnoreCase("yes") || o.toString().equalsIgnoreCase("1")) {
             return true;
         } else if(o.toString().equalsIgnoreCase("false") || o.toString().equalsIgnoreCase("no") || o.toString().equalsIgnoreCase("0")) {
@@ -165,11 +175,13 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
     }
 
 	protected Double toReal(RecordFormatter rf, int fieldIndex, Object o) {
-		if (o == null)
-			return null;
+		if (o == null) {
+            return null;
+        }
 		String s = ("" + o).trim();
-		if (s.length() == 0)
-			return null;
+		if (s.length() == 0) {
+            return null;
+        }
 		try {
 			return new Double(Double.parseDouble(s));
 		} catch (NumberFormatException e) {

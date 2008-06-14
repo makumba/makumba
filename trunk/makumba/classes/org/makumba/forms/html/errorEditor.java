@@ -40,7 +40,8 @@ public class errorEditor extends FieldEditor {
 		return SingletonHolder.singleton;
 	}
 
-	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParam) {
+	@Override
+    public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParam) {
 		throw new org.makumba.commons.formatters.InvalidValueException(rf.expr[fieldIndex],
 				"cannot edit fields of type " + rf.dd.getFieldDefinition(fieldIndex).getType());
 	}
