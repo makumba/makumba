@@ -31,8 +31,8 @@ public class StringUtils {
     }
 
     public static boolean anyNotEmpty(String[] o) {
-        for (int i = 0; i < o.length; i++) {
-            if(org.apache.commons.lang.StringUtils.isNotEmpty(o[i])) {
+        for (String element : o) {
+            if(org.apache.commons.lang.StringUtils.isNotEmpty(element)) {
                 return true;
             }
         } 
@@ -40,8 +40,8 @@ public class StringUtils {
     }
     
     public static boolean allNotEmpty(String[] o) {
-        for (int i = 0; i < o.length; i++) {
-            if(org.apache.commons.lang.StringUtils.isBlank(o[i])) {
+        for (String element : o) {
+            if(org.apache.commons.lang.StringUtils.isBlank(element)) {
                 return false;
             }
         } 
@@ -85,15 +85,15 @@ public class StringUtils {
         return b.toString();
     }
 
-    public static String toString(Collection collection, boolean frame, String delimeter) {
-        return toString((Object[]) collection.toArray(new Object[collection.size()]), frame, delimeter);
+    public static String toString(Collection<?> collection, boolean frame, String delimeter) {
+        return toString(collection.toArray(new Object[collection.size()]), frame, delimeter);
     }
 
-    public static String toString(Collection collection, boolean frame) {
+    public static String toString(Collection<?> collection, boolean frame) {
         return toString(collection, frame, DEFAULT_DELIMETER);
     }
 
-    public static String toString(Collection collection) {
+    public static String toString(Collection<?> collection) {
         return toString(collection, true);
     }
 
@@ -133,8 +133,8 @@ public class StringUtils {
         if (s == null) {
             return false;
         }
-        for (int i = 0; i < options.length; i++) {
-            if (s.equals(options[i])) {
+        for (String element : options) {
+            if (s.equals(element)) {
                 return true;
             }
         }
@@ -146,8 +146,8 @@ public class StringUtils {
         if (s == null) {
             return false;
         }
-        for (int i = 0; i < options.length; i++) {
-            if (s.startsWith(options[i])) {
+        for (String element : options) {
+            if (s.startsWith(element)) {
                 return true;
             }
         }
@@ -158,9 +158,9 @@ public class StringUtils {
         if (s == null) {
             return null;
         }
-        for (int i = 0; i < options.length; i++) {
-            if (s.startsWith(options[i])) {
-                return options[i];
+        for (String element : options) {
+            if (s.startsWith(element)) {
+                return element;
             }
         }
         return null;
@@ -171,8 +171,8 @@ public class StringUtils {
         if (s == null) {
             return false;
         }
-        for (int i = 0; i < options.length; i++) {
-            if (s.endsWith(options[i])) {
+        for (String element : options) {
+            if (s.endsWith(element)) {
                 return true;
             }
         }
@@ -194,7 +194,7 @@ public class StringUtils {
         }
     }
 
-    public static String toString(Enumeration enumeration) {
+    public static String toString(Enumeration<?> enumeration) {
         return toString(EnumerationUtils.toList(enumeration));
     }
     
