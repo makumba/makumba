@@ -54,10 +54,12 @@ public class dateEditor extends FieldEditor {
 
     static String[][] _paramValues = { null, new String[] { "true", "false" }, null };
 
+    @Override
     public String[] getAcceptedParams() {
         return _params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return _paramValues;
     }
@@ -89,12 +91,15 @@ public class dateEditor extends FieldEditor {
         return getComponentName(rf, fieldIndex, i, getSuffix(rf, fieldIndex, formatParams));
     }
 
+    @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String format = (String) formatParams.get("format");
-        if (format == null)
+        if (format == null) {
             format = "dd MMMMM yyyy";
-        if (o == org.makumba.Pointer.NullDate)
+        }
+        if (o == org.makumba.Pointer.NullDate) {
             o = null;
+        }
         Date d = (Date) o;
         StringBuffer sb = new StringBuffer();
         boolean hidden = "hidden".equals(formatParams.get("type"));
@@ -105,8 +110,9 @@ public class dateEditor extends FieldEditor {
         int n = 0;
         while (true) {
             n = findNextFormatter(rf, fieldIndex, sb, format, n, hidden);
-            if (n == -1)
+            if (n == -1) {
                 break;
+            }
             n = formatFrom(rf, fieldIndex, sb, d, format, n, hidden, formatParams);
         }
 
@@ -150,8 +156,9 @@ public class dateEditor extends FieldEditor {
                     c.set(components[component], i);
                     String opt = df.format(c.getTime());
                     sb.append("<option value=\"").append(i).append("\"");
-                    if (opt.equals(val))
+                    if (opt.equals(val)) {
                         sb.append(" selected");
+                    }
                     sb.append(">").append(opt).append("</option>");
                 }
                 sb.append("</select>");
@@ -159,6 +166,7 @@ public class dateEditor extends FieldEditor {
         }
     }
 
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters pr,
             String suffix) {
         Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
@@ -166,11 +174,13 @@ public class dateEditor extends FieldEditor {
         for (int i = 0; i < components.length; i++) {
             String name = getComponentName(rf, fieldIndex, i, suffix);
             Object o = pr.getParameter(name);
-            if (o == null)
+            if (o == null) {
                 continue;
-            if (o instanceof Vector)
+            }
+            if (o instanceof Vector) {
                 throw new InvalidValueException(rf.expr[fieldIndex], "Multiple value not allowed for '"
                         + componentNames[i] + "' component");
+            }
             int n = -1;
             try {
                 n = Integer.parseInt((String) o);
@@ -182,8 +192,9 @@ public class dateEditor extends FieldEditor {
         }
         Date d = c.getTime();
         if (d.equals(rf.dd.getFieldDefinition(fieldIndex).getDefaultValue())
-                && pr.getParameter(getNullName(rf, fieldIndex, suffix)) != null)
+                && pr.getParameter(getNullName(rf, fieldIndex, suffix)) != null) {
             return null;
+        }
         return d;
     }
 
@@ -197,8 +208,9 @@ public class dateEditor extends FieldEditor {
         c.clear();
         for (int i = 0; i < components.length; i++) {
             Object o = pr.getParameter(name + "_" + i);
-            if (o == null)
+            if (o == null) {
                 continue;
+            }
             int n = -1;
             try {
                 n = Integer.parseInt((String) o);
@@ -213,8 +225,9 @@ public class dateEditor extends FieldEditor {
             Dictionary formatParams) {
         int m = n;
         char c = format.charAt(n);
-        while (++n < format.length() && format.charAt(n) == c)
+        while (++n < format.length() && format.charAt(n) == c) {
             ;
+        }
         formatComponent(rf, fieldIndex, sb, d, format.substring(m, n), recognized.indexOf(c), hidden, formatParams);
         return n;
     }
@@ -223,38 +236,44 @@ public class dateEditor extends FieldEditor {
         StringBuffer quoted = null;
         for (; n < format.length(); n++) {
             char c = format.charAt(n);
-            if (c == '\'')
-                if (quoted != null) // existing quote
+            if (c == '\'') {
+                if (quoted != null) { // existing quote
                     if (quoted.length() == 0) // double quote
                     {
-                        if (!hidden)
+                        if (!hidden) {
                             sb.append('\'');
+                        }
                         quoted = null;
                     } else // closed quote
                     {
-                        if (!hidden)
+                        if (!hidden) {
                             sb.append(quoted.toString());
+                        }
                         quoted = null;
                     }
-                else
+                } else {
                     // new quote
                     quoted = new StringBuffer();
-            else if (quoted != null) {
+                }
+            } else if (quoted != null) {
                 quoted.append(c);
             } else // we're outside quotes
             if (!Character.isLetter(c)) // non-letters don't need quotes
             {
-                if (!hidden)
+                if (!hidden) {
                     sb.append(c);
-            } else if (recognized.indexOf(c) == -1)
+                }
+            } else if (recognized.indexOf(c) == -1) {
                 throw new InvalidValueException(rf.expr[fieldIndex], "unrecognized formatting letter \'" + c
                         + "\' in date format string <" + format + ">");
-            else
+            } else {
                 return n;
+            }
         }
-        if (quoted != null)
+        if (quoted != null) {
             throw new InvalidValueException(rf.expr[fieldIndex], "unterminated single quote in date format string <"
                     + format + ">");
+        }
         return -1;
     }
 }
