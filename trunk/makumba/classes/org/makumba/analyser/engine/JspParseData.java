@@ -26,8 +26,8 @@ package org.makumba.analyser.engine;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -82,11 +82,13 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Object getHashObject(Object o) {
             Object[] o1 = (Object[]) o;
             return ((String) o1[0] + o1[2]) + o1[1].getClass().getName();
         }
 
+        @Override
         public Object makeResource(Object o, Object hashName) throws Throwable {
             Object[] o1 = (Object[]) o;
             return new JspParseData((String) o1[0], (String) o1[2], (JspAnalyzer) o1[1]);
@@ -149,12 +151,14 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     public synchronized Object getAnalysisResult(Object initStatus) {
         try {
-            if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged())
+            if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged()) {
                 getSyntaxPointArray(initStatus);
+            }
             return holder;
         } finally {
-            if(syntaxPoints!=null)
+            if(syntaxPoints!=null) {
                 syntaxPoints.discardPoints();
+            }
         }
     }
 
@@ -259,8 +263,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             char chQuote = attValQuoted.charAt(0);
 
             // the following assertion must be ensured by the attributePattern matching
-            if (attValQuoted.charAt(0) != attValQuoted.charAt(attValQuoted.length() - 1))
+            if (attValQuoted.charAt(0) != attValQuoted.charAt(attValQuoted.length() - 1)) {
                 throw new RuntimeException("Properly quoted string expected, found " + attValQuoted);
+            }
 
             // unescape the "escaped quotes" in the attributeValue
             if (chQuote == '\"') {
@@ -352,26 +357,31 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Matcher systemTags = JspSystemTagPattern.matcher(content);
 
         int tagStart = Integer.MAX_VALUE;
-        if (tags.find())
+        if (tags.find()) {
             tagStart = tags.start();
+        }
         int systemStart = Integer.MAX_VALUE;
-        if (systemTags.find())
+        if (systemTags.find()) {
             systemStart = systemTags.start();
+        }
 
         while (true) {
             if (tagStart < systemStart) {
                 treatTag(tags, content, an);
                 tagStart = Integer.MAX_VALUE;
-                if (tags.find())
+                if (tags.find()) {
                     tagStart = tags.start();
+                }
             } else if (systemStart < tagStart) {
                 treatSystemTag(systemTags, content, an);
                 systemStart = Integer.MAX_VALUE;
-                if (systemTags.find())
+                if (systemTags.find()) {
                     systemStart = systemTags.start();
+                }
             }
-            if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE)
+            if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE) {
                 break;
+            }
         }
     }
 
@@ -405,18 +415,20 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
         // we avoid evaluation of the logging expression
-        if (log.isLoggable(Level.FINE))
+        if (log.isLoggable(Level.FINE)) {
             log.fine(uri + ":" + start.line + ":" + start.column + ": "
                     + (tagEnd ? ("/" + tagName) : (td.name + " " + td.attributes)));
+        }
         if (tagEnd) {
             an.endTag(td, holder);
             return;
         }
 
-        if (tagClosed)
+        if (tagClosed) {
             an.simpleTag(td, holder);
-        else
+        } else {
             an.startTag(td, holder);
+        }
     }
 
     /**
@@ -454,8 +466,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
         // we avoid evaluation of the logging expression
-        if (log.isLoggable(Level.FINE))
+        if (log.isLoggable(Level.FINE)) {
             log.fine(uri + ":" + start.line + ":" + start.column + ": " + td.name + " " + td.attributes);
+        }
 
         an.systemTag(td, holder);
     }
@@ -482,8 +495,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
 
         // we avoid evaluation of the logging expression
-        if (log.isLoggable(Level.FINE))
+        if (log.isLoggable(Level.FINE)) {
             log.fine(uri + ":" + start.line + ":" + start.column + ": " + td.name + " " + td.attributes);
+        }
 
         an.systemTag(td, holder); // change?
     }
@@ -500,8 +514,9 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     public static void tagDataLine(TagData td, StringBuffer sb) {
         sb.append("\n").append(td.getSourceSyntaxPoints().getLineText(td.getStartLine())).append('\n');
-        for (int i = 1; i < td.getStartColumn(); i++)
+        for (int i = 1; i < td.getStartColumn(); i++) {
             sb.append(' ');
+        }
         sb.append('^');
     }
 
@@ -513,13 +528,13 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param attributes
      *            the attributes of the tag
      */
-    public static void fill(Tag t, Map attributes) {
+    public static void fill(Tag t, Map<String, String> attributes) {
         Class c = t.getClass();
         Class[] argTypes = { String.class };
         Object[] args = new Object[1];
 
-        for (Iterator i = attributes.entrySet().iterator(); i.hasNext();) {
-            Map.Entry me = (Map.Entry) i.next();
+        for (Entry<String, String> entry : attributes.entrySet()) {
+            Entry me = entry;
             String s = (String) me.getKey();
             String methodName = "set" + Character.toUpperCase(s.charAt(0)) + s.substring(1);
             try {
