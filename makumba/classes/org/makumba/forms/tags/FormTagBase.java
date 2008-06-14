@@ -487,6 +487,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 responder.setResponderOrder(responderOrder);
                 responder.setFormNames(formNames);
                 // we need to save the responder again to the disc, cause the new fields were not persisted yet
+                // FIXME: this might be sub-optimal, but i guess it can only be fixed when the form/responder order
+                // detection is done at analysis time, before the responder gets saved to the disc in
+                // org.makumba.forms.responder.ResponderCacheManager.NamedResources.makeResource
                 responder.saveResponderToDisc();
             }
 
