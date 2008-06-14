@@ -92,7 +92,7 @@ public class tableHibernate extends TestCase {
 
 	static String[] subsetFields = { "description" };
 
-	static Dictionary pc, pc1;
+	static Dictionary<String, Object> pc, pc1;
 
 	static Date now;
 
@@ -179,11 +179,11 @@ public class tableHibernate extends TestCase {
 		p.put("indiv.surname", "doe");
 		p.put("extraData.something", "else");
 
-		Vector setintElem = new Vector();
+		Vector<Integer> setintElem = new Vector<Integer>();
 		setintElem.addElement(new Integer(1));
 		setintElem.addElement(new Integer(0));
 
-		Vector setcharElem = new Vector();
+		Vector<String> setcharElem = new Vector<String>();
 		setcharElem.addElement("f");
 		setcharElem.addElement("e");
 
@@ -196,11 +196,11 @@ public class tableHibernate extends TestCase {
 
 		now = new Date();
 
-		Vector v = db.executeQuery(readPerson1, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
 
 		assertEquals(1, v.size());
 
-		pc = (Dictionary) v.elementAt(0);
+		pc = v.elementAt(0);
 
 		create = (Date) pc.get("TS_create");
 		ptrOne = (Pointer) pc.get("extraData");
@@ -215,15 +215,15 @@ public class tableHibernate extends TestCase {
 
 		v = db.executeQuery(readIntSet, ptr);
 		assertEquals(2, v.size());
-		assertEquals(new Integer(0), ((Dictionary) v.elementAt(0))
+		assertEquals(new Integer(0), (v.elementAt(0))
 				.get("member"));
-		assertEquals(new Integer(1), ((Dictionary) v.elementAt(1))
+		assertEquals(new Integer(1), (v.elementAt(1))
 				.get("member"));
 
 		v = db.executeQuery(readCharSet, ptr);
 		assertEquals(v.size(), 2);
-		assertEquals("e", ((Dictionary) v.elementAt(0)).get("member"));
-		assertEquals("f", ((Dictionary) v.elementAt(1)).get("member"));
+		assertEquals("e", (v.elementAt(0)).get("member"));
+		assertEquals("f", (v.elementAt(1)).get("member"));
 
 		assertEquals(create, pc.get("TS_modify"));
 		assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
@@ -254,7 +254,7 @@ public class tableHibernate extends TestCase {
         assertNotNull(fptr);
         assertEquals(fptr.getType(), "test.Person");
 
-        Vector v = db.executeQuery(readPerson2, fptr);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson2, fptr);
         //System.out.println(v.size()); 
         assertEquals(1, v.size());
 
@@ -278,7 +278,7 @@ public class tableHibernate extends TestCase {
 
         assertEquals(1, v.size());
         
-        pc = (Dictionary) v.elementAt(0);
+        pc = v.elementAt(0);
         
         fptr2 = (Pointer) pc.get("brother");
         assertNotNull(fptr2);
@@ -305,19 +305,19 @@ public class tableHibernate extends TestCase {
 	static String subsetQuery = "SELECT a.description, a.id, a.description, a.sth.aaa FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
 
 	public void testSetInsert() {
-		Dictionary p = new Hashtable();
+		Dictionary<String, String> p = new Hashtable<String, String>();
 		p.put("description", "home");
 		p.put("sth.aaa", "bbb");
 
 		set1 = db.insert(ptr, "address", p);
 
 		assertNotNull(set1);
-		Vector v = db.executeQuery(subsetQuery, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
 		assertEquals(1, v.size());
-		assertEquals("home", ((Dictionary) v.elementAt(0)).get("col1"));
-		assertEquals(set1, ((Dictionary) v.elementAt(0)).get("col2"));
-		assertEquals("home", ((Dictionary) v.elementAt(0)).get("col3"));
-		assertEquals("bbb", ((Dictionary) v.elementAt(0)).get("col4"));
+		assertEquals("home", (v.elementAt(0)).get("col1"));
+		assertEquals(set1, (v.elementAt(0)).get("col2"));
+		assertEquals("home", (v.elementAt(0)).get("col3"));
+		assertEquals("bbb", (v.elementAt(0)).get("col4"));
 
 		p.put("description", "away");
 
@@ -326,52 +326,52 @@ public class tableHibernate extends TestCase {
 		assertEquals("away", db.read(set2, subsetFields).get("description"));
 		v = db.executeQuery(subsetQuery, ptr);
 		assertEquals(2, v.size());
-		assertEquals("away", ((Dictionary) v.elementAt(0)).get("col1"));
-		assertEquals(set2, ((Dictionary) v.elementAt(0)).get("col2"));
-		assertEquals("home", ((Dictionary) v.elementAt(1)).get("col1"));
-		assertEquals(set1, ((Dictionary) v.elementAt(1)).get("col2"));
+		assertEquals("away", (v.elementAt(0)).get("col1"));
+		assertEquals(set2, (v.elementAt(0)).get("col2"));
+		assertEquals("home", (v.elementAt(1)).get("col1"));
+		assertEquals(set1, (v.elementAt(1)).get("col2"));
 	}
 
 	public void testSetMemberUpdate() {
-		Dictionary p = new Hashtable();
+		Dictionary<String, String> p = new Hashtable<String, String>();
 		p.put("description", "somewhere");
 
 		db.update(set2, p);
 
-		Vector v = db.executeQuery(subsetQuery, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
 
 		assertEquals("somewhere", db.read(set2, subsetFields)
 				.get("description"));
 		v = db.executeQuery(subsetQuery, ptr);
 		assertEquals(v.size(), 2);
-		assertEquals("home", ((Dictionary) v.elementAt(0)).get("col1"));
-		assertEquals(set1, ((Dictionary) v.elementAt(0)).get("col2"));
-		assertEquals("somewhere", ((Dictionary) v.elementAt(1)).get("col1"));
-		assertEquals(set2, ((Dictionary) v.elementAt(1)).get("col2"));
+		assertEquals("home", (v.elementAt(0)).get("col1"));
+		assertEquals(set1, (v.elementAt(0)).get("col2"));
+		assertEquals("somewhere", (v.elementAt(1)).get("col1"));
+		assertEquals(set2, (v.elementAt(1)).get("col2"));
 	}
 
 	public void testSetMemberDelete() {
 		db.delete(set1);
 		assertNull(db.read(set1, subsetFields));
-		Vector v = db.executeQuery(subsetQuery, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
 		assertEquals(1, v.size());
-		assertEquals("somewhere", ((Dictionary) v.elementAt(0)).get("col1"));
-		assertEquals(set2, ((Dictionary) v.elementAt(0)).get("col2"));
+		assertEquals("somewhere", (v.elementAt(0)).get("col1"));
+		assertEquals(set2, (v.elementAt(0)).get("col2"));
 
 		// we put it back
-		Dictionary p = new Hashtable();
+		Dictionary<String, String> p = new Hashtable<String, String>();
 		p.put("description", "home");
        
         set1 = db.insert(ptr, "address", p);
 	}
 
 	public void testSubrecordUpdate() {
-		Dictionary p = new Hashtable();
+		Dictionary<String, String> p = new Hashtable<String, String>();
 		p.put("something", "else2");
 
 		db.update(ptrOne, p);
 
-		Dictionary d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, personFields);
 		assertNotNull(d);
 		assertEquals(ptrOne, d.get("extraData"));
 
@@ -392,34 +392,35 @@ public class tableHibernate extends TestCase {
 	static String checkSpeaksQuery = "SELECT l.id FROM test.Person s JOIN s.speaks l WHERE s.id=?";
 
 	void workWithSet(String[] t) {
-		Vector v = new Vector();
-		for (int i = 0; i < t.length; i++) {
-            Vector getLanguagesFromDb = db.executeQuery(langQuery, t[i]);
-            Dictionary resultDic = (Dictionary) (getLanguagesFromDb.elementAt(0));
+		Vector<Object> v = new Vector<Object>();
+		for (String element : t) {
+            Vector<Dictionary<String, Object>> getLanguagesFromDb = db.executeQuery(langQuery, element);
+            Dictionary<String, Object> resultDic = getLanguagesFromDb.elementAt(0);
             v.addElement(resultDic.get("col1"));
         }
 			
 
-		Hashtable dt = new Hashtable();
+		Hashtable<String, Object> dt = new Hashtable<String, Object>();
 		dt.put("speaks", v);
 		db.update(ptr, dt);
 
-		Vector result = db.executeQuery(speaksQuery, ptr);
-		Vector result1 = db.executeQuery(checkSpeaksQuery, ptr);
+		Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
+		Vector<Dictionary<String, Object>> result1 = db.executeQuery(checkSpeaksQuery, ptr);
 
 		assertEquals(t.length, result.size());
 		assertEquals(t.length, result1.size());
 
-		for (int i = 0; i < t.length; i++) {
+		for (String element : t) {
 			for (int j = 0; j < result.size(); j++) {
-				Dictionary d = (Dictionary) result.elementAt(j);
-				if (d.get("name").equals(t[i])) {
-					for (int k = 0; j < result1.size(); k++)
-						if (((Dictionary) result1.elementAt(k)).get("col1")
+				Dictionary<String, Object> d = result.elementAt(j);
+				if (d.get("name").equals(element)) {
+					for (int k = 0; j < result1.size(); k++) {
+                        if ((result1.elementAt(k)).get("col1")
 								.equals(d.get("k"))) {
 							result1.removeElementAt(k);
 							break;
 						}
+                    }
 					result.removeElementAt(j);
 					break;
 				}
@@ -430,14 +431,15 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testSetUpdate() {
-		Dictionary p = new Hashtable();
-		if (db.executeQuery("SELECT l.id FROM test.Language l", null).size() == 0)
-			for (int i = 0; i < languageData.length; i++) {
-				p.put("name", languageData[i][0]);
-				p.put("isoCode", languageData[i][1]);
-				Pointer italian = db.insert("test.Language", p);
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
+		if (db.executeQuery("SELECT l.id FROM test.Language l", null).size() == 0) {
+            for (Object[] element : languageData) {
+				p.put("name", element[0]);
+				p.put("isoCode", element[1]);
+				db.insert("test.Language", p);
 			}
-		p = new Hashtable();
+        }
+		p = new Hashtable<String, Object>();
 
 		workWithSet(toInsert);
 	}
@@ -451,13 +453,11 @@ public class tableHibernate extends TestCase {
 	static String[] toInsert3 = { "English", "German", "French" };
 
 	public void testSetDelete() {
-		Dictionary p = new Hashtable();
-
-		Hashtable dt = new Hashtable();
-		dt.put("speaks", new Vector());
+		Hashtable<String, Object> dt = new Hashtable<String, Object>();
+		dt.put("speaks", new Vector<Object>());
 
 		db.update(ptr, dt);
-		Vector result = db.executeQuery(speaksQuery, ptr);
+		Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
 		assertEquals(0, result.size());
 
 		assertEquals(0, db.executeQuery(
@@ -472,7 +472,7 @@ public class tableHibernate extends TestCase {
 	public void testPtrOneDelete() {
 		db.delete(ptrOne);
 
-		Dictionary d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, personFields);
 		assertNotNull(d);
 		assertNull(d.get("extraData"));
 
@@ -480,13 +480,13 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testPtrOneReInsert() {
-		Dictionary p = new Hashtable();
+		Dictionary<String, String> p = new Hashtable<String, String>();
 		p.put("extraData.something", "else2");
 		db.update(ptr, p);
-		Dictionary d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, personFields);
 		ptrOne = (Pointer) d.get("extraData");
 		assertNotNull(ptrOne);
-		Dictionary read;
+		Dictionary <String, Object>read;
 		assertNotNull(read = db.read(ptrOne, ptrOneFields));
 		assertEquals("else2", read.get("something"));
 	}
@@ -496,10 +496,10 @@ public class tableHibernate extends TestCase {
 		String val = "A completely new guy";
 		pmod.put("indiv.name", val);
 
-		Vector setintElem = new Vector();
+		Vector<Integer> setintElem = new Vector<Integer>();
 		setintElem.addElement(new Integer(2));
 
-		Vector setcharElem = new Vector();
+		Vector<String> setcharElem = new Vector<String>();
 		setcharElem.addElement("d");
 
 		pmod.put("intSet", setintElem);
@@ -508,10 +508,10 @@ public class tableHibernate extends TestCase {
 		db.update(ptr, pmod);
 
 		now = new Date();
-		Vector v = db.executeQuery(readPerson, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
 		assertEquals(1, v.size());
 
-		Dictionary modc = (Dictionary) v.elementAt(0);
+		Dictionary<String, Object> modc = v.elementAt(0);
 
 		assertNotNull(modc);
 		create = (Date) modc.get("TS_create");
@@ -522,17 +522,17 @@ public class tableHibernate extends TestCase {
 
 		v = db.executeQuery(readIntSet, ptr);
 		assertEquals(1, v.size());
-		assertEquals(new Integer(2), ((Dictionary) v.elementAt(0))
+		assertEquals(new Integer(2), (v.elementAt(0))
 				.get("member"));
 
 		v = db.executeQuery(readCharSet, ptr);
 		assertEquals(1, v.size());
-		assertEquals("d", ((Dictionary) v.elementAt(0)).get("member"));
+		assertEquals("d", (v.elementAt(0)).get("member"));
 	}
 
 	public void testDelete() {
-        Hashtable dt = new Hashtable();
-        dt.put("speaks", new Vector());
+        Hashtable<String, Vector<Object>> dt = new Hashtable<String, Vector<Object>>();
+        dt.put("speaks", new Vector<Object>());
 
 		db.delete(ptr);
         
@@ -590,10 +590,10 @@ public class tableHibernate extends TestCase {
 		assertNotNull(ptr1);
 
 		now = new Date();
-		Vector v = db.executeQuery(readPerson, ptr1);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr1);
 		assertEquals(1, v.size());
 
-		pc1 = (Dictionary) v.elementAt(0);
+		pc1 = v.elementAt(0);
 		assertNotNull(pc1);
 
 		assertEquals("john", pc1.get("name"));
