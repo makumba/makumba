@@ -61,9 +61,11 @@ public class FieldFormatter {
     protected FieldFormatter() {
         for (int i = 0; i < getAcceptedParams().length; i++) {
             Hashtable h = new Hashtable(13);
-            if (getAcceptedValue()[i] != null)
-                for (int j = 0; j < getAcceptedValue()[i].length; j++)
+            if (getAcceptedValue()[i] != null) {
+                for (int j = 0; j < getAcceptedValue()[i].length; j++) {
                     h.put(getAcceptedValue()[i][j], dummy);
+                }
+            }
             validParams.put(getAcceptedParams()[i], h);
         }
     }
@@ -71,8 +73,9 @@ public class FieldFormatter {
     static Object dummy = new Object();
 
     public String getExpr(RecordFormatter rf, int fieldIndex) {
-        if (rf.expr[fieldIndex] != null)
+        if (rf.expr[fieldIndex] != null) {
             return rf.expr[fieldIndex];
+        }
         return rf.dd.getFieldDefinition(fieldIndex).getName();
     }
 
@@ -85,22 +88,26 @@ public class FieldFormatter {
     public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         for (Enumeration e = formatParams.keys(); e.hasMoreElements();) {
             String s = (String) e.nextElement();
-            if (s.startsWith("org.makumba"))
+            if (s.startsWith("org.makumba")) {
                 continue;
+            }
             checkParam(rf, fieldIndex, s, ((String) formatParams.get(s)).toLowerCase());
         }
     }
 
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
         Hashtable h = (Hashtable) validParams.get(name);
-        if (h == null)
+        if (h == null) {
             throw new InvalidValueException(rf.expr[fieldIndex], "invalid format parameter \'" + name
                     + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
-        if (h.size() == 0)
+        }
+        if (h.size() == 0) {
             return;
-        if (h.get(val) == null)
+        }
+        if (h.get(val) == null) {
             throw new InvalidValueException(rf.expr[fieldIndex], "invalid value for format parameter \'" + name
                     + "\': <" + val + ">. Allowed values are: " + ArrayUtils.toString(h.keySet()));
+        }
     }
 
     /**
@@ -145,8 +152,9 @@ public class FieldFormatter {
 
     public int getIntParam(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
         String s = (String) formatParams.get(name);
-        if (s == null)
+        if (s == null) {
             return -1;
+        }
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
@@ -156,8 +164,9 @@ public class FieldFormatter {
 
     public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
         int n = getIntParam(rf, fieldIndex, formatParams, name);
-        if (n == -1)
+        if (n == -1) {
             return "";
+        }
         return name + "=\"" + n + "\" ";
     }
 
