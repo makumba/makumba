@@ -169,10 +169,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setMultipart() {
         FormTagBase parent = findParentForm();
-        if (parent != null) // propagate multipart to the root form
+        if (parent != null) {// propagate multipart to the root form
             parent.setMultipart();
-        else
+        } else {
             responder.setMultipart(true);
+        }
     }
 
     // additional html attributes:
@@ -232,11 +233,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     String getOperation() {
         String classname = getClass().getName();
 
-        if (classname.endsWith("FormTagBase"))
+        if (classname.endsWith("FormTagBase")) {
             return "simple";
+        }
         int n = classname.lastIndexOf("Tag");
-        if (n != classname.length() - 3)
+        if (n != classname.length() - 3) {
             throw new RuntimeException("the tag class name was expected to end with \'Tag\': " + classname);
+        }
         classname = classname.substring(0, n);
         int m = classname.lastIndexOf(".");
         return classname.substring(m + 1).toLowerCase();
@@ -259,6 +262,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         Object[] keyComponents = { baseObject, handler, afterHandler, fdp.getParentListKey(this), getClass() };
         tagKey = new MultipleKey(keyComponents);
@@ -269,6 +273,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     /**
      * {@inheritDoc} FIXME QueryExecutionProvider should tell us the syntax for the primary key name
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (!shouldComputeBasePointer()) {
             return;
@@ -293,8 +298,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     FormTagBase findRootForm() {
         FormTagBase parent = findParentForm();
-        if (parent == null)
+        if (parent == null) {
             return this;
+        }
         return parent.findRootForm();
     }
 
@@ -306,13 +312,15 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * @throws ProgrammerError
      */
     void checkNoParent(String attrName) {
-        if (findParentForm() != null)
+        if (findParentForm() != null) {
             throw new ProgrammerError("Forms included in other forms cannot have a '" + attrName + "' attribute");
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void doEndAnalyze(PageCache pageCache) {
         fdp.onFormEndAnalyze(getTagKey(), pageCache);
 
@@ -322,9 +330,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                     "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
         }
         if (findParentForm() != null) {
-            if (formAction != null)
+            if (formAction != null) {
                 throw new ProgrammerError(
                         "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
+            }
         }
         // add needed resources, stored in cache for this page
         if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
@@ -332,8 +341,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
 
-        if (!shouldComputeBasePointer())
+        if (!shouldComputeBasePointer()) {
             return;
+        }
 
         pageCache.cache(BASE_POINTER_TYPES, tagKey,
             fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
@@ -342,30 +352,37 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void initialiseState() {
         super.initialiseState();
 
         responder = responderFactory.createResponder();
-        if (formName != null)
+        if (formName != null) {
             responder.setResultAttribute(formName);
-        if (handler != null)
+        }
+        if (handler != null) {
             responder.setHandler(handler);
+        }
         if (afterHandler != null) {
             responder.setAfterHandler(afterHandler);
         }
-        if (formAction != null)
+        if (formAction != null) {
             responder.setAction(formAction);
-        if (formMethod != null)
+        }
+        if (formMethod != null) {
             responder.setMethod(formMethod);
-        if (formMessage != null)
+        }
+        if (formMessage != null) {
             responder.setMessage(formMessage);
+        }
 
         responder.setReloadFormOnError(reloadFormOnError);
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
 
-        if (findParentForm() != null)
+        if (findParentForm() != null) {
             responder.setParentResponder(findParentForm().responder, findRootForm().responder);
+        }
 
         if (findParentForm() == null) { // initialise only for the root form!
             responders = new HashMap<MultipleKey, String>();
@@ -381,6 +398,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * @throws JspException
      * @throws LogicException
      */
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
 
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
@@ -412,6 +430,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      *            the page cache of the current page
      * @throws JspException
      */
+    @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
 
         fdp.onFormEndTag(getTagKey(), pageCache, pageContext);
@@ -457,9 +476,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
 
             bodyContent.getEnclosingWriter().print(sb.toString());
-            if (findParentForm() != null)
+            if (findParentForm() != null) {
                 java.util.logging.Logger.getLogger("org.makumba." + "taglib.performance").fine(
                     "form time: " + ((new java.util.Date().getTime() - starttime)));
+            }
 
             // retrieves the form dependency graph from the cache
             // this needs to be the last thing done, so we can retrieve the responder code safely
@@ -479,9 +499,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 // so now we can set the responder order in the responder
                 ArrayList<String> responderOrder = new ArrayList<String>();
                 int j = 0;
-                for (int i = 0; i < sortedForms.length; i++) {
-                    if (responders.get(sortedForms[i]) != null) {
-                        responderOrder.add(responders.get(sortedForms[i]));
+                for (MultipleKey element : sortedForms) {
+                    if (responders.get(element) != null) {
+                        responderOrder.add(responders.get(element));
                     }
                 }
                 responder.setResponderOrder(responderOrder);
@@ -527,6 +547,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
             return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
@@ -534,6 +555,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 getConnectionProvider(req, resp.getController()));
         }
 
+        @Override
         public String verify(Responder resp) {
             return null;
         }
