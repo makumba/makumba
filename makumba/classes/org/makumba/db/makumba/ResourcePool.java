@@ -37,13 +37,13 @@ import java.util.Vector;
  */
 public abstract class ResourcePool {
     // a stack of resources
-    Stack stack = new Stack();
+    Stack<Object> stack = new Stack<Object>();
 
     // a parallel stack that keeps the time when each resource was last used
-    Stack timeStack = new Stack();
+    Stack<Date> timeStack = new Stack<Date>();
 
     // we keep a reference to all our resources to prevent them from being finalized when they are out of the pool
-    Vector all = new Vector();
+    Vector<Object> all = new Vector<Object>();
 
     /** re-define this method to express how to create a resource */
     public abstract Object create() throws Exception;
@@ -88,7 +88,7 @@ public abstract class ResourcePool {
     }
 
     /** a weak reference to ourselves, for usage by foreign objects */
-    WeakReference poolRef = new WeakReference(this);
+    WeakReference<ResourcePool> poolRef = new WeakReference<ResourcePool>(this);
 
     /** clear all resource containers. if we have a stale prevention thread, we interrupt it */
     public void close() {
@@ -158,11 +158,11 @@ class StalePreventionThread extends Thread implements Runnable {
     // we only keep a weak reference to the pool
     // otherwise the system (which keeps a reference to every thread)
     // would not allow the resource pool to be gargage-collected.
-    WeakReference poolRef;
+    WeakReference<ResourcePool> poolRef;
 
     long sleeping;
 
-    StalePreventionThread(WeakReference poolRef, long sleeping) {
+    StalePreventionThread(WeakReference<ResourcePool> poolRef, long sleeping) {
         this.poolRef = poolRef;
         this.sleeping = sleeping;
         this.setDaemon(true);
