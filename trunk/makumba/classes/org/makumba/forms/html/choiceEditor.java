@@ -46,10 +46,12 @@ public abstract class choiceEditor extends FieldEditor {
 
     protected String nullOption = null;
 
+    @Override
     public String[] getAcceptedParams() {
         return _params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return _paramValues;
     }
@@ -100,14 +102,15 @@ public abstract class choiceEditor extends FieldEditor {
         // check whether the enum Editor should have a null value option.
         // doing this from here seems a bit dirty, but the formatParams are not available in the subclass.
         if (this instanceof choiceEditor) {
-            ((choiceEditor) this).setNullOption(formatParams.get("nullOption"));
+            this.setNullOption(formatParams.get("nullOption"));
         }
 
         if (yn_tickbox) {
-            if (isMultiple(rf, fieldIndex))
+            if (isMultiple(rf, fieldIndex)) {
                 yn_checkbox = true;
-            else
+            } else {
                 yn_radio = true;
+            }
         }
 
         Vector value;
@@ -116,16 +119,19 @@ public abstract class choiceEditor extends FieldEditor {
             value = (Vector) o;
         } else {
             value = new Vector(1);
-            if (o != null)
+            if (o != null) {
                 value.addElement(o);
+            }
         }
 
         // we clean up null values
-        for (Iterator i = value.iterator(); i.hasNext();)
+        for (Iterator i = value.iterator(); i.hasNext();) {
             if (i.next() == Pointer.Null) {
-                if (shouldRemoveNullValue(rf, fieldIndex))
+                if (shouldRemoveNullValue(rf, fieldIndex)) {
                     i.remove();
+                }
             }
+        }
         if (!hidden) {
             HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
 
@@ -168,7 +174,7 @@ public abstract class choiceEditor extends FieldEditor {
                 if (dv != null && !dv.isEmpty()) {
                     String[] dvs = new String[dv.size()];
                     for (int i = 0; i < dv.size(); i++) {
-                        dvs[i] = (String) dv.elementAt(i).toString();
+                        dvs[i] = dv.elementAt(i).toString();
                     }
                     hcw.setDeprecatedValues(dvs);
                 }
@@ -182,16 +188,19 @@ public abstract class choiceEditor extends FieldEditor {
 
             if (yn_radio || yn_checkbox) {
                 String sep = (String) formatParams.get("elementSeparator");
-                if (sep != null)
+                if (sep != null) {
                     hcw.setOptionSeparator(sep);
+                }
                 sep = (String) formatParams.get("labelSeparator");
-                if (sep != null)
+                if (sep != null) {
                     hcw.setTickLabelSeparator(sep);
+                }
 
-                if (yn_radio)
+                if (yn_radio) {
                     return hcw.getRadioSelect();
-                else
+                } else {
                     return hcw.getCheckboxSelect();
+                }
             }
 
             return hcw.getSelect();
