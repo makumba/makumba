@@ -30,7 +30,7 @@ public interface ValidationDefinition {
     public DataDefinition getDataDefinition();
 
     /** Get the operator names of known rules. FIXME: this should probably be a static method somewhere else. */
-    public ArrayList getRulesSyntax();
+    public ArrayList<String> getRulesSyntax();
 
     public boolean hasValidationRules();
 }
