@@ -96,7 +96,7 @@ public class ResponderFactory {
         // for this we need to fetch a root form responder
 
         // Map<MultipleKey, String> formKeyToResponderCode = new HashMap<MultipleKey, String>();
-        String[] order = null;
+        ArrayList<String> order = null;
 
         while (responderCodes.hasNext()) {
             String responderCode = responderCodes.next();
@@ -121,7 +121,7 @@ public class ResponderFactory {
         // }
 
         if (order != null) {
-            return Arrays.asList(order).iterator();
+            return order.iterator();
         } else {
             return new ArrayList<String>().iterator();
         }
