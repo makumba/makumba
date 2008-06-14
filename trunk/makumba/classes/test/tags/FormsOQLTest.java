@@ -152,8 +152,10 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             for (int i = 0; i < namesPersonIndivName.length; i++) {
                 Vector<Dictionary<String, Object>> v = db.executeQuery(
                     "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name=$1", namesPersonIndivName[i]);
+                if (v.size() >0) {
                 db.delete((Pointer) v.firstElement().get("p"));
                 db.delete((Pointer) v.firstElement().get("i"));
+                }
             }
         }
 
