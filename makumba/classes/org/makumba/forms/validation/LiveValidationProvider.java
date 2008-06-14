@@ -3,7 +3,6 @@ package org.makumba.forms.validation;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
@@ -44,7 +43,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
 
     /** initialises a field, basically does create the variables and calls for this field. */
     public void initField(String inputName, FieldDefinition fieldDefinition, boolean validateLive) {
-        Collection validationRules = fieldDefinition.getValidationRules();// def.getValidationRules(inputName);
+        Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();// def.getValidationRules(inputName);
         int size = validationRules != null ? validationRules.size() : 1;
         StringBuffer validations = new StringBuffer(100 + size * 50);
         String inputVarName = inputName.replaceAll("\\.", "__") + "Validation";
@@ -63,8 +62,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             validations.append(getValidationLine(inputVarName, "Validate.Numericality", FieldEditor.ERROR_NO_INT));
         }
         if (validationRules != null) {
-            for (Iterator iter = validationRules.iterator(); iter.hasNext();) {
-                ValidationRule rule = (ValidationRule) iter.next();
+            for (ValidationRule validationRule : validationRules) {
+                ValidationRule rule = validationRule;
                 if (rule instanceof StringLengthValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Length", rule, getRangeLimits(rule)));
                 } else if (rule instanceof NumberRangeValidationRule) {
@@ -88,7 +87,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                         validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
                             arguments));
                     } else if (c.getFieldDefinition().isDateType()) {
-                        // todo: implement!
+                        // TODO: implement!
                     } else if (c.getFieldDefinition().isStringType()) {
                         if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
                             arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";

@@ -1,7 +1,6 @@
 package org.makumba.forms.responder;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
@@ -57,14 +56,14 @@ public class ResponseControllerHandler extends ControllerHandler {
                         "Processing CompositeValidationException for annotation:\n" + v.toString());
                     // if the form shall be annotated, we need to filter which exceptions can be assigned to
                     // fields, and which not
-                    ArrayList unassignedExceptions = factory.getUnassignedExceptions(v, (HttpServletRequest) req);
+                    ArrayList<InvalidValueException> unassignedExceptions = factory.getUnassignedExceptions(v, (HttpServletRequest) req);
                     java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
                         "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
 
                     // the messages left unassigned will be shown as the form response
                     message = "";
-                    for (Iterator iter = unassignedExceptions.iterator(); iter.hasNext();) {
-                        InvalidValueException invEx = (InvalidValueException) iter.next();
+                    for (InvalidValueException invalidValueException : unassignedExceptions) {
+                        InvalidValueException invEx = invalidValueException;
                         message += invEx.getMessage() + "<br>";
                     }
                 } else {
@@ -93,6 +92,7 @@ public class ResponseControllerHandler extends ControllerHandler {
      */
     private ServletResponse getFormReloadResponse(ServletResponse resp, final String root) {
         resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
+            @Override
             public void sendRedirect(String s) throws java.io.IOException {
                 if (root != null && s.startsWith(root)) {
                     s = s.substring(root.length());
@@ -115,6 +115,7 @@ public class ResponseControllerHandler extends ControllerHandler {
         // 
         req = new HttpServletRequestWrapper((HttpServletRequest) req) {
 
+            @Override
             public String getServletPath() {
                 HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
                 String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
@@ -132,6 +133,7 @@ public class ResponseControllerHandler extends ControllerHandler {
              * We override this method so we can serve the previous request URI. This doesn't have any effect on the URI
              * displayed in the browser, but it makes submitting the form twice possible...
              */
+            @Override
             public String getRequestURI() {
                 return getRequest().getParameter(Responder.originatingPageName);
             }
