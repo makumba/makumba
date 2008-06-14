@@ -45,11 +45,11 @@ public class MultipleAttributeParametrizer {
 
     NamedResources parametrizers;
 
-    public String getTransformedQuery(Map args) throws LogicException {
+    public String getTransformedQuery(Map<String, Object>  args) throws LogicException {
         return getAttributeParametrizer(args).getTransformedQuery(args);
     }
     
-    public Object[] getTransformedParams(Map args) throws LogicException{
+    public Object[] getTransformedParams(Map<String, Object>  args) throws LogicException{
         return getAttributeParametrizer(args).getTansformedParams(rewriteAttributes(args));
     }
     public MultipleAttributeParametrizer(String oql) {
