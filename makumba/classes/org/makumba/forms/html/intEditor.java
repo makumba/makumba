@@ -46,20 +46,24 @@ public class intEditor extends charEditor {
 
 	static String[][] __paramValues = { null, null, null, null };
 
-	public String[] getAcceptedParams() {
+	@Override
+    public String[] getAcceptedParams() {
 		return __params;
 	}
 
-	public String[][] getAcceptedValue() {
+	@Override
+    public String[][] getAcceptedValue() {
 		return __paramValues;
 	}
 
-	public int getWidth(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public int getWidth(RecordFormatter rf, int fieldIndex) {
 		return 10;
 	}
 
 	/** Formats the value to appear in an input statement. */
-	public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	@Override
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		// note: only diff with charEditor.formatValue is not calling
 		// string2html
 		//       maybe can just as well not redefine this method?
@@ -67,7 +71,8 @@ public class intEditor extends charEditor {
 		return resetValueFormat(rf, fieldIndex, s, formatParams);
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
+	@Override
+    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
 			String suffix) {
 		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 

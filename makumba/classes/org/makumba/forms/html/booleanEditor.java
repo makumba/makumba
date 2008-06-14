@@ -53,21 +53,25 @@ public class booleanEditor extends choiceEditor {
 
     static String[][] __paramValues = { null };
 
+    @Override
     public String[] getAcceptedParams() {
         return __params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return __paramValues;
     }
 
     /** Formats the value to appear in an input statement. */
+    @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 
         String s = (o == null) ? null : (((Boolean)o) ? "Yes" : "No");
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
             String suffix) {
         Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));

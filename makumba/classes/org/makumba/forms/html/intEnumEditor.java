@@ -40,6 +40,7 @@ public class intEnumEditor extends charEnumEditor {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
         if (nullOption != null) {
             if (i == 0) {
@@ -51,6 +52,7 @@ public class intEnumEditor extends charEnumEditor {
         return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
     }
 
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
             String suffix) {
         Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));

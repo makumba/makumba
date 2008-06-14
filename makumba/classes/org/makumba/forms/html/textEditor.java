@@ -50,11 +50,13 @@ public class textEditor extends FieldEditor {
 	static String[][] _paramValues = { null, null, { "textarea", "file" },
 			null, null, SearchFieldTag.allowedSelectTypes };
 
-	public String[] getAcceptedParams() {
+	@Override
+    public String[] getAcceptedParams() {
 		return _params;
 	}
 
-	public String[][] getAcceptedValue() {
+	@Override
+    public String[][] getAcceptedValue() {
 		return _paramValues;
 	}
 
@@ -70,11 +72,13 @@ public class textEditor extends FieldEditor {
         return super.format(rf, fieldIndex, o, formatParams);
     }
 
-	public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	@Override
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return formatNotNull(rf, fieldIndex, null, formatParams);
     }
 
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
+	@Override
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
 		if (isTextArea(rf, fieldIndex, formatParams)) {
 			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + " name=\""
@@ -92,7 +96,8 @@ public class textEditor extends FieldEditor {
 	 * Formats the value to appear in an input statement. For textarea type data
 	 * only!
 	 */
-	public String formatValue(RecordFormatter rf, int fieldIndex, Object o,
+	@Override
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
 		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
 		return resetValueFormat(rf, fieldIndex, s, formatParams);

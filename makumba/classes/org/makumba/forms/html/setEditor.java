@@ -40,29 +40,36 @@ public class setEditor extends ptrEditor {
 		return SingletonHolder.singleton;
 	}
 
-	public String getMultiple(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public String getMultiple(RecordFormatter rf, int fieldIndex) {
 		return " multiple";
 	}
 
-	public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
 		return true;
 	}
 
-	public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
+	@Override
+    public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
 		return 10;
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex,
+	@Override
+    public Object readFrom(RecordFormatter rf, int fieldIndex,
 			org.makumba.commons.attributes.HttpParameters p, String suffix) {
 		Object o = super.readFrom(rf, fieldIndex, p, suffix);
-		if (o == null)
-			return new Vector();
+		if (o == null) {
+            return new Vector();
+        }
 
 		/* we remove all nulls from the input */
 		if (o instanceof Vector) {
-			for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();)
-				if ("".equals(i.next()))
-					i.remove();
+			for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();) {
+                if ("".equals(i.next())) {
+                    i.remove();
+                }
+            }
 		}
 		return o;
 	}

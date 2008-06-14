@@ -40,20 +40,24 @@ public class setintEnumEditor extends setcharEnumEditor {
 		return SingletonHolder.singleton;
 	}
 
-	public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
+	@Override
+    public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
 		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
+	@Override
+    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
 			String suffix) {
 		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 
-		if (o == null || o == org.makumba.Pointer.NullSet)
-			return o;
+		if (o == null || o == org.makumba.Pointer.NullSet) {
+            return o;
+        }
 		if (o instanceof Vector) {
 			Vector v = (Vector) o;
-			for (int i = 0; i < v.size(); i++)
-				v.setElementAt(toInt(rf, fieldIndex, v.elementAt(i)), i);
+			for (int i = 0; i < v.size(); i++) {
+                v.setElementAt(toInt(rf, fieldIndex, v.elementAt(i)), i);
+            }
 			return v;
 		}
 		return toInt(rf, fieldIndex, o);
