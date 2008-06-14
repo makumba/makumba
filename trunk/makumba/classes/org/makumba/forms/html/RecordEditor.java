@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -64,7 +63,7 @@ public class RecordEditor extends RecordFormatter {
     protected RecordEditor() {
     }
 
-    public RecordEditor(DataDefinition ri, Hashtable h, String database, boolean isSearchForm, String formResponderValue) {
+    public RecordEditor(DataDefinition ri, Hashtable<String, String> h, String database, boolean isSearchForm, String formResponderValue) {
         super(ri, h, isSearchForm, formResponderValue);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
@@ -76,8 +75,8 @@ public class RecordEditor extends RecordFormatter {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             Collection<InvalidValueException> exceptions = e.getExceptions(fe.getInputName(this, i, suffix));
             if (exceptions != null) {
-                for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
-                    unassignedExceptions.remove(iter.next());
+                for (InvalidValueException invalidValueException : exceptions) {
+                    unassignedExceptions.remove(invalidValueException);
                 }
             }
         }
@@ -136,15 +135,15 @@ public class RecordEditor extends RecordFormatter {
         // in the second validation pass, we only validate those fields that passed the first check
         // on those, we apply the user-defined checks from the validation definition
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
-            int i = ((Integer) validatedFieldsOrdered.get(index)).intValue();
+            int i = (validatedFieldsOrdered.get(index)).intValue();
             FieldEditor fe = (FieldEditor) formatterArray[i];
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
             Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
             
             if (validationRules != null && applyValidationRules) {
-                for (Iterator<ValidationRule> iter = validationRules.iterator(); iter.hasNext();) {
-                    ValidationRule rule = (ValidationRule) iter.next();
+                for (ValidationRule validationRule : validationRules) {
+                    ValidationRule rule = validationRule;
                     try { // evaluate each rule separately
                         if (rule instanceof ComparisonValidationRule
                                 && !((ComparisonValidationRule) rule).isCompareToExpression()) {
