@@ -163,9 +163,9 @@ public interface DataDefinition {
         @Override
         public String toString() {
             String s = "";
-            Vector fieldNames = getParameters().getFieldNames();
-            for (Iterator iter = fieldNames.iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
+            Vector<String> fieldNames = getParameters().getFieldNames();
+            for (Iterator<String> iter = fieldNames.iterator(); iter.hasNext();) {
+                String name = iter.next();
                 s += getParameters().getFieldDefinition(name).getType() + " " + name;
                 if (iter.hasNext()) {
                     s += ", ";
