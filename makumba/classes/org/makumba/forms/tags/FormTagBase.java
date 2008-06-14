@@ -24,6 +24,7 @@
 package org.makumba.forms.tags;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -107,6 +108,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
+    private Map<MultipleKey, String> responders; // all the form responders in a nested form; only in the root form
+
+    private ArrayList<String> formNames; // the names of all forms in this root form; only in the root form
+
     public FormTagBase() {
         // TODO move this somewhere else
         try {
@@ -168,49 +173,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             parent.setMultipart();
         else
             responder.setMultipart(true);
-    }
-
-    /**
-     * Sets the order of the form responders according to the order of the forms
-     * 
-     * @param order
-     *            the order of MultipleKey-s of the forms in the page
-     */
-    public void setFormOrder(MultipleKey[] order, Map<MultipleKey, String> responders) {
-        FormTagBase parent = findParentForm();
-        if (parent != null) {
-
-            if (responders == null)
-                responders = new HashMap<MultipleKey, String>();
-
-            // we add ourselves to the matching map
-            responders.put(this.getTagKey(), responder.getResponderValue());
-
-            // propagate form order to the root form
-            parent.setFormOrder(order, responders);
-        } else {
-            // we are in the root form, which means that all child forms have a responder by now
-            // so now we can set the responder order in the responder
-            if (responder.getFormOrder() == null) {
-
-                if (responders == null)
-                    responders = new HashMap<MultipleKey, String>();
-
-                // first we add ourselves to the hashMap
-                responders.put(this.getTagKey(), responder.getResponderValue());
-
-                String[] responderOrder = new String[responders.size()];
-                int j=0;
-                for (int i = 0; i < order.length && j<responderOrder.length; i++) {
-                    if (responders.get(order[i]) != null)
-                        responderOrder[j++] = responders.get(order[i]);
-                }
-
-                responder.setResponderOrder(responderOrder);
-            }
-
-        }
-
     }
 
     // additional html attributes:
@@ -282,7 +244,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /**
      * Indicates whether the base pointer should be computed or not
-     * @return <code>false</code> if we are at runtime (i.e. the baseObject has been set by JSP), <code>true</code> if we are at analysis time
+     * 
+     * @return <code>false</code> if we are at runtime (i.e. the baseObject has been set by JSP), <code>true</code>
+     *         if we are at analysis time
      */
     public boolean shouldComputeBasePointer() {
         return baseObject != null;
@@ -363,7 +327,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                         "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
         }
         // add needed resources, stored in cache for this page
-        if (clientSideValidation != null && StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
+        if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
@@ -402,6 +366,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         if (findParentForm() != null)
             responder.setParentResponder(findParentForm().responder, findRootForm().responder);
+
+        if (findParentForm() == null) { // initialise only for the root form!
+            responders = new HashMap<MultipleKey, String>();
+            formNames = new ArrayList<String>();
+        }
     }
 
     /**
@@ -497,9 +466,30 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.DEPENDENCY_CACHE,
                 MakumbaJspAnalyzer.DEPENDENCY_CACHE);
 
-            setFormOrder(sortedForms, null);
+            // form order - add the responders & form names
+            FormTagBase rootForm = findRootForm();
+            if (rootForm.responders == null) {
+                findRootForm();
+            }
+            rootForm.responders.put(this.getTagKey(), responder.getResponderValue());
+            rootForm.formNames.add(formName);
 
-            
+            if (findParentForm() == null) { // we are in the end of the root form - all child forms have a responder by
+                // now
+                // so now we can set the responder order in the responder
+                ArrayList<String> responderOrder = new ArrayList<String>();
+                int j = 0;
+                for (int i = 0; i < sortedForms.length; i++) {
+                    if (responders.get(sortedForms[i]) != null) {
+                        responderOrder.add(responders.get(sortedForms[i]));
+                    }
+                }
+                responder.setResponderOrder(responderOrder);
+                responder.setFormNames(formNames);
+                // we need to save the responder again to the disc, cause the new fields were not persisted yet
+                responder.saveResponderToDisc();
+            }
+
         } catch (IOException e) {
             throw new JspException(e.toString());
         }
