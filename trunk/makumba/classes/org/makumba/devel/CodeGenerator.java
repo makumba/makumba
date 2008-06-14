@@ -251,7 +251,7 @@ public class CodeGenerator {
         addOnEditHandler(sb, indent, ddMethodName);
         addOnDeleteHandler(sb, indent, ddMethodName);
 
-        Vector fields = extractSetComplex(dd);
+        Vector<FieldDefinition> fields = extractSetComplex(dd);
         for (int i = 0; i < fields.size(); i++) {
             FieldDefinition fd = (FieldDefinition) fields.elementAt(i);
             String handlerName = getMethodHandlerName(dd.getName() + "." + fd.getName());
@@ -336,12 +336,12 @@ public class CodeGenerator {
         }
     }
 
-    private void generateCode(StringBuffer sb, String type, DataDefinition dd, String action, Vector[] processData,
+    private void generateCode(StringBuffer sb, String type, DataDefinition dd, String action, Vector<FieldDefinition>[] processData,
             CodeGeneratorTemplate template, int indent) {
 
         long beginTime = System.currentTimeMillis();
-        Vector fields = processData[0];
-        Vector sets = processData[1];
+        Vector<FieldDefinition> fields = processData[0];
+        Vector<FieldDefinition> sets = processData[1];
         String labelName = getLabelNameFromDataDefinition(dd);
 
         try {
@@ -418,7 +418,7 @@ public class CodeGenerator {
                                     + fd.getName() + "' in data definition '" + dd.getName() + "'.");
                         } else {
                             // sorting out only the normal fields, we don't care about generate sets inside sets.
-                            Vector innerFields = extractInnerFields(setDd);
+                            Vector<FieldDefinition> innerFields = extractInnerFields(setDd);
                             DataServlet.logger.finer("DEBUG INFO: Number of inner fields of MDD " + dd + ", subset "
                                     + setDd.getName() + " is " + innerFields.size());
 
@@ -569,7 +569,7 @@ public class CodeGenerator {
 
     /** Generate code for sets for addForm, editForm and object. */
     private void generateSetCode(StringBuffer sb, String type, FieldDefinition fd, String action,
-            CodeGeneratorTemplate template, Vector innerFields, int indent, String labelName) throws IOException {
+            CodeGeneratorTemplate template, Vector<FieldDefinition> innerFields, int indent, String labelName) throws IOException {
         appendEmptyLine(sb);
         if (type == TYPE_ADDFORM) {
             appendJSPLine(sb, indent, "<%-- Makumba Generator - START ADDFORM FOR FIELD " + fd.getName() + " --%>");
@@ -759,7 +759,7 @@ public class CodeGenerator {
     }
 
     /** Gathers all fields that are not sets and ptrRel from a given DataDefinition. */
-    private Vector extractInnerFields(DataDefinition dd) {
+    private Vector<FieldDefinition> extractInnerFields(DataDefinition dd) {
         Vector<FieldDefinition> innerFields = new Vector<FieldDefinition>();
         if (dd != null && dd.getFieldNames() != null) {
             for (int i = 0; i < dd.getFieldNames().size(); i++) {
@@ -774,7 +774,7 @@ public class CodeGenerator {
     }
 
     /** Extracts all complex sets from a given DataDefinition. */
-    private Vector extractSetComplex(DataDefinition dd) {
+    private Vector<FieldDefinition> extractSetComplex(DataDefinition dd) {
         Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
