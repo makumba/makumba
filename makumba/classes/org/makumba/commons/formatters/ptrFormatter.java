@@ -40,7 +40,8 @@ public class ptrFormatter extends FieldFormatter {
 		return SingletonHolder.singleton;
 	}
 
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	@Override
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		return ((Pointer) o).toExternalForm();
 	}
 }

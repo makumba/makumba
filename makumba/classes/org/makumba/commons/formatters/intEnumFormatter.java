@@ -41,6 +41,7 @@ public class intEnumFormatter extends FieldFormatter {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
     }

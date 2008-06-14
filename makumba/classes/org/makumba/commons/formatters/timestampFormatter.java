@@ -40,7 +40,8 @@ public class timestampFormatter extends dateFormatter {
 		return SingletonHolder.singleton;
 	}
 
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	@Override
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		DateFormat formatter = timestamp;
 		String s = (String) formatParams.get("format");
 		if (s != null) {
