@@ -8,18 +8,18 @@ import java.util.jar.*;
 public class ShowResources {
 
     public static void main(String[] args) throws Exception {
-        List resources = listResources(ShowResources.class.getClassLoader());
+        List<URL> resources = listResources(ShowResources.class.getClassLoader());
 
         if (args.length == 0) {
-            for (Iterator iter = resources.iterator(); iter.hasNext();) {
-                System.out.println(((URL) iter.next()).toExternalForm());
+            for (URL url : resources) {
+                System.out.println((url).toExternalForm());
             }
         } else {
-            for (Iterator iter = resources.iterator(); iter.hasNext();) {
-                URL url = (URL) iter.next();
+            for (URL url2 : resources) {
+                URL url = url2;
                 String urlString = url.toExternalForm();
-                for (int i = 0; i < args.length; i++) {
-                    if (urlString.indexOf(args[i]) != -1) {
+                for (String element : args) {
+                    if (urlString.indexOf(element) != -1) {
                         System.out.println("Found resource: " + urlString);
                         System.out.println("First few chars: " + readAFewChars(url));
                         System.out.println();
@@ -30,14 +30,13 @@ public class ShowResources {
         }
     }
 
-    private static List listResources(ClassLoader cl) throws IOException, MalformedURLException {
-        List resources = new ArrayList();
+    private static List<URL> listResources(ClassLoader cl) throws IOException, MalformedURLException {
+        List<URL> resources = new ArrayList<URL>();
         while (cl != null) {
             if (cl instanceof URLClassLoader) {
                 URLClassLoader ucl = (URLClassLoader) cl;
                 URL[] urls = ucl.getURLs();
-                for (int i = 0; i < urls.length; i++) {
-                    URL url = urls[i];
+                for (URL url : urls) {
                     if (url.getFile().endsWith(".jar")) {
                         listJarResources(new URL("jar:" + url.toExternalForm() + "!/"), resources);
                     } else if (url.getProtocol().equals("file")) {
@@ -53,10 +52,9 @@ public class ShowResources {
         return resources;
     }
 
-    private static void listDirResources(File dir, List resources) throws MalformedURLException {
+    private static void listDirResources(File dir, List<URL> resources) throws MalformedURLException {
         File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
+        for (File file : files) {
             resources.add(file.toURL());
             if (file.isDirectory()) {
                 listDirResources(file, resources);
@@ -64,11 +62,11 @@ public class ShowResources {
         }
     }
 
-    private static void listJarResources(URL jarUrl, List resources) throws IOException, MalformedURLException {
+    private static void listJarResources(URL jarUrl, List<URL> resources) throws IOException, MalformedURLException {
         JarURLConnection jarConnection = (JarURLConnection) jarUrl.openConnection();
 
-        for (Enumeration entries = jarConnection.getJarFile().entries(); entries.hasMoreElements();) {
-            JarEntry entry = (JarEntry) entries.nextElement();
+        for (Enumeration<JarEntry> entries = jarConnection.getJarFile().entries(); entries.hasMoreElements();) {
+            JarEntry entry = entries.nextElement();
             resources.add(new URL(jarUrl, entry.getName()));
         }
     }
