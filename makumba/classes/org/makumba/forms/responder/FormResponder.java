@@ -53,20 +53,23 @@ public class FormResponder extends Responder {
      * reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved
      * as attributes
      */
-    public Dictionary getHttpData(HttpServletRequest req, String suffix) {
-        if (editor != null)
+    @Override
+    public Dictionary<String, Object> getHttpData(HttpServletRequest req, String suffix) {
+        if (editor != null) {
             return editor.readFrom(req, suffix, !operation.equals("search"));
-        else
-            return new Hashtable(1);
+        } else {
+            return new Hashtable<String, Object>(1);
+        }
     }
 
     @Override
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions,
             String suffix) {
-        if (editor != null)
+        if (editor != null) {
             return editor.getUnassignedExceptions(e, unassignedExceptions, suffix);
-        else
+        } else {
             return null;
+        }
     }
 
     Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
@@ -75,21 +78,22 @@ public class FormResponder extends Responder {
 
     int max = 0;
 
-    Hashtable<String, Dictionary> fieldParameters = new Hashtable<String, Dictionary>();
+    Hashtable<String, Dictionary<String, Object>> fieldParameters = new Hashtable<String, Dictionary<String, Object>>();
 
     Hashtable<String, String> fieldNames = new Hashtable<String, String>();
 
     /** Format a field using the editor, and grow the editor as needed */
-    public String format(String fname, FieldDefinition ftype, Object fval, Dictionary formatParams,
+    public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
             String extraFormatting) {
-        Dictionary paramCopy = (Dictionary) ((Hashtable) formatParams).clone();
+        Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) (formatParams).clone();
         FieldEditor.setSuffix(paramCopy, storedSuffix);
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
 
         boolean display = (formatParams.get("org.makumba.noDisplay") == null);
-        Integer i = (Integer) indexes.get(fname);
-        if (i != null)
+        Integer i = indexes.get(fname);
+        if (i != null) {
             return display ? editor.format(i.intValue(), fval, paramCopy) : "";
+        }
 
         indexes.put(fname, new Integer(max));
         String colName = ("col" + max);
@@ -106,6 +110,7 @@ public class FormResponder extends Responder {
         return display ? editor.format(max - 1, fval, paramCopy) : "";
     }
 
+    @Override
     public String responderKey() {
         return "" + fieldNames + fieldParameters + super.responderKey();
     }
@@ -144,9 +149,10 @@ public class FormResponder extends Responder {
     }
 
     public void writeFormPreamble(StringBuffer sb, String basePointer) {
-        if (!storedSuffix.equals(""))
+        if (!storedSuffix.equals("")) {
             // no preamble for non-root forms (forms included in other forms)
             return;
+        }
         String sep = action.indexOf('?') >= 0 ? "&" : "?";
         // handle anchors in actions (bla.jsp?person=hg34bw#employment)
         String actionBase = action;
@@ -185,8 +191,9 @@ public class FormResponder extends Responder {
             sb.append("\"" + action + "\"");
             sb.append(" method=");
             sb.append("\"" + method + "\"");
-            if (multipart)
+            if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
+            }
             // if we do client side validation, we need to put an extra formatting parameter for onSubmit
             // but, do it only for edit operations (not search)
             if (!operation.equals("search")
@@ -218,8 +225,9 @@ public class FormResponder extends Responder {
 
         // writes the hidden fields
 
-        if (basePointer != null)
+        if (basePointer != null) {
             writeInput(sb, basePointerName, basePointer, storedSuffix);
+        }
 
         String responderValue = getResponderValue();
         String formSessionValue = responderValue + session; // gets the formSession value
@@ -245,8 +253,8 @@ public class FormResponder extends Responder {
             String url = request.getRequestURI();
             String queryString = request.getQueryString();
             if (queryString != null) {
-                if (queryString.indexOf(FormResponder.originatingPageName) > 0) {
-                    queryString = queryString.substring(0, queryString.indexOf(FormResponder.originatingPageName) - 1);
+                if (queryString.indexOf(Responder.originatingPageName) > 0) {
+                    queryString = queryString.substring(0, queryString.indexOf(Responder.originatingPageName) - 1);
                 }
                 url += "?" + queryString;
             }
@@ -254,9 +262,10 @@ public class FormResponder extends Responder {
             sb.append('\n');
         }
 
-        if (storedSuffix.equals(""))
+        if (storedSuffix.equals("")) {
             // a root form
             sb.append("\n</form>");
+        }
     }
 
     public String getResponderValue() {
@@ -268,6 +277,7 @@ public class FormResponder extends Responder {
             "\">");
     }
 
+    @Override
     protected void postDeserializaton() {
         if (editor != null) {
             editor.initFormatters();

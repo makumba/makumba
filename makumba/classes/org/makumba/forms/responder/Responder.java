@@ -298,8 +298,9 @@ public abstract class Responder implements java.io.Serializable {
     public int getPrototype() {
         // at this point we should have all data set, so we should be able to verify the responder
         String s = op.verify(this);
-        if (s != null)
+        if (s != null) {
             throw new MakumbaError("Bad responder configuration " + s);
+        }
         return factory.getResponderIdentity(this);
     }
 
@@ -358,9 +359,9 @@ public abstract class Responder implements java.io.Serializable {
      *            the request corresponding to the current page
      * @param suffix
      *            the responder / form suffix
-     * @return a Dicionary holding the data read by the logic
+     * @return a Dictionary holding the data read by the logic
      */
-    public abstract Dictionary getHttpData(HttpServletRequest req, String suffix);
+    public abstract Dictionary<String, Object> getHttpData(HttpServletRequest req, String suffix);
 
     public abstract ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
             ArrayList<InvalidValueException> unassignedExceptions, String suffix);
