@@ -23,7 +23,6 @@
 
 package org.makumba;
 
-import org.makumba.commons.WrappedException;
 
 /** 
  * An exception thrown if an attribute is not found

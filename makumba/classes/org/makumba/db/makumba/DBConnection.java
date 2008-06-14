@@ -172,7 +172,7 @@ public abstract class DBConnection extends TransactionImplementation {
             return query;
         }
         QueryAndArgs(String OQL, Object a){
-            Map args1=paramsToMap(a);
+            Map<String, Object>  args1=paramsToMap(a);
             MultipleAttributeParametrizer mpa= ((MultipleAttributeParametrizer) queries.getResource(OQL));
             try {
                 query=mpa.getTransformedQuery(args1);

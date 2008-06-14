@@ -57,8 +57,8 @@ public class ArgumentReplacer {
      *  */
     public String replaceValues(Map<String, Object> d) {
         StringBuffer sb = new StringBuffer();
-        Iterator f = argumentOrder.iterator();
-        Iterator e = text.iterator();
+        Iterator<String> f = argumentOrder.iterator();
+        Iterator<String> e = text.iterator();
         while (true) {
             sb.append(e.next());
             if (f.hasNext()) {
