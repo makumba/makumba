@@ -25,9 +25,9 @@ import javassist.NotFoundException;
 public class MddToClass {
     //public static final String generatedClassPath="work/generated-hibernate-classes";
     public String generatedClassPath="";
-    private List mddsDone = new ArrayList();
-	private LinkedList mddsToDo = new LinkedList();
-	private LinkedList appendToClass = new LinkedList();
+    private List<String> mddsDone = new ArrayList<String>();
+	private LinkedList<DataDefinition> mddsToDo = new LinkedList<DataDefinition>();
+	private LinkedList<Object[]> appendToClass = new LinkedList<Object[]>();
     
     private DataDefinitionProvider ddp= DataDefinitionProvider.getInstance();
     private NameResolver nr;
@@ -36,18 +36,19 @@ public class MddToClass {
       this.nr = nr;
       this.generatedClassPath = generationPath;
       for(int i=0; i<v.size(); i++){
-          generateClass(ddp.getDataDefinition((String)v.elementAt(i)));
+          generateClass(ddp.getDataDefinition(v.elementAt(i)));
           v.set(i, nr.arrowToDoubleUnderscore(v.get(i)));
       }
       while (!mddsToDo.isEmpty()) {
-            DataDefinition first = (DataDefinition)mddsToDo.removeFirst();
+            DataDefinition first = mddsToDo.removeFirst();
             String name = nr.arrowToDoubleUnderscore(first.getName());
-            if(!v.contains(name))
+            if(!v.contains(name)) {
                 v.add(name);
+            }
             generateClass(first);
       }
         while (!appendToClass.isEmpty()) {
-            Object[] append = (Object[]) appendToClass.removeFirst();
+            Object[] append = appendToClass.removeFirst();
             appendClass((String)append[0], (FieldDefinition)append[1]);
         }
     }
@@ -55,11 +56,11 @@ public class MddToClass {
         this.generatedClassPath = generationPath;
         generateClass(dd);
 		while (!mddsToDo.isEmpty()) {
-			generateClass((DataDefinition)mddsToDo.removeFirst());	
+			generateClass(mddsToDo.removeFirst());	
 		}
 
 		while (!appendToClass.isEmpty()) {
-			Object[] append = (Object[]) appendToClass.removeFirst();
+			Object[] append = appendToClass.removeFirst();
 			appendClass((String)append[0], (FieldDefinition)append[1]);
 		}
 	}
@@ -102,8 +103,9 @@ public class MddToClass {
             File checkFile = new File(generatedClassPath+java.io.File.separator+ nr.dotToUnderscore(nr.arrowToDoubleUnderscore(dd.getName()))+"_.class");
             if(checkFile.exists()) {
                 
-                if(dd.lastModified() < checkFile.lastModified())
+                if(dd.lastModified() < checkFile.lastModified()) {
                     return;
+                }
             }
             
 
@@ -188,10 +190,11 @@ public class MddToClass {
 			}
             String nm= dd.getName();
             int lst= nm.lastIndexOf("->");
-            if(lst!=-1)
+            if(lst!=-1) {
                 lst++;
-            else
+            } else {
                 lst=nm.lastIndexOf(".");
+            }
                 
 			cc.addConstructor(CtNewConstructor.make("public "+ nm.substring(lst+1)+"() {}", cc));
 //			ClassFileWriter.print(cc.getClassFile());
@@ -219,7 +222,9 @@ public class MddToClass {
             Integer currentIntEnumValue = new Integer(fd.getIntAt(i));
             
             enumCode += "I"+i+ "(\""+currentIntEnumName+"\", "+currentIntEnumValue.intValue() + ")";
-            if(i+1 != fd.getEnumeratorSize()) enumCode += ",";
+            if(i+1 != fd.getEnumeratorSize()) {
+                enumCode += ",";
+            }
         }
         enumCode +=";";
         
