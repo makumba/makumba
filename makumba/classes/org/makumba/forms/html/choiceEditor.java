@@ -147,8 +147,8 @@ public abstract class choiceEditor extends FieldEditor {
             hcw.setFormResponderValue(rf.getFormResponderValue());
 
             Object opt = getOptions(rf, fieldIndex, formatParams);
-            List values = new ArrayList(getOptionsLength(rf, fieldIndex, opt));
-            List labels = new ArrayList(getOptionsLength(rf, fieldIndex, opt));
+            List<String> values = new ArrayList<String>(getOptionsLength(rf, fieldIndex, opt));
+            List<String> labels = new ArrayList<String>(getOptionsLength(rf, fieldIndex, opt));
             String[] valueFormattedList = new String[value.size()];
 
             for (int i = 0; i < getOptionsLength(rf, fieldIndex, opt); i++) {
