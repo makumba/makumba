@@ -107,12 +107,12 @@ public class ObjectImporter {
                 throw new MakumbaError(f);
             }
         }
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             configureField(fieldName, markers);
         }
         Vector notMarked = new Vector();
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (!isMarked(fieldName) && !isIgnored(fieldName))
                 notMarked.addElement(fieldName);
@@ -126,7 +126,7 @@ public class ObjectImporter {
                         + "\nUse \"<fieldname>.ignore=true\" in the marked file if you are shure you don't want the field to be imported");
 
         boolean hasErrors = false;
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (configError != null && !isIgnored(fieldName)) {
                 if (!hasErrors) {
@@ -171,7 +171,7 @@ public class ObjectImporter {
 
         Hashtable ht = new Hashtable();
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             this.importFieldTo(fieldName, ht, s, db, indexes);
         }
