@@ -122,9 +122,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             b.append("function " + getValidationFunction() + " {\n");
             b.append("  valid = LiveValidation.massValidate( ").append(StringUtils.toString(definitionVarNames)).append(
                 " );\n");
-            b.append("  if (!valid) {");
-            b.append("    alert('Please correct all form errors first!');");
-            b.append("  }\n");
+            b.append("  if (!valid) { alert('Please correct all form errors first!'); }\n");
             b.append("  return valid;\n");
             b.append("}\n");
             b.append("</script>\n");
