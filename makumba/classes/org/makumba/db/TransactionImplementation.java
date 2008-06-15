@@ -1,10 +1,31 @@
+// /////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003 http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id: timestampFormatter.java 2568 2008-06-14 01:06:21Z rosso_nero $
+//  $Name$
+/////////////////////////////////////
 package org.makumba.db;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -22,10 +43,13 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
+/**
+ * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
+ */
 public abstract class TransactionImplementation implements Transaction {
 
     protected DataDefinitionProvider ddp;
-    
+
     protected QueryProvider qp;
 
     protected TransactionProviderInterface tp;
@@ -34,7 +58,7 @@ public abstract class TransactionImplementation implements Transaction {
         this.tp = tp;
         this.ddp = DataDefinitionProvider.getInstance();
     }
-    
+
     public abstract void close();
 
     public abstract void commit();
@@ -73,16 +97,16 @@ public abstract class TransactionImplementation implements Transaction {
 
         // if this is a ptrOne, we nullify the pointer in the parent record
         if (fi != null && fi.getType().equals("ptrOne"))
-            executeUpdate(transformTypeName(fi.getDataDefinition().getName()) + " this", "this." + fi.getName() + "=" + getNullConstant(), "this."
-                    + fi.getName() + getPrimaryKeyName() + "="+getParameterName(), ptr);
+            executeUpdate(transformTypeName(fi.getDataDefinition().getName()) + " this", "this." + fi.getName() + "="
+                    + getNullConstant(), "this." + fi.getName() + getPrimaryKeyName() + "=" + getParameterName(), ptr);
 
         // then we do the rest of the delete job
         try {
             delete1(ptr);
-        } catch(ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             throw new DBError(e);
         }
-        
+
     }
 
     /**
@@ -102,18 +126,18 @@ public abstract class TransactionImplementation implements Transaction {
     public TransactionProviderInterface getTransactionProvider() {
         return this.tp;
     }
-    
+
     public Pointer insert(String type, Dictionary data) {
-        
-        // TODO: this does not support the DataTransformer possiblilty as for the Makumba DB.
+
+        // TODO: this does not support the DataTransformer possibility as for the Makumba DB.
         // Probably all those Makumba DB features should be placed in another place than the makumba DB.
-        
+
         DataHolder dh = new DataHolder(this, data, type);
         dh.checkInsert();
         return dh.insert();
-        
+
     }
-    
+
     /**
      * Insert a record in a subset (1-N set) or subrecord (1-1 pointer) of the given record. For 1-1 pointers, if
      * another subrecord existed, it is deleted.
@@ -232,37 +256,38 @@ public abstract class TransactionImplementation implements Transaction {
             if (fi.getType().startsWith("set"))
                 if (fi.getType().equals("setComplex"))
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
-                            + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName() + "= "+getParameterName(), param);
+                            + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName()
+                            + "= " + getParameterName(), param);
                 else
                     tp.getCRUD().deleteSet(this, ptr, fi);
         }
         // delete the record
-        executeUpdate(transformTypeName(ptrDD) + " this", null, "this."
-                + getPrimaryKeyName(ptrDD) + "="+getParameterName(), ptr);
+        executeUpdate(transformTypeName(ptrDD) + " this", null, "this." + getPrimaryKeyName(ptrDD) + "="
+                + getParameterName(), ptr);
     }
 
-    protected Map<String, Object> paramsToMap(Object args){
-        if(args instanceof Map)
-            return (Map<String, Object>)args;
-        Map<String, Object> ret= new HashMap<String, Object>();
-        if(args==null)
+    protected Map<String, Object> paramsToMap(Object args) {
+        if (args instanceof Map)
+            return (Map<String, Object>) args;
+        Map<String, Object> ret = new HashMap<String, Object>();
+        if (args == null)
             return ret;
-        if(args instanceof List)
-            args= ((List)args).toArray();
-        if(args instanceof Object[]){
-            for(int j=0; j<((Object[])args).length; j++){
-                ret.put(""+(j+1), ((Object[])args)[j]);
+        if (args instanceof List)
+            args = ((List) args).toArray();
+        if (args instanceof Object[]) {
+            for (int j = 0; j < ((Object[]) args).length; j++) {
+                ret.put("" + (j + 1), ((Object[]) args)[j]);
             }
             return ret;
         }
         ret.put("1", args);
         return ret;
     }
-    
+
     protected Object[] treatParam(Object args) {
         if (args == null) {
             return new Object[] {};
-        } else if(args instanceof Vector) {
+        } else if (args instanceof Vector) {
             Vector v = (Vector) args;
             Object[] param = new Object[v.size()];
             v.copyInto(param);
@@ -274,26 +299,25 @@ public abstract class TransactionImplementation implements Transaction {
             return p;
         }
     }
-    
+
     public String transformTypeName(String name) {
         return name;
     }
-    
+
     public String getParameterName() {
         return "$1";
     }
-    
+
     public String getPrimaryKeyName() {
         return "";
     }
-    
+
     public String getPrimaryKeyName(String ptrDD) {
         return ddp.getDataDefinition(ptrDD).getIndexPointerFieldName();
     }
-    
+
     public abstract String getNullConstant();
-    
+
     public abstract String getDataSource();
 
-    
 }
