@@ -39,7 +39,7 @@ import com.meterware.httpunit.WebResponse;
  * @author Manuel Gay
  */
 public class FormsHQLTest extends MakumbaJspTestCase {
-    
+
     private boolean record = false;
 
     static Pointer person;
@@ -66,8 +66,8 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
         protected void setUp() {
             TransactionProvider tp = TransactionProvider.getInstance();
-            Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-            
+            Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+
             insertLanguages(db);
             insertPerson(db);
 
@@ -147,8 +147,8 @@ public class FormsHQLTest extends MakumbaJspTestCase {
         public void tearDown() {
             // do your one-time tear down here!
             TransactionProvider tp = TransactionProvider.getInstance();
-            Transaction db =  tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-            
+            Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+
             deletePerson(db);
             deleteLanguages(db);
             db.close();
@@ -176,73 +176,81 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
     public void testTomcat() {
     }
-  
-    
+
     public void testHibernateMakNewForm() throws ServletException, IOException {
         pageContext.include("forms-hql/testHibernateMakNewForm.jsp");
     }
+
     public void endHibernateMakNewForm(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, record);
+            output = response.getText();
+            fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
         assertTrue(compareTest(output));
-        
-        }
+
+    }
 
     public void beginHibernateMakAddForm(Request request) throws MalformedURLException, IOException, SAXException {
         WebConversation wc = new WebConversation();
-        WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/forms-hql/beginHibernateMakAddForm.jsp");
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-hql/beginHibernateMakAddForm.jsp");
 
         // we get the first form in the jsp
-        if(resp.getForms().length==0)
-            fail("forms expected\n"+resp.getText());
+        if (resp.getForms().length == 0)
+            fail("forms expected\n" + resp.getText());
         WebForm form = resp.getForms()[0];
         // set the input field "email" to "bartolomeus@rogue.be"
-        form.setParameter("email","bartolomeus@rogue.be");
+        form.setParameter("email", "bartolomeus@rogue.be");
         // submit the form
         form.submit();
     }
-    
+
     public void testHibernateMakAddForm() throws ServletException, IOException {
         pageContext.include("forms-hql/testHibernateMakAddForm.jsp");
     }
+
     public void endHibernateMakAddForm(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, record);
+            output = response.getText();
+            fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
 
         assertTrue(compareTest(output));
     }
-    
+
     public void testHibernateMakEditForm() throws ServletException, IOException {
-       pageContext.include("forms-hql/testHibernateMakEditForm.jsp");
+        pageContext.include("forms-hql/testHibernateMakEditForm.jsp");
     }
+
     public void endHibernateMakEditForm(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, record);
+            output = response.getText();
+            fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        
+
         assertTrue(compareTest(output));
-                
+
     }
-    
+
     public void testHibernateMakForm() throws ServletException, IOException, SAXException {
         pageContext.include("forms-hql/testHibernateMakForm.jsp");
     }
+
     public void endHibernateMakForm(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, record);
+            output = response.getText();
+            fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        
+
         assertTrue(compareTest(output));
-        
-    }      
+
+    }
 }
