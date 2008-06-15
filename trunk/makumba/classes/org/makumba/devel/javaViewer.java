@@ -29,7 +29,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +60,7 @@ public class javaViewer extends LineViewer {
     /** the name of the properties file configuring what to highlight how */
     public static final String PROPERTIES_FILE_NAME = "javaSyntax.properties";
 
-    public static Properties javaSyntaxProperties = new Properties();
+    public static Hashtable<String, String> javaSyntaxProperties = new Hashtable<String, String>();
 
     // styles are roughly the same as the ECLIPSE standards
     private static final String DEFAULT_JAVACOMMENT_STYLE = "color: #1BA55F; font-family: monospace; ";
@@ -184,17 +184,16 @@ public class javaViewer extends LineViewer {
      * 
      * @see org.makumba.devel.LineViewer#parseLine(java.lang.String)
      */
+    @Override
     public String parseLine(String s) {
         String result = super.parseLine(s);
         if (compiledJSP) {
             return result;
         }
-        Iterator syntax = javaSyntaxProperties.keySet().iterator();
-        while (syntax.hasNext()) {
-            String keyWord = String.valueOf(syntax.next());
+        for (String keyWord : javaSyntaxProperties.keySet()) {
             // we highlight the word if we have a style defined for this syntax point typ
-            if (javaSyntaxProperties.getProperty(keyWord) != null) { 
-                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.getProperty(keyWord)
+            if (javaSyntaxProperties.get(keyWord) != null) { 
+                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.get(keyWord)
                         + "\">" + keyWord + "</span> ");
             }
         }
@@ -202,6 +201,7 @@ public class javaViewer extends LineViewer {
     }
 
     /** parse the text and write the output */
+    @Override
     public void parseText(PrintWriter writer) throws IOException {
         long begin = System.currentTimeMillis();
         printPageBegin(writer);
@@ -248,7 +248,7 @@ public class javaViewer extends LineViewer {
                         }
                         if (JavaParseData.isClassUsageSyntaxPoint(currentSyntaxPoint.getType())) {
                             // generate links to used classes
-                            Class webappClass = findClass(beforeSyntaxPoint);
+                            Class<?> webappClass = findClass(beforeSyntaxPoint);
                             String classLink = null;
                             if (webappClass == null) {
                                 webappClass = findClassSimple(beforeSyntaxPoint);
@@ -277,7 +277,7 @@ public class javaViewer extends LineViewer {
                                 object = parts[0]; 
                                 method = parts[1]; 
                             }
-                            Class variableClass = null;
+                            Class<?> variableClass = null;
                             String classLink = null;
                             if (object.equals("super")) { // provide link to super class
                                 variableClass = findClass(javaParseData.getSuperClass());
@@ -376,7 +376,7 @@ public class javaViewer extends LineViewer {
         }
 
         partList.add(encodedMddName.substring(currentPos));
-        String[] parts = (String[]) partList.toArray(new String[partList.size()]);
+        String[] parts = partList.toArray(new String[partList.size()]);
         for (int i = 0; i < parts.length; i++) {
             if (upperCaseSecondButLast) {
                 if (i + 2 < parts.length) {
@@ -419,6 +419,7 @@ public class javaViewer extends LineViewer {
                 type.substring(0, 1).toUpperCase() + type.substring(1) };
     }
 
+    @Override
     public void intro(PrintWriter w) {
         w.println("<td align=\"center\" bgcolor=\"darkblue\">");
         printFileRelations(w);
