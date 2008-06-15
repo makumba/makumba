@@ -81,9 +81,9 @@ public class TableManager extends Table {
             preparedDeleteFromIgnoreDbsvString;
 
     /** The query that searches for duplicates on this field */
-    Hashtable<String, Object> checkDuplicate = new Hashtable<String, Object>();
+    Hashtable<String, String> checkDuplicate = new Hashtable<String, String>();
 
-    Hashtable checkNullDuplicate = new Hashtable();
+    Hashtable<String, String> checkNullDuplicate = new Hashtable<String, String>();
 
     public boolean exists() {
         return exists_;
@@ -195,7 +195,7 @@ public class TableManager extends Table {
 
     Hashtable<String, String[]> foreignKeys = new Hashtable<String, String[]>();
 
-    Hashtable extraIndexes;
+    Hashtable<String, String[]> extraIndexes;
 
     private boolean autoIncrementAlter;
 
@@ -234,10 +234,10 @@ public class TableManager extends Table {
             throw new DBError(e);
         }
 
-        extraIndexes = (Hashtable) indexes.clone();
+        extraIndexes = (Hashtable<String, String[]>) indexes.clone();
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
+        for (String string : dd.getFieldNames()) {
+            String fieldName = (String) string;
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             onStartup(fieldName, config, dbc);
@@ -274,7 +274,7 @@ public class TableManager extends Table {
 
         if (!getDatabase().usesHibernateIndexes())
             if (alter)
-                for (Enumeration ei = extraIndexes.keys(); ei.hasMoreElements();) {
+                for (Enumeration<String> ei = extraIndexes.keys(); ei.hasMoreElements();) {
                     String indexName = (String) ei.nextElement();
                     String syntax = "DROP INDEX " + indexName + " ON " + getDBName();
                     try {
@@ -290,7 +290,7 @@ public class TableManager extends Table {
             else {
                 StringBuffer extraList = new StringBuffer();
                 String separator = "";
-                for (Enumeration ei = extraIndexes.keys(); ei.hasMoreElements();) {
+                for (Enumeration<String> ei = extraIndexes.keys(); ei.hasMoreElements();) {
                     extraList.append(separator).append(ei.nextElement());
                     separator = ", ";
                 }
@@ -341,18 +341,18 @@ public class TableManager extends Table {
     }
 
     class CatalogChecker implements CheckingStrategy {
-        Vector columns;
+        Vector<Hashtable<String, Object>> columns;
 
-        Hashtable column;
+        Hashtable<String, Object> column;
 
         int i = 0;
 
-        CatalogChecker(Hashtable catalog) throws SQLException {
-            columns = (Vector) catalog.get(tbname);
+        CatalogChecker(Hashtable<String, Vector<Hashtable<String, Object>>> catalog) throws SQLException {
+            columns = catalog.get(tbname);
             if (columns == null) {
-                columns = (Vector) catalog.get(tbname.toLowerCase());
+                columns = catalog.get(tbname.toLowerCase());
                 if (columns == null) {
-                    columns = (Vector) catalog.get(tbname.toUpperCase());
+                    columns = catalog.get(tbname.toUpperCase());
                     if (columns != null)
                         tbname = tbname.toUpperCase();
                 } else
@@ -367,7 +367,7 @@ public class TableManager extends Table {
 
         public boolean hasMoreColumns() throws SQLException {
             if (i < columns.size()) {
-                column = (Hashtable) columns.elementAt(i);
+                column = columns.elementAt(i);
                 i++;
                 return true;
             }
@@ -434,8 +434,8 @@ public class TableManager extends Table {
         while (cs.hasMoreColumns()) {
             String dbfn = cs.columnName();
             boolean found = false;
-            for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-                String fieldName = (String) e.nextElement();
+            for (String string : dd.getFieldNames()) {
+                String fieldName = (String) string;
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
                     continue;
                 if (getFieldDBName(fieldName).toLowerCase().equals(dbfn.toLowerCase())) {
@@ -463,8 +463,7 @@ public class TableManager extends Table {
         Vector<String> v = new Vector<String>();
         keyIndex = new Hashtable<String, Integer>();
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
+        for (String fieldName : dd.getFieldNames()) {
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             if (handlerExist.get(fieldName) == null && !(alter && alter(dbc, fieldName, "ADD"))) {
@@ -562,10 +561,8 @@ public class TableManager extends Table {
         /* TODO: concatAll() */
 
         StringBuffer ret = new StringBuffer();
-        String fieldName;
         String sep = "";
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            fieldName = (String) e.nextElement();
+        for (String fieldName : dd.getFieldNames()) {
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             ret.append(sep).append(inCreate(fieldName, getSQLDatabase()));
@@ -606,12 +603,9 @@ public class TableManager extends Table {
 
         /* TODO: concatAll() */
         StringBuffer ret = new StringBuffer();
-        String fieldName;
         String sep = "";
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-
-            fieldName = (String) e.nextElement();
+        for (String fieldName : dd.getFieldNames()) {
             if (getFieldDefinition(fieldName).getType().startsWith("set")
                     || getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._ptrIndex && autoIncrement)
                 continue;
@@ -639,8 +633,7 @@ public class TableManager extends Table {
             else
                 ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertAutoIncrementString);
             int n = 0;
-            for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-                String fieldName = (String) e.nextElement();
+            for (String fieldName : dd.getFieldNames()) {
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
                     continue;
                 if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._ptrIndex && !wasIndex
@@ -704,8 +697,8 @@ public class TableManager extends Table {
         CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
+        for (String string : dd.getFieldNames()) {
+            String fieldName = (String) string;
             Object val = d.get(fieldName);
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
@@ -714,7 +707,7 @@ public class TableManager extends Table {
             }
         }
 
-        // now we check all mult-field indices
+        // now we check all multi-field indices
         MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             // we only need to check unique keys within the same data definition now
@@ -1766,16 +1759,16 @@ public class TableManager extends Table {
         Object val = data.get(fieldName);
         PreparedStatement ps;
         if (val == null)
-            ps = dbc.getPreparedStatement((String) checkNullDuplicate.get(fieldName));
+            ps = dbc.getPreparedStatement(checkNullDuplicate.get(fieldName));
         else
-            ps = dbc.getPreparedStatement((String) checkDuplicate.get(fieldName));
+            ps = dbc.getPreparedStatement(checkDuplicate.get(fieldName));
         try {
             if (val != null)
                 setUpdateArgument(fieldName, ps, 1, val);
             return ps.executeQuery().next();
         } catch (SQLException se) {
             Database.logException(se, dbc);
-            throw new org.makumba.DBError(se, (String) checkDuplicate.get(fieldName));
+            throw new org.makumba.DBError(se, checkDuplicate.get(fieldName));
         }
     }
 
@@ -2014,8 +2007,8 @@ public class TableManager extends Table {
      */
     public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
         dd.checkFieldNames(fieldsToCheck);
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
+        for (String string : dd.getFieldNames()) {
+            String name = (String) string;
             if (fieldsToIgnore.get(name) == null) {
                 Object o = fieldsToCheck.get(name);
                 if (o != null) {
@@ -2095,8 +2088,7 @@ public class TableManager extends Table {
             MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
             // Hashtable<Object, Object> duplicates = new Hashtable<Object, Object>();
             CompositeValidationException notUnique = new CompositeValidationException();
-            for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
-                MultipleUniqueKeyDefinition key = multiFieldUniqueKeys[i];
+            for (MultipleUniqueKeyDefinition key : multiFieldUniqueKeys) {
                 String[] fields = key.getFields();
                 Object[] values = new Object[fields.length];
                 if (key.isKeyOverSubfield()) {
