@@ -62,7 +62,7 @@ public class DataTypeListerServlet extends DataServlet {
             try {
                 String dataBaseName = t.getName();
                 writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
-                Vector fields = dd.getFieldNames();
+                Vector<String> fields = dd.getFieldNames();
                 String titleField = request.getParameter("titleField");
                 if (titleField == null || titleField.trim().equals("")) {
                     titleField = dd.getTitleFieldName();
