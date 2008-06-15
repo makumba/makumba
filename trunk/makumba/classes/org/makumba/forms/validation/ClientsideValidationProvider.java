@@ -6,7 +6,7 @@ import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.responder.FormResponder;
 
 /**
- * Provides an interface to a client-side validation mechanism. For HTML forms, this can e.g. be javascript validation.
+ * Provides an interface to a client-side validation mechanism. For HTML forms, this can e.g. be java-script validation.
  * 
  * @author Rudolf Mayer
  * @version $Id: ClientsideValidationProvider.java,v 1.1 15.09.2007 13:28:28 Rudolf Mayer Exp $
@@ -24,7 +24,7 @@ public interface ClientsideValidationProvider {
     /** Shall provide the calls needed for doing validation on e.g. form submission. */
     public StringBuffer getOnSubmitValidation(boolean validateLive);
 
-    /** Shall return all calls needed for cleint side validation, e.g. providing some javascript code. */
+    /** Shall return all calls needed for client side validation, e.g. providing some java-script code. */
     public StringBuffer getClientValidation(boolean validateLive);
 
     /**
