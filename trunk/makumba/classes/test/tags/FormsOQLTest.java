@@ -560,6 +560,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     public void endFormResponderOrder(WebResponse response) throws Exception {
     }
+    
+    public void testClientSideValidationMultipleForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testClientSideValidationMultipleForms.jsp");
+    }
+
+    public void endClientSideValidationMultipleForms(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, true);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
 
     public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
         WebConversation wc = new WebConversation();
