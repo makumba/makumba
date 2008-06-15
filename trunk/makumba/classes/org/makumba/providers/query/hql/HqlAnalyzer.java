@@ -193,7 +193,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     public String toString() {
         String result = "Query:\n" + this.getOQL() + "\n";
-        Vector w = this.getProjectionType().getFieldNames();
+        Vector<String> w = this.getProjectionType().getFieldNames();
         result += "Number of projections: " + w.size() + "\n";
 
         for (int i = 0; i < w.size(); i++) {

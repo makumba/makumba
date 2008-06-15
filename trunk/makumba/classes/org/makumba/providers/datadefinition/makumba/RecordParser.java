@@ -518,7 +518,7 @@ public class RecordParser {
     }
 
     void treatSubfields() {
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             parseSubfields(fieldName);
         }
