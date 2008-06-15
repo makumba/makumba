@@ -173,7 +173,7 @@ public abstract class CRUDOperationProvider {
         
         // we check if we can perform the update
         dd.checkFieldNames(fieldsToCheck);
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             if (fieldsToIgnore.get(name) == null) {
                 dd.checkUpdate(name, fieldsToCheck);
