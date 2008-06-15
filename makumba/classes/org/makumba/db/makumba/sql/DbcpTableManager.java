@@ -18,7 +18,8 @@ public class DbcpTableManager extends org.makumba.db.makumba.sql.TableManager {
 	
 	//Moved from dbcp.textManager
 	/** ask this field to write its contribution in a SQL CREATE statement */
-	public String inCreate(String fieldName, Database d) {
+	@Override
+    public String inCreate(String fieldName, Database d) {
 		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text)
 			return getFieldDBName(fieldName) + " "
 					+ getFieldDBType(fieldName, d) + "(1024000)";
@@ -28,7 +29,8 @@ public class DbcpTableManager extends org.makumba.db.makumba.sql.TableManager {
 
 	//moved from dbcp.timeStampManager
 	/** a timestamp is always sent as null to the database */
-	public String writeConstant(String fieldName, Object o) {
+	@Override
+    public String writeConstant(String fieldName, Object o) {
 		if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text)
 			return "TIMESTAMP " + super.writeConstant(fieldName, o);
 		else

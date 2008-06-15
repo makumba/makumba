@@ -84,7 +84,8 @@ public class Database extends org.makumba.db.makumba.Database {
         return false;
     }
     
-	protected DBConnection makeDBConnection() {
+	@Override
+    protected DBConnection makeDBConnection() {
 		try {
 			return new SQLDBConnection(this, tp);
 		} catch (SQLException e) {
@@ -276,23 +277,28 @@ public class Database extends org.makumba.db.makumba.Database {
 		return _url + p.getProperty("#database");
 	}
 
-	public org.makumba.db.makumba.Query prepareQueryImpl(String oqlQuery, String insertIn) {
+	@Override
+    public org.makumba.db.makumba.Query prepareQueryImpl(String oqlQuery, String insertIn) {
 		return new Query(this, oqlQuery, insertIn);
 	}
 
-	public Update prepareUpdateImpl(String type, String set, String where) {
+	@Override
+    public Update prepareUpdateImpl(String type, String set, String where) {
 		return new SQLUpdate(this, type, set, where);
 	}
 
-	public int getMinPointerValue() {
+	@Override
+    public int getMinPointerValue() {
 		return getDbsv() << SQLPointer.getMaskOrder();
 	}
 
-	public int getMaxPointerValue() {
+	@Override
+    public int getMaxPointerValue() {
 		return ((getDbsv() + 1) << SQLPointer.getMaskOrder()) - 1;
 	}
 
-	protected Class<?> getTableClassConfigured() {
+	@Override
+    protected Class<?> getTableClassConfigured() {
 		String tcs;
 		try {
 			if ((tcs = getConfiguration("tableclass")) != null
@@ -382,7 +388,8 @@ public class Database extends org.makumba.db.makumba.Database {
 	 * return whether the exception indicates a duplicate. may need to be
 	 * specified differently for certain database engines
 	 */
-	public boolean isDuplicateException(SQLException e) {
+	@Override
+    public boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
 	}
 
@@ -408,11 +415,13 @@ public class Database extends org.makumba.db.makumba.Database {
 	}
 
 	/** write a date into an OQL query */
-	public String OQLDate(java.util.Date d) {
+	@Override
+    public String OQLDate(java.util.Date d) {
 		return "date" + "\"" + new Timestamp(d.getTime()) + "\"";
 	}
 
-	public Pointer getPointer(String type, int uid) {
+	@Override
+    public Pointer getPointer(String type, int uid) {
 		return new SQLPointer(type, getDbsv(), uid);
 	}
 	

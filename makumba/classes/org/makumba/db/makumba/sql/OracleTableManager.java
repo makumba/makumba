@@ -18,7 +18,8 @@ public class OracleTableManager extends org.makumba.db.makumba.sql.TableManager
 {
 	//moved from oracle.charManager
 	  /** returns char */
-	  protected String get_char_FieldDBType(String fieldName)
+	  @Override
+    protected String get_char_FieldDBType(String fieldName)
 	  {
 	  	switch (getFieldDefinition(fieldName).getIntegerType()){
 	  	case FieldDefinition._char:

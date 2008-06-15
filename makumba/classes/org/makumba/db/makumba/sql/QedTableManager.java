@@ -3,6 +3,8 @@
  */
 package org.makumba.db.makumba.sql;
 
+import java.util.Hashtable;
+
 import org.makumba.FieldDefinition;
 
 /**
@@ -27,8 +29,9 @@ public class QedTableManager extends org.makumba.db.makumba.sql.TableManager {
 	}
 
 	//		moved from qed.textManager
-	protected boolean unmodified(String fieldName, int type, int size,
-			java.util.Vector columns, int index) throws java.sql.SQLException {
+	@Override
+    protected boolean unmodified(String fieldName, int type, int size,
+			java.util.Vector<Hashtable<String, Object>> columns, int index) throws java.sql.SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._binary:
 		case FieldDefinition._text:

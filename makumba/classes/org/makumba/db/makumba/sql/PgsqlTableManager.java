@@ -27,7 +27,8 @@ public class PgsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 	 * 
 	 * @throws SQLException
 	 */
-	protected boolean check_char_Width(String fieldName, ResultSetMetaData rsm,
+	@Override
+    protected boolean check_char_Width(String fieldName, ResultSetMetaData rsm,
 			int index) throws SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._char:
@@ -40,7 +41,8 @@ public class PgsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 
 	//Moved from pgsql.textManager
 	/** returns Postgres TEXT */
-	protected String getFieldDBType(String fieldName) {
+	@Override
+    protected String getFieldDBType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return "TEXT";
@@ -51,7 +53,8 @@ public class PgsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 	}
 
 	//	Moved from pgsql.textManager
-	protected int getSQLType(String fieldName) {
+	@Override
+    protected int getSQLType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return Types.VARCHAR;
@@ -61,7 +64,8 @@ public class PgsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 	}
 
 	//	Moved from pgsql.textManager
-	public void setArgument(String fieldName, PreparedStatement ps, int n,
+	@Override
+    public void setArgument(String fieldName, PreparedStatement ps, int n,
 			Object o) throws SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:

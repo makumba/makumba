@@ -12,7 +12,8 @@ import org.makumba.FieldDefinition;
 
 public class HsqldbTableManager extends org.makumba.db.makumba.sql.TableManager {
 	
-	protected int getSQLType(String fieldName) {
+	@Override
+    protected int getSQLType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return -4;
@@ -20,11 +21,13 @@ public class HsqldbTableManager extends org.makumba.db.makumba.sql.TableManager 
 			return super.getSQLType(fieldName);
 		}
 	}
-	protected String getColumnAlterKeyword() {
+	@Override
+    protected String getColumnAlterKeyword() {
 		return "ALTER COLUMN";
 	}
 	
-	public String getFieldDBIndexName(String fieldName) {
+	@Override
+    public String getFieldDBIndexName(String fieldName) {
 		return getFieldDBName(fieldName)+"_"+this.getDBName();
 	}
 

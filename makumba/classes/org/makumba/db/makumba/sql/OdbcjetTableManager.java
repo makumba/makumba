@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Hashtable;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Text;
@@ -23,7 +24,8 @@ import org.makumba.Text;
  */
 public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager {
 
-	protected void create(org.makumba.db.makumba.sql.SQLDBConnection dbc,
+	@Override
+    protected void create(org.makumba.db.makumba.sql.SQLDBConnection dbc,
 			String tblname, boolean really) throws java.sql.SQLException {
 		super.create(dbc, tblname, really);
 		if (really) {
@@ -35,13 +37,15 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 		}
 	}
 
-	protected void indexCreated(org.makumba.db.makumba.sql.SQLDBConnection dbc) {
+	@Override
+    protected void indexCreated(org.makumba.db.makumba.sql.SQLDBConnection dbc) {
 		dbc.commit();
 	}
 
 	//	moved from odbcjet.charManager, .intManager
-	protected boolean unmodified(String fieldName, int type, int size,
-			java.util.Vector columns, int index) throws java.sql.SQLException {
+	@Override
+    protected boolean unmodified(String fieldName, int type, int size,
+			java.util.Vector<Hashtable<String, Object>> columns, int index) throws java.sql.SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._char:
 		case FieldDefinition._charEnum:
@@ -62,7 +66,8 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 
 	//moved from odbcjet.dateTimeManager
 	/** stupdid odbc needs a {ts 'date'} format when writing date constants */
-	public String writeConstant(String fieldName, Object o) {
+	@Override
+    public String writeConstant(String fieldName, Object o) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._date:
 		case FieldDefinition._dateCreate:
@@ -74,7 +79,8 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 	}
 
 	//moved from odbcjet.textManager
-	public void setNullArgument(String fieldName, PreparedStatement ps, int n)
+	@Override
+    public void setNullArgument(String fieldName, PreparedStatement ps, int n)
 			throws SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
@@ -86,7 +92,8 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 	}
 
 	//	moved from odbcjet.textManager
-	public void setArgument(String fieldName, PreparedStatement ps, int n,
+	@Override
+    public void setArgument(String fieldName, PreparedStatement ps, int n,
 			Object o) throws SQLException {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
@@ -102,7 +109,8 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 	}
 
 	//	moved from odbcjet.textManager
-	protected String getFieldDBType(String fieldName) {
+	@Override
+    protected String getFieldDBType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return "LONGBINARY";
@@ -116,7 +124,8 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
 	 * get the java value of the recordSet column corresponding to this field.
 	 * This method should return null if the SQL field is null
 	 */
-	public Object get_text_Value(String fieldName, ResultSet rs, int i)
+	@Override
+    public Object get_text_Value(String fieldName, ResultSet rs, int i)
 			throws SQLException {
 		InputStream in = rs.getBinaryStream(i);
 		if (rs.wasNull())

@@ -63,6 +63,7 @@ public class SQLDBConnection extends DBConnection {
         }
     }
 
+    @Override
     public void close() {
         try {
             conn.close();
@@ -72,6 +73,7 @@ public class SQLDBConnection extends DBConnection {
         }
     }
 
+    @Override
     public void commit() {
         try {
             conn.commit();
@@ -81,6 +83,7 @@ public class SQLDBConnection extends DBConnection {
         }
     }
 
+    @Override
     public void rollback() {
         try {
             conn.rollback();
@@ -96,6 +99,7 @@ public class SQLDBConnection extends DBConnection {
         return conn;
     }
 
+    @Override
     public String toString() {
         return "connection " + n;
     }

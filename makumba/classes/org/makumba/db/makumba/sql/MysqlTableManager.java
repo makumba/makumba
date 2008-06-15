@@ -31,10 +31,12 @@ import org.makumba.db.makumba.sql.SQLDBConnection;
 
 public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager
 {
-  protected String createDbSpecific(String command){return command+" type=InnoDB"; }
+  @Override
+protected String createDbSpecific(String command){return command+" type=InnoDB"; }
 
   /** checks if an alteration is needed, and calls doAlter if so */
-  protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
+  @Override
+protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
   {
     Statement st= dbc.createStatement();
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
@@ -52,7 +54,8 @@ public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager
   }
 
   /** mysql needs to have it adjustable, depending on version (see bug 512) */
-  protected String getTableMissingStateName(SQLDBConnection dbc)
+  @Override
+protected String getTableMissingStateName(SQLDBConnection dbc)
   {
    try{
      //version:"3.0.5-gamma" has major:3, minor:0
@@ -77,7 +80,8 @@ public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager
    }
   }
   
-  protected int getSQLType(String fieldName) {
+  @Override
+protected int getSQLType(String fieldName) {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
         case FieldDefinition._text:
             return -1;

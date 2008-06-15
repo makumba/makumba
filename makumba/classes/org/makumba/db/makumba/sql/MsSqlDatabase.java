@@ -51,7 +51,8 @@ public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database
 	}
 
 	
-	protected String getJdbcUrl(Properties p) {
+	@Override
+    protected String getJdbcUrl(Properties p) {
 		// makumba mssql implementation accepts stuff like localhost_mssql_makumba.properties
 		//which needs to be converted to JDBC url for MS jdbc driver: 
 		//jdbc:microsoft:sqlserver://server_name:1433
@@ -67,7 +68,8 @@ public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database
 	}
 
 	//Solving http://bugs.best.eu.org/show_bug.cgi?id=905
-	protected DBConnection makeDBConnection() {
+	@Override
+    protected DBConnection makeDBConnection() {
 		SQLDBConnection dbc=(SQLDBConnection)super.makeDBConnection();
 		try
 		{
@@ -89,7 +91,8 @@ public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database
 
 
 	/** MS SQL Server uses incompatible sytax, see http://blog.daemon.com.au/archives/000301.html */
-	public boolean supportsLimitInQuery() {
+	@Override
+    public boolean supportsLimitInQuery() {
 		return false;
 	}
 

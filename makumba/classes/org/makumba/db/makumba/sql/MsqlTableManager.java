@@ -15,7 +15,8 @@ public class MsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 
 	//	moved from msql.textManager
 	/** msql needs an 'approximative size' for text fields. */
-	public String inCreate(String fieldName, Database d) {
+	@Override
+    public String inCreate(String fieldName, Database d) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return super.inCreate(fieldName, d) + "(255)";
@@ -26,7 +27,8 @@ public class MsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
 
 	//	Moved from msql.textManager
 	/** what is the database level type of this field? */
-	protected String getFieldDBType(String fieldName) {
+	@Override
+    protected String getFieldDBType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return "TEXT";

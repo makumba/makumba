@@ -85,10 +85,12 @@ public class TableManager extends Table {
 
     Hashtable<String, String> checkNullDuplicate = new Hashtable<String, String>();
 
+    @Override
     public boolean exists() {
         return exists_;
     }
 
+    @Override
     public boolean exists(String s) {
         return handlerExist.get(s) != null;
     }
@@ -118,6 +120,7 @@ public class TableManager extends Table {
     }
 
     /** the SQL table opening. might call create() or alter() */
+    @Override
     protected void open(Properties config, NameResolver nr) {
         setTableAndFieldNames(nr);
         if (!getDataDefinition().isTemporary()) {
@@ -152,6 +155,7 @@ public class TableManager extends Table {
 
     boolean admin;
 
+    @Override
     public boolean canAdmin() {
         return admin;
     }
@@ -395,6 +399,7 @@ public class TableManager extends Table {
         }
     }
 
+    @Override
     public int deleteFrom(DBConnection here, DBConnection source, boolean ignoreDbsv) {
         if (!exists())
             return 0;
@@ -519,7 +524,7 @@ public class TableManager extends Table {
      * @param modify
      *            the abstract fields that exist in the db but need to be modified to the new abstract definition
      */
-    protected void doAlter(SQLDBConnection dbc, Vector drop, Vector present, Vector add, Vector modify)
+    protected void doAlter(SQLDBConnection dbc, Vector<String> drop, Vector<String> present, Vector<String> add, Vector<String> modify)
             throws SQLException {
         // MakumbaSystem.getLogger("debug.db").severe(drop);
         // MakumbaSystem.getLogger("debug.db").severe(present);
@@ -617,6 +622,7 @@ public class TableManager extends Table {
                 + ret + ")";
     }
 
+    @Override
     public Pointer insertRecordImpl(DBConnection dbc, Dictionary d) {
         boolean wasIndex = d.get(indexField) != null;
         boolean wasCreate = d.get("TS_create") != null;
@@ -1887,7 +1893,7 @@ public class TableManager extends Table {
      * check if the column from the SQL database (read from the catalog) still corresponds with the abstract definition
      * of this field
      */
-    protected boolean unmodified(String fieldName, int type, int size, Vector columns, int index) throws SQLException {
+    protected boolean unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._char:
             case FieldDefinition._charEnum:
@@ -1900,23 +1906,23 @@ public class TableManager extends Table {
     }
 
     // original unmodified() from FieldManager
-    protected boolean base_unmodified(String fieldName, int type, int size, Vector columns, int index)
+    protected boolean base_unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index)
             throws SQLException {
         return type == getSQLType(fieldName);
     }
 
-    private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector columns, int index)
+    private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index)
             throws SQLException {
         if (!base_unmodified(fieldName, type, size, columns, index))
             return false;
         if (!getSQLDatabase().isAutoIncrement() && !getDatabase().usesHibernateIndexes())
             return true;
-        boolean unmod = unmodifiedAutoIncrement((Hashtable) columns.elementAt(index - 1));
+        boolean unmod = unmodifiedAutoIncrement(columns.elementAt(index - 1));
         autoIncrementAlter = !unmod;
         return unmod;
     }
 
-    private boolean unmodifiedAutoIncrement(Hashtable column) {
+    private boolean unmodifiedAutoIncrement(Hashtable<String, Object> column) {
         // this is a hack. we know that auto_increment is always not null, and we take advantage of makumba having
         // created _nullable_ primary keys before.
         return "NO".equals(column.get("IS_NULLABLE"));
@@ -1936,7 +1942,7 @@ public class TableManager extends Table {
      * Checks if the type is java.sql.Types.CHAR. Then, if the size of the SQL column is still large enough, this
      * returns true. Some SQL drivers allocate more anyway.
      */
-    protected boolean unmodified_char(String fieldName, int type, int size, java.util.Vector columns, int index)
+    protected boolean unmodified_char(String fieldName, int type, int size, java.util.Vector<Hashtable<String, Object>> columns, int index)
             throws SQLException {
         return (base_unmodified(fieldName, type, size, columns, index) || type == java.sql.Types.CHAR)
                 && check_char_Width(fieldName, size);
@@ -1946,7 +1952,7 @@ public class TableManager extends Table {
     /**
      * check if the column from the SQL database still coresponds with the abstract definition of this field
      */
-    protected boolean unmodified_wrapper(String fieldName, int type, int size, java.util.Vector v, int index)
+    protected boolean unmodified_wrapper(String fieldName, int type, int size, java.util.Vector<Hashtable<String, Object>> v, int index)
             throws SQLException {
         return base_unmodified(fieldName, type, size, v, index);
     }
@@ -2005,6 +2011,7 @@ public class TableManager extends Table {
      * @param allFields
      *            the entire data to be inserted
      */
+    @Override
     public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
         dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
@@ -2044,6 +2051,7 @@ public class TableManager extends Table {
      * @param allFields
      *            the entire data to be inserted
      */
+    @Override
     public void checkUpdate(Pointer pointer, Dictionary allFields) {
 
         // check multi-field key uniqueness that span over more than one table

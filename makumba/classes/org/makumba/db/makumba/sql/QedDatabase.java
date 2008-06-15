@@ -40,7 +40,8 @@ public class QedDatabase extends org.makumba.db.makumba.sql.Database
 
   /** the postgres jdbc driver does not return sql states...
    * we just let every state pass, but print the exception */
-  protected void checkState(SQLException e, String state)
+  @Override
+protected void checkState(SQLException e, String state)
   {
     System.out.println(e);
   }
@@ -50,7 +51,8 @@ public class QedDatabase extends org.makumba.db.makumba.sql.Database
 //  protected Class getTableClass()
 //  { return org.makumba.db.sql.qed.RecordManager.class; }
 
-  protected String getJdbcUrl(Properties p)
+  @Override
+protected String getJdbcUrl(Properties p)
   {
     String qedUrl="jdbc:";
     String qedEng=p.getProperty("#sqlEngine");

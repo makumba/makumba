@@ -18,7 +18,8 @@ public class InformixTableManager extends org.makumba.db.makumba.sql.TableManage
 {
 
 	//moved from informix.dateTimeManager; .textManager and .timeStampManager
-	protected String getFieldDBType(String fieldName)
+	@Override
+    protected String getFieldDBType(String fieldName)
 	  {
 		switch (getFieldDefinition(fieldName).getIntegerType()){
 			case FieldDefinition._date:
