@@ -43,7 +43,7 @@ public class open {
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
             String[] tables;
             if (argv.length < 2) {
-                Vector v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+                Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
                 tables = new String[v.size()];
                 for (int i = 0; i < v.size(); i++)
                     tables[i] = (String) v.elementAt(i);

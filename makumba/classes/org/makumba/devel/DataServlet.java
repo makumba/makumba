@@ -117,7 +117,7 @@ public abstract class DataServlet extends HttpServlet {
     }
 
     /** Extracts the fields and sets from a given DataDefinition. */
-    public static Vector[] extractFields(DataDefinition dd, boolean skipDefaultFields) {
+    public static Vector<FieldDefinition>[] extractFields(DataDefinition dd, boolean skipDefaultFields) {
         Vector<FieldDefinition> fields = new Vector<FieldDefinition>();
         Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
         // iterating over the DataDefinition, extracting normal fields and sets
