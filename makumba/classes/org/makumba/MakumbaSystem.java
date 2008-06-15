@@ -401,14 +401,9 @@ public class MakumbaSystem {
         return KruseCalendarEditor.getInstance();
     }
 
-    private static ClientsideValidationProvider clientSideValidationProviderSingleton;
-
-    /** Get the default client-side validation provider. FIXME: read this from some config, or so. */
+    /** Get the default client-side validation provider. */
     public static ClientsideValidationProvider getClientsideValidationProvider() {
-        if (clientSideValidationProviderSingleton == null) {
-            clientSideValidationProviderSingleton = new LiveValidationProvider();
-        }
-        return clientSideValidationProviderSingleton;
+        return new LiveValidationProvider();
     }
 
     /**
