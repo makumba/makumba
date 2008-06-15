@@ -156,7 +156,7 @@ public class NameResolver {
      * @return <code>true</code> if such a field already exists, <code>false</code> otherwise
      */
     private boolean checkDuplicateFieldName(String name, DataDefinition dd) {
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (dd.getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
@@ -178,7 +178,7 @@ public class NameResolver {
         resolvedCache = new HashMap<String, String>();
         fieldDBNames.put(dd.getName(), resolvedCache);
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
             String name = (String) e.nextElement();
             

@@ -16,7 +16,7 @@ public class TextUserType implements UserType {
 	
 	public int[] sqlTypes() { return SQL_TYPES; }
 	
-	public Class returnedClass() { return Text.class; }
+	public Class<Text> returnedClass() { return Text.class; }
 	
 	public boolean equals(Object x, Object y) {
 		if (x == y) return true;
