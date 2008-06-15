@@ -29,6 +29,7 @@ import java.util.Hashtable;
 
 /**
  * This class exports an Object[] array as a dictionary
+ * 
  * @author Cristian Bogdan
  */
 public class ArrayMap extends Dictionary {
@@ -49,27 +50,33 @@ public class ArrayMap extends Dictionary {
         return (Integer) keyIndex.get(key);
     }
 
+    @Override
     public Object get(Object key) {
         Integer i = index(key);
-        if (i == null)
+        if (i == null) {
             return null;
+        }
         return data[i.intValue()];
     }
 
+    @Override
     public Object put(Object key, Object value) {
         Integer i = index(key);
         if (i != null) {
             Object ret = data[i.intValue()];
             data[i.intValue()] = value;
             return ret;
-        } else
+        } else {
             throw new RuntimeException("invalid key: " + key);
+        }
     }
 
+    @Override
     public Object remove(Object key) {
         return put(key, null);
     }
 
+    @Override
     public Enumeration keys() {
         return new Enumeration() {
             Object nxt;
@@ -84,8 +91,9 @@ public class ArrayMap extends Dictionary {
 
             void findNext() {
                 next = null;
-                while (e.hasMoreElements() && (next = get(nxt = e.nextElement())) == null)
+                while (e.hasMoreElements() && (next = get(nxt = e.nextElement())) == null) {
                     ;
+                }
             }
 
             public boolean hasMoreElements() {
@@ -100,6 +108,7 @@ public class ArrayMap extends Dictionary {
         };
     }
 
+    @Override
     public Enumeration elements() {
         return new Enumeration() {
             int i;
@@ -109,8 +118,9 @@ public class ArrayMap extends Dictionary {
             }
 
             void findNext() {
-                while (i < data.length && data[i] == null)
+                while (i < data.length && data[i] == null) {
                     i++;
+                }
             }
 
             public boolean hasMoreElements() {
@@ -125,18 +135,23 @@ public class ArrayMap extends Dictionary {
         };
     }
 
+    @Override
     public int size() {
         int n = 0;
-        for (int i = 0; i < data.length; i++)
-            if (data[i] != null)
+        for (Object element : data) {
+            if (element != null) {
                 n++;
+            }
+        }
         return n;
     }
 
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
 
+    @Override
     public String toString() {
         StringBuffer ret = new StringBuffer();
         ret.append("{");
