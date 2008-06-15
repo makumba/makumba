@@ -109,7 +109,18 @@ public class FormResponder extends Responder {
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
         dd.addField(DataDefinitionProvider.getInstance().makeFieldWithName(colName, ftype));
+
+        // FIXME: the form responder value is needed to passed to the editor, so it can generate unique auto id's for
+        // tick-boxes. the auto-ids are use so we can create a <label for="id">, that allows clicking on the text next
+        // to the tickbox as well
+        // we could also use the field name & the form suffix, but that would be not unique if we have twice the same
+        // root-form in the page
+        // getResponderValue() changes on each iteration, as it takes the hashcode of the form, and that changes when we
+        // add more fields. thus, we create too many new responders
+        // it seems we can't set the responder value later, when the editors are complete, as the format method needs
+        // it, and is called in this current method
         editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), getResponderValue());
+        
         editor.config();
         // add client side validation, but only for edit operations (not search)
         if (!operation.equals("search")
