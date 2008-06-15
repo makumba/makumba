@@ -567,6 +567,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = null;
         responder = null;
         bodyContent = null;
+        formNames = null;
+        responders = null;
     }
 
 }
