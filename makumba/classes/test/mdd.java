@@ -68,15 +68,22 @@ public class mdd extends TestCase {
         }
     }
 
-    /**
-     * This test can't be performed on a Windows platform! Windows does not support capitalization in file name.
-     */
-    // public void testWronglyCapitalizedMdd() {
-    // try {
-    // MakumbaSystem.getDataDefinition("test.person");
-    // fail("Should raise DataDefinitionNotFoundError");
-    // } catch (DataDefinitionNotFoundError e) { }
-    // }
+    public void testWronglyCapitalizedMdd() {
+        final String osName = System.getProperty("os.name");
+        if (osName.toLowerCase().startsWith("windows")) {
+            // This test can't be performed on a Windows platform! Windows does not support capitalization in file name.
+            System.out.println("\n\nOperating System is "
+                    + osName
+                    + ", skipping 'testWronglyCapitalizedMdd' test (Windows does not support capitalization in file name).\n");
+        } else {
+            try {
+                ddp.getDataDefinition("test.person");
+                fail("Should raise DataDefinitionNotFoundError");
+            } catch (DataDefinitionNotFoundError e) {
+            }
+        }
+    }
+
     public void testAllValidMdds() {
         String base = "test/validMdds/";
         Vector<String> mdds = ddp.getDataDefinitionsInLocation(base);
