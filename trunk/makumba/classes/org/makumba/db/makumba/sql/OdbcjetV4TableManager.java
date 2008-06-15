@@ -26,7 +26,8 @@ public class OdbcjetV4TableManager extends OdbcjetTableManager {
 			Locale.UK);
 
 	//Moved from odbcjet.v4.dateTimeManager
-	public String writeConstant(String fieldName, Object o) {
+	@Override
+    public String writeConstant(String fieldName, Object o) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._date:
 			return "\'"

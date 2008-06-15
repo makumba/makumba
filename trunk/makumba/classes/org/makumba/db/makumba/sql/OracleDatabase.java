@@ -39,7 +39,8 @@ public class OracleDatabase extends org.makumba.db.makumba.sql.Database
 //  protected Class getTableClass()
 //  { return org.makumba.db.sql.oracle.RecordManager.class; }
 
-  protected String getJdbcUrl(Properties p)
+  @Override
+protected String getJdbcUrl(Properties p)
   {
     String host=p.getProperty("#host");
     if(host.indexOf(':')<0) //no port specified

@@ -24,7 +24,8 @@ public class PgsqlOldTableManager extends PgsqlTableManager
 	
 	//moved from pgsql.old.charManager
 	 /** trims the data at the left. for old databases */
-	  public Object get_char_Value(String fieldName, ResultSet rs, int i)
+	  @Override
+    public Object get_char_Value(String fieldName, ResultSet rs, int i)
 	    throws SQLException
 	    {
 	      Object o=super.get_char_Value(fieldName, rs, i);

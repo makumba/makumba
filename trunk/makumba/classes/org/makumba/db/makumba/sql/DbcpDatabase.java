@@ -41,7 +41,8 @@ public class DbcpDatabase extends org.makumba.db.makumba.sql.Database
 
   /** the postgres jdbc driver does not return sql states...
    * we just let every state pass, but print the exception */
-  protected void checkState(SQLException e, String state)
+  @Override
+protected void checkState(SQLException e, String state)
   {
     System.out.println(e+" "+e.getSQLState());
   }
@@ -52,7 +53,8 @@ public class DbcpDatabase extends org.makumba.db.makumba.sql.Database
 //  
 //  { return org.makumba.db.sql.dbcp.RecordManager.class; }
 
-  protected String getJdbcUrl(Properties p)
+  @Override
+protected String getJdbcUrl(Properties p)
   {
      return "jdbc:dbcp://local";
   }

@@ -32,7 +32,8 @@ import java.util.Properties;
 public class HsqldbDatabase extends org.makumba.db.makumba.sql.Database
 {
 	
-	protected String getJdbcUrl(Properties p) {
+	@Override
+    protected String getJdbcUrl(Properties p) {
 		// makumba hsqldb implementation accepts stuff like localhost_hsql_path_to_some_dir.properties
 		String s=super.getJdbcUrl(p);
 		String dbn= p.getProperty("#database");
@@ -54,15 +55,18 @@ public class HsqldbDatabase extends org.makumba.db.makumba.sql.Database
 		return p;
 	}
 
-	public boolean isDuplicateException(SQLException e) {
+	@Override
+    public boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
 	}
 
-	public String getLimitSyntax() {
+	@Override
+    public String getLimitSyntax() {
 		return 	" LIMIT ? OFFSET ?";
 	}
 
-	public boolean isLimitOffsetFirst() {
+	@Override
+    public boolean isLimitOffsetFirst() {
 		return false;
 	}
 	
