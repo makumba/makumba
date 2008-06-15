@@ -94,7 +94,7 @@ public class ObjectToRecord {
             for (int i = 0; i < accountedImp.length; i++)
                 accountedImport.put(accountedImp[i], dummy);
 
-            Enumeration e = this.type.getFieldNames().elements();
+            Enumeration<String> e = this.type.getFieldNames().elements();
             for (int i = 0; i < 3; i++)
                 // skipping default fields
                 e.nextElement();
