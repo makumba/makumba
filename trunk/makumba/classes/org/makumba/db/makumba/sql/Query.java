@@ -27,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.DBError;
@@ -86,20 +85,22 @@ public class Query implements org.makumba.db.makumba.Query {
         command = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
             
 
-        resultHandler = (TableManager) db.makePseudoTable((DataDefinition) qA.getProjectionType());
+        resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
         assigner = new ParameterAssigner(db, qA);
         limitSyntax = ((org.makumba.db.makumba.sql.Database) db).getLimitSyntax();
         offsetFirst = ((org.makumba.db.makumba.sql.Database) db).isLimitOffsetFirst();
         supportsLimitInQuery = ((org.makumba.db.makumba.sql.Database) db).supportsLimitInQuery();
         this.insertIn = insertIn;
-        if (insertIn != null && insertIn.length() > 0)
+        if (insertIn != null && insertIn.length() > 0) {
             analyzeInsertIn(qA.getProjectionType(), db);
+        }
     }
 
     public Vector execute(Object[] args, DBConnection dbc, int offset, int limit) {
         String com = command;
-        if (supportsLimitInQuery)
+        if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
+        }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
         try {
@@ -117,8 +118,9 @@ public class Query implements org.makumba.db.makumba.Query {
                 }
             }
 
-            if (s != null)
+            if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
+            }
 
             java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").fine("" + ps);
             java.util.Date d = new java.util.Date();
@@ -157,10 +159,9 @@ public class Query implements org.makumba.db.makumba.Query {
 
     void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
         DataDefinition insert = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
-        for (Iterator i = proj.getFieldNames().iterator(); i.hasNext();) {
-            String s = (String) i.next();
-            if (insert.getFieldDefinition(s) == null) {
-                throw new NoSuchFieldException(insert, s);
+        for (String string : proj.getFieldNames()) {
+            if (insert.getFieldDefinition(string) == null) {
+                throw new NoSuchFieldException(insert, string);
             }
         }
         insertHandler = (TableManager) db.getTable(insert);
@@ -169,10 +170,10 @@ public class Query implements org.makumba.db.makumba.Query {
     public int insert(Object[] args, DBConnection dbc) {
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
-        for (Iterator i = resultHandler.getDataDefinition().getFieldNames().iterator(); i.hasNext();) {
+        for (String string : resultHandler.getDataDefinition().getFieldNames()) {
             fieldList.append(comma);
             comma = ",";
-            fieldList.append(insertHandler.getFieldDBName((String) i.next()));
+            fieldList.append(insertHandler.getFieldDBName(string));
         }
 
         String tablename = "temp_" + (int) (Math.random() * 10000.0);
@@ -183,8 +184,9 @@ public class Query implements org.makumba.db.makumba.Query {
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
             String s = assigner.assignParameters(ps, args);
-            if (s != null)
+            if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
+            }
 
             int n = ps.executeUpdate();
 
@@ -194,8 +196,9 @@ public class Query implements org.makumba.db.makumba.Query {
 
             int m = ps.executeUpdate();
 
-            if (m != n)
+            if (m != n) {
                 throw new MakumbaError("inserted in temp " + n + " inserted in final " + m);
+            }
             Statement st = sqldbc.createStatement();
             st.execute("DROP TABLE " + tablename);
             return n;
