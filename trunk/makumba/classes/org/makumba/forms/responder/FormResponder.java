@@ -86,13 +86,22 @@ public class FormResponder extends Responder {
     public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
             String extraFormatting) {
         Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) (formatParams).clone();
+        
+        // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
+        // don't do it for dates (a date is several inputs, need _0, _1, _2, ..) and radio / checkbox / tickbox
+        if (!ftype.isDateType()
+                && !org.makumba.commons.StringUtils.equalsAny(formatParams.get("type"), new String[] { "radio",
+                        "checkbox", "tickbox" })) {
+            extraFormatting += "id=\"" + fname + storedSuffix + "\" ";
+        }
+        
         FieldEditor.setSuffix(paramCopy, storedSuffix);
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
 
         boolean display = (formatParams.get("org.makumba.noDisplay") == null);
         Integer i = indexes.get(fname);
         if (i != null) {
-            return display ? editor.format(i.intValue(), fval, paramCopy) : "";
+            return display ? editor.format(i, fval, paramCopy) : "";
         }
 
         indexes.put(fname, new Integer(max));
@@ -103,8 +112,9 @@ public class FormResponder extends Responder {
         editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), getResponderValue());
         editor.config();
         // add client side validation, but only for edit operations (not search)
-        if (!operation.equals("search") && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            provider.initField(fname, ftype, clientSideValidation.equals("live"));
+        if (!operation.equals("search")
+                && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
+            provider.initField(fname + storedSuffix, ftype, clientSideValidation.equals("live"));
         }
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
