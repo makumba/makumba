@@ -60,17 +60,6 @@ public class mdd extends TestCase {
         ddp.getDataDefinition("test.Person.address.sth");
     }
 
-    /** removed printers, so no need to test them anymore! */
-    // public void testMddPrinter()
-    // {
-    // System.out.println("\n"+new
-    // org.makumba.abstr.printer.RecordPrinter("test.Individual"));
-    // String personMdd=new
-    // org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
-    // //IMPROVE: should try to parse the printer output again as another MDD,
-    // //then compare them (eg by comparing the printer output of the new and
-    // original MDD).
-    // }
     public void testNonexistingMdd() {
         try {
             ddp.getDataDefinition("test.brokenMdds.NonexistingMdd");
@@ -80,7 +69,7 @@ public class mdd extends TestCase {
     }
 
     /**
-     * This test can't be performed on a Windows platform! Windows does not support capitalization in file name
+     * This test can't be performed on a Windows platform! Windows does not support capitalization in file name.
      */
     // public void testWronglyCapitalizedMdd() {
     // try {
@@ -90,12 +79,12 @@ public class mdd extends TestCase {
     // }
     public void testAllValidMdds() {
         String base = "test/validMdds/";
-        Vector mdds = ddp.getDataDefinitionsInLocation(base);
+        Vector<String> mdds = ddp.getDataDefinitionsInLocation(base);
 
         // we have to collect all errors if we want to run tests on all
-        // MDDs in directory instead of stoping at first fail()ure.
-        Vector errors = new Vector();
-        for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
+        // MDDs in directory instead of stopping at first fail()ure.
+        Vector<String> errors = new Vector<String>();
+        for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
             String mdd = (String) e.nextElement();
             try {
                 ddp.getDataDefinition("test.validMdds." + mdd);
@@ -111,12 +100,12 @@ public class mdd extends TestCase {
 
     public void testIfAllBrokenMddsThrowErrors() {
         String base = "test/brokenMdds/";
-        Vector mdds = ddp.getDataDefinitionsInLocation(base);
+        Vector<String> mdds = ddp.getDataDefinitionsInLocation(base);
 
         // we have to collect all errors if we want to run tests on all
         // MDDs in directory instead of stoping at first fail()ure.
-        Vector errors = new Vector();
-        for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
+        Vector<String> errors = new Vector<String>();
+        for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
             DataDefinitionParseError expected = new DataDefinitionParseError();
             DataDefinitionParseError actual = expected;
             String mdd = (String) e.nextElement();
