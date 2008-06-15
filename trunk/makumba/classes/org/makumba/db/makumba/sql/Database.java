@@ -34,7 +34,6 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import org.makumba.DBError;
-import org.makumba.DataDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.commons.SQLPointer;
@@ -56,7 +55,7 @@ public class Database extends org.makumba.db.makumba.Database {
 
 	boolean addUnderscore = true;
 
-	Hashtable catalog = null;
+	Hashtable<String, Vector<Hashtable<String, Object>>> catalog = null;
 
 	static final int DESIRED_TRANSACTION_LEVEL = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
@@ -234,7 +233,7 @@ public class Database extends org.makumba.db.makumba.Database {
 
 	protected void readCatalog(SQLDBConnection dbc) throws SQLException {
 		Exception ex = null;
-		Hashtable c = new Hashtable();
+		Hashtable<String, Vector<Hashtable<String, Object>>> c = new Hashtable<String, Vector<Hashtable<String, Object>>>();
 		boolean failed = false;
 		try {
 			ResultSet rs = dbc.getMetaData().getColumns(null, null, "%", null);
@@ -243,10 +242,10 @@ public class Database extends org.makumba.db.makumba.Database {
 			else
 				while (rs.next()) {
 					String tn = rs.getString("TABLE_NAME");
-					Vector v = (Vector) c.get(tn);
+					Vector<Hashtable<String, Object>> v = (Vector<Hashtable<String, Object>>) c.get(tn);
 					if (v == null)
-						c.put(tn, v = new Vector());
-					Hashtable h = new Hashtable(5);
+						c.put(tn, v = new Vector<Hashtable<String, Object>>());
+					Hashtable<String, Object> h = new Hashtable<String, Object>(5);
 					h.put("COLUMN_NAME", rs.getString("COLUMN_NAME"));
 					h.put("DATA_TYPE", new Integer(rs.getInt("DATA_TYPE")));
 					h.put("TYPE_NAME", rs.getString("TYPE_NAME"));
@@ -293,7 +292,7 @@ public class Database extends org.makumba.db.makumba.Database {
 		return ((getDbsv() + 1) << SQLPointer.getMaskOrder()) - 1;
 	}
 
-	protected Class getTableClassConfigured() {
+	protected Class<?> getTableClassConfigured() {
 		String tcs;
 		try {
 			if ((tcs = getConfiguration("tableclass")) != null
@@ -308,7 +307,7 @@ public class Database extends org.makumba.db.makumba.Database {
 		}
 	}
 
-	protected Class getTableClass() {
+	protected Class<?> getTableClass() {
 		return org.makumba.db.makumba.sql.TableManager.class;
 	}
 
