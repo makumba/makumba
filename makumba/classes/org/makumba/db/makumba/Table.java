@@ -63,7 +63,7 @@ public abstract class Table // extends RecordHandler
 
     protected void setDataDefinition(DataDefinition dd) {
         this.dd = dd; // needed as we don't extend FieldHandler anymore
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             FieldDefinition fd = dd.getFieldDefinition(name);
             if (fd.getType().equals("ptr") || fd.getType().equals("ptrRel"))
@@ -126,7 +126,7 @@ public abstract class Table // extends RecordHandler
             StringBuffer list = new StringBuffer();
             String comma = "";
 
-            for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
                 String name = (String) e.nextElement();
                 if (dd.getFieldDefinition(name).getType().startsWith("set"))
                     continue;
@@ -188,7 +188,7 @@ public abstract class Table // extends RecordHandler
         Hashtable<Object, String> nameKey = new Hashtable<Object, String>(23);
 
         int f = 0;
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             if (dd.getFieldDefinition(name).getType().startsWith("set"))
                 continue;

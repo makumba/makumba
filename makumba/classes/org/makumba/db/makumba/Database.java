@@ -343,7 +343,7 @@ public abstract class Database {
         java.util.logging.Logger.getLogger("org.makumba." + "db.admin.delete").info(
             "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
                 deleteFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
@@ -397,7 +397,7 @@ public abstract class Database {
         DataDefinition dd = ddp.getDataDefinition(table);
         getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB, ignoreDbsv);
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
                 copyFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
@@ -433,7 +433,7 @@ public abstract class Database {
         getTable(table);
         DataDefinition dd = ddp.getDataDefinition(table);
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
                 openTable(fi.getSubtable().getName());

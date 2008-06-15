@@ -312,8 +312,8 @@ public class HibernateTransaction extends TransactionImplementation {
 
         Vector results = new Vector(list.size());
 
-        Object[] projections = dataDef.getFieldNames().toArray();
-        Dictionary keyIndex = new java.util.Hashtable(projections.length);
+        String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
+        Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>(projections.length);
         for (int i = 0; i < projections.length; i++) {
             keyIndex.put(projections[i], new Integer(i));
         }
