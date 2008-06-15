@@ -236,7 +236,7 @@ public class TableManager extends Table {
 
         extraIndexes = (Hashtable) indexes.clone();
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
@@ -303,7 +303,7 @@ public class TableManager extends Table {
         fieldList(sb, dd.getFieldNames().elements());
         handlerList = sb.toString();
         sb = new StringBuffer();
-        Enumeration e = dd.getFieldNames().elements();
+        Enumeration<String> e = dd.getFieldNames().elements();
         e.nextElement();
         fieldList(sb, e);
         handlerListAutoIncrement = sb.toString();
@@ -434,7 +434,7 @@ public class TableManager extends Table {
         while (cs.hasMoreColumns()) {
             String dbfn = cs.columnName();
             boolean found = false;
-            for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
                 String fieldName = (String) e.nextElement();
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
                     continue;
@@ -564,7 +564,7 @@ public class TableManager extends Table {
         StringBuffer ret = new StringBuffer();
         String fieldName;
         String sep = "";
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             fieldName = (String) e.nextElement();
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
@@ -609,7 +609,7 @@ public class TableManager extends Table {
         String fieldName;
         String sep = "";
 
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
             fieldName = (String) e.nextElement();
             if (getFieldDefinition(fieldName).getType().startsWith("set")
@@ -639,7 +639,7 @@ public class TableManager extends Table {
             else
                 ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertAutoIncrementString);
             int n = 0;
-            for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
                 String fieldName = (String) e.nextElement();
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
                     continue;
@@ -704,7 +704,7 @@ public class TableManager extends Table {
         CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             Object val = d.get(fieldName);
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
@@ -2014,7 +2014,7 @@ public class TableManager extends Table {
      */
     public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
         dd.checkFieldNames(fieldsToCheck);
-        for (Enumeration e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             if (fieldsToIgnore.get(name) == null) {
                 Object o = fieldsToCheck.get(name);
