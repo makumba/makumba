@@ -1,6 +1,26 @@
-/*
- *
- */
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package test.tags;
 
 import java.io.IOException;
@@ -37,14 +57,11 @@ import com.meterware.httpunit.WebResponse;
 /**
  * @author Rudolf Mayer
  * @author Manuel Gay
+ * @version $Id$
  */
 public class FormsHQLTest extends MakumbaJspTestCase {
 
     private boolean record = false;
-
-    static Pointer person;
-
-    static Pointer brother;
 
     static Pointer address;
 
@@ -59,7 +76,15 @@ public class FormsHQLTest extends MakumbaJspTestCase {
     static Object[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
 
+    private static final String namePersonIndivName_John = "john";
+
+    private static final String namePersonIndivName_Bart = "bart";
+
+    /** All names of individuals to be deleted. bart is referenced by john, so we delete him afterwards. */
+    private static final String[] namesPersonIndivName = { namePersonIndivName_John, namePersonIndivName_Bart };
+
     private static final class Suite extends TestSetup {
+
         private Suite(Test arg0) {
             super(arg0);
         }
@@ -83,11 +108,11 @@ public class FormsHQLTest extends MakumbaJspTestCase {
         protected void insertPerson(Transaction db) {
             Properties p = new Properties();
 
-            p.put("indiv.name", "bart");
-            brother = db.insert("test.Person", p);
+            p.put("indiv.name", namePersonIndivName_Bart);
+            Pointer brother = db.insert("test.Person", p);
 
             p.clear();
-            p.put("indiv.name", "john");
+            p.put("indiv.name", namePersonIndivName_John);
 
             Calendar c = Calendar.getInstance();
             c.clear();
@@ -112,7 +137,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
             p.put("brother", brother);
             p.put("uniqPtr", languages.get(0));
-            person = db.insert("test.Person", p);
+            Pointer person = db.insert("test.Person", p);
 
             p.clear();
             p.put("description", "");
@@ -122,11 +147,16 @@ public class FormsHQLTest extends MakumbaJspTestCase {
 
         }
 
-        protected void deletePerson(Transaction db) {
+        protected void deletePersonsAndIndividuals(Transaction db) {
             db.delete(address);
-            db.delete(person);
-            // brother is referenced by person so we delete it after person
-            db.delete(brother);
+            for (int i = 0; i < namesPersonIndivName.length; i++) {
+                Vector<Dictionary<String, Object>> v = db.executeQuery(
+                    "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name=$1", namesPersonIndivName[i]);
+                if (v.size() > 0) {
+                    db.delete((Pointer) v.firstElement().get("p"));
+                    db.delete((Pointer) v.firstElement().get("i"));
+                }
+            }
         }
 
         protected void insertLanguages(Transaction db) {
@@ -149,7 +179,7 @@ public class FormsHQLTest extends MakumbaJspTestCase {
             TransactionProvider tp = TransactionProvider.getInstance();
             Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
 
-            deletePerson(db);
+            deletePersonsAndIndividuals(db);
             deleteLanguages(db);
             db.close();
         }
