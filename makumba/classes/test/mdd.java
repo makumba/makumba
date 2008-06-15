@@ -40,113 +40,101 @@ import org.makumba.providers.DataDefinitionProvider;
  * @author Stefan Baebler
  */
 public class mdd extends TestCase {
-    
+
     private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-    
-	public mdd(String name) {
-		super(name);
-	}
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(suite());
-	}
+    public mdd(String name) {
+        super(name);
+    }
 
-	public static Test suite() {
-		return new TestSuite(mdd.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
 
-	public void testMdd() {
+    public static Test suite() {
+        return new TestSuite(mdd.class);
+    }
+
+    public void testMdd() {
         ddp.getDataDefinition("test.Person");
         ddp.getDataDefinition("test.Person.address.sth");
-	}
+    }
 
-	/** removed printers, so no need to test them anymore! */
-	// public void testMddPrinter()
-	// {
-	// System.out.println("\n"+new
-	// org.makumba.abstr.printer.RecordPrinter("test.Individual"));
-	// String personMdd=new
-	// org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
-	// //IMPROVE: should try to parse the printer output again as another MDD,
-	// //then compare them (eg by comparing the printer output of the new and
-	// original MDD).
-	// }
-	public void testNonexistingMdd() {
-		try {
+    /** removed printers, so no need to test them anymore! */
+    // public void testMddPrinter()
+    // {
+    // System.out.println("\n"+new
+    // org.makumba.abstr.printer.RecordPrinter("test.Individual"));
+    // String personMdd=new
+    // org.makumba.abstr.printer.RecordPrinter("test.Person").toString();
+    // //IMPROVE: should try to parse the printer output again as another MDD,
+    // //then compare them (eg by comparing the printer output of the new and
+    // original MDD).
+    // }
+    public void testNonexistingMdd() {
+        try {
             ddp.getDataDefinition("test.brokenMdds.NonexistingMdd");
-			fail("Should raise DataDefinitionNotFoundError");
-		} catch (DataDefinitionNotFoundError e) {
-		}
-	}
+            fail("Should raise DataDefinitionNotFoundError");
+        } catch (DataDefinitionNotFoundError e) {
+        }
+    }
 
-	/**
-	 * This test can't be performed on a Windows platform! Windows does not
-	 * support capitalization in file name
-	 */
-	// public void testWronglyCapitalizedMdd() {
-	// try {
-	// MakumbaSystem.getDataDefinition("test.person");
-	// fail("Should raise DataDefinitionNotFoundError");
-	// } catch (DataDefinitionNotFoundError e) { }
-	// }
+    /**
+     * This test can't be performed on a Windows platform! Windows does not support capitalization in file name
+     */
+    // public void testWronglyCapitalizedMdd() {
+    // try {
+    // MakumbaSystem.getDataDefinition("test.person");
+    // fail("Should raise DataDefinitionNotFoundError");
+    // } catch (DataDefinitionNotFoundError e) { }
+    // }
+    public void testAllValidMdds() {
+        String base = "test/validMdds/";
+        Vector mdds = ddp.getDataDefinitionsInLocation(base);
 
-	public void testAllValidMdds() {
-		String base = "test/validMdds/";
-		Vector mdds = ddp.getDataDefinitionsInLocation(base);
-
-		// we have to collect all errors if we want to run tests on all
-		// MDDs in directory instead of stoping at first fail()ure.
-		Vector errors = new Vector();
-		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
-			String mdd = (String) e.nextElement();
+        // we have to collect all errors if we want to run tests on all
+        // MDDs in directory instead of stoping at first fail()ure.
+        Vector errors = new Vector();
+        for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
+            String mdd = (String) e.nextElement();
             try {
-                ddp.getDataDefinition("test.validMdds."+mdd);
-			} catch (DataDefinitionParseError ex) {
-				errors
-						.add("\n ." + (errors.size() + 1)
-								+ ") Error reported in valid MDD <" + mdd
-								+ ">:\n" + ex);
-				 //ex.printStackTrace();
-			}
-		}
-		if (errors.size() > 0)
-			fail("\n  Tested " + mdds.size() + " valid MDDs, but found "
-					+ errors.size() + " problems: " + errors.toString());
-	}
+                ddp.getDataDefinition("test.validMdds." + mdd);
+            } catch (DataDefinitionParseError ex) {
+                errors.add("\n ." + (errors.size() + 1) + ") Error reported in valid MDD <" + mdd + ">:\n" + ex);
+                // ex.printStackTrace();
+            }
+        }
+        if (errors.size() > 0)
+            fail("\n  Tested " + mdds.size() + " valid MDDs, but found " + errors.size() + " problems: "
+                    + errors.toString());
+    }
 
-	public void testIfAllBrokenMddsThrowErrors() {
-		String base = "test/brokenMdds/";
-		Vector mdds = ddp.getDataDefinitionsInLocation(base);
+    public void testIfAllBrokenMddsThrowErrors() {
+        String base = "test/brokenMdds/";
+        Vector mdds = ddp.getDataDefinitionsInLocation(base);
 
-		// we have to collect all errors if we want to run tests on all
-		// MDDs in directory instead of stoping at first fail()ure.
-		Vector errors = new Vector();
-		for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
-			DataDefinitionParseError expected = new DataDefinitionParseError();
-			DataDefinitionParseError actual = expected;
-			String mdd = (String) e.nextElement();
-			try {
-				ddp.getDataDefinition("test.brokenMdds."+mdd);
-			} catch (DataDefinitionParseError thrown) {
-				actual = thrown;
-			}
+        // we have to collect all errors if we want to run tests on all
+        // MDDs in directory instead of stoping at first fail()ure.
+        Vector errors = new Vector();
+        for (Enumeration e = mdds.elements(); e.hasMoreElements();) {
+            DataDefinitionParseError expected = new DataDefinitionParseError();
+            DataDefinitionParseError actual = expected;
+            String mdd = (String) e.nextElement();
+            try {
+                ddp.getDataDefinition("test.brokenMdds." + mdd);
+            } catch (DataDefinitionParseError thrown) {
+                actual = thrown;
+            }
 
-			if (expected == actual)
-				errors.add("\n ." + (errors.size() + 1)
-						+ ") Error report missing from broken MDD <" + mdd
-						+ "> ");
-			if (!expected.getClass().equals(actual.getClass()))
-				errors
-						.add("\n ." + (errors.size() + 1) + ") MDD " + mdd
-								+ " threw <" + actual.getClass()
-								+ "> instead of expected <"
-								+ expected.getClass() + ">");
-		}
-		if (errors.size() > 0)
-			fail("\n  Tested " + mdds.size() + " broken MDDs, but "
-					+ errors.size() + " reported wrong/no error: "
-					+ errors.toString());
-	}
-
+            if (expected == actual)
+                errors.add("\n ." + (errors.size() + 1) + ") Error report missing from broken MDD <" + mdd + "> ");
+            if (!expected.getClass().equals(actual.getClass()))
+                errors.add("\n ." + (errors.size() + 1) + ") MDD " + mdd + " threw <" + actual.getClass()
+                        + "> instead of expected <" + expected.getClass() + ">");
+        }
+        if (errors.size() > 0)
+            fail("\n  Tested " + mdds.size() + " broken MDDs, but " + errors.size() + " reported wrong/no error: "
+                    + errors.toString());
+    }
 
 }
