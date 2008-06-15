@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * Displays the error processed by ErrorFilter in a servlet.
  * 
@@ -46,9 +45,9 @@ public class TagExceptionServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         resp.setContentType("text/html");
-        //FIXME:see if error code thrown gives problems to tests
-        //resp.setStatus(500);
-        ErrorFormatter er = new ErrorFormatter(req,this.getServletContext(), resp.getWriter(), true);
+        // FIXME:see if error code thrown gives problems to tests
+        // resp.setStatus(500);
+        new ErrorFormatter(req, this.getServletContext(), resp.getWriter(), true);
         resp.getWriter().flush();
     }
 }
