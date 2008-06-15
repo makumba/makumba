@@ -96,9 +96,10 @@ public abstract class TransactionImplementation implements Transaction {
         FieldDefinition fi = ri.getParentField();
 
         // if this is a ptrOne, we nullify the pointer in the parent record
-        if (fi != null && fi.getType().equals("ptrOne"))
+        if (fi != null && fi.getType().equals("ptrOne")) {
             executeUpdate(transformTypeName(fi.getDataDefinition().getName()) + " this", "this." + fi.getName() + "="
                     + getNullConstant(), "this." + fi.getName() + getPrimaryKeyName() + "=" + getParameterName(), ptr);
+        }
 
         // then we do the rest of the delete job
         try {
@@ -152,8 +153,9 @@ public abstract class TransactionImplementation implements Transaction {
         if (fi.getType().equals("setComplex")) {
             data.put(fi.getSubtable().getSetOwnerFieldName(), base);
             return insert(fi.getSubtable().getName(), data);
-        } else
+        } else {
             throw new InvalidFieldTypeException(fi, "subset");
+        }
     }
 
     public abstract int insertFromQuery(String type, String OQL, Object parameterValues);
@@ -179,16 +181,18 @@ public abstract class TransactionImplementation implements Transaction {
 
     public Dictionary read(Pointer p, Object flds) {
 
-        Enumeration e = extractReadFields(p, flds);
+        Enumeration<String> e = extractReadFields(p, flds);
 
         StringBuffer sb = writeReadQuery(p, e);
 
         Vector v = executeReadQuery(p, sb);
 
-        if (v.size() == 0)
+        if (v.size() == 0) {
             return null;
-        if (v.size() > 1)
+        }
+        if (v.size() > 1) {
             throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: " + p);
+        }
         Dictionary d = (Dictionary) v.elementAt(0);
         Hashtable<Object, Object> h = new Hashtable<Object, Object>(13);
         for (Enumeration en = d.keys(); en.hasMoreElements();) {
@@ -198,26 +202,27 @@ public abstract class TransactionImplementation implements Transaction {
         return h;
     }
 
-    protected Enumeration extractReadFields(Pointer p, Object flds) throws ProgrammerError {
-        Enumeration e = null;
+    protected Enumeration<String> extractReadFields(Pointer p, Object flds) throws ProgrammerError {
+        Enumeration<String> e = null;
         if (flds == null) {
             DataDefinition ri = ddp.getDataDefinition(p.getType());
             Vector<String> v = new Vector<String>();
-            for (Enumeration f = ri.getFieldNames().elements(); f.hasMoreElements();) {
-                String s = (String) f.nextElement();
-                if (!ri.getFieldDefinition(s).getType().startsWith("set"))
+            for (String s : ri.getFieldNames()) {
+                if (!ri.getFieldDefinition(s).getType().startsWith("set")) {
                     v.addElement(s);
+                }
             }
             e = v.elements();
-        } else if (flds instanceof Vector)
+        } else if (flds instanceof Vector) {
             e = ((Vector) flds).elements();
-        else if (flds instanceof Enumeration)
+        } else if (flds instanceof Enumeration) {
             e = (Enumeration) flds;
-        else if (flds instanceof String[]) {
+        } else if (flds instanceof String[]) {
             Vector<String> v = new Vector<String>();
             String[] fl = (String[]) flds;
-            for (int i = 0; i < fl.length; i++)
-                v.addElement(fl[i]);
+            for (String element : fl) {
+                v.addElement(element);
+            }
             e = v.elements();
         } else if (flds instanceof String) {
             Vector<String> v = new Vector<String>();
@@ -237,29 +242,32 @@ public abstract class TransactionImplementation implements Transaction {
         Object param[] = { ptr };
 
         // delete the ptrOnes
-        Vector ptrOnes = new Vector();
+        Vector<String> ptrOnes = new Vector<String>();
 
-        for (Enumeration e = ri.getFieldNames().elements(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
-            if (ri.getFieldDefinition(s).getType().equals("ptrOne"))
+        for (String s : ri.getFieldNames()) {
+            if (ri.getFieldDefinition(s).getType().equals("ptrOne")) {
                 ptrOnes.addElement(s);
+            }
         }
 
         if (ptrOnes.size() > 0) {
             Dictionary d = read(ptr, ptrOnes);
-            for (Enumeration e = d.elements(); e.hasMoreElements();)
+            for (Enumeration e = d.elements(); e.hasMoreElements();) {
                 delete((Pointer) e.nextElement());
+            }
         }
         // delete all the subfields
-        for (Enumeration e = ri.getFieldNames().elements(); e.hasMoreElements();) {
-            FieldDefinition fi = ri.getFieldDefinition((String) e.nextElement());
-            if (fi.getType().startsWith("set"))
-                if (fi.getType().equals("setComplex"))
+        for (String string : ri.getFieldNames()) {
+            FieldDefinition fi = ri.getFieldDefinition(string);
+            if (fi.getType().startsWith("set")) {
+                if (fi.getType().equals("setComplex")) {
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
                             + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName()
                             + "= " + getParameterName(), param);
-                else
+                } else {
                     tp.getCRUD().deleteSet(this, ptr, fi);
+                }
+            }
         }
         // delete the record
         executeUpdate(transformTypeName(ptrDD) + " this", null, "this." + getPrimaryKeyName(ptrDD) + "="
@@ -267,13 +275,16 @@ public abstract class TransactionImplementation implements Transaction {
     }
 
     protected Map<String, Object> paramsToMap(Object args) {
-        if (args instanceof Map)
+        if (args instanceof Map) {
             return (Map<String, Object>) args;
+        }
         Map<String, Object> ret = new HashMap<String, Object>();
-        if (args == null)
+        if (args == null) {
             return ret;
-        if (args instanceof List)
+        }
+        if (args instanceof List) {
             args = ((List) args).toArray();
+        }
         if (args instanceof Object[]) {
             for (int j = 0; j < ((Object[]) args).length; j++) {
                 ret.put("" + (j + 1), ((Object[]) args)[j]);
@@ -292,9 +303,9 @@ public abstract class TransactionImplementation implements Transaction {
             Object[] param = new Object[v.size()];
             v.copyInto(param);
             return param;
-        } else if (args instanceof Object[])
+        } else if (args instanceof Object[]) {
             return (Object[]) args;
-        else {
+        } else {
             Object p[] = { args };
             return p;
         }
