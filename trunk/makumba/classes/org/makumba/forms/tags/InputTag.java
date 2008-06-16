@@ -275,7 +275,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 params.put("calendarEditorLink", calendarEditorLink);
             }
         }
-        
+
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
         String fieldName = name + getForm().responder.getSuffix();
 
@@ -293,7 +293,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                     exceptions = errors.getExceptions(fieldName);
                 }
                 // if requested, do annotation before the field
-                if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" }) && exceptions != null) {
+                if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" })
+                        && exceptions != null) {
                     for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
                         printAnnotation(fieldName, (InvalidValueException) iter.next());
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
@@ -335,14 +336,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setCalendarEditor(String calendarEditor) {
         this.calendarEditor = Boolean.parseBoolean(calendarEditor);
     }
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
-        bodyContent=null;
-        choiceSet=null;
-        name= nameVar= nullOption= display=calendarEditorLink= null;
-        calendarEditor= Configuration.getCalendarEditorDefault();
+        bodyContent = null;
+        choiceSet = null;
+        name = nameVar = nullOption = display = calendarEditorLink = null;
+        calendarEditor = Configuration.getCalendarEditorDefault();
     }
 
 }
