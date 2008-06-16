@@ -48,7 +48,7 @@ public class FormResponder extends Responder {
     private static final long serialVersionUID = 1L;
 
     RecordEditor editor;
-    
+
     /**
      * reads the data submitted to the controller by http, also sets the values in the request so they can be retrieved
      * as attributes
@@ -63,8 +63,8 @@ public class FormResponder extends Responder {
     }
 
     @Override
-    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions,
-            String suffix) {
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
+            ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
         if (editor != null) {
             return editor.getUnassignedExceptions(e, unassignedExceptions, suffix);
         } else {
@@ -74,7 +74,8 @@ public class FormResponder extends Responder {
 
     Hashtable<String, Integer> indexes = new Hashtable<String, Integer>();
 
-    DataDefinition dd = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Form responder"); // TODO: more precise name
+    // TODO: more precise name
+    DataDefinition dd = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Form responder");
 
     int max = 0;
 
@@ -86,7 +87,7 @@ public class FormResponder extends Responder {
     public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
             String extraFormatting) {
         Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) (formatParams).clone();
-        
+
         // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
         // don't do it for dates (a date is several inputs, need _0, _1, _2, ..) and radio / checkbox / tickbox
         if (!ftype.isDateType()
@@ -94,7 +95,7 @@ public class FormResponder extends Responder {
                         "checkbox", "tickbox" })) {
             extraFormatting += "id=\"" + fname + storedSuffix + "\" ";
         }
-        
+
         FieldEditor.setSuffix(paramCopy, storedSuffix);
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
 
@@ -120,7 +121,7 @@ public class FormResponder extends Responder {
         // it seems we can't set the responder value later, when the editors are complete, as the format method needs
         // it, and is called in this current method
         editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), getResponderValue());
-        
+
         editor.config();
         // add client side validation, but only for edit operations (not search)
         if (!operation.equals("search")
@@ -259,7 +260,8 @@ public class FormResponder extends Responder {
             writeInput(sb, formSessionName, formSessionValue, "");
 
             // insert the formSession into the database
-            Transaction db = ((DbConnectionProvider) request.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(database);
+            Transaction db = ((DbConnectionProvider) request.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(
+                database);
             try {
                 Dictionary<String, String> p = new Hashtable<String, String>();
                 p.put("formSession", formSessionValue);
@@ -308,7 +310,7 @@ public class FormResponder extends Responder {
     public void writeClientsideValidation(StringBuffer sb) {
         sb.append(provider.getClientValidation(clientSideValidation.equals("live")));
     }
-    
+
     public void setUnresolvedInputValues(Hashtable<String, String> unresolvedInputValues) {
         this.unresolvedInputValues = unresolvedInputValues;
     }
