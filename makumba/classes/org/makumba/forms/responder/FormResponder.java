@@ -25,6 +25,7 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +57,18 @@ public class FormResponder extends Responder {
     @Override
     public Dictionary<String, Object> getHttpData(HttpServletRequest req, String suffix) {
         if (editor != null) {
-            return editor.readFrom(req, suffix, !operation.equals("search"));
+            // first read data from the form itself
+            Dictionary<String, Object> data = editor.readFrom(req, suffix, !operation.equals("search"));
+
+            // then, fill in values from unresolved inputs (i.e. from nested forms)
+            HashMap<String, Object> results = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
+            for (String key : lazyEvaluatedInputs.keySet()) {
+                if (results.get(key) != null) {
+                    data.put(lazyEvaluatedInputs.get(key), results.get(key));
+                }
+            }
+
+            return data;
         } else {
             return new Hashtable<String, Object>(1);
         }
@@ -147,8 +159,11 @@ public class FormResponder extends Responder {
 
     private ClientsideValidationProvider provider = MakumbaSystem.getClientsideValidationProvider();
 
-    /** Values of inputs that could not be resolved (yet), e.g. from nested form operations. */
-    private Hashtable<String, String> unresolvedInputValues;
+    /**
+     * Values of inputs that could not be resolved (yet), e.g. from nested form operations. Stores a formName->fieldName
+     * mapping.
+     */
+    private HashMap<String, String> lazyEvaluatedInputs;
 
     public void setAction(String action) {
         this.action = action;
@@ -311,12 +326,12 @@ public class FormResponder extends Responder {
         sb.append(provider.getClientValidation(clientSideValidation.equals("live")));
     }
 
-    public void setUnresolvedInputValues(Hashtable<String, String> unresolvedInputValues) {
-        this.unresolvedInputValues = unresolvedInputValues;
+    public void setLazyEvaluatedInputs(HashMap<String, String> unresolvedInputValues) {
+        this.lazyEvaluatedInputs = unresolvedInputValues;
     }
 
-    public Hashtable<String, String> getUnresolvedInputValues() {
-        return unresolvedInputValues;
+    public HashMap<String, String> getLazyEvaluatedInputs() {
+        return lazyEvaluatedInputs;
     }
 
 }
