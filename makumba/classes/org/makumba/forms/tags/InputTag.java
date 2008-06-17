@@ -73,7 +73,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     protected String nullOption;
 
-    /** input whith body, used only for choosers as yet * */
+    /** input with body, used only for choosers as yet * */
     BodyContent bodyContent = null;
 
     org.makumba.forms.html.ChoiceSet choiceSet;

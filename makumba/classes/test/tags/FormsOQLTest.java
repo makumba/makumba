@@ -28,31 +28,23 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.makumba.Pointer;
-import org.makumba.Text;
-import org.makumba.Transaction;
 import org.makumba.forms.responder.ResponderFactory;
-import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
+import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -73,144 +65,18 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     private boolean record = false;
 
-    static Pointer address;
-
     static Suite setup;
-
-    static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 
     private String output;
 
-    static ArrayList<Pointer> languages = new ArrayList<Pointer>();
-
-    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
-            { "Italian", "it" }, { "Spanish", "sp" } };
-
-    private final static String namePersonIndivName_AddToNew = "addToNewPerson";
-
-    private static final String namePersonIndivName_Bart = "bart";
-
-    private static final String namePersonIndivName_John = "john";
-
-    private static final String namePersonIndivName_FirstBrother = "firstBrother";
-
-    private static final String namePersonIndivName_SecondBrother = "secondBrother";
-
-    private static final String namePersonIndivName_StepBrother = "stepBrother";
-
-    /** All names of individuals to be deleted. bart is referenced by john, so we delete him afterwards. */
-    private static final String[] namesPersonIndivName = { namePersonIndivName_John, namePersonIndivName_Bart,
-            namePersonIndivName_AddToNew, namePersonIndivName_StepBrother, namePersonIndivName_SecondBrother,
-            namePersonIndivName_FirstBrother };
-
     private WebResponse submissionResponse;
 
-    private static final Integer uniqInt = new Integer(255);
+    private static final class Suite extends MakumbaTestSetup {
 
-    private static final String uniqChar = new String("testing \" character field");
-
-    private static Date birthdate;
-
-    private static final class Suite extends TestSetup {
-
-        private Suite(Test arg0) {
-            super(arg0);
+        public Suite(Test test) {
+            super(test, "oql");
         }
 
-        protected void setUp() {
-            TransactionProvider tp = TransactionProvider.getInstance();
-            Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-
-            insertLanguages(db);
-            insertPerson(db);
-
-            /*
-             * Just a dummy select, so the test_Person__extraData_ is mentioned in the client side part of the tests. If
-             * this is not done, the server side and the client side will attempt to insert the same primary key in the
-             * catalog table (because they use the same DBSV, because they use the same database connection file).
-             */
-            db.executeQuery("SELECT p.extraData.something FROM test.Person p WHERE 1=0", null);
-            db.close();
-        }
-
-        protected void insertPerson(Transaction db) {
-            Properties p = new Properties();
-
-            p.put("indiv.name", namePersonIndivName_Bart);
-            Pointer brother = db.insert("test.Person", p);
-
-            p.clear();
-            p.put("indiv.name", namePersonIndivName_John);
-
-            Calendar c = Calendar.getInstance();
-            c.clear();
-            c.set(1977, 2, 5);
-            birthdate = c.getTime();
-            p.put("birthdate", birthdate);
-
-            p.put("uniqDate", birthdate);
-            p.put("gender", new Integer(1));
-            p.put("uniqChar", uniqChar);
-
-            p.put("weight", new Double(85.7d));
-
-            p.put("comment", new Text("This is a text field. It's a comment about this person."));
-
-            p.put("uniqInt", uniqInt);
-
-            Vector<Integer> intSet = new Vector<Integer>();
-            intSet.addElement(new Integer(1));
-            intSet.addElement(new Integer(0));
-            p.put("intSet", intSet);
-
-            p.put("brother", brother);
-            p.put("uniqPtr", languages.get(0));
-            Pointer person = db.insert("test.Person", p);
-
-            p.clear();
-            p.put("description", "");
-            p.put("usagestart", birthdate);
-            p.put("email", "email1");
-            address = db.insert(person, "address", p);
-
-        }
-
-        protected void deletePersonsAndIndividuals(Transaction db) {
-            db.delete(address);
-            for (int i = 0; i < namesPersonIndivName.length; i++) {
-                Vector<Dictionary<String, Object>> v = db.executeQuery(
-                    "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name=$1", namesPersonIndivName[i]);
-                if (v.size() > 0) {
-                    db.delete((Pointer) v.firstElement().get("p"));
-                    db.delete((Pointer) v.firstElement().get("i"));
-                }
-            }
-        }
-
-        protected void insertLanguages(Transaction db) {
-            languages.clear();
-            Dictionary<String, String> p = new Hashtable<String, String>();
-            for (int i = 0; i < languageData.length; i++) {
-                p.put("name", languageData[i][0]);
-                p.put("isoCode", languageData[i][1]);
-                languages.add(db.insert("test.Language", p));
-            }
-        }
-
-        protected void deleteLanguages(Transaction db) {
-            for (int i = 0; i < languages.size(); i++)
-                db.delete((Pointer) languages.get(i));
-        }
-
-        public void tearDown() {
-            // do your one-time tear down here!
-            TransactionProvider tp = TransactionProvider.getInstance();
-            Transaction db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-
-            deletePersonsAndIndividuals(db);
-            deleteLanguages(db);
-            db.close();
-        }
     }
 
     public static Test suite() {
@@ -386,7 +252,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", namePersonIndivName_AddToNew);
+        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_AddToNew);
         form.setParameter("description_1", "addToNewDescription");
         form.setParameter("email_1", "addToNew@makumba.org");
         // submit the form
@@ -473,15 +339,15 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         form.setParameter("firstSex_0", String.valueOf(first.getDate()));
         form.setParameter("firstSex_1", String.valueOf(first.getMonth()));
         form.setParameter("firstSex_2", String.valueOf(first.getYear() + 1900));
-        form.setParameter("birthdate_0", String.valueOf(birthdate.getDate()));
-        form.setParameter("birthdate_1", String.valueOf(birthdate.getMonth()));
-        form.setParameter("birthdate_2", String.valueOf(birthdate.getYear() + 1800));
-        form.setParameter("uniqDate_0", String.valueOf(birthdate.getDate()));
-        form.setParameter("uniqDate_1", String.valueOf(birthdate.getMonth()));
-        form.setParameter("uniqDate_2", String.valueOf(birthdate.getYear() + 1900));
+        form.setParameter("birthdate_0", String.valueOf(MakumbaTestSetup.birthdate.getDate()));
+        form.setParameter("birthdate_1", String.valueOf(MakumbaTestSetup.birthdate.getMonth()));
+        form.setParameter("birthdate_2", String.valueOf(MakumbaTestSetup.birthdate.getYear() + 1800));
+        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestSetup.birthdate.getDate()));
+        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestSetup.birthdate.getMonth()));
+        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestSetup.birthdate.getYear() + 1900));
         form.setParameter("hobbies", " ");
-        form.setParameter("uniqInt", uniqInt.toString());
-        form.setParameter("uniqChar", uniqChar);
+        form.setParameter("uniqInt", MakumbaTestSetup.uniqInt.toString());
+        form.setParameter("uniqChar", MakumbaTestSetup.uniqChar);
 
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
@@ -601,9 +467,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", namePersonIndivName_FirstBrother);
+        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_FirstBrother);
         form.setParameter("indiv.surname", "Person");
-        form.setParameter("indiv.name_1", namePersonIndivName_SecondBrother);
+        form.setParameter("indiv.name_1", MakumbaTestSetup.namePersonIndivName_SecondBrother);
         form.setParameter("indiv.surname_1", "Person");
 
         // TODO: read HTTP unit documents carefully.
@@ -645,7 +511,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", namePersonIndivName_StepBrother);
+        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_StepBrother);
         form.setParameter("indiv.surname", namePersonIndivSurname);
 
         // TODO: read HTTP unit documents carefully.
