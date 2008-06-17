@@ -41,12 +41,7 @@ public class MultipleKey extends Vector implements Serializable {
     /**
      * Dummy object holding the place for a null element
      */
-    static private final Object theNull = new Object() {
-        @Override
-        public String toString() {
-            return "null key member";
-        }
-    };
+    static private final String theNull = "null key member";
 
     public MultipleKey(int size) {
         super(size);
