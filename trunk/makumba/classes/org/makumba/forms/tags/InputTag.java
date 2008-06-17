@@ -32,15 +32,21 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.makumba.CompositeValidationException;
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.attributes.HttpParameters;
+import org.makumba.commons.attributes.PageAttributes;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.forms.html.dateEditor;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.Configuration;
 
@@ -168,8 +174,18 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (getForm() == null) {
             throw new ProgrammerError("input tag must be enclosed by a form tag!");
         }
-        if (isValue())
-            fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
+        if (isValue()) {
+            // check if the value is the same as a previous form name
+            if (getForm().getNestedFormNames(pageCache).keySet().contains(expr)) { // delay the evaluation
+                // we delay finding the value for later
+                // String tagName = name + getForm().responder.getSuffix();
+                getForm().lazyEvaluatedInputs.put(expr, name);
+                setDisplay("false"); // we assume that this input does not need to be displayed. FIXME: maybe this
+                // should be made explicit as a programmer error
+            } else {
+                fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
+            }
+        }
     }
 
     /**
@@ -179,6 +195,15 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      *            the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
+        if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
+            // set the input type as the form type
+            TagData t = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE,
+                getForm().getNestedFormNames(pageCache).get(expr));
+            DataDefinition type = ((NewTag) t.tagObject).type;
+            pageCache.cache(INPUT_TYPES, tagKey, type.getFieldDefinition(type.getIndexPointerFieldName()));
+            return;
+        }
+
         if (nameVar != null)
             setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
 
@@ -218,6 +243,47 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public int doAnalyzedStartTag(PageCache pageCache) {
         // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
         return EVAL_BODY_BUFFERED;
+    }
+
+    @Override
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
+        params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
+        FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
+        Object val = null;
+
+        // if we are reloading the form page on validation errors, fill form inputs as in the request
+        if (StringUtils.equals(pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD),
+            "true")) {
+            String tagName = name + getForm().responder.getSuffix();
+            HttpParameters parameters = RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest());
+            if (type.isDateType()) {
+                // we need a special treatment for date fields, as they do not come in a single input, but several ones
+                val = dateEditor.readFrom(tagName, parameters);
+                // if the date is the default value date, set it to null
+                if (val.equals(type.getDefaultValue()) && parameters.getParameter(tagName + "_null") != null) {
+                    val = null;
+                }
+            } else { // other types can be handled normally
+                val = parameters.getParameter(tagName);
+            }
+            return computedValue(val, type);
+        }
+
+        if (isValue()) {
+            // check whether we shall evaluate the value now, or later
+            if (!getForm().getNestedFormNames(pageCache).containsKey(expr)) {
+                val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
+            }
+        }
+
+        if (isAttribute()) {
+            val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
+        }
+
+        if (val != null)
+            val = type.checkValue(val);
+
+        return computedValue(val, type);
     }
 
     void checkBodyContentForNonWhitespace() throws JspException {
