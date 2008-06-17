@@ -13,7 +13,7 @@
 <!--		<property name="hibernate.show_sql">true</property>-->
 		<property name="makumba.seed">SEED.txt</property>
 		<property name="makumba.prefix">makumbaGeneratedMappings</property>
-		<property name="makumba.mdd.list">test.Person,test.Language</property>
+		<property name="makumba.mdd.list">test.Person,test.Individual,test.Language</property>
 		<property name="makumba.schemaUpdate">true</property>
 
 		<property name="dbcp.maxActive">15</property>

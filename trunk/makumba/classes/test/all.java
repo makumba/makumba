@@ -23,6 +23,10 @@
 
 package test;
 
+import test.newtags.FormsHQLTest;
+import test.newtags.ListOQLTest;
+import test.tags.FormsOQLTest;
+import test.tags.ListHQLTest;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
@@ -30,6 +34,7 @@ import junit.framework.TestSuite;
 /**
  * TestSuite that runs all the Makumba tests
  * @author Stefan Baebler
+ * @author Manuel Gay
  */
 public class all {
 
@@ -45,6 +50,11 @@ public class all {
 		suite.addTest(config.suite());
 		suite.addTest(mdd.suite());
 		suite.addTest(table.suite());
+		suite.addTest(tableHibernate.suite());
+		suite.addTest(FormsHQLTest.suite());
+        suite.addTest(ListHQLTest.suite());
+        suite.addTest(FormsOQLTest.suite());
+        suite.addTest(ListOQLTest.suite());
 	    return suite;
 	}
 }

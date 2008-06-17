@@ -51,7 +51,7 @@ public class config extends TestCase
   
   private TransactionProvider tp = TransactionProvider.getInstance();
 
-  public void testBiuldInfo()
+  public void testBuildInfo()
   {
     System.out.println(
 	 "\nTesting Makumba version: "+MakumbaSystem.getVersion()
