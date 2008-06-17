@@ -29,7 +29,12 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 
 /**
- * Copies one database to the other.
+ * Opens given database tables; if allowed to, this would also trigger alter commands.
+ * <p>
+ * Usage: <code>java org.makumba.devel.open [source [type1 [type2 ...] ] ]</code>
+ * </p>
+ * If no source is specified the default database specified in <i>MakumbaDatabase.properties</i> is used. If not types
+ * are specified, all MDDs found in the webapp are processed.
  * 
  * @author Cristian Bogdan
  */
@@ -51,7 +56,14 @@ public class open {
                 tables = new String[argv.length - 1];
                 System.arraycopy(argv, 1, tables, 0, tables.length);
             }
-            d.openTables(tables);
+            for (int i = 0; i < tables.length; i++) {
+                try {
+                    System.out.println("**** Checking table " + (i + 1) + " of " + tables.length);
+                    d.openTable(tables[i]);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
