@@ -80,7 +80,7 @@ public abstract class NamedResourceFactory implements java.io.Serializable {
     }
 
     /**
-     * This method builds the hash object from the name of the object. By defaault, it returns the name
+     * This method builds the hash object from the name of the object. By default, it returns the name
      * @param name the name of the object
      * @throws Throwable
      * @return The hash object
