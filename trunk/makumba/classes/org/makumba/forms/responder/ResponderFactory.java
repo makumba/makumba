@@ -1,12 +1,11 @@
 package org.makumba.forms.responder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -354,7 +353,11 @@ public class ResponderFactory {
 
         // store the results from each responder, needed for nested new/add forms wanting to refer to newly created
         // objects
-        Hashtable<String, Object> responderResults = new Hashtable<String, Object>();
+        HashMap<String, Object> responderResults = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
+        if (responderResults == null) {
+            responderResults = new HashMap<String, Object>();
+            req.setAttribute(Responder.FORM_RESULTS, responderResults);
+        }
 
         // we go over all the responders of this page (hold in the request)
         for (Iterator<String> responderCodes = getResponderCodes(req); responderCodes.hasNext();) {
@@ -372,17 +375,8 @@ public class ResponderFactory {
                 if (responder instanceof FormResponder) {
                     if (result != null) {
                         // FIXME: what to do if responder is not a form responder? pull up the result attribute field?
-                        responderResults.put(((FormResponder) responder).resultAttribute, result);
-                        // FormResponder formResponder2 = ((FormResponder) formResponder);
-                        // String resultAttribute = formResponder2.resultAttribute;
-                        // if (result != null) {
-                        // responderResults.put(resultAttribute, result);
-                        // req.setAttribute(resultAttribute, result);
-                        // HttpParameters params = (HttpParameters)
-                        // req.getAttribute(RequestAttributes.PARAMETERS_NAME);
-                        // params.
-                        // }
-                        // formResponder2.resolveInputValue
+                        FormResponder formResponder = (FormResponder) responder;
+                        responderResults.put(formResponder.resultAttribute, result);
                     }
                 }
                 // display the response message and set attributes

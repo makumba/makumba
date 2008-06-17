@@ -63,6 +63,8 @@ public abstract class Responder implements java.io.Serializable {
      */
     public final static String formSessionName = "__makumba__formSession__";
 
+    public static final String FORM_RESULTS = "org.makumba.formResults";
+
     /** the default label used to store the add and new result, "___mak___edited___" */
     static public final String anonymousResult = "___mak___edited___";
 
@@ -145,12 +147,6 @@ public abstract class Responder implements java.io.Serializable {
     /** order of the forms in the page * */
     protected ArrayList<String> formOrder;
 
-    /**
-     * Names of the forms in the page, needed for nested forms that depend on each other, e.g. two nested new forms,
-     * where one wants to store the result of the new operation of the other.
-     */
-    protected ArrayList<String> formNames;
-
     public String getHandler() {
         return handler;
     }
@@ -189,10 +185,6 @@ public abstract class Responder implements java.io.Serializable {
 
     public ArrayList<String> getFormOrder() {
         return formOrder;
-    }
-
-    public ArrayList<String> getFormNames() {
-        return formNames;
     }
 
     // --------------- form time, responder preparation -------------------
@@ -279,10 +271,6 @@ public abstract class Responder implements java.io.Serializable {
 
     public void setResponderOrder(ArrayList<String> formOrder) {
         this.formOrder = formOrder;
-    }
-
-    public void setFormNames(ArrayList<String> formNames) {
-        this.formNames = formNames;
     }
 
     abstract protected void postDeserializaton();
@@ -400,5 +388,4 @@ public abstract class Responder implements java.io.Serializable {
             file.delete();
         }
     }
-
 }
