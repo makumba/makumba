@@ -66,6 +66,12 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
+
+    public static final String LAZY_EVALUATED_INPUTS = "org.makumba.unresolvedInputs";
+
+    private static final String NESTED_FORM_NAMES = "org.makumba.nestedFormNames";
+
     // the tag attributes
     public String baseObject = null;
 
@@ -110,7 +116,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private Map<MultipleKey, String> responders; // all the form responders in a nested form; only in the root form
 
-    private ArrayList<String> formNames; // the names of all forms in this root form; only in the root form
+    /**
+     * Names of the forms in the page, needed for nested forms that depend on each other, e.g. two nested new forms,
+     * where one wants to store the result of the new operation of the other.
+     */
+    HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
 
     public FormTagBase() {
         // TODO move this somewhere else
@@ -268,13 +278,19 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         tagKey = new MultipleKey(keyComponents);
     }
 
-    public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
-
     /**
      * {@inheritDoc} FIXME QueryExecutionProvider should tell us the syntax for the primary key name
      */
     @Override
     public void doStartAnalyze(PageCache pageCache) {
+        if (findParentForm() == null) { // only for the root form
+            pageCache.cache(NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
+        }
+
+        if (org.apache.commons.lang.StringUtils.isNotBlank(formName)) {
+            getNestedFormNames(pageCache).put(formName, getTagKey());
+        }
+
         if (!shouldComputeBasePointer()) {
             return;
         }
@@ -341,6 +357,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
 
+        pageCache.cache(LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
+
         if (!shouldComputeBasePointer()) {
             return;
         }
@@ -386,7 +404,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         if (findParentForm() == null) { // initialise only for the root form!
             responders = new HashMap<MultipleKey, String>();
-            formNames = new ArrayList<String>();
         }
     }
 
@@ -492,7 +509,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 findRootForm();
             }
             rootForm.responders.put(this.getTagKey(), responder.getResponderValue());
-            rootForm.formNames.add(formName);
+
+            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(LAZY_EVALUATED_INPUTS,
+                getTagKey()));
 
             if (findParentForm() == null) { // we are in the end of the root form - all child forms have a responder by
                 // now
@@ -505,12 +524,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                     }
                 }
                 responder.setResponderOrder(responderOrder);
-                responder.setFormNames(formNames);
                 // we need to save the responder again to the disc, cause the new fields were not persisted yet
                 // FIXME: this might be sub-optimal, but i guess it can only be fixed when the form/responder order
                 // detection is done at analysis time, before the responder gets saved to the disc in
                 // org.makumba.forms.responder.ResponderCacheManager.NamedResources.makeResource
-                responder.saveResponderToDisc();
+                // responder.saveResponderToDisc();
             }
 
         } catch (IOException e) {
@@ -567,8 +585,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = null;
         responder = null;
         bodyContent = null;
-        formNames = null;
         responders = null;
+    }
+
+    public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
+        return (HashMap<String, MultipleKey>) pageCache.retrieve(NESTED_FORM_NAMES, findRootForm().getTagKey());
     }
 
 }
