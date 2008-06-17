@@ -69,6 +69,8 @@ import com.meterware.httpunit.WebResponse;
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
 
+    private static final String namePersonIndivSurname = "Makumbian";
+
     private boolean record = false;
 
     static Pointer address;
@@ -90,9 +92,16 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     private static final String namePersonIndivName_John = "john";
 
+    private static final String namePersonIndivName_FirstBrother = "firstBrother";
+
+    private static final String namePersonIndivName_SecondBrother = "secondBrother";
+
+    private static final String namePersonIndivName_StepBrother = "stepBrother";
+
     /** All names of individuals to be deleted. bart is referenced by john, so we delete him afterwards. */
     private static final String[] namesPersonIndivName = { namePersonIndivName_John, namePersonIndivName_Bart,
-            namePersonIndivName_AddToNew };
+            namePersonIndivName_AddToNew, namePersonIndivName_StepBrother, namePersonIndivName_SecondBrother,
+            namePersonIndivName_FirstBrother };
 
     private WebResponse submissionResponse;
 
@@ -560,7 +569,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     public void endFormResponderOrder(WebResponse response) throws Exception {
     }
-    
+
     public void testClientSideValidationMultipleForms() throws ServletException, IOException, SAXException {
         pageContext.include("forms-oql/testClientSideValidationMultipleForms.jsp");
     }
@@ -568,6 +577,92 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     public void endClientSideValidationMultipleForms(WebResponse response) throws Exception {
         try {
             output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void beginMakNestedNewFormsSimple(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/beginMakNestedNewFormsSimple.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", namePersonIndivName_FirstBrother);
+        form.setParameter("indiv.surname", "Person");
+        form.setParameter("indiv.name_1", namePersonIndivName_SecondBrother);
+        form.setParameter("indiv.surname_1", "Person");
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakNestedNewFormsSimple() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakNestedNewFormsSimple(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void beginMakNestedNewAndEditFormsSimple(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/beginMakNestedNewAndEditFormsSimple.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", namePersonIndivName_StepBrother);
+        form.setParameter("indiv.surname", namePersonIndivSurname);
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakNestedNewAndEditFormsSimple() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
             fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
