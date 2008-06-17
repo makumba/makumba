@@ -23,7 +23,6 @@
 
 package org.makumba.forms.tags;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -33,14 +32,8 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.StringUtils;
-import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
-import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.devel.relations.RelationCrawler;
-import org.makumba.forms.html.dateEditor;
-import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
@@ -206,25 +199,6 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
         Object val = null;
-
-        // if we are reloading the form page on validation errors, fill form inputs as in the request
-        if (this instanceof InputTag
-                && StringUtils.equals(pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD),
-                    "true")) {
-            String tagName = ((InputTag) this).name + getForm().responder.getSuffix();
-            HttpParameters parameters = RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest());
-            if (type.isDateType()) {
-                // we need a special treatment for date fields, as they do not come in a single input, but several ones
-                val = dateEditor.readFrom(tagName, parameters);
-                // if the date is the default value date, set it to null
-                if (val.equals(type.getDefaultValue()) && parameters.getParameter(tagName + "_null") != null) {
-                    val = null;
-                }
-            } else { // other types can be handled normally
-                val = parameters.getParameter(tagName); 
-            }
-            return computedValue(val, type);
-        }
 
         if (isValue())
             val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
