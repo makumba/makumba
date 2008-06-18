@@ -600,8 +600,8 @@ public class tableHibernate extends TestCase {
 		assertEquals("Copy", pc1.get("surname"));
 		assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
 		assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
-		db.delete(ptr1);
-		db.delete("test.Individual i","1=1",null);
+        db.delete(ptr1);
+        db.delete("test.Individual i","i.surname='Copy'",null);
         db.delete("test.Language l", "1=1", null);
 	}
 	
