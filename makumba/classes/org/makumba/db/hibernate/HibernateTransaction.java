@@ -162,7 +162,14 @@ public class HibernateTransaction extends TransactionImplementation {
             Class recordClass = null;
             try {
                 recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(p.getType()));
-                Method m = recordClass.getMethod("getId", new Class[] {});
+                
+                String idMethodName = "getprimaryKey";
+                
+                if (!HibernateCRUDOperationProvider.isGenerated(recordClass)) {
+                    idMethodName = "getId";
+                }
+                
+                Method m = recordClass.getMethod(idMethodName, new Class[] {});
                 if(HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
                     return new Integer(p.getId());
                 } else if(HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
