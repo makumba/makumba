@@ -30,7 +30,7 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
 
     private static final class Suite extends MakumbaTestSetup {
         private Suite(Test arg0) {
-            super(arg0, "hql");
+            super(arg0, "oql");
         }
     }
 
