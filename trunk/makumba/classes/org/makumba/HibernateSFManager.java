@@ -65,6 +65,8 @@ public class HibernateSFManager {
     private static SessionFactory sf;
     
     private static Vector<String> generatedClasses;
+    
+    private static NameResolver nr;
 
     public static String findClassesRootFolder(String locatorSeed) {
         String rootFolder = "";
@@ -161,7 +163,7 @@ public class HibernateSFManager {
             throw new org.makumba.ConfigFileError(databaseProperties);
         }
 
-        NameResolver nr = new NameResolver(p);
+        nr = new NameResolver(p);
 
         try {
             MddToClass jot = new MddToClass(dds, seedDir, nr);
@@ -256,9 +258,9 @@ public class HibernateSFManager {
     public static void setHibernateSessionFactory(SessionFactory sessionFactory) {
         sf = sessionFactory;
     }
-    
+        
     public static String getFullyQualifiedName(String className) {
-        return (String) configuredConfiguration.getImports().get(className);
+        return (String) configuredConfiguration.getImports().get(nr.arrowToDoubleUnderscore(className));
     }
     
     public static Vector<String> getGeneratedClasses() {
