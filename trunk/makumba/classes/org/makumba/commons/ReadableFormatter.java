@@ -103,8 +103,6 @@ public class ReadableFormatter {
 		String unit = "seconds";
 
 		//now try to give it a meaning:
-		Long s = new Long(secs);
-
 		long[] breaks = { 31536000, 2628000, 604800, 86400, 3600, 60, 1 };
 		String[] desc = { "year", "month", "week", "day", "hour", "minute",
 				"second" };
