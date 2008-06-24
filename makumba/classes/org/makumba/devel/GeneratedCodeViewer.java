@@ -90,11 +90,11 @@ public class GeneratedCodeViewer extends jspViewer {
                 File templatePropDirectory = new File(templatePath.getFile());
                 if (templatePropDirectory.canRead() && templatePropDirectory.isDirectory()) {
                     File[] files = templatePropDirectory.listFiles(CodeGenerator.getFileFilter());
-                    for (int j = 0; j < files.length; j++) {
+                    for (File element : files) {
                         Properties props = new Properties();
                         try {
-                            props.load(new FileInputStream(files[j]));
-                            String name = files[j].getName().substring(0, files[j].getName().lastIndexOf(".properties"));
+                            props.load(new FileInputStream(element));
+                            String name = element.getName().substring(0, element.getName().lastIndexOf(".properties"));
                             TEMPLATES[TEMPLATES_ALL].put(name, props);
                             TEMPLATES[TEMPLATES_USERDEFINED].put(name, props);
                         } catch (FileNotFoundException e) {
@@ -105,7 +105,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     }
                 }
             }
-        defaultTemplate = (String) TEMPLATES[TEMPLATES_BUILTIN].keys().nextElement();
+        defaultTemplate = TEMPLATES[TEMPLATES_BUILTIN].keys().nextElement();
         selectableCodeTypes = new Hashtable<String, String>();
         selectableCodeTypes.put(CodeGenerator.TYPE_NEWFORM, "mak:newForm");
         selectableCodeTypes.put(CodeGenerator.TYPE_EDITFORM, "mak:editForm");
@@ -179,7 +179,7 @@ public class GeneratedCodeViewer extends jspViewer {
             if (typeParam.equalsIgnoreCase("all")) { // all selected
                 selectedCodeTypes = CodeGenerator.ALL_PROCESSABLE_TYPES;
             } else { // single checkbox selected
-                selectedCodeTypes = new String[] { (String) CodeGenerator.nameToTypeMapping.get(typeParam) };
+                selectedCodeTypes = new String[] { CodeGenerator.nameToTypeMapping.get(typeParam) };
             }
             if (selectedCodeTypes == null) { // invalid param passes - default to newForm
                 selectedCodeTypes = new String[] { CodeGenerator.TYPE_NEWFORM };
@@ -193,7 +193,7 @@ public class GeneratedCodeViewer extends jspViewer {
             }
 
             CodeGeneratorTemplate template = new CodeGeneratorTemplate(
-                    (Properties) TEMPLATES[TEMPLATES_ALL].get(templateName));
+                    TEMPLATES[TEMPLATES_ALL].get(templateName));
             String action = CodeGenerator.getLabelNameFromDataDefinition(dd) + "View.jsp";
 
             // puts to gether all pages generated --> used when we have selected more than one code type
@@ -212,7 +212,7 @@ public class GeneratedCodeViewer extends jspViewer {
 
             // create all selected types
             for (int i = 0; i < selectedCodeTypes.length; i++) {
-                String generatingType = (String) CodeGenerator.nameToTypeMapping.get(selectedCodeTypes[i]);
+                String generatingType = CodeGenerator.nameToTypeMapping.get(selectedCodeTypes[i]);
 
                 // create current page
                 StringBuffer sb = new StringBuffer();
@@ -353,9 +353,7 @@ public class GeneratedCodeViewer extends jspViewer {
         w.println("<span style=\"font-size: smaller;\">");
         boolean addSeperator = false;
         boolean firstPage = true;
-        for (int i = 0; i < CodeGenerator.ALL_PROCESSABLE_TYPES.length; i++) {
-            String currentType = CodeGenerator.ALL_PROCESSABLE_TYPES[i];
-
+        for (String currentType : CodeGenerator.ALL_PROCESSABLE_TYPES) {
             if (currentType == CodeGenerator.TYPE_EDITFORM || currentType == CodeGenerator.TYPE_OBJECT
                     || currentType == CodeGenerator.TYPE_DELETE && cgiParams.equals("")) {
                 String labelName = CodeGenerator.getLabelNameFromDataDefinition(dd);
@@ -364,10 +362,10 @@ public class GeneratedCodeViewer extends jspViewer {
                 try {
                     String query = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;
-                    Vector v = db.executeQuery(query, null, 0, 1);
+                    Vector<Dictionary<String, Object>> v = db.executeQuery(query, null, 0, 1);
                     if (v.size() > 0) {
                         cgiParams = "?" + labelName + "="
-                                + ((Pointer) ((Dictionary) v.firstElement()).get(labelName)).toExternalForm();
+                                + ((Pointer) v.firstElement().get(labelName)).toExternalForm();
                     }
                 }catch (RuntimeWrappedException e) {
                     w.println("<br/> <span style=\"color: red\">" + e.getCause() + "</span>");
