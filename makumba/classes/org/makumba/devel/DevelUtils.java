@@ -56,12 +56,23 @@ public class DevelUtils {
     }
 
     public static String writePointerValueLink(String contextPath, Pointer pointer) {
-        String result = "<span style=\"font-size: smaller;\">" + pointer.getType();
+        return writePointerValueLink(contextPath, pointer, null, true);
+    }
+
+    public static String writePointerValueLink(String contextPath, Pointer pointer, String pointerTitle,
+            boolean printType) {
+        String result = "<span style=\"font-size: smaller;\"> ";
+        if (printType) {
+            result += pointer.getType();
+        }
         result += " <span style=\"color: green; afont-size: x-small;\">[";
+        boolean haveTitle = StringUtils.isNotBlank(pointerTitle);
         result += "<a href=\"" + contextPath + "/dataView/" + pointer.getType() + "?ptr=" + pointer.toExternalForm()
-                + "\" style=\"color: green\" title=\"Database Value: " + pointer.longValue() + "; DBSV|Unique Index: "
-                + pointer.getDbsv() + "|" + pointer.getUid() + "\">" + pointer.toExternalForm() + "</a>";
-        result += "]</span>";
+                + "\" style=\"color: green\" title=\""
+                + (haveTitle ? "Pointer: " + pointer.toExternalForm() + "; " : "") + "Database Value: "
+                + pointer.longValue() + "; DBSV|Unique Index: " + pointer.getDbsv() + "|" + pointer.getUid() + "\">"
+                + (haveTitle ? pointerTitle : pointer.toExternalForm()) + "</a>";
+        result += "]</span> ";
         result += "</span>";
         return result;
     }

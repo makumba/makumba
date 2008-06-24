@@ -123,15 +123,15 @@ public class DataTypeListerServlet extends DataServlet {
 
                 String query = "SELECT obj as ptr, obj." + titleField + " as title" + ", obj." + otherField
                         + " as other" + " FROM " + type + " obj";
-                Vector results = t.executeQuery(query, null, 0, limit);
+                Vector<Dictionary<String, Object>> results = t.executeQuery(query, null, 0, limit);
 
                 for (int i = 0; i < results.size(); i++) {
                     writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
                     writer.println("<a href=\"" + contextPath + "/dataView/" + type + "?ptr="
-                            + ((Pointer) ((Dictionary) results.elementAt(i)).get("ptr")).toExternalForm() + "\">");
-                    Dictionary dictionary = ((Dictionary) results.elementAt(i));
+                            + ((Pointer) (results.elementAt(i)).get("ptr")).toExternalForm() + "\">");
+                    Dictionary<String, Object> dictionary = results.elementAt(i);
                     Object value = dictionary.get("title");
                     if (value == null || value.equals("")) {
                         value = "<i>[none]</i>";

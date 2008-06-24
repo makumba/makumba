@@ -50,6 +50,7 @@ public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + "/dataList/" + browsePath;
@@ -78,29 +79,27 @@ public class DataObjectViewerServlet extends DataServlet {
                 writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
                 writer.println("<br/>");
 
-                Vector[] allFields = DataServlet.extractFields(dd, false);
-                Vector fields = allFields[0];
+                Vector<FieldDefinition>[] allFields = DataServlet.extractFields(dd, false);
+                Vector<FieldDefinition> fields = allFields[0];
 
-                String OQL = "SELECT ";
+                String OQL = "";
                 for (int i = 0; i < fields.size(); i++) {
-                    FieldDefinition fd = (FieldDefinition) fields.get(i);
-                    if (!fd.isSetType()) {
+                    FieldDefinition fd = fields.get(i);
+                    if (!fd.isSetType() && !fd.isIndexPointerField()) {
+                        if (OQL.trim().length() > 0) {
+                            OQL += ", ";
+                        }
                         OQL += "o." + fd.getName() + " AS " + fd.getName();
-                    } else {
-                        OQL += "\"<i>&lt;SET&gt;</i>\" AS " + fd.getName();
-                    }
-                    if (i + 1 < fields.size()) {
-                        OQL += ", ";
                     }
                 }
-                OQL += " FROM " + type + " o WHERE o=$1";
-                Vector v = t.executeQuery(OQL, dataPointer);
+                OQL = "SELECT " + OQL + " FROM " + type + " o WHERE o=$1";
+                Vector<Dictionary<String, Object>> v = t.executeQuery(OQL, dataPointer);
                 if (v.size() != 1) {
                     writer.println("<span style=\"color: red;\">Problem executing query:</span><br>");
                     writer.println(OQL + "<br><br>");
                     writer.println("<span style=\"color: red;\">==&gt; found " + v.size() + " results!</span>");
                 } else {
-                    Dictionary values = (Dictionary) v.firstElement();
+                    Dictionary<String, Object> values = v.firstElement();
 
                     writer.println("<table>");
                     writer.println("  <tr>");
@@ -108,20 +107,56 @@ public class DataObjectViewerServlet extends DataServlet {
                     writer.println("    <th>Value</th>");
                     writer.println("  </tr>");
                     for (int i = 0; i < fields.size(); i++) {
-                        FieldDefinition fd = (FieldDefinition) fields.get(i);
+                        FieldDefinition fd = fields.get(i);
+                        System.out.println(fd.getName());
+                        if (fd.isIndexPointerField()) {
+                            continue;
+                        }
                         writer.println("  <tr>");
                         writer.print("    <td class=\"columnHead\">" + fd.getName());
                         if (fd.isDefaultField()) {
-                            writer.print(" <span style=\"color:grey;font-style:italic;\">(default field)</span>");
+                            writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">(default field)</span>");
+                        } else if (fd.isSetType() || fd.isPointer()) {
+                            writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">("
+                                    + (fd.isSetType() ? "set " : "ptr ") + fd.getPointedType().getName() + ")</span>");
                         }
                         writer.println("</td>");
-                        Object value = values.get(fd.getName());
-                        if (value instanceof Pointer) {
-                            writer.println("    <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
-                                    + "</td>");
+
+                        writer.print("    <td>");
+                        if (fd.isSetType()) { // special handling for set types - query their values
+                            if (!fd.isComplexSet()) {
+                                String oql = "SELECT setEntry as setEntry, setEntry."
+                                        + fd.getPointedType().getTitleFieldName() + " as setTitle FROM " + dd.getName()
+                                        + " o, o." + fd.getName() + " setEntry WHERE o=$1";
+                                Vector<Dictionary<String, Object>> vSet = t.executeQuery(oql, dataPointer);
+                                for (int j = 0; j < vSet.size(); j++) {
+                                    Dictionary<String, Object> dictionary = vSet.elementAt(j);
+                                    writer.print(" "
+                                            + DevelUtils.writePointerValueLink(contextPath,
+                                                (Pointer) dictionary.get("setEntry"),
+                                                (String) dictionary.get("setTitle"), false) + " ");
+                                }
+                                if (vSet.size() == 0) {
+                                    writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">(empty)</span>");
+                                }
+                            } else {
+                                writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">SET COMPLEX</span>");
+                            }
                         } else {
-                            writer.println("    <td>" + value + "</td>");
+                            Object value = values.get(fd.getName());
+                            if (value instanceof Pointer) {
+                                writer.print(" "
+                                        + DevelUtils.writePointerValueLink(contextPath, (Pointer) value, null, false)
+                                        + " ");
+                            } else {
+                                writer.print(value);
+                                if (fd.isEnumType() && value != null) {
+                                    writer.print(" <i>(=" + fd.getNameFor((Integer) value) + ")</i>");
+                                }
+                            }
                         }
+                        writer.println("</td>");
+
                         writer.println("  </tr>");
                     }
                     writer.println("</table>");

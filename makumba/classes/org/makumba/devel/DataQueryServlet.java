@@ -54,7 +54,7 @@ public class DataQueryServlet extends DataServlet {
 
     public final int QUERY_LANGUAGE_HQL = 20;
 
-
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + "/dataList";
@@ -109,13 +109,13 @@ public class DataQueryServlet extends DataServlet {
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
-                Vector results = t.executeQuery(query, null, 0, limit);
+                Vector<Dictionary<String, Object>> results = t.executeQuery(query, null, 0, limit);
 
                 if (queryLanguage == QUERY_LANGUAGE_OQL) {
-                    org.makumba.db.makumba.Query oqlQuery = ((DBConnection)t).getQuery(query);
+                    org.makumba.db.makumba.Query oqlQuery = ((DBConnection) t).getQuery(query);
                     if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                         writer.println("<hr>");
-                        org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection)t).getQuery(query);
+                        org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
                         writer.println("SQL query: " + sqlQuery.getCommand() + ";<br>");
                         writer.println("<hr>");
                     }
@@ -129,19 +129,18 @@ public class DataQueryServlet extends DataServlet {
                     // Query q = session.createQuery(query);
                 }
 
-                ArrayList keys = new ArrayList();
+                ArrayList<String> keys = new ArrayList<String>();
                 for (int i = 0; i < results.size(); i++) {
-                    Dictionary d = (Dictionary) results.get(i);
+                    Dictionary<String, Object> d = results.get(i);
                     if (i == 0) {
                         writer.println("<table cellpadding=\"5\">");
                         writer.println("<tr>");
-                        Enumeration e = d.keys();
-                        while (e.hasMoreElements()) {
-                            keys.add(e.nextElement());
-                        }
                         writer.println("<th>#</th>");
-                        for (int j = 0; j < keys.size(); j++) {
-                            writer.println("<th>" + keys.get(j) + "</th>");
+                        Enumeration<String> e = d.keys();
+                        while (e.hasMoreElements()) {
+                            String key = e.nextElement();
+                            keys.add(key);
+                            writer.println("<th>" + key + "</th>");
                         }
                         writer.println("</tr>");
                     }
@@ -167,10 +166,7 @@ public class DataQueryServlet extends DataServlet {
                 writer.println("<div id=\"showStackTrace\" style=\"display: inline;\"><a href=\"javascript:toggleStackTrace();\" title=\"Show full stack trace\">--></a></div>");
                 writer.println("<div id=\"hideStackTrace\" style=\"display: none\"><a href=\"javascript:toggleStackTrace();\" title=\"Hide stack trace\"><--</a></div>");
                 writer.println("<div id=\"stackTrace\" style=\"display: none; color: red; font-style: italic; font-size: smaller; margin-left: 40px; \">");
-                StackTraceElement[] traces = e.getStackTrace();
-                for (int i = 0; i < traces.length; i++) {
-                    writer.println("at " + traces[i] + "<br/>");
-                }
+                e.printStackTrace(writer);
                 writer.println("</div>");
             } catch (org.makumba.OQLParseError e) {
                 writer.println("<span style=\"color: red\">Incorrect OQL query: <i>" + e.getMessage() + "</i></span>");
