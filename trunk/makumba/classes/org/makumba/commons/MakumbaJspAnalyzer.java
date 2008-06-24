@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
@@ -66,7 +65,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     
     static String[] formTagNames = {"form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm", "new", "add", "edit"};
 
-    static final Map<String, Class> tagClasses = new HashMap<String, Class>();
+    static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
     
     static final List<String> formTagNamesList = Arrays.asList(formTagNames);
     
@@ -74,24 +73,27 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * Puts the Makumba tags into a Map
      */
     static {
-        for (int i = 0; i < listTags.length; i += 2)
+        for (int i = 0; i < listTags.length; i += 2) {
             try {
                 tagClasses.put(listTags[i], Class.forName(listTags[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-        for (int i = 0; i < oldFormTags.length; i += 2)
+        }
+        for (int i = 0; i < oldFormTags.length; i += 2) {
             try {
                 tagClasses.put(oldFormTags[i], Class.forName(oldFormTags[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-        for (int i = 0; i < formTags.length; i += 2)
+        }
+        for (int i = 0; i < formTags.length; i += 2) {
             try {
                 tagClasses.put(formTags[i], Class.forName(formTags[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+        }
     }
 
     public static final String TAG_CACHE = "org.makumba.tags";
@@ -132,8 +134,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             // we check if this is a Makumba taglib declaration
             if (td.attributes.get("uri") != null
                     && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
-                String prefix = (String) td.attributes.get("prefix");
-                String URI = (String) td.attributes.get("uri");
+                String prefix = td.attributes.get("prefix");
+                String URI = td.attributes.get("uri");
 
                 // if this is an old makumba system-tag or a OQL list
                 if (URI.equals("http://www.makumba.org/presentation") || URI.equals("http://www.makumba.org/list")) {
@@ -193,9 +195,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 tagName = td.name.substring(formsPrefix.length());
             }
     
-            Class c = (Class) tagClasses.get(tagName);
-            if (c == null)
+            Class<?> c = tagClasses.get(tagName);
+            if (c == null) {
                 return;
+            }
             AnalysableTag.analyzedTag.set(td);
             AnalysableTag t = null;
             try {
