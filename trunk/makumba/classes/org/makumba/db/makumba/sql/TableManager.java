@@ -1553,11 +1553,8 @@ public class TableManager extends Table {
     } // end isIndexOk()
 
     public boolean hasForeignKey(String fieldName) {
-        if (foreignKeys.get(getFieldDBIndexName(fieldName).toLowerCase()) == null)
-            return false;
-
-        return true;
-    } // end hasForeignKey()
+        return foreignKeys.get(getFieldDBIndexName(fieldName).toLowerCase()) != null;
+    }
 
     public boolean isIndexOk(String[] fieldNames) {
         Boolean b = (Boolean) indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
@@ -1634,11 +1631,11 @@ public class TableManager extends Table {
         }
     }// method
 
-    protected void manageForeignKeys(String fieldName, SQLDBConnection dbc, String brief) throws DBError {
+    public void manageForeignKeys(String fieldName, SQLDBConnection dbc, String brief) throws DBError {
         // for foreign keys
 
         String type = getFieldDefinition(fieldName).getType();
-        if (((type.equals("ptr") || type.equals("ptrOne")) && !hasForeignKey(fieldName))) {
+        if (((type.equals("ptr") || type.equals("ptrOne") || type.equals("ptrRel")) && !hasForeignKey(fieldName))) {
             // System.out.println("We need a foreign key for " + brief);
 
             try {
