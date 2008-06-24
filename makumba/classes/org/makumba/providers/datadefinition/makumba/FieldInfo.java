@@ -409,7 +409,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return name;
     }
 
-    /** tells wether this field has a description originally */
+    /** tells whether this field has a description originally */
     public boolean hasDescription() {
         return !description.equals(name);
     }
@@ -428,6 +428,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /** returns field's type */
     public String getType() {
         return type;
+    }
+    
+    public boolean isIndexPointerField() {
+        return getDataDefinition().getIndexPointerFieldName() == name;
     }
 
     /** returns field type's integer value */
