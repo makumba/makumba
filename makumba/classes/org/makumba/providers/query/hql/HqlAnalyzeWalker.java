@@ -19,7 +19,7 @@ import antlr.collections.AST;
 
 public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
-    private List result;
+    private List<AST> result;
     private String query;
 
     void setAliasType(AST alias, String type) throws antlr.RecognitionException{
@@ -199,7 +199,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     void getReturnTypes(AST r, java.util.Stack stackAliases) throws RecognitionException {
         if(isSubQuery())
             return;
-        result = new ArrayList();
+        result = new ArrayList<AST>();
         for (AST a = r.getFirstChild(); a != null; a = a.getNextSibling()) {
             result.add(a);
         }
