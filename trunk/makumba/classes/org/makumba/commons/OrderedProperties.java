@@ -11,16 +11,16 @@ import java.util.Vector;
  * @author Cristian Bogdan
  * @version $Id: ReferenceChecker.java,v 1.1 12.10.2007 05:17:31 Rudolf Mayer Exp $
  */
-public class OrderedProperties extends Dictionary {
-    Vector<Object> ks = new Vector<Object>();
+public class OrderedProperties extends Dictionary<String, String> {
+    Vector<String> ks = new Vector<String>();
 
-    Hashtable<Object, Object> orig = new Hashtable<Object, Object>();
+    Hashtable<String, String> orig = new Hashtable<String, String>();
 
-    Hashtable<Object, Object> content = new Hashtable<Object, Object>();
+    Hashtable<String, String> content = new Hashtable<String, String>();
 
     public String toString() {
         StringBuffer sb = new StringBuffer("{");
-        Enumeration e = keys();
+        Enumeration<String> e = keys();
         if (e.hasMoreElements()) {
             Object o = e.nextElement();
             sb.append(o).append("=").append(get(o));
@@ -32,15 +32,15 @@ public class OrderedProperties extends Dictionary {
         return sb.append('}').toString();
     }
 
-    public Enumeration elements() {
-        return ((Hashtable) content.clone()).elements();
+    public Enumeration<String> elements() {
+        return ((Hashtable<String, String>) content.clone()).elements();
     }
 
-    public Object get(Object key) {
+    public String get(Object key) {
         return content.get(key);
     }
 
-    public Enumeration keys() {
+    public Enumeration<String> keys() {
         return ((Vector) ks.clone()).elements();
     }
 
@@ -52,20 +52,20 @@ public class OrderedProperties extends Dictionary {
         return (String) ks.elementAt(i);
     }
 
-    public Object remove(Object key) {
+    public String remove(Object key) {
         ks.removeElement(key);
         orig.remove(key);
         return content.remove(key);
     }
 
-    public Object putAt(int n, Object key, Object origKey, Object value) {
+    public Object putAt(int n, String key, String origKey, String value) {
         ks.insertElementAt(key, n);
         orig.put(key, origKey);
         return content.put(key, value);
     }
 
-    public synchronized Object putLast(Object key, Object origKey, Object value) {
-        Object o = content.put(key, value);
+    public synchronized String putLast(String key, String origKey, String value) {
+        String o = content.put(key, value);
         if (o != null)
             ks.removeElement(key);
         ks.addElement(key);
@@ -73,7 +73,7 @@ public class OrderedProperties extends Dictionary {
         return o;
     }
 
-    public Object put(Object key, Object value) {
+    public String put(String key, String value) {
         return putLast(key, key, value);
     }
 
