@@ -56,7 +56,7 @@ public class MakumbaSystem {
      * @return a {@link java.util.Map} with cache categories as keys and cache sizes as values
      * @since makumba-0.5.5.13
      */
-    public static java.util.Map getCacheInfo() {
+    public static java.util.Map<String, int[]> getCacheInfo() {
         return org.makumba.commons.NamedResources.getCacheInfo();
     }
 
