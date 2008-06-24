@@ -75,7 +75,6 @@ public interface FieldDefinition {
 
     public static final int _boolean = 19;
 
-    
     public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
 
     public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
@@ -85,6 +84,9 @@ public interface FieldDefinition {
 
     /** The data definition that contains this field definition */
     public DataDefinition getDataDefinition();
+
+    /** Indicates whether this field is the index pointer field of the {@link DataDefinition} it belongs to. */
+    public boolean isIndexPointerField();
 
     /**
      * The value returned in case there is no value in the database and no default value is indicated
@@ -102,7 +104,6 @@ public interface FieldDefinition {
 
     /**
      * Returns field's internal makumba type. Can be:
-     * 
      * <ul>
      * <li>ptr: normal pointer</li>
      * <li>ptrRel: relational pointer (in automatically generated types such as middle types in set)</li>
@@ -121,7 +122,6 @@ public interface FieldDefinition {
      * <li>binary: binary data type (images, documents...)</li>
      * <li>boolean: boolean, can only take two values</li>
      * </ul>
-     * 
      * TODO nil and real and timeStamp need to be added???
      */
     public String getType();
@@ -325,10 +325,10 @@ public interface FieldDefinition {
 
     /** retuns whether this field is a set enum type, i.e. setIntEnum or setCharEnum. */
     public boolean isSetEnumType();
-    
+
     /** retuns whether this field is a simple enum type, i.e. intEnum or charEnum. */
     public boolean isEnumType();
-    
+
     /**
      * retuns whether this field is any kind of internal set type, i.e. set, setIntEnum, setCharEnum and setComplex, but
      * not set.
@@ -337,7 +337,7 @@ public interface FieldDefinition {
 
     /** retuns whether this field is an external set, i.e. set ptr, but not setIntEnum, not setCharEnum nor setComplex. */
     public boolean isExternalSet();
-    
+
     /** retuns whether this field is a setComplex. */
     public boolean isComplexSet();
 
