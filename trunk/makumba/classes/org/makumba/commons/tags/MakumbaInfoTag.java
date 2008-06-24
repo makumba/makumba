@@ -263,9 +263,10 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("  <tr> <th>Name</th> <th>size</th> <th>hits</th> <th>misses</th> </tr>");
 
             line = 0;
-            Map m = MakumbaSystem.getCacheInfo();
-
-            for (Iterator iterator = new TreeSet(m.keySet()).iterator(); iterator.hasNext();) {
+            Map<String, int[]> m = MakumbaSystem.getCacheInfo();
+            TreeSet<String> treeSet = new TreeSet<String>(m.keySet());
+            
+            for (Iterator<String> iterator = treeSet.iterator(); iterator.hasNext();) {
                 String nm = (String) iterator.next();
                 Object o = m.get(nm);
 
