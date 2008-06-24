@@ -53,6 +53,7 @@ public class DataPointerValueConverter extends DataServlet {
    
 
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + "/dataList";
@@ -91,7 +92,7 @@ public class DataPointerValueConverter extends DataServlet {
         writer.println("    <th>Data type</th>");
         writer.println("    <td>");
         writer.println("      <select name=\"dataType\">");
-        Vector v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+        Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
         Collections.sort(v);
         for (int i = 0; i < v.size(); i++) {
             String selected = (v.get(i).equals(paramDataType) ? " selected" : "");

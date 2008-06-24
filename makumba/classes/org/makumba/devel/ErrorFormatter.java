@@ -224,7 +224,7 @@ public class ErrorFormatter {
             dbc.getTransactionProvider().getDefaultDataSourceName());
 
         try {
-            Dictionary<String, Comparable> d = new Hashtable<String, Comparable>();
+            Dictionary<String, Object> d = new Hashtable<String, Object>();
 
             // TODO: read and store the source of the submited page
             // d.put("page", "");

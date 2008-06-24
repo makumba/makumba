@@ -484,7 +484,7 @@ public class CodeGenerator {
     }
 
     /** generate inner field code for mak:new/editForm. */
-    private void generateInnerFieldFormCode(CodeGeneratorTemplate template, StringBuffer sb, Vector innerFields,
+    private void generateInnerFieldFormCode(CodeGeneratorTemplate template, StringBuffer sb, Vector<FieldDefinition> innerFields,
             int indent) throws IOException {
         for (int i = 0; i < innerFields.size(); i++) {
             FieldDefinition innerFd = (FieldDefinition) innerFields.get(i);
