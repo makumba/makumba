@@ -90,7 +90,7 @@ public class ErrorControllerHandler extends ControllerHandler {
                     resp.setContentType("text/html");
                     // FIXME:see if error code thrown gives problems to tests
                     // resp.setStatus(500);
-                    ErrorFormatter er = new ErrorFormatter(req, conf.getServletContext(), resp.getWriter(), true);
+                    new ErrorFormatter(req, conf.getServletContext(), resp.getWriter(), true);
                     resp.getWriter().flush();
                     // req.getRequestDispatcher("/servlet/org.makumba.devel.TagExceptionServlet").forward(req, resp);
                 }
