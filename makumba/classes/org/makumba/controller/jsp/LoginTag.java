@@ -57,7 +57,7 @@ public class LoginTag extends BodyTagSupport {
      * given a list of parameter values A= {a1, a2, ... an}, this method makes a set {[a, t]} where t is the number of
      * times a occurs in A
      */
-    static Dictionary countValues(String[] parameterValues) {
+    static Dictionary<String, Integer> countValues(String[] parameterValues) {
         Dictionary<String, Integer> values = new Hashtable<String, Integer>();
         for (int i = 0; i < parameterValues.length; i++) {
             Integer n = (Integer) values.get(parameterValues[i]);
@@ -136,15 +136,15 @@ public class LoginTag extends BodyTagSupport {
                 if (!name.equals("username") && !name.equals("password")) {
 
                     // count the unique values for this parameter
-                    Dictionary dParamValues = countValues(req.getParameterValues(name)); // ! was pcReq
+                    Dictionary<String, Integer> dParamValues = countValues(req.getParameterValues(name)); // ! was pcReq
 
                     // count the unique values for this parameter in the GET-QueryString
-                    Dictionary dGetParamValues = null;
+                    Dictionary<String, Integer> dGetParamValues = null;
                     if (dGetParams.get(name) != null)
                         dGetParamValues = countValues((String[]) dGetParams.get(name));
 
                     // for each unique value for this parameter... print as hidden input
-                    for (Enumeration ee = dParamValues.keys(); ee.hasMoreElements();) {
+                    for (Enumeration<String> ee = dParamValues.keys(); ee.hasMoreElements();) {
                         String value = (String) ee.nextElement();
 
                         // how many times is (paramName=value) among ALL params?
