@@ -24,7 +24,6 @@
 package org.makumba.commons.attributes;
 
 import java.util.Enumeration;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
