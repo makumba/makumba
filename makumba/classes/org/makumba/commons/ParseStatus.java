@@ -1,7 +1,6 @@
 package org.makumba.commons;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.jsp.tagext.BodyTag;
@@ -52,10 +51,11 @@ public class ParseStatus {
      *            the TagData where to which the tag should be added
      */
     void addTag(AnalysableTag t, TagData td) {
-        if (!parents.isEmpty())
-            t.setParent((AnalysableTag) parents.get(parents.size() - 1));
-        else
+        if (!parents.isEmpty()) {
+            t.setParent(parents.get(parents.size() - 1));
+        } else {
             t.setParent(null);
+        }
 
         JspParseData.fill(t, td.attributes);
         t.setTagKey(pageCache);
@@ -126,10 +126,12 @@ public class ParseStatus {
      *            the tag to be added
      */
     public void start(AnalysableTag t) {
-        if (t == null)
+        if (t == null) {
             return;
-        if (!(t instanceof BodyTag) && !t.canHaveBody())
+        }
+        if (!(t instanceof BodyTag) && !t.canHaveBody()) {
             throw new ProgrammerError("This type of tag cannot have a body:\n " + t.getTagText());
+        }
         parents.add(t);
     }
 
@@ -141,8 +143,9 @@ public class ParseStatus {
      */
     public void end(TagData td) {
         String tagName = td.name;
-        if (!tagName.startsWith(makumbaPrefix) && !tagName.startsWith(formPrefix))
+        if (!tagName.startsWith(makumbaPrefix) && !tagName.startsWith(formPrefix)) {
             return;
+        }
 
         // checks if the tag was opened
         if (parents.isEmpty()) {
@@ -154,7 +157,7 @@ public class ParseStatus {
 
         tagName = getTagName(tagName);
 
-        AnalysableTag t = (AnalysableTag) parents.get(parents.size() - 1);
+        AnalysableTag t = parents.get(parents.size() - 1);
 
         // if the end and start of the tag are not the same kind of tag
         if (!t.getClass().equals(MakumbaJspAnalyzer.tagClasses.get(tagName))) {
@@ -189,8 +192,8 @@ public class ParseStatus {
      * Ends the analysis when the end of the page is reached.
      */
     public void endPage() {
-        for (Iterator i = tags.iterator(); i.hasNext();) {
-            AnalysableTag t = (AnalysableTag) i.next();
+        for (AnalysableTag analysableTag : tags) {
+            AnalysableTag t = analysableTag;
             AnalysableTag.analyzedTag.set(t.tagData);
             t.doEndAnalyze(pageCache);
             AnalysableTag.analyzedTag.set(null);
