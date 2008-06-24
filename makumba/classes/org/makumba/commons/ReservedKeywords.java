@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+
 /**
  * Utility class containing all kind of reserved words which may cause problems if used as e.g. field names
  * 
@@ -30,19 +32,13 @@ public class ReservedKeywords {
     private static String[] sqlReserved = { "avg", "count", "distinct", "group", "order", "sum", "database", "from"};
 
     static {
-        ReservedKeywords.reservedKeywords = new HashSet<String>();
-        for (int i = 0; i < ReservedKeywords.javaReserved.length; i++) {
-            ReservedKeywords.reservedKeywords.add(ReservedKeywords.javaReserved[i]);
-        }
-        for (int i = 0; i < ReservedKeywords.hibernateReserved.length; i++) {
-            ReservedKeywords.reservedKeywords.add(ReservedKeywords.hibernateReserved[i]);
-        }
-        for (int i = 0; i < ReservedKeywords.sqlReserved.length; i++) {
-            ReservedKeywords.reservedKeywords.add(ReservedKeywords.sqlReserved[i]);
-        }
+        reservedKeywords = new HashSet<String>();
+        CollectionUtils.addAll(reservedKeywords, javaReserved);
+        CollectionUtils.addAll(reservedKeywords, hibernateReserved);
+        CollectionUtils.addAll(reservedKeywords, sqlReserved);
     }
 
-    public static Set getReservedKeywords() {
+    public static Set<String> getReservedKeywords() {
         return reservedKeywords;
     }
 
@@ -52,7 +48,7 @@ public class ReservedKeywords {
 
     public static String getKeywordsAsString() {
         String reserved = new String();
-        Iterator i = reservedKeywords.iterator();
+        Iterator<String> i = reservedKeywords.iterator();
         while (i.hasNext()) {
             reserved += (String) i.next();
             if (i.hasNext()) {
