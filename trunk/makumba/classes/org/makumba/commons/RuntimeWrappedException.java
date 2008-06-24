@@ -23,10 +23,6 @@
 
 package org.makumba.commons;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
-import org.makumba.forms.html.setcharEnumEditor;
 
 /**
  * Wraps an exception to throw it further as a RuntimeException. Stacktraces of this exception will actually print the
