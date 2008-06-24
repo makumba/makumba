@@ -129,10 +129,10 @@ public class ComposedSubquery extends ComposedQuery {
      */
     protected void initKeysets() {
         previousKeyset = (Vector) superQuery.previousKeyset.clone();
-        keyset = (Vector) superQuery.keyset.clone();
-        keysetLabels = (Vector) superQuery.keysetLabels.clone();
+        keyset = (Vector<Integer>) superQuery.keyset.clone();
+        keysetLabels = (Vector<String>) superQuery.keysetLabels.clone();
 
-        for (Enumeration e = keysetLabels.elements(); e.hasMoreElements();)
+        for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();)
             addProjection((String) e.nextElement());
         previousKeyset.addElement(superQuery.keyset);
         
