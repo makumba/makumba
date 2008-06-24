@@ -34,7 +34,7 @@ import java.util.Vector;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class MultipleKey extends Vector implements Serializable {
+public class MultipleKey extends Vector<Object> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,11 +47,11 @@ public class MultipleKey extends Vector implements Serializable {
         super(size);
     }
 
-    public MultipleKey(Vector v) {
+    public MultipleKey(Vector<Object> v) {
         this(v, v.size());
     }
 
-    public MultipleKey(Vector v, int size) {
+    public MultipleKey(Vector<Object> v, int size) {
         super(size);
         for (; elementCount < v.size(); elementCount++) {
             elementData[elementCount] = checkNull(v.elementAt(elementCount));
@@ -63,7 +63,7 @@ public class MultipleKey extends Vector implements Serializable {
      * @param v An instance of Vector 
      * @param o An object to be added
      */
-    public MultipleKey(Vector v, Object o) {
+    public MultipleKey(Vector<Object> v, Object o) {
         this(v, v.size() + 1);
         setAt(o, v.size());
     }

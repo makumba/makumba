@@ -125,7 +125,7 @@ public class NamedResources implements java.io.Serializable {
     }
 
     /**
-     * Cleans the given cache. Use this for developping purposes.
+     * Cleans the given cache. Use this for developing purposes.
      * 
      * @param n
      *            the index of the cache to be cleaned
@@ -169,7 +169,7 @@ public class NamedResources implements java.io.Serializable {
     public NamedResources(String name, NamedResourceFactory f) {
         this.name = name;
         this.f = f;
-        allCaches.addElement(new java.lang.ref.WeakReference(this));
+        allCaches.addElement(new java.lang.ref.WeakReference<NamedResources>(this));
     }
 
     /**
