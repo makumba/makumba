@@ -440,6 +440,17 @@ public abstract class Database {
         }
     }
 
+    public void checkForeignKeys(String table) {
+        getTable(table);
+        DataDefinition dd = ddp.getDataDefinition(table);
+
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
+            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+                openTable(fi.getSubtable().getName());
+        }
+    }
+
     protected void finalize() throws Throwable {
         close();
     }
