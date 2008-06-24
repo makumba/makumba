@@ -38,9 +38,10 @@ import javax.servlet.jsp.tagext.ValidationMessage;
  
 public class PageValidator extends TagLibraryValidator
 {
-  static ThreadLocal pageStack= new ThreadLocal();
+  static ThreadLocal<Stack<String>> pageStack= new ThreadLocal<Stack<String>>();
 
-  public ValidationMessage[] validate(java.lang.String prefix,
+  @Override
+public ValidationMessage[] validate(java.lang.String prefix,
 				      java.lang.String uri,
 				      javax.servlet.jsp.tagext.PageData page)
   {
@@ -48,16 +49,18 @@ public class PageValidator extends TagLibraryValidator
     String s;
     BufferedReader r= new BufferedReader(new InputStreamReader(page.getInputStream()));
     try{
-      while((s=r.readLine())!=null)
-	sb.append(s).append("\n");
+      while((s=r.readLine())!=null) {
+        sb.append(s).append("\n");
+    }
     }catch(IOException e){System.err.println(e);}
     String pg= sb.toString();
     int n= pg.indexOf("mak:");
-    if(n!=-1)
-      System.out.println("######## pushing"+ pg.substring(n-1, n+40));
-    Stack st= (Stack)pageStack.get();
+    if(n!=-1) {
+        System.out.println("######## pushing"+ pg.substring(n-1, n+40));
+    }
+    Stack<String> st= pageStack.get();
     if(st==null)
-      {st=new Stack(); pageStack.set(st);}
+      {st=new Stack<String>(); pageStack.set(st);}
     st.push(pg);
     return null;
   }
