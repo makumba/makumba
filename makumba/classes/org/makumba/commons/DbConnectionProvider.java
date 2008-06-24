@@ -24,7 +24,6 @@
 package org.makumba.commons;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.makumba.Transaction;
@@ -49,19 +48,22 @@ public class DbConnectionProvider {
             tp = TransactionProvider.getInstance();
         }
         
-        Transaction db = (Transaction) connections.get(dbname);
-        if (db == null)
+        Transaction db = connections.get(dbname);
+        if (db == null) {
             connections.put(dbname, db = tp.getConnectionTo(dbname));
+        }
         return db;
     }
 
     /** Close all connections. */
     public void close() {
-        for (Iterator i = connections.values().iterator(); i.hasNext();)
-            ((Transaction) i.next()).close();
+        for (Transaction transaction : connections.values()) {
+            (transaction).close();
+        }
         connections.clear();
     }
 
+    @Override
     protected void finalize() {
         close();
     }
