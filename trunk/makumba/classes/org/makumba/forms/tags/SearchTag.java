@@ -176,7 +176,7 @@ public class SearchTag extends FormTagBase {
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
 
-            Dictionary data = resp.getHttpData(req, suffix);
+            Dictionary<String, Object> data = resp.getHttpData(req, suffix);
             RequestAttributes attributes = RequestAttributes.getAttributes(req);
             HttpParameters parameters = RequestAttributes.getParameters(req);
             DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(resp.getSearchType());
@@ -192,7 +192,7 @@ public class SearchTag extends FormTagBase {
             StringBuffer queryString = new StringBuffer();
 
             // iterate over all fields in the form
-            Enumeration enumeration = data.keys();
+            Enumeration<String> enumeration = data.keys();
             while (enumeration.hasMoreElements()) {
                 String inputName = (String) enumeration.nextElement();
 
@@ -287,9 +287,10 @@ public class SearchTag extends FormTagBase {
                 link.append("&");
             }
             if (value instanceof Vector) {
-                for (int i = 0; i < ((Vector) value).size(); i++) {
-                    link.append(inputName).append("=").append(treatValue(inputName, ((Vector) value).get(i)));
-                    if (i + 1 < ((Vector) value).size()) {
+                Vector vector = (Vector) value;
+                for (int i = 0; i < (vector).size(); i++) {
+                    link.append(inputName).append("=").append(treatValue(inputName, (vector).get(i)));
+                    if (i + 1 < (vector).size()) {
                         link.append("&");
                     }
                 }

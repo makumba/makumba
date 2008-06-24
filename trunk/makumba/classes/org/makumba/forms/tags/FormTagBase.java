@@ -517,7 +517,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 // now
                 // so now we can set the responder order in the responder
                 ArrayList<String> responderOrder = new ArrayList<String>();
-                int j = 0;
                 for (MultipleKey element : sortedForms) {
                     if (responders.get(element) != null) {
                         responderOrder.add(responders.get(element));
