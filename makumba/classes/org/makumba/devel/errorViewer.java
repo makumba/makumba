@@ -69,7 +69,7 @@ public class errorViewer extends LineViewer {
     }
 
     public String parseLine(String s) {
-        Class javaClass;
+        Class<?> javaClass;
         String jspPage;
         String jspClass;
 
