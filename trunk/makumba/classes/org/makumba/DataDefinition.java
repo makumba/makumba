@@ -110,7 +110,7 @@ public interface DataDefinition {
     public boolean hasMultiUniqueKey(String[] fieldNames);
 
     /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
-    public Vector getReferenceFields();
+    public Vector<FieldDefinition> getReferenceFields();
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name);
