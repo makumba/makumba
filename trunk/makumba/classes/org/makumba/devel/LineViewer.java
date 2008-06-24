@@ -32,12 +32,10 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -116,7 +114,7 @@ public abstract class LineViewer implements SourceViewer {
     /** Default packages to be known. Use {@link JavaParseData#getImportedPackages()} to add more */
     protected String[] importedPackages = new String[] { "java.lang." };
 
-    protected Hashtable importedClasses = new Hashtable();
+    protected Hashtable<String, String> importedClasses = new Hashtable<String, String>();
 
     protected Error caughtError;
 
@@ -488,7 +486,7 @@ public abstract class LineViewer implements SourceViewer {
      * @return The formatted code line.
      */
     public String parseLine(String s) {
-        Class javaClass;
+        Class<?> javaClass;
         String jspPage;
         String jspClass;
 
@@ -640,8 +638,8 @@ public abstract class LineViewer implements SourceViewer {
      *            The class name to search for
      * @return The class, if found, <code>null</code> otherwise.
      */
-    public Class findClassSimple(String s) {
-        Class c = null;
+    public Class<?> findClassSimple(String s) {
+        Class<?> c = null;
         try {
             c = Class.forName(s);
         } catch (Throwable t) {
@@ -693,8 +691,8 @@ public abstract class LineViewer implements SourceViewer {
      * @param token
      * @return
      */
-    public Class findClass(String className) {
-        Class c = null;
+    public Class<?> findClass(String className) {
+        Class<?> c = null;
         String classNameTrial = (String) importedClasses.get(className);
         if (classNameTrial != null) {
             try {
@@ -732,7 +730,7 @@ public abstract class LineViewer implements SourceViewer {
         return null;
     }
 
-    public String formatClassLink(Class c, String methodName, String displayName) {
+    public String formatClassLink(Class<?> c, String methodName, String displayName) {
         if (c != null) {
             String s = "<a class=\"classLink\" href=\"";
             if (c.getName().startsWith("java")) {
