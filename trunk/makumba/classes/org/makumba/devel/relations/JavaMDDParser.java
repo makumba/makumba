@@ -30,7 +30,7 @@ public class JavaMDDParser {
 
     public static void main(String[] args) {
 
-        JavaMDDParser jqp = new JavaMDDParser(
+        new JavaMDDParser(
                 "/home/manu/workspace/karamba/public_html/WEB-INF/classes/org/eu/best/general/AccessControlLogic.java");
 
     }
