@@ -35,7 +35,7 @@ public class DataHolder {
     /** dictionary holding subrecords, i.e. each key gives access to a hashtable of fields * */
     Dictionary<String, Object> others = new Hashtable<String, Object>(); // contains data holders
 
-    /** dictionnary holding the data which has to be performed on sets * */
+    /** dictionary holding the data which has to be performed on sets * */
     Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
 
     /** all the fields to be processed * */
@@ -58,7 +58,7 @@ public class DataHolder {
         this.tp = t.getTransactionProvider();
         this.typeDef = ddp.getDataDefinition(type);
 
-        // we populate our dictionnary with the given data
+        // we populate our dictionary with the given data
         for (Enumeration e = data.keys(); e.hasMoreElements();) {
             Object o = e.nextElement();
             dictionnary.put(o, data.get(o));
@@ -157,7 +157,7 @@ public class DataHolder {
 
     public Pointer insert() {
         // first we insert the other pointers, i.e. the subrecords
-        for (Enumeration e = others.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = others.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
         }
@@ -165,7 +165,7 @@ public class DataHolder {
         Pointer p = tp.getCRUD().insert(t, type, dictionnary);
 
         // insert the sets
-        for (Enumeration e = sets.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fi = ddp.getDataDefinition(p.getType()).getFieldDefinition(fld);
             tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
@@ -177,7 +177,7 @@ public class DataHolder {
         // see if we have to read some pointers
         Vector<Object> ptrsx = new Vector<Object>();
         // we have to read the "other" pointers
-        for (Enumeration e = others.keys(); e.hasMoreElements();)
+        for (Enumeration<String> e = others.keys(); e.hasMoreElements();)
             ptrsx.addElement(e.nextElement());
         // we might have to read the ptrOnes that are nullified
         for (Enumeration e = dictionnary.keys(); e.hasMoreElements();) {
@@ -186,12 +186,12 @@ public class DataHolder {
                 ptrsx.addElement(s);
         }
         // read the pointers if there are any to read
-        Dictionary ptrs = null;
+        Dictionary<String, Object> ptrs = null;
         if (ptrsx.size() > 0)
             ptrs = t.read(p, ptrsx);
 
         // update others
-        for (Enumeration e = others.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = others.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             Pointer ptr = (Pointer) ptrs.remove(fld);
             if (ptr == null || ptr == Pointer.Null)
@@ -208,7 +208,7 @@ public class DataHolder {
         // we update the record
         tp.getCRUD().update1(t, p, typeDef, dictionnary);
 
-        for (Enumeration e = sets.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fi = ddp.getDataDefinition(p.getType()).getFieldDefinition(fld);
             tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
