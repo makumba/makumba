@@ -481,7 +481,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     // intEnum has int, set has null, etc
-    public Class getJavaType() {
+    public Class<?> getJavaType() {
         switch (getIntegerType()) {
             case FieldDefinition._char:
             case FieldDefinition._charEnum:
