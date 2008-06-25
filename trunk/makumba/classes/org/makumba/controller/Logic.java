@@ -273,7 +273,7 @@ public class Logic {
         return NamedResources.getStaticCache(logix).getResource(path);
     }
 
-    static Class[] argDb = { Attributes.class, Database.class };
+    static Class<?>[] argDb = { Attributes.class, Database.class };
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
@@ -324,7 +324,7 @@ public class Logic {
         }
     }
 
-    public static Method getMethod(String name, Class[] args, Object controller) {
+    public static Method getMethod(String name, Class<?>[] args, Object controller) {
         try {
             Method m = null;
             if(args != null) {

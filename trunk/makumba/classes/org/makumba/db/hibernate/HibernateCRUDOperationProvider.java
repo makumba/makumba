@@ -88,7 +88,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Pointer base = (Pointer) data.get(dd.getParentField().getDataDefinition().getName());
 
-                Class c = getPointerClass(base.getType());
+                Class<?> c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
 
                 String fieldNameInClass = getFieldNameInClass(c, fi.getName());
@@ -97,13 +97,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
                 if (col == null) {
-                    col = new HashSet();
+                    col = new HashSet<Object>();
                     m = c.getMethod("set" + fieldNameInClass, new Class[] { Collection.class });
                     m.invoke(baseObject, new Object[] { col });
                 }
 
                 // now we add our new data
-                Enumeration<Object> e = data.elements();
+                Enumeration e = data.elements();
                 while (e.hasMoreElements()) {
                     Object o = e.nextElement();
                     if (!(o instanceof Pointer && ((Pointer) o).equals(base))) {
@@ -121,7 +121,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             } else {
 
-                Class recordClass = null;
+                Class<?> recordClass = null;
                 recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
                 // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
@@ -132,7 +132,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 fillObject(t, data, dd, recordClass, newRecord);
 
                 if (isGenerated(recordClass) && data.get("TS_create") == null) {
-                    Class[] classes = new Class[] { java.util.Date.class };
+                    Class<?>[] classes = new Class<?>[] { java.util.Date.class };
                     Object[] now = new Object[] { new Date() };
 
                     Method m = recordClass.getMethod("setTS_create", classes);
@@ -148,7 +148,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Object pointerId = null;
 
-                Class[] noParam = {};
+                Class<?>[] noParam = {};
 
                 String idMethodName = "getprimaryKey";
                 if (!isGenerated(recordClass)) {
@@ -194,7 +194,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     }
 
-    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class recordClass, Object newRecord)
+    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class<?> recordClass, Object newRecord)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Enumeration<String> fields = data.keys();
         while (fields.hasMoreElements()) {
@@ -205,7 +205,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
 
-            Class fieldType = null;
+            Class<?> fieldType = null;
 
             switch (fd.getIntegerType()) {
                 case FieldDefinition._intEnum:
@@ -281,7 +281,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             }
 
-            Class[] parameterTypes = { fieldType };
+            Class<?>[] parameterTypes = { fieldType };
 
             // maybe we need an uppercase here, not sure
             Method m = null;
@@ -304,7 +304,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         }
     }
 
-    private Object getPointedObject(Transaction t, Class pointerClass, Pointer pointer) {
+    private Object getPointedObject(Transaction t, Class<?> pointerClass, Pointer pointer) {
         return ((HibernateTransaction) t).s.get(pointerClass, getTypedId(pointerClass, pointer));
     }
 
@@ -324,7 +324,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     return;
 
                 HibernateTransaction ht = (HibernateTransaction) t;
-                Class c = getPointerClass(base.getType());
+                Class<?> c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
 
                 Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
@@ -339,7 +339,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 // we convert all the pointers to objects so Hibernate can handle them
                 for (Iterator i = values.iterator(); i.hasNext();) {
                     Pointer p = (Pointer) i.next();
-                    Class c1 = getPointerClass(p.getType());
+                    Class<?> c1 = getPointerClass(p.getType());
                     col.add(getPointedObject(t, c1, p));
                 }
 
@@ -381,11 +381,11 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             try {
                 HibernateTransaction ht = (HibernateTransaction) t;
-                Class c = getPointerClass(base.getType());
+                Class<?> c = getPointerClass(base.getType());
                 Object baseObject = getPointedObject(t, c, base);
 
                 String fieldNameInClass = fi.getName();
-                Class[] parameterTypes = new Class[] { Collection.class };
+                Class<?>[] parameterTypes = new Class[] { Collection.class };
                 
                 if (!isGenerated(c)) {
                     for (Method met : c.getMethods()) {
@@ -441,7 +441,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             String name = nr.arrowToDoubleUnderscore(dd.getName());
 
-            Class recordClass = null;
+            Class<?> recordClass = null;
             recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
             // System.out.println(recordClass.getName() + ": " + Arrays.toString(recordClass.getMethods()));
 
@@ -453,7 +453,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             fillObject(t, dic, dd, recordClass, record);
 
             if (isGenerated(recordClass)) {
-                Class[] classes = new Class[] { java.util.Date.class };
+                Class<?>[] classes = new Class[] { java.util.Date.class };
                 Object[] now = new Object[] { new Date() };
                 Method m = recordClass.getMethod("setTS_modify", classes);
                 m.invoke(record, now);
@@ -490,7 +490,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
      *            the class
      * @return <code>true</code> if it was generated, <code>false</code> otherwise
      */
-    public static boolean isGenerated(Class clazz) {
+    public static boolean isGenerated(Class<?> clazz) {
         for (String s : HibernateSFManager.getGeneratedClasses()) {
             if (s.equals(clazz.getCanonicalName())) {
                 return true;
@@ -505,7 +505,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
      * @param fieldName the name of the field 
      * @return the fieldName, with the right capitals
      */
-    private String getFieldNameInClass(Class clazz, String fieldName) {
+    private String getFieldNameInClass(Class<?> clazz, String fieldName) {
         if (!isGenerated(clazz)) {
             for (Method met : clazz.getMethods()) {
                 if (met.getName().toLowerCase().equals("get" + fieldName.toLowerCase())) {
@@ -524,7 +524,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
      * @param p the Pointer
      * @return a long or int value, depending on the type of the field in the class
      */
-    private Serializable getTypedId(Class clazz, Pointer p) {
+    private Serializable getTypedId(Class<?> clazz, Pointer p) {
         for (Method m : clazz.getMethods()) {
             if (m.getName().equals("getId") || m.getName().equals("getprimaryKey")) {
                 if (isInteger(m.getReturnType().getName())) {

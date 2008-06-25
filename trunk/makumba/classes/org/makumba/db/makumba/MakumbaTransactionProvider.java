@@ -21,7 +21,7 @@ public class MakumbaTransactionProvider implements TransactionProviderInterface 
     
     private static CRUDOperationProvider singleton;
     
-    static Class[] theProp = { java.util.Properties.class };
+    static Class<?>[] theProp = { java.util.Properties.class };
     
     /**
      * Initializes a Database object from the given properties. The following properties are expected:
