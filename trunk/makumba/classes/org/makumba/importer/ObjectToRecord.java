@@ -48,9 +48,9 @@ public class ObjectToRecord {
 
     Hashtable fields = new Hashtable();
 
-    public ObjectToRecord(Class c, String type) {
+    public ObjectToRecord(Class<?> c, String type) {
         try {
-            Class args[] = { java.util.Hashtable.class, org.makumba.db.makumba.Database.class };
+            Class<?> args[] = { java.util.Hashtable.class, org.makumba.db.makumba.Database.class };
             try {
                 transform = c.getMethod("importTransform", args);
             } catch (NoSuchMethodException nsme) {
