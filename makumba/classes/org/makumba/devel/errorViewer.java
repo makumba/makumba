@@ -131,7 +131,7 @@ public class errorViewer extends LineViewer {
      * @param token
      * @return
      */
-    public Class findClassSimple(String token) {
+    public Class<?> findClassSimple(String token) {
         int index = token.lastIndexOf('.');
         String className = token.substring(0, index);
         return super.findClassSimple(className);

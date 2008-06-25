@@ -57,7 +57,7 @@ public class ErrorFormatter {
             { org.makumba.NoSuchLabelException.class, "no such label" },
             { org.makumba.LogicException.class, "business logic" } };
 
-    static final Class[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class,
+    static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class,
             ClassCastException.class };
 
     protected ServletContext servletContext;
@@ -155,8 +155,8 @@ public class ErrorFormatter {
                     }
                     title = "JSP Compilation error";
                     for (int i = 0; i < errors.length; i++) {
-                        if ((((Class) errors[i][0])).isInstance(t) || t1 != null
-                                && (((Class) errors[i][0])).isInstance(t = t1)) {
+                        if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null
+                                && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
                             title = "Makumba " + errors[i][1] + " error";
                         }
                     }
@@ -188,7 +188,7 @@ public class ErrorFormatter {
         }
 
         for (int i = 0; i < errors.length; i++)
-            if ((((Class) errors[i][0])).isInstance(t) || t1 != null && (((Class) errors[i][0])).isInstance(t = t1)) {
+            if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
                 title = "Makumba " + errors[i][1] + " error";
                 knownError(title, t, original, req, wr);
                 return;
@@ -493,7 +493,7 @@ public class ErrorFormatter {
             return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
         }
         for (int i = 0; i < errors.length; i++) {
-            if ((((Class) errors[i][0])).isInstance(t) || t1 != null && (((Class) errors[i][0])).isInstance(t = t1)) {
+            if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
                 return "Makumba " + errors[i][1] + " error:\n" + formatTagData(req) + t.getMessage();
             }
         }

@@ -165,7 +165,7 @@ public abstract class Database {
 
     Properties config = null;
 
-    Class tableclass;
+    Class<?> tableclass;
 
     String configName;
 
@@ -269,7 +269,7 @@ public abstract class Database {
     }
 
     /** this method should be redefined by database classes that have a default table class. this returns null */
-    protected Class getTableClassConfigured() {
+    protected Class<?> getTableClassConfigured() {
         return null;
     }
 

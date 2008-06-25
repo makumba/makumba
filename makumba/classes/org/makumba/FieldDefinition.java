@@ -133,7 +133,7 @@ public interface FieldDefinition {
     public String getDataType();
 
     /** The Java type of this field. For example, intEnum and int both have java.lang.Integer as data type */
-    public Class getJavaType();
+    public Class<?> getJavaType();
 
     /** tells whether this field is fixed */
     public boolean isFixed();

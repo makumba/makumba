@@ -159,7 +159,7 @@ public class HibernateTransaction extends TransactionImplementation {
             }
             
             // otherwise it may be a long
-            Class recordClass = null;
+            Class<?> recordClass = null;
             try {
                 recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(p.getType()));
                 

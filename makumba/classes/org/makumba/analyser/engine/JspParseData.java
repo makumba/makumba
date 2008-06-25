@@ -306,7 +306,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         
         treatIncludeDirective(includeDirective, start, end, analyzer);
         
-        Map m1 = parseAttributes(includeDirective, -1);
+        Map<String, String> m1 = parseAttributes(includeDirective, -1);
         String fileName = (String) m1.get("file");
         String dir = fileName.startsWith("/") ? root : host.file.getParent();
         host.include(new File(dir, fileName), position, includeDirective);
@@ -340,7 +340,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Matcher m = JspExpressionLanguagePattern.matcher(content);
         while (m.find()) {
             SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
-            SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+            end.getOtherInfo();
         }
     }
 
@@ -529,12 +529,12 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            the attributes of the tag
      */
     public static void fill(Tag t, Map<String, String> attributes) {
-        Class c = t.getClass();
-        Class[] argTypes = { String.class };
+        Class<?> c = t.getClass();
+        Class<?>[] argTypes = { String.class };
         Object[] args = new Object[1];
 
         for (Entry<String, String> entry : attributes.entrySet()) {
-            Entry me = entry;
+            Entry<String, String> me = entry;
             String s = (String) me.getKey();
             String methodName = "set" + Character.toUpperCase(s.charAt(0)) + s.substring(1);
             try {
