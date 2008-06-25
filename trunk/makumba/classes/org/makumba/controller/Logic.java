@@ -299,11 +299,11 @@ public class Logic {
         }
     }
 
-    static Class[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
+    static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
 
-    static Class[] opArgs = { Dictionary.class, Attributes.class, Database.class };
+    static Class<?>[] opArgs = { Dictionary.class, Attributes.class, Database.class };
 
-    static Class[] noClassArgs = {};
+    static Class<?>[] noClassArgs = {};
 
     static Object[] noObjectArgs = {};
 
@@ -434,7 +434,7 @@ public class Logic {
         }
     }
 
-    public static Object doOp(Object controller, String opName, Dictionary data, Attributes a, String dbName,
+    public static Object doOp(Object controller, String opName, Dictionary<String, Object> data, Attributes a, String dbName,
             DbConnectionProvider dbcp) throws LogicException {
         if (opName == null) {
             return null;
@@ -472,7 +472,7 @@ public class Logic {
     }
 
     public static Pointer doEdit(Object controller, String handlerName, String afterHandlerName, String typename,
-            Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { p, data, a, db };
         Method edit = null;
@@ -510,7 +510,7 @@ public class Logic {
         }
     }
 
-    static Class[] deleteArgs = { Pointer.class, Attributes.class, Database.class };
+    static Class<?>[] deleteArgs = { Pointer.class, Attributes.class, Database.class };
 
     public static Pointer doDelete(Object controller, String typename, Pointer p, Attributes a, String dbName,
             DbConnectionProvider dbcp) throws LogicException {
@@ -555,7 +555,7 @@ public class Logic {
     }
 
     public static Pointer doAdd(Object controller, String handlerName, String afterHandlerName, String typename,
-            Pointer p, Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] addArg = { p, data, a, db };
         Method on = null;
@@ -600,10 +600,10 @@ public class Logic {
         }
     }
 
-    static Class[] newArgs = { Dictionary.class, Attributes.class, Database.class };
+    static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Database.class };
 
     public static Pointer doNew(Object controller, String handlerName, String afterHandlerName, String typename,
-            Dictionary data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] onArgs = { data, a, db };
         Object[] afterArgs = { null, data, a, db };
