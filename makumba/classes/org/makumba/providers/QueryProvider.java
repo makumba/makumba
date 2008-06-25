@@ -17,7 +17,7 @@ public abstract class QueryProvider {
 
     private static String[] queryProviders = {"oql", "org.makumba.db.makumba.OQLQueryProvider", "hql", "org.makumba.db.hibernate.HQLQueryProvider" };
 
-    static final Map<String, Class> providerClasses = new HashMap<String, Class>();
+    static final Map<String, Class<?>> providerClasses = new HashMap<String, Class<?>>();
 
     public QueryProvider(){
         try {

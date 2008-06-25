@@ -16,7 +16,7 @@ public class DetectHQLTokenTypes {
     }
     
     public void generate(){
-        Class c= org.hibernate.hql.antlr.HqlTokenTypes.class;
+        Class<?> c= org.hibernate.hql.antlr.HqlTokenTypes.class;
 
         PrintStream out=null;
         String HQLTokenPath = "";
