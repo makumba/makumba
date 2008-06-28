@@ -343,6 +343,7 @@ public class CodeGenerator {
         Vector<FieldDefinition> fields = processData[0];
         Vector<FieldDefinition> sets = processData[1];
         String labelName = getLabelNameFromDataDefinition(dd);
+        action += "?" + labelName + "=${" + labelName + "Pointer}";
 
         try {
             // Write page header, depending on type
@@ -363,12 +364,14 @@ public class CodeGenerator {
                 } else if (type == TYPE_OBJECT) {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + "=$"
                             + labelName + "\">");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
                             + template.afterPageHeader);
                 } else if (type == TYPE_EDITFORM) {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + "=$"
                             + labelName + "\">");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
                             + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
                             + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
@@ -595,7 +598,7 @@ public class CodeGenerator {
             appendJSPLine(sb, indent, "<mak:list from=\"" + labelName + "." + fd.getName() + " " + fd.getName()
                     + "\" >");
             indent++;
-            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" >");
+            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" />"+ "\" >");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 
