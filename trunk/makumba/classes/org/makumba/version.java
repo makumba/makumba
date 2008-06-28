@@ -75,7 +75,12 @@ public class version {
 
         } else {
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
-            version = "devel-" + df.format(getBuildDate());
+            Date buildDate = getBuildDate();
+            if(buildDate != null) {
+                version = "devel-" + df.format(getBuildDate());
+            } else {
+                version = "devel-DATE-NOT-FOUND";
+            }
         }
 
         return version;
