@@ -51,7 +51,7 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
         ArrayList<Driver> driversToUnload=new ArrayList<Driver>();
         while (drivers.hasMoreElements()) {
                 Driver driver = drivers.nextElement();
-                if (driver.getClass().getClassLoader().equals(getClass().getClassLoader())) {
+                if (driver.getClass().getClassLoader() != null && driver.getClass().getClassLoader().equals(getClass().getClassLoader())) {
                         driversToUnload.add(driver);
                 }
         }
