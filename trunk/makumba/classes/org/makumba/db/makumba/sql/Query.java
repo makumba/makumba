@@ -195,7 +195,8 @@ public class Query implements org.makumba.db.makumba.Query {
             }
 
             int n = ps.executeUpdate();
-
+            ps.close();
+            
             com = "INSERT INTO " + insertHandler.getDBName() + " (" + fieldList + ") SELECT " + fieldList + " FROM "
                     + tablename;
             ps = sqldbc.getPreparedStatement(com);
@@ -207,10 +208,11 @@ public class Query implements org.makumba.db.makumba.Query {
             }
             Statement st = sqldbc.createStatement();
             st.execute("DROP TABLE " + tablename);
+            st.close();
+            ps.close();
             return n;
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
         }
-
     }
 }

@@ -375,6 +375,7 @@ public class Database extends org.makumba.db.makumba.Database {
 					ps.toString());
 			ps.execute();
 			int n = ps.getUpdateCount();
+            ps.close();
 			return n;
 		} catch (SQLException e) {
 			if (isDuplicateException(e))

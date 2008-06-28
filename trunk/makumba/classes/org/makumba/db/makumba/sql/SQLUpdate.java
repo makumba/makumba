@@ -195,6 +195,12 @@ public class SQLUpdate implements Update {
             return rez;
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
     }
 }
