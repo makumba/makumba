@@ -96,6 +96,14 @@ public class CodeGenerator {
     /** Default used access keys for Add, Save changes, Cancel & Reset */
     private static final List<String> DEFAULTUSED_ACCESS_KEYS = Arrays.asList(new String[] { "a", "s", "c", "r" });
 
+    public static final String QL_OQL = "OQL";
+    
+    public static final String QL_HQL = "HQL";
+    
+    public static final String OQL_TLD_DEFINITION = "<%@ taglib uri=\"http://www.makumba.org/presentation\" prefix=\"mak\" %>";
+
+    public static final String HQL_TLD_DEFINITION = "<%@ taglib uri=\"http://www.makumba.org/view-hql\" prefix=\"mak\" %>";
+
     static {
         allCodeTypes = new String[] { TYPE_NEWFORM, TYPE_ADDFORM, TYPE_EDITFORM, TYPE_LIST, TYPE_OBJECT, TYPE_DELETE,
                 TYPE_BUSINESS_LOGICS };
@@ -166,7 +174,7 @@ public class CodeGenerator {
             BufferedWriter out = new BufferedWriter(fw);
             StringBuffer sb = new StringBuffer();
             String action = getLabelNameFromDataDefinition(dd) + "View.jsp";
-            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template);
+            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template, QL_OQL);
             out.write(sb.toString());
             out.close();
         }
@@ -175,10 +183,11 @@ public class CodeGenerator {
     /** Contains lists of already used accessKeys for each DataDefinition. */
     private Hashtable<DataDefinition, ArrayList<String>> accessKeys = new Hashtable<DataDefinition, ArrayList<String>>();
 
-    /** Starts the code generation for the given code type and DataDefinition. */
+    /** Starts the code generation for the given code type and DataDefinition. 
+     * @param queryLanguage TODO*/
     public void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
-            CodeGeneratorTemplate template) {
-        generateCode(sb, type, dd, action, DataServlet.extractFields(dd, true), template, 0);
+            CodeGeneratorTemplate template, String queryLanguage) {
+        generateCode(sb, type, dd, action, DataServlet.extractFields(dd, true), template, 0, queryLanguage);
     }
 
     /** Starts the business logic code generation for the given DataDefinition. */
@@ -337,7 +346,7 @@ public class CodeGenerator {
     }
 
     private void generateCode(StringBuffer sb, String type, DataDefinition dd, String action, Vector<FieldDefinition>[] processData,
-            CodeGeneratorTemplate template, int indent) {
+            CodeGeneratorTemplate template, int indent, String queryLanguage) {
 
         long beginTime = System.currentTimeMillis();
         Vector<FieldDefinition> fields = processData[0];
@@ -351,9 +360,9 @@ public class CodeGenerator {
             appendLine(sb, "<%-- Makumba Generator - START OF  *** " + type.toUpperCase() + " ***  PAGE FOR OBJECT "
                     + dd + " --%>");
             if (type == TYPE_LIST) {
-                generateListCode(sb, dd, template, indent, labelName);
+                generateListCode(sb, dd, template, indent, labelName, queryLanguage);
             } else if (type == TYPE_DELETE) {
-                generateDeleteCode(sb, dd, template, labelName, indent);
+                generateDeleteCode(sb, dd, template, labelName, indent, queryLanguage);
             } else {
                 indent++;
                 if (type == TYPE_NEWFORM) {
@@ -362,16 +371,16 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:newForm type=\"" + dd + "\" action=\"" + action + "\" name=\"" + labelName
                             + "\" >");
                 } else if (type == TYPE_OBJECT) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + "=$"
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:")
                             + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName + "\" var=\""+labelName+"Pointer\" />");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
                             + template.afterPageHeader);
                 } else if (type == TYPE_EDITFORM) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + "=$"
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:")
                             + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName + "\" var=\""+labelName+"Pointer\" />");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
                             + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
                             + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
@@ -468,11 +477,12 @@ public class CodeGenerator {
                 + (System.currentTimeMillis() - beginTime) + " ms");
     }
 
-    /** Generates the code for a delete form. */
+    /** Generates the code for a delete form. 
+     * @param queryLanguage TODO*/
     private void generateDeleteCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template,
-            String labelName, int indent) {
+            String labelName, int indent, String queryLanguage) {
         appendLine(sb, template.beforePageHeader + "Delete confirmation" + template.afterPageHeader);
-        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + "=$" + labelName
+        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:") + labelName
                 + "\">");
         indent++;
         appendJSPLine(sb, indent, "Delete " + labelName + " '<mak:value expr=\"" + labelName + "."
@@ -496,15 +506,16 @@ public class CodeGenerator {
         }
     }
 
-    /** Generate the code for listing objects. */
+    /** Generate the code for listing objects. 
+     * @param queryLanguage TODO*/
     private void generateListCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template, int indent,
-            String labelName) {
+            String labelName, String queryLanguage) {
 
         appendJSPLine(sb, indent, template.beforePageHeader + "List " + StringUtils.upperCaseBeginning(labelName) + "s"
                 + template.afterPageHeader);
 
         // links to this file for sort-by links
-        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName + "\" />";
+        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" />";
         String thisFile = getFileNameFromObject(dd, TYPE_LIST) + "?sortBy=";
 
         // converting parameters --> EL sort by values

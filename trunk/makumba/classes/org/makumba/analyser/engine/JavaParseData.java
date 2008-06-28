@@ -226,6 +226,20 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         return holder;
     }
 
+    public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus){
+        try {
+            parse(initStatus);
+            return syntaxPoints.getSyntaxPoints();
+        } catch (Error e) {
+            holder = e;
+            throw e;
+        } catch (RuntimeException re) {
+            holder = re;
+            throw re;
+        }
+    }
+
+    
     /**
      * Gets the imported packages found in this java class.
      * 
