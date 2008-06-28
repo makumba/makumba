@@ -38,6 +38,9 @@ public class RuntimeWrappedException extends RuntimeException {
     public RuntimeWrappedException(Throwable e) {
         super(e);
     }
-
+    
+    public RuntimeWrappedException(String message) {
+        super(message);
+    }
 
 }
