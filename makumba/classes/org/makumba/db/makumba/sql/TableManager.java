@@ -232,6 +232,7 @@ public class TableManager extends Table {
                     foreignKeys.put(rs2.getString("FKCOLUMN_NAME").toLowerCase(), temp_foreign);
                 }
             }
+            rs2.close();
 
         } catch (SQLException e) {
             Database.logException(e, dbc);
@@ -421,6 +422,7 @@ public class TableManager extends Table {
                 throw new DBError(e);
             }
         }
+        // exec closes the ps
         int n = getSQLDatabase().exec(ps);
 
         if (!getSQLDatabase().isAutoIncrement())
@@ -663,6 +665,7 @@ public class TableManager extends Table {
 
                 }
             }
+            // exec closes ps
             if (getSQLDatabase().exec(ps) == -1)
                 throw findDuplicates((SQLDBConnection) dbc, d);
 
@@ -671,6 +674,8 @@ public class TableManager extends Table {
                 ResultSet rs = ps.executeQuery();
                 rs.next();
                 d.put(indexField, new SQLPointer(getDataDefinition().getName(), rs.getInt(1)));
+                rs.close();
+                ps.close();
             }
 
             Pointer ret = (Pointer) d.get(indexField);
@@ -748,6 +753,7 @@ public class TableManager extends Table {
         // while(true)
         try {
             setUpdateArgument(getDBName(), ps, 1, uid);
+            // exec closes the ps
             getSQLDatabase().exec(ps);
             // break;
         }// catch(ReconnectedException e) { continue; }
@@ -795,6 +801,7 @@ public class TableManager extends Table {
 
             setUpdateArgument(getDBName(), st, n, uid);
 
+            // exec closes the st
             if (getSQLDatabase().exec(st) == -1)
                 throw findDuplicates((SQLDBConnection) dbc, d);
             return;
@@ -1772,6 +1779,12 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, checkDuplicate.get(fieldName));
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
     }
 
@@ -1800,6 +1813,12 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, StringUtils.toString(fields));
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
 
     }
@@ -1881,6 +1900,12 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, StringUtils.toString(fields));
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
 
     }

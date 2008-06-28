@@ -84,16 +84,27 @@ public class ReferenceChecker extends HttpServlet {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
         try {
             ResultSet result = ps.executeQuery();
-            result.next();
-            return result.getInt(1);
+            try{
+                result.next();
+                return result.getInt(1);
+            }finally{
+                result.close();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
         return -1;
     }
 
     private ResultSet executeQuery(String query) {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
+        // FIXME: this PreparedStatement is never closed, and it probably cannot be closed before closing the result set which we return....
         try {
             return ps.executeQuery();
         } catch (SQLException e) {
