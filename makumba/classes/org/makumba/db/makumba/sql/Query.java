@@ -136,6 +136,12 @@ public class Query implements org.makumba.db.makumba.Query {
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
+        }finally{
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                throw new org.makumba.DBError(e);
+            }
         }
     }
 
