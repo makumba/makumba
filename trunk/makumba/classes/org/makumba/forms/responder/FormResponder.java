@@ -62,9 +62,11 @@ public class FormResponder extends Responder {
 
             // then, fill in values from unresolved inputs (i.e. from nested forms)
             HashMap<String, Object> results = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
-            for (String key : lazyEvaluatedInputs.keySet()) {
-                if (results.get(key) != null) {
-                    data.put(lazyEvaluatedInputs.get(key), results.get(key));
+            if (lazyEvaluatedInputs != null) { // check for != null to be on the safe side
+                for (String key : lazyEvaluatedInputs.keySet()) {
+                    if (results.get(key) != null) {
+                        data.put(lazyEvaluatedInputs.get(key), results.get(key));
+                    }
                 }
             }
 
