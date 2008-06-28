@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="Author" content="makumba-dev">
+<title>Makumba documentation</title>
+<link rel="stylesheet" type="text/css" media="all" href="../main.css">
+<script type="text/javascript" src="../main.js"></script>
+<script type="text/javascript" src="makumbaSetChooser.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("../");
+</script>
+<h1>JavaScript set choosers with Makumba</h1>
+<p>When you have a set, <i>mak:input</i> will generate a list of values to choose from. To make the choice easier, you
+sometimes need to use two select boxes whereby the user can move items from one box to the other. Example: (<a
+  href="example-makumbaSetChooser.html">download example</a>)</p>
+
+<!-- begin: example -->
+<form action="#" method="get" name="myForm">
+<table>
+  <tr>
+    <td><select multiple size="5" name="selectFrom"></select></td>
+    <td><input type="button" onclick="move(this.form.selectFrom,this.form.fieldName)" value="&raquo; add &raquo;"> <br>
+    <br>
+    <input type="button" onclick="move(this.form.fieldName,this.form.selectFrom)" value="&laquo; remove &laquo;"></td>
+    <td><!-- select to --> <select multiple name="fieldName" size="5">
+      <option>Item 1</option>
+      <option>Item 2</option>
+      <option selected>Item 3</option>
+      <option>Item 4</option>
+      <option>Item 5</option>
+    </select></td>
+    <td><input type="button" value="Move up" onclick="Moveup(this.form.fieldName)"> <br>
+    <br>
+    <input type="button" value="Move down" onclick="Movedown(this.form.fieldName)"></td>
+    <td></td>
+  </tr>
+</table>
+<input type="submit" value="Submit" onclick="javascript:highlightAll(this.form.fieldName);"></form>
+<!-- code that initialises the select boxes -->
+<script language="JavaScript" type="text/javascript">
+<!-- //Begin
+moveNotSelected(document.forms['myForm'].fieldName,document.forms['myForm'].selectFrom)
+//  End -->
+</script>
+<!-- end: example -->
+
+<p>How to do this in your pages:</p>
+<ol>
+  <li>Download the script <a href="makumbaSetChooser.js">makumbaSetChooser.js</a> and save it in your web application</li>
+  <li>Include the script in your page. You can do that in two ways:</li>
+</ol>
+<ul>
+  <li>If you have access to the page header use javascript include</li>
+</ul>
+<pre class="example">&lt;head&gt;
+...
+&lt;script type=&quot;text/javascript&quot; src=&quot;makumbaSetChooser.js&quot;&gt;&lt;/script&gt;
+...<br>&lt;/head&gt;</pre>
+<ul>
+  <li>When the page header is not in the JSP you work with and you want to keep everything close to the form which contains
+  the chooser you can include the script server side, like this</li>
+</ul>
+<pre class="example">&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;<br>&lt;%@include file=&quot;makumbaSetChooser.js&quot; %&gt;<br>&lt;/script&gt;</pre>
+<ol start="3">
+  <li>Say you have a form that contains a set input as follows</li>
+</ol>
+<pre class="example">&lt;mak:...form ...<b>&gt;
+</b>&lt;mak:input name=<b>&quot;fieldName&quot;</b>/&gt;
+&lt;input type=&quot;submit&quot;&gt;
+&lt;/mak:...form&gt;</pre>
+<ol start="4">
+  <li>Now you can enhance the form as follows.<br>
+  Add the following items to the form. Change the names in bold to adapt the example to your situation.</li>
+</ol>
+<pre class="example">&lt;mak:...form ... <b><i>name=&quot;myForm&quot;</i>&gt;
+
+</b><i>&lt;!-- an empty list for the non selected values and give a name, e.g., &quot;selectFrom&quot; --&gt;
+</i><i>&lt;select multiple size=&quot;5&quot; <b>name=&quot;selectFrom&quot;</b>&gt;&lt;/select&gt;
+
+&lt;!-- the buttons to move the items --&gt;
+&lt;input type=&quot;button&quot; onClick=&quot;move(this.form.<b>selectFrom</b>,this.form.<b>fieldName</b>)&quot; value=&quot;add&quot;&gt;<br>&lt;input type=&quot;button&quot; onClick=&quot;move(this.form.<b>fieldName</b>,this.form.<b>selectFrom</b>)&quot; value=&quot;remove&quot;&gt;
+</i>
+<i>&lt;!--  the original mak:input --&gt;</i>
+&lt;mak:input name=&quot;<b>fieldName</b>&quot; ...&gt;
+
+<i>&lt;!-- buttons for changing the order, if needed --&gt;
+&lt;input type=&quot;button&quot; value=&quot;Move up&quot; onclick=&quot;Moveup(this.form.field1)&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;Move down&quot; onclick=&quot;Movedown(this.form.field1)&quot;&gt;</i>
+
+<i>&lt;!-- submit button --&gt;</i>
+&lt;input type=&quot;submit&quot; <i><b>onClick=&quot;javascript:highlightAll(this.form.fieldName);&quot;</b>&gt;</i>
+
+&lt;/mak:...form&gt;
+
+<i>&lt;!-- code that initialises the select boxes --&gt;
+&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;<br>&lt;!-- //Begin<br>moveNotSelected(document.forms['<b>myForm</b>'].<b>fieldName</b>,document.forms['<b>myForm</b>'].<b>selectFrom</b>)<br>//  End --&gt;<br>&lt;/script&gt;</i>
+</pre>
+<script type="text/javascript">
+   makeFooter("$Id: makumba-javascript.html,v 1.2 2006/01/16 12:41:18 manuel_gay Exp $");
+</script>
+</body>
+</html>
