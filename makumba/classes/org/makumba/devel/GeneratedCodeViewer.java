@@ -24,7 +24,9 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
@@ -47,6 +49,8 @@ public class GeneratedCodeViewer extends jspViewer {
     private static Hashtable<String, String> selectableCodeTypes = new Hashtable<String, String>();
 
     private static ArrayList<String> selectableCodeTypesOrdered = new ArrayList<String>();
+    
+    private static String[] selectableQueryLanguages = {"OQL", "HQL"};
 
     /**
      * Contains all templates, indices are defined by {@link #TEMPLATES_ALL}, {@link #TEMPLATES_BUILTIN},
@@ -140,6 +144,8 @@ public class GeneratedCodeViewer extends jspViewer {
     private String templateName;
 
     private String typeParam;
+    
+    private String queryLanguageParam;
 
     public GeneratedCodeViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
         super(req, sv, true);
@@ -185,6 +191,12 @@ public class GeneratedCodeViewer extends jspViewer {
                 selectedCodeTypes = new String[] { CodeGenerator.TYPE_NEWFORM };
                 typeParam = CodeGenerator.TYPE_NEWFORM;
             }
+            
+            // check which query lanaguage is selected
+            queryLanguageParam = request.getParameter("queryLanguage");
+            if(queryLanguageParam == null) {
+                queryLanguageParam = CodeGenerator.QL_OQL;
+            }
 
             // check template
             templateName = request.getParameter("template");
@@ -193,14 +205,14 @@ public class GeneratedCodeViewer extends jspViewer {
             }
 
             CodeGeneratorTemplate template = new CodeGeneratorTemplate(
-                    TEMPLATES[TEMPLATES_ALL].get(templateName));
+                    TEMPLATES[TEMPLATES_ALL].get(templateName), queryLanguageParam);
             String action = CodeGenerator.getLabelNameFromDataDefinition(dd) + "View.jsp";
 
-            // puts to gether all pages generated --> used when we have selected more than one code type
+            // puts to together all pages generated --> used when we have selected more than one code type
             StringBuffer allPages = new StringBuffer();
-            JspParseData jspParseData = null;
+            SourceSyntaxPoints.PreprocessorClient jspParseData = null;
 
-            // intialise file handlers
+            // initialise file handlers
             String rootPath = servlet.getServletContext().getRealPath("/");
             fileRoot = new File(rootPath + File.separator + GENERATED_CODE_DIRECTORY);
             fileRoot.mkdirs();
@@ -223,17 +235,19 @@ public class GeneratedCodeViewer extends jspViewer {
                     logicDir = File.separator + GENERATED_CODE_DIRECTORY + File.separator
                             + packageName.replace('.', File.separatorChar) + File.separator;
                     String logicPath = classesDirectory.getPath() + logicDir;
-                    System.out.println(new File(logicDir).getAbsolutePath());
                     if (new File(logicPath).mkdirs()) {
                         java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator").info(
                             "Created logic directory " + logicPath);
                     }
                     boolean hasSuperLogic = new File(logicPath + "Logic.java").exists();
                     codeGenerator.generateJavaBusinessLogicCode(dd, packageName, hasSuperLogic, selectedCodeTypes, sb);
-                    generatedCodeFile = new File(logicPath + logicFileName);
+                    generatedCodeFile = new File(fileRoot, logicFileName);
                     allPages.append("\n " + CODE_TYPE_DELIM + "  " + selectableCodeTypes.get(generatingType) + "  "
                             + CODE_TYPE_DELIM + "\n\n");
                     allPages.append(sb); // add to all pages buffer
+                    reader = new StringReader(sb.toString());
+                    String fileName = GENERATED_CODE_DIRECTORY + File.separator + logicFileName;
+                    jspParseData = JavaParseData.getParseData(rootPath, fileName, JavaSourceAnalyzer.getInstance());
                 } else { // jsp code
                     // create seperator between different pages
                     if (i > 0) {
@@ -242,7 +256,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     allPages.append("\n " + CODE_TYPE_DELIM + "  " + selectableCodeTypes.get(generatingType) + "  "
                             + CODE_TYPE_DELIM + "\n\n");
 
-                    codeGenerator.generateCode(sb, generatingType, dd, action, template);
+                    codeGenerator.generateCode(sb, generatingType, dd, action, template, queryLanguageParam);
                     allPages.append(sb); // add to all pages buffer
 
                     // get and save page & file names
@@ -323,6 +337,18 @@ public class GeneratedCodeViewer extends jspViewer {
             }
 
             w.println("<br />");
+            w.println("<b>Query language:</b>");
+
+            for (int i = 0; i < selectableQueryLanguages.length; i++) {
+                w.print("<input type=\"radio\" name=\"queryLanguage\" value=\"" + selectableQueryLanguages[i] + "\"");
+                if (selectableQueryLanguages[i].equals(queryLanguageParam)) {
+                    w.print("checked=\"checked\" ");
+                }
+                w.println(" />" + selectableQueryLanguages[i]);
+                
+            }
+            w.println("<br />");
+            
             w.println("<b>Template:</b>");
             w.println("&nbsp;<i>Built-in</i>:");
             printTemplates(w, TEMPLATES_BUILTIN);
@@ -336,7 +362,7 @@ public class GeneratedCodeViewer extends jspViewer {
         }
     }
 
-    private void getParseData(JspParseData jspParseData) {
+    private void getParseData(SourceSyntaxPoints.PreprocessorClient jspParseData) {
         if (jspParseData != null) {
             sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
             syntaxPoints = jspParseData.getSyntaxPoints();

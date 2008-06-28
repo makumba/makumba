@@ -34,8 +34,7 @@ import java.util.Properties;
  * @version $Id$
  */
 public class CodeGeneratorTemplate {
-    static final String DEFAULT_STYLE_HEADER = "<%@ taglib uri=\"http://www.makumba.org/presentation\" prefix=\"mak\" %>\n"
-            + "<%@ taglib uri=\"http://java.sun.com/jstl/core_rt\" prefix=\"c\" %>\n";
+    static final String DEFAULT_STYLE_HEADER = "<%@ taglib uri=\"http://java.sun.com/jstl/core_rt\" prefix=\"c\" %>\n";
 
     String afterField;
 
@@ -68,8 +67,14 @@ public class CodeGeneratorTemplate {
     public CodeGeneratorTemplate() {
     }
 
-    public CodeGeneratorTemplate(Properties props) {
-        header = (String) props.getProperty("header", DEFAULT_STYLE_HEADER);
+    public CodeGeneratorTemplate(Properties props, String queryLanguage) {
+        if(queryLanguage.equals(CodeGenerator.QL_OQL)) {
+            header = CodeGenerator.OQL_TLD_DEFINITION;
+        } else if (queryLanguage.equals(CodeGenerator.QL_HQL)) {
+            header = CodeGenerator.HQL_TLD_DEFINITION;
+        }
+        header +="\n";
+        header += (String) props.getProperty("header", DEFAULT_STYLE_HEADER);
         footer = (String) props.getProperty("footer", "");
         afterFormBegin = (String) props.getProperty("afterFormBegin", "");
         beforeFormEnd = (String) props.getProperty("beforeFormEnd", "");

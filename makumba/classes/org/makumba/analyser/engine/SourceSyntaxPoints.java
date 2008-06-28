@@ -44,7 +44,7 @@ import org.makumba.ProgrammerError;
  * @version $Id$
  */
 public class SourceSyntaxPoints {
-    static interface PreprocessorClient {
+    public static interface PreprocessorClient {
         public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host);
 
         public Pattern[] getCommentPatterns();
@@ -58,6 +58,11 @@ public class SourceSyntaxPoints {
         public Pattern getIncludePattern();
 
         public String getIncludePatternName();
+        
+        public SourceSyntaxPoints getSyntaxPoints();
+        
+        public SyntaxPoint[] getSyntaxPointArray(Object initStatus);
+
     }
 
     /** The path of the analyzed file */
