@@ -62,8 +62,6 @@ public class HibernateSFManager {
 
     private static Configuration configuredConfiguration;
 
-    private static SessionFactory sf;
-    
     private static Vector<String> generatedClasses;
     
     private static NameResolver nr;
@@ -87,6 +85,7 @@ public class HibernateSFManager {
             protected Object makeResource(Object nm, Object hashName) throws Exception {
                 return makeSF((String) nm);
             }
+            
         }, false);
 
     public static SessionFactory getSF(String cfgFilePath) {
@@ -94,10 +93,6 @@ public class HibernateSFManager {
     }
 
     private static SessionFactory makeSF(String cfgFilePath) {
-        if (sf != null) {
-            return sf;
-        }
-
         cfgFilePath += ".cfg.xml";
 
         java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Makumba Hibernate SessionFactory manager, Hibernate "+MakumbaSystem.getHibernateVersionNumber()+ ", configuration in "+cfgFilePath);
@@ -112,13 +107,9 @@ public class HibernateSFManager {
         if ((seed = cfg.getProperty("makumba.seed")) == null)
             seed = SEED;
         String seedDir = findClassesRootFolder(seed);
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes under " + seedDir);
 
         if ((prefix = cfg.getProperty("makumba.prefix")) == null)
             prefix = PREFIX;
-
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
-            "Generating mappings under " + seedDir + File.separator + prefix);
 
         String mddList;
         Vector<String> dds = new Vector<String>();
@@ -143,15 +134,14 @@ public class HibernateSFManager {
         }
 
         // internal makumba MDDs are there by default
+        // TODO maybe configure somewhere whether relations are on or off. for now, they are needed since they are used in the source viewer
         dds.add("org.makumba.controller.ErrorLog");
         dds.add("org.makumba.controller.MultipleSubmit");
-
-// please uncomment these if you think they are needed. I think they should only take effect in developer environments
-//        dds.add("org.makumba.devel.relations.Relation");
-//        dds.add("org.makumba.devel.relations.RelationOrigin");
-//        dds.add("org.makumba.devel.relations.WebappDatabase");
+        dds.add("org.makumba.devel.relations.Relation");
+        dds.add("org.makumba.devel.relations.RelationOrigin");
+        dds.add("org.makumba.devel.relations.WebappDatabase");
         
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes");
+        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes under " + seedDir);
 
         // FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not
         // two
@@ -174,7 +164,8 @@ public class HibernateSFManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating mappings");
+        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
+            "Generating mappings under " + seedDir + File.separator + prefix);
 
         try {
             MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed),
@@ -202,7 +193,7 @@ public class HibernateSFManager {
         
         generatedClasses = dds;
         java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generated the classes " + dds);
-
+        
         return sessionFactory;
     }
 
@@ -249,14 +240,6 @@ public class HibernateSFManager {
      */
     public static void setExternalConfigurationResources(Vector<String> resources) {
         externalConfigurationResources = resources;
-    }
-
-    /**
-     * Sets the {@link SessionFactory} Makumba should use. In this case Makumba won't generate any mappings.
-     * @param sessionFactory the instance of the Hibernate {@link SessionFactory} Makumba should use
-     */
-    public static void setHibernateSessionFactory(SessionFactory sessionFactory) {
-        sf = sessionFactory;
     }
         
     public static String getFullyQualifiedName(String className) {
