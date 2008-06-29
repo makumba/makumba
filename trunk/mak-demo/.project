@@ -3,6 +3,7 @@
 	<name>mak-demo</name>
 	<comment></comment>
 	<projects>
+		<project>makumba</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
