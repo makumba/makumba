@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.loader.hql.QueryLoader;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
@@ -386,9 +387,13 @@ public class GeneratedCodeViewer extends jspViewer {
                 // we need to find an object to edit
                 Transaction db = tp.getConnectionTo(tp.getDefaultDataSourceName());
                 try {
-                    String query = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
+                    String queryOQL = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;
-                    Vector<Dictionary<String, Object>> v = db.executeQuery(query, null, 0, 1);
+                    
+                    String queryHQL = "SELECT " + labelName + ".id AS " + labelName + " FROM " + dd.getName() + " "
+                    + labelName;
+                    
+                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(CodeGenerator.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
                     if (v.size() > 0) {
                         cgiParams = "?" + labelName + "="
                                 + ((Pointer) v.firstElement().get(labelName)).toExternalForm();
