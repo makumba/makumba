@@ -35,6 +35,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.makumba.Text;
 
 /**
@@ -105,6 +106,12 @@ public class MultipartHttpParameters extends HttpParameters {
 
                     String name = item.getFieldName();
                     String fileName = item.getName();
+                    
+                    // Internet Explorer provides the entire path to the uploaded file and not just the base file name, we remove the path information
+                    if (fileName != null) {
+                        fileName = FilenameUtils.getName(fileName);
+                    }
+
                     String type = item.getContentType();
                     // boolean isInMemory = item.isInMemory();
 
