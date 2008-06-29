@@ -3,6 +3,9 @@
     <wb-module deploy-name="mak-demo">
         <wb-resource deploy-path="/" source-path="/webapp"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/makumba/makumba">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="mak-demo"/>
         <property name="java-output-path" value="build/classes"/>
     </wb-module>

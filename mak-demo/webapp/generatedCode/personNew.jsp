@@ -5,7 +5,7 @@
 <fieldset style="text-align:right;">
   <legend>New Person</legend>
 <mak:newForm type="Person" action="personView.jsp" name="person" >
-  vds
+
   <%-- Makumba Generator - START OF NORMAL FIELDS --%>
   
   <label for="name"><span class="accessKey">N</span>ame</label>
