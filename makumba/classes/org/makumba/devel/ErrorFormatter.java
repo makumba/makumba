@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.Transaction;
 import org.makumba.analyser.AnalysableTag;
@@ -240,8 +241,14 @@ public class ErrorFormatter {
                 d.put("makumbaController", req.getAttribute("makumba.controller").toString());
 
             tr.insert("org.makumba.controller.ErrorLog", d);
+        } catch(Throwable t1) {
+            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe("Could not log exception, impossible to get access to the database");
         } finally {
-            tr.close();
+            try {
+                tr.close();
+            } catch(Throwable t2) {
+                java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe("Could not log exception, impossible to get access to the database");
+            }
         }
     }
 
