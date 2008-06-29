@@ -1,0 +1,263 @@
+/* $Id$ */
+body {
+	font-family: arial, helvetica, sans-serif;
+	color: black;
+	background-color: white;
+	margin-right: 10px;
+	margin-top: 0px;
+	margin-left: 150px;
+}
+
+h1 {
+	background: #044a2c;
+	color: white;
+	margin-top: 0px;
+	padding-left: 10px;
+	margin-left: -40px;
+}
+
+h2 {
+	background: #74c27a;
+	margin-top: 25px;
+	padding-left: 10px;
+	margin-left: -30px;
+}
+
+h3 {
+	background: #c2fe8d;
+	margin-top: 40px;
+	padding-left: 10px;
+	margin-left: -10px;
+}
+
+h4 {
+	background: #dad3b8;
+	margin-top: 40px;
+	margin-bottom: 5px;
+	padding-left: 10px;
+	margin-left: -10px;
+}
+
+h5 {
+	background: #e0d9cf;
+	color: #666666;
+	margin-top: 40px;
+	padding-left: 10px;
+}
+
+h1 a {
+	color: white;
+}
+
+/* for fixed page title (h1), might result in non-smooth scrolling: 
+HTML>BODY { margin-top:50px; }
+BODY>H1 {position:fixed; top:0; margin-top:0; right:10px; left:150px; white-space:nowrap;}
+H2 a[name], H3 a[name], H4 a[name] {color:black; position:relative; top:-60px}
+*/
+a:hover {
+	color: red;
+}
+
+.simplelink {
+	color: #044a2c;
+}
+
+.simplelink:hover {
+	color: #74c27a;
+}
+
+/*
+  H1:after, H2:after, H3:after, H4:after {content:"<a href=#content>top</a>";}
+*/ /* old and future feature */
+.oldfeat {
+	color: #000099
+}
+
+.futfeat {
+	color: #990000
+}
+
+/*  .unusedcolor (#74C27A #CBBE1D) */
+.exampleblock {
+	background: #e7e7e7;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+	padding-bottom: 2px;
+}
+
+ul,ol {
+	margin-top: 0
+}
+
+a {
+	color: #044a2c;
+}
+
+div.navbar {
+	background: #e7e7e7;
+	padding: 5px;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100px;
+	font-size: 80%;
+	border-right: solid 1px #999999;
+	border-bottom: solid 1px #999999;
+}
+
+/* trick IE with child selector */
+body>div.navbar {
+	position: fixed
+}
+
+form.search {
+	margin: 0px;
+}
+
+input.search {
+	border: solid 1px #e7e7e7;
+	background: #f5f5f5;
+	width: 100%;
+	color: #044a2c;
+	padding: 0px;
+	text-decoration: underline;
+	margin-left: -2px;
+	padding-left: 2px;
+}
+
+/*IE will ignore this:*/
+div.navbar>form .search {
+	background: #e7e7e7;
+}
+
+#searchBox :hover {
+	color: red;
+}
+
+input.search:focus {
+	background: white !important;
+	color: black;
+	text-decoration: none;
+	border: solid 1px #999999;
+}
+
+.pageFooter {
+	color: #666666;
+	background: #eeeeee;
+	font-size: 120%;
+	text-align: right;
+	margin-top: 20px;
+	margin-left: -140px;
+}
+
+/* Tables in specification */
+table.tagParamDef {
+	margin-left: 20px;
+	border: solid #ddd 1px;
+	border-spacing: 0;
+}
+
+table.tagParamDef th {
+	background: #ddd;
+}
+
+table.tagParamDef td {
+	border: solid #ddd 1px;
+}
+
+pre.example {
+	border-left: solid green 1px;
+	margin-left: 20px;
+	padding-left: 5px;
+	background: #f5f5ff;
+	/* margin-top: 0.5em; */
+}
+
+
+.example-header {
+	border-top: solid green 1px;
+	border-bottom: solid green 1px;
+	text-align: center;
+	font-weight: bold;
+	background: #f5f5ff;
+}
+
+.note {
+	font-size: 0.9em;
+	font-style: italic;
+	margin-left: 50px;
+	padding: 0.2em;
+	background: white url("note.gif") no-repeat;
+	padding-left: 25px;
+	padding-bottom: 5px;
+}
+
+.internals {
+	background: white url("gears.gif") no-repeat;
+	color: #666666;
+	padding: 0.2em;
+	padding-left: 32px;
+	padding-bottom: 5px;
+}
+
+.plainstyle {
+	background: #dddddd;
+	margin-left: 20px;
+	font-family: serif;
+	padding: 5px;
+	width: 50%;
+}
+
+.plainstyle h1,.plainstyle h2,.plainstyle h3 {
+	color: black;
+	padding: 0;
+	background: transparent;
+	margin: 0;
+}
+
+.icon_expand {
+	background: url(plus.gif) left center no-repeat;
+	padding-left: 8px;
+	height: 16px;
+}
+
+a.tab {
+	font-weight: bold;
+	text-decoration: none;
+	color: #044a2c;
+}
+
+a.tab:hover,a.tab:active {
+	text-decoration: none;
+	background-color: #c2fe8d;
+}
+
+div.menu {
+	margin-left: -30px;
+	margin-top: -10px;
+	margin-bottom: -15px;
+}
+
+.menu_item {
+	margin-right: 8px;
+}
+
+.active_menu_item {
+	font-weight: bold;
+	background-color: #c2fe8d;
+	margin-right: 8px;
+}
+
+li.section {
+	padding-bottom: 20px;
+}
+
+li.sectionLevel2 {
+	margin-left: -20px;
+}
+
+div.navbarPage {
+	margin-left: -50px;
+}
