@@ -88,8 +88,8 @@ public class DBConnectionWrapper extends DBConnection {
         return getWrapped().insert(host, subsetField, data);
     }
 
-    public void update(Pointer ptr, java.util.Dictionary fieldsToChange) {
-        getWrapped().update(ptr, fieldsToChange);
+    public int update(Pointer ptr, java.util.Dictionary fieldsToChange) {
+        return getWrapped().update(ptr, fieldsToChange);
     }
 
     public int update(String from, String set, String where, Object parameters) {

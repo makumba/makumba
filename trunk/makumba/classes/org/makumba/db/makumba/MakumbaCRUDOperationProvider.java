@@ -39,7 +39,7 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
     }
     
     @Override
-    public void update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary dic) {
+    public int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary dic) {
         Object[] params = new Object[dic.size() + 1];
         params[0] = p;
         int n = 1;
@@ -53,8 +53,10 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
             comma = ",";
         }
         if (set.trim().length() > 0)
-            t.update(typeDef.getName() + " this", set, "this."
+            return t.update(typeDef.getName() + " this", set, "this."
                     + ddp.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
+        
+        return 0;
     }
 
 }
