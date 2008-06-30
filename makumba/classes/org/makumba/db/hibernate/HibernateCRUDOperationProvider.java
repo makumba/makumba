@@ -313,17 +313,15 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     @Override
-    public int updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+    public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
         
-        int updates = 0;
-
         if (fi.getType().equals("set")) {
 
             try {
 
                 Collection values = (Collection) val;
                 if (values.isEmpty())
-                    return 0;
+                    return;
 
                 HibernateTransaction ht = (HibernateTransaction) t;
                 Class<?> c = getPointerClass(base.getType());
@@ -343,13 +341,10 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     Pointer p = (Pointer) i.next();
                     Class<?> c1 = getPointerClass(p.getType());
                     col.add(getPointedObject(t, c1, p));
-                    updates++;
                 }
 
                 ht.s.saveOrUpdate(baseObject);
                 ht.s.flush();
-                
-                return updates;
 
             } catch (ClassNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -370,11 +365,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
-            return 0;
 
         } else {
-            return super.updateSet1(t, base, fi, val);
+            super.updateSet1(t, base, fi, val);
         }
 
     }
