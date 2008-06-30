@@ -173,7 +173,7 @@ public class DataHolder {
         return p;
     }
 
-    void update(Pointer p) {
+    int update(Pointer p) {
         // see if we have to read some pointers
         Vector<Object> ptrsx = new Vector<Object>();
         // we have to read the "other" pointers
@@ -206,13 +206,15 @@ public class DataHolder {
                 tp.getCRUD().delete(t, (Pointer) e.nextElement());
 
         // we update the record
-        tp.getCRUD().update1(t, p, typeDef, dictionnary);
+        int updates = tp.getCRUD().update1(t, p, typeDef, dictionnary);
 
         for (Enumeration<String> e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fi = ddp.getDataDefinition(p.getType()).getFieldDefinition(fld);
-            tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
+            updates = updates + tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
         }
+        
+        return updates;
     }
 
     

@@ -313,7 +313,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     @Override
-    public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+    public int updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+        
+        int updates = 0;
 
         if (fi.getType().equals("set")) {
 
@@ -321,7 +323,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Collection values = (Collection) val;
                 if (values.isEmpty())
-                    return;
+                    return 0;
 
                 HibernateTransaction ht = (HibernateTransaction) t;
                 Class<?> c = getPointerClass(base.getType());
@@ -341,10 +343,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     Pointer p = (Pointer) i.next();
                     Class<?> c1 = getPointerClass(p.getType());
                     col.add(getPointedObject(t, c1, p));
+                    updates++;
                 }
 
                 ht.s.saveOrUpdate(baseObject);
                 ht.s.flush();
+                
+                return updates;
 
             } catch (ClassNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -365,9 +370,11 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            
+            return 0;
 
         } else {
-            super.updateSet1(t, base, fi, val);
+            return super.updateSet1(t, base, fi, val);
         }
 
     }
@@ -430,10 +437,10 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     @Override
-    public void update1(Transaction t, Pointer p, DataDefinition dd, Dictionary dic) {
+    public int update1(Transaction t, Pointer p, DataDefinition dd, Dictionary dic) {
 
         if (dic.isEmpty())
-            return;
+            return 0;
 
         try {
 
@@ -461,6 +468,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             ht.s.saveOrUpdate(record);
             ht.s.flush();
+            
+            return 1;
 
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
@@ -480,6 +489,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        return 0;
 
     }
 

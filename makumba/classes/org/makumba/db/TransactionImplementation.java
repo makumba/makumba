@@ -163,10 +163,10 @@ public abstract class TransactionImplementation implements Transaction {
     protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration e);
 
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
-    public void update(Pointer ptr, java.util.Dictionary fieldsToChange) {
+    public int update(Pointer ptr, java.util.Dictionary fieldsToChange) {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
         dh.checkUpdate(ptr);
-        dh.update(ptr);
+        return dh.update(ptr);
     }
 
     /**

@@ -152,7 +152,7 @@ public interface Transaction extends Database
      * @see Pointer#NullDate
      * @see Pointer#NullSet
      */
-    public void update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange);
+    public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange);
 
     /** Update in the form <code>update("general.Person p", "p.birthdate=$1", "p=$2", params)</code> . <br>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br>
