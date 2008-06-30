@@ -88,7 +88,7 @@ public abstract class CRUDOperationProvider {
      * @param val
      *            the data to be updated, hold in a Vector
      */
-    public int updateSet(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+    public void updateSet(Transaction t, Pointer base, FieldDefinition fi, Object val) {
 
         if (!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum"))
             throw new InvalidFieldTypeException(fi, "set");
@@ -98,14 +98,13 @@ public abstract class CRUDOperationProvider {
 
         // if the new value is empty, we simply return
         if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0)
-            return 0;
+            return;
 
-        return updateSet1(t, base, fi, val);
+        updateSet1(t, base, fi, val);
     }
 
-    public int updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
+    public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
         // we update the set with the new values
-        int updates = 0;
         Vector values = (Vector) val;
 
         Dictionary<String, Object> data = new Hashtable<String, Object>(10);
@@ -114,9 +113,7 @@ public abstract class CRUDOperationProvider {
         for (Enumeration e = values.elements(); e.hasMoreElements();) {
             data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
             insert(t, fi.getSubtable().getName(), data);
-            updates++;
         }
-        return updates;
     }
 
     /**

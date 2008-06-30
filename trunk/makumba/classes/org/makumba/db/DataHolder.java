@@ -206,15 +206,15 @@ public class DataHolder {
                 tp.getCRUD().delete(t, (Pointer) e.nextElement());
 
         // we update the record
-        int updates = tp.getCRUD().update1(t, p, typeDef, dictionnary);
+        tp.getCRUD().update1(t, p, typeDef, dictionnary);
 
         for (Enumeration<String> e = sets.keys(); e.hasMoreElements();) {
             String fld = (String) e.nextElement();
             FieldDefinition fi = ddp.getDataDefinition(p.getType()).getFieldDefinition(fld);
-            updates = updates + tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
+            tp.getCRUD().updateSet(t, p, fi, sets.get(fld));
         }
         
-        return updates;
+        return 1;
     }
 
     
