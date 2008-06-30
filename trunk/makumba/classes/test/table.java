@@ -111,7 +111,7 @@ public class table extends TestCase {
 
 	static InputStream getExampleData() {
 		try {
-			return new BufferedInputStream(new FileInputStream("lib/antlr.jar"
+			return new BufferedInputStream(new FileInputStream("lib/antlr-2.7.6.jar"
 					.replace('/', File.separatorChar)));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -503,11 +503,12 @@ public class table extends TestCase {
 		pmod.put("intSet", setintElem);
 		pmod.put("charSet", setcharElem);
 
-		db.update(ptr, pmod);
+		int updateReturn = db.update(ptr, pmod);
 
 		now = new Date();
 		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
 		assertEquals(1, v.size());
+		assertEquals(1, updateReturn);
 
 		Dictionary<String, Object> modc = v.elementAt(0);
 
