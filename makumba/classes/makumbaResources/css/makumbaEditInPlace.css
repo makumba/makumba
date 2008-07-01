@@ -1,10 +1,15 @@
 
-.tolink
+.mak_tolink
 {
 	cursor: pointer;
 }
 
-.onedit
+.mak_onedit
 {
 	display: none;
+}
+
+form.mak_edit
+{
+	display: inline;
 }
