@@ -23,12 +23,19 @@
 
 package org.makumba.list.tags;
 
+import java.io.IOException;
+import java.util.HashSet;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.StringUtils;
+import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.devel.relations.JSPRelationMiner;
 import org.makumba.list.engine.ComposedQuery;
@@ -38,7 +45,8 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * mak:value tag
  * 
  * @author Cristian Bogdan
- *
+ * @author Manuel Gay
+ * @author Marius Andra
  */
 public class ValueTag extends GenericListTag {
 
@@ -49,6 +57,8 @@ public class ValueTag extends GenericListTag {
     private String var;
 
     private String printVar;
+
+    private String editable;
 
     public void setExpr(String expr) {
         this.expr = expr;
@@ -61,7 +71,11 @@ public class ValueTag extends GenericListTag {
     public void setPrintVar(String var) {
         this.printVar = var;
     }
-    
+
+    public void setEditable(String s) {
+        this.editable = s;
+    }
+
     public String getExpr() {
         return expr;
     }
@@ -85,31 +99,38 @@ public class ValueTag extends GenericListTag {
         addToParentListKey(expr.trim());
     }
 
-    /** 
+    /**
      * Determines the ValueComputer and caches it with the tagKey
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
-        
-        // if we add a projection to a query, we also cache this so that we know where the projection comes from (for the relation analysis)
+        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this,
+            QueryTag.getParentListKey(this, pageCache), expr, pageCache));
+
+        // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
+        // the relation analysis)
         ComposedQuery query = null;
         try {
             query = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(this, pageCache));
-        } catch(MakumbaError me) {
+        } catch (MakumbaError me) {
             // this happens when there is no query for this mak:value
             // we ignore it, query will stay null anyway
         }
-        
-        if(query != null) {
-            pageCache.cache(JSPRelationMiner.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
+
+        if (query != null) {
+            pageCache.cache(JSPRelationMiner.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this,
+                pageCache), expr), tagKey);
         }
 
     }
 
-    /** 
+    /**
      * Tells the ValueComputer to finish analysis, and sets the types for var and printVar.
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
@@ -120,33 +141,129 @@ public class ValueTag extends GenericListTag {
 
         if (printVar != null)
             setType(pageCache, printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
+
+        // add needed resources, stored in cache for this page
+        if (StringUtils.equals(editable, "true")) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js",
+                    "makumbaEditInPlace.css" });
+        }
+
     }
 
-    /** 
+    /**
      * Asks the ValueComputer to present the expression
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      * @throws JspException
      * @throws LogicException
-     *  */
-    public int doAnalyzedStartTag(PageCache pageCache) throws JspException,
-            org.makumba.LogicException {
-        ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).print(this, pageCache);
+     */
+    public int doAnalyzedStartTag(PageCache pageCache) throws JspException, org.makumba.LogicException {
+
+        StringBuffer sb = new StringBuffer();
+
+        if (StringUtils.equals(editable, "true")) {
+
+            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+            // if we are at the first value
+            if (pageContext.getAttribute("firstValuePassed") == null) {
+                // included needed resources
+                HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
+                if (resources != null) {
+                    MakumbaResourceServlet.writeResources(sb, (request).getContextPath(), resources);
+                    pageContext.setAttribute("firstValuePassed", Boolean.TRUE);
+                }
+            }
+
+            Integer counter = (Integer) pageContext.getAttribute("org.makumba.valueCounter");
+            if (counter == null) {
+                counter = 0;
+                pageContext.setAttribute("org.makumba.valueCounter", counter);
+            }
+
+            String formattedValue = ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getFormattedValue(
+                this, pageCache);
+
+            sb.append("");
+            sb.append("<span id='mak_onview_" + counter + "' class='mak_tolink' onclick=\"eip.turnit('" + counter
+                    + "');return false;\">\n");
+            sb.append(formattedValue);
+            sb.append("</span>");
+            sb.append("<span id='mak_onedit_" + counter + "' class='mak_onedit'>\n");
+            sb.append("       <form method='post' class='mak_edit' action='valueEditor?" + formattedValue + "'");
+            sb.append("onsubmit=\"return eip.AIM.submit(this, {'onComplete' :");
+            sb.append("eip.completeCallback}, '" + counter + "')\">");
+
+            //FIXME use the record editor for the inner formatting
+            switch (((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getType().getIntegerType()) {
+
+                case FieldDefinition._char:
+
+                    sb.append("               <input type='hidden' id='mak_edittype_" + counter + "' value='char' />\n");
+                    sb.append("               <input type='text' name='value' id='mak_onedit_" + counter
+                            + "_text' value='' />\n");
+                    sb.append("               <input type='submit' value='X' />\n");
+                    sb.append("       </form>\n");
+                    sb.append("</span>\n");
+
+                    break;
+
+                case FieldDefinition._text:
+
+                    sb.append("               <input type='hidden' id='mak_edittype_" + counter + "' value='text' />\n");
+                    sb.append("               <textarea name='value' id='mak_onedit_" + counter
+                            + "_text'></textarea>\n");
+                    sb.append("               <input type='submit' value='X' />\n");
+                    sb.append("       </form>\n");
+                    sb.append("</span>\n");
+
+                    break;
+
+                default:
+                    break;
+                /*
+                 * sb.append("<span id='mak_onedit_3' class='mak_onedit'>");
+                 * sb.append("       <form method='post' class='mak_edit' action='valueEditor?asd'");
+                 * sb.append("onsubmit=\"return eip.AIM.submit(this, {'onComplete' :");
+                 * sb.append("eip.completeCallback}, '3')\">");
+                 * sb.append("               <input type='hidden' id='mak_edittype_3' value='select'>");
+                 * sb.append("               <select name='value' id='mak_onedit_3_text'>");
+                 * sb.append("                       <option value='nr1'>Ajee1</option>");
+                 * sb.append("                       <option value='nr2'>Ajee2</option>");
+                 * sb.append("                       <option value='nr3'>Ajee3</option>");
+                 * sb.append("               </select>"); sb.append("               <input type='submit' value='X' />");
+                 * sb.append("       </form>"); sb.append("</span>");
+                 */
+            }
+
+            pageContext.setAttribute("org.makumba.valueCounter", counter++);
+
+            try {
+                getPageContext().getOut().print(sb.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).print(this, pageCache);
+        }
 
         return EVAL_BODY_INCLUDE;
     }
 
     /**
      * Computes a string
+     * 
      * @return A String holding the value in a form useful for debugging
      */
     public String toString() {
         return "VALUE expr=" + expr + " parameters: " + params;
     }
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
-        expr= printVar= var= null;
+        expr = printVar = var = null;
     }
 
 }
