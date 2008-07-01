@@ -55,6 +55,15 @@
     <url-pattern>/validationDefinitions/*</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>makumbaResources</servlet-name>
+    <servlet-class>org.makumba.commons.MakumbaResourceServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>makumbaResources</servlet-name>
+    <url-pattern>/makumbaResources/*</url-pattern>
+  </servlet-mapping>
   
 
   <servlet>
@@ -91,6 +100,15 @@
   <servlet-mapping>
     <servlet-name>dataQuery</servlet-name>
     <url-pattern>/dataQuery/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>valueEditor</servlet-name>
+    <servlet-class>org.makumba.forms.responder.ValueEditor</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>valueEditor</servlet-name>
+    <url-pattern>/valueEditor/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
