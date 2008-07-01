@@ -129,7 +129,7 @@ MakumbaValidate.Uniqueness = function(value, paramsObj) {
     
     var yes = 1;
     
-    httpObject.open("GET", paramObj.path+"/makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), false);
+    httpObject.open("GET", "../makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), false);
     httpObject.onreadystatechange = function() { 
       if(httpObject.readyState == 4) { 
         if(httpObject.responseText == "unique") {
