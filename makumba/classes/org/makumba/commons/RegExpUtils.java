@@ -14,7 +14,7 @@ public class RegExpUtils {
 
     public static final String whitespace = "[\\s]*";
 
-    public static final String minOneWhitespace = whitespace + "+";
+    public static final String minOneWhitespace = "[\\s]+";
 
     public static final String minOneLineWhitespace = "[ \\t]+";
 
