@@ -23,7 +23,7 @@ public class OQLQueryProvider extends QueryProvider {
     
     @Override
     public Vector execute(String query, Map args, int offset, int limit) {
-       return tr.executeQuery(query, args, offset, limit);
+       return tr.executeQuery(preprocessMDDFunctionsAtExecute(query), args, offset, limit);
     }
 
     @Override

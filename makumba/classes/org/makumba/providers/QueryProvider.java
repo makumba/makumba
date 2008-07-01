@@ -117,6 +117,14 @@ public abstract class QueryProvider {
     public abstract Vector execute(String query, Map args, int offset, int limit);
 
     /**
+     * Pre-process the query at execution time. For now does inlining of functions defined in the MDD.<br>
+     * FIXME: this should not be done twice at analysis and execution time
+     */
+    public String preprocessMDDFunctionsAtExecute(String query) {
+        return query;
+    }
+
+    /**
      * Closes the environment, when all queries were executed
      */
     public abstract void close();
@@ -138,7 +146,13 @@ public abstract class QueryProvider {
      * @return the {@link QueryAnalysis} for this query and QueryProvider
      */
     public QueryAnalysis getQueryAnalysis(String query) {
-        return qap.getQueryAnalysis(query);
+        // pre-process the query
+        return qap.getQueryAnalysis(preprocessMDDFunctionsAtQueryAnalysis(query));
+    }
+
+    /** Pre-process the query at analysis time. For now does inlining of functions defined in the MDD. */
+    public String preprocessMDDFunctionsAtQueryAnalysis(String query) {
+        return query;
     }
 
     private String dataSource;
