@@ -242,6 +242,13 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 
+
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
                 <attribute>
                         <name>default</name>
                         <required>false</required>
