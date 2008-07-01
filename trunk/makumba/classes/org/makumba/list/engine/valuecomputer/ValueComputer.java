@@ -195,6 +195,17 @@ public class ValueComputer {
             }
         }
     }
+    
+    public String getFormattedValue(ValueTag running, PageCache pageCache) throws JspException, LogicException {
+        Object o = getValue(running.getPageContext());
+        String s = null;
+        if (running.getPrintVar() != null || running.getVar() == null) {
+            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex,
+                o, running.getParams());
+        }
+        return s;
+        
+    }
 
     public FieldDefinition getType() {
         return type;
