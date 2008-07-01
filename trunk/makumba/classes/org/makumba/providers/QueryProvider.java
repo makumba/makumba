@@ -121,7 +121,7 @@ public abstract class QueryProvider {
      * FIXME: this should not be done twice at analysis and execution time
      */
     public String preprocessMDDFunctionsAtExecute(String query) {
-        return query;
+        return preprocessMDDFunctions(query);
     }
 
     /**
@@ -152,6 +152,10 @@ public abstract class QueryProvider {
 
     /** Pre-process the query at analysis time. For now does inlining of functions defined in the MDD. */
     public String preprocessMDDFunctionsAtQueryAnalysis(String query) {
+        return preprocessMDDFunctions(query);
+    }
+    
+    public String preprocessMDDFunctions(String query) {
         return query;
     }
 
