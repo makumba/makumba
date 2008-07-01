@@ -47,7 +47,7 @@ import org.makumba.providers.DataDefinitionProvider;
 /**
  * This class generates code from a {@link DataDefinition}. Possible code types are:
  * <ul>
- * <li>JSP code: newForm, editForm, deleteLink, pages to list and view objectd.</li>
+ * <li>JSP code: newForm, editForm, deleteLink, pages to list and view objects.</li>
  * <li>Java business logic code with needed handler methods.</li>
  * </ul>
  * 
