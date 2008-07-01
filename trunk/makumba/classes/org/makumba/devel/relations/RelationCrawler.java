@@ -505,7 +505,9 @@ public class RelationCrawler {
                 return tp.getDefaultDataSourceName();
             }
         } finally {
-            tr.close();
+            if (tr != null) { // we need to be careful to check that tr != null, it might not have been initialised
+                tr.close();
+            }
         }
 
         return null;
