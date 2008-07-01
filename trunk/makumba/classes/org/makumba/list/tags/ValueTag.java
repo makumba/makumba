@@ -34,6 +34,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
+import org.makumba.Pointer;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
@@ -43,6 +44,8 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
  * mak:value tag
+ * 
+ * FIXME - "editable" for now only works for OQL, it needs to take into account HQL's ".id"
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
@@ -106,9 +109,33 @@ public class ValueTag extends GenericListTag {
      *            the page cache of the current page
      */
     public void doStartAnalyze(PageCache pageCache) {
+
         pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this,
             QueryTag.getParentListKey(this, pageCache), expr, pageCache));
 
+        if (StringUtils.equals(editable, "true")) {
+
+            // if we want this value to be editable, we also ask for a ValueComputer of the parent object
+            String parentExpr = expr.indexOf(".") > 0 ? expr.substring(0, expr.lastIndexOf(".")) : null;
+
+            if (parentExpr != null) {
+
+                // TODO move me to setTagKey
+                MultipleKey parentObjectKey = new MultipleKey(tagKey);
+                parentObjectKey.remove(tagKey.size() - 1);
+                parentObjectKey.add(parentExpr);
+
+                // first try to retrieve the projection, see if it already exists
+                Object check = pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, parentObjectKey);
+                if (check == null) {
+
+                    ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this,
+                        pageCache), parentExpr, pageCache);
+                    pageCache.cache(GenericListTag.VALUE_COMPUTERS, parentObjectKey, vc);
+
+                }
+            }
+        }
         // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
         // the relation analysis)
         ComposedQuery query = null;
@@ -135,6 +162,19 @@ public class ValueTag extends GenericListTag {
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
+
+        if (StringUtils.equals(editable, "true")) {
+            String parentExpr = expr.indexOf(".") > 0 ? expr.substring(0, expr.lastIndexOf(".")) : null;
+
+            if (parentExpr != null) {
+                MultipleKey parentObjectKey = new MultipleKey(tagKey);
+                parentObjectKey.remove(tagKey.size() - 1);
+                parentObjectKey.add(parentExpr);
+                ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, parentObjectKey)).doEndAnalyze(pageCache);
+
+            }
+
+        }
 
         if (var != null)
             setType(pageCache, var, vc.getType());
@@ -181,8 +221,29 @@ public class ValueTag extends GenericListTag {
                 pageContext.setAttribute("org.makumba.valueCounter", counter);
             }
 
+            // prepare the data needed in order to call the edit-in-place servlet
+
             String formattedValue = ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getFormattedValue(
                 this, pageCache);
+
+            // this FieldDefinition is not a MDD one, it is computed through the ComputedQuery. so we can only use it
+            // for type analysis
+            FieldDefinition fd = ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getType();
+
+            String externalPointer = "";
+            Pointer ptr = null;
+            String fieldName = expr.substring(expr.lastIndexOf(".") + 1);
+
+            String parentExpr = expr.indexOf(".") > 0 ? expr.substring(0, expr.lastIndexOf(".")) : null;
+
+            if (parentExpr != null) {
+                // TODO move me to setTagKey
+                MultipleKey parentObjectKey = new MultipleKey(tagKey);
+                parentObjectKey.remove(tagKey.size() - 1);
+                parentObjectKey.add(parentExpr);
+                ptr = (Pointer) ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, parentObjectKey)).getValue(pageContext);
+                externalPointer = ptr.toExternalForm();
+            }
 
             sb.append("");
             sb.append("<span id='mak_onview_" + counter + "' class='mak_tolink' onclick=\"eip.turnit('" + counter
@@ -190,12 +251,14 @@ public class ValueTag extends GenericListTag {
             sb.append(formattedValue);
             sb.append("</span>");
             sb.append("<span id='mak_onedit_" + counter + "' class='mak_onedit'>\n");
-            sb.append("       <form method='post' class='mak_edit' action='valueEditor?" + formattedValue + "'");
+            sb.append("       <form method='post' class='mak_edit' action='" + request.getContextPath()
+                    + "/valueEditor?table=" + ptr.getType() + "&field=" + fieldName + "&pointer=" + externalPointer
+                    + "'");
             sb.append("onsubmit=\"return eip.AIM.submit(this, {'onComplete' :");
             sb.append("eip.completeCallback}, '" + counter + "')\">");
 
-            //FIXME use the record editor for the inner formatting
-            switch (((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getType().getIntegerType()) {
+            // FIXME use the record editor for the inner formatting
+            switch (fd.getIntegerType()) {
 
                 case FieldDefinition._char:
 
