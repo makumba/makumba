@@ -15,15 +15,16 @@ import org.makumba.FieldDefinition;
  */
 public abstract class QueryProvider {
 
-    private static String[] queryProviders = {"oql", "org.makumba.db.makumba.OQLQueryProvider", "hql", "org.makumba.db.hibernate.HQLQueryProvider" };
+    private static String[] queryProviders = { "oql", "org.makumba.db.makumba.OQLQueryProvider", "hql",
+            "org.makumba.db.hibernate.HQLQueryProvider" };
 
     static final Map<String, Class<?>> providerClasses = new HashMap<String, Class<?>>();
 
-    public QueryProvider(){
+    public QueryProvider() {
         try {
-            if(getQueryAnalysisProviderClass()!=null) {
-                if(qap == null) {
-                    qap=(QueryAnalysisProvider) Class.forName(getQueryAnalysisProviderClass()).newInstance();
+            if (getQueryAnalysisProviderClass() != null) {
+                if (qap == null) {
+                    qap = (QueryAnalysisProvider) Class.forName(getQueryAnalysisProviderClass()).newInstance();
                 }
             }
         } catch (InstantiationException e) {
@@ -40,6 +41,7 @@ public abstract class QueryProvider {
     protected String getQueryAnalysisProviderClass() {
         return null;
     }
+
     /**
      * Puts the QueryEnvironmentExecutionProviders into a Map
      */
@@ -51,10 +53,10 @@ public abstract class QueryProvider {
                 t.printStackTrace();
             }
     }
-    
+
     /**
-     * Provides the analysis QueryProvider for a given query language.
-     * 
+     * Provides the analysis QueryProvider for a given query language.<br>
+     * <br>
      * TODO this should be refactored to use the same mechanism as for the dataDefinitionProvider
      * 
      * @param name
@@ -62,20 +64,19 @@ public abstract class QueryProvider {
      * @return the QueryProvider able of performing analysis for this language
      */
     public static QueryProvider makeQueryAnalzyer(String name) {
-            try {
-                return (QueryProvider) providerClasses.get(name).newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return null;
+        try {
+            return (QueryProvider) providerClasses.get(name).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
-     * Provides the query execution environment corresponding to the query language.
-     * 
-     * TODO this should be refactored to use the same mechanism as for the dataDefinitionProvider
+     * Provides the query execution environment corresponding to the query language. TODO this should be refactored to
+     * use the same mechanism as for the dataDefinitionProvider
      * 
      * @param dataSource
      *            the source on which the query should be run
@@ -89,7 +90,7 @@ public abstract class QueryProvider {
 
         return qeep;
     }
- 
+
     /**
      * Initalises the provider with the datasource
      * 
@@ -112,7 +113,6 @@ public abstract class QueryProvider {
      * @param limit
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
-     *
      */
     public abstract Vector execute(String query, Map args, int offset, int limit);
 
@@ -141,7 +141,6 @@ public abstract class QueryProvider {
         return qap.getQueryAnalysis(query);
     }
 
-
     private String dataSource;
 
     private QueryAnalysisProvider qap;
@@ -158,6 +157,5 @@ public abstract class QueryProvider {
     public abstract boolean selectGroupOrOrderAsLabels();
 
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
-
 
 }
