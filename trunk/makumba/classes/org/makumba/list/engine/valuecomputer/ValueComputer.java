@@ -29,9 +29,9 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.PageAttributes;
-import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
@@ -179,7 +179,7 @@ public class ValueComputer {
         Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex,
+            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(projectionIndex,
                 o, running.getParams());
         }
 
@@ -200,7 +200,7 @@ public class ValueComputer {
         Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(RecordFormatter.FORMATTERS, getQueryKey())).format(projectionIndex,
+            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(projectionIndex,
                 o, running.getParams());
         }
         return s;

@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -51,12 +52,6 @@ import org.makumba.providers.TransactionProvider;
  */
 public abstract class GenericListTag extends GenericMakumbaTag {
 
-    public static final String VALUE_COMPUTERS = "org.makumba.valueComputers";
-
-    public static final String QUERY = "org.makumba.query";
-
-    public static final String DS_ATTR = "org.makumba.database";
-    
     protected FormDataProvider fdp = ListFormDataProvider.getInstance();
 
     @Override
@@ -65,7 +60,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
             return super.doEndTag();
         } finally {
             if (findAncestorWithClass(this, GenericListTag.class) == null)
-                pageContext.removeAttribute(DS_ATTR);
+                pageContext.removeAttribute(MakumbaJspAnalyzer.DS_ATTR);
             
         }
     }
@@ -101,7 +96,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      * @return A String containing the name of the database
      */
     public static String getDataSourceName(PageContext pc) {
-        String ds = (String) pc.getAttribute(DS_ATTR);
+        String ds = (String) pc.getAttribute(MakumbaJspAnalyzer.DS_ATTR);
         if (ds == null)
             return TransactionProvider.getInstance().getDefaultDataSourceName();
         return ds;
@@ -131,6 +126,6 @@ public abstract class GenericListTag extends GenericMakumbaTag {
     public void setDb(String db) throws JspException {
         onlyRootArgument("db");
         if (pageContext != null)
-            pageContext.setAttribute(DS_ATTR, db);
+            pageContext.setAttribute(MakumbaJspAnalyzer.DS_ATTR, db);
     }
 }

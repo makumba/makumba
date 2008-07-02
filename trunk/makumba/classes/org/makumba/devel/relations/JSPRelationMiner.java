@@ -19,13 +19,10 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.forms.tags.BasicValueTag;
-import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.tags.InputTag;
 import org.makumba.forms.tags.NewTag;
 import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.tags.GenericListTag;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.oql.OQLQueryAnalysisProvider;
@@ -38,8 +35,6 @@ public class JSPRelationMiner extends RelationMiner {
         super(rc);
     }
 
-    public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
-    
     private Pattern expression = Pattern.compile("[a-zA-Z]" + "\\w" + "*" + "(?:\\.\\w+)?");
 
 
@@ -57,7 +52,7 @@ public class JSPRelationMiner extends RelationMiner {
             return;
         }
 
-        Map<Object, Object> queryCache = pageCache.retrieveCache(GenericListTag.QUERY);
+        Map<Object, Object> queryCache = pageCache.retrieveCache(MakumbaJspAnalyzer.QUERY);
 
         if (queryCache != null) {
             Iterator<Object> it = queryCache.keySet().iterator();
@@ -79,7 +74,7 @@ public class JSPRelationMiner extends RelationMiner {
             }
         }
 
-        Map<Object, Object> tagDataCache = pageCache.retrieveCache(TagData.TAG_DATA_CACHE);
+        Map<Object, Object> tagDataCache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
 
         if (tagDataCache != null) {
             Iterator<Object> it2 = tagDataCache.keySet().iterator();
@@ -155,7 +150,7 @@ public class JSPRelationMiner extends RelationMiner {
             if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) { // skip search field tags. FIXME: at least for now
                 MultipleKey formTagKey = ((InputTag) tag).getForm().getTagKey();
 
-                String baseObjectType = (String) pageCache.retrieve(FormTagBase.BASE_POINTER_TYPES, formTagKey);
+                String baseObjectType = (String) pageCache.retrieve(MakumbaJspAnalyzer.BASE_POINTER_TYPES, formTagKey);
 
                 // for some strange reason this happens for newTag-s types
                 if (baseObjectType == null) {
@@ -167,7 +162,7 @@ public class JSPRelationMiner extends RelationMiner {
                     return;
                 }
 
-                FieldDefinition tagFieldType = (FieldDefinition) pageCache.retrieve(BasicValueTag.INPUT_TYPES, tagKey);
+                FieldDefinition tagFieldType = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
                 String expr = tagData.attributes.get("field") == null ? tagData.attributes.get("name")
                         : tagData.attributes.get("field");
 
@@ -260,7 +255,7 @@ public class JSPRelationMiner extends RelationMiner {
         Map<String, DataDefinition> labelTypes = cq.getFromLabelTypes();
         Set<String> labels = labelTypes.keySet();
         for (String labelName : labels) {            
-            TagData td = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, (MultipleKey) queryKey);
+            TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, (MultipleKey) queryKey);
 
             // if td is null it means that we have a dummy query, not interesting to us
             if (td != null) {
@@ -298,12 +293,12 @@ public class JSPRelationMiner extends RelationMiner {
 
         for (Iterator<Object> iterator = projections.iterator(); iterator.hasNext();) {
             String projectionExpr = (String) iterator.next();
-            MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(PROJECTION_ORIGIN_CACHE, new MultipleKey(
+            MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(
                     (MultipleKey) queryKey, projectionExpr));
 
             // if we don't get anything here it means that this CQ is not interesting for us
             if (valueTagKey != null) {
-                TagData td = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, valueTagKey);
+                TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, valueTagKey);
 
                 String field = cq.getFieldOfExpr(projectionExpr);
                 String realExpr = null;

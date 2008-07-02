@@ -30,6 +30,7 @@ import javax.servlet.jsp.tagext.BodyTag;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 
 /**
@@ -57,7 +58,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     }
 
     FieldDefinition getTypeFromContext(PageCache pageCache) {
-        FieldDefinition t = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, getInput().tagKey);
+        FieldDefinition t = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, getInput().tagKey);
 
         // for now, only sets and pointers are accepted
         if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))

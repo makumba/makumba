@@ -30,8 +30,6 @@ public class TagData implements Serializable {
     
     protected SourceSyntaxPoints sourceSyntaxPoints;
 
-    public static final String TAG_DATA_CACHE = "org.makumba.tagData";
-
     public TagData(String name, SyntaxPoint start, SyntaxPoint end, Map<String, String> attributes) {
         this.name=name;
         this.sourceSyntaxPoints= start.getSourceSyntaxPoints();

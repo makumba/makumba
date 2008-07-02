@@ -66,12 +66,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
-
-    public static final String LAZY_EVALUATED_INPUTS = "org.makumba.unresolvedInputs";
-
-    private static final String NESTED_FORM_NAMES = "org.makumba.nestedFormNames";
-
     // the tag attributes
     public String baseObject = null;
 
@@ -284,7 +278,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (findParentForm() == null) { // only for the root form
-            pageCache.cache(NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
+            pageCache.cache(MakumbaJspAnalyzer.NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
         }
 
         if (org.apache.commons.lang.StringUtils.isNotBlank(formName)) {
@@ -357,13 +351,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
 
-        pageCache.cache(LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
+        pageCache.cache(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
 
         if (!shouldComputeBasePointer()) {
             return;
         }
 
-        pageCache.cache(BASE_POINTER_TYPES, tagKey,
+        pageCache.cache(MakumbaJspAnalyzer.BASE_POINTER_TYPES, tagKey,
             fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
     }
 
@@ -422,7 +416,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
         responder.setExtraFormatting(extraFormatting);
-        responder.setBasePointerType((String) pageCache.retrieve(BASE_POINTER_TYPES, tagKey));
+        responder.setBasePointerType((String) pageCache.retrieve(MakumbaJspAnalyzer.BASE_POINTER_TYPES, tagKey));
 
         starttime = new java.util.Date().getTime();
 
@@ -500,8 +494,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             // retrieves the form dependency graph from the cache
             // this needs to be the last thing done, so we can retrieve the responder code safely
-            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.DEPENDENCY_CACHE,
-                MakumbaJspAnalyzer.DEPENDENCY_CACHE);
+            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE,
+                MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE);
 
             // form order - add the responders & form names
             FormTagBase rootForm = findRootForm();
@@ -510,7 +504,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             }
             rootForm.responders.put(this.getTagKey(), responder.getResponderValue());
 
-            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(LAZY_EVALUATED_INPUTS,
+            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS,
                 getTagKey()));
 
             if (findParentForm() == null) { // we are in the end of the root form - all child forms have a responder by
@@ -588,7 +582,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
-        return (HashMap<String, MultipleKey>) pageCache.retrieve(NESTED_FORM_NAMES, findRootForm().getTagKey());
+        return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES, findRootForm().getTagKey());
     }
 
 }

@@ -41,6 +41,7 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -96,10 +97,6 @@ public class CodeGenerator {
     /** Default used access keys for Add, Save changes, Cancel & Reset */
     private static final List<String> DEFAULTUSED_ACCESS_KEYS = Arrays.asList(new String[] { "a", "s", "c", "r" });
 
-    public static final String QL_OQL = "OQL";
-    
-    public static final String QL_HQL = "HQL";
-    
     public static final String OQL_TLD_DEFINITION = "<%@ taglib uri=\"http://www.makumba.org/presentation\" prefix=\"mak\" %>";
 
     public static final String HQL_TLD_DEFINITION = "<%@ taglib uri=\"http://www.makumba.org/view-hql\" prefix=\"mak\" %>";
@@ -174,7 +171,7 @@ public class CodeGenerator {
             BufferedWriter out = new BufferedWriter(fw);
             StringBuffer sb = new StringBuffer();
             String action = getLabelNameFromDataDefinition(dd) + "View.jsp";
-            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template, QL_OQL);
+            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template, MakumbaJspAnalyzer.QL_OQL);
             out.write(sb.toString());
             out.close();
         }
@@ -371,16 +368,16 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:newForm type=\"" + dd + "\" action=\"" + action + "\" name=\"" + labelName
                             + "\" >");
                 } else if (type == TYPE_OBJECT) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:")
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:")
                             + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
                             + template.afterPageHeader);
                 } else if (type == TYPE_EDITFORM) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:")
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:")
                             + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
                             + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
                             + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
@@ -482,7 +479,7 @@ public class CodeGenerator {
     private void generateDeleteCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template,
             String labelName, int indent, String queryLanguage) {
         appendLine(sb, template.beforePageHeader + "Delete confirmation" + template.afterPageHeader);
-        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "=$" : ".id=:") + labelName
+        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName
                 + "\">");
         indent++;
         appendJSPLine(sb, indent, "Delete " + labelName + " '<mak:value expr=\"" + labelName + "."
@@ -515,7 +512,7 @@ public class CodeGenerator {
                 + template.afterPageHeader);
 
         // links to this file for sort-by links
-        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName + (queryLanguage.equals(CodeGenerator.QL_OQL) ? "" : ".id" ) + "\" />";
+        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" />";
         String thisFile = getFileNameFromObject(dd, TYPE_LIST) + "?sortBy=";
 
         // converting parameters --> EL sort by values

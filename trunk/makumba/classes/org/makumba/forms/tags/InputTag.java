@@ -197,10 +197,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doEndAnalyze(PageCache pageCache) {
         if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
             // set the input type as the form type
-            TagData t = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE,
+            TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
                 getForm().getNestedFormNames(pageCache).get(expr));
             DataDefinition type = ((NewTag) t.tagObject).type;
-            pageCache.cache(INPUT_TYPES, tagKey, type.getFieldDefinition(type.getIndexPointerFieldName()));
+            pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, type.getFieldDefinition(type.getIndexPointerFieldName()));
             return;
         }
 
@@ -248,7 +248,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
-        FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
+        FieldDefinition type = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
         Object val = null;
 
         // if we are reloading the form page on validation errors, fill form inputs as in the request

@@ -36,7 +36,6 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.QueryExecution;
@@ -255,7 +254,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public void doEndAnalyze(PageCache pageCache) {
         ComposedQuery cq = QueryTag.getQuery(pageCache, tagKey);
         cq.analyze();
-        pageCache.cache(RecordFormatter.FORMATTERS, tagKey, new RecordViewer(cq));
+        pageCache.cache(MakumbaJspAnalyzer.FORMATTERS, tagKey, new RecordViewer(cq));
     }
 
     static final Integer zero = new Integer(0);
@@ -316,7 +315,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
                     simpleQueryProps, QueryTag.getQuery(pageCache, parentKey), ql);
             query.addProjection("count(*)");
             query.init();
-            pageCache.cache(GenericListTag.QUERY, maxResultsKey, query);
+            pageCache.cache(MakumbaJspAnalyzer.QUERY, maxResultsKey, query);
             // we need to pass these variables in request to the method doing the query
             // TODO: this looks like a hack, and might not be safe if there are more lists in the same page
             pageContext.getRequest().setAttribute(standardMaxResultsContext, pageContext);
@@ -446,7 +445,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The OQL query corresponding to this tag
      */
     public static ComposedQuery getQuery(PageCache pc, MultipleKey key) {
-        ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
+        ComposedQuery ret = (ComposedQuery) pc.retrieve(MakumbaJspAnalyzer.QUERY, key);
         if (ret == null)
             throw new MakumbaError("unknown query for key " + key);
         return ret;
@@ -463,7 +462,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      *            the key of the parent tag, if any
      */
     public static ComposedQuery cacheQuery(PageCache pc, MultipleKey key, String[] sections, MultipleKey parentKey) {
-        ComposedQuery ret = (ComposedQuery) pc.retrieve(GenericListTag.QUERY, key);
+        ComposedQuery ret = (ComposedQuery) pc.retrieve(MakumbaJspAnalyzer.QUERY, key);
         if (ret != null)
             return ret;
         String ql = MakumbaJspAnalyzer.getQueryLanguage(pc);
@@ -471,7 +470,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pc, parentKey), ql);
 
         ret.init();
-        pc.cache(GenericListTag.QUERY, key, ret);
+        pc.cache(MakumbaJspAnalyzer.QUERY, key, ret);
 
         return ret;
     }

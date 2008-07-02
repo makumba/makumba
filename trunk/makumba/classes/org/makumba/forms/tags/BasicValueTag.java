@@ -47,8 +47,6 @@ import org.makumba.providers.FormDataProvider;
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {
 
-    public static final String INPUT_TYPES = "org.makumba.inputtypes";
-
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
@@ -192,12 +190,12 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         if (contextType == null)
             contextType = dataTypeInfo != null ? dataTypeInfo : type;
 
-        pageCache.cache(INPUT_TYPES, tagKey, contextType);
+        pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, contextType);
     }
 
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
-        FieldDefinition type = (FieldDefinition) pageCache.retrieve(INPUT_TYPES, tagKey);
+        FieldDefinition type = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
         Object val = null;
 
         if (isValue())

@@ -4,8 +4,8 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
@@ -55,10 +55,10 @@ public abstract class QueryValueComputer extends ValueComputer {
      *            the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
-        if (pageCache.retrieve(RecordFormatter.FORMATTERS, queryKey) == null) {
+        if (pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, queryKey) == null) {
             ComposedQuery myQuery = QueryTag.getQuery(pageCache, queryKey);
             myQuery.analyze();
-            pageCache.cache(RecordFormatter.FORMATTERS, queryKey, new RecordViewer(myQuery));
+            pageCache.cache(MakumbaJspAnalyzer.FORMATTERS, queryKey, new RecordViewer(myQuery));
         }
         super.doEndAnalyze(pageCache);
     }

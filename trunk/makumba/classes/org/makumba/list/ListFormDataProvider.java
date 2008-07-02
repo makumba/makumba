@@ -41,7 +41,7 @@ public class ListFormDataProvider implements FormDataProvider {
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
         if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
             ptrExpr+=".id";
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(),
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
             ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr, pageCache));
     }
 
@@ -51,7 +51,7 @@ public class ListFormDataProvider implements FormDataProvider {
     public void onBasicValueStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey, PageCache pageCache, String ptrExpr) {
             MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
         
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(tag,
             parentListKey, ptrExpr, pageCache));
     }
 
@@ -80,7 +80,7 @@ public class ListFormDataProvider implements FormDataProvider {
                 && !expr.endsWith(".id"))
             expr+=".id";     
        
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tag.getTagKey(), 
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), 
             ValueComputer.getValueComputerAtAnalysis(tag, parentListKey, expr, pageCache));
     }
 
@@ -88,7 +88,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormEndAnalyze(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache)
      */
     public void onFormEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
-        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(GenericListTag.QUERY, tagKey);
+        ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey);
         if (dummy != null)
             dummy.analyze();
     }
@@ -105,7 +105,7 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public void onFormStartTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) throws LogicException {
         // if we have a dummy query, we simulate an iteration
-        if (pageCache.retrieve(GenericListTag.QUERY, tagKey) != null) {
+        if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null) {
             QueryExecution.startListGroup(pageContext);
             QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
         }
@@ -117,7 +117,7 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public void onFormEndTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) {
         // if we have a dummy query, we simulate end iteration
-        if (pageCache.retrieve(GenericListTag.QUERY, tagKey) != null)
+        if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null)
             QueryExecution.endListGroup(pageContext);
 
     }
@@ -126,7 +126,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getTypeOnEndAnalyze(org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache)
      */
     public FieldDefinition getTypeOnEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
         return vc.getType();
     }
@@ -143,7 +143,7 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
 
-        Object o = ((ValueComputer) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(GenericListTag.VALUE_COMPUTERS,
+        Object o = ((ValueComputer) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS,
             tagKey)).getValue(pageContext);
         if (!(o instanceof Pointer))
             throw new RuntimeException("Pointer expected, got instead "+o);
@@ -154,7 +154,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getValue(org.makumba.commons.MultipleKey, javax.servlet.jsp.PageContext, org.makumba.analyser.PageCache)
      */
     public Object getValue(MultipleKey tagKey, PageContext pageContext, PageCache pageCache) throws LogicException {
-        return ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
+        return ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
     }
 
     /* (non-Javadoc)

@@ -28,6 +28,7 @@ import org.makumba.Transaction;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
@@ -196,7 +197,7 @@ public class GeneratedCodeViewer extends jspViewer {
             // check which query lanaguage is selected
             queryLanguageParam = request.getParameter("queryLanguage");
             if(queryLanguageParam == null) {
-                queryLanguageParam = CodeGenerator.QL_OQL;
+                queryLanguageParam = MakumbaJspAnalyzer.QL_OQL;
             }
 
             // check template
@@ -393,7 +394,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     String queryHQL = "SELECT " + labelName + ".id AS " + labelName + " FROM " + dd.getName() + " "
                     + labelName;
                     
-                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(CodeGenerator.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
+                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(MakumbaJspAnalyzer.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
                     if (v.size() > 0) {
                         cgiParams = "?" + labelName + "="
                                 + ((Pointer) v.firstElement().get(labelName)).toExternalForm();

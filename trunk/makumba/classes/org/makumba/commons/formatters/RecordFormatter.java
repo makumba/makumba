@@ -40,8 +40,6 @@ import org.makumba.FieldDefinition;
 
 public class RecordFormatter implements Serializable {
     
-    public static final String FORMATTERS = "org.makumba.formatters";
-    
     public DataDefinition dd;
 
     public String[] expr;
