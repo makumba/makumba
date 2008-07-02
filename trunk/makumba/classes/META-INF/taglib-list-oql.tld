@@ -241,25 +241,40 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-                <attribute>
-                        <name>default</name>
-                        <required>false</required>
-                        <rtexprvalue>true</rtexprvalue>
-                </attribute>
-
-                <attribute>
-                        <name>empty</name>
-                        <required>false</required>
-                        <rtexprvalue>true</rtexprvalue>
-                </attribute>
-
-    <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-	</tag>
+    
+            <attribute>
+                    <name>default</name>
+                    <required>false</required>
+                    <rtexprvalue>true</rtexprvalue>
+            </attribute>
+    
+            <attribute>
+                    <name>empty</name>
+                    <required>false</required>
+                    <rtexprvalue>true</rtexprvalue>
+            </attribute>
+    
+            <attribute>
+              <name>editable</name>
+              <required>false</required>
+              <rtexprvalue>true</rtexprvalue>
+            </attribute>
+            
+            <attribute>
+              <name>logicClass</name>
+              <required>false</required>
+              <rtexprvalue>true</rtexprvalue>
+            </attribute>
+            
+            <attribute>
+              <name>editPage</name>
+              <required>false</required>
+              <rtexprvalue>true</rtexprvalue>
+            </attribute>
+         
+         </tag>
+    
+    
 	
         <tag>
 		<name>if</name>

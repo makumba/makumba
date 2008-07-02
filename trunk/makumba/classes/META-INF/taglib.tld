@@ -96,6 +96,26 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
   </tag>
 
 
@@ -165,6 +185,25 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
   </tag>
 
 
@@ -333,6 +372,19 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
   </tag>
 
   <tag>
