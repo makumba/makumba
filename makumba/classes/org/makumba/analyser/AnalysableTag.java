@@ -240,7 +240,7 @@ public abstract class AnalysableTag extends TagSupport {
                 pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             setTagKey(pageCache);
             if (pageCache != null) {
-                tagData = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE, tagKey);
+                tagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, tagKey);
                 runningTag.set(tagData);
             }
             int n;

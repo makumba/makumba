@@ -45,6 +45,36 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
+    
+    // cache keys, centralised in one place to have an overview of what is cached
+
+    public static final String TAG_CACHE = "org.makumba.tags";
+
+    public static final String TAG_DATA_CACHE = "org.makumba.tagData";
+    
+    public static final String FORM_TAGS_DEPENDENCY_CACHE = "org.makumba.dependency";
+
+    public static final String NESTED_FORM_NAMES = "org.makumba.nestedFormNames";
+
+    public static final String INPUT_TYPES = "org.makumba.inputtypes";
+
+    public static final String LAZY_EVALUATED_INPUTS = "org.makumba.unresolvedInputs";
+
+    public static final String BASE_POINTER_TYPES = "org.makumba.basePointerTypes";
+
+    public static final String VALUE_COMPUTERS = "org.makumba.valueComputers";
+
+    public static final String QUERY = "org.makumba.query";
+
+    public static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
+
+    public static final String DS_ATTR = "org.makumba.database";
+
+    public static final String FORMATTERS = "org.makumba.formatters";
+
+    public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
+
+    
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
             "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag" };
@@ -96,10 +126,6 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         }
     }
 
-    public static final String TAG_CACHE = "org.makumba.tags";
-    
-    public static final String DEPENDENCY_CACHE = "org.makumba.dependency";
-
     /**
      * SingletonHolder, to make sure there's only one instance for the MakumbaJspAnalyzer
      * 
@@ -109,7 +135,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         static final JspAnalyzer singleton = new MakumbaJspAnalyzer();
     }
 
-    static final String QUERY_LANGUAGE = "org.makumba.queryLanguage";
+    public static final String QL_OQL = "OQL";
+
+    public static final String QL_HQL = "HQL";
 
     protected MakumbaJspAnalyzer() {
     }
@@ -161,7 +189,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                     // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
 
                     if (((ParseStatus) status).pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE) == null) {
-                        ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, MakumbaJspAnalyzer.QUERY_LANGUAGE, "oql");
+                        ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
                     }
 
                 }
@@ -270,6 +298,14 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     public static String getQueryLanguage(PageCache pageCache) {
         return (String)pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE);
+    }
+    
+    public static boolean isOQLPage(PageCache pageCache) {
+        return getQueryLanguage(pageCache).equals(QL_OQL);
+    }
+    
+    public static boolean isHQLPage(PageCache pageCache) {
+        return getQueryLanguage(pageCache).equals(QL_HQL);
     }
     
 }

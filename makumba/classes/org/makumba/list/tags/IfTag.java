@@ -82,7 +82,7 @@ public class IfTag extends GenericListTag implements BodyTag {
         String te= testExpr;
         if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) 
             te="case when " + testExpr +" then 1 else 0 end";
-        pageCache.cache(GenericListTag.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), te, pageCache));
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this, pageCache), te, pageCache));
     }
 
     /** 
@@ -90,7 +90,7 @@ public class IfTag extends GenericListTag implements BodyTag {
      * @param pageCache the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey);
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
         String type = vc.getType().getDataType();
         if (!"int".equals(type)) {
@@ -106,7 +106,7 @@ public class IfTag extends GenericListTag implements BodyTag {
      */
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException,
             org.makumba.LogicException {
-        Object exprvalue = ((ValueComputer) pageCache.retrieve(GenericListTag.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
+        Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
 
         if (exprvalue instanceof Integer) {
             int i = ((Integer) exprvalue).intValue();

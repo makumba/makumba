@@ -110,7 +110,7 @@ public class ParseStatus {
             }
         }
         
-        pageCache.cache(TagData.TAG_DATA_CACHE, t.getTagKey(), td);
+        pageCache.cache(MakumbaJspAnalyzer.TAG_DATA_CACHE, t.getTagKey(), td);
 
         t.doStartAnalyze(pageCache);
         tags.add(t);
@@ -200,6 +200,6 @@ public class ParseStatus {
         }
         // additionally to the tags, we also store the dependency graph in the pageCache after sorting it
         formGraph.topo();            
-        pageCache.cache(MakumbaJspAnalyzer.DEPENDENCY_CACHE, MakumbaJspAnalyzer.DEPENDENCY_CACHE, formGraph.getSortedKeys());
+        pageCache.cache(MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, formGraph.getSortedKeys());
     }
 }

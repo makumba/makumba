@@ -6,6 +6,7 @@ import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.forms.tags.SearchTag;
 import org.makumba.list.engine.ComposedQuery;
@@ -56,7 +57,7 @@ public class ResultListTag extends QueryTag {
      * called before any of the super class methods to do analysis & execution is invoked.
      */
     private void setFieldsFromSearchFormInfo(PageCache pageCache) {
-        TagData tag = (TagData) pageCache.retrieve(TagData.TAG_DATA_CACHE,
+        TagData tag = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
             new MultipleKey(new Object[] { resultsFrom }));
         if (tag != null) {
             setFrom(tag.attributes.get("in") + " " + SearchTag.OBJECT_NAME);
