@@ -65,6 +65,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
     String maxCountVar;
 
     String offset, limit;
+    
+    String editable, logicClass, editPage;
 
     private int defaultOffset = 0;
 
@@ -130,6 +132,30 @@ public class QueryTag extends GenericListTag implements IterationTag {
         onlyOuterListArgument("defaultLimit");
         onlyInt("defaultLimit", s);
         defaultLimit = s.trim();
+    }
+    
+    public void setEditable(String s) {
+        editable = s.trim();
+    }
+    
+    public String getLogicClass() {
+        return logicClass;
+    }
+
+    public void setLogicClass(String logicClass) {
+        this.logicClass = logicClass;
+    }
+
+    public String getEditPage() {
+        return editPage;
+    }
+
+    public void setEditPage(String editPage) {
+        this.editPage = editPage;
+    }
+
+    public String getEditable() {
+        return this.editable;
     }
 
     public int getLimitInt() {
