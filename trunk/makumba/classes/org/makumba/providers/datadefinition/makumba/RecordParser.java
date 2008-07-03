@@ -88,24 +88,20 @@ public class RecordParser {
      * defines all possible types. <br>
      * FIXME: maybe this shall be move to {@link FieldDefinition}?
      */
-    public static final String funcDefParamTypeRegExp = "(char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
+    public static final String funcDefParamTypeRegExp = "(?:char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
 
-    public static final String funcDefParamValueRegExp = "(\\d+|" + RegExpUtils.fieldName + ")";
+    public static final String funcDefParamValueRegExp = "(?:\\d+|" + RegExpUtils.fieldName + ")";
 
     /** defines "int a" or "int 5". */
     public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
             + funcDefParamValueRegExp;
 
     /** treats (int a, char b, ...) */
-    public static final String funcDefParamRepeatRegExp = "\\((?:" + "(?:" + funcDefParamRegExp + ")" + "(?:"
+    public static final String funcDefParamRepeatRegExp = "\\((" + "(?:" + funcDefParamRegExp + ")" + "(?:"
             + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
             + RegExpUtils.LineWhitespaces + ")?\\)";
 
-    /**
-     * treats function(params) = queryFragment : errorMessage.<br>
-     * FIXME: this regexp always produces at least 4 groups for the parameters, which get the value of null if there are
-     * no params --> would be good to remove this.
-     */
+    /** treats function(params) = queryFragment : errorMessage. */
     public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + ")" + funcDefParamRepeatRegExp
             + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.[^:]+)"
             + RegExpUtils.LineWhitespaces + "(?::" + RegExpUtils.LineWhitespaces + "(.*))?";
@@ -598,22 +594,23 @@ public class RecordParser {
                 if (dd.getFunction(name) != null) {
                     mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, st));
                 }
-                String queryFragment = matcher.group(matcher.groupCount() - 1);
-                String errorMessage = matcher.group(matcher.groupCount());
-                DataDefinition params = new RecordInfo(dd.getName() + "." + matcher.group(0));
-                for (int i = 2; i < matcher.groupCount() - 2; i += 2) {
-                    String type = matcher.group(i);
-                    // if we provide < 2 params, we still get 2 * 2 empty groups matched ==> need to check tht here
-                    // see the comment in the field init.
-                    if (type != null) {
-                        if (type.equals("char[]")) { // we substitute char[] with the max char length
-                            type = ("char[255]");
+                String paramsBlock = matcher.group(2); // params are not split yet, we get them all in one
+                String queryFragment = matcher.group(3);
+                String errorMessage = matcher.group(4);
+                DataDefinition ddParams = new RecordInfo(dd.getName() + "." + matcher.group(0));
+                if (StringUtils.isNotBlank(paramsBlock)) {
+                    String[] params = paramsBlock.split(",");
+                    for (int j = 0; j < params.length; j++) {
+                        String paramType = params[j].split(" ")[0];
+                        String paramName = params[j].split(" ")[1];
+                        if (paramType.equals("char[]")) { // we substitute char[] with the max char length
+                            paramType = ("char[255]");
                         }
-                        params.addField(new FieldInfo(matcher.group(i + 1), type));
+                        ddParams.addField(new FieldInfo(paramName, paramType));
                     }
                 }
                 DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                        queryFragment, params, errorMessage);
+                        queryFragment, ddParams, errorMessage);
                 dd.addFunction(name, function);
                 continue;
             }
