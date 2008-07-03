@@ -51,7 +51,7 @@ public interface DataDefinition {
 
     /** the field with the respective index, null if such a field doesn't exist */
     public FieldDefinition getFieldDefinition(int n);
-    
+
     /** Returns a field definition that is either contained in this data definition, or in a pointed type. */
     public FieldDefinition getFieldOrPointedFieldDefinition(String nm);
 
@@ -90,10 +90,10 @@ public interface DataDefinition {
 
     /** Checks whether all fieldnames exist in the database */
     public void checkFieldNames(Dictionary d);
-    
-    /** Checks whether a record can be updated **/
+
+    /** Checks whether a record can be updated * */
     public void checkUpdate(String fieldName, Dictionary d);
-    
+
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
@@ -126,15 +126,19 @@ public interface DataDefinition {
 
         private String name;
 
+        private String sessionVariableName;
+
         private String queryFragment;
 
         private DataDefinition parameters;
 
         private String errorMessage;
 
-        public QueryFragmentFunction(String name, String queryFragment, DataDefinition parameters, String errorMessage) {
+        public QueryFragmentFunction(String name, String sessionVariableName, String queryFragment,
+                DataDefinition parameters, String errorMessage) {
             super();
             this.name = name;
+            this.sessionVariableName = sessionVariableName;
             this.queryFragment = queryFragment;
             this.parameters = parameters;
             if (errorMessage != null) {
@@ -146,6 +150,10 @@ public interface DataDefinition {
 
         public String getName() {
             return name;
+        }
+
+        public String getSessionVariableName() {
+            return sessionVariableName;
         }
 
         public DataDefinition getParameters() {
@@ -172,7 +180,9 @@ public interface DataDefinition {
                 }
             }
             s += "";
-            return "QueryFragment Function: " + getName() + "(" + s + ")" + " = " + queryFragment + ":" + errorMessage;
+            return "QueryFragment Function: "
+                    + (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
+                            : "") + getName() + "(" + s + ")" + " = " + queryFragment + ":" + errorMessage;
         }
 
     }
