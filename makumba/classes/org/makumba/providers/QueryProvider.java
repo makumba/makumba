@@ -1,6 +1,5 @@
 package org.makumba.providers;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -49,6 +48,25 @@ public abstract class QueryProvider {
         }
 
     }
+
+    public static final String PARTS_SEPARATOR_LOGICAL_OPERANDS = "(?:AND|OR)";
+
+    public static final String PARTS_SEPARATOR_PROJECTION = ",";
+
+    public static final String PATTERN_FUNCTION_CALL = "(" + RegExpUtils.fieldName + ")" + "\\((" + "(?:"
+            + RecordParser.funcDefParamValueRegExp + ")" + "(?:" + RegExpUtils.LineWhitespaces + ","
+            + RegExpUtils.LineWhitespaces + "(?:" + RecordParser.funcDefParamValueRegExp + "))*"
+            + RegExpUtils.LineWhitespaces + ")?\\)";
+
+    public static final String patternDefLogicalOperands = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
+            + PARTS_SEPARATOR_LOGICAL_OPERANDS + RegExpUtils.LineWhitespaces + ").*)*";
+
+    public static final String patternDefProjection = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
+            + PARTS_SEPARATOR_PROJECTION + RegExpUtils.LineWhitespaces + ").*)*";
+
+    public static final Pattern patternLogicalOperands = Pattern.compile(patternDefLogicalOperands);
+
+    public static final Pattern patternProjection = Pattern.compile(patternDefProjection);
 
     protected String getQueryAnalysisProviderClass() {
         return null;
@@ -176,15 +194,6 @@ public abstract class QueryProvider {
         // need to split the queries into the SELECT, FROM & WHERE parts
         String[] parts = splitQueryInParts(query);
 
-        String patternDefLogicalOperands = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
-                + PARTS_SEPARATOR_LOGICAL_OPERANDS + RegExpUtils.LineWhitespaces + ").*)*";
-
-        String patternDefProjection = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
-                + PARTS_SEPARATOR_PROJECTION + RegExpUtils.LineWhitespaces + ").*)*";
-
-        Pattern patternLogicalOperands = Pattern.compile(patternDefLogicalOperands);
-        Pattern patternProjection = Pattern.compile(patternDefProjection);
-
         // System.out.println("patternDefLogicalOperands: " + patternDefLogicalOperands);
         // System.out.println("patternDefProjection: " + patternDefProjection);
 
@@ -193,7 +202,7 @@ public abstract class QueryProvider {
         query = inlineSection(query, parts, patternProjection, parts[0]);
         // inline MDD functions in WHERE part
         query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
-        System.out.println("new query: " + query + "\n");
+        System.out.println("new query:     " + query);
 
         // pre-process the WHERE part
         return query;
@@ -223,9 +232,9 @@ public abstract class QueryProvider {
         String newSection = "";
         while (matcher.matches()) {
             RegExpUtils.evaluate(pattern, new String[] { section });
-            String functionDef = matcher.group(1); // this works for now only for functions w/o any params
-            String params = matcher.group(2);
-            String conjunction = matcher.group(7);
+            String functionDef = matcher.group(1);
+            String paramsBlock = matcher.group(2);
+            String separator = matcher.group(3);
             int lastDot = functionDef.lastIndexOf(".");
             String label = functionDef.substring(0, lastDot);
             String functionName = functionDef.substring(lastDot + 1);
@@ -250,12 +259,28 @@ public abstract class QueryProvider {
 
             String whereBefore = section.substring(0, section.indexOf(functionDef));
 
-            String inlinedFunction = inlineNestedFunctions(labelType, function.getQueryFragment());
-            inlinedFunction = inlinedFunction.replaceAll("this", label);
-            newSection += whereBefore + inlinedFunction + (conjunction != null ? conjunction : "");
+            String queryFragment = function.getQueryFragment();
 
-            int index = section.indexOf(functionDef) + functionDef.length() + (params != null ? params.length() : 2)
-                    + (conjunction != null ? conjunction.length() + 1 : 0);
+            // replace argument names with actual arguments
+            if (StringUtils.isNotBlank(paramsBlock)) {
+                String[] params = paramsBlock.split(",");
+                for (int i = 0; i < params.length; i++) {
+                    // FIXME: this replacement is not safe, as it replaces e.g. this.paramName --> improve reg-exp for
+                    // replaceAll
+                    queryFragment = queryFragment.replaceAll(function.getParameters().getFieldDefinition(i).getName(),
+                        params[i]);
+                }
+            }
+
+            // inline nested functions
+            String inlinedFunction = inlineNestedFunctions(labelType, queryFragment);
+
+            // replace 'this' with the actual label name
+            inlinedFunction = inlinedFunction.replaceAll("this", label);
+            newSection += whereBefore + inlinedFunction + (separator != null ? separator : "");
+
+            int index = section.indexOf(functionDef) + functionDef.length()
+                    + (paramsBlock != null ? paramsBlock.length() : 2) + (separator != null ? separator.length() : 0);
             section = section.substring(index).trim();
             matcher = pattern.matcher(section);
         }
@@ -304,15 +329,6 @@ public abstract class QueryProvider {
     private String dataSource;
 
     private QueryAnalysisProvider qap;
-
-    public static final String PARTS_SEPARATOR_LOGICAL_OPERANDS = "(AND|OR)";
-
-    public static final String PARTS_SEPARATOR_PROJECTION = ",";
-
-    public static final String PATTERN_FUNCTION_CALL = "(" + RegExpUtils.fieldName + ")" + "\\((?:" + "("
-            + RecordParser.funcDefParamValueRegExp + ")" + "(?:" + RegExpUtils.LineWhitespaces + ","
-            + RegExpUtils.LineWhitespaces + "(" + RecordParser.funcDefParamValueRegExp + "))*"
-            + RegExpUtils.LineWhitespaces + ")?\\)";
 
     /**
      * Gets the data source of the QueryProvider.
