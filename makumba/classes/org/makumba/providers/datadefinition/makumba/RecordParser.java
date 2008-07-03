@@ -90,9 +90,11 @@ public class RecordParser {
      */
     public static final String funcDefParamTypeRegExp = "(char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
 
+    public static final String funcDefParamValueRegExp = "(\\d+|" + RegExpUtils.fieldName + ")";
+
     /** defines "int a" or "int 5". */
     public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
-            + "(\\d+|" + RegExpUtils.fieldName + ")";
+            + funcDefParamValueRegExp;
 
     /** treats (int a, char b, ...) */
     public static final String funcDefParamRepeatRegExp = "\\((?:" + "(?:" + funcDefParamRegExp + ")" + "(?:"
@@ -135,8 +137,8 @@ public class RecordParser {
 
     private ArrayList<String> unparsedValidationDefinitions = new ArrayList<String>();
 
-    private String titleExpressionToEvaluate; // title field expression to be evaluated later, after all subfields
-                                                // were found
+    /** title field expression to be evaluated later, after all subfields were found */
+    private String titleExpressionToEvaluate;
 
     private String titleExpressionToEvaluateOrigCmd;
 
@@ -308,8 +310,8 @@ public class RecordParser {
         String ttl = (String) text.remove("!title");
         String ttlt = null;
         if (ttl != null) {
-            if (ttl.contains(".")) { // we point to a field in a ptd type ==> need to evaluate it later, after all
-                                        // fields are evaluated
+            if (ttl.contains(".")) {
+                // we point to a field in a ptd type ==> need to evaluate it later, after all fields are evaluated
                 titleExpressionToEvaluateOrigCmd = origCmd;
                 titleExpressionToEvaluate = ttl;
                 return;
