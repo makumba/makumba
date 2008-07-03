@@ -231,7 +231,7 @@ public abstract class QueryProvider {
         }
         String newSection = "";
         while (matcher.matches()) {
-            RegExpUtils.evaluate(pattern, new String[] { section });
+            // RegExpUtils.evaluate(pattern, new String[] { section });
             String functionDef = matcher.group(1);
             String paramsBlock = matcher.group(2);
             String separator = matcher.group(3);
