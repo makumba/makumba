@@ -236,4 +236,16 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMDDFunctions() throws ServletException, IOException {
+        pageContext.include("list-oql/testMDDFunctions.jsp");
+    }
+
+    public void endMDDFunctions(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, true);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
 }
