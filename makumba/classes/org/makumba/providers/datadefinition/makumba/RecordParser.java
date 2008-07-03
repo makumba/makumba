@@ -33,6 +33,7 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -49,6 +50,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
@@ -102,8 +104,8 @@ public class RecordParser {
             + RegExpUtils.LineWhitespaces + ")?\\)";
 
     /** treats function(params) = queryFragment : errorMessage. */
-    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + ")" + funcDefParamRepeatRegExp
-            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.[^:]+)"
+    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" + "(" + RegExpUtils.fieldName + ")"
+            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.[^:]+)"
             + RegExpUtils.LineWhitespaces + "(?::" + RegExpUtils.LineWhitespaces + "(.*))?";
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
@@ -590,13 +592,17 @@ public class RecordParser {
             // check if the line is a function definition
             matcher = funcDefPattern.matcher(lineWithoutComment);
             if (matcher.matches()) {
-                String name = matcher.group(1);
+                String sessionVariableName = matcher.group(1);
+                if (sessionVariableName != null) {
+                    sessionVariableName = sessionVariableName.replace("%", "");
+                }
+                String name = matcher.group(2);
                 if (dd.getFunction(name) != null) {
                     mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, st));
                 }
-                String paramsBlock = matcher.group(2); // params are not split yet, we get them all in one
-                String queryFragment = matcher.group(3);
-                String errorMessage = matcher.group(4);
+                String paramsBlock = matcher.group(3); // params are not split yet, we get them all in one
+                String queryFragment = matcher.group(4);
+                String errorMessage = matcher.group(5);
                 DataDefinition ddParams = new RecordInfo(dd.getName() + "." + matcher.group(0));
                 if (StringUtils.isNotBlank(paramsBlock)) {
                     String[] params = paramsBlock.split(",");
@@ -610,7 +616,7 @@ public class RecordParser {
                     }
                 }
                 DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                        queryFragment, ddParams, errorMessage);
+                        sessionVariableName, queryFragment, ddParams, errorMessage);
                 dd.addFunction(name, function);
                 continue;
             }
@@ -1190,7 +1196,12 @@ public class RecordParser {
                 "someOtherFunction(int age, char[] b) = this.age > age : You are too young!" });
 
         // test some mdd reading
-        RecordInfo.getRecordInfo("test.Person");
+        DataDefinition recordInfo = RecordInfo.getRecordInfo("test.Person");
+        System.out.println("Functions in " + recordInfo);
+        Collection<QueryFragmentFunction> functions = recordInfo.getFunctions();
+        for (QueryFragmentFunction queryFragmentFunction : functions) {
+            System.out.println("\t" + queryFragmentFunction);
+        }
     }
 
 }
