@@ -18,20 +18,28 @@ rudi & stefan: added developer support for data listing (lists all data of a cer
 rudi: (mostly) fixing bug 281, form annotation, missing is just the URI changing
 rudi: fixes for certain runtime exception treating (e.g. NullPointer), giving more info on the exception
 rudi & manu: link to CVS from source code viewer
-
------------------------------------------------
-
-NOT TO BE RELEASED YET (need more testing)
-------------------------------------------
-rudi: support for search forms
 rudi: validation rules, fixing bug 312 (data range: int[min..max]) partly, 313 (regexp data validation), 531 (char[minLength...maxLength])
 rudi: fixing bug 513, unique groups of fields
 rudi: fixing bug 962, Edit/Add/New Forms should allow handler attribute
 rudi: fixing bug 957, support for search forms
 rudi: added totalCount() to mak:list
+rudi: fixing bugs introduced to addToNew with refactoring of responders
+rudi: implementing basic version of nested new forms (bug 1026) 
+rudi: implemented pagination
+
+-----------------------------------------------
+
+NOT TO BE RELEASED YET (need more testing)
+rudi: implemented query functions inlining in WHERE sections and BL queries
+
+------------------------------------------
 - add your changes -
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.7 ALPHA3; 22 May 2008
+rudi: reverting form order in responder factory
+rudi: bringing back functionality for form reload on submission errors
 
 0.7 ALPHA2; 20 Dec 2007
 cristi&rudi: fixing bug with @include not finding absolute paths
