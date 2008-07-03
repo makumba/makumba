@@ -88,7 +88,7 @@ public class RegExpUtils {
         }
     }
 
-    public static void evaluate(Pattern p, String[] rules) {
+    public static void evaluate(Pattern p, String... rules) {
         evaluate(p, rules, true);
     }
 
