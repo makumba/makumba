@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.InvalidFieldTypeException;
 import org.makumba.NoSuchLabelException;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.list.engine.ComposedQuery;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 
 /**
@@ -242,12 +242,9 @@ public abstract class QueryProvider {
             // we need to find out the type of the label the function is called on
             // thus, we need to do a dummy query to analyze the type
             // FIXME: this does not yet take great care of other things around..
-            String[] queryProps = new String[5];
-            queryProps[ComposedQuery.FROM] = from;
-            ComposedQuery q = new ComposedQuery(queryProps, providerClassesReverse.get(getClass()));
-            q.init();
-            q.analyze();
-            DataDefinition labelType = q.getLabelType(label);
+            
+            DataDefinition labelType= getQueryAnalysis("SELECT 1 FROM "+from).getLabelType(label);
+           
             if (labelType == null) {
                 throw new NoSuchLabelException("no such label '" + label + "'");
             }
@@ -324,6 +321,99 @@ public abstract class QueryProvider {
             parts[2] = "";
         }
         return parts;
+    }
+    
+    /**
+     * Checks if an expression is valid, nullable or set
+     * 
+     * @param expr
+     *            the expression
+     * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
+     */
+    public Object checkExprSetOrNullable(String from, String expr) {
+        if (expr.toLowerCase().indexOf(" from ") != -1)
+            // subqueries do not need separate queries
+            return null;
+
+        String query= "SELECT "+expr+" FROM "+from;
+        query= preprocessMDDFunctionsAtQueryAnalysis(query);
+        expr= query.substring(7);
+        expr= expr.substring(0, expr.indexOf("FROM"));
+        
+        int n = 0;
+        int m = 0;
+        while (true) {
+            // FIXME: this is a not that good algorithm for finding label.field1.fiel2.field3
+            while (n < expr.length() && !isMakId(expr.charAt(n)))
+                n++;
+
+            if (n == expr.length())
+                return null;
+            m = n;
+            while (n < expr.length() && isMakId(expr.charAt(n)))
+                n++;
+            Object nl = checkLabelSetOrNullable(from, expr.substring(m, n));
+            if (nl != null)
+                return nl;
+            if (n == expr.length())
+                return null;
+        }
+    }
+
+    /**
+     * Checks if a character can be part of a makumba identifier
+     * 
+     * @param c
+     *            the character to check
+     * @return <code>true</code> if the character can be part of a makumba identifier, <code>false</code> otherwise
+     */
+    static boolean isMakId(char c) {
+        return Character.isJavaIdentifierPart(c) || c == '.';
+    }
+
+    /**
+     * Checks if an id is nullable, and if so, return the path to the null pointer
+     * 
+     * @param referenceSequence
+     *            a sequence like field1.field2.field3
+     * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
+     */
+    public Object checkLabelSetOrNullable(String from, String referenceSequence) {
+        int dot = referenceSequence.indexOf(".");
+        if (dot == -1)
+            return null;
+        String substring = referenceSequence.substring(0, dot);
+        try { // if the "label" is actually a real number as 3.0
+            Integer.parseInt(substring);
+            return null; // if so, just return
+        } catch (NumberFormatException e) {
+        }
+        DataDefinition dd = getQueryAnalysis("SELECT 1 FROM "+from).getLabelType(substring);
+        if (dd == null) {
+            throw new org.makumba.NoSuchLabelException("no such label '" + substring + "'.");
+        }
+        while (true) {
+            int dot1 = referenceSequence.indexOf(".", dot + 1);
+            if (dot1 == -1) {
+                String fn = referenceSequence.substring(dot + 1);
+                FieldDefinition fd = dd.getFieldDefinition(fn);
+                if (fd == null && (fd = getAlternativeField(dd, fn)) == null)
+                    throw new org.makumba.NoSuchFieldException(dd, fn);
+
+                if (fd.getType().equals("set"))
+                    return fd;
+                return null;
+            }
+            FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
+            if (fd == null)
+                throw new org.makumba.NoSuchFieldException(dd, referenceSequence.substring(dot + 1, dot1));
+            if (!fd.getType().startsWith("ptr"))
+                throw new InvalidFieldTypeException(fd, "pointer");
+            if (!fd.isNotNull())
+                return referenceSequence.substring(0, dot1);
+            dd = fd.getPointedType();
+            dot = dot1;
+        }
     }
 
     private String dataSource;
