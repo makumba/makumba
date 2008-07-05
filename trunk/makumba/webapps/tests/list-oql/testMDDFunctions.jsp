@@ -25,13 +25,12 @@ p.nameMin4CharsLong()<br>
 
 p.nameMin3CharsLong()<br>
 <mak:list from="test.Person p" where="p.nameMin3CharsLong()">
-  ${mak:count()} - <mak:value expr="p.indiv.name"/>, <mak:value expr="p.indiv.name"/>, <mak:value expr="character_length(p.indiv.name)"/> <br>
-</mak:list>
+  ${mak:count()} - <mak:value expr="p.indiv.name"/>, <mak:value expr="p.indiv.name"/>, <mak:value expr="character_length(p.indiv.name)"/> 
+  <br><%--
+ <mak:value expr="p.nameMin3CharsLong()" />	
+--%></mak:list>
 
 <br><br>
 
 
-p.oldEnough2(): age + 3 > 20<br>
-<mak:list from="test.Person p" where="p.oldEnough2(3, 13, 14)">
-  ${mak:count()} - <mak:value expr="p.indiv.name"/>, <mak:value expr="p.indiv.name"/>, <mak:value expr="p.age"/> <br>
-</mak:list>
+
