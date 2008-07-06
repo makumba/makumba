@@ -264,8 +264,6 @@ public abstract class QueryProvider {
                 throw new ProgrammerError("No function '" + functionName + "' found in type '" + labelType + "'");
             }
 
-            String whereBefore = section.substring(0, section.indexOf(functionDef));
-
             String queryFragment = function.getQueryFragment();
 
             // replace argument names with actual arguments
@@ -284,14 +282,10 @@ public abstract class QueryProvider {
 
             // replace 'this' with the actual label name
             inlinedFunction = inlinedFunction.replaceAll("this", label);
-            newSection += whereBefore + inlinedFunction + (separator != null ? separator : "");
-
-            int index = section.indexOf(functionDef) + functionDef.length()
-                    + (paramsBlock != null ? paramsBlock.length() : 2) + (separator != null ? separator.length() : 0);
-            section = section.substring(index).trim();
+            section = section.replace(matcher.group().trim(), inlinedFunction);
             matcher = pattern.matcher(section);
         }
-        return newSection;
+        return section;
     }
 
     /** Inlines MDD-functions that itself contain other query functions; does only one level of inlining yet. */
