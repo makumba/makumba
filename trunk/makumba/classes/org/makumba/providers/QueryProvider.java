@@ -63,7 +63,8 @@ public abstract class QueryProvider {
             + PARTS_SEPARATOR_LOGICAL_OPERANDS + RegExpUtils.LineWhitespaces + ").*)*";
 
     public static final String patternDefProjection = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
-            + PARTS_SEPARATOR_PROJECTION + RegExpUtils.LineWhitespaces + ").*)*";
+            + PARTS_SEPARATOR_PROJECTION + RegExpUtils.LineWhitespaces + ").*)*" + "(?:" + RegExpUtils.LineWhitespaces
+            + " AS " + RegExpUtils.LineWhitespaces + RegExpUtils.fieldNameAndSpaces + ")?";
 
     public static final Pattern patternLogicalOperands = Pattern.compile(patternDefLogicalOperands);
 
@@ -209,7 +210,7 @@ public abstract class QueryProvider {
 
         // inline MDD functions in WHERE part
         // query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
-        query = inline(query, parts, parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS), patternLogicalOperands);
+        query = inline(query, parts, parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS), patternLogicalOperands).trim();
 
         System.out.println("\ninitial query: '" + originalQuery + "'");
         System.out.println("new query:     '" + query + "'");
@@ -234,15 +235,9 @@ public abstract class QueryProvider {
         while (section.contains("  ")) {
             section = section.replaceAll("  ", " ");
         }
-        String as = "";
-        int asi = section.indexOf(" AS ");
-        if (asi != -1) {
-            as = section.substring(asi);
-            section = section.substring(0, asi);
-        }
         Matcher matcher = pattern.matcher(section);
         if (!matcher.matches()) {
-            return section + as;
+            return section;
         }
         String newSection = "";
         while (matcher.matches()) {
@@ -296,7 +291,7 @@ public abstract class QueryProvider {
             section = section.substring(index).trim();
             matcher = pattern.matcher(section);
         }
-        return newSection + as;
+        return newSection;
     }
 
     /** Inlines MDD-functions that itself contain other query functions; does only one level of inlining yet. */
@@ -450,6 +445,8 @@ public abstract class QueryProvider {
 
     public static void main(String[] args) throws Exception {
         String[] queries = { "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
+                "SELECT p as p, p.indiv as indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
+                "SELECT p AS  p, p.indiv   AS    indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
                 "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
                 "SELECT p.nameMin3CharsLong() FROM test.Person p" };
