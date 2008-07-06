@@ -211,7 +211,7 @@ public abstract class QueryProvider {
         // query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
         query = inline(query, parts, parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS), patternLogicalOperands);
 
-        System.out.println("\ninitial query: '" + originalQuery+ "'");
+        System.out.println("\ninitial query: '" + originalQuery + "'");
         System.out.println("new query:     '" + query + "'");
         // pre-process the WHERE part
         return query;
@@ -234,15 +234,15 @@ public abstract class QueryProvider {
         while (section.contains("  ")) {
             section = section.replaceAll("  ", " ");
         }
-        String as= "";
-        int asi= section.indexOf(" AS ");
-        if(asi!=-1){
-            as= section.substring(asi);
-            section= section.substring(0, asi);
+        String as = "";
+        int asi = section.indexOf(" AS ");
+        if (asi != -1) {
+            as = section.substring(asi);
+            section = section.substring(0, asi);
         }
         Matcher matcher = pattern.matcher(section);
         if (!matcher.matches()) {
-            return section+as;
+            return section + as;
         }
         String newSection = "";
         while (matcher.matches()) {
@@ -296,7 +296,7 @@ public abstract class QueryProvider {
             section = section.substring(index).trim();
             matcher = pattern.matcher(section);
         }
-        return newSection+as;
+        return newSection + as;
     }
 
     /** Inlines MDD-functions that itself contain other query functions; does only one level of inlining yet. */
