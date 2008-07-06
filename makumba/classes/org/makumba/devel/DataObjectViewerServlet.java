@@ -151,7 +151,7 @@ public class DataObjectViewerServlet extends DataServlet {
                             } else {
                                 writer.print(value);
                                 if (fd.isEnumType() && value != null) {
-                                    writer.print(" <i>(=" + fd.getNameFor((Integer) value) + ")</i>");
+                                    writer.print(" <i>(=" + fd.getNameFor((Integer.parseInt(String.valueOf(value)))) + ")</i>");
                                 }
                             }
                         }
