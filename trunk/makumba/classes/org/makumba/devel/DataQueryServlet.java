@@ -165,7 +165,7 @@ public class DataQueryServlet extends DataServlet {
                 writer.println("");
                 writer.println("<div id=\"showStackTrace\" style=\"display: inline;\"><a href=\"javascript:toggleStackTrace();\" title=\"Show full stack trace\">--></a></div>");
                 writer.println("<div id=\"hideStackTrace\" style=\"display: none\"><a href=\"javascript:toggleStackTrace();\" title=\"Hide stack trace\"><--</a></div>");
-                writer.println("<div id=\"stackTrace\" style=\"display: none; color: red; font-style: italic; font-size: smaller; margin-left: 40px; \">");
+                writer.println("<div id=\"stackTrace\" style=\"white-space: pre; display: none; color: red; font-style: italic; font-size: smaller; margin-left: 40px; \">");
                 e.printStackTrace(writer);
                 writer.println("</div>");
             } catch (org.makumba.OQLParseError e) {
