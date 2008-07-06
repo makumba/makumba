@@ -53,10 +53,11 @@ public abstract class QueryProvider {
 
     public static final String PARTS_SEPARATOR_PROJECTION = ",";
 
-    public static final String PATTERN_FUNCTION_CALL = "(" + RegExpUtils.fieldName + ")" + "\\((" + "(?:"
-            + RecordParser.funcDefParamValueRegExp + ")" + "(?:" + RegExpUtils.LineWhitespaces + ","
-            + RegExpUtils.LineWhitespaces + "(?:" + RecordParser.funcDefParamValueRegExp + "))*"
-            + RegExpUtils.LineWhitespaces + ")?\\)";
+    public static final String PATTERN_FUNCTION_CALL = "(?:" + RegExpUtils.LineWhitespaces + ")?" + "("
+            + RegExpUtils.fieldName + ")" + "\\((" + "(?:" + RecordParser.funcDefParamValueRegExp + ")" + "(?:"
+            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + "(?:"
+            + RecordParser.funcDefParamValueRegExp + "))*" + RegExpUtils.LineWhitespaces + ")?\\)" + "(?:"
+            + RegExpUtils.LineWhitespaces + ")?";
 
     public static final String patternDefLogicalOperands = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
             + PARTS_SEPARATOR_LOGICAL_OPERANDS + RegExpUtils.LineWhitespaces + ").*)*";
@@ -197,23 +198,33 @@ public abstract class QueryProvider {
         // System.out.println("patternDefLogicalOperands: " + patternDefLogicalOperands);
         // System.out.println("patternDefProjection: " + patternDefProjection);
 
-        System.out.println("\ninitial query: " + query);
-        // inline MDD functions in projections (SELECT)
-        query = inlineSection(query, parts, patternProjection, parts[0]);
-        // inline MDD functions in WHERE part
-        query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
-        System.out.println("new query:     " + query);
+        String originalQuery = new String(query);
 
+        // System.out.println(Arrays.toString(split));
+        // System.out.println(Arrays.toString(parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS)));
+
+        // inline MDD functions in projections (SELECT)
+        // query = inlineSection(query, parts, patternProjection, parts[0]);
+        query = inline(query, parts, parts[0].split(PARTS_SEPARATOR_PROJECTION), patternProjection);
+
+        // inline MDD functions in WHERE part
+        // query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
+        query = inline(query, parts, parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS), patternLogicalOperands);
+
+        if (!originalQuery.equals(query)) {
+            System.out.println("\ninitial query: '" + originalQuery+ "'");
+            System.out.println("new query:     '" + query + "'");
+        }
         // pre-process the WHERE part
         return query;
     }
 
-    public String inlineSection(String query, String[] parts, Pattern pattern, String section) {
-        int indexOf = query.indexOf(section);
-        int endIndex = indexOf + section.length();
-        String inlineFunction = inlineFunction(parts[1], section, pattern);
-        if (!inlineFunction.equals(section)) {
-            query = query.substring(0, indexOf) + inlineFunction + query.substring(endIndex);
+    private String inline(String query, String[] parts, String[] split, final Pattern p) {
+        for (int i = 0; i < split.length; i++) {
+            String inlined = inlineFunction(parts[1], split[i], p);
+            if (!inlined.equals(split[i])) {
+                query = query.replace(split[i], inlined);
+            }
         }
         return query;
     }
@@ -432,5 +443,16 @@ public abstract class QueryProvider {
     public abstract boolean selectGroupOrOrderAsLabels();
 
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
+
+    public static void main(String[] args) throws Exception {
+        String[] queries = { "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
+                "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
+                "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
+                "SELECT p.nameMin3CharsLong() FROM test.Person p" };
+        final QueryProvider qp = QueryProvider.makeQueryAnalzyer("oql");
+        for (int i = 0; i < queries.length; i++) {
+            qp.preprocessMDDFunctions(queries[i]);
+        }
+    }
 
 }
