@@ -84,15 +84,15 @@ public class ReferenceChecker extends HttpServlet {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
         try {
             ResultSet result = ps.executeQuery();
-            try{
+            try {
                 result.next();
                 return result.getInt(1);
-            }finally{
+            } finally {
                 result.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             try {
                 ps.close();
             } catch (SQLException e) {
@@ -104,7 +104,8 @@ public class ReferenceChecker extends HttpServlet {
 
     private ResultSet executeQuery(String query) {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
-        // FIXME: this PreparedStatement is never closed, and it probably cannot be closed before closing the result set which we return....
+        // FIXME: this PreparedStatement is never closed, and it probably cannot be closed before closing the result set
+        // which we return....
         try {
             return ps.executeQuery();
         } catch (SQLException e) {
@@ -193,12 +194,9 @@ public class ReferenceChecker extends HttpServlet {
                         DataDefinition pointerDd = f.getPointedType();
                         String pointerDdName = pointerDd.getName();
                         w.println("&rarr; " + pointerDdName + "(" + count(pointerDd) + ")");
-                        String idName = (mddName + f.getName()).replace('.', '_').replaceAll("->", "__");
                         String query = getQueryString(pointerDd, dd, f, true);
-                        w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", "
-                                + idName + "Ref)\">[+]</a>");
-                        w.println("<div id=\"" + idName + "\" style=\"display:none;\">" + query + "</div> "
-                                + printDetails(executeIntQuery(query), dd, f));
+                        printHiddenQuery(w, getDivID(mddName, f), query);
+                        w.println(printDetails(executeIntQuery(query), dd, f));
                         printForeignKey(w, dd, f);
                     }
                     if (f.isExternalSet()) {
@@ -208,9 +206,13 @@ public class ReferenceChecker extends HttpServlet {
                         w.println(" &larr;[" + setDd + " (" + count(setDd) + ")]&rarr " + pointerDdName + " ("
                                 + count(pointerDd) + ")");
                         FieldDefinition backPtr = setDd.getFieldDefinition(dd.getIndexPointerFieldName());
+                        String query = getQueryString(dd, setDd, backPtr, true);
+                        printHiddenQuery(w, getDivID(mddName, backPtr), query);
                         w.println(printDetails(countMissing(dd, setDd, backPtr), dd, f));
                         printForeignKey(w, setDd, backPtr);
                         FieldDefinition backPtr2 = setDd.getFieldDefinition(pointerDd.getIndexPointerFieldName());
+                        query = getQueryString(pointerDd, setDd, backPtr2, true);
+                        printHiddenQuery(w, getDivID(mddName, backPtr2), query);
                         w.println(printDetails(countMissing(pointerDd, setDd, backPtr2), pointerDd, f));
                         printForeignKey(w, setDd, backPtr2);
                     }
@@ -218,6 +220,8 @@ public class ReferenceChecker extends HttpServlet {
                         DataDefinition setDd = f.getSubtable();
                         w.println(" &larr;[" + setDd + " (" + count(setDd) + ")]");
                         FieldDefinition backPtr = setDd.getFieldDefinition(dd.getIndexPointerFieldName());
+                        String query = getQueryString(dd, setDd, backPtr, true);
+                        printHiddenQuery(w, getDivID(mddName, backPtr), query);
                         w.println(printDetails(countMissing(dd, setDd, backPtr), dd, f));
                         printForeignKey(w, setDd, backPtr);
                         stack.add(setDd.getName());
@@ -232,6 +236,16 @@ public class ReferenceChecker extends HttpServlet {
                 w.println(" <font color=\"red\">" + ex + "</font></b>  ");
             }
         }
+    }
+
+    private String getDivID(String mddName, FieldDefinition f) {
+        return (mddName + f.getName()).replace('.', '_').replaceAll("->", "__");
+    }
+
+    private void printHiddenQuery(PrintWriter w, String idName, String query) {
+        w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", " + idName
+                + "Ref)\">[+]</a>");
+        w.println("<div id=\"" + idName + "\" style=\"display:none;\">" + query + "</div> ");
     }
 
     private void printForeignKey(PrintWriter w, DataDefinition dd, FieldDefinition f) {
@@ -267,7 +281,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("<tr> <th>#</th> <th>Pointer</th>  <th>Title field: " + dd.getTitleFieldName()
                 + "</th> <th title=\"field " + fd.getName() + "\">Broken ref</th> </tr>");
         try {
-            for (int i = 0; rs.next(); i++) {
+            for (int i = 0; rs != null && rs.next(); i++) {
                 int ptrInt = rs.getInt("ptr");
                 int brokenRef = rs.getInt("brokenRef");
                 Object titleField = rs.getObject("titleField");
