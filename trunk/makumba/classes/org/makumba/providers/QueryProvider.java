@@ -242,9 +242,9 @@ public abstract class QueryProvider {
             // we need to find out the type of the label the function is called on
             // thus, we need to do a dummy query to analyze the type
             // FIXME: this does not yet take great care of other things around..
-            
-            DataDefinition labelType= getQueryAnalysis("SELECT 1 FROM "+from).getLabelType(label);
-           
+
+            DataDefinition labelType = getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(label);
+
             if (labelType == null) {
                 throw new NoSuchLabelException("no such label '" + label + "'");
             }
@@ -322,7 +322,7 @@ public abstract class QueryProvider {
         }
         return parts;
     }
-    
+
     /**
      * Checks if an expression is valid, nullable or set
      * 
@@ -335,11 +335,11 @@ public abstract class QueryProvider {
             // subqueries do not need separate queries
             return null;
 
-        String query= "SELECT "+expr+" FROM "+from;
-        query= preprocessMDDFunctionsAtQueryAnalysis(query);
-        expr= query.substring(7);
-        expr= expr.substring(0, expr.indexOf("FROM"));
-        
+        String query = "SELECT " + expr + " FROM " + from;
+        query = preprocessMDDFunctionsAtQueryAnalysis(query);
+        expr = query.substring(7);
+        expr = expr.substring(0, expr.indexOf("FROM"));
+
         int n = 0;
         int m = 0;
         while (true) {
@@ -388,7 +388,7 @@ public abstract class QueryProvider {
             return null; // if so, just return
         } catch (NumberFormatException e) {
         }
-        DataDefinition dd = getQueryAnalysis("SELECT 1 FROM "+from).getLabelType(substring);
+        DataDefinition dd = getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(substring);
         if (dd == null) {
             throw new org.makumba.NoSuchLabelException("no such label '" + substring + "'.");
         }
