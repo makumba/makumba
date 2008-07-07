@@ -607,8 +607,9 @@ public class RecordParser {
                 if (StringUtils.isNotBlank(paramsBlock)) {
                     String[] params = paramsBlock.split(",");
                     for (int j = 0; j < params.length; j++) {
-                        String paramType = params[j].split(" ")[0];
-                        String paramName = params[j].split(" ")[1];
+                        // make sure to trim(), if we have "int x, int y", the second one param will be " int y"
+                        String paramType = params[j].trim().split(" ")[0];
+                        String paramName = params[j].trim().split(" ")[1];
                         if (paramType.equals("char[]")) { // we substitute char[] with the max char length
                             paramType = ("char[255]");
                         }
@@ -1191,16 +1192,28 @@ public class RecordParser {
 
     public static void main(String[] args) {
         // test some function definition
+        System.out.println("Testing some reg-exps:");
         RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() = abc : errorMessage",
                 " someFunc(char[] a, int 5) =abc:errorMessages", "someFunction(int a, char[] b) = yeah:errorMessage3",
                 "someOtherFunction(int age, char[] b) = this.age > age : You are too young!" });
 
         // test some mdd reading
+        System.out.println("\n\n*****************************************************************************");
+        System.out.println("Testing reading test.Person MDD:\n");
         DataDefinition recordInfo = RecordInfo.getRecordInfo("test.Person");
         System.out.println("Functions in " + recordInfo);
         Collection<QueryFragmentFunction> functions = recordInfo.getFunctions();
         for (QueryFragmentFunction queryFragmentFunction : functions) {
             System.out.println("\t" + queryFragmentFunction);
+            System.out.println("\t\tparameters:");
+            DataDefinition parameters = queryFragmentFunction.getParameters();
+            for (int i = 0; i < parameters.getFieldNames().size(); i++) {
+                FieldDefinition fieldDefinition = parameters.getFieldDefinition(i);
+                System.out.println("\t\t\t" + fieldDefinition.getDataType() + " " + fieldDefinition.getName());
+            }
+            if (parameters.getFieldNames().size() == 0) {
+                System.out.println("\t\t\t--None--");
+            }
         }
     }
 
