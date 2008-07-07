@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Created-By: Java @java.version@ (@java.vendor@)
+
+Name: Makumba
+Version: @version@
+Packed-By: @user@ at @buildhost@
+Date: @date@
+License: GNU Lesser General Public License (LGPL)
+URL: http://www.makumba.org
+
