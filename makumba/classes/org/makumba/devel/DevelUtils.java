@@ -94,7 +94,9 @@ public class DevelUtils {
             writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
                     + "</font></a></font>");
         }
-        writer.println(repositoryLink);
+        if (StringUtils.isNotBlank(repositoryLink)) {
+            writer.println(repositoryLink);
+        }
         if (realPath != null) {
             writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
         }
