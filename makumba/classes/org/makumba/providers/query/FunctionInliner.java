@@ -38,59 +38,56 @@ public class FunctionInliner {
 
     private String inlinedFunction;
 
+    private String functionObject;
+
     public FunctionInliner(String query, QueryProvider qp) {
         this(query, findFrom(query), qp);
     }
 
     public FunctionInliner(String query, String from, QueryProvider qp) {
         findFunctionComponents(query, from, qp);
-        //        if(functionDefinition.getParameters().getFieldNames().size()!=parameterExpr.size())
-        //            throw new ProgrammerError("parameter number "+parameterExpr + " does not match function "+functionDefinition);
-        int n = 0;
-        for (String parameter : parameterExpr) {
-            String inlineParameter = inlineParameter(parameter, qp);
-            parameterInline.add(inlineParameter);
-            checkParameter(n, parameter, inlineParameter, qp);
-            n++;
+        if (functionText != null) {
+            if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size())
+                throw new ProgrammerError("parameter number " + parameterExpr + " does not match function "
+                        + functionDefinition);
+            int n = 0;
+            for (String parameter : parameterExpr) {
+                String inlineParameter = inline(parameter, from, qp);
+                parameterInline.add(inlineParameter);
+                checkParameter(n, parameter, inlineParameter, qp);
+                n++;
+            }
+            doInline();
         }
-        //doInline();
     }
 
     private void doInline() {
-        inlinedFunction = "("+functionDefinition.getQueryFragment()+")";
+        inlinedFunction = "(" + functionDefinition.getQueryFragment() + ")";
         for (int i = 0; i < parameterExpr.size(); i++) {
-            // FIXME: this replacement is not safe, as it replaces e.g. this.paramName --> improve reg-exp for
-            // replaceAll
+            // FIXME: this replacement is not safe, as it replaces e.g. this.paramName 
+            // --> need to replace parameters all at once, and only those that don't have . before or ( after them...
             inlinedFunction = inlinedFunction.replaceAll(
-                functionDefinition.getParameters().getFieldDefinition(i).getName(), "("+parameterInline.get(i)+")");
+                functionDefinition.getParameters().getFieldDefinition(i).getName(), "(" + parameterInline.get(i) + ")");
         }
-
+        // FIXME: this replacement is not safe, see above
+        inlinedFunction = inlinedFunction.replaceAll("this", functionObject);
     }
 
     private void checkParameter(int n, String parameter, String inlineParameter, QueryProvider qp) {
         FieldDefinition fieldDefinition = functionDefinition.getParameters().getFieldDefinition(n);
         FieldDefinition actual = qp.getQueryAnalysis("SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
             0);
-        /*       if(!fieldDefinition.isAssignableFrom(actual))
-         throw new ProgrammerError(
-         "formal paramter "+fieldDefinition.getName() + " of type "+fieldDefinition.getDataType()
-         +" is not matched by the actual value given "+ parameter +" of type "+actual.getDataType()
-         +" for function "+functionDefinition );       
-         */}
 
-    private String inlineParameter(String parameter, QueryProvider qp) {
-        String toRight = parameter;
-        StringBuffer inlined = new StringBuffer();
-        while (toRight != null) {
-            FunctionInliner fi = new FunctionInliner(toRight, from, qp);
-            toRight = fi.getAfterFunction();
-            inlined.append(fi.inline());
-        }
-        return inlined.toString();
+        if (!fieldDefinition.isAssignableFrom(actual))
+            throw new ProgrammerError("formal paramter " + fieldDefinition.getName() + " of type "
+                    + fieldDefinition.getDataType() + " is not matched by the actual value given " + parameter
+                    + " of type " + actual.getDataType() + " for function " + functionDefinition);
     }
 
-    /** Return the inlined function prepended by the non-functional text that came before it in the text; 
-     * if no functions are found, return the text*/
+    /**
+     * Return the inlined function prepended by the non-functional text that came before it in the text; if no functions
+     * are found, return the text
+     */
     private String inline() {
         if (functionText == null)
             return beforeFunction;
@@ -140,6 +137,7 @@ public class FunctionInliner {
                     functionDefinition = dd.getFunction(fn);
                     if (functionDefinition == null)
                         throw new ProgrammerError(fn + " is not a function in " + dd.getName());
+                    functionObject = referenceSequence.substring(0, dot);
                     break;
                 }
                 FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
@@ -163,7 +161,8 @@ public class FunctionInliner {
 
     @Override
     public String toString() {
-        return beforeFunction + " [" + functionText + ":" + parameterInline + ":" + from + "] " + afterFunction;
+        return beforeFunction + " [" + functionText + ":" + parameterInline + ":" + functionDefinition + ":"
+                + functionObject + ":" + inline() + "] " + afterFunction;
     }
 
     /**
@@ -194,6 +193,42 @@ public class FunctionInliner {
         }
     }
 
+    /** Inline query functions in a query using the given query provider 
+     * @param expression the expression
+     * @param qp the query provider
+     * @return the query with inlined query functions
+     */ 
+    public static String inline(String query, QueryProvider qp) {
+        return inline(query, findFrom(query), qp);
+    }
+    
+    /** Inline query functions in an expression or query with the given label types, using given query provider 
+     * @param expression the expression
+     * @param from the label types as a QL FROM
+     * @param qp the query provider
+     * @return the expression with inlined query functions
+     */ 
+    public static String inline(String expression, String from, QueryProvider qp) {
+        String inlinedQuery = expression;
+        boolean didInline;
+        do {
+            StringBuffer inlined = new StringBuffer();
+            didInline = false;
+            String toRight = inlinedQuery;
+            while (true) {
+                FunctionInliner fi = new FunctionInliner(toRight, from, qp);
+                toRight = fi.getAfterFunction();
+                inlined.append(fi.inline());
+                if (toRight != null)
+                    didInline = true;
+                else
+                    break;
+            }
+            inlinedQuery = inlined.toString();
+        } while (didInline);
+        return inlinedQuery;
+    }
+
     public static void main(String[] args) throws Exception {
         String[] queries = {
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
@@ -205,7 +240,7 @@ public class FunctionInliner {
                 "SELECT p.indiv.name AS col1,character_length(p.indiv.name) AS col2 FROM test.Person p WHERE p.someFunctionWithParams(2,5,7)" };
 
         for (int i = 0; i < queries.length; i++) {
-            System.out.println(new FunctionInliner(queries[i], QueryProvider.makeQueryAnalzyer("oql")));
+            System.out.println(queries[i] + "\n -> " + inline(queries[i], QueryProvider.makeQueryAnalzyer("oql")));
         }
     }
 
