@@ -48,28 +48,7 @@ public abstract class QueryProvider {
         }
 
     }
-
-    public static final String PARTS_SEPARATOR_LOGICAL_OPERANDS = "(?:AND|OR)";
-
-    public static final String PARTS_SEPARATOR_PROJECTION = ",";
-
-    public static final String PATTERN_FUNCTION_CALL = "(?:" + RegExpUtils.LineWhitespaces + ")?" + "("
-            + RegExpUtils.fieldName + ")" + "\\((" + "(?:" + RecordParser.funcDefParamValueRegExp + ")" + "(?:"
-            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + "(?:"
-            + RecordParser.funcDefParamValueRegExp + "))*" + RegExpUtils.LineWhitespaces + ")?\\)" + "(?:"
-            + RegExpUtils.LineWhitespaces + ")?";
-
-    public static final String patternDefLogicalOperands = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
-            + PARTS_SEPARATOR_LOGICAL_OPERANDS + RegExpUtils.LineWhitespaces + ").*)*";
-
-    public static final String patternDefProjection = PATTERN_FUNCTION_CALL + "(?:(" + RegExpUtils.LineWhitespaces
-            + PARTS_SEPARATOR_PROJECTION + RegExpUtils.LineWhitespaces + ").*)*" + "(?:" + RegExpUtils.LineWhitespaces
-            + " AS " + RegExpUtils.LineWhitespaces + RegExpUtils.fieldNameAndSpaces + ")?";
-
-    public static final Pattern patternLogicalOperands = Pattern.compile(patternDefLogicalOperands);
-
-    public static final Pattern patternProjection = Pattern.compile(patternDefProjection);
-
+    
     protected String getQueryAnalysisProviderClass() {
         return null;
     }
@@ -154,7 +133,7 @@ public abstract class QueryProvider {
      * FIXME: this should not be done twice at analysis and execution time
      */
     public String preprocessMDDFunctionsAtExecute(String query) {
-        return preprocessMDDFunctions(query);
+        return query;
     }
 
     /**
@@ -185,148 +164,10 @@ public abstract class QueryProvider {
 
     /** Pre-process the query at analysis time. For now does inlining of functions defined in the MDD. */
     public String preprocessMDDFunctionsAtQueryAnalysis(String query) {
-        return preprocessMDDFunctions(query);
-    }
-
-    public String preprocessMDDFunctions(String query) {
-        if (!query.contains("(")) { // a simple check to see if there is any potential function at all
-            return query;
-        }
-
-        // need to split the queries into the SELECT, FROM & WHERE parts
-        String[] parts = splitQueryInParts(query);
-
-        // System.out.println("patternDefLogicalOperands: " + patternDefLogicalOperands);
-        // System.out.println("patternDefProjection: " + patternDefProjection);
-
-        String originalQuery = new String(query);
-
-        // System.out.println(Arrays.toString(split));
-        // System.out.println(Arrays.toString(parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS)));
-
-        // inline MDD functions in projections (SELECT)
-        // query = inlineSection(query, parts, patternProjection, parts[0]);
-        query = inline(query, parts, parts[0].split(PARTS_SEPARATOR_PROJECTION), patternProjection);
-
-        // inline MDD functions in WHERE part
-        // query = inlineSection(query, parts, patternLogicalOperands, parts[2]);
-        query = inline(query, parts, parts[2].split(PARTS_SEPARATOR_LOGICAL_OPERANDS), patternLogicalOperands).trim();
-
-        System.out.println("\ninitial query: '" + originalQuery + "'");
-        System.out.println("new query:     '" + query + "'");
-        // pre-process the WHERE part
         return query;
     }
 
-    private String inline(String query, String[] parts, String[] split, final Pattern p) {
-        for (int i = 0; i < split.length; i++) {
-            String inlined = inlineFunction(parts[1], split[i], p);
-            if (!inlined.equals(split[i])) {
-                query = query.replace(split[i], inlined);
-            }
-        }
-        return query;
-    }
-
-    public String inlineFunction(String from, String section, Pattern pattern) {
-        if (StringUtils.isBlank(section)) {
-            return section;
-        }
-        while (section.contains("  ")) {
-            section = section.replaceAll("  ", " ");
-        }
-        Matcher matcher = pattern.matcher(section);
-        if (!matcher.matches()) {
-            return section;
-        }
-        String newSection = "";
-        while (matcher.matches()) {
-            // RegExpUtils.evaluate(pattern, new String[] { section });
-            String functionDef = matcher.group(1);
-            String paramsBlock = matcher.group(2);
-            String separator = matcher.group(3);
-            int lastDot = functionDef.lastIndexOf(".");
-            String label = functionDef.substring(0, lastDot);
-            String functionName = functionDef.substring(lastDot + 1);
-
-            // we need to find out the type of the label the function is called on
-            // thus, we need to do a dummy query to analyze the type
-            // FIXME: this does not yet take great care of other things around..
-
-            DataDefinition labelType = getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(label);
-
-            if (labelType == null) {
-                throw new NoSuchLabelException("no such label '" + label + "'");
-            }
-
-            QueryFragmentFunction function = labelType.getFunction(functionName);
-            if (function == null) {
-                throw new ProgrammerError("No function '" + functionName + "' found in type '" + labelType + "'");
-            }
-
-            String queryFragment = function.getQueryFragment();
-
-            // replace argument names with actual arguments
-            if (StringUtils.isNotBlank(paramsBlock)) {
-                String[] params = paramsBlock.split(",");
-                for (int i = 0; i < params.length; i++) {
-                    // FIXME: this replacement is not safe, as it replaces e.g. this.paramName --> improve reg-exp for
-                    // replaceAll
-                    queryFragment = queryFragment.replaceAll(function.getParameters().getFieldDefinition(i).getName(),
-                        params[i]);
-                }
-            }
-
-            // inline nested functions
-            String inlinedFunction = inlineNestedFunctions(labelType, queryFragment);
-
-            // replace 'this' with the actual label name
-            inlinedFunction = inlinedFunction.replaceAll("this", label);
-            section = section.replace(matcher.group().trim(), inlinedFunction);
-            matcher = pattern.matcher(section);
-        }
-        return section;
-    }
-
-    /** Inlines MDD-functions that itself contain other query functions; does only one level of inlining yet. */
-    private String inlineNestedFunctions(DataDefinition labelType, String s) {
-        if (s.indexOf("(") > s.indexOf(".")) { // we only do that if we have a ( after a .
-            String stripArgs = s.substring(0, s.indexOf("("));
-            String fieldName = s.substring(0, stripArgs.lastIndexOf(".")).replaceAll("this.", "");
-            FieldDefinition fd = labelType.getFieldOrPointedFieldDefinition(fieldName);
-            String functionName = s.substring(s.lastIndexOf(".") + 1, s.indexOf("("));
-            QueryFragmentFunction function = fd.getPointedType().getFunction(functionName);
-            String queryFragment = function.getQueryFragment();
-            // this in the function relates to the data-definition the function definition comes from
-            // ==> we need to replace the "this" with "this" and the field-name the function came from
-            queryFragment = queryFragment.replaceAll("this", "this." + fieldName);
-            s = queryFragment;
-        }
-        return s;
-    }
-
-    /** Splits a query in projection, FROM and WHERE sections. */
-    private String[] splitQueryInParts(String query) {
-        String[] parts = new String[3];
-        final String lower = query.toLowerCase();
-        int indexSelect = lower.indexOf("select");
-        int indexFrom = lower.indexOf("from");
-        int indexWhere = lower.indexOf("where");
-        int indexGroupBy = lower.indexOf("group by");
-        int indexOrderBy = lower.indexOf("order by");
-        int indexEnd = Math.max(indexGroupBy, indexOrderBy);
-        parts[0] = query.substring(indexSelect + "select".length(), indexFrom);
-        parts[1] = indexWhere == -1 ? query.substring(indexFrom + "from".length()) : query.substring(indexFrom
-                + "from".length(), indexWhere);
-        if (indexWhere != -1) {
-            parts[2] = indexEnd == -1 ? query.substring(indexWhere + "where".length()).trim() : query.substring(
-                indexWhere + "where".length(), indexEnd);
-        } else {
-            parts[2] = "";
-        }
-        return parts;
-    }
-
+  
     /**
      * Checks if an expression is valid, nullable or set
      * 
@@ -436,18 +277,5 @@ public abstract class QueryProvider {
     public abstract boolean selectGroupOrOrderAsLabels();
 
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
-
-    public static void main(String[] args) throws Exception {
-        String[] queries = { "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
-                "SELECT p as p, p.indiv as indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
-                "SELECT p AS  p, p.indiv   AS    indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
-                "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
-                "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
-                "SELECT p.nameMin3CharsLong() FROM test.Person p" };
-        final QueryProvider qp = QueryProvider.makeQueryAnalzyer("oql");
-        for (int i = 0; i < queries.length; i++) {
-            qp.preprocessMDDFunctions(queries[i]);
-        }
-    }
 
 }
