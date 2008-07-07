@@ -14,6 +14,9 @@ import org.makumba.providers.QueryProvider;
 
 /**
  * Inliner for query functions.
+ * FIXME: cache inlining results
+ * FIXME: change the replaceAll in doInline()
+ * FIXME: catch StringIndexOutOfBonds e.g. when counting parantheses and throw ProgrammerErrors 
  * @author Cristian Bogdan
  * @version $Id: FunctionInliner.java,v 1.1 Jul 7, 2008 5:11:53 PM cristi Exp $
  */
@@ -174,7 +177,10 @@ public class FunctionInliner {
                 fromBegin = index + 6;
             if (parLevel == 0
                     && (toRighty.length() == 0 || toRighty.startsWith(" where ") || toRighty.startsWith(" group by ") || toRighty.startsWith(" order by")))
-                return query.substring(fromBegin, index);
+                if(fromBegin!=-1)
+                    return query.substring(fromBegin, index);
+                else 
+                    return "";
             char c = query.charAt(index);
             if (c == ')') {
                 parLevel--;
