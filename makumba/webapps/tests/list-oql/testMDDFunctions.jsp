@@ -31,9 +31,7 @@ p.nameMin3CharsLong()<br>
 <br><br>
 
 
-<%-- 
 p.someFunctionWithParams(2, 5, 7)<br>
 <mak:list from="test.Person p">
   ${mak:count()} - <mak:value expr="p.indiv.name"/>, <mak:value expr="p.indiv.name"/>, <mak:value expr="character_length(p.indiv.name)"/> <mak:value expr="p.someFunctionWithParams(2, 5, 7)" /> <br/>	
 </mak:list>
---%>
