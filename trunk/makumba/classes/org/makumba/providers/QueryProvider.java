@@ -15,6 +15,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
+import org.makumba.providers.query.FunctionInliner;
 
 /**
  * This provider makes it possible to run queries against a data source.
@@ -133,7 +134,7 @@ public abstract class QueryProvider {
      * FIXME: this should not be done twice at analysis and execution time
      */
     public String preprocessMDDFunctionsAtExecute(String query) {
-        return query;
+        return FunctionInliner.inline(query, this);
     }
 
     /**
@@ -164,7 +165,7 @@ public abstract class QueryProvider {
 
     /** Pre-process the query at analysis time. For now does inlining of functions defined in the MDD. */
     public String preprocessMDDFunctionsAtQueryAnalysis(String query) {
-        return query;
+        return FunctionInliner.inline(query, this);
     }
 
   
