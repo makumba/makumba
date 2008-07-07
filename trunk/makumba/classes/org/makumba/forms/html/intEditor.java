@@ -30,57 +30,57 @@ import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class intEditor extends charEditor {
-	
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new intEditor();
-	}
 
-	/** Don't use this, use getInstance() */
-	protected intEditor() {}
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new intEditor();
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    /** Don't use this, use getInstance() */
+    protected intEditor() {
+    }
 
-	static String[] __params = { "default", "empty", "size", "maxlength" };
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	static String[][] __paramValues = { null, null, null, null };
+    static String[] __params = { "default", "empty", "size", "maxlength" };
 
-	@Override
+    static String[][] __paramValues = { null, null, null, null };
+
+    @Override
     public String[] getAcceptedParams() {
-		return __params;
-	}
+        return __params;
+    }
 
-	@Override
+    @Override
     public String[][] getAcceptedValue() {
-		return __paramValues;
-	}
+        return __paramValues;
+    }
 
-	@Override
+    @Override
     public int getWidth(RecordFormatter rf, int fieldIndex) {
-		return 10;
-	}
+        return 10;
+    }
 
-	/** Formats the value to appear in an input statement. */
-	@Override
+    /** Formats the value to appear in an input statement. */
+    @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-		// note: only diff with charEditor.formatValue is not calling
-		// string2html
-		//       maybe can just as well not redefine this method?
-		String s = (o == null) ? null : o.toString();
-		return resetValueFormat(rf, fieldIndex, s, formatParams);
-	}
+        // note: only diff with charEditor.formatValue is not calling
+        // string2html
+        // maybe can just as well not redefine this method?
+        String s = (o == null) ? null : o.toString();
+        return resetValueFormat(rf, fieldIndex, s, formatParams);
+    }
 
-	@Override
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
-			String suffix) {
-		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+            String suffix) {
+        Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 
-		if (o instanceof java.util.Vector) {
-			throw new InvalidValueException(rf.expr[fieldIndex],
-					"multiple value not accepted for integer: " + o);
-		}
-		return toInt(rf, fieldIndex, o);
-	}
+        if (o instanceof java.util.Vector) {
+            throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not accepted for integer: " + o);
+        }
+        return toInt(rf, fieldIndex, o);
+    }
 
 }

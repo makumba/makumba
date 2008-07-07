@@ -29,26 +29,26 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public class realEditor extends intEditor {
 
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new realEditor();
-	}
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new realEditor();
+    }
 
-	private realEditor() {}
+    private realEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
-			String suffix) {
-		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+            String suffix) {
+        Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 
-		if (o instanceof java.util.Vector) {
-			throw new InvalidValueException(rf.expr[fieldIndex],
-					"multiple value not accepted for real: " + o);
-		}
-		return toReal(rf, fieldIndex, o);
-	}
+        if (o instanceof java.util.Vector) {
+            throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not accepted for real: " + o);
+        }
+        return toReal(rf, fieldIndex, o);
+    }
 
 }
