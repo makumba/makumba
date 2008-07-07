@@ -24,32 +24,35 @@
 package org.makumba.providers.query.oql;
 
 import org.makumba.commons.NameResolver;
+
 import antlr.CommonAST;
 
-public class OQLAST extends CommonAST
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class OQLAST extends CommonAST {
+    private static final long serialVersionUID = 1L;
 
-public OQLAST(){};
-  public OQLAST(antlr.Token t) { super(t); }
-  public String writeInSQLQuery(NameResolver nr){return getText(); }
+    public OQLAST() {
+    }
 
-  /* used in expressions */
-  Object makumbaType;
-  
-  Object extraInfo;
+    public OQLAST(antlr.Token t) {
+        super(t);
+    }
 
-  AnalysisTree tree;
+    public String writeInSQLQuery(NameResolver nr) {
+        return getText();
+    }
 
-  public Object getMakumbaType() throws antlr.RecognitionException
-  {
-    if(tree!=null)
-      return tree.getMakumbaType();
-    else
-      return makumbaType;
-  }
+    /* used in expressions */
+    Object makumbaType;
+
+    Object extraInfo;
+
+    AnalysisTree tree;
+
+    public Object getMakumbaType() throws antlr.RecognitionException {
+        if (tree != null) {
+            return tree.getMakumbaType();
+        } else {
+            return makumbaType;
+        }
+    }
 }
-
