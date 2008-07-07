@@ -183,9 +183,8 @@ public class ReferenceChecker extends HttpServlet {
 
             try {
                 DataDefinition dd = MakumbaSystem.getDataDefinition(mddName);
-                w.println("<h3><a name=\"" + mddName + "\" href=\"brokenReferences?mdd=" + mddName + "\">" + mddName
-                        + " (" + count(dd) + ")</a> <a style=\"font-siz:small\" href=\"" + contextPath
-                        + "/dataDefinitions/" + mddName + "\">[mdd]</a></h3>");
+                w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath + "/dataDefinitions/" + mddName
+                        + "\">" + mddName + "</a> (" + count(dd) + ")</h3>");
                 for (Enumeration<FieldDefinition> fnse = dd.getReferenceFields().elements(); fnse.hasMoreElements();) {
                     FieldDefinition f = (FieldDefinition) fnse.nextElement();
                     String ft = f.getType();
