@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
-import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
@@ -162,14 +159,6 @@ public class FunctionInliner {
         }
     }
 
-    public String getBeforeFunction() {
-        return beforeFunction;
-    }
-
-    public String getAfterFunction() {
-        return afterFunction;
-    }
-
     @Override
     public String toString() {
         return beforeFunction + " [" + functionText + ":" + parameterInline + ":" + functionDefinition + ":"
@@ -231,24 +220,22 @@ public class FunctionInliner {
     public static String inline(String expression, String from, QueryProvider qp) {
         String inlinedQuery = expression;
         boolean didInline;
+        boolean didWork = false;
         do {
             StringBuffer inlined = new StringBuffer();
             didInline = false;
             String toRight = inlinedQuery;
-            while (true) {
+            while (functionBegin.matcher(toRight).find()) {
                 FunctionInliner fi = new FunctionInliner(toRight, from, qp);
-                toRight = fi.getAfterFunction();
-                if (toRight == null) {
-                    inlined.append(fi.beforeFunction);
-                    break;
-                } else {
-                    didInline = true;
-                    addInlinedToBuffer(inlined, toRight, fi);
-                }
+                toRight = fi.afterFunction;
+                didInline = true;
+                didWork = true;
+                addInlinedToBuffer(inlined, toRight, fi);
             }
+            inlined.append(toRight);
             inlinedQuery = inlined.toString();
         } while (didInline);
-        if (!expression.equals(inlinedQuery))
+        if (didWork)
             java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(
                 expression + " \n-> " + inlinedQuery);
         return inlinedQuery;
@@ -262,8 +249,7 @@ public class FunctionInliner {
                 && toRight.trim().startsWith(")")
                 ||
                 // or we are after a select or a comma
-                (fi.beforeFunction.trim().toLowerCase().endsWith("select") || fi.beforeFunction.trim().endsWith(
-                    ","))
+                (fi.beforeFunction.trim().toLowerCase().endsWith("select") || fi.beforeFunction.trim().endsWith(","))
                 // and
                 &&
                 // we are before an as or a comma or a from
