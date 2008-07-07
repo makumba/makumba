@@ -1415,6 +1415,12 @@
     </attribute>
 
     <attribute>
+      <name>spinnerStepSize</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
       <name>calendarEditor</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
