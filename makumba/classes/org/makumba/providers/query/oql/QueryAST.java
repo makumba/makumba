@@ -414,7 +414,6 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** treat the makumba identifiers, generate the needed joins */
     void computeExpressionTypes() throws antlr.RecognitionException {
-        System.out.println(ArrayUtils.toString(expressions));
         for (Enumeration<AST> e = expressions.elements(); e.hasMoreElements();) {
             OQLAST expr = ((OQLAST) e.nextElement());
             // System.out.println(expr.getClass()+" "+expr);
