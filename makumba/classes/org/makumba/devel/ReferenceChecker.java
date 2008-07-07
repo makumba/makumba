@@ -270,6 +270,7 @@ public class ReferenceChecker extends HttpServlet {
         DevelUtils.printPageHeader(w, title);
         writeHeader(w);
         w.println("<h3>Type: " + dd.getName() + "</h3>");
+        w.println("<h3>Field: " + fd.getName() + "</h3>");
 
         w.println("Query: " + query);
 
@@ -278,7 +279,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("<br><br>");
         w.println("<table>");
         w.println("<tr> <th>#</th> <th>Pointer</th>  <th>Title field: " + dd.getTitleFieldName()
-                + "</th> <th title=\"field " + fd.getName() + "\">Broken ref</th> </tr>");
+                + "</th> <th title=\"field " + fd.getName() + "\">Broken ref in " + fd.getName() + "</th> </tr>");
         try {
             for (int i = 0; rs != null && rs.next(); i++) {
                 int ptrInt = rs.getInt("ptr");
