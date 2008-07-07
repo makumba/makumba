@@ -96,7 +96,7 @@ public class AnalysisTree {
 
     public void computeType() throws antlr.RecognitionException {
         if (leaf != null) {
-            makumbaType = leaf.makumbaType;
+            makumbaType = leaf instanceof FunctionAST? leaf.getMakumbaType() : leaf.makumbaType;
             return;
         }
         left.computeType();
