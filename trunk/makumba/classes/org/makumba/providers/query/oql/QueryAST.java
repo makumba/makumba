@@ -26,19 +26,16 @@ package org.makumba.providers.query.oql;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
@@ -114,7 +111,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     Vector<Projection> projections = new Vector<Projection>();
 
     /** labels of the projections, given or attributed automatically */
-    Vector projectionLabels;
+    Vector<String> projectionLabels;
 
     /** searcher for projection labels */
     Hashtable<String, Projection> projectionLabelSearch = new Hashtable<String, Projection>();
@@ -214,7 +211,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     public void computeParameterTypes() {
         if (parameters.size() == 0)
             return;
-        paramInfo = MakumbaSystem.getTemporaryDataDefinition("Parameters for " + originalQuery);
+        paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + originalQuery);
 
         for (int i = 0; i < parameters.size(); i++) {
             ParamAST param = (ParamAST) parameters.elementAt(i);
@@ -222,9 +219,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             FieldDefinition fd;
             String nm = "param" + i;
             if (param.makumbaType instanceof String)
-                fd = MakumbaSystem.makeFieldOfType(nm, (String) param.makumbaType);
+                fd = DataDefinitionProvider.getInstance().makeFieldOfType(nm, (String) param.makumbaType);
             else
-                fd = MakumbaSystem.makeFieldWithName(nm, (FieldDefinition) param.makumbaType);
+                fd = DataDefinitionProvider.getInstance().makeFieldWithName(nm, (FieldDefinition) param.makumbaType);
             paramInfo.addField(fd);
         }
     }
@@ -417,7 +414,8 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** treat the makumba identifiers, generate the needed joins */
     void computeExpressionTypes() throws antlr.RecognitionException {
-        for (Enumeration e = expressions.elements(); e.hasMoreElements();) {
+        System.out.println(ArrayUtils.toString(expressions));
+        for (Enumeration<AST> e = expressions.elements(); e.hasMoreElements();) {
             OQLAST expr = ((OQLAST) e.nextElement());
             // System.out.println(expr.getClass()+" "+expr);
             expr.getMakumbaType();
@@ -434,7 +432,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** treat the makumba identifiers, generate the needed joins */
     void treatExpressionIdentifiers() throws antlr.RecognitionException {
-        for (Enumeration e = expressionIdentifiers.elements(); e.hasMoreElements();) {
+        for (Enumeration<AST> e = expressionIdentifiers.elements(); e.hasMoreElements();) {
             AST token = (AST) e.nextElement();
             IdAST id = (IdAST) token;
             id.query = this;
@@ -531,7 +529,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     protected void writeFrom(NameResolver nr, StringBuffer ret) {
         boolean comma = false;
 
-        for (Enumeration e = fromLabels.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
             String label = (String) e.nextElement();
 
             if (comma)
@@ -570,7 +568,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
     /** write the translator-generated joins */
     protected void writeJoins(NameResolver nr, StringBuffer ret) {
         // boolean and = false;
-        for (Enumeration e = joins.elements(); e.hasMoreElements();) {
+        for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
             // if (and)
             // ret.append(" AND ");
