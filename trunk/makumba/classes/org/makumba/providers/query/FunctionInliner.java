@@ -12,6 +12,11 @@ import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.QueryProvider;
 
+/**
+ * Inliner for query functions.
+ * @author Cristian Bogdan
+ * @version $Id: FunctionInliner.java,v 1.1 Jul 7, 2008 5:11:53 PM cristi Exp $
+ */
 public class FunctionInliner {
     public static String NAME = "[a-zA-Z]\\w*";
 
@@ -41,11 +46,7 @@ public class FunctionInliner {
 
     private String functionObject;
 
-    public FunctionInliner(String query, QueryProvider qp) {
-        this(query, findFrom(query), qp);
-    }
-
-    public FunctionInliner(String query, String from, QueryProvider qp) {
+    private FunctionInliner(String query, String from, QueryProvider qp) {
         findFunctionComponents(query, from, qp);
         if (functionText != null) {
             if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size())
@@ -75,7 +76,7 @@ public class FunctionInliner {
         inlinedFunction = inlinedFunction.replaceAll("this", functionObject);
     }
 
-    private String paranthesize(String expr) {
+    private static String paranthesize(String expr) {
         if (expr.trim().startsWith("(") && expr.trim().endsWith(")"))
             return expr;
         return "(" + expr + ")";
@@ -90,16 +91,6 @@ public class FunctionInliner {
             throw new ProgrammerError("formal paramter " + fieldDefinition.getName() + " of type "
                     + fieldDefinition.getDataType() + " is not matched by the actual value given " + parameter
                     + " of type " + actual.getDataType() + " for function " + functionDefinition);
-    }
-
-    /**
-     * Return the inlined function prepended by the non-functional text that came before it in the text; if no functions
-     * are found, return the text
-     */
-    private String inline() {
-        if (functionText == null)
-            return beforeFunction;
-        return beforeFunction + inlinedFunction;
     }
 
     private void findFunctionComponents(String query, String from, QueryProvider qp) {
@@ -162,7 +153,7 @@ public class FunctionInliner {
     @Override
     public String toString() {
         return beforeFunction + " [" + functionText + ":" + parameterInline + ":" + functionDefinition + ":"
-                + functionObject + ":" + inline() + "] " + afterFunction;
+                + functionObject + "] " + afterFunction;
     }
 
     /**
