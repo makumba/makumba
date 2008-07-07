@@ -57,7 +57,7 @@ public class FunctionAST extends OQLAST {
     public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp" };
 
     public static final String[] allNonParametricFunctions;
-    
+
     public static final String[] allSingleParameterFunctions;
 
     /** All known functions. */
@@ -73,7 +73,7 @@ public class FunctionAST extends OQLAST {
         ArrayList<String> allNonParemtric = new ArrayList<String>();
         CollectionUtils.addAll(allNonParemtric, nonParametricDateFunctions);
         allNonParametricFunctions = (String[]) allNonParemtric.toArray(new String[allNonParemtric.size()]);
-        
+
         ArrayList<String> all = new ArrayList<String>();
         CollectionUtils.addAll(all, allNonParametricFunctions);
         CollectionUtils.addAll(all, allSingleParameterFunctions);
@@ -112,35 +112,35 @@ public class FunctionAST extends OQLAST {
             String os = o.toString();
             if (StringUtils.startsWith(getText(), simpleStringFunctions)) { // string functions
                 if (os.startsWith("char") || os.startsWith("text")) {
-                    return o;
+                    makumbaType = o;
                 } else {
                     throw new antlr.SemanticException("cannot " + printOptions(simpleStringFunctions) + " a '" + os
                             + "' type");
                 }
             } else if (StringUtils.startsWith(getText(), stringToIntFunctions)) { // string to int
                 if (os.startsWith("char") || os.startsWith("text")) {
-                    return "int";
+                    makumbaType = "int";
                 } else {
                     throw new antlr.SemanticException("cannot " + printOptions(stringToIntFunctions) + " a '" + os
                             + "' type");
                 }
             } else if (StringUtils.startsWith(getText(), intToStringFunctions)) { // int to string
                 if (os.startsWith("int")) {
-                    return "char";
+                    makumbaType = "char";
                 } else {
                     throw new antlr.SemanticException("cannot " + printOptions(intToStringFunctions) + " a '" + os
                             + "' type");
                 }
             } else if (StringUtils.startsWith(getText(), dateToIntFunctions)) { // date to int
                 if (os.startsWith("date")) {
-                    return "int";
+                    makumbaType = "int";
                 } else {
                     throw new antlr.SemanticException("cannot " + printOptions(dateToIntFunctions) + " a '" + os
                             + "' type");
                 }
             } else if (StringUtils.startsWith(getText(), dateToStringFunctions)) { // date to string
                 if (os.startsWith("date")) {
-                    return "text";
+                    makumbaType = "text";
                 } else {
                     throw new antlr.SemanticException("cannot " + printOptions(dateToStringFunctions) + " a '" + os
                             + "' type");
@@ -148,13 +148,15 @@ public class FunctionAST extends OQLAST {
             }
         } else { // functions without paraemters
             if (StringUtils.startsWith(getText(), nonParametricDateFunctions)) { // non-parametric date
-                return "date";
+                makumbaType = "date";
             } else {
                 throw new antlr.SemanticException("non-parametric functions are: "
                         + StringUtils.toString(allNonParametricFunctions, false));
             }
         }
-
+        if (makumbaType != null) {
+            return makumbaType;
+        }
         throw new antlr.SemanticException("function expressions can be " + StringUtils.toString(allFunctions, false));
     }
 
