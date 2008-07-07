@@ -242,7 +242,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMDDFunctions(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, true);
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
