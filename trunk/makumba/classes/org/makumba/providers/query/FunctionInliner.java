@@ -9,6 +9,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
@@ -17,8 +18,11 @@ import org.makumba.providers.QueryProvider;
 public class FunctionInliner {
     public static String NAME = "[a-zA-Z]\\w*";
 
-    public static final String PATTERN_FUNCTION_CALL_BEGIN = "((" + NAME + ")(" + RegExpUtils.whitespace + "\\."
-            + RegExpUtils.whitespace + NAME + ")+)" + RegExpUtils.whitespace + "\\(";
+    public static final String PATTERN_FUNCTION_CALL_BEGIN =
+    // name . name . name ...
+    "((" + NAME + ")(" + RegExpUtils.whitespace + "\\." + RegExpUtils.whitespace + NAME + ")+)"
+    // (
+            + RegExpUtils.whitespace + "\\(";
 
     public static final Pattern functionBegin = Pattern.compile(PATTERN_FUNCTION_CALL_BEGIN);
 
@@ -62,15 +66,22 @@ public class FunctionInliner {
     }
 
     private void doInline() {
-        inlinedFunction = "(" + functionDefinition.getQueryFragment() + ")";
+        inlinedFunction = functionDefinition.getQueryFragment();
         for (int i = 0; i < parameterExpr.size(); i++) {
-            // FIXME: this replacement is not safe, as it replaces e.g. this.paramName 
+            // FIXME: this replacement is not safe, as it replaces e.g. this.paramName
             // --> need to replace parameters all at once, and only those that don't have . before or ( after them...
             inlinedFunction = inlinedFunction.replaceAll(
-                functionDefinition.getParameters().getFieldDefinition(i).getName(), "(" + parameterInline.get(i) + ")");
+                functionDefinition.getParameters().getFieldDefinition(i).getName(),
+                paranthesize(parameterInline.get(i)));
         }
         // FIXME: this replacement is not safe, see above
         inlinedFunction = inlinedFunction.replaceAll("this", functionObject);
+    }
+
+    private String paranthesize(String expr) {
+        if (expr.trim().startsWith("(") && expr.trim().endsWith(")"))
+            return expr;
+        return "(" + expr + ")";
     }
 
     private void checkParameter(int n, String parameter, String inlineParameter, QueryProvider qp) {
@@ -193,21 +204,30 @@ public class FunctionInliner {
         }
     }
 
-    /** Inline query functions in a query using the given query provider 
-     * @param expression the expression
-     * @param qp the query provider
+    /**
+     * Inline query functions in a query using the given query provider
+     * 
+     * @param expression
+     *            the expression
+     * @param qp
+     *            the query provider
      * @return the query with inlined query functions
-     */ 
+     */
     public static String inline(String query, QueryProvider qp) {
         return inline(query, findFrom(query), qp);
     }
-    
-    /** Inline query functions in an expression or query with the given label types, using given query provider 
-     * @param expression the expression
-     * @param from the label types as a QL FROM
-     * @param qp the query provider
+
+    /**
+     * Inline query functions in an expression or query with the given label types, using given query provider
+     * 
+     * @param expression
+     *            the expression
+     * @param from
+     *            the label types as a QL FROM
+     * @param qp
+     *            the query provider
      * @return the expression with inlined query functions
-     */ 
+     */
     public static String inline(String expression, String from, QueryProvider qp) {
         String inlinedQuery = expression;
         boolean didInline;
@@ -218,29 +238,55 @@ public class FunctionInliner {
             while (true) {
                 FunctionInliner fi = new FunctionInliner(toRight, from, qp);
                 toRight = fi.getAfterFunction();
-                inlined.append(fi.inline());
-                if (toRight != null)
-                    didInline = true;
-                else
+                if (toRight == null) {
+                    inlined.append(fi.beforeFunction);
                     break;
+                } else {
+                    didInline = true;
+                    addInlinedToBuffer(inlined, toRight, fi);
+                }
             }
             inlinedQuery = inlined.toString();
         } while (didInline);
+        if (!expression.equals(inlinedQuery))
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(
+                expression + " \n-> " + inlinedQuery);
         return inlinedQuery;
+    }
+
+    /** we add inlined text and try to reduce the number of parantheses */
+    private static void addInlinedToBuffer(StringBuffer inlined, String toRight, FunctionInliner fi) {
+        if (
+        // if things around start and end with paranthesis
+        fi.beforeFunction.trim().endsWith("(")
+                && toRight.trim().startsWith(")")
+                ||
+                // or we are after a select or a comma
+                (fi.beforeFunction.trim().toLowerCase().endsWith("select") || fi.beforeFunction.trim().endsWith(
+                    ","))
+                // and
+                &&
+                // we are before an as or a comma or a from
+                (toRight.trim().toLowerCase().startsWith("as") || toRight.trim().startsWith(","))
+                || toRight.trim().toLowerCase().startsWith("from"))
+            // then we skip parantheses
+            inlined.append(fi.beforeFunction).append(fi.inlinedFunction);
+        else
+            inlined.append(fi.beforeFunction).append("(").append(fi.inlinedFunction).append(")");
     }
 
     public static void main(String[] args) throws Exception {
         String[] queries = {
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
                 "SELECT p as p, p.indiv as indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
-                "SELECT p AS  p, p.indiv   AS    indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
+                "SELECT p AS p, p.indiv AS indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
                 "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
                 "SELECT p.nameMin3CharsLong() FROM test.Person p",
                 "SELECT p.indiv.name AS col1,character_length(p.indiv.name) AS col2 FROM test.Person p WHERE p.someFunctionWithParams(2,5,7)" };
 
         for (int i = 0; i < queries.length; i++) {
-            System.out.println(queries[i] + "\n -> " + inline(queries[i], QueryProvider.makeQueryAnalzyer("oql")));
+            inline(queries[i], QueryProvider.makeQueryAnalzyer("oql"));
         }
     }
 
