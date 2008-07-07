@@ -3,24 +3,18 @@ package org.makumba.providers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
-import org.makumba.NoSuchLabelException;
-import org.makumba.ProgrammerError;
-import org.makumba.DataDefinition.QueryFragmentFunction;
-import org.makumba.commons.RegExpUtils;
-import org.makumba.providers.datadefinition.makumba.RecordParser;
 import org.makumba.providers.query.FunctionInliner;
 
 /**
  * This provider makes it possible to run queries against a data source.
  * 
  * @author Manuel Gay
+ * @author Cristian Bogdan
+ * @author Rudolf Mayer
  * @version $Id: QueryExecutionProvider.java,v 1.1 17.09.2007 15:16:57 Manuel Exp $
  */
 public abstract class QueryProvider {
@@ -49,7 +43,7 @@ public abstract class QueryProvider {
         }
 
     }
-    
+
     protected String getQueryAnalysisProviderClass() {
         return null;
     }
@@ -168,7 +162,6 @@ public abstract class QueryProvider {
         return FunctionInliner.inline(query, this);
     }
 
-  
     /**
      * Checks if an expression is valid, nullable or set
      * 
