@@ -1415,7 +1415,7 @@
     </attribute>
 
     <attribute>
-      <name>spinnerStepSize</name>
+      <name>stepSize</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
