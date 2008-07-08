@@ -403,6 +403,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         this.calendarEditor = Boolean.parseBoolean(calendarEditor);
     }
 
+    public void setStepSize(String s) {
+        params.put("stepSize", s);
+    }
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
