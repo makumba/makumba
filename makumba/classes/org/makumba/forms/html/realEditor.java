@@ -29,6 +29,13 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public class realEditor extends intEditor {
 
+    static String[][] __paramValues = { null, null, null, null, new String[] { "spinner" }, null };
+
+    @Override
+    public String[][] getAcceptedValue() {
+        return __paramValues;
+    }
+
     private static final class SingletonHolder {
         static final FieldEditor singleton = new realEditor();
     }
