@@ -124,12 +124,12 @@ public class StringUtils {
     }
 
     /** Checks whether the given Object equals any of the given options. */
-    public static boolean equalsAny(Object o, String[] options) {
+    public static boolean equalsAny(Object o, String... options) {
         return o instanceof String && equalsAny((String) o, options);
     }
 
     /** Checks whether the given String equals any of the given options. */
-    public static boolean equalsAny(String s, String[] options) {
+    public static boolean equalsAny(String s, String... options) {
         if (s == null) {
             return false;
         }
