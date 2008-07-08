@@ -50,4 +50,12 @@ public abstract class RangeValidationRule extends SingleFieldValidationRule {
         return upperLimitString;
     }
 
+    public Number getLowerLimit() {
+        return lowerLimit;
+    }
+
+    public Number getUpperLimit() {
+        return upperLimit;
+    }
+
 }
