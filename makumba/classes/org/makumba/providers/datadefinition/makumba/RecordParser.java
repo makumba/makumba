@@ -90,23 +90,23 @@ public class RecordParser {
      * defines all possible types. <br>
      * FIXME: maybe this shall be move to {@link FieldDefinition}?
      */
-    public static final String funcDefParamTypeRegExp = "(?:char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum)";
+    public static final String funcDefParamTypeRegExp = "(?:char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum|ptr)";
 
     public static final String funcDefParamValueRegExp = "(?:\\d+|" + RegExpUtils.fieldName + ")";
 
     /** defines "int a" or "int 5". */
     public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
-            + funcDefParamValueRegExp;
+            + funcDefParamValueRegExp + "(?:" + RegExpUtils.minOneLineWhitespace + funcDefParamValueRegExp + ")?";
 
     /** treats (int a, char b, ...) */
     public static final String funcDefParamRepeatRegExp = "\\((" + "(?:" + funcDefParamRegExp + ")" + "(?:"
             + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
             + RegExpUtils.LineWhitespaces + ")?\\)";
 
-    /** treats function(params) = queryFragment : errorMessage. */
+    /** treats function(params) { queryFragment } errorMessage. */
     public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" + "(" + RegExpUtils.fieldName + ")"
-            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.[^:]+)"
-            + RegExpUtils.LineWhitespaces + "(?::" + RegExpUtils.LineWhitespaces + "(.*))?";
+            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces
+            + "(.[^\\}]+)" + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
 
@@ -608,12 +608,20 @@ public class RecordParser {
                     String[] params = paramsBlock.split(",");
                     for (int j = 0; j < params.length; j++) {
                         // make sure to trim(), if we have "int x, int y", the second one param will be " int y"
-                        String paramType = params[j].trim().split(" ")[0];
-                        String paramName = params[j].trim().split(" ")[1];
-                        if (paramType.equals("char[]")) { // we substitute char[] with the max char length
-                            paramType = ("char[255]");
+                        String paramType = params[j].trim().split(" ")[0].trim();
+                        if (paramType.equals("ptr")) { // we have a ptr, treat separately
+                            String paramMdd = params[j].trim().split(" ")[1].trim();
+                            String paramName = params[j].trim().split(" ")[2].trim();
+                            DataDefinition pointedDD = DataDefinitionProvider.getInstance().getDataDefinition(paramMdd);
+                            ddParams.addField(new FieldInfo(paramName,
+                                    (FieldInfo) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
+                        } else {
+                            String paramName = params[j].trim().split(" ")[1].trim();
+                            if (paramType.equals("char[]")) { // we substitute char[] with the max char length
+                                paramType = ("char[255]");
+                            }
+                            ddParams.addField(new FieldInfo(paramName, paramType));
                         }
-                        ddParams.addField(new FieldInfo(paramName, paramType));
                     }
                 }
                 DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
@@ -1193,9 +1201,9 @@ public class RecordParser {
     public static void main(String[] args) {
         // test some function definition
         System.out.println("Testing some reg-exps:");
-        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() = abc : errorMessage",
-                " someFunc(char[] a, int 5) =abc:errorMessages", "someFunction(int a, char[] b) = yeah:errorMessage3",
-                "someOtherFunction(int age, char[] b) = this.age > age : You are too young!" });
+        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() { abc } errorMessage",
+                " someFunc(char[] a, int 5) {abc}errorMessages", "someFunction(int a, char[] b) { yeah}errorMessage3",
+                "someOtherFunction(int age, char[] b) { this.age > age } You are too young!" });
 
         // test some mdd reading
         System.out.println("\n\n*****************************************************************************");

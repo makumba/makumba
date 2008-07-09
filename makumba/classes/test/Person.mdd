@@ -88,9 +88,10 @@ lowerName%compare = lower(indiv.name) != indiv.name : Your name can't be all low
 unique12%unique = age, email : these need to be unique!
 unique13%unique = indiv.name, indiv.surname : these too!
 
-someFunction(char[] b) = count(address) > 0 : You need to specify an address ; some sample function definition
-someOtherFunction(int age, char[] b) = this.age > age : You are too young!
-someFunctionWithParams(int param, int param2, int param3) = this.age+param > 20 : You are too young!
-nameMin2CharsLong() = character_length(this.indiv.name) > 2 : Your name is not long enough!
-nameMin4CharsLong() = character_length(this.indiv.name) > 4 : Your name is not long enough!
-nameMin3CharsLong() = this.indiv.nameMin3CharsLong() : Your name is not long enough!
+someFunction(char[] b) { count(address) > 0 } You need to specify an address ; some sample function definition
+someOtherFunction(int age, char[] b) { this.age > age } You are too young!
+functionWithPointer(ptr test.Individual i, int age, char[] b) { this.age > age } You are too young!
+someFunctionWithParams(int param, int param2, int param3) { this.age+param > 20 } You are too young!
+nameMin2CharsLong() { character_length(this.indiv.name) > 2 } Your name is not long enough!
+nameMin4CharsLong() { character_length(this.indiv.name) > 4 } Your name is not long enough!
+nameMin3CharsLong() { this.indiv.nameMin3CharsLong() } Your name is not long enough!
