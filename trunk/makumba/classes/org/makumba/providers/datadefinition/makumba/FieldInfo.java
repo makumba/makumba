@@ -333,7 +333,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._binary:
                 return "";
             case FieldDefinition._boolean:
-                return false; //FIXME check if this is true
+                return false; // FIXME check if this is true
             case FieldDefinition._date:
             case FieldDefinition._dateCreate:
             case FieldDefinition._dateModify:
@@ -429,7 +429,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public String getType() {
         return type;
     }
-    
+
     public boolean isIndexPointerField() {
         return getDataDefinition().getIndexPointerFieldName() == name;
     }
@@ -898,13 +898,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             throw new InvalidValueException(this, e.getMessage());
         }
     }
-    
+
     public Object check_boolean_ValueImpl(Object value) {
-        if(value instanceof Boolean) {
+        if (value instanceof Boolean) {
             return value;
         }
         return normalCheck(value);
-        
+
     }
 
     // moved from setcharEnumHandler and setintEnumHandler
@@ -1099,6 +1099,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     public boolean isNumberType() {
         return isIntegerType() || isRealType();
+    }
+
+    public boolean isBinaryType() {
+        return getIntegerType() == _binary;
     }
 
     public boolean isSetType() {
