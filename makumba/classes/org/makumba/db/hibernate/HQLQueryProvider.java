@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Text;
@@ -36,15 +34,15 @@ public class HQLQueryProvider extends QueryProvider {
         return HQLQUERY_ANALYSIS_PROVIDER;
     }
     @Override
-    public void init(String db) {
+    protected void init(String db) {
         super.init(db);
         tp = new TransactionProvider(new HibernateTransactionProvider());
         transaction = tp.getConnectionTo(db);
     }
 
     @Override
-    public Vector execute(String query, Map args, int offset, int limit) {
-        return transaction.executeQuery(preprocessMDDFunctionsAtExecute(query), args, offset, limit);
+    public Vector executeRaw(String query, Map args, int offset, int limit) {
+        return transaction.executeQuery(query, args, offset, limit);
     }
 
     @Override
@@ -60,26 +58,6 @@ public class HQLQueryProvider extends QueryProvider {
         return result;
     }
 
-    @Override
-    public String getPrimaryKeyNotation(String label) {
-        // this is specific to Hibernate: we add '.id' in order to get the id as in makumba
-        if (label.indexOf('.') == -1)
-            label += ".id";
-        return label;
-    }
-
-    @Override
-    public boolean selectGroupOrOrderAsLabels() {
-        return false;
-    }
-
-    @Override
-    public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
-        if (fn.equals("id"))
-            return dd.getFieldDefinition(dd.getIndexPointerFieldName());
-        return null;
-
-    }
     
     /**
      * Method for testing the query runner outside a JSP

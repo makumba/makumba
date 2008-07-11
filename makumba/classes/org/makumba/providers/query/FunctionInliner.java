@@ -10,6 +10,7 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 /**
@@ -18,7 +19,6 @@ import org.makumba.providers.QueryProvider;
  * @version $Id: FunctionInliner.java,v 1.1 Jul 7, 2008 5:11:53 PM cristi Exp $
  */
 public class FunctionInliner {
-    // TODO: cache inlining results 
     // TODO: store all inolved functions with error messages and their FROMs to be able to trace back the error
     // FIXME: catch StringIndexOutOfBonds e.g. when counting parantheses and throw ProgrammerErrors
 
@@ -42,7 +42,7 @@ public class FunctionInliner {
 
     private String functionObject;
 
-    private FunctionInliner(String query, Matcher m, QueryProvider qp, QuerySectionProcessor qsp) {
+    private FunctionInliner(String query, Matcher m, QueryAnalysisProvider qp, QuerySectionProcessor qsp) {
         String from= qsp.getInitialFrom();
         findFunctionBody(query, m);
         findFunctionObject(m, from, qp);
@@ -62,7 +62,7 @@ public class FunctionInliner {
         inlinedFunction = func.getProjectionText();
     }
 
-    private void checkParameter(int n, String inlineParameter, String from, QueryProvider qp) {
+    private void checkParameter(int n, String inlineParameter, String from, QueryAnalysisProvider qp) {
         FieldDefinition fieldDefinition = functionDefinition.getParameters().getFieldDefinition(n);
         FieldDefinition actual = qp.getQueryAnalysis(
             "SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
@@ -74,7 +74,7 @@ public class FunctionInliner {
                     + " of type " + actual.getDataType() + " for function " + functionDefinition);
     }
 
-    private void findFunctionObject(Matcher m, String from, QueryProvider qp) {
+    private void findFunctionObject(Matcher m, String from, QueryAnalysisProvider qp) {
         DataDefinition dd = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
         if (dd == null) {
             throw new org.makumba.NoSuchLabelException("no such label '" + m.group(2) + "'.");
@@ -137,7 +137,7 @@ public class FunctionInliner {
      *            the query provider
      * @return the query with inlined query functions
      */
-    public static String inline(String expr, QueryProvider qp) {
+    public static String inline(String expr, QueryAnalysisProvider qp) {
         return inline(expr, qp, null);
     }
 
@@ -150,7 +150,7 @@ public class FunctionInliner {
      *            the query provider
      * @return the query with inlined query functions
      */
-    static String inline(String expr, QueryProvider qp, QuerySectionProcessor qsp) {
+    static String inline(String expr, QueryAnalysisProvider qp, QuerySectionProcessor qsp) {
         String initialQuery = expr;
         while (true) {
             Matcher m;
@@ -192,7 +192,7 @@ public class FunctionInliner {
         };
 
         for (int i = 0; i < queries.length; i++) {
-            inline(queries[i], QueryProvider.makeQueryAnalzyer("oql"));
+            inline(queries[i], QueryProvider.getQueryAnalzyer("oql"));
         }
     }
 

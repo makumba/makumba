@@ -32,11 +32,10 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
-import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.commons.ArgumentReplacer;
 import org.makumba.list.tags.QueryTag;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 /**
@@ -65,7 +64,7 @@ public class ComposedQuery {
         String evaluate(String s);
     }
 
-    public QueryProvider qep = null;
+    public QueryAnalysisProvider qep = null;
 
     /**
      * Default constructor
@@ -76,7 +75,7 @@ public class ComposedQuery {
     public ComposedQuery(String[] sections, String queryLanguage) {
         this.sections = sections;
         this.derivedSections = sections;
-        this.qep = QueryProvider.makeQueryAnalzyer(queryLanguage);
+        this.qep = QueryProvider.getQueryAnalzyer(queryLanguage);
     }
 
     /** The subqueries of this query */

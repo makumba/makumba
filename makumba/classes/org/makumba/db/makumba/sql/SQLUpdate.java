@@ -32,6 +32,7 @@ import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
 import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.oql.QueryAST;
 
@@ -43,7 +44,7 @@ public class SQLUpdate implements Update {
 
     String updateCommand;
     
-    QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
+    QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     SQLUpdate(org.makumba.db.makumba.Database db, String from, String setWhere, String DELIM) {
         int whereMark=setWhere.indexOf(DELIM);

@@ -1,6 +1,7 @@
 package test;
 
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 import junit.framework.Test;
@@ -27,7 +28,7 @@ public class oqlanalyzer extends TestCase {
         }
     }
     
-    private QueryProvider qP = QueryProvider.makeQueryAnalzyer("oql");
+    private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     public void testDateParameterType() {
         String q1 = "SELECT p as id FROM test.Person p WHERE $1<p.TS_create";
