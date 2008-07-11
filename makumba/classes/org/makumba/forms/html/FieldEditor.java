@@ -122,11 +122,11 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	public void onStartup(RecordFormatter rf, int fieldIndex) {
 	}
 
-	public String getInputName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
 		return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
 	}
 
-	public String getInputName(RecordFormatter rf, int fieldIndex, String suffix) {
+	public static String getInputName(RecordFormatter rf, int fieldIndex, String suffix) {
 		return rf.expr[fieldIndex] + suffix;
 	}
 
