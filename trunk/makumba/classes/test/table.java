@@ -464,6 +464,10 @@ public class table extends TestCase {
 				.size());
 
 		workWithSet(toInsert3);
+
+		// clear the speaks set, so we can delete the languages w/o a foreign key error
+        dt.put("speaks", new Vector<Object>());
+        db.update(ptr, dt);
 		db.delete("test.Language l", "1=1", null); //delete garbage
 	}
 
