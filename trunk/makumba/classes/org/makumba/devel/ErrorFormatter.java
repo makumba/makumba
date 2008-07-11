@@ -110,7 +110,9 @@ public class ErrorFormatter {
                 ServletException e = (ServletException) t;
                 t1 = e.getRootCause();
                 t1.setStackTrace(e.getRootCause().getStackTrace());
-            } else
+            } else if( t instanceof ServletException)
+                t1= ((ServletException)t).getRootCause();
+            else
                 break;
             if (t1 == null)
                 break;
