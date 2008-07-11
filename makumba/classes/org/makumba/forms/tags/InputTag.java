@@ -197,10 +197,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doEndAnalyze(PageCache pageCache) {
         if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
             // set the input type as the form type
-            TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
-                getForm().getNestedFormNames(pageCache).get(expr));
+            TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, getForm().getNestedFormNames(
+                pageCache).get(expr));
             DataDefinition type = ((NewTag) t.tagObject).type;
-            pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, type.getFieldDefinition(type.getIndexPointerFieldName()));
+            pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey,
+                type.getFieldDefinition(type.getIndexPointerFieldName()));
             return;
         }
 
@@ -249,6 +250,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
+
+        // for file types, set the form to multi-part
+        // FIXME: this check is a bit duplicated to the one in initialiseState(), but we only know the field-type here
+        // need to do it here, to have both the type of this field and the responder available
+        if (type.isBinaryType()) {
+            getForm().setMultipart();
+        }
+
         Object val = null;
 
         // if we are reloading the form page on validation errors, fill form inputs as in the request
