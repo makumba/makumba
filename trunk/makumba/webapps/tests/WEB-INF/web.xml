@@ -131,6 +131,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>valueEditor</servlet-name>
+    <servlet-class>org.makumba.forms.responder.ValueEditor</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>valueEditor</servlet-name>
+    <url-pattern>/valueEditor/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>invoker</servlet-name>
     <servlet-class>org.apache.catalina.servlets.InvokerServlet</servlet-class>
     <init-param>
