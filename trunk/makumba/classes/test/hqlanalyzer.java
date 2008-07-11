@@ -4,6 +4,7 @@ package test;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 import junit.framework.Test;
@@ -30,7 +31,7 @@ public class hqlanalyzer extends TestCase {
         }
     }
 
-    private QueryProvider qP = QueryProvider.makeQueryAnalzyer("hql");
+    private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("hql");
     
     public void testAnalysisComplexSet() {
 

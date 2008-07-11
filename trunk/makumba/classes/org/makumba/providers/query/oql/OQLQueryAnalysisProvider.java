@@ -3,6 +3,8 @@ package org.makumba.providers.query.oql;
 import java.io.StringReader;
 import java.util.Date;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -10,7 +12,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 
-public class OQLQueryAnalysisProvider implements QueryAnalysisProvider {
+public class OQLQueryAnalysisProvider extends QueryAnalysisProvider {
     public static int parsedQueries = NamedResources.makeStaticCache("OQL parsed queries", new NamedResourceFactory() {
 
         private static final long serialVersionUID = 1L;
@@ -20,7 +22,8 @@ public class OQLQueryAnalysisProvider implements QueryAnalysisProvider {
         }
     }, true);
 
-    public QueryAnalysis getQueryAnalysis(String query) {
+    @Override
+    public QueryAnalysis getRawQueryAnalysis(String query) {
         
         try {
             return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
@@ -36,6 +39,21 @@ public class OQLQueryAnalysisProvider implements QueryAnalysisProvider {
         }
     }
 
+
+    @Override
+    public boolean selectGroupOrOrderAsLabels() {
+        return true;
+    }
+    @Override
+    public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
+        return null;
+    }
+
+    @Override
+    public String getPrimaryKeyNotation(String label) {
+        return label;
+    }
+    
     /**
      * Performs the analysis of an OQL query
      * @param oqlQuery the query to analyse

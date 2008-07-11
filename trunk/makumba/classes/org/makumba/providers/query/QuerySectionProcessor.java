@@ -11,6 +11,9 @@ import org.makumba.commons.RegExpUtils;
  * its grandparent query ... ending with the outer query. After this analysis, it can insert text in the query and
  * expand the FROM and WHERE sections. For all queries and subqueries the class separates the projection, FROM and WHERE
  * sections. To analyze/process just the outer query, use 0 as a starting point.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id:  $
  */
 public class QuerySectionProcessor {
     StringBuffer query;
