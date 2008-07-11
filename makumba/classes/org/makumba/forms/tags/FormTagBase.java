@@ -178,7 +178,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         } else {
             // check that the form has a POST method -> file upload won't work with GET
             if (!formMethod.trim().equalsIgnoreCase("post")) {
-                throw new ProgrammerError("Forms with file upload have to use method=\"get\"!");
+                throw new ProgrammerError("Forms with file upload have to use method=\"post\"!");
             }
             responder.setMultipart(true);
         }
