@@ -156,9 +156,10 @@ public class FunctionInliner {
             Matcher m;
             if ((m = functionBegin.matcher(expr)).find()) {
                 QuerySectionProcessor qspText = null;
-                if (qsp == null)
-                    qsp = qspText = new QuerySectionProcessor(expr, m.start());
-                FunctionInliner fi = new FunctionInliner(expr, m, qp, qsp);
+                QuerySectionProcessor qs= qsp;
+                if (qs == null)
+                    qs = qspText = new QuerySectionProcessor(expr, m.start());
+                FunctionInliner fi = new FunctionInliner(expr, m, qp, qs);
                 if (qspText == null)
                     qspText = new QuerySectionProcessor(expr, 0);
 
