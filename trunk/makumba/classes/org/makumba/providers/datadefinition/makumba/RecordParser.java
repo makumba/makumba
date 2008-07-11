@@ -467,6 +467,10 @@ public class RecordParser {
         int line = 0;
         for (Enumeration e = fields.keys(); e.hasMoreElements(); line++) {
             nm = (String) e.nextElement();
+            String val = fields.get(nm);
+            if (matchFunction(nm + val))
+                continue;
+
             // check name for validity:
             for (int i = 0; i < nm.length(); i++) {
                 if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
@@ -490,6 +494,50 @@ public class RecordParser {
                 continue;
             }
         }
+    }
+
+    boolean matchFunction(String line) {
+        // check if the line is a function definition
+        Matcher matcher = funcDefPattern.matcher(line);
+        if (!matcher.matches())
+            return false;
+
+        String sessionVariableName = matcher.group(1);
+        if (sessionVariableName != null) {
+            sessionVariableName = sessionVariableName.replace("%", "");
+        }
+        String name = matcher.group(2);
+        if (dd.getFunction(name) != null) {
+            mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, line));
+        }
+        String paramsBlock = matcher.group(3); // params are not split yet, we get them all in one
+        String queryFragment = matcher.group(4);
+        String errorMessage = matcher.group(5);
+        DataDefinition ddParams = new RecordInfo(dd.getName() + "." + matcher.group(0));
+        if (StringUtils.isNotBlank(paramsBlock)) {
+            String[] params = paramsBlock.split(",");
+            for (int j = 0; j < params.length; j++) {
+                // make sure to trim(), if we have "int x, int y", the second one param will be " int y"
+                String paramType = params[j].trim().split(" ")[0].trim();
+                if (paramType.equals("ptr")) { // we have a ptr, treat separately
+                    String paramMdd = params[j].trim().split(" ")[1].trim();
+                    String paramName = params[j].trim().split(" ")[2].trim();
+                    DataDefinition pointedDD = DataDefinitionProvider.getInstance().getDataDefinition(paramMdd);
+                    ddParams.addField(new FieldInfo(paramName,
+                            (FieldInfo) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
+                } else {
+                    String paramName = params[j].trim().split(" ")[1].trim();
+                    if (paramType.equals("char[]")) { // we substitute char[] with the max char length
+                        paramType = ("char[255]");
+                    }
+                    ddParams.addField(new FieldInfo(paramName, paramType));
+                }
+            }
+        }
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
+                sessionVariableName, queryFragment, ddParams, errorMessage);
+        dd.addFunction(name, function);
+        return true;
     }
 
     void configSubfields() {
@@ -589,52 +637,17 @@ public class RecordParser {
                 continue;
             }
 
-            // check if the line is a function definition
-            matcher = funcDefPattern.matcher(lineWithoutComment);
-            if (matcher.matches()) {
-                String sessionVariableName = matcher.group(1);
-                if (sessionVariableName != null) {
-                    sessionVariableName = sessionVariableName.replace("%", "");
-                }
-                String name = matcher.group(2);
-                if (dd.getFunction(name) != null) {
-                    mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, st));
-                }
-                String paramsBlock = matcher.group(3); // params are not split yet, we get them all in one
-                String queryFragment = matcher.group(4);
-                String errorMessage = matcher.group(5);
-                DataDefinition ddParams = new RecordInfo(dd.getName() + "." + matcher.group(0));
-                if (StringUtils.isNotBlank(paramsBlock)) {
-                    String[] params = paramsBlock.split(",");
-                    for (int j = 0; j < params.length; j++) {
-                        // make sure to trim(), if we have "int x, int y", the second one param will be " int y"
-                        String paramType = params[j].trim().split(" ")[0].trim();
-                        if (paramType.equals("ptr")) { // we have a ptr, treat separately
-                            String paramMdd = params[j].trim().split(" ")[1].trim();
-                            String paramName = params[j].trim().split(" ")[2].trim();
-                            DataDefinition pointedDD = DataDefinitionProvider.getInstance().getDataDefinition(paramMdd);
-                            ddParams.addField(new FieldInfo(paramName,
-                                    (FieldInfo) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
-                        } else {
-                            String paramName = params[j].trim().split(" ")[1].trim();
-                            if (paramType.equals("char[]")) { // we substitute char[] with the max char length
-                                paramType = ("char[255]");
-                            }
-                            ddParams.addField(new FieldInfo(paramName, paramType));
-                        }
-                    }
-                }
-                DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                        sessionVariableName, queryFragment, ddParams, errorMessage);
-                dd.addFunction(name, function);
-                continue;
-            }
-
             int l = s.indexOf('=');
-            if (l == -1) {
-                mpe.add(fail("non-empty, non-comment line without =", s));
+            int lpar = s.indexOf('{');
+            if (l == -1 && lpar == -1) {
+                mpe.add(fail("non-empty, non-comment line without = or {", s));
                 continue;
             }
+            if ((l == -1 || l > lpar) && lpar != -1)
+                l = lpar;
+            else
+                lpar = l + 1;
+
             String k = s.substring(0, l);
             String kt = k.trim();
             if (kt.length() == 0) {
@@ -654,7 +667,7 @@ public class RecordParser {
                 while (op.get(kt) != null)
                     kt = kt + "_";
             }
-            String val = s.substring(l + 1);
+            String val = s.substring(lpar);
             if (op.putLast(kt, k, val) != null)
                 mpe.add(fail("ambiguous key " + kt, s));
         }
