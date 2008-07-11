@@ -209,9 +209,11 @@ public class RecordEditor extends RecordFormatter {
                     formatterArray[i] = charEnumEditor.getInstance();
                     break;
                 case FieldDefinition._text:
-                case FieldDefinition._binary:
                     formatterArray[i] = textEditor.getInstance();
                     break;
+                case FieldDefinition._binary:
+                  formatterArray[i] = binaryEditor.getInstance();
+                  break;
                 case FieldDefinition._boolean:
                     formatterArray[i] = booleanEditor.getInstance();
                     break;
