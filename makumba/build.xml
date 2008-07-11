@@ -412,11 +412,19 @@
 
 <target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publisDoc">
 	<echo>updating zip for distribution</echo>
+	<echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
 	<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
 		<fileset dir="lib" includes="makumbadoc.zip" />
 	</ftp>
 </target>
 
+<target name="installAntFtp" description="copy required lib to ANT home so the FTP task works and doc can be uploaded">
+<echo>Attempting to copy commons-net to your ANT_HOME/lib dir. Make sure you have the right permissions when running this task!</echo>
+  <copy todir="${ant.home}/lib">
+    <fileset file="lib/commons-net-1.4.1.jar"></fileset>
+  </copy>
+</target>
+	
 <target name="zipdoc" description="makes the documentation and zips it">
 	<delete file="${temp.dir}/makumbadoc.zip" />
 	<antcall target="doc" />
