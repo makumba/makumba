@@ -88,7 +88,7 @@ public class textEditor extends FieldEditor {
 					+ formatValue(rf, fieldIndex, o, formatParams)
 					+ (forceInput ? "</INPUT>" : "</TEXTAREA>");
 		} else {
-			return fileInput(rf, fieldIndex, formatParams);
+			return binaryEditor.fileInput(rf, fieldIndex, formatParams);
 		}
 	}
 
@@ -101,17 +101,6 @@ public class textEditor extends FieldEditor {
 			Dictionary formatParams) {
 		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
 		return resetValueFormat(rf, fieldIndex, s, formatParams);
-	}
-
-	/*
-	 * Formats the value to appear in hidden input statement: don't overload
-	 * default behaviour set in FieldEditor.
-	 */
-	// public String formatHiddenValue(Object o, Dictionary formatParams) {}
-	String fileInput(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
-		return "<INPUT name=\"" + getInputName(rf, fieldIndex, formatParams)
-				+ "\" type=\"file\" "
-				+ getExtraFormatting(rf, fieldIndex, formatParams) + " >";
 	}
 
 	boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
