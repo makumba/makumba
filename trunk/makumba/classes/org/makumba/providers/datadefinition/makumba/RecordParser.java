@@ -110,6 +110,8 @@ public class RecordParser {
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
 
+    public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
+
     OrderedProperties text;
 
     OrderedProperties fields = new OrderedProperties();
@@ -231,6 +233,9 @@ public class RecordParser {
         // make a FieldParser for each field, let it parse and substitute
         // itself
         treatMyFields();
+
+        // based on field and function info, look at function body and put it in the dd
+        compileFunctions();
 
         // send info from the subfield table to the subfields
         configSubfields();
@@ -534,10 +539,58 @@ public class RecordParser {
                 }
             }
         }
+
         DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
                 sessionVariableName, queryFragment, ddParams, errorMessage);
-        dd.addFunction(name, function);
+        funcNames.put(function.getName(), function);
         return true;
+    }
+
+    HashMap<String, QueryFragmentFunction> funcNames = new HashMap<String, QueryFragmentFunction>();
+
+    void compileFunctions() {
+        for (String fn : funcNames.keySet()) {
+            QueryFragmentFunction f = funcNames.get(fn);
+            StringBuffer sb = new StringBuffer();
+            String queryFragment = f.getQueryFragment();
+            Matcher m = ident.matcher(queryFragment);
+            boolean found = false;
+            while (m.find()) {
+                String id = queryFragment.substring(m.start(), m.end());
+                int after = -1;
+                for (int index = m.end(); index < queryFragment.length(); index++) {
+                    char c = queryFragment.charAt(index);
+                    if (c == ' ' || c == '\t')
+                        continue;
+                    after = c;
+                    break;
+                }
+                int before = -1;
+                for (int index = m.start()-1; index >= 0; index--) {
+                    char c = queryFragment.charAt(index);
+                    if (c == ' ' || c == '\t')
+                        continue;
+                    before = c;
+                    break;
+                }
+
+                if (before == '.' || id.equals("this") || id.equals("actor")
+                        || f.getParameters().getFieldDefinition(id) != null)
+                    continue;
+                if (dd.getFieldDefinition(id) != null || after == '(' && funcNames.get(id) != null){
+                    m.appendReplacement(sb, "this." + id);
+                    found = true;
+                }
+            }
+            m.appendTail(sb);
+            if (found) {
+                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(queryFragment+ " -> " + sb.toString());
+                f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
+                        f.getParameters(), f.getErrorMessage());
+
+            }
+            dd.addFunction(f.getName(), f);
+        }
     }
 
     void configSubfields() {
