@@ -2,4 +2,4 @@ surname=char[40]         ;Family Name
 name=char[40]            ;First Name
 person=ptr test.Person
 
-nameMin3CharsLong() { character_length(this.name) > 3 } Your name is not long enough!
+nameMin3CharsLong() { character_length(name) > 3 } Your name is not long enough!
