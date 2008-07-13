@@ -44,6 +44,9 @@ function makeNavBar(pathToBase)
 	 document.write('<input type=hidden name=domains value="makumba.org">');
 	 document.write('<input type=hidden name=sitesearch value="makumba.org">');
 	document.write('</FORM>');
+	
+	document.write('<br>');
+	document.write('<a href="'+bDir+'supporters.html"><b>Supporters</b></a><br>');
         
 	document.write('</div>');
 }
