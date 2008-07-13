@@ -88,4 +88,10 @@ public class OQLQueryAnalysisProvider extends QueryAnalysisProvider {
         return t;
     }
 
+
+    @Override
+    public String getParameterSyntax() {
+        return "$";
+    }
+
 }
