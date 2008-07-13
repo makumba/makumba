@@ -63,6 +63,9 @@ function getPageInfo(svnID)
 	var revision=svnIds[1];
 	var date=svnIds[2].replace("/","-").replace("/","-");
 	var time=svnIds[3];
+	// remove the "Z" character in the end of time value
+	if (time.charAt(time.length-1,1) == "Z")
+		time = time.substring(0, time.length-1);
 	var author=svnIds[4];
 
 	return(''+filename+', revision '+revision+', last modified on '+date+' at '+time+' by '+author);
