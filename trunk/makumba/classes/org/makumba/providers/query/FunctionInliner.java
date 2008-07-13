@@ -10,17 +10,21 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 /**
- * Inliner for query functions. 
+ * Inliner for query functions.
+ * 
  * @author Cristian Bogdan
  * @version $Id: FunctionInliner.java,v 1.1 Jul 7, 2008 5:11:53 PM cristi Exp $
  */
 public class FunctionInliner {
     // TODO: store all inolved functions with error messages and their FROMs to be able to trace back the error
     // FIXME: catch StringIndexOutOfBonds e.g. when counting parantheses and throw ProgrammerErrors
+
+    private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public static String NAME = "[a-zA-Z]\\w*";
 
@@ -30,7 +34,15 @@ public class FunctionInliner {
     // (
             + RegExpUtils.whitespace + "\\(";
 
+    public static final String PATTERN_ACTOR =
+    //
+    "actor" + RegExpUtils.whitespace + "\\(" + RegExpUtils.whitespace +
+    // actor(a.b.c)
+            "(" + NAME + "(\\." + NAME + ")*)" + RegExpUtils.whitespace + "\\)" + RegExpUtils.whitespace;
+
     public static final Pattern functionBegin = Pattern.compile(PATTERN_FUNCTION_CALL_BEGIN);
+
+    public static final Pattern actor = Pattern.compile(PATTERN_ACTOR);
 
     private String functionText;
 
@@ -43,7 +55,7 @@ public class FunctionInliner {
     private String functionObject;
 
     private FunctionInliner(String query, Matcher m, QueryAnalysisProvider qp, QuerySectionProcessor qsp) {
-        String from= qsp.getInitialFrom();
+        String from = qsp.getInitialFrom();
         findFunctionBody(query, m);
         findFunctionObject(m, from, qp);
         if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size())
@@ -54,8 +66,7 @@ public class FunctionInliner {
         for (String parameter : parameterExpr) {
             String inlineParameter = inline(parameter, qp, qsp);
             checkParameter(n, inlineParameter, from, qp);
-            func.replaceParameter(functionDefinition.getParameters().getFieldDefinition(n).getName(),
-                inlineParameter); 
+            func.replaceParameter(functionDefinition.getParameters().getFieldDefinition(n).getName(), inlineParameter);
             n++;
         }
         qsp.addFromWhere(func, functionObject);
@@ -64,14 +75,13 @@ public class FunctionInliner {
 
     private void checkParameter(int n, String inlineParameter, String from, QueryAnalysisProvider qp) {
         FieldDefinition fieldDefinition = functionDefinition.getParameters().getFieldDefinition(n);
-        FieldDefinition actual = qp.getQueryAnalysis(
-            "SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
+        FieldDefinition actual = qp.getQueryAnalysis("SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
             0);
 
         if (!fieldDefinition.isAssignableFrom(actual))
             throw new ProgrammerError("formal paramter " + fieldDefinition.getName() + " of type "
-                    + fieldDefinition.getDataType() + " is not matched by the actual value given " + parameterExpr.get(n)
-                    + " of type " + actual.getDataType() + " for function " + functionDefinition);
+                    + fieldDefinition.getDataType() + " is not matched by the actual value given "
+                    + parameterExpr.get(n) + " of type " + actual.getDataType() + " for function " + functionDefinition);
     }
 
     private void findFunctionObject(Matcher m, String from, QueryAnalysisProvider qp) {
@@ -156,7 +166,7 @@ public class FunctionInliner {
             Matcher m;
             if ((m = functionBegin.matcher(expr)).find()) {
                 QuerySectionProcessor qspText = null;
-                QuerySectionProcessor qs= qsp;
+                QuerySectionProcessor qs = qsp;
                 if (qs == null)
                     qs = qspText = new QuerySectionProcessor(expr, m.start());
                 FunctionInliner fi = new FunctionInliner(expr, m, qp, qs);
@@ -168,21 +178,42 @@ public class FunctionInliner {
                 continue;
             }
 
-            // look for actor(...).
-
-            // look for actor(
+            if ((m = actor.matcher(expr)).find()) {
+                String actorType = m.group(1);
+                ddp.getDataDefinition(actorType);
+                if (m.end() < expr.length() && expr.charAt(m.end()) == '.') {
+                    QuerySectionProcessor qspText = null;
+                    QuerySectionProcessor qs = qsp;
+                    if (qs == null)
+                        qs = qspText = new QuerySectionProcessor(expr, m.start());
+                    String actorLabel= getActorLabel(actorType); 
+                    qs.addFromWhere(actorType+" "+actorLabel, actorLabel+"="+qp.getParameterSyntax()+actorLabel );
+                    if (qspText == null)
+                        qspText = new QuerySectionProcessor(expr, 0);                    
+                    qspText.replaceExpr(m.start(), m.group().length(), actorLabel);
+                    expr = qspText.getText();
+                } else {
+                    QuerySectionProcessor qspText = new QuerySectionProcessor(expr, 0);
+                    qspText.replaceExpr(m.start(), m.group().length(), qp.getParameterSyntax()+getActorLabel(actorType));
+                    expr = qspText.getText();
+                }
+            }
             break;
         }
         if (!expr.equals(initialQuery))
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(initialQuery + " \n-> " + expr);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(initialQuery + " \n-> " + expr);
 
         return expr;
 
     }
 
+    private static String getActorLabel(String actorType) {
+        return "actor_" + actorType.trim().replace('.', '_');
+    }
+
     public static void main(String[] args) throws Exception {
         String[] queries = {
-                "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong()",
+                "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND actor(test.Person).name is not null",
                 "SELECT p as p, p.indiv as indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
                 "SELECT p AS p, p.indiv AS indiv FROM test.Person p WHERE p.nameMin3CharsLong()",
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
