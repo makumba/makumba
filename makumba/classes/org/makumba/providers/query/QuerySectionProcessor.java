@@ -13,7 +13,7 @@ import org.makumba.commons.RegExpUtils;
  * sections. To analyze/process just the outer query, use 0 as a starting point.
  * 
  * @author Cristian Bogdan
- * @version $Id:  $
+ * @version $Id: $
  */
 public class QuerySectionProcessor {
     StringBuffer query;
@@ -30,7 +30,7 @@ public class QuerySectionProcessor {
         public void setWhereStart(int index) {
             whereStart = index;
             whereEnd = end;
-            checkFromEnd(index);
+            checkFromEnd(index - 7);
         }
 
         public void checkFromEnd(int index) {
@@ -47,13 +47,17 @@ public class QuerySectionProcessor {
         }
 
         public void setFromStart(int index) {
-            projectionEnd = index;
+            projectionEnd = index - 5;
             fromStart = index;
             fromEnd = end;
         }
 
         public void setStart(int i) {
             start = i;
+            projectionStart = i;
+        }
+
+        public void setProjectionStart(int i) {
             projectionStart = i;
         }
 
@@ -64,16 +68,60 @@ public class QuerySectionProcessor {
 
         public void shift(int index, int delta) {
             end += delta;
-            if (fromStart >= index)
+            if (projectionStart > index)
+                projectionStart += delta;
+            if (fromStart > index)
                 fromStart += delta;
-            if (fromEnd >= index)
+            if (fromEnd > index)
                 fromEnd += delta;
-            if (whereStart >= index)
+            if (whereStart > index)
                 whereStart += delta;
-            if (whereEnd >= index)
+            if (whereEnd > index)
                 whereEnd += delta;
-            if (projectionEnd >= index)
+            if (projectionEnd > index)
                 projectionEnd += delta;
+        }
+
+        public void addFromWhere(String from, String where) {
+            QuerySectionProcessor.this.replace(fromEnd, 0, ", " + from);
+            if (where == null)
+                return;
+            if (whereStart == -1) {
+                int x = fromEnd;
+                QuerySectionProcessor.this.replace(fromEnd, 0, " WHERE " + where);
+                whereEnd = fromEnd;
+                fromEnd = x;
+                whereStart = fromEnd + 7;
+            } else {
+                QuerySectionProcessor.this.replace(whereStart, 0, where + " AND (");
+                QuerySectionProcessor.this.replace(whereEnd, 0, ")");
+            }
+        }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(query, projectionStart, projectionEnd);
+            if (fromStart != -1)
+                sb.append(" FROM ").append(query, fromStart, fromEnd);
+            if (whereStart != -1)
+                sb.append(" WHERE ").append(query, whereStart, whereEnd);
+            return sb.toString();
+        }
+
+        public String getWhere() {
+            if (whereStart == -1)
+                return null;
+            return query.substring(whereStart, whereEnd);
+        }
+
+        public String getFrom() {
+            if (fromStart == -1)
+                return null;
+            return query.substring(fromStart, fromEnd);
+        }
+
+        public String getProjection() {
+            return query.substring(projectionStart, projectionEnd);
         }
     }
 
@@ -109,14 +157,19 @@ public class QuerySectionProcessor {
                         levels[i] = -1;
                     else if (levels[i] < lev && levels[i] != -1) {
                         sd.setStart(min = i + 1);
+                        if (lowerQuery.substring(min).trim().startsWith("select "))
+                            sd.setProjectionStart(lowerQuery.substring(min).indexOf("select") + 7);
                     }
                 } else {
                     if (levels[i] >= lev)
                         levels[i] = -1;
                 }
             }
-            if (sd.start == -1)
+            if (sd.start == -1) {
                 sd.setStart(0);
+                if (lowerQuery.trim().startsWith("select "))
+                    sd.setProjectionStart(lowerQuery.indexOf("select") + 7);
+            }
 
             for (int i = max; i < query.length(); i++) {
                 if (sd.end == -1) {
@@ -141,7 +194,7 @@ public class QuerySectionProcessor {
             if (findIndex == -1)
                 break;
             if (levels[findIndex] != -1) {
-                subqueries.get(levels[findIndex]).setFromStart(findIndex);
+                subqueries.get(levels[findIndex]).setFromStart(findIndex + 5);
             }
             findIndex++;
         }
@@ -165,7 +218,7 @@ public class QuerySectionProcessor {
             if (findIndex == -1)
                 break;
             if (levels[findIndex] != -1) {
-                subqueries.get(levels[findIndex]).setWhereStart(findIndex);
+                subqueries.get(levels[findIndex]).setWhereStart(findIndex + 7);
             }
             findIndex++;
         }
@@ -195,17 +248,17 @@ public class QuerySectionProcessor {
             }
             findIndex++;
         }
-        
-        StringBuffer from= new StringBuffer();
 
-        String separator="";
+        StringBuffer from = new StringBuffer();
+
+        String separator = "";
         for (int i = 0; i < subqueries.size(); i++) {
-            if(subqueries.get(i).fromStart!=-1){
-                from.append(separator).append(query, subqueries.get(i).fromStart+ 5, subqueries.get(i).fromEnd);
-                separator=",";                
+            if (subqueries.get(i).fromStart != -1) {
+                from.append(separator).append(query, subqueries.get(i).fromStart, subqueries.get(i).fromEnd);
+                separator = ",";
             }
         }
-        initialFrom= from.toString();
+        initialFrom = from.toString();
     }
 
     /**
@@ -216,39 +269,32 @@ public class QuerySectionProcessor {
         return initialFrom;
     }
 
-    /** Return the query text */
-    public String getText() {
-        return query.toString();
-    }
-
     /** Return the projection section of the outer query, without the word SELECT */
     public String getProjectionText() {
-        String ret = query.substring(subqueries.get(0).projectionStart, subqueries.get(0).projectionEnd).toString();
-        if (ret.toLowerCase().startsWith("select "))
-            ret = ret.substring(7);
-        return ret;
+        return subqueries.get(0).getProjection();
     }
 
     /** Inline a parameter. */
     public void replaceParameter(String name, String parameterInline) {
-        int index=0;
-        while((index= (query.indexOf(name, index)))!=-1){
-            if(query.substring(0, index).trim().endsWith(".") || query.substring(index+name.length()).trim().startsWith("(")){
+        int index = 0;
+        while ((index = (query.indexOf(name, index))) != -1) {
+            if (query.substring(0, index).trim().endsWith(".")
+                    || query.substring(index + name.length()).trim().startsWith("(")) {
                 index++;
                 continue;
             }
             replaceExpr(index, name.length(), parameterInline);
         }
-        
+
     }
-    
-    void replaceThis(String thisExpr){
-        int index=0;
-        while((index= (query.indexOf("this", index)))!=-1){
+
+    void replaceThis(String thisExpr) {
+        int index = 0;
+        while ((index = (query.indexOf("this", index))) != -1) {
             replace(index, "this".length(), thisExpr);
-        }        
+        }
     }
-    
+
     /** Replace the expression begining at regionStart, of length regionLength with the given text. */
     public void replaceExpr(int regionStart, int regionLength, String text) {
         replace(regionStart, regionLength, //
@@ -260,12 +306,27 @@ public class QuerySectionProcessor {
 
     /** Replace the region begining at regionStart, of length regionLength with the given text. */
     private void replace(int regionStart, int regionLength, String text) {
+        if (closed)
+            throw new IllegalStateException("Cannot add text after getText() was called");
+
         for (int lev = 0; lev < subqueries.size(); lev++) {
             subqueries.get(lev).shift(regionStart, text.length() - regionLength);
         }
         query.delete(regionStart, regionStart + regionLength);
         query.insert(regionStart, text);
     }
+
+    static class Insertion {
+        int queryLevel;
+
+        String from;
+
+        String where;
+    }
+
+    ArrayList<Insertion> insertions = new ArrayList<Insertion>();
+
+    boolean closed = false;
 
     /**
      * Given a query, add from it to the FROM section and to the WHERE condition of the outermost possible suquery. If
@@ -280,23 +341,50 @@ public class QuerySectionProcessor {
      *            the object that will substitute "this" in the expression
      */
     public void addFromWhere(QuerySectionProcessor func, String thisExpr) {
-        // TODO Auto-generated method stub
-        func.getFrom();
-        func.getWhere();
-        
+        // TODO this does no addition yet
+        // func.getFrom();
+        // func.getWhere();
+        // use Insertion
+
         func.replaceThis(thisExpr);
+    }
+
+    /**
+     * Add to the FROM section and to the WHERE condition of the outermost suquery.
+     * 
+     * @param from
+     *            the from section
+     * @param where
+     *            the where section for joining it
+     */
+    public void addFromWhere(String from, String where) {
+        if (closed)
+            throw new IllegalStateException("Cannot add text after getText() was called");
+
+        Insertion ins = new Insertion();
+        ins.queryLevel = 0;
+        ins.from = from;
+        ins.where = where;
+        insertions.add(ins);
+    }
+
+    /** Return the query text */
+    public String getText() {
+        for (Insertion ins : insertions) {
+            subqueries.get(ins.queryLevel).addFromWhere(ins.from, ins.where);
+        }
+        closed = true;
+        return query.toString();
     }
 
     /** Return the WHERE section of the outer query, without the word WHERE. */
     public String getWhere() {
-        // TODO Auto-generated method stub
-        return null;
+        return subqueries.get(0).getWhere();
     }
 
     /** Return the FROM section of the outer query, without the word FROM */
     public String getFrom() {
-        // TODO Auto-generated method stub
-        return null;
+        return subqueries.get(0).getFrom();
     }
 
     public static final String PATTERN_ALL_FUNCTION_CALL_BEGIN = // name [. name . name ...]
@@ -307,6 +395,8 @@ public class QuerySectionProcessor {
 
     public static final Pattern allFunctionBegin = Pattern.compile(PATTERN_ALL_FUNCTION_CALL_BEGIN);
 
+    public static final Pattern ident = Pattern.compile(FunctionInliner.NAME);
+
     static String paranthesize(String before, String after, String expr) {
         String trimExpr = expr.trim();
 
@@ -314,7 +404,23 @@ public class QuerySectionProcessor {
         if (trimExpr.startsWith("(") && trimExpr.trim().endsWith(")"))
             return expr;
 
-        // we never paranthesize [a.b.]function()
+        // we don't paranthesize identifiers or parameters
+        if (ident.matcher(trimExpr).matches() || (trimExpr.startsWith("$") || trimExpr.startsWith(":"))
+                && ident.matcher(trimExpr.substring(1)).matches())
+            return expr;
+
+        // we don't paranthesize numbers
+        try {
+            // TODO: replace with regex
+            Double.parseDouble(trimExpr);
+            return expr;
+        } catch (NumberFormatException nfe) {
+        }
+        // we don't paranthesize 'strings'
+        if (trimExpr.startsWith("\'") && trimExpr.endsWith("\'"))
+            return expr;
+
+        // we never paranthesize [a.b.]function() or actor(...)
         if (allFunctionBegin.matcher(trimExpr).matches() && trimExpr.endsWith(")"))
             return expr;
 
@@ -324,7 +430,7 @@ public class QuerySectionProcessor {
 
         // if we are after a select or a comma
         if ((before.toLowerCase().endsWith("select") || before.endsWith(",")) && // and we are before an as or a
-                                                                                    // comma or a from
+                // comma or a from
                 (after.toLowerCase().startsWith("as") || after.startsWith(",") || after.toLowerCase().startsWith("from")))
             return expr;
 
