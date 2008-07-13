@@ -153,5 +153,8 @@ public abstract class QueryAnalysisProvider {
         }
     }
 
+	/** return the first character(s) in a parameter designator */
+    public abstract String getParameterSyntax();
+
 
 }
