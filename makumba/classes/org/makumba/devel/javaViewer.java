@@ -48,13 +48,12 @@ import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
- * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources. See SourceViewServlet for the
- * filter architecture
+ * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources.
+ * See SourceViewServlet for the filter architecture
  * 
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
- *  
  */
 public class javaViewer extends LineViewer {
     /** the name of the properties file configuring what to highlight how */
@@ -74,7 +73,7 @@ public class javaViewer extends LineViewer {
     private static final String DEFAULT_JAVASTRINGLITERAL_STYLE = "color: #FF0000; font-style: italic; font-family: monospace; ";
 
     private boolean compiledJSP = false;
-    
+
     private boolean haveFile = false;
 
     private SourceSyntaxPoints syntaxPoints;
@@ -82,18 +81,18 @@ public class javaViewer extends LineViewer {
     private SyntaxPoint[] sourceSyntaxPoints;
 
     private JavaParseData javaParseData;
-    
+
     private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private URL url;
-    
+
     static {
         initProperties();
     }
 
     /**
-     * Loads the properties file, if that fails uses {@link org.makumba.devel.javaViewer#initDefaultProperties() initDefaultProperties}to get default
-     * values.
+     * Loads the properties file, if that fails uses
+     * {@link org.makumba.devel.javaViewer#initDefaultProperties() initDefaultProperties}to get default values.
      */
     private static void initProperties() {
         try {
@@ -103,22 +102,22 @@ public class javaViewer extends LineViewer {
 
             // we load from the properties file the non-taglib properties, using defaults when necessary
             javaSyntaxProperties.put("JavaBlockComment", readProperties.getProperty("JavaBlockComment",
-                    DEFAULT_JAVACOMMENT_STYLE));
+                DEFAULT_JAVACOMMENT_STYLE));
             javaSyntaxProperties.put("JavaDocComment", readProperties.getProperty("javaDocComment",
-                    DEFAULT_JAVADOC_STYLE));
+                DEFAULT_JAVADOC_STYLE));
             javaSyntaxProperties.put("JavaLineComment", readProperties.getProperty("javaLineComment",
-                    DEFAULT_JAVACOMMENT_STYLE));
+                DEFAULT_JAVACOMMENT_STYLE));
             javaSyntaxProperties.put("JavaModifier", readProperties.getProperty("JavaReservedWord",
-                    DEFAULT_JAVAMODIFIER_STYLE));
+                DEFAULT_JAVAMODIFIER_STYLE));
             javaSyntaxProperties.put("JavaReservedWord", readProperties.getProperty("JavaReservedWord",
-                    DEFAULT_JAVARESERVEDWORD_STYLE));
+                DEFAULT_JAVARESERVEDWORD_STYLE));
             javaSyntaxProperties.put("JavaStringLiteral", readProperties.getProperty("JavaStringLiteral",
-                    DEFAULT_JAVASTRINGLITERAL_STYLE));
-        } catch (Throwable t) { // the properties file was not found / readable / etc 
+                DEFAULT_JAVASTRINGLITERAL_STYLE));
+        } catch (Throwable t) { // the properties file was not found / readable / etc
             // --> use default values
             java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
-                    "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
-                            + "' not found! Using default values.");
+                "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
+                        + "' not found! Using default values.");
             javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVADOC_STYLE);
             javaSyntaxProperties.put("JavaBlockComment", DEFAULT_JAVACOMMENT_STYLE);
             javaSyntaxProperties.put("JavaLineComment", DEFAULT_JAVACOMMENT_STYLE);
@@ -161,10 +160,10 @@ public class javaViewer extends LineViewer {
                 if (s.startsWith("/")) {
                     s = s.substring(1);
                 }
-                url= org.makumba.commons.ClassResource.get(s.replace('.', '/'));
+                url = org.makumba.commons.ClassResource.get(s.replace('.', '/'));
             }
         }
-        
+
         if (haveFile) { // we actually read a file
             // uncomment this for testing purposes to clean the analyzer cache.
             // NamedResources.cleanStaticCache(JavaParseData.analyzedPages);
@@ -179,7 +178,6 @@ public class javaViewer extends LineViewer {
     }
 
     /**
-     * 
      * Utilises the super-class' method, and performs additionally syntax highlighting for java keywords.
      * 
      * @see org.makumba.devel.LineViewer#parseLine(java.lang.String)
@@ -192,9 +190,9 @@ public class javaViewer extends LineViewer {
         }
         for (String keyWord : javaSyntaxProperties.keySet()) {
             // we highlight the word if we have a style defined for this syntax point typ
-            if (javaSyntaxProperties.get(keyWord) != null) { 
-                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.get(keyWord)
-                        + "\">" + keyWord + "</span> ");
+            if (javaSyntaxProperties.get(keyWord) != null) {
+                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.get(keyWord) + "\">"
+                        + keyWord + "</span> ");
             }
         }
         return result;
@@ -214,12 +212,13 @@ public class javaViewer extends LineViewer {
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
 
-            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we print the line numbers
+            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we print the line
+                                                                            // numbers
                 if (printLineNumbers) {
                     writer.print("\n");
                     if (!hideLineNumbers) {
                         writer.print("<a style=\"font-style: normal; \" name=\"" + currentLine + "\" href=\"#"
-                            + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
+                                + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
                     }
                 }
             } else {
@@ -253,7 +252,7 @@ public class javaViewer extends LineViewer {
                             if (webappClass == null) {
                                 webappClass = findClassSimple(beforeSyntaxPoint);
                             }
-                            if (webappClass != null) {      
+                            if (webappClass != null) {
                                 classLink = formatClassLink(webappClass, null, beforeSyntaxPoint);
                             }
                             if (classLink != null) {
@@ -264,33 +263,36 @@ public class javaViewer extends LineViewer {
                             writer.print("</a>");
                         } else if (currentSyntaxPoint.getType().equals("JavaMethodInvocation")) {
                             String object = null;
-                            String method = null; 
+                            String method = null;
                             String[] parts = null;
-                            if (beforeSyntaxPoint.indexOf(".") != -1) { // we actually do have a "." inside the syntax point
+                            if (beforeSyntaxPoint.indexOf(".") != -1) { // we actually do have a "." inside the syntax
+                                                                        // point
                                 parts = beforeSyntaxPoint.split("\\.");
                             } else { // we need to go back one more syntax point
                                 parts = syntaxPoints.getLineText(currentLine).substring(
-                                    sourceSyntaxPoints[j-2].getColumn() - 1, currentSyntaxPoint.getColumn() - 1).split("\\.");
-                            }                                
+                                    sourceSyntaxPoints[j - 2].getColumn() - 1, currentSyntaxPoint.getColumn() - 1).split(
+                                    "\\.");
+                            }
 
                             if (parts.length > 1) {
-                                object = parts[0]; 
-                                method = parts[1]; 
+                                object = parts[0];
+                                method = parts[1];
                             }
                             Class<?> variableClass = null;
                             String classLink = null;
                             if (object.equals("super")) { // provide link to super class
                                 variableClass = findClass(javaParseData.getSuperClass());
-                                classLink = formatClassLink(variableClass, method,  beforeSyntaxPoint);
+                                classLink = formatClassLink(variableClass, method, beforeSyntaxPoint);
                             } else if (!object.equals("this")) { // don't care about usage of this
-                                String className = javaParseData.getDefinedObjectClassName(object, currentSyntaxPoint.getPosition());
+                                String className = javaParseData.getDefinedObjectClassName(object,
+                                    currentSyntaxPoint.getPosition());
                                 if (className == null) { // try to check if we use a static field
                                     className = object;
                                 }
                                 if (className != null) {
                                     variableClass = findClass(className);
                                     if (variableClass != null) {
-                                        classLink = object + "." + formatClassLink(variableClass, method,  method);
+                                        classLink = object + "." + formatClassLink(variableClass, method, method);
                                     } else {
                                         classLink = object + "." + method;
                                     }
@@ -310,17 +312,17 @@ public class javaViewer extends LineViewer {
                                 String mddName = findMddNameFromHandler(parts[1]);
                                 try {
                                     dd = ddp.getDataDefinition(mddName);
-                                    writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + dd.getName()
-                                        + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
-                                        + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                    writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/"
+                                            + dd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
+                                            + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
                                     mddName = findMddNameFromHandler(parts[1], true);
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
-                                        writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/" + parentDd.getName()
-                                            + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
-                                            + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                        writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/"
+                                                + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
+                                                + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
                                         // do nothing, just don't use this possible MDD
                                     } catch (NullPointerException e1) {
@@ -348,12 +350,13 @@ public class javaViewer extends LineViewer {
         printPageEnd(writer);
         double timeTaken = System.currentTimeMillis() - begin;
         java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").info(
-                "Java sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
+            "Java sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
     private String findMddNameFromHandler(String encodedMddName) {
         return findMddNameFromHandler(encodedMddName, false);
     }
+
     /**
      * Discovers the name of an MDD from an encoded MDD name. Used for discovering the name of the MDD from a handler
      * method. e.g. general.address.City becomes on_editGeneralAddressCity in an edit handler.
@@ -397,7 +400,7 @@ public class javaViewer extends LineViewer {
         }
         return mddName;
     }
-    
+
     /**
      * splits the name of a handler method into different parts. For e.g. on_editGeneralAddressCity, the return values
      * are as follows:<br>
@@ -421,11 +424,16 @@ public class javaViewer extends LineViewer {
 
     @Override
     public void intro(PrintWriter w) {
-        w.println("<td align=\"center\" bgcolor=\"darkblue\">");
+        w.println("<td align=\"center\" >");
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
-        w.println("<font color=\"lightblue\">Java</font></td>");
-        String path = contextPath + "/classes/" + virtualPath.substring(0, virtualPath.lastIndexOf('/') + 1);
+        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">Java</span></td>");
+        String p = virtualPath;
+        if (p.endsWith(".java")) {
+            p = p.substring(0, p.indexOf(".java"));
+        }
+        p = p.replaceAll("\\.", "/");
+        String path = contextPath + "/classes/" + p.substring(0, p.lastIndexOf('/') + 1);
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
