@@ -23,6 +23,7 @@
 
 package org.makumba.commons.tags;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,6 +45,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.Base64;
 import org.makumba.commons.ReadableFormatter;
@@ -60,7 +62,7 @@ public class MakumbaInfoTag extends TagSupport {
 
     private int line = 0;
 
-    Object applicationProperties;
+    String applicationProperties;
 
     Properties sysprops = System.getProperties();
 
@@ -68,7 +70,7 @@ public class MakumbaInfoTag extends TagSupport {
      * @param applicationProperties
      *            The applicationProperties to set.
      */
-    public void setApplicationProperties(Object applicationProperties) {
+    public void setApplicationProperties(String applicationProperties) {
         this.applicationProperties = applicationProperties;
     }
 
@@ -77,7 +79,7 @@ public class MakumbaInfoTag extends TagSupport {
             Properties projectProperties = new Properties();
             try {
                 if (applicationProperties != null) {
-                    projectProperties.load(new FileInputStream(applicationProperties.toString()));
+                    projectProperties.load(new FileInputStream(applicationProperties));
                 }
             } catch (IOException e) {
                 System.err.println("IGNORED " + e);
@@ -127,6 +129,11 @@ public class MakumbaInfoTag extends TagSupport {
                 }
             }
 
+            String tomcatLocation = System.getProperty("tomcat.manager.location");
+            if (tomcatLocation == null) { // not in system props? try in application properties
+                tomcatLocation = projectProperties.getProperty("tomcat.manager.location");
+            }
+
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             HttpSession session = request.getSession(true);
             int port = request.getServerPort();
@@ -140,8 +147,8 @@ public class MakumbaInfoTag extends TagSupport {
             if (serverInfo.indexOf("Tomcat") != -1) { // we have a tomcat
                 if (username != null && password != null) { // we have a user and password
                     try { // --> connect
-                        HttpURLConnection uc = (HttpURLConnection) (new URL("http://localhost:" + port
-                                + "/manager/list")).openConnection();
+                        HttpURLConnection uc = (HttpURLConnection) (new URL("http://localhost:" + port + "/"
+                                + (tomcatLocation != null ? tomcatLocation : "") + "manager/list")).openConnection();
                         uc.setRequestProperty("connection", "close");
                         uc.setRequestProperty("Authorization", "Basic "
                                 + Base64.encode((username + ":" + password).getBytes()));
@@ -223,7 +230,16 @@ public class MakumbaInfoTag extends TagSupport {
             printSystemInfoRow(out, "Server protocol, name and port", "<a href=\"" + serverURL + "\">" + serverURL
                     + "</a>");
             printSystemInfoRow(out, "Server software", pageContext.getServletContext().getServerInfo());
-
+            out.println("        <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+            out.print("          <td colspan=\"2\">");
+            if (StringUtils.equals(request.getParameter("garbageCollection"), "true")) {
+                System.gc();
+                out.print("Performed garbage collection. <a href=\"?\">Run without</a>");
+            } else {
+                out.print("<a href=\"?garbageCollection=true\">Request garbage collection</a>");
+            }
+            out.println("          </td>");
+            out.println("        </tr>");
             out.println("      </table>");
             out.println("    </td>");
             out.println("  </tr>");
@@ -233,11 +249,12 @@ public class MakumbaInfoTag extends TagSupport {
                 out.println("<h2>Application specific properties <span style=\"font-size:smaller\">("
                         + applicationProperties + ")</span> </h2>");
                 try {
-                    projectProperties.load(new FileInputStream(applicationProperties.toString()));
+                    projectProperties.load(new FileInputStream(applicationProperties));
                     printProperties(out, projectProperties);
                 } catch (IOException io) {
                     out.println("<p style=\"color: red;\">Could not find application specific properties file <i>'"
-                            + applicationProperties + "'</i> in the current directory </p>");
+                            + applicationProperties + "'</i> in the current directory '"
+                            + new File("").getAbsolutePath() + "'</p>");
                 }
             }
 
@@ -253,9 +270,11 @@ public class MakumbaInfoTag extends TagSupport {
                 MakumbaSystem.getVersion());
             printMakumbaPropertyRow(out, "Default database name", dbname);
             printMakumbaPropertyRow(out, "DBSV", MakumbaSystem.getDatabaseProperty(dbname, "dbsv"));
-            ;
             printMakumbaPropertyRow(out, "Number of connections open", MakumbaSystem.getDatabaseProperty(dbname,
                 "jdbc_connections"));
+            printMakumbaPropertyRow(out, "Out of this, unused connections in the pool",
+                MakumbaSystem.getDatabaseProperty(dbname, "resource_pool_size"));
+
             printMakumbaPropertyRow(out, "SQL engine and version", MakumbaSystem.getDatabaseProperty(dbname,
                 "sql_engine.name"));
             printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaSystem.getDatabaseProperty(dbname,
