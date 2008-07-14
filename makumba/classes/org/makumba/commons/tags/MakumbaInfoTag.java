@@ -79,7 +79,7 @@ public class MakumbaInfoTag extends TagSupport {
                 if (applicationProperties != null)
                     projectProperties.load(new FileInputStream(applicationProperties.toString()));
             } catch (IOException e) {
-                System.err.println("IGNORED "+e);
+                System.err.println("IGNORED " + e);
             }
 
             JspWriter out = pageContext.getOut();
@@ -265,7 +265,7 @@ public class MakumbaInfoTag extends TagSupport {
             line = 0;
             Map<String, int[]> m = MakumbaSystem.getCacheInfo();
             TreeSet<String> treeSet = new TreeSet<String>(m.keySet());
-            
+
             for (Iterator<String> iterator = treeSet.iterator(); iterator.hasNext();) {
                 String nm = (String) iterator.next();
                 Object o = m.get(nm);
