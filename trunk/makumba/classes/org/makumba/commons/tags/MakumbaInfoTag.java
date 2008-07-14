@@ -51,7 +51,7 @@ import org.makumba.providers.TransactionProvider;
 
 /**
  * mak:info tag
- * 
+ *
  * @author
  * @version $Id$
  */
@@ -76,8 +76,9 @@ public class MakumbaInfoTag extends TagSupport {
         try {
             Properties projectProperties = new Properties();
             try {
-                if (applicationProperties != null)
+                if (applicationProperties != null) {
                     projectProperties.load(new FileInputStream(applicationProperties.toString()));
+                }
             } catch (IOException e) {
                 System.err.println("IGNORED " + e);
             }
@@ -146,24 +147,29 @@ public class MakumbaInfoTag extends TagSupport {
                                 + Base64.encode((username + ":" + password).getBytes()));
                         uc.setUseCaches(false);
                         uc.connect();
-                        if (uc.getResponseCode() != 200)
+                        if (uc.getResponseCode() != 200) {
                             throw new RuntimeException(uc.getResponseMessage());
-                        if (uc.getContentLength() == 0)
+                        }
+                        if (uc.getContentLength() == 0) {
                             throw new RuntimeException("content zero");
+                        }
                         StringWriter sw = new StringWriter();
                         InputStreamReader ir = new InputStreamReader(uc.getInputStream());
                         char[] buf = new char[1024];
                         int n;
-                        while ((n = ir.read(buf)) != -1)
+                        while ((n = ir.read(buf)) != -1) {
                             sw.write(buf, 0, n);
+                        }
                         String list = sw.toString();
                         String marker = request.getContextPath();
-                        if (marker.length() == 0)
+                        if (marker.length() == 0) {
                             marker = "/";
+                        }
                         marker = marker + ":running:";
                         int found = list.indexOf(marker) + marker.length();
-                        if (found == -1)
+                        if (found == -1) {
                             throw new RuntimeException("context not found");
+                        }
                         activeSessions = list.substring(found, list.indexOf(":", found + 1));
                     } catch (Throwable t) {
                         out.println(" <p>could connect to /manager/list: " + t.getMessage() + " </p>");
