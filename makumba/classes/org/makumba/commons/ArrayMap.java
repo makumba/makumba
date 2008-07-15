@@ -32,7 +32,7 @@ import java.util.Hashtable;
  * 
  * @author Cristian Bogdan
  */
-public class ArrayMap extends Dictionary {
+public class ArrayMap extends Dictionary<String, Object> {
     public Object[] data;
 
     Dictionary keyIndex;
@@ -60,7 +60,7 @@ public class ArrayMap extends Dictionary {
     }
 
     @Override
-    public Object put(Object key, Object value) {
+    public Object put(String key, Object value) {
         Integer i = index(key);
         if (i != null) {
             Object ret = data[i.intValue()];
@@ -73,12 +73,12 @@ public class ArrayMap extends Dictionary {
 
     @Override
     public Object remove(Object key) {
-        return put(key, null);
+        return put((String)key, null);
     }
 
     @Override
-    public Enumeration keys() {
-        return new Enumeration() {
+    public Enumeration<String> keys() {
+        return new Enumeration<String>() {
             Object nxt;
 
             Object next;
@@ -100,17 +100,17 @@ public class ArrayMap extends Dictionary {
                 return next != null;
             }
 
-            public Object nextElement() {
+            public String nextElement() {
                 Object o = nxt;
                 findNext();
-                return o;
+                return (String)o;
             }
         };
     }
 
     @Override
-    public Enumeration elements() {
-        return new Enumeration() {
+    public Enumeration<Object> elements() {
+        return new Enumeration<Object>() {
             int i;
             {
                 i = 0;

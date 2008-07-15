@@ -167,7 +167,7 @@ public abstract class Table // extends RecordHandler
             selectAllWithDbsv = "SELECT " + list + " FROM " + nm + " t " + dbsvLimitation;
         }
 
-        Vector<Object> v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
+        Vector<Dictionary<String, Object>> v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
         if (v.size() == 0) {
             java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm + ": no records to copy");
             return;

@@ -189,7 +189,7 @@ public abstract class DBConnection extends TransactionImplementation {
      * 
      * @return a Vector of Dictionaries
      */
-    public java.util.Vector executeQuery(String OQL, Object args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args, int offset, int limit) {
         QueryAndArgs qa= new QueryAndArgs(OQL, args);
         Object[] k = { qa.getQuery(), "" };
         return ((Query) getHostDatabase().queries.getResource(k)).execute(qa.getArgs(), this, offset, limit);
@@ -211,7 +211,7 @@ public abstract class DBConnection extends TransactionImplementation {
         return ((Query) getHostDatabase().queries.getResource(k)).insert(qa.getArgs(), this);
     }
 
-    public java.util.Vector executeQuery(String OQL, Object args) {
+    public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args) {
         return executeQuery(OQL, args, 0, -1);
     }
  
