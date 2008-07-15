@@ -74,6 +74,9 @@ public class FunctionInliner {
     }
 
     private void checkParameter(int n, String inlineParameter, String from, QueryAnalysisProvider qp) {
+        if (inlineParameter.trim().startsWith(qp.getParameterSyntax()))
+            return;
+
         FieldDefinition fieldDefinition = functionDefinition.getParameters().getFieldDefinition(n);
         FieldDefinition actual = qp.getQueryAnalysis("SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
             0);
@@ -186,17 +189,20 @@ public class FunctionInliner {
                     QuerySectionProcessor qs = qsp;
                     if (qs == null)
                         qs = qspText = new QuerySectionProcessor(expr, m.start());
-                    String actorLabel= getActorLabel(actorType); 
-                    qs.addFromWhere(actorType+" "+actorLabel, actorLabel+"="+qp.getParameterSyntax()+actorLabel );
+                    String actorLabel = getActorLabel(actorType);
+                    qs.addFromWhere(actorType + " " + actorLabel, actorLabel + "=" + qp.getParameterSyntax()
+                            + actorLabel);
                     if (qspText == null)
-                        qspText = new QuerySectionProcessor(expr, 0);                    
-                    qspText.replaceExpr(m.start(), m.group().length(), actorLabel);
+                        qspText = new QuerySectionProcessor(expr, 0);
+                    qspText.replaceExpr(m.start(), m.group().trim().length(), actorLabel);
                     expr = qspText.getText();
                 } else {
                     QuerySectionProcessor qspText = new QuerySectionProcessor(expr, 0);
-                    qspText.replaceExpr(m.start(), m.group().length(), qp.getParameterSyntax()+getActorLabel(actorType));
+                    qspText.replaceExpr(m.start(), m.group().trim().length(), qp.getParameterSyntax()
+                            + getActorLabel(actorType));
                     expr = qspText.getText();
                 }
+                continue;
             }
             break;
         }
