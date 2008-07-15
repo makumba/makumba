@@ -246,6 +246,12 @@ public class HibernateTransaction extends TransactionImplementation {
     }
 
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
+        // TODO: 
+        // we have to inline functions before the query execution asks for analysis
+        // otherwise we might get $name parameters at a time when it is too late
+        // query= QueryProvider.getQueryAnalzyer("hql").inlineFunctions(query);
+        // then we have to find if there are parameters that appeared after inlining (actors, session), and find them from some Atttributes/session info
+
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
         QueryAnalysisProvider qap = null;
         try {

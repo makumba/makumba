@@ -190,6 +190,11 @@ public abstract class DBConnection extends TransactionImplementation {
      * @return a Vector of Dictionaries
      */
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args, int offset, int limit) {
+        // TODO: 
+        // we have to inline functions before the query execution asks for analysis
+        // otherwise we might get $name parameters at a time when it is too late
+        // OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
+        // then we have to find if there are parameters that appeared after inlining (actors, session), and find them from some Atttributes/session info
         QueryAndArgs qa= new QueryAndArgs(OQL, args);
         Object[] k = { qa.getQuery(), "" };
         return ((Query) getHostDatabase().queries.getResource(k)).execute(qa.getArgs(), this, offset, limit);
