@@ -93,8 +93,13 @@ public class QuerySectionProcessor {
                 fromEnd = x;
                 whereStart = fromEnd + 7;
             } else {
-                QuerySectionProcessor.this.replace(whereStart, 0, where + " AND (");
-                QuerySectionProcessor.this.replace(whereEnd, 0, ")");
+                if(!where.trim().startsWith("(") || !where.trim().endsWith(")"))
+                    where="("+where+")";
+                String wh= getWhere().trim();
+                boolean para=wh.startsWith("(") && wh.endsWith(")");
+                QuerySectionProcessor.this.replace(whereStart, 0, where + " AND "+(para?"":"("));
+                if(!para)
+                    QuerySectionProcessor.this.replace(whereEnd, 0, ")");
             }
         }
 
@@ -284,6 +289,7 @@ public class QuerySectionProcessor {
                 continue;
             }
             replaceExpr(index, name.length(), parameterInline);
+            index+=parameterInline.length();
         }
 
     }
