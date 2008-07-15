@@ -32,10 +32,15 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
+import org.makumba.DataDefinition;
 import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
@@ -47,6 +52,9 @@ import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /** busines logic administration */
@@ -63,6 +71,8 @@ public class Logic {
     private static final String HANDLER_METHOD_HEAD = "public void ";
 
     private static final String HANDLER_METHOD_END = " throws LogicException {}";
+
+    private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     static {
         controllerConfig = new Properties();
@@ -277,6 +287,8 @@ public class Logic {
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
+        if(attname.startsWith("actor_"))
+            return computeActor(attname, a, db, dbcp);
         if (controller instanceof LogicNotFoundException) {
             throw new NoSuchMethodException("no controller=> no attribute method");
         }
@@ -297,6 +309,57 @@ public class Logic {
             }
             throw new LogicInvocationError(g);
         }
+    }
+    
+    public static Object computeActor(String attname, Attributes a, String db, DbConnectionProvider dbcp)
+    throws LogicException
+    {
+        String type= attname.substring(6).replace('_', '.');
+        DataDefinition dd=ddp.getDataDefinition(type);
+        QueryAnalysisProvider qap=QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
+        nextFunction:
+        for(DataDefinition.QueryFragmentFunction f:dd.getFunctions()){
+            if(f.getName().startsWith("actor")){
+                StringBuffer funcCall= new StringBuffer();
+                funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(" x WHERE x.").append(f.getName()).append("(");
+                String separator="";
+                DataDefinition params= f.getParameters();
+                HashMap<String, Object> values= new HashMap<String, Object>();
+                for(String para:params.getFieldNames()){
+                    try{
+                        funcCall.append(separator);
+                        separator=", ";
+                        funcCall.append(qap.getParameterSyntax()).append(para);
+                        values.put(para, a.getAttribute(para));
+                        // TODO: check if the value is assignable to the function parameter type
+                    }catch(LogicException ae){
+                        continue nextFunction;
+                    }
+                }
+                funcCall.append(")");
+                // we inline the query
+                String qr= qap.inlineFunctions(funcCall.toString());
+                // then we enrich the parameters from attributes... this should be moved to a more general place
+                Matcher m= Pattern.compile("\\"+qap.getParameterSyntax()+"[a-zA-Z]\\w*").matcher(qr);
+                while(m.find()){
+                    String para = m.group().substring(1);
+                    if (values.get(para)==null)
+                        values.put(para, a.getAttribute(para));
+                }
+                Vector<Dictionary<String, Object>> v= dbcp.getConnectionTo(db).executeQuery(qr, values );
+                if(v.size()==0){
+                    throw new LogicException(f.getErrorMessage());
+                }else if(v.size()>1){
+                    throw new LogicException("Multiple "+type+" objects fit the function "+f);
+                }else{
+                    // TODO: compute all statics!
+                    // and return a hashmap, then request attributes will know to put them all in the session
+                    return v.elementAt(0).get("col1");
+                }
+            }
+            
+        }
+        throw new ProgrammerError("No fitting actor() function was found in "+type);
     }
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
