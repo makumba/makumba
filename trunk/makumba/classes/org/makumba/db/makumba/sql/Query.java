@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Dictionary;
 import java.util.Vector;
 
 import org.makumba.DBError;
@@ -96,7 +97,7 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
-    public Vector execute(Object[] args, DBConnection dbc, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> execute(Object[] args, DBConnection dbc, int offset, int limit) {
         String com = command;
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
@@ -145,11 +146,11 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
-    Vector goThru(ResultSet rs, TableManager rm) {
+    Vector<Dictionary<String, Object>> goThru(ResultSet rs, TableManager rm) {
         // TODO: if(!supportsLimitInQuery) { do slower limit & offset in java}
         int size = rm.keyIndex.size();
 
-        Vector ret = new Vector(100, 100);
+        Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(100, 100);
         Object[] dt;
         try {
             while (rs.next()) {

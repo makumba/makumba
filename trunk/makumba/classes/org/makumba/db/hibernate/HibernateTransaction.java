@@ -226,7 +226,7 @@ public class HibernateTransaction extends TransactionImplementation {
      * @return a Vector of Dictionaries containing the results
      */
     @Override
-    public Vector executeQuery(String query, Object args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> executeQuery(String query, Object args, int offset, int limit) {
         return execute(query, args, offset, limit);
     }
 
@@ -241,11 +241,11 @@ public class HibernateTransaction extends TransactionImplementation {
      * @return a Vector of Dictionaries containing the results
      */
     @Override
-    public Vector executeQuery(String query, Object parameterValues) {
+    public Vector<Dictionary<String, Object>> executeQuery(String query, Object parameterValues) {
         return execute(query, parameterValues, 0, -1);
     }
 
-    public Vector execute(String query, Object args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
         QueryAnalysisProvider qap = null;
         try {
@@ -293,7 +293,7 @@ public class HibernateTransaction extends TransactionImplementation {
             setOrderedParameters(args, paramsDef, q);
         }
 
-        Vector results = null;
+        Vector<Dictionary<String, Object>> results = null;
         try {
             results = getConvertedQueryResult(analyzer, q.list());
 
@@ -314,10 +314,10 @@ public class HibernateTransaction extends TransactionImplementation {
      * @param list
      * @return
      */
-    private Vector getConvertedQueryResult(QueryAnalysis analyzer, List list) {
+    private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
 
-        Vector results = new Vector(list.size());
+        Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
 
         String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
         Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>(projections.length);
@@ -362,7 +362,7 @@ public class HibernateTransaction extends TransactionImplementation {
                     }
                 }
             }
-            Dictionary dic = new ArrayMap(keyIndex, resultFields);
+            Dictionary<String, Object> dic = new ArrayMap(keyIndex, resultFields);
             results.add(dic);
         }
         return results;

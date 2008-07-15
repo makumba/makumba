@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba;
+import java.util.Dictionary;
 import java.util.Vector;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Vector;
 public interface Query
 {
   /** Execute the query with the given arguments */
-  public Vector execute(Object [] args, DBConnection dbc, int offset, int limit);
+  public Vector<Dictionary<String, Object>> execute(Object [] args, DBConnection dbc, int offset, int limit);
 
   public int insert(Object[] args, DBConnection dbc);
 

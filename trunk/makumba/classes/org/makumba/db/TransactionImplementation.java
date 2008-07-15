@@ -120,9 +120,9 @@ public abstract class TransactionImplementation implements Transaction {
         return executeUpdate(from, null, where, parameters);
     }
 
-    public abstract Vector executeQuery(String OQL, Object parameterValues, int offset, int limit);
+    public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset, int limit);
 
-    public abstract Vector executeQuery(String OQL, Object parameterValues);
+    public abstract Vector<Dictionary<String, Object>>  executeQuery(String OQL, Object parameterValues);
 
     public TransactionProviderInterface getTransactionProvider() {
         return this.tp;
@@ -145,7 +145,7 @@ public abstract class TransactionImplementation implements Transaction {
      * 
      * @return a Pointer to the inserted record
      */
-    public Pointer insert(Pointer base, String field, java.util.Dictionary data) {
+    public Pointer insert(Pointer base, String field, Dictionary data) {
         FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
         if (fi == null) {
             throw new NoSuchFieldException(ddp.getDataDefinition(base.getType()), field);
@@ -179,7 +179,7 @@ public abstract class TransactionImplementation implements Transaction {
         return executeUpdate(from, set, where, parameters);
     }
 
-    public Dictionary read(Pointer p, Object flds) {
+    public Dictionary<String, Object> read(Pointer p, Object flds) {
 
         Enumeration<String> e = extractReadFields(p, flds);
 
@@ -194,10 +194,10 @@ public abstract class TransactionImplementation implements Transaction {
             throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: " + p);
         }
         Dictionary d = (Dictionary) v.elementAt(0);
-        Hashtable<Object, Object> h = new Hashtable<Object, Object>(13);
+        Hashtable<String, Object> h = new Hashtable<String, Object>(13);
         for (Enumeration en = d.keys(); en.hasMoreElements();) {
             Object o = en.nextElement();
-            h.put(o, d.get(o));
+            h.put((String)o, d.get(o));
         }
         return h;
     }
