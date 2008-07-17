@@ -6,6 +6,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -41,8 +42,13 @@ public class ListFormDataProvider implements FormDataProvider {
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
         if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
             ptrExpr+=".id";
+        MultipleKey parentListKey = QueryTag.getParentListKey(tag, pageCache);
+        if (parentListKey == null) {
+            // if we are not enclosed in a list or object, throw programmer error
+            throw new ProgrammerError("mak:addForm needs to be enclosed in a list, object or form tag");
+        }
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
-            ValueComputer.getValueComputerAtAnalysis(tag, QueryTag.getParentListKey(tag, pageCache), ptrExpr, pageCache));
+            ValueComputer.getValueComputerAtAnalysis(tag, parentListKey, ptrExpr, pageCache));
     }
 
     /* (non-Javadoc)
