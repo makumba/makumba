@@ -122,7 +122,7 @@ public class RecordParser {
 
     Properties definedTypes;
 
-    DataDefinition dd;
+    RecordInfo dd;
 
     // moved from ptrOneParser
     HashMap<String, RecordParser> ptrOne_RecordParsers = new HashMap<String, RecordParser>();
@@ -131,9 +131,9 @@ public class RecordParser {
     HashMap<String, DataDefinition> setParser_settbls = new HashMap<String, DataDefinition>();
 
     // moved from subtableParser
-    HashMap<String, DataDefinition> subtableParser_subtables = new HashMap<String, DataDefinition>();
+    HashMap<String, RecordInfo> subtableParser_subtables = new HashMap<String, RecordInfo>();
 
-    HashMap<String, DataDefinition> subtableParser_here = new HashMap<String, DataDefinition>();
+    HashMap<String, RecordInfo> subtableParser_here = new HashMap<String, RecordInfo>();
 
     private ArrayList<String> unparsedValidationDefinitions = new ArrayList<String>();
 
@@ -186,7 +186,7 @@ public class RecordParser {
 
     DataDefinition parse(java.net.URL u, String path) {
         dd = new RecordInfo(u, path);
-        parse((RecordInfo) dd);
+        parse(dd);
         return dd;
     }
 
@@ -202,7 +202,7 @@ public class RecordParser {
         }
         try {
             // make the default pointers resulted from the table name
-            ((RecordInfo) dd).addStandardFields(dd.getName().substring(dd.getName().lastIndexOf('.') + 1));
+            dd.addStandardFields(dd.getName().substring(dd.getName().lastIndexOf('.') + 1));
             parse();
         } catch (RuntimeException e) {
             throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName());
@@ -211,7 +211,7 @@ public class RecordParser {
             throw mpe;
         }
 
-        return (RecordInfo) dd;
+        return dd;
     }
 
     void parse() {
@@ -265,7 +265,7 @@ public class RecordParser {
                         titleExpressionToEvaluateOrigCmd, titleExpressionToEvaluate)));
                     return;
                 }
-                ((RecordInfo) dd).title = titleExpressionToEvaluate;
+                dd.title = titleExpressionToEvaluate;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -335,7 +335,7 @@ public class RecordParser {
         if (fields.size() > 0) {
             ttlt = fields.keyAt(0);
         }
-        ((RecordInfo) dd).title = ttlt;
+        dd.title = ttlt;
     }
 
     static java.net.URL getResource(String s) {
@@ -501,13 +501,13 @@ public class RecordParser {
                         + ReservedKeywords.getKeywordsAsString(), nm));
             }
 
-            fi = new FieldInfo((RecordInfo) dd, nm);
-            ((RecordInfo) dd).addField1(fi);
+            fi = new FieldInfo(dd, nm);
+            dd.addField1(fi);
             try {
                 parse(nm, new FieldCursor(this, makeLine(fields, nm)));
             } catch (DataDefinitionParseError pe) {
-                ((RecordInfo) dd).fields.remove(nm);
-                ((RecordInfo) dd).fieldOrder.remove(nm);
+                dd.fields.remove(nm);
+                dd.fieldOrder.remove(nm);
                 mpe.add(pe);
                 continue;
             }
@@ -775,7 +775,7 @@ public class RecordParser {
     // moved from setParser
     public void parse_set_Subfields(String fieldName) {
         if (getFieldInfo(fieldName).extra2 == null) {
-            getFieldInfo(fieldName).extra2 = ((RecordInfo) subtableParser_subtables.get(fieldName)).title = ((DataDefinition) setParser_settbls.get(fieldName)).getTitleFieldName();
+            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = ((DataDefinition) setParser_settbls.get(fieldName)).getTitleFieldName();
         }
     }
 
@@ -831,7 +831,7 @@ public class RecordParser {
     String add_set_Text(String fieldName, String nm, String origNm, String val) {
         String s = acceptTitle(fieldName, nm, origNm, val, (DataDefinition) setParser_settbls.get(fieldName));
         if (s == null) {
-            ((RecordInfo) subtableParser_subtables.get(fieldName)).title = val.trim();
+            subtableParser_subtables.get(fieldName).title = val.trim();
         }
         return s;
     }
@@ -1012,26 +1012,25 @@ public class RecordParser {
     // moved from setComplexParser
     public void setComplex_parse1(String fieldName, FieldCursor fc) {
         ptrOne_parse1(fieldName, fc);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).mainPtr = addPtrHere(fieldName);
+        subtableParser_subtables.get(fieldName).mainPtr = addPtrHere(fieldName);
         return;
     }
 
     // moved from ptrOneParser
     public void ptrOne_parse1(String fieldName, FieldCursor fc) {
         makeSubtable(fieldName, fc);
-        ptrOne_RecordParsers.put(fieldName, new RecordParser(((RecordInfo) subtableParser_subtables.get(fieldName)),
-                this));
+        ptrOne_RecordParsers.put(fieldName, new RecordParser(subtableParser_subtables.get(fieldName), this));
         return;
     }
 
     // moved from setEnumParser, setChatEnumParser
     public void setCharEnum_parse1(String fieldName, FieldCursor fc) {
-        FieldInfo _enum = new FieldInfo(((RecordInfo) subtableParser_subtables.get(fieldName)), "enum");
+        FieldInfo _enum = new FieldInfo(subtableParser_subtables.get(fieldName), "enum");
         makeSubtable(fieldName, fc);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).mainPtr = addPtrHere(fieldName);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).addField1(_enum);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).title = _enum.name;
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).setField = _enum.name;
+        subtableParser_subtables.get(fieldName).mainPtr = addPtrHere(fieldName);
+        subtableParser_subtables.get(fieldName).addField1(_enum);
+        subtableParser_subtables.get(fieldName).title = _enum.name;
+        subtableParser_subtables.get(fieldName).setField = _enum.name;
         _enum.type = "charEnum";
         fc.expectCharEnum(_enum);
         getFieldInfo(fieldName).description = fc.lookupDescription();
@@ -1042,12 +1041,12 @@ public class RecordParser {
 
     // moved from setEnumParser, setIntEnumParser
     public void setIntEnum_parse1(String fieldName, FieldCursor fc) {
-        FieldInfo _enum = new FieldInfo(((RecordInfo) subtableParser_subtables.get(fieldName)), "enum");
+        FieldInfo _enum = new FieldInfo(subtableParser_subtables.get(fieldName), "enum");
         makeSubtable(fieldName, fc);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).mainPtr = addPtrHere(fieldName);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).addField1(_enum);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).title = _enum.name;
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).setField = _enum.name;
+        subtableParser_subtables.get(fieldName).mainPtr = addPtrHere(fieldName);
+        subtableParser_subtables.get(fieldName).addField1(_enum);
+        subtableParser_subtables.get(fieldName).title = _enum.name;
+        subtableParser_subtables.get(fieldName).setField = _enum.name;
         _enum.type = "intEnum";
         fc.expectIntEnum(_enum);
         getFieldInfo(fieldName).description = fc.lookupDescription();
@@ -1118,10 +1117,10 @@ public class RecordParser {
         }
 
         makeSubtable(fieldName, fc);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).mainPtr = addPtrHere(fieldName);
+        subtableParser_subtables.get(fieldName).mainPtr = addPtrHere(fieldName);
 
         setParser_settbls.put(fieldName, ori);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).setField = addPtr(fieldName,
+        subtableParser_subtables.get(fieldName).setField = addPtr(fieldName,
             ((RecordInfo) setParser_settbls.get(fieldName)).getBaseName(), ori);
         return;
     }
@@ -1144,10 +1143,10 @@ public class RecordParser {
     void makeSubtable(String fieldName, FieldCursor fc) {
         subtableParser_here.put(fieldName, dd);
 
-        subtableParser_subtables.put(fieldName,
-            ((RecordInfo) subtableParser_here.get(fieldName)).makeSubtable(getFieldInfo(fieldName).name));
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).addStandardFields(((RecordInfo) subtableParser_subtables.get(fieldName)).subfield);
-        getFieldInfo(fieldName).extra1 = ((RecordInfo) subtableParser_subtables.get(fieldName));
+        subtableParser_subtables.put(fieldName, subtableParser_here.get(fieldName).makeSubtable(
+            getFieldInfo(fieldName).name));
+        subtableParser_subtables.get(fieldName).addStandardFields(subtableParser_subtables.get(fieldName).subfield);
+        getFieldInfo(fieldName).extra1 = subtableParser_subtables.get(fieldName);
     }
 
     // moved from subtableParser
@@ -1156,12 +1155,12 @@ public class RecordParser {
         if (n != -1) {
             name = name.substring(n + 1);
         }
-        while (((RecordInfo) subtableParser_subtables.get(fieldName)).fields.get(name) != null) {
+        while (subtableParser_subtables.get(fieldName).fields.get(name) != null) {
             name = name + "_";
         }
 
-        FieldInfo ptr = new FieldInfo(((RecordInfo) subtableParser_subtables.get(fieldName)), name);
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).addField1(ptr);
+        FieldInfo ptr = new FieldInfo(subtableParser_subtables.get(fieldName), name);
+        subtableParser_subtables.get(fieldName).addField1(ptr);
         ptr.fixed = true;
         ptr.notNull = true;
         ptr.type = "ptrRel";
@@ -1174,13 +1173,11 @@ public class RecordParser {
     String addPtrHere(String fieldName) {
         // System.err.println(here.canonicalName()+"
         // "+subtable.canonicalName());
-        ((RecordInfo) subtableParser_subtables.get(fieldName)).relations = 1;
-        if (((RecordInfo) subtableParser_here.get(fieldName)).getParentField() != null) {
-            return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).subfield,
-                ((RecordInfo) subtableParser_here.get(fieldName)));
+        subtableParser_subtables.get(fieldName).relations = 1;
+        if (subtableParser_here.get(fieldName).getParentField() != null) {
+            return addPtr(fieldName, subtableParser_here.get(fieldName).subfield, subtableParser_here.get(fieldName));
         } else {
-            return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).name,
-                ((RecordInfo) subtableParser_here.get(fieldName)));
+            return addPtr(fieldName, subtableParser_here.get(fieldName).name, subtableParser_here.get(fieldName));
         }
     }
 
@@ -1289,7 +1286,7 @@ public class RecordParser {
                 }
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
-                ((RecordInfo) dd).addValidationRule(rule);
+                dd.addValidationRule(rule);
                 java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
                     "added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
