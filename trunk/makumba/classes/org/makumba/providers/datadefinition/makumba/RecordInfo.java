@@ -396,7 +396,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return subfieldPtr;
     }
 
-    DataDefinition makeSubtable(String name) {
+    RecordInfo makeSubtable(String name) {
         return new RecordInfo(this, name);
     }
 
