@@ -119,9 +119,11 @@ public class MultipartHttpParameters extends HttpParameters {
                     contentToSave = new Text(item.get());
                     contentSize = contentToSave.length();
 
+                    // FIXME: what to do if content type is null? not set, or set to an empty String / String constant?
                     parameters.put(name + "_contentType", type);
+                    
                     parameters.put(name + "_filename", fileName);
-                    parameters.put(name + "_contentLength", new Integer(contentSize));
+                    parameters.put(name + "_contentLength", contentSize);
                     parameters.put(name, contentToSave);
 
                     java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
