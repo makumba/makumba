@@ -31,10 +31,12 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.makumba.Attributes;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
+import org.makumba.LogicException;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
@@ -53,6 +55,8 @@ public abstract class TransactionImplementation implements Transaction {
     protected QueryProvider qp;
 
     protected TransactionProviderInterface tp;
+
+    private Attributes contextAttributes;
 
     public TransactionImplementation(TransactionProviderInterface tp) {
         this.tp = tp;
@@ -120,9 +124,10 @@ public abstract class TransactionImplementation implements Transaction {
         return executeUpdate(from, null, where, parameters);
     }
 
-    public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset, int limit);
+    public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset,
+            int limit);
 
-    public abstract Vector<Dictionary<String, Object>>  executeQuery(String OQL, Object parameterValues);
+    public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues);
 
     public TransactionProviderInterface getTransactionProvider() {
         return this.tp;
@@ -197,7 +202,7 @@ public abstract class TransactionImplementation implements Transaction {
         Hashtable<String, Object> h = new Hashtable<String, Object>(13);
         for (Enumeration en = d.keys(); en.hasMoreElements();) {
             Object o = en.nextElement();
-            h.put((String)o, d.get(o));
+            h.put((String) o, d.get(o));
         }
         return h;
     }
@@ -330,5 +335,13 @@ public abstract class TransactionImplementation implements Transaction {
     public abstract String getNullConstant();
 
     public abstract String getDataSource();
+
+    public void setContext(Attributes a) {
+        contextAttributes = a;
+    }
+
+    public Object getObjectFromConext(String name) throws LogicException {
+        return contextAttributes.getAttribute(name);
+    }
 
 }
