@@ -179,8 +179,9 @@ public class RecordParser {
         } catch (RuntimeException e) {
             throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName() + " from " + dd.origin);
         }
-        if (!mpe.isSingle() && !(dd.getParentField() != null))
+        if (!mpe.isSingle() && !(dd.getParentField() != null)) {
             throw mpe;
+        }
     }
 
     DataDefinition parse(java.net.URL u, String path) {
@@ -206,8 +207,9 @@ public class RecordParser {
         } catch (RuntimeException e) {
             throw new MakumbaError(e, "Internal error in parser while parsing " + dd.getName());
         }
-        if (!mpe.isSingle() && dd.getParentField() == null)
+        if (!mpe.isSingle() && dd.getParentField() == null) {
             throw mpe;
+        }
 
         return (RecordInfo) dd;
     }
@@ -227,8 +229,9 @@ public class RecordParser {
         readTypes();
 
         // commands should be finished at this point
-        if (text.size() != 0)
+        if (text.size() != 0) {
             mpe.add(fail("unrecognized commands", text.toString()));
+        }
 
         // make a FieldParser for each field, let it parse and substitute
         // itself
@@ -296,15 +299,17 @@ public class RecordParser {
     }
 
     void separateFields() {
-        for (Enumeration e = text.keys(); e.hasMoreElements();) {
-            String k = (String) e.nextElement();
-            if (k.indexOf('!') == 0)
+        for (Enumeration<String> e = text.keys(); e.hasMoreElements();) {
+            String k = e.nextElement();
+            if (k.indexOf('!') == 0) {
                 continue;
+            }
 
-            if (k.indexOf("->") == -1)
+            if (k.indexOf("->") == -1) {
                 fields.putLast(k, text.getOriginal(k), text.remove(k));
-            else
+            } else {
                 subfields.putLast(k, text.getOriginal(k), text.remove(k));
+            }
         }
     }
 
@@ -322,13 +327,14 @@ public class RecordParser {
                 mpe.add(fail("no such field for title", makeLine(origCmd, ttl)));
                 return;
             }
-        } else if (fields.get("name") != null)
+        } else if (fields.get("name") != null) {
             ttlt = "name";
-        else
+        } else
         // if there are any relations, we skip their fields as
         // titles...
-        if (fields.size() > 0)
+        if (fields.size() > 0) {
             ttlt = fields.keyAt(0);
+        }
         ((RecordInfo) dd).title = ttlt;
     }
 
@@ -339,8 +345,9 @@ public class RecordParser {
     static public java.net.URL findDataDefinition(String s, String ext) {
         // must specify a filename, not a directory (or package), see bug 173
         java.net.URL u = findDataDefinitionOrDirectory(s, ext);
-        if (u != null && (s.endsWith("/") || getResource(s + '/') != null))
+        if (u != null && (s.endsWith("/") || getResource(s + '/') != null)) {
             return null;
+        }
         return u;
     }
 
@@ -356,10 +363,12 @@ public class RecordParser {
      */
     static public java.net.URL findDataDefinitionOrDirectory(String s, String ext) {
         java.net.URL u = null;
-        if (s.startsWith("/"))
+        if (s.startsWith("/")) {
             s = s.substring(1);
-        if (s.endsWith(".") || s.endsWith("//"))
+        }
+        if (s.endsWith(".") || s.endsWith("//")) {
             return null;
+        }
 
         // if a webappRoot was passed, we fetch the MDDs from there, not using the CP
         if (RecordInfo.webappRoot != null) {
@@ -401,8 +410,8 @@ public class RecordParser {
         OrderedProperties inclText;
         Vector<String> overridenFields = new Vector<String>();
 
-        for (Enumeration e = text.keys(); e.hasMoreElements(); line++) {
-            String st = (String) e.nextElement();
+        for (Enumeration<String> e = text.keys(); e.hasMoreElements(); line++) {
+            String st = e.nextElement();
 
             if (st.startsWith("!include")) {
                 String ok = text.getOriginal(st);
@@ -427,14 +436,16 @@ public class RecordParser {
                     return;
                 }
 
-                for (Enumeration k = inclText.keys(); k.hasMoreElements();) {
-                    String key = (String) k.nextElement();
+                for (Enumeration<String> k = inclText.keys(); k.hasMoreElements();) {
+                    String key = k.nextElement();
                     String val = text.getProperty(key);
-                    if (val == null) // new field, not overriden in main mdd
+                    if (val == null) {
+                        // new field, not overriden in main mdd
                         text.putAt(++line, key, inclText.getOriginal(key), inclText.getProperty(key));
-                    else
+                    } else {
                         // field is overriden in main mdd, ignore it
                         overridenFields.add(key);
+                    }
                 }
             }
         }
@@ -442,16 +453,16 @@ public class RecordParser {
         // now we remove all overriden empty fields
         // keep the non-overriden ones with empty definiton to report a mdd
         // error
-        for (Enumeration k = overridenFields.elements(); k.hasMoreElements();) {
-            String key = (String) k.nextElement();
-            if (((String) text.get(key)).trim().length() == 0)
+        for (String key : overridenFields) {
+            if (((String) text.get(key)).trim().length() == 0) {
                 text.remove(key);
+            }
         }
     }
 
     void readTypes() {
-        for (Enumeration e = text.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
+        for (Enumeration<String> e = text.keys(); e.hasMoreElements();) {
+            String s = e.nextElement();
             if (s.startsWith("!type.")) {
                 String nm = s.substring(6);
                 definedTypes.put(nm, text.remove(s));
@@ -470,17 +481,19 @@ public class RecordParser {
         String nm;
 
         int line = 0;
-        for (Enumeration e = fields.keys(); e.hasMoreElements(); line++) {
-            nm = (String) e.nextElement();
+        for (Enumeration<String> e = fields.keys(); e.hasMoreElements(); line++) {
+            nm = e.nextElement();
             String val = fields.get(nm);
-            if (matchFunction(nm + val))
+            if (matchFunction(nm + val)) {
                 continue;
+            }
 
             // check name for validity:
             for (int i = 0; i < nm.length(); i++) {
                 if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
-                        && !Character.isJavaIdentifierPart(nm.charAt(i)))
+                        && !Character.isJavaIdentifierPart(nm.charAt(i))) {
                     mpe.add(fail("Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm + "\"", nm));
+                }
             }
 
             if (ReservedKeywords.isReservedKeyword(nm)) {
@@ -504,8 +517,9 @@ public class RecordParser {
     boolean matchFunction(String line) {
         // check if the line is a function definition
         Matcher matcher = funcDefPattern.matcher(line);
-        if (!matcher.matches())
+        if (!matcher.matches()) {
             return false;
+        }
 
         String sessionVariableName = matcher.group(1);
         if (sessionVariableName != null) {
@@ -521,17 +535,17 @@ public class RecordParser {
         DataDefinition ddParams = new RecordInfo(dd.getName() + "." + matcher.group(0));
         if (StringUtils.isNotBlank(paramsBlock)) {
             String[] params = paramsBlock.split(",");
-            for (int j = 0; j < params.length; j++) {
+            for (String element : params) {
                 // make sure to trim(), if we have "int x, int y", the second one param will be " int y"
-                String paramType = params[j].trim().split(" ")[0].trim();
+                String paramType = element.trim().split(" ")[0].trim();
                 if (paramType.equals("ptr")) { // we have a ptr, treat separately
-                    String paramMdd = params[j].trim().split(" ")[1].trim();
-                    String paramName = params[j].trim().split(" ")[2].trim();
+                    String paramMdd = element.trim().split(" ")[1].trim();
+                    String paramName = element.trim().split(" ")[2].trim();
                     DataDefinition pointedDD = DataDefinitionProvider.getInstance().getDataDefinition(paramMdd);
                     ddParams.addField(new FieldInfo(paramName,
                             (FieldInfo) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
                 } else {
-                    String paramName = params[j].trim().split(" ")[1].trim();
+                    String paramName = element.trim().split(" ")[1].trim();
                     if (paramType.equals("char[]")) { // we substitute char[] with the max char length
                         paramType = ("char[255]");
                     }
@@ -560,31 +574,35 @@ public class RecordParser {
                 int after = -1;
                 for (int index = m.end(); index < queryFragment.length(); index++) {
                     char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t')
+                    if (c == ' ' || c == '\t') {
                         continue;
+                    }
                     after = c;
                     break;
                 }
                 int before = -1;
-                for (int index = m.start()-1; index >= 0; index--) {
+                for (int index = m.start() - 1; index >= 0; index--) {
                     char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t')
+                    if (c == ' ' || c == '\t') {
                         continue;
+                    }
                     before = c;
                     break;
                 }
 
                 if (before == '.' || id.equals("this") || id.equals("actor")
-                        || f.getParameters().getFieldDefinition(id) != null)
+                        || f.getParameters().getFieldDefinition(id) != null) {
                     continue;
-                if (dd.getFieldDefinition(id) != null || after == '(' && funcNames.get(id) != null){
+                }
+                if (dd.getFieldDefinition(id) != null || after == '(' && funcNames.get(id) != null) {
                     m.appendReplacement(sb, "this." + id);
                     found = true;
                 }
             }
             m.appendTail(sb);
             if (found) {
-                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(queryFragment+ " -> " + sb.toString());
+                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(
+                    queryFragment + " -> " + sb.toString());
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
                         f.getParameters(), f.getErrorMessage());
 
@@ -596,8 +614,8 @@ public class RecordParser {
     void configSubfields() {
         String nm;
         int p;
-        for (Enumeration e = subfields.keys(); e.hasMoreElements();) {
-            nm = (String) e.nextElement();
+        for (Enumeration<String> e = subfields.keys(); e.hasMoreElements();) {
+            nm = e.nextElement();
 
             p = nm.indexOf("->");
             FieldInfo fieldInfo = getFieldInfo(nm.substring(0, p));
@@ -613,14 +631,15 @@ public class RecordParser {
 
             String s;
             if ((s = addText(nm.substring(0, p), nm.substring(p + 2), subfields.getOriginal(nm),
-                subfields.getProperty(nm))) != null)
+                subfields.getProperty(nm))) != null) {
                 mpe.add(fail(s, makeLine(subfields, nm)));
+            }
         }
     }
 
     void treatSubfields() {
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
+        for (String string : dd.getFieldNames()) {
+            String fieldName = (String) string;
             parseSubfields(fieldName);
         }
     }
@@ -668,12 +687,14 @@ public class RecordParser {
         while (true) {
             String s = null;
             s = rd.readLine();
-            if (s == null)
+            if (s == null) {
                 break;
+            }
 
             String st = s.trim();
-            if (st.length() == 0 || st.charAt(0) == '#')
+            if (st.length() == 0 || st.charAt(0) == '#') {
                 continue;
+            }
 
             String lineWithoutComment = null;
             if (st.indexOf(";") == -1) {
@@ -696,10 +717,11 @@ public class RecordParser {
                 mpe.add(fail("non-empty, non-comment line without = or {", s));
                 continue;
             }
-            if ((l == -1 || l > lpar) && lpar != -1)
+            if ((l == -1 || l > lpar) && lpar != -1) {
                 l = lpar;
-            else
+            } else {
                 lpar = l + 1;
+            }
 
             String k = s.substring(0, l);
             String kt = k.trim();
@@ -717,12 +739,14 @@ public class RecordParser {
                     mpe.add(fail("unknown command: " + kt, s));
                     continue;
                 }
-                while (op.get(kt) != null)
+                while (op.get(kt) != null) {
                     kt = kt + "_";
+                }
             }
             String val = s.substring(lpar);
-            if (op.putLast(kt, k, val) != null)
+            if (op.putLast(kt, k, val) != null) {
                 mpe.add(fail("ambiguous key " + kt, s));
+            }
         }
         rd.close();
     }
@@ -760,8 +784,9 @@ public class RecordParser {
         val = val.trim();
         if (nm.equals("!title")) {
             DataDefinition ri = (DataDefinition) o;
-            if (ri.getFieldDefinition(val) == null)
+            if (ri.getFieldDefinition(val) == null) {
                 return ri.getName() + " has no field called " + val;
+            }
             getFieldInfo(fieldName).extra2 = val;
             return null;
         }
@@ -796,16 +821,18 @@ public class RecordParser {
 
     // moved from ptrOneParser
     String add_ptrOne_Text(String fieldName, String nm, String origNm, String val) {
-        if (ptrOne_RecordParsers.get(fieldName).text.putLast(nm, origNm, val) != null)
+        if (ptrOne_RecordParsers.get(fieldName).text.putLast(nm, origNm, val) != null) {
             return "field already exists";
+        }
         return null;
     }
 
     // moved from setParser
     String add_set_Text(String fieldName, String nm, String origNm, String val) {
         String s = acceptTitle(fieldName, nm, origNm, val, (DataDefinition) setParser_settbls.get(fieldName));
-        if (s == null)
+        if (s == null) {
             ((RecordInfo) subtableParser_subtables.get(fieldName)).title = val.trim();
+        }
         return s;
     }
 
@@ -813,8 +840,9 @@ public class RecordParser {
     void parse(String fieldName, FieldCursor fc) throws org.makumba.DataDefinitionParseError {
         while (true) {
             if (fc.lookup("not")) {
-                if (getFieldInfo(fieldName).notNull)
+                if (getFieldInfo(fieldName).notNull) {
                     throw fc.fail("too many not null");
+                }
                 fc.expect("null");
                 fc.expectWhitespace();
                 getFieldInfo(fieldName).notNull = true;
@@ -823,16 +851,18 @@ public class RecordParser {
 
             if (fc.lookup("fixed")) {
                 fc.expectWhitespace();
-                if (getFieldInfo(fieldName).fixed)
+                if (getFieldInfo(fieldName).fixed) {
                     throw fc.fail("too many fixed");
+                }
                 getFieldInfo(fieldName).fixed = true;
                 continue;
             }
 
             if (fc.lookup("unique")) {
                 fc.expectWhitespace();
-                if (getFieldInfo(fieldName).unique)
+                if (getFieldInfo(fieldName).unique) {
                     throw fc.fail("already unique");
+                }
                 getFieldInfo(fieldName).unique = true;
                 continue;
             }
@@ -842,13 +872,15 @@ public class RecordParser {
 
         if (setType(fieldName, fc.expectTypeLiteral(), fc) == null) {
             String s = definedTypes.getProperty(getFieldInfo(fieldName).type);
-            if (s == null)
+            if (s == null) {
                 throw fc.fail("unknown type: " + getFieldInfo(fieldName).type);
+            }
 
             fc.substitute(getFieldInfo(fieldName).type.length(), s);
 
-            if (setType(fieldName, fc.expectTypeLiteral(), fc) == null)
+            if (setType(fieldName, fc.expectTypeLiteral(), fc) == null) {
                 throw fc.fail("unknown type: " + getFieldInfo(fieldName).type);
+            }
         }
         getFieldInfo(fieldName).description = getFieldInfo(fieldName).description == null ? getFieldInfo(fieldName).name
                 : getFieldInfo(fieldName).description;
@@ -865,8 +897,9 @@ public class RecordParser {
                 return null;
             }
             parse1(fieldName, fc);
-            if (getFieldInfo(fieldName).type.equals(initialType))
+            if (getFieldInfo(fieldName).type.equals(initialType)) {
                 return initialType;
+            }
             initialType = getFieldInfo(fieldName).type;
         }
     }
@@ -943,8 +976,9 @@ public class RecordParser {
         if (!fc.lookup("{")) {
             fc.expect("[");
             Integer size = fc.expectInteger();
-            if (size.intValue() > 255 || size.intValue() < 0)
+            if (size.intValue() > 255 || size.intValue() < 0) {
                 throw fc.fail("char size must be between 0 and 255, not " + size.toString());
+            }
             getFieldInfo(fieldName).extra2 = size;
             fc.expect("]");
             getFieldInfo(fieldName).description = fc.lookupDescription();
@@ -969,8 +1003,9 @@ public class RecordParser {
 
     // moved from textParser
     public void text_parse1(String fieldName, FieldCursor fc) throws org.makumba.DataDefinitionParseError {
-        if (getFieldInfo(fieldName).isUnique())
+        if (getFieldInfo(fieldName).isUnique()) {
             throw fc.fail("text fields can't be declared unique");
+        }
         return;
     }
 
@@ -1025,16 +1060,18 @@ public class RecordParser {
     public void ptr_parse1(String fieldName, FieldCursor fc) {
         Object o = fc.lookupTableSpecifier();
 
-        if (o != null)
+        if (o != null) {
             getFieldInfo(fieldName).extra1 = o;
+        }
         try {
             getFieldInfo(fieldName).description = fc.lookupDescription();
         } catch (org.makumba.DataDefinitionParseError e) {
             throw fc.fail("table specifier or nothing expected");
         }
 
-        if (o != null)
+        if (o != null) {
             return;
+        }
 
         // getFieldInfo(fieldName).unique = true;
         getFieldInfo(fieldName).type = "ptrOne";
@@ -1042,8 +1079,9 @@ public class RecordParser {
 
     // moved from setParser
     public void set_parse1(String fieldName, FieldCursor fc) {
-        if (getFieldInfo(fieldName).isUnique())
+        if (getFieldInfo(fieldName).isUnique()) {
             throw fc.fail("sets can't be declared unique");
+        }
 
         DataDefinition ori = fc.lookupTableSpecifier();
         if (ori == null) {
@@ -1063,8 +1101,9 @@ public class RecordParser {
                 return;
             }
             String s = fc.rp.definedTypes.getProperty(word);
-            if (s == null)
+            if (s == null) {
                 throw fc.fail("table, char{}, int{} or macro type expected after set");
+            }
 
             fc.substitute(word.length(), s);
 
@@ -1093,8 +1132,9 @@ public class RecordParser {
         if (fc.lookup("{")) {
             newName = "set" + word + "Enum";
             getFieldInfo(fieldName).type = newName;
-            if (newName != null)
+            if (newName != null) {
                 return newName;
+            }
             fc.fail("int{} or char{} expected after set");
         }
         return null;
@@ -1113,10 +1153,12 @@ public class RecordParser {
     // moved from subtableParser
     String addPtr(String fieldName, String name, DataDefinition o) {
         int n = name.lastIndexOf('.');
-        if (n != -1)
+        if (n != -1) {
             name = name.substring(n + 1);
-        while (((RecordInfo) subtableParser_subtables.get(fieldName)).fields.get(name) != null)
+        }
+        while (((RecordInfo) subtableParser_subtables.get(fieldName)).fields.get(name) != null) {
             name = name + "_";
+        }
 
         FieldInfo ptr = new FieldInfo(((RecordInfo) subtableParser_subtables.get(fieldName)), name);
         ((RecordInfo) subtableParser_subtables.get(fieldName)).addField1(ptr);
@@ -1133,12 +1175,13 @@ public class RecordParser {
         // System.err.println(here.canonicalName()+"
         // "+subtable.canonicalName());
         ((RecordInfo) subtableParser_subtables.get(fieldName)).relations = 1;
-        if (((RecordInfo) subtableParser_here.get(fieldName)).getParentField() != null)
+        if (((RecordInfo) subtableParser_here.get(fieldName)).getParentField() != null) {
             return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).subfield,
                 ((RecordInfo) subtableParser_here.get(fieldName)));
-        else
+        } else {
             return addPtr(fieldName, ((RecordInfo) subtableParser_here.get(fieldName)).name,
                 ((RecordInfo) subtableParser_here.get(fieldName)));
+        }
     }
 
     public void parseValidationDefinition() throws ValidationDefinitionParseError {
