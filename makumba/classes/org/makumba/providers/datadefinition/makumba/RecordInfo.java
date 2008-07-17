@@ -54,9 +54,9 @@ import org.makumba.providers.datadefinition.makumba.validation.StringLengthValid
  */
 public class RecordInfo implements java.io.Serializable, DataDefinition, ValidationDefinition {
     private static final long serialVersionUID = 1L;
-    
+
     protected static String webappRoot;
-    
+
     public static void setWebappRoot(String s) {
         webappRoot = s;
     }
@@ -195,7 +195,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public static int infos = NamedResources.makeStaticCache("Data definitions parsed", new NamedResourceFactory() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -225,7 +225,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /**
      * returns the record info with the given absolute name
-     * 
+     *
      * @throws org.makumba.DataDefinitionNotFoundError
      *             if the name is not a valid record info name
      * @throws org.makumba.DataDefinitionParseError
@@ -318,7 +318,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /** returns all the field names */
     public Vector<String> getFieldNames() {
-        return (Vector<String>) fieldOrder.clone();
+        return new Vector<String>(fieldOrder);
     }
 
     public Vector<FieldDefinition> getReferenceFields() {
