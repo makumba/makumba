@@ -53,8 +53,6 @@ import org.makumba.providers.TransactionProviderInterface;
  */
 public abstract class DBConnection extends TransactionImplementation {
    
-    private QueryProvider qp;
-    
     protected String dataSource;
     
     protected org.makumba.db.makumba.Database db;
@@ -109,12 +107,12 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     protected void unlockAll() {
-        for (Iterator i = locks.keySet().iterator(); i.hasNext();) {
+        for (Iterator<String> i = locks.keySet().iterator(); i.hasNext();) {
             deleteLock((String) i.next());
         }
     }
 
-    protected StringBuffer writeReadQuery(Pointer p, Enumeration e) {
+    protected StringBuffer writeReadQuery(Pointer p, Enumeration<String> e) {
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
         String separator = "";
@@ -135,9 +133,9 @@ public abstract class DBConnection extends TransactionImplementation {
         return sb;
     }
     
-    protected Vector executeReadQuery(Pointer p, StringBuffer sb) {
+    protected Vector<Dictionary<String, Object>> executeReadQuery(Pointer p, StringBuffer sb) {
         Object[] params = { p };
-        Vector v = executeQuery(sb.toString(), params);
+        Vector<Dictionary<String, Object>> v = executeQuery(sb.toString(), params);
         return v;
     }
 

@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.Vector;
 
 import junit.framework.Test;
@@ -37,10 +36,10 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -165,7 +164,7 @@ public class table extends TestCase {
 	}
 
 	public void testInsert() {
-		Properties p = new Properties();
+		Hashtable<String, Object> p = new Hashtable<String, Object>();
 		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(1977, 2, 5);
@@ -240,7 +239,7 @@ public class table extends TestCase {
         // try to delete the other brother
         
         // insert the first person
-        Properties p = new Properties();
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
         
         Text comment = new Text("Hello world!!!!");
         
@@ -261,7 +260,7 @@ public class table extends TestCase {
         assertEquals(1, v.size());
 
         // insert the second person (brother)
-        p = new Properties();
+        p = new Hashtable<String, Object>();
         
         comment = new Text("Itrntinliztin");
 
@@ -306,7 +305,7 @@ public class table extends TestCase {
 	static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
 	public void testSetInsert() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
 		p.put("sth.aaa", "bbb");
 
@@ -334,7 +333,7 @@ public class table extends TestCase {
 	}
 
 	public void testSetMemberUpdate() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "somewhere");
 
 		db.update(set2, p);
@@ -360,14 +359,14 @@ public class table extends TestCase {
 		assertEquals(set2, v.elementAt(0).get("col2"));
 
 		// we put it back
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
 
 		set1 = db.insert(ptr, "address", p);
 	}
 
 	public void testSubrecordUpdate() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("something", "else2");
 
 		db.update(ptrOne, p);
@@ -399,7 +398,7 @@ public class table extends TestCase {
 					.elementAt(0).get("col1"));
         }
 
-		Hashtable<String, Vector<Object>> dt = new Hashtable<String, Vector<Object>>();
+		Hashtable<String, Object> dt = new Hashtable<String, Object>();
 		dt.put("speaks", v);
 		db.update(ptr, dt);
 
@@ -430,7 +429,7 @@ public class table extends TestCase {
 	}
 
 	public void testSetUpdate() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		if (db.executeQuery("SELECT l FROM test.Language l", null).size() == 0) {
             for (String[] element : languageData) {
 				p.put("name", element[0]);
@@ -438,7 +437,7 @@ public class table extends TestCase {
 				db.insert("test.Language", p);
 			}
         }
-		p = new Hashtable<String, String>();
+		p = new Hashtable<String, Object>();
 
 		workWithSet(toInsert);
 	}
@@ -452,7 +451,7 @@ public class table extends TestCase {
 	static String[] toInsert3 = { "English", "German", "French" };
 
 	public void testSetDelete() {
-		Hashtable<String, Vector<Object>> dt = new Hashtable<String, Vector<Object>>();
+		Hashtable<String, Object> dt = new Hashtable<String, Object>();
 		dt.put("speaks", new Vector<Object>());
 
 		db.update(ptr, dt);
@@ -482,7 +481,7 @@ public class table extends TestCase {
 	}
 
 	public void testPtrOneReInsert() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("extraData.something", "else2");
 		db.update(ptr, p);
 		Dictionary<String, Object> d = db.read(ptr, personFields);
@@ -494,7 +493,7 @@ public class table extends TestCase {
 	}
 
 	public void testUpdate() {
-		Properties pmod = new Properties();
+		Hashtable<String, Object> pmod = new Hashtable<String, Object>();
 		String val = "A completely new guy";
 		pmod.put("indiv.name", val);
 
@@ -567,7 +566,7 @@ public class table extends TestCase {
 	public void testRealAggregation() {
 		db.delete("test.validMdds.Real r", "r=r", null); // delete all
 		// entries first
-		Dictionary<String, Double> p = new Hashtable<String, Double>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("r", new Double(.5d));
 		db.insert("test.validMdds.Real", p);
 		p.put("r", new Double(.2d));
@@ -616,7 +615,7 @@ public class table extends TestCase {
 	public void testIntAggregation() {
 		db.delete("test.validMdds.Int iii", "5=5", null); // delete all
 		// entries first
-		Dictionary<String, Integer> p = new Hashtable<String, Integer>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("i", new Integer(0));
 		db.insert("test.validMdds.Int", p);
 		p.put("i", new Integer(1));
@@ -643,7 +642,7 @@ public class table extends TestCase {
 	}
 
 	public void testCopy() {
-		Properties p = new Properties();
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
 		p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7)
 				.getTime());
 		p.put("indiv.name", "john");

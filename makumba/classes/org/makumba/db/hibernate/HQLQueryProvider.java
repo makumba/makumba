@@ -127,14 +127,14 @@ public class HQLQueryProvider extends QueryProvider {
         populated = true;
         
         languages.clear();
-        Dictionary<String, String> language = new Hashtable<String, String>();
+        Dictionary<String, Object> language = new Hashtable<String, Object>();
         for (int i = 0; i < languageData.length; i++) {
             language.put("name", languageData[i][0]);
             language.put("isoCode", languageData[i][1]);
             languages.add(db.insert("test.Language", language));
         }  
         
-        Properties p = new Properties();
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
         
         p.put("indiv.name", "bart");
         brother=db.insert("test.Person", p);

@@ -133,7 +133,7 @@ public abstract class TransactionImplementation implements Transaction {
         return this.tp;
     }
 
-    public Pointer insert(String type, Dictionary data) {
+    public Pointer insert(String type, Dictionary<String, Object> data) {
 
         // TODO: this does not support the DataTransformer possibility as for the Makumba DB.
         // Probably all those Makumba DB features should be placed in another place than the makumba DB.
@@ -150,7 +150,7 @@ public abstract class TransactionImplementation implements Transaction {
      * 
      * @return a Pointer to the inserted record
      */
-    public Pointer insert(Pointer base, String field, Dictionary data) {
+    public Pointer insert(Pointer base, String field, Dictionary<String, Object> data) {
         FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
         if (fi == null) {
             throw new NoSuchFieldException(ddp.getDataDefinition(base.getType()), field);
@@ -165,10 +165,10 @@ public abstract class TransactionImplementation implements Transaction {
 
     public abstract int insertFromQuery(String type, String OQL, Object parameterValues);
 
-    protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration e);
+    protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration<String> e);
 
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
-    public int update(Pointer ptr, java.util.Dictionary fieldsToChange) {
+    public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
         dh.checkUpdate(ptr);
         return dh.update(ptr);
@@ -190,7 +190,7 @@ public abstract class TransactionImplementation implements Transaction {
 
         StringBuffer sb = writeReadQuery(p, e);
 
-        Vector v = executeReadQuery(p, sb);
+        Vector<Dictionary<String, Object>> v = executeReadQuery(p, sb);
 
         if (v.size() == 0) {
             return null;
@@ -198,9 +198,9 @@ public abstract class TransactionImplementation implements Transaction {
         if (v.size() > 1) {
             throw new org.makumba.MakumbaError("MAKUMBA DATABASE INCOSISTENT: Pointer not unique: " + p);
         }
-        Dictionary d = (Dictionary) v.elementAt(0);
+        Dictionary<String, Object> d = v.elementAt(0);
         Hashtable<String, Object> h = new Hashtable<String, Object>(13);
-        for (Enumeration en = d.keys(); en.hasMoreElements();) {
+        for (Enumeration<String> en = d.keys(); en.hasMoreElements();) {
             Object o = en.nextElement();
             h.put((String) o, d.get(o));
         }
@@ -239,7 +239,7 @@ public abstract class TransactionImplementation implements Transaction {
         return e;
     }
 
-    protected abstract Vector executeReadQuery(Pointer p, StringBuffer sb);
+    protected abstract Vector<Dictionary<String, Object>> executeReadQuery(Pointer p, StringBuffer sb);
 
     public void delete1(Pointer ptr) {
         String ptrDD = ptr.getType();
@@ -256,8 +256,8 @@ public abstract class TransactionImplementation implements Transaction {
         }
 
         if (ptrOnes.size() > 0) {
-            Dictionary d = read(ptr, ptrOnes);
-            for (Enumeration e = d.elements(); e.hasMoreElements();) {
+            Dictionary<String, Object> d = read(ptr, ptrOnes);
+            for (Enumeration<Object> e = d.elements(); e.hasMoreElements();) {
                 delete((Pointer) e.nextElement());
             }
         }

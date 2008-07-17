@@ -451,7 +451,7 @@ public class RelationCrawler {
 
                 if (forceDestination) {
                     // we set the location to the one provided at execution
-                    Dictionary<String, String> data = new Hashtable<String, String>();
+                    Dictionary<String, Object> data = new Hashtable<String, Object>();
                     data.put("relationDatabase", targetDatabase);
                     Pointer oldPointer = webappPointer = (Pointer) databaseLocation.get(0).get("webappPointer");
                     tr.update(oldPointer, data);
@@ -462,7 +462,7 @@ public class RelationCrawler {
                 }
             } else if (databaseLocation.size() == 0) {
                 // we set the location to the one provided at execution
-                Dictionary<String, String> data = new Hashtable<String, String>();
+                Dictionary<String, Object> data = new Hashtable<String, Object>();
                 data.put("webappRoot", webappRoot);
                 data.put("relationDatabase", targetDatabase);
                 webappPointer = tr.insert("org.makumba.devel.relations.WebappDatabase", data);

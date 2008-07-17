@@ -280,7 +280,7 @@ public class FormResponder extends Responder {
             Transaction db = ((DbConnectionProvider) request.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE)).getTransactionProvider().getConnectionTo(
                 database);
             try {
-                Dictionary<String, String> p = new Hashtable<String, String>();
+                Dictionary<String, Object> p = new Hashtable<String, Object>();
                 p.put("formSession", formSessionValue);
                 db.insert("org.makumba.controller.MultipleSubmit", p);
             } finally {
