@@ -101,7 +101,7 @@ public class DataHolder {
             }
         }
         Dictionary others1 = others;
-        others = new Hashtable<String, Object>(); // we clean the dictionnary of subrecords
+        others = new Hashtable<String, Object>(); // we clean the dictionary of subrecords
 
         // we check what is left (in the subrecords)
         for (Enumeration e = others1.keys(); e.hasMoreElements();) {
