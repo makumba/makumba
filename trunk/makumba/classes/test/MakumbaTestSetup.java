@@ -5,17 +5,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.Vector;
+
+import junit.extensions.TestSetup;
+import junit.framework.Test;
 
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.TransactionProvider;
-
-import junit.extensions.TestSetup;
-import junit.framework.Test;
 
 public class MakumbaTestSetup extends TestSetup {
 
@@ -82,7 +81,7 @@ public class MakumbaTestSetup extends TestSetup {
     }
 
     protected void insertPerson(Transaction db) {
-        Properties p = new Properties();
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
 
         p.put("indiv.name", namePersonIndivName_Bart);
         Pointer brother = db.insert("test.Person", p);
@@ -137,7 +136,7 @@ public class MakumbaTestSetup extends TestSetup {
 
     protected void insertLanguages(Transaction db) {
         languages.clear();
-        Dictionary<String, String> p = new Hashtable<String, String>();
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
         for (int i = 0; i < languageData.length; i++) {
             p.put("name", languageData[i][0]);
             p.put("isoCode", languageData[i][1]);

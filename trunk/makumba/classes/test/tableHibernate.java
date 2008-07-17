@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.Vector;
 
 import junit.framework.Test;
@@ -37,10 +36,10 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -161,7 +160,7 @@ public class tableHibernate extends TestCase {
     }*/
     
 	public void testInsert() {
-		Properties p = new Properties();
+	    Hashtable<String, Object> p = new Hashtable<String, Object>();
 		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(1977, 2, 5);
@@ -238,7 +237,7 @@ public class tableHibernate extends TestCase {
         // try to delete the other brother
         
         // insert the first person
-        Properties p = new Properties();
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
         
         Text comment = new Text("Hello world!!!!");
         
@@ -259,7 +258,7 @@ public class tableHibernate extends TestCase {
         assertEquals(1, v.size());
 
         // insert the second person (brother)
-        p = new Properties();
+        p = new Hashtable<String, Object>();
         
         comment = new Text("SomeComment");
 
@@ -305,7 +304,7 @@ public class tableHibernate extends TestCase {
 	static String subsetQuery = "SELECT a.description, a.id, a.description, a.sth.aaa FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
 
 	public void testSetInsert() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
 		p.put("sth.aaa", "bbb");
 
@@ -333,7 +332,7 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testSetMemberUpdate() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "somewhere");
 
 		db.update(set2, p);
@@ -359,14 +358,14 @@ public class tableHibernate extends TestCase {
 		assertEquals(set2, (v.elementAt(0)).get("col2"));
 
 		// we put it back
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
        
         set1 = db.insert(ptr, "address", p);
 	}
 
 	public void testSubrecordUpdate() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("something", "else2");
 
 		db.update(ptrOne, p);
@@ -480,7 +479,7 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testPtrOneReInsert() {
-		Dictionary<String, String> p = new Hashtable<String, String>();
+		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("extraData.something", "else2");
 		db.update(ptr, p);
 		Dictionary<String, Object> d = db.read(ptr, personFields);
@@ -492,7 +491,7 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testUpdate() {
-		Properties pmod = new Properties();
+	    Hashtable<String, Object> pmod = new Hashtable<String, Object>();
 		String val = "A completely new guy";
 		pmod.put("indiv.name", val);
 
@@ -568,7 +567,7 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void testCopy() {
-		Properties p = new Properties();
+	    Hashtable<String, Object> p = new Hashtable<String, Object>();
 		p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7)
 				.getTime());
 		p.put("indiv.name", "john");
