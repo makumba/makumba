@@ -81,29 +81,4 @@ public interface Attributes {
      * @return true if the attribute exists, false otherwise.
      */
     public boolean hasAttribute(String name);
-    
-    /**
-     * Helper class to use Attributes as a Map, for more generic usage
-     * @author Manuel Gay
-     * @version $Id$
-     */
-    class MA extends HashMap implements Map {
-        
-        private static final long serialVersionUID = 1L;
-        private Attributes a;
-        
-        public MA(Attributes a) {
-            this.a = a;
-        }
-
-        public Object get(Object key) {
-            Object o = null;
-            try {
-                o = a.getAttribute((String)key);
-            } catch (LogicException e) {
-                throw new RuntimeWrappedException(e);
-            }
-            return o;
-        }
-    }
 }
