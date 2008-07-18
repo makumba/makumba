@@ -337,16 +337,7 @@ public class Logic {
                     }
                 }
                 funcCall.append(")");
-                // we inline the query
-                String qr= qap.inlineFunctions(funcCall.toString());
-                // then we enrich the parameters from attributes... this should be moved to a more general place
-                Matcher m= Pattern.compile("\\"+qap.getParameterSyntax()+"[a-zA-Z]\\w*").matcher(qr);
-                while(m.find()){
-                    String para = m.group().substring(1);
-                    if (values.get(para)==null)
-                        values.put(para, a.getAttribute(para));
-                }
-                Vector<Dictionary<String, Object>> v= dbcp.getConnectionTo(db).executeQuery(qr, values );
+                Vector<Dictionary<String, Object>> v= dbcp.getConnectionTo(db).executeQuery(funcCall.toString(), values );
                 if(v.size()==0){
                     throw new LogicException(f.getErrorMessage());
                 }else if(v.size()>1){
