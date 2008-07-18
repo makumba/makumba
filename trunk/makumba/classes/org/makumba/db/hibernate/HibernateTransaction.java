@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.hibernate.CacheMode;
 import org.hibernate.Hibernate;
@@ -247,7 +248,9 @@ public class HibernateTransaction extends TransactionImplementation {
         return execute(query, parameterValues, 0, -1);
     }
 
-    public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {           
+    static Pattern namedParam= Pattern.compile("\\:[a-zA-Z]\\w*");
+    
+    public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
         QueryAnalysisProvider qap =QueryProvider.getQueryAnalzyer("hql");
         query= qap.inlineFunctions(query);
@@ -280,8 +283,12 @@ public class HibernateTransaction extends TransactionImplementation {
         if (limit != -1) { // limit parameter was specified
             q.setMaxResults(limit);
         }
+
+        // a better way to detect named parameters
+        if(namedParam.matcher(query).find())
+             args= paramsToMap(args);
+
         if (args != null && args instanceof Map) {
-            args= paramsToMap(args);
             setNamedParameters((Map) args, paramsDef, q);
         } else if (args != null) {
             setOrderedParameters(args, paramsDef, q);
