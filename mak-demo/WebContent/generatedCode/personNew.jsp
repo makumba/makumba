@@ -14,6 +14,11 @@
   <label for="age">A<span class="accessKey">g</span>e</label>
   <mak:input field="age" styleId="age" accessKey="g" />  <br/>
   <%-- Makumba Generator - END OF NORMAL FIELDS --%>
+
+  <label for="age">S<span class="accessKey">t</span>ory</label>
+  <mak:input field="story" styleId="story" accessKey="s" />  <br/>
+  <%-- Makumba Generator - END OF NORMAL FIELDS --%>
+
   
     <input type="submit" value="Add" accessKey="A">  <input type="reset" accessKey="R">  <input type="reset" value="Cancel" accessKey="C" onClick="javascript:back();">  
   <br/>
@@ -21,5 +26,3 @@
 </mak:newForm>
 
 <%-- Makumba Generator - END OF *** NEW ***  PAGE FOR OBJECT Person --%>
-
-cd

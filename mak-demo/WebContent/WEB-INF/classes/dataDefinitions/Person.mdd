@@ -3,4 +3,5 @@
 
 name=not null char[32]  ; Name
 age=not null int        ; Age
+story=text;
 
