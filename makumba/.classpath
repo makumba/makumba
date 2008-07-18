@@ -38,7 +38,7 @@
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jspwiki.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar" sourcepath="lib-src/commons-fileupload-1.2.1-src.zip"/>
-	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.1.jar" sourcepath="lib-src/commons-io-1.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.jar" sourcepath="lib-src/commons-collections-3.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/jtidy-r8.jar" sourcepath="lib/jtidy-r8.jar">
 		<attributes>
