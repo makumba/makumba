@@ -30,14 +30,13 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
@@ -64,8 +63,8 @@ public class Logic {
     static java.net.URL controllerURL;
 
     static HashMap<String, Object> nameToObject = new HashMap<String, Object>();
-    
-    /** for the default transaction provider **/
+
+    /** for the default transaction provider * */
     static Configuration configuration = new Configuration();
 
     private static final String HANDLER_METHOD_HEAD = "public void ";
@@ -247,6 +246,100 @@ public class Logic {
         }
     }, false);
 
+    static class AuthorizationConstraint {
+        String key;
+
+        String value;
+
+        String rule;
+
+        String fromWhere;
+
+        String message;
+    }
+
+    /** gets the authorization constraint associated with the given URI path */
+    public static Object getAuthorizationConstraint(String path) {
+        return NamedResources.getStaticCache(authConstraints).getResource(path);
+    }
+
+    static int authConstraints = NamedResources.makeStaticCache("Authorization constraints",
+        new NamedResourceFactory() {
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected Object makeResource(Object p) {
+                if (controllerConfig == null)
+                    return "none";
+                String path = (String) p;
+                int n = path.lastIndexOf(".");
+                if (n != -1) {
+                    path = path.substring(0, n);
+                }
+
+                String maxKey = "";
+                String rule = "none";
+                String params = "";
+
+                for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
+                    String k = (String) e.nextElement();
+                    if (!k.startsWith("authorize%"))
+                        continue;
+                    String k1 = k.substring("authorize%".length());
+                    if (path.startsWith(k1) && k1.length() > maxKey.length()) {
+                        maxKey = k1;
+                        rule = controllerConfig.getProperty(k);
+                    }
+                }
+                String originalRule = rule;
+
+                if (rule.equals("none"))
+                    return rule;
+
+                AuthorizationConstraint ac = new AuthorizationConstraint();
+                ac.key = maxKey;
+                ac.value = rule;
+
+                rule = rule.trim();
+                params = "";
+                int lpar = rule.indexOf("(");
+                if (lpar == 0) {
+                    int rpar = rule.indexOf(")");
+                    if (rpar == -1)
+                        throw new ProgrammerError("Parameter list should end with ) in authorization constraint "
+                                + maxKey);
+                    params = rule.substring(1, rpar);
+                    rule = rule.substring(rpar + 1).trim();
+                    if (params.trim().length() == 0)
+                        throw new ProgrammerError("Parameter list should not be empty in authorization constraint "
+                                + maxKey);
+                }
+                int ms = rule.indexOf("}");
+                if (!rule.startsWith("{") || ms < 2)
+                    throw new ProgrammerError("body not found for authorization constraint " + maxKey);
+                ac.message = rule.substring(ms + 1);
+                rule = rule.substring(1, ms);
+                ac.rule=rule.trim();
+                if (rule.trim().length() == 0)
+                    throw new ProgrammerError("empty body for authorization constraint " + maxKey);
+                if (params.length() > 0) {
+                    QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(getTransactionProvider(getLogic(path)).getQueryLanguage());
+                    Map<String, DataDefinition> m = qap.getQueryAnalysis("SELECT 1 FROM " + params).getLabelTypes();
+                    StringBuffer where = new StringBuffer();
+                    String separator = "";
+                    for (String label : m.keySet()) {
+                        where.append(separator).append(label).append("=").append(qap.getParameterSyntax()).append(label);
+                        separator = " AND ";
+                    }
+                    ac.fromWhere = " FROM " + params + " WHERE " + where;
+                }
+                return ac;
+            }
+        }, false);
+
     static String[] separators = { ".", "->" };
 
     public static String upperCase(String a) {
@@ -287,7 +380,7 @@ public class Logic {
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
-        if(attname.startsWith("actor_"))
+        if (attname.startsWith("actor_"))
             return computeActor(attname, a, db, dbcp);
         if (controller instanceof LogicNotFoundException) {
             throw new NoSuchMethodException("no controller=> no attribute method");
@@ -312,45 +405,45 @@ public class Logic {
     }
     
     public static Object computeActor(String attname, Attributes a, String db, DbConnectionProvider dbcp)
-    throws LogicException
-    {
-        String type= attname.substring(6).replace('_', '.');
-        DataDefinition dd=ddp.getDataDefinition(type);
-        QueryAnalysisProvider qap=QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
-        nextFunction:
-        for(DataDefinition.QueryFragmentFunction f:dd.getFunctions()){
-            if(f.getName().startsWith("actor")){
-                StringBuffer funcCall= new StringBuffer();
-                funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(" x WHERE x.").append(f.getName()).append("(");
-                String separator="";
-                DataDefinition params= f.getParameters();
-                HashMap<String, Object> values= new HashMap<String, Object>();
-                for(String para:params.getFieldNames()){
-                    try{
+            throws LogicException {
+        String type = attname.substring(6).replace('_', '.');
+        DataDefinition dd = ddp.getDataDefinition(type);
+        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
+        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions()) {
+            if (f.getName().startsWith("actor")) {
+                StringBuffer funcCall = new StringBuffer();
+                funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
+                    " x WHERE x.").append(f.getName()).append("(");
+                String separator = "";
+                DataDefinition params = f.getParameters();
+                HashMap<String, Object> values = new HashMap<String, Object>();
+                for (String para : params.getFieldNames()) {
+                    try {
                         funcCall.append(separator);
-                        separator=", ";
+                        separator = ", ";
                         funcCall.append(qap.getParameterSyntax()).append(para);
                         values.put(para, a.getAttribute(para));
                         // TODO: check if the value is assignable to the function parameter type
-                    }catch(LogicException ae){
+                    } catch (LogicException ae) {
                         continue nextFunction;
                     }
                 }
                 funcCall.append(")");
-                Vector<Dictionary<String, Object>> v= dbcp.getConnectionTo(db).executeQuery(funcCall.toString(), values );
-                if(v.size()==0){
+                Vector<Dictionary<String, Object>> v = dbcp.getConnectionTo(db).executeQuery(funcCall.toString(),
+                    values);
+                if (v.size() == 0) {
                     throw new LogicException(f.getErrorMessage());
-                }else if(v.size()>1){
-                    throw new LogicException("Multiple "+type+" objects fit the function "+f);
-                }else{
+                } else if (v.size() > 1) {
+                    throw new LogicException("Multiple " + type + " objects fit the function " + f);
+                } else {
                     // TODO: compute all statics!
                     // and return a hashmap, then request attributes will know to put them all in the session
                     return v.elementAt(0).get("col1");
                 }
             }
-            
+
         }
-        throw new ProgrammerError("No fitting actor() function was found in "+type);
+        throw new ProgrammerError("No fitting actor() function was found in " + type);
     }
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
@@ -381,8 +474,8 @@ public class Logic {
     public static Method getMethod(String name, Class<?>[] args, Object controller) {
         try {
             Method m = null;
-            if(args != null) {
-                m = controller.getClass().getMethod(name, args);  
+            if (args != null) {
+                m = controller.getClass().getMethod(name, args);
             } else {
                 m = controller.getClass().getMethod(name);
             }
@@ -395,46 +488,46 @@ public class Logic {
         }
     }
 
+    public static void doInit(String path, Attributes a, String dbName, DbConnectionProvider dbcp)
+            throws LogicException {
+        Object o = getAuthorizationConstraint(path);
+        if (!(o instanceof AuthorizationConstraint))
+            return;
+        AuthorizationConstraint constraint = (AuthorizationConstraint) o;
+
+        Object result = null;
+        if (constraint.fromWhere == null) {
+            QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
+            // we have no FROM and WHERE section, this leads in a hard-to-analyze query
+            // so we try a paramter
+            String q1 = qap.inlineFunctions(constraint.rule).trim();
+            if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*"))
+                result = a.getAttribute(q1.substring(1));
+        }
+
+        if (result == null) {
+            String query = "SELECT " + constraint.rule + " AS col1 ";
+            if (constraint.fromWhere != null)
+                query += constraint.fromWhere;
+
+            Vector<Dictionary<String, Object>> v = dbcp.getConnectionTo(dbName).executeQuery(query, null);
+            if (v.size() > 1)
+                throw new ProgrammerError("Authorization constraint returned multiple values: " + constraint.key + "="
+                        + constraint.value);
+            if (v.size() == 0)
+                throw new LogicException(constraint.message);
+            result = v.elementAt(0).get("col1");
+        }
+        if (result == null || result.equals(Pointer.Null) || result.equals(0) || result.equals(false))
+            throw new LogicException(constraint.message);
+    }
+
     public static void doInit(Object controller, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
         if (controller instanceof LogicNotFoundException) {
             return;
         }
-        
-        // we try to figure which transaction provider to use from the BL itself
-        Method connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
-        String transactionProviderClass = null;
-        if (connectionProvider != null) {
-            try {
-                transactionProviderClass = (String)connectionProvider.invoke(controller);
-            } catch (IllegalAccessException g) {
-                throw new LogicInvocationError(g);
-            } catch (InvocationTargetException f) {
-                Throwable g = f.getTargetException();
-                throw new LogicInvocationError(g);
-            }
-        }
-        
-        if(transactionProviderClass == null) {
-            transactionProviderClass = configuration.getDefaultTransactionProviderClass();
-        }
-        
-        TransactionProviderInterface tp = null;
-        try {
-            tp = (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
-        } catch (InstantiationException e) {
-            LogicException le = new LogicException("Could not instantiate transaction provider "+transactionProviderClass);
-            throw new LogicInvocationError(le);
-        } catch (IllegalAccessException e) {
-            LogicException le = new LogicException("Illegal access for transaction provider "+transactionProviderClass);
-            throw new LogicInvocationError(le);
-        } catch (ClassNotFoundException e) {
-            LogicException le = new LogicException("Could not find transaction provider "+transactionProviderClass);
-            throw new LogicInvocationError(le);
-        }
-        
-        dbcp.setTransactionProvider(tp);
-        
+
         Transaction db = dbcp.getConnectionTo(dbName);
         Method init = getMethod("checkAttributes", argDb, controller);
         Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
@@ -488,8 +581,29 @@ public class Logic {
         }
     }
 
-    public static Object doOp(Object controller, String opName, Dictionary<String, Object> data, Attributes a, String dbName,
-            DbConnectionProvider dbcp) throws LogicException {
+    public static TransactionProviderInterface getTransactionProvider(Object controller) throws LogicInvocationError {
+        Method connectionProvider = null;
+        if (controller != null)
+            connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
+        String transactionProviderClass = null;
+        try {
+            if (connectionProvider != null)
+                transactionProviderClass = (String) connectionProvider.invoke(controller);
+
+            if (transactionProviderClass == null) {
+                transactionProviderClass = configuration.getDefaultTransactionProviderClass();
+            }
+
+            return (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
+        } catch (Throwable e) {
+            LogicException le = new LogicException("Could not instantiate transaction provider "
+                    + transactionProviderClass != null ? transactionProviderClass : "");
+            throw new LogicInvocationError(le);
+        }
+    }
+
+    public static Object doOp(Object controller, String opName, Dictionary<String, Object> data, Attributes a,
+            String dbName, DbConnectionProvider dbcp) throws LogicException {
         if (opName == null) {
             return null;
         }
@@ -526,7 +640,8 @@ public class Logic {
     }
 
     public static Pointer doEdit(Object controller, String handlerName, String afterHandlerName, String typename,
-            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp)
+            throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { p, data, a, db };
         Method edit = null;
@@ -581,8 +696,9 @@ public class Logic {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
                         + HANDLER_METHOD_HEAD + "on_delete" + upper + "(Pointer p, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_delete" + upper + "(Pointer p, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + "so it does not allow DELETE operations on the type " + typename
+                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_delete" + upper
+                        + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+                        + "so it does not allow DELETE operations on the type " + typename
                         + "\nDefine that method (even with an empty body) to allow such operations.");
             }
         }
@@ -609,7 +725,8 @@ public class Logic {
     }
 
     public static Pointer doAdd(Object controller, String handlerName, String afterHandlerName, String typename,
-            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp)
+            throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] addArg = { p, data, a, db };
         Method on = null;
@@ -657,7 +774,8 @@ public class Logic {
     static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Database.class };
 
     public static Pointer doNew(Object controller, String handlerName, String afterHandlerName, String typename,
-            Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp) throws LogicException {
+            Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp)
+            throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] onArgs = { data, a, db };
         Object[] afterArgs = { null, data, a, db };

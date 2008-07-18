@@ -87,6 +87,9 @@ public class RequestAttributes implements Attributes {
             req.setAttribute(CONTROLLER_NAME + controller.getClass().getName(), controller);
             try {
                 getConnectionProvider(req).setContext(this);
+                getConnectionProvider(req).setTransactionProvider(Logic.getTransactionProvider(controller));
+
+                Logic.doInit(req.getServletPath(), this, db, getConnectionProvider(req));
                 Logic.doInit(controller, this, db, getConnectionProvider(req));
             } catch (UnauthorizedException e) {
                 // if we are not in the login page
