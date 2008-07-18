@@ -26,7 +26,10 @@ package org.makumba.commons;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.makumba.Attributes;
 import org.makumba.Transaction;
+import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
@@ -43,6 +46,8 @@ public class DbConnectionProvider {
     
     Map<String, Transaction> connections = new HashMap<String, Transaction>(7);
 
+    private Attributes contextAttributes;
+
     public Transaction getConnectionTo(String dbname) {
         if(tp == null) {
             tp = TransactionProvider.getInstance();
@@ -52,6 +57,7 @@ public class DbConnectionProvider {
         if (db == null) {
             connections.put(dbname, db = tp.getConnectionTo(dbname));
         }
+        ((TransactionImplementation)db).setContext(contextAttributes);
         return db;
     }
 
@@ -77,6 +83,11 @@ public class DbConnectionProvider {
             tp = TransactionProvider.getInstance();
         }
         return tp;
+    }
+
+    public void setContext(Attributes attributes) {
+        contextAttributes=attributes;
+        
     }
 
 }
