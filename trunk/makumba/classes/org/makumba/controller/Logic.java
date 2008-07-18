@@ -256,6 +256,12 @@ public class Logic {
         String fromWhere;
 
         String message;
+        
+        void check(){
+            if(message==null || message.length()==0){
+                message="Authorization constraint failed: "+key+"= "+value;
+            }
+        }
     }
 
     /** gets the authorization constraint associated with the given URI path */
@@ -336,6 +342,7 @@ public class Logic {
                     }
                     ac.fromWhere = " FROM " + params + " WHERE " + where;
                 }
+                ac.check();
                 return ac;
             }
         }, false);
