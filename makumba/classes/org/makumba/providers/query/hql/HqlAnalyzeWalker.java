@@ -157,12 +157,14 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         if("max".equals(agr) || "min".equals(agr))
             // min and max return the same type as the expr
             return ae;
+        if("sum".equals(agr))
+            // sum returns the same type as the expr
+            return ae;
         if("avg".equals(agr))
             return new ExprTypeAST(ExprTypeAST.DOUBLE);
         if("count".equals(agr))
             return new ExprTypeAST(ExprTypeAST.INT);
         
-        // FIXME see if there are other aggregate functions, throw exception for unknown aggregate (though the walker should not let it pass)
         return null;
     }
 
