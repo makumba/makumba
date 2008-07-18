@@ -13,10 +13,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.commons.SQLPointer;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -34,10 +36,11 @@ public class HQLQueryProvider extends QueryProvider {
         return HQLQUERY_ANALYSIS_PROVIDER;
     }
     @Override
-    protected void init(String db) {
-        super.init(db);
+    protected void init(String db, Attributes a) {
+        super.init(db, a);
         tp = new TransactionProvider(new HibernateTransactionProvider());
         transaction = tp.getConnectionTo(db);
+        ((TransactionImplementation)transaction).setContext(a);
     }
 
     @Override
@@ -66,7 +69,7 @@ public class HQLQueryProvider extends QueryProvider {
         TransactionProvider tp = new TransactionProvider(new HibernateTransactionProvider());
 
         HQLQueryProvider qr = new HQLQueryProvider();
-        qr.init("test/localhost_mysql_makumba");
+        qr.init("test/localhost_mysql_makumba", null);
         
         org.makumba.Transaction t = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
         

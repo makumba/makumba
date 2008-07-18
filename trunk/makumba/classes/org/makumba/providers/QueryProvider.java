@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.Attributes;
+
 /**
  * This provider makes it possible to run queries against a data source.
  * 
@@ -72,7 +74,7 @@ public abstract class QueryProvider {
      *            the name of the query execution provider (oql, hql, castorOql, ...)
      * @return
      */
-    public static QueryProvider makeQueryRunner(String dataSource, String name) {
+    public static QueryProvider makeQueryRunner(String dataSource, String name, Attributes a) {
         QueryProvider qeep = null;
 
         try {
@@ -80,18 +82,22 @@ public abstract class QueryProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        qeep.init(dataSource);
+        qeep.init(dataSource, a);
 
         return qeep;
     }
 
+    public static QueryProvider makeQueryRunner(String string, String queryLang) {
+        return makeQueryRunner(string, queryLang, null);
+    }
     /**
      * Initalises the provider with the datasource
      * 
      * @param dataSource
      *            the source on which the query should be run
+     * @param a 
      */
-    protected void init(String dataSource) {
+    protected void init(String dataSource, Attributes a) {
         this.dataSource = dataSource;
     }
 

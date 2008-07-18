@@ -22,12 +22,14 @@
 /////////////////////////////////////
 package org.makumba.db;
 
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -280,6 +282,28 @@ public abstract class TransactionImplementation implements Transaction {
     }
 
     protected Map<String, Object> paramsToMap(Object args) {
+        final Map<String, Object> m= paramsToMap1(args);
+        if(contextAttributes==null)
+            return m;
+        return new EasyMap<String, Object>(){
+            public Object get(Object key){
+                Object o= m.get(key);
+                if(o!=null)
+                    return o;
+                if(!contextAttributes.hasAttribute((String)key)){
+                    return null;
+                }
+                try{
+                    return contextAttributes.getAttribute((String)key);
+                }catch(LogicException e){
+                    return null;
+                }
+            }
+
+        };
+    }
+    
+    protected Map<String, Object> paramsToMap1(Object args) {
         if (args instanceof Map) {
             return (Map<String, Object>) args;
         }
@@ -339,9 +363,54 @@ public abstract class TransactionImplementation implements Transaction {
     public void setContext(Attributes a) {
         contextAttributes = a;
     }
+    
+    static class EasyMap<K, V>implements Map<K,V>{
 
-    public Object getObjectFromConext(String name) throws LogicException {
-        return contextAttributes.getAttribute(name);
+        public void clear() {            
+        }
+
+        public boolean containsKey(Object key) {
+            return false;
+        }
+
+        public boolean containsValue(Object value) {
+            return false;
+        }
+
+        public Set<java.util.Map.Entry<K, V>> entrySet() {
+            return null;
+        }
+
+        public V get(Object key) {
+            return null;
+        }
+
+        public boolean isEmpty() {
+            return false;
+        }
+
+        public Set<K> keySet() {
+            return null;
+        }
+
+        public V put(K key, V value) {
+            return null;
+        }
+
+        public void putAll(Map<? extends K, ? extends V> t) {            
+        }
+
+        public V remove(Object key) {
+            return null;
+        }
+
+        public int size() {
+            return 0;
+        }
+
+        public Collection<V> values() {
+            return null;
+        }
+        
     }
-
 }

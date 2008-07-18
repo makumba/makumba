@@ -86,6 +86,7 @@ public class RequestAttributes implements Attributes {
         if (req.getAttribute(CONTROLLER_NAME + controller.getClass().getName()) == null) {
             req.setAttribute(CONTROLLER_NAME + controller.getClass().getName(), controller);
             try {
+                getConnectionProvider(req).setContext(this);
                 Logic.doInit(controller, this, db, getConnectionProvider(req));
             } catch (UnauthorizedException e) {
                 // if we are not in the login page

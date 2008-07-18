@@ -27,6 +27,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 
+import org.makumba.Attributes;
+import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
@@ -124,6 +126,7 @@ public class DBConnectionWrapper extends DBConnection {
 
     public synchronized void close() {
         try{
+            getWrapped().setContext(null);
             commit();
             getHostDatabase().connections.put(getWrapped());
         } finally{
@@ -138,7 +141,11 @@ public class DBConnectionWrapper extends DBConnection {
             close();
         }
     }
-
+    @Override
+    public void setContext(Attributes a) {
+        getWrapped().setContext(a);
+    }
+    
     public String getCreationStack() {
         StringWriter sbw = new StringWriter();
         PrintWriter output = new PrintWriter(sbw);

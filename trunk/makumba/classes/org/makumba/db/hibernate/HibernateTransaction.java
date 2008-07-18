@@ -30,6 +30,7 @@ import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
@@ -65,6 +66,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public void close() {
+        setContext(null);
         t.commit();
         s.close();
     }
@@ -245,25 +247,10 @@ public class HibernateTransaction extends TransactionImplementation {
         return execute(query, parameterValues, 0, -1);
     }
 
-    public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
-        // TODO: 
-        // we have to inline functions before the query execution asks for analysis
-        // otherwise we might get $name parameters at a time when it is too late
-        // query= QueryProvider.getQueryAnalzyer("hql").inlineFunctions(query);
-        // then we have to find if there are parameters that appeared after inlining (actors, session), and find them from some Atttributes/session info
-
+    public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {           
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        QueryAnalysisProvider qap = null;
-        try {
-            qap = (QueryAnalysisProvider) Class.forName(HQLQueryProvider.HQLQUERY_ANALYSIS_PROVIDER).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        QueryAnalysisProvider qap =QueryProvider.getQueryAnalzyer("hql");
+        query= qap.inlineFunctions(query);
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
@@ -294,6 +281,7 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
         if (args != null && args instanceof Map) {
+            args= paramsToMap(args);
             setNamedParameters((Map) args, paramsDef, q);
         } else if (args != null) {
             setOrderedParameters(args, paramsDef, q);

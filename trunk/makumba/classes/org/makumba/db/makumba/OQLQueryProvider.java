@@ -3,7 +3,9 @@ package org.makumba.db.makumba;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.Attributes;
 import org.makumba.Transaction;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -30,9 +32,10 @@ public class OQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    protected void init(String dataSource) {
-        super.init(dataSource);
+    protected void init(String dataSource, Attributes a) {
+        super.init(dataSource, a);
         tr = new TransactionProvider(new MakumbaTransactionProvider()).getConnectionTo(dataSource);
+        ((TransactionImplementation)tr).setContext(a);
 
     } 
 }
