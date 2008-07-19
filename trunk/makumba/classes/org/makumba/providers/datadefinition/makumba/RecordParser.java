@@ -601,7 +601,7 @@ public class RecordParser {
             }
             m.appendTail(sb);
             if (found) {
-                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").info(
+                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(
                     queryFragment + " -> " + sb.toString());
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
                         f.getParameters(), f.getErrorMessage());
