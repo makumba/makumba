@@ -94,10 +94,15 @@ public class HibernateTransaction extends TransactionImplementation {
             if (fieldDefinition == null)
                 throw new org.makumba.NoSuchFieldException(r, (String) o);
             String s = (String) o;
-            sb.append(separator).append("p.").append(s);
-            if (fieldDefinition.getType().startsWith(("ptr"))) {
-                sb.append(".id");
+            sb.append(separator).append("p.");
+            if (fieldDefinition.getType().equals("ptrIndex"))
+                sb.append("id");
+            else {
+                sb.append(s);
+                if (fieldDefinition.getType().startsWith("ptr"))
+                    sb.append(".id");
             }
+
             sb.append(" as ").append(s);
             separator = ",";
         }
@@ -152,34 +157,33 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private Object weaklyTreatParamType(Object object) {
         if (object instanceof Pointer) {
-            Pointer p = (Pointer)object;
+            Pointer p = (Pointer) object;
             // let's figure the correct type for this guy
             // if it is a generated class, it will be an integer
             for (String s : HibernateSFManager.getGeneratedClasses()) {
-                if(s.equals(p.getType())) {
+                if (s.equals(p.getType())) {
                     return new Integer(p.getId());
-                }                    
+                }
             }
-            
+
             // otherwise it may be a long
             Class<?> recordClass = null;
             try {
                 recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(p.getType()));
-                
+
                 String idMethodName = "getprimaryKey";
-                
+
                 if (!HibernateCRUDOperationProvider.isGenerated(recordClass)) {
                     idMethodName = "getId";
                 }
-                
+
                 Method m = recordClass.getMethod(idMethodName, new Class[] {});
-                if(HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
+                if (HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
                     return new Integer(p.getId());
-                } else if(HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
+                } else if (HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
                     return (Long) (p.longValue());
                 }
-                
-                
+
             } catch (ClassNotFoundException cnfe) {
                 cnfe.printStackTrace();
             } catch (SecurityException e) {
@@ -187,8 +191,7 @@ public class HibernateTransaction extends TransactionImplementation {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-            
-            
+
         }
         return object;
     }
@@ -248,12 +251,12 @@ public class HibernateTransaction extends TransactionImplementation {
         return execute(query, parameterValues, 0, -1);
     }
 
-    static Pattern namedParam= Pattern.compile("\\:[a-zA-Z]\\w*");
-    
+    static Pattern namedParam = Pattern.compile("\\:[a-zA-Z]\\w*");
+
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        QueryAnalysisProvider qap =QueryProvider.getQueryAnalzyer("hql");
-        query= qap.inlineFunctions(query);
+        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("hql");
+        query = qap.inlineFunctions(query);
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
@@ -285,8 +288,8 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         // a better way to detect named parameters
-        if(namedParam.matcher(query).find())
-             args= paramsToMap(args);
+        if (namedParam.matcher(query).find())
+            args = paramsToMap(args);
 
         if (args != null && args instanceof Map) {
             setNamedParameters((Map) args, paramsDef, q);
@@ -302,7 +305,8 @@ public class HibernateTransaction extends TransactionImplementation {
             throw new ProgrammerError(
                     "Error while trying to compute the results for query "
                             + q.getQueryString()
-                            + ": are you sure you did not try to compare two incompatible types? (remember, in HQL you need to select an object's id for comparison)\n"+e.getMessage());
+                            + ": are you sure you did not try to compare two incompatible types? (remember, in HQL you need to select an object's id for comparison)\n"
+                            + e.getMessage());
         }
         return results;
     }
@@ -415,25 +419,27 @@ public class HibernateTransaction extends TransactionImplementation {
                 q.setParameter(paramName, paramValue, Hibernate.INTEGER);
             } else if (paramValue instanceof Pointer) {
                 q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()), Hibernate.INTEGER);
-            } else if(paramValue instanceof NullObject) {
-                NullObject n = (NullObject)paramValue;
-                if(n.equals(Pointer.Null)) {
+            } else if (paramValue instanceof NullObject) {
+                NullObject n = (NullObject) paramValue;
+                if (n.equals(Pointer.Null)) {
                     q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
-                } else if(n.equals(Pointer.NullInteger)) {
+                } else if (n.equals(Pointer.NullInteger)) {
                     q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
                 } else {
                     q.setParameter(paramName, null);
                 }
-                
+
             } else { // we have any param type (most likely String)
                 if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
                     Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
                     q.setParameter(paramName, new Integer(p.getId()), Hibernate.INTEGER);
-                } else if(paramDef.getIntegerType() == FieldDefinition._int) {
-                    Integer val = paramValue instanceof String ? Integer.parseInt((String)paramValue) : (Integer) paramValue;
+                } else if (paramDef.getIntegerType() == FieldDefinition._int) {
+                    Integer val = paramValue instanceof String ? Integer.parseInt((String) paramValue)
+                            : (Integer) paramValue;
                     q.setParameter(paramName, val);
-                } else if(paramDef.getIntegerType() == FieldDefinition._real) {
-                    Double val = paramValue instanceof String ? Double.parseDouble((String)paramValue) : (Double) paramValue;
+                } else if (paramDef.getIntegerType() == FieldDefinition._real) {
+                    Double val = paramValue instanceof String ? Double.parseDouble((String) paramValue)
+                            : (Double) paramValue;
                     q.setParameter(paramName, val);
                 } else
                     q.setParameter(paramName, paramValue);
