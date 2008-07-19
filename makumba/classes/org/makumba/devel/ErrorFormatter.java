@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.OQLParseError;
 import org.makumba.Transaction;
 import org.makumba.analyser.AnalysableTag;
@@ -33,7 +32,7 @@ import org.makumba.commons.attributes.RequestAttributes;
  * copied from the TagExceptionServlet.<br>
  * FIXME the exception hierarchy needs to be reviewed.<br>
  * FIXME: this class should extend the Filter class (part of refactoring)
- * 
+ *
  * @author Cristian Bogdan
  * @author Stefan Baebler
  * @author Rudolf Mayer
@@ -95,27 +94,29 @@ public class ErrorFormatter {
         }
 
         while (true) {
-            if (t instanceof LogicException)
+            if (t instanceof LogicException) {
                 t1 = ((LogicException) t).getReason();
-            else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
+            } else if (t instanceof MakumbaError && !(t instanceof OQLParseError)) {
                 t1 = ((MakumbaError) t).getCause();
-            else if (t instanceof LogicInvocationError)
+            } else if (t instanceof LogicInvocationError) {
                 t1 = ((LogicInvocationError) t).getReason();
-            else if (t instanceof RuntimeWrappedException)
+            } else if (t instanceof RuntimeWrappedException) {
                 t1 = ((RuntimeWrappedException) t).getCause();
-            else if (t instanceof ServletException
+            } else if (t instanceof ServletException
                     && ((ServletException) t).getRootCause() instanceof NullPointerException) {
                 // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and
                 // no stacktrace.
                 ServletException e = (ServletException) t;
                 t1 = e.getRootCause();
                 t1.setStackTrace(e.getRootCause().getStackTrace());
-            } else if( t instanceof ServletException)
+            } else if( t instanceof ServletException) {
                 t1= ((ServletException)t).getRootCause();
-            else
+            } else {
                 break;
-            if (t1 == null)
+            }
+            if (t1 == null) {
                 break;
+            }
             t = t1;
         }
         logError(t, req);
@@ -157,10 +158,10 @@ public class ErrorFormatter {
                         }
                     }
                     title = "JSP Compilation error";
-                    for (int i = 0; i < errors.length; i++) {
-                        if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null
-                                && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
-                            title = "Makumba " + errors[i][1] + " error";
+                    for (Object[] element : errors) {
+                        if ((((Class<?>) element[0])).isInstance(t) || t1 != null
+                                && (((Class<?>) element[0])).isInstance(t = t1)) {
+                            title = "Makumba " + element[1] + " error";
                         }
                     }
                     knownError(title, t, original, req, wr);
@@ -192,19 +193,20 @@ public class ErrorFormatter {
             }
         }
 
-        for (int i = 0; i < errors.length; i++)
-            if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
-                title = "Makumba " + errors[i][1] + " error";
+        for (Object[] element : errors) {
+            if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
+                title = "Makumba " + element[1] + " error";
                 knownError(title, t, original, req, wr);
                 return;
             }
+        }
         unknownError(original, t, wr, req);
     }
 
     private boolean isRuntimeJspErrors(ServletException t) {
         if (t.getRootCause() != null) {
-            for (int i = 0; i < knownJSPruntimeErrors.length; i++) {
-                if (t.getRootCause().getClass().isAssignableFrom(knownJSPruntimeErrors[i])) {
+            for (Class<?> element : knownJSPruntimeErrors) {
+                if (t.getRootCause().getClass().isAssignableFrom(element)) {
                     return true;
                 }
             }
@@ -214,7 +216,7 @@ public class ErrorFormatter {
 
     /**
      * Stores the error details to the database (ErrorLog.mdd)
-     * 
+     *
      * @param t
      *            the exception
      * @param req
@@ -233,16 +235,20 @@ public class ErrorFormatter {
 
             // TODO: read and store the source of the submited page
             // d.put("page", "");
-            if (t != null && t.getMessage() != null)
+            if (t != null && t.getMessage() != null) {
                 d.put("exception", t.getMessage());
+            }
             d.put("executionDate", new Date());
             d.put("url", req.getRequestURL().toString());
-            if (req.getAttribute("makumba.parameters") != null)
+            if (req.getAttribute("makumba.parameters") != null) {
                 d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
-            if (req.getAttribute("makumba.attributes") != null)
+            }
+            if (req.getAttribute("makumba.attributes") != null) {
                 d.put("makumbaAttributes", req.getAttribute("makumba.attributes").toString());
-            if (req.getAttribute("makumba.controller") != null)
+            }
+            if (req.getAttribute("makumba.controller") != null) {
                 d.put("makumbaController", req.getAttribute("makumba.controller").toString());
+            }
 
             tr.insert("org.makumba.controller.ErrorLog", d);
         } catch(Throwable t1) {
@@ -258,7 +264,7 @@ public class ErrorFormatter {
 
     /**
      * Displays a knows error in the case of an error originating from a tag
-     * 
+     *
      * @param title
      *            title describing the error
      * @param t
@@ -283,10 +289,11 @@ public class ErrorFormatter {
                 boolean foundRootCause = false;
                 int i = 0;
                 while (!foundRootCause && i < t.getStackTrace().length) {
-                    if (t.getStackTrace()[i].getClassName().indexOf("org.makumba") == -1)
+                    if (t.getStackTrace()[i].getClassName().indexOf("org.makumba") == -1) {
                         foundRootCause = true;
-                    else
+                    } else {
                         i++;
+                    }
                 }
 
                 body = "Exception occured at " + t.getStackTrace()[i].getClassName() + "."
@@ -295,8 +302,9 @@ public class ErrorFormatter {
             } else {
                 body = formatTagData(req) + body;
             }
-        } else
+        } else {
             body = formatTagData(req) + body;
+        }
 
         if (original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic") != -1) {
             body = body + "\n\n" + trc;
@@ -314,7 +322,7 @@ public class ErrorFormatter {
 
     /**
      * Displays information about the tag in which the error occurs in a nice way
-     * 
+     *
      * @param req
      *            the http request corresponding to the current access
      * @return The tag error, nicely displayed
@@ -364,7 +372,7 @@ public class ErrorFormatter {
 
     /**
      * Prints the stacktrace
-     * 
+     *
      * @param t
      *            the exception
      * @return A String holding the stacktrace
@@ -377,7 +385,7 @@ public class ErrorFormatter {
 
     /**
      * Filters out a short part of the stacktrace
-     * 
+     *
      * @param s
      *            the stacktrace to be filtered
      * @return A short version of the stacktrace, meaning only the beginning
@@ -387,19 +395,21 @@ public class ErrorFormatter {
         if (i != -1) {
             s = s.substring(0, i);
             i = s.indexOf("at sun.reflect");
-            if (i != -1)
+            if (i != -1) {
                 s = s.substring(0, i);
+            }
         } else {
             i = s.indexOf("at javax.servlet.http.HttpServlet.service(HttpServlet.java");
-            if (i != -1)
+            if (i != -1) {
                 s = s.substring(0, i);
-            else {
+            } else {
                 i = s.indexOf("at org.makumba.controller.http.ControllerFilter.doFilter(ControllerFilter.java");
-                if (i != -1)
+                if (i != -1) {
                     s = s.substring(0, i);
-                else
+                } else {
                     java.util.logging.Logger.getLogger("org.makumba." + "devel").severe(
                         "servlet or filter call not found in stacktrace");
+                }
             }
 
         }
@@ -408,7 +418,7 @@ public class ErrorFormatter {
 
     /**
      * Displays an unknown error
-     * 
+     *
      * @param original
      *            the original error exception, not treated
      * @param t
@@ -436,8 +446,9 @@ public class ErrorFormatter {
             if (t instanceof ServletException) {
                 traced = ((ServletException) t).getRootCause();
                 // maybe there's no root cause...
-                if (traced == null)
+                if (traced == null) {
                     traced = t;
+                }
             }
         } else {
             title = "Error in JSP Java scriplet or servlet container";
@@ -466,7 +477,7 @@ public class ErrorFormatter {
 
     /**
      * Returns a string describing the error that occured.
-     * 
+     *
      * @param req
      * @return the described error
      */
@@ -476,25 +487,27 @@ public class ErrorFormatter {
         Throwable original = t;
 
         while (true) {
-            if (t instanceof LogicException)
+            if (t instanceof LogicException) {
                 t1 = ((LogicException) t).getReason();
-            else if (t instanceof MakumbaError && !(t instanceof OQLParseError))
+            } else if (t instanceof MakumbaError && !(t instanceof OQLParseError)) {
                 t1 = ((MakumbaError) t).getCause();
-            else if (t instanceof LogicInvocationError)
+            } else if (t instanceof LogicInvocationError) {
                 t1 = ((LogicInvocationError) t).getReason();
-            else if (t instanceof RuntimeWrappedException)
+            } else if (t instanceof RuntimeWrappedException) {
                 t1 = ((RuntimeWrappedException) t).getCause();
-            else if (t instanceof ServletException
+            } else if (t instanceof ServletException
                     && ((ServletException) t).getRootCause() instanceof NullPointerException) {
                 // handle null pointer exception seperate, as otherwise tomcat 5.0.x reports only "null" as message, and
                 // no stacktrace.
                 ServletException e = (ServletException) t;
                 t1 = e.getRootCause();
                 t1.setStackTrace(e.getRootCause().getStackTrace());
-            } else
+            } else {
                 break;
-            if (t1 == null)
+            }
+            if (t1 == null) {
                 break;
+            }
             t = t1;
         }
 
@@ -503,9 +516,9 @@ public class ErrorFormatter {
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
             return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
         }
-        for (int i = 0; i < errors.length; i++) {
-            if ((((Class<?>) errors[i][0])).isInstance(t) || t1 != null && (((Class<?>) errors[i][0])).isInstance(t = t1)) {
-                return "Makumba " + errors[i][1] + " error:\n" + formatTagData(req) + t.getMessage();
+        for (Object[] element : errors) {
+            if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
+                return "Makumba " + element[1] + " error:\n" + formatTagData(req) + t.getMessage();
             }
         }
         return unknownErrorMessage(original, t, req);
@@ -514,7 +527,7 @@ public class ErrorFormatter {
     /**
      * Returns a string describing an unknown error. TODO: this code is more or less a copy of unknownError() --> could
      * be optimised
-     * 
+     *
      * @param original
      * @param t
      * @return
@@ -552,7 +565,7 @@ public class ErrorFormatter {
 
     /**
      * Cuts down a stack trace to the given number of lines.
-     * 
+     *
      * @param s
      *            a stacktrace as string.
      * @param lineNumbers
@@ -611,11 +624,11 @@ public class ErrorFormatter {
             String[] split = message.split("\n");
             String variableName = null;
             String errorLine = null;
-            for (int i = 0; i < split.length; i++) {
-                if (split[i].startsWith("An error occurred at line:")) {
-                    errorLine = split[i];
-                } else if (split[i].startsWith("Duplicate local variable")) {
-                    variableName = split[i].substring("Duplicate local variable".length()).trim();
+            for (String element : split) {
+                if (element.startsWith("An error occurred at line:")) {
+                    errorLine = element;
+                } else if (element.startsWith("Duplicate local variable")) {
+                    variableName = element.substring("Duplicate local variable".length()).trim();
                 }
             }
             if (variableName != null && jspReservedWordList.contains(variableName)) {
