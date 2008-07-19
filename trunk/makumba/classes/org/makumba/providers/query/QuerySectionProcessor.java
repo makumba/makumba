@@ -83,7 +83,14 @@ public class QuerySectionProcessor {
         }
 
         public void addFromWhere(String from, String where) {
-            QuerySectionProcessor.this.replace(fromEnd, 0, ", " + from);
+            if (fromEnd == -1) {
+                fromStart = end;
+                fromEnd = end;
+                QuerySectionProcessor.this.replace(fromEnd, 0, " FROM " + from);
+                fromEnd = end;
+            } else
+                QuerySectionProcessor.this.replace(fromEnd, 0, ", " + from);
+
             if (where == null)
                 return;
             if (whereStart == -1) {
@@ -93,12 +100,12 @@ public class QuerySectionProcessor {
                 fromEnd = x;
                 whereStart = fromEnd + 7;
             } else {
-                if(!where.trim().startsWith("(") || !where.trim().endsWith(")"))
-                    where="("+where+")";
-                String wh= getWhere().trim();
-                boolean para=wh.startsWith("(") && wh.endsWith(")");
-                QuerySectionProcessor.this.replace(whereStart, 0, where + " AND "+(para?"":"("));
-                if(!para)
+                if (!where.trim().startsWith("(") || !where.trim().endsWith(")"))
+                    where = "(" + where + ")";
+                String wh = getWhere().trim();
+                boolean para = wh.startsWith("(") && wh.endsWith(")");
+                QuerySectionProcessor.this.replace(whereStart, 0, where + " AND " + (para ? "" : "("));
+                if (!para)
                     QuerySectionProcessor.this.replace(whereEnd, 0, ")");
             }
         }
@@ -289,7 +296,7 @@ public class QuerySectionProcessor {
                 continue;
             }
             replaceExpr(index, name.length(), parameterInline);
-            index+=parameterInline.length();
+            index += parameterInline.length();
         }
 
     }
