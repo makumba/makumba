@@ -45,10 +45,6 @@ public class MakumbaJspException extends javax.servlet.jsp.JspException {
         this(new RuntimeException(s + "\nin tag: " + t.toString()));
     }
 
-    public MakumbaJspException(String msg) {
-        super(msg);
-    }
-
     public String getMessage() {
         return e.getMessage();
     }

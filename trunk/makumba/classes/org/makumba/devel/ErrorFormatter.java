@@ -178,15 +178,17 @@ public class ErrorFormatter {
              */
             if (t != null && original.getMessage() != null && !original.getMessage().equals(t.getMessage())) {
                 try {
-                    // make new throwable, but keep original class just in case
+                    // make new throwable, but keep original class to preserve as much as possible
                     // need to use reflection - no methods to clone or set message available in Throwable class.
                     String message = t.getMessage() + "\n\n" + original.getMessage();
                     t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
                     t1.setStackTrace(t.getStackTrace());
-                    t = t1;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // if we do not find a standard constructor, make a new throwable
+                    t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
+                    t1.setStackTrace(t.getStackTrace());
                 }
+                t = t1;
             }
         }
 
