@@ -68,7 +68,8 @@ public class MultipartHttpParameters extends HttpParameters {
     public MultipartHttpParameters(HttpServletRequest req) {
         super(req);
 
-        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine("\n\n---- code with apache.commons.fileupload  ------\n");
+        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
+            "\n\n---- code with apache.commons.fileupload  ------\n");
 
         // Create a factory for disk-based file items
         DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -90,46 +91,36 @@ public class MultipartHttpParameters extends HttpParameters {
         while (iter.hasNext()) {
             FileItem item = (FileItem) iter.next();
 
-            if (item.isFormField()) {
-                // Process a regular form field
-                if (item.isFormField()) {
-                    String name = item.getFieldName();
-                    String value = item.getString();
-                    addParameter(name, value);
+            if (item.isFormField()) { // Process a regular form field
+                String name = item.getFieldName();
+                String value = item.getString();
+                addParameter(name, value);
+
+            } else { // Process a file upload
+                String name = item.getFieldName();
+                String fileName = item.getName();
+
+                // Internet Explorer provides the entire path to the uploaded file and not just the base file name, we
+                // remove the path information
+                if (fileName != null) {
+                    fileName = FilenameUtils.getName(fileName);
                 }
 
-            } else {
-                // Process a file upload
-                if (!item.isFormField()) {
-                    Text contentToSave;
-                    int contentSize;
+                String type = item.getContentType();
 
-                    String name = item.getFieldName();
-                    String fileName = item.getName();
-                    
-                    // Internet Explorer provides the entire path to the uploaded file and not just the base file name, we remove the path information
-                    if (fileName != null) {
-                        fileName = FilenameUtils.getName(fileName);
-                    }
+                // ---- read the content and set parameters
+                Text contentToSave = new Text(item.get());
+                int contentSize = contentToSave.length();
 
-                    String type = item.getContentType();
-                    // boolean isInMemory = item.isInMemory();
+                // FIXME: what to do if content type is null? not set, or set to an empty String / String constant?
+                parameters.put(name + "_contentType", type);
 
-                    // ---- read the content and set parameters
-                    contentToSave = new Text(item.get());
-                    contentSize = contentToSave.length();
+                parameters.put(name + "_filename", fileName);
+                parameters.put(name + "_contentLength", contentSize);
+                parameters.put(name, contentToSave);
 
-                    // FIXME: what to do if content type is null? not set, or set to an empty String / String constant?
-                    parameters.put(name + "_contentType", type);
-                    
-                    parameters.put(name + "_filename", fileName);
-                    parameters.put(name + "_contentLength", contentSize);
-                    parameters.put(name, contentToSave);
-
-                    java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
-                        "Parameters set: contentType=" + type + ", fileName=" + fileName + ", contentSize="
-                                + contentSize);
-                }
+                java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
+                    "Parameters set: contentType=" + type + ", fileName=" + fileName + ", contentSize=" + contentSize);
 
             }
         }
@@ -154,7 +145,8 @@ public class MultipartHttpParameters extends HttpParameters {
      * Composes what is read from the multipart with what is in the query string. The assumption is that the multipart
      * cannot change during execution, while the query string may change due to e.g. forwards
      * 
-     * @param s the query string
+     * @param s
+     *            the query string
      * @return An Object holding the parameters
      */
     public Object getParameter(String s) {
@@ -164,8 +156,10 @@ public class MultipartHttpParameters extends HttpParameters {
     /**
      * TODO this should not be here but in a util class Composes two objects, if both are vectors, unites them
      * 
-     * @param a1 the first object
-     * @param a2 the second object
+     * @param a1
+     *            the first object
+     * @param a2
+     *            the second object
      * @return a composed object
      */
     static Object compose(Object a1, Object a2) {
