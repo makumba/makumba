@@ -25,8 +25,9 @@ package org.makumba.list.tags;
 
 import org.makumba.analyser.AnalysableTag;
 
-/** 
+/**
  * An exception thrown due to makumba-specific reasons during tag execution
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -42,6 +43,10 @@ public class MakumbaJspException extends javax.servlet.jsp.JspException {
 
     public MakumbaJspException(AnalysableTag t, String s) {
         this(new RuntimeException(s + "\nin tag: " + t.toString()));
+    }
+
+    public MakumbaJspException(String msg) {
+        super(msg);
     }
 
     public String getMessage() {
