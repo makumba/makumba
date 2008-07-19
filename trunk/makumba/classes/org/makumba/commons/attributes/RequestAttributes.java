@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
+import org.makumba.Pointer;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
@@ -44,7 +45,6 @@ import org.makumba.providers.TransactionProvider;
  * 
  * @author Cristian Bogdan
  * @version $Id: RequestAttributes.java 1707 2007-09-28 15:35:48Z manuel_gay $
- * 
  */
 public class RequestAttributes implements Attributes {
     public static final String PARAMETERS_NAME = "makumba.parameters";
@@ -56,7 +56,7 @@ public class RequestAttributes implements Attributes {
     HttpServletRequest request;
 
     Object controller;
-    
+
     private TransactionProvider tp = TransactionProvider.getInstance();
 
     public String getRequestDatabase() {
@@ -277,14 +277,25 @@ public class RequestAttributes implements Attributes {
     }
 
     public Object checkLogicForAttribute(String s) throws LogicException {
-        String snull = s + "_null";
         HttpSession ss = request.getSession(true);
         boolean nullValue = false;
         Object value = null;
         try {
             value = Logic.getAttribute(getRequestController(), s, this, getRequestDatabase(),
-                    getConnectionProvider(request));
-            if (value == null)
+                getConnectionProvider(request));
+            if (value instanceof Map) {
+                Map<String, Object> mp = (Map<String, Object>) value;
+                value = mp.get(s);
+                for (Map.Entry<String, Object> entr : mp.entrySet()) {
+                    if (entr.getKey().equals(s))
+                        value = entr.getValue();
+                    if (entr.getValue() == Pointer.Null)
+                        removeFromSession(entr.getKey(), ss);
+                    else
+                        ss.setAttribute(entr.getKey(), entr.getValue());
+                }
+            }
+            if (value == null || value == Pointer.Null)
                 nullValue = true;
         } catch (NoSuchMethodException e) {
         } catch (UnauthenticatedException ue) {
@@ -298,11 +309,16 @@ public class RequestAttributes implements Attributes {
             return value;
         }
         if (nullValue) {
-            ss.removeAttribute(s);
-            ss.setAttribute(snull, "x");
+            removeFromSession(s, ss);
             return null;
         }
         return notFound;
+    }
+
+    private void removeFromSession(String s, HttpSession ss) {
+        String snull = s + "_null";
+        ss.removeAttribute(s);
+        ss.setAttribute(snull, "x");
     }
 
     public Object checkParameterForAttribute(String s) {
@@ -313,30 +329,29 @@ public class RequestAttributes implements Attributes {
     }
 
     /**
-     * Computes a Map that holds all Attributes (meaning, session attributes, request attributes and parameters)
-     * 
-     * FIXME should also take into account all the rest (BL, login, ...)
+     * Computes a Map that holds all Attributes (meaning, session attributes, request attributes and parameters) FIXME
+     * should also take into account all the rest (BL, login, ...)
      */
     public Map toMap() {
         HttpSession ss = request.getSession(true);
         Enumeration<String> enumSession = ss.getAttributeNames();
         Enumeration<String> enumRequest = request.getAttributeNames();
         Enumeration<String> enumParams = request.getParameterNames();
-        
+
         Map<String, Object> allAttributes = new HashMap<String, Object>();
-        while(enumSession.hasMoreElements()) {
+        while (enumSession.hasMoreElements()) {
             String attrName = enumSession.nextElement();
             allAttributes.put(attrName, ss.getAttribute(attrName));
         }
-        while(enumRequest.hasMoreElements()) {
+        while (enumRequest.hasMoreElements()) {
             String attrName = enumRequest.nextElement();
             allAttributes.put(attrName, ss.getAttribute(attrName));
         }
-        while(enumParams.hasMoreElements()) {
+        while (enumParams.hasMoreElements()) {
             String attrName = enumParams.nextElement();
             allAttributes.put(attrName, ss.getAttribute(attrName));
         }
-        
+
         return allAttributes;
     }
 }

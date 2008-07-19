@@ -44,9 +44,12 @@ import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.UnauthenticatedException;
+import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -256,10 +259,10 @@ public class Logic {
         String fromWhere;
 
         String message;
-        
-        void check(){
-            if(message==null || message.length()==0){
-                message="Authorization constraint failed: "+key+"= "+value;
+
+        void check() {
+            if (message == null || message.length() == 0) {
+                message = "Authorization constraint failed: " + key + "= " + value;
             }
         }
     }
@@ -328,7 +331,7 @@ public class Logic {
                     throw new ProgrammerError("body not found for authorization constraint " + maxKey);
                 ac.message = rule.substring(ms + 1);
                 rule = rule.substring(1, ms);
-                ac.rule=rule.trim();
+                ac.rule = rule.trim();
                 if (rule.trim().length() == 0)
                     throw new ProgrammerError("empty body for authorization constraint " + maxKey);
                 if (params.length() > 0) {
@@ -410,17 +413,34 @@ public class Logic {
             throw new LogicInvocationError(g);
         }
     }
-    
+
     public static Object computeActor(String attname, Attributes a, String db, DbConnectionProvider dbcp)
             throws LogicException {
         String type = attname.substring(6).replace('_', '.');
         DataDefinition dd = ddp.getDataDefinition(type);
+        String field = null;
+        if (dd == null) {
+            int lastDot = type.lastIndexOf('.');
+            if (lastDot == -1)
+                throw new ProgrammerError("Unknown actor: " + type);
+            type = type.substring(0, lastDot);
+            field = type.substring(lastDot + 1);
+            dd = ddp.getDataDefinition(type);
+            if (dd == null)
+                throw new ProgrammerError("Unknown actor: " + type + "." + field);
+        }
+
+        StringBuffer error = new StringBuffer();
+        String errorSep = "";
+        boolean foundFunction = false;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
         nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions()) {
             if (f.getName().startsWith("actor")) {
-                StringBuffer funcCall = new StringBuffer();
-                funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
-                    " x WHERE x.").append(f.getName()).append("(");
+                StringBuffer funcCall1 = new StringBuffer();
+                funcCall1.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
+                    " x WHERE x.").append(f.getName());
+                StringBuffer funcCall = funcCall1;
+                funcCall.append("(");
                 String separator = "";
                 DataDefinition params = f.getParameters();
                 HashMap<String, Object> values = new HashMap<String, Object>();
@@ -436,21 +456,68 @@ public class Logic {
                     }
                 }
                 funcCall.append(")");
-                Vector<Dictionary<String, Object>> v = dbcp.getConnectionTo(db).executeQuery(funcCall.toString(),
-                    values);
-                if (v.size() == 0) {
-                    throw new LogicException(f.getErrorMessage());
-                } else if (v.size() > 1) {
-                    throw new LogicException("Multiple " + type + " objects fit the function " + f);
-                } else {
-                    // TODO: compute all statics!
-                    // and return a hashmap, then request attributes will know to put them all in the session
-                    return v.elementAt(0).get("col1");
+                foundFunction = true;
+                Transaction connection = dbcp.getConnectionTo(db);
+                Vector<Dictionary<String, Object>> v;
+                try {
+                    v = connection.executeQuery(funcCall.toString(), values);
+                } catch (MakumbaError e) {
+                    throw new ProgrammerError("Error while computing actor " + attname + " during execution of query "
+                            + funcCall.toString() + " " + e.getMessage());
                 }
-            }
+                if (v.size() == 0) {
+                    if (f.getErrorMessage().trim().length() > 0) {
+                        error.append(errorSep).append(f.getErrorMessage());
+                        errorSep = ", ";
+                    }
+                    continue nextFunction;
+                } else if (v.size() > 1)
+                    throw new LogicException("Multiple " + type + " objects fit the actor function " + f);
 
+                Pointer p = (Pointer) v.elementAt(0).get("col1");
+                Dictionary<String, Object> obj = connection.read(p, null);
+
+                Map<String, Object> ret = new HashMap<String, Object>();
+                String att = "actor_" + type.replace(".", "_");
+                ret.put(att, p);
+
+                for (Enumeration<String> e = obj.keys(); e.hasMoreElements();) {
+                    String k = e.nextElement();
+                    ret.put(att + "_" + k, obj.get(k));
+                }
+
+                // now we call all functions with no parameters
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("x", p);
+                for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
+                    if (g.getName().startsWith("actor") || g.getParameters().getFieldNames().size() > 0)
+                        continue;
+                    StringBuffer fc = new StringBuffer();
+                    fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
+                        " x WHERE x=").append(qap.getParameterSyntax()).append("x");
+                    Object result;
+                    try {
+                        result = connection.executeQuery(fc.toString(), param).elementAt(0).get("col1");
+                    } catch (MakumbaError e) {
+                        throw new ProgrammerError("Error while computing function " + g.getName() + " of actor "
+                                + attname + " during execution of query " + fc.toString() + " " + e.getMessage());
+                    }
+                    ret.put(att + "_" + g.getName(), result);
+                    if (g.getSessionVariableName() != null) {
+                        ret.put(g.getSessionVariableName(), result);
+                    }
+                }
+
+                return ret;
+            }
         }
-        throw new ProgrammerError("No fitting actor() function was found in " + type);
+        if (!foundFunction)
+            throw new ProgrammerError("No fitting actor() function was found in " + type);
+        if (error.length() > 0) {
+            throw new UnauthenticatedException(error.toString());
+        }
+        throw new UnauthenticatedException("Could not instantiate actor of type " + type);
+
     }
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
@@ -501,32 +568,53 @@ public class Logic {
         if (!(o instanceof AuthorizationConstraint))
             return;
         AuthorizationConstraint constraint = (AuthorizationConstraint) o;
+        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
 
         Object result = null;
         if (constraint.fromWhere == null) {
-            QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
             // we have no FROM and WHERE section, this leads in a hard-to-analyze query
             // so we try a paramter
-            String q1 = qap.inlineFunctions(constraint.rule).trim();
+            String q1;
+            try {
+                q1 = qap.inlineFunctions(constraint.rule).trim();
+            } catch (MakumbaError e) {
+                throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
+                        + " during inlining of query " + constraint.rule + " " + e.getMessage());
+            }
             if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*"))
                 result = a.getAttribute(q1.substring(1));
+            // then we try a number
+            if (result == null)
+                try {
+                    result = Double.parseDouble(q1);
+                } catch (NumberFormatException e) {
+                }
+            // then we try a string
+            if (result == null && q1.startsWith("(") && q1.endsWith(")"))
+                result = q1;
         }
 
         if (result == null) {
             String query = "SELECT " + constraint.rule + " AS col1 ";
             if (constraint.fromWhere != null)
                 query += constraint.fromWhere;
-
-            Vector<Dictionary<String, Object>> v = dbcp.getConnectionTo(dbName).executeQuery(query, null);
+            query = qap.inlineFunctions(query);
+            Vector<Dictionary<String, Object>> v;
+            try {
+                v = dbcp.getConnectionTo(dbName).executeQuery(query, null);
+            } catch (MakumbaError e) {
+                throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
+                        + " during execution of query " + query + " " + e.getMessage());
+            }
             if (v.size() > 1)
                 throw new ProgrammerError("Authorization constraint returned multiple values: " + constraint.key + "="
                         + constraint.value);
             if (v.size() == 0)
-                throw new LogicException(constraint.message);
+                throw new UnauthorizedException(constraint.message);
             result = v.elementAt(0).get("col1");
         }
         if (result == null || result.equals(Pointer.Null) || result.equals(0) || result.equals(false))
-            throw new LogicException(constraint.message);
+            throw new UnauthorizedException(constraint.message);
     }
 
     public static void doInit(Object controller, Attributes a, String dbName, DbConnectionProvider dbcp)
