@@ -59,16 +59,16 @@ public class QueryExecution {
     public int iteration;
 
     /** A reference to the currentDataSet <strong>shared</strong> by all ListQueryExecutions in the listGroup */
-    Stack currentDataSet;
+    Stack<Dictionary<String, Object>> currentDataSet;
 
     /** Stores the data for queryData */
-    public HashMap valueQueryData = new HashMap();
+    public HashMap<MultipleKey, Object> valueQueryData = new HashMap<MultipleKey, Object>();
 
     static final private String EXECUTIONS = "org.makumba.taglibQueryExecutions";
 
     static final private String CURRENT_DATA_SET = "org.makumba.currentDataSet";
 
-    static final private Dictionary NOTHING = new ArrayMap();
+    static final private Dictionary<String, Object> NOTHING = new ArrayMap();
 
     /**
      * Allocates a currentDataSet and a container for the QueryExecutions of the listGroup. Executed by the rootList.
