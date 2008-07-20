@@ -29,6 +29,7 @@ import java.lang.reflect.Modifier;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
@@ -478,7 +479,7 @@ public class Logic {
                 Dictionary<String, Object> obj = connection.read(p, null);
 
                 Map<String, Object> ret = new HashMap<String, Object>();
-                String att = "actor_" + type.replace(".", "_");
+                String att = actorPrefix(dd);
                 ret.put(att, p);
 
                 for (Enumeration<String> e = obj.keys(); e.hasMoreElements();) {
@@ -490,7 +491,7 @@ public class Logic {
                 Map<String, Object> param = new HashMap<String, Object>();
                 param.put("x", p);
                 for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
-                    if (g.getName().startsWith("actor") || g.getParameters().getFieldNames().size() > 0)
+                    if (!isSessionFunction(g))
                         continue;
                     StringBuffer fc = new StringBuffer();
                     fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
@@ -518,6 +519,27 @@ public class Logic {
         }
         throw new UnauthenticatedException("Could not instantiate actor of type " + type);
 
+    }
+
+    private static boolean isSessionFunction(DataDefinition.QueryFragmentFunction g) {
+        return !g.getName().startsWith("actor") && g.getParameters().getFieldNames().size() == 0;
+    }
+
+    private static String actorPrefix(DataDefinition dd) {
+        return "actor_" + dd.getName().replace(".", "_");
+    }
+    
+    public static Set<String> logoutActor(DataDefinition dd){
+        Set<String >ret= new HashSet<String>();
+        String att= actorPrefix(dd);
+        ret.add(att);
+        for(String s:dd.getFieldNames()){
+            ret.add(att+"_"+s);
+        }
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) 
+            if(isSessionFunction(g))
+                ret.add(att+"_"+g.getName());
+        return ret;        
     }
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
