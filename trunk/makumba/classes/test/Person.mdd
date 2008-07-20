@@ -60,6 +60,7 @@ address=set			 ;Addresses
   address->!title=description
   address->description=char[30]	;Description (home address, study-time address, ...)
   address->streetno=char[100]	      ;Street
+  
   address->zipcode=char[10]		;Zipcode
   address->city=char[40]		;City
   address->country=char[20]             ;Country
@@ -95,3 +96,4 @@ someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } You
 nameMin2CharsLong() { character_length(indiv.name) > 2 } Your name is not long enough!
 nameMin4CharsLong() { character_length(indiv.name) > 4 } Your name is not long enough!
 nameMin3CharsLong() { indiv.nameMin3CharsLong() } Your name is not long enough!
+someTest(){ actor(test.Person) }
