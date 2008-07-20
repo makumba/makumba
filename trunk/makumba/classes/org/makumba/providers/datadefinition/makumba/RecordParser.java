@@ -897,6 +897,9 @@ public class RecordParser {
                 return null;
             }
             parse1(fieldName, fc);
+            if (initialType.equals(FieldInfo.getStringType(FieldInfo._file))) { // file type gets re-written to ptrOne
+                return getFieldInfo(fieldName).type;
+            }
             if (getFieldInfo(fieldName).type.equals(initialType)) {
                 return initialType;
             }
@@ -923,6 +926,9 @@ public class RecordParser {
                 return;
             case FieldDefinition._ptrOne:
                 ptrOne_parse1(fieldName, fc);
+                return;
+            case FieldDefinition._file:
+                parseFile(fieldName, fc);
                 return;
             case FieldDefinition._ptrRel:
             case FieldDefinition._ptr:
@@ -1019,6 +1025,19 @@ public class RecordParser {
     // moved from ptrOneParser
     public void ptrOne_parse1(String fieldName, FieldCursor fc) {
         makeSubtable(fieldName, fc);
+        ptrOne_RecordParsers.put(fieldName, new RecordParser(subtableParser_subtables.get(fieldName), this));
+        return;
+    }
+
+    // based on ptrOne_parse1
+    public void parseFile(String fieldName, FieldCursor fc) {
+        subtableParser_here.put(fieldName, dd);
+
+        String name = getFieldInfo(fieldName).name;
+        subtableParser_subtables.put(fieldName, new FileRecordInfo(dd, name));
+        getFieldInfo(fieldName).type = FieldInfo.getStringType(FieldInfo._ptrOne);
+        subtableParser_subtables.get(fieldName).addStandardFields(subtableParser_subtables.get(fieldName).subfield);
+        getFieldInfo(fieldName).extra1 = subtableParser_subtables.get(fieldName);
         ptrOne_RecordParsers.put(fieldName, new RecordParser(subtableParser_subtables.get(fieldName), this));
         return;
     }
@@ -1328,6 +1347,20 @@ public class RecordParser {
             if (parameters.getFieldNames().size() == 0) {
                 System.out.println("\t\t\t--None--");
             }
+        }
+
+        System.out.println("\n\n*****************************************************************************");
+        FieldDefinition fi = recordInfo.getFieldDefinition("someAttachment");
+        System.out.println("extra1:" + ((FieldInfo) fi).extra1);
+        System.out.println("extra2:" + ((FieldInfo) fi).extra2);
+        System.out.println("extra3:" + ((FieldInfo) fi).extra3);
+        System.out.println("File sub-ptr in test.Person:");
+        System.out.println("\ttype: " + fi);
+        DataDefinition pointedType = fi.getPointedType();
+        System.out.println("\tname: " + pointedType);
+        System.out.println("\tfields: " + pointedType.getFieldNames());
+        for (String string : pointedType.getFieldNames()) {
+            System.out.println("\t\t" + string + ": " + pointedType.getFieldDefinition(string));
         }
     }
 

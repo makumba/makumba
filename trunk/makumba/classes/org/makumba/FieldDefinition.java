@@ -75,6 +75,8 @@ public interface FieldDefinition {
 
     public static final int _boolean = 19;
 
+    public static final int _file = 20;
+
     public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
 
     public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
@@ -322,6 +324,9 @@ public interface FieldDefinition {
 
     /** returns whether this field is a binary type. */
     public boolean isBinaryType();
+
+    /** returns whether this field is a file type. */
+    public boolean isFileType();
 
     /** returns whether this field is a set type, i.e. set, setIntEnum or setCharEnum or setComplex. */
     public boolean isSetType();

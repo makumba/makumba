@@ -38,6 +38,8 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ValidationRule;
+import org.makumba.commons.attributes.HttpParameters;
+import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.forms.validation.ClientsideValidationProvider;
@@ -162,8 +164,19 @@ public class RecordEditor extends RecordFormatter {
                 fieldDefinition);
 
             if (o != null) {
+                // if we have a file type data-definition, put all fields in the sub-record
+                String inputName = FieldEditor.getInputName(this, i, "");
+                if (fieldDefinition.isFileType()) {
+                    data.put(inputName + ".content", o);
+                    HttpParameters parameters = RequestAttributes.getParameters(req);
+                    data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
+                    data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
+                    data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
+                    data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
+                } else {
                 // the data is written in the dictionary without the suffix
-                data.put(FieldEditor.getInputName(this, i, ""), o);
+                data.put(inputName, o);
+                }
             }
             org.makumba.commons.attributes.RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
         }
@@ -185,6 +198,10 @@ public class RecordEditor extends RecordFormatter {
         formatterArray = new FieldFormatter[dd.getFieldNames().size()];
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
+            if (fd.isFileType()) {
+                formatterArray[i] = binaryEditor.getInstance();
+                return;
+            }
             switch (fd.getIntegerType()) {
                 case FieldDefinition._ptr:
                     formatterArray[i] = ptrEditor.getInstance();
