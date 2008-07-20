@@ -185,7 +185,7 @@ public class JavaRelationMiner extends RelationMiner {
         String toFile = "/WEB-INF/classes/" + className.replace(".", File.separator);
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("reason", reason);
-        rc.addRelation(fromFile, toFile, relationOrigin);
+        rc.addRelation(fromFile, toFile, "java2java", relationOrigin);
     }
 
     /**
@@ -208,7 +208,6 @@ public class JavaRelationMiner extends RelationMiner {
         relationOrigin.put("expr", expr);
         relationOrigin.put("field", field);
         relationOrigin.put("reason", query);
-        rc.addRelation(fromFile, toFile, relationOrigin);
+        rc.addRelation(fromFile, toFile, "java2MDD", relationOrigin);
     }
-
 }

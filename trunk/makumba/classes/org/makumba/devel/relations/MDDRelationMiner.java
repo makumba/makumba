@@ -88,6 +88,6 @@ public class MDDRelationMiner extends RelationMiner {
     private void addMDD2MDDRelation(String fromFile, String toFile, String fromField) {
         Dictionary<String, Object> relationOrigin = new Hashtable<String, Object>();
         relationOrigin.put("field", fromField);
-        rc.addRelation(fromFile, toFile, relationOrigin);
+        rc.addRelation(fromFile, toFile, "mdd2mdd", relationOrigin);
     }
 }
