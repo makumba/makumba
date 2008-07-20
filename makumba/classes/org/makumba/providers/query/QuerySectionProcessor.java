@@ -365,9 +365,10 @@ public class QuerySectionProcessor {
             // and name identically the labels that have same definition;
             // then check if all labels are the same and have identical definitions, and if all where conditions are
             // equivalent.
-            // for now we only check if things are identical
-            return ins.from.equals(from)
-                    && (ins.where == null && where == null || where != null && where.equals(ins.where));
+            // for now we only check if things are identical or if the included FROM and WHERE are subqueries of the current ones
+            // that's enough for actor expansion
+            return from!=null && from.indexOf(ins.from)!=-1
+                    && (ins.where == null && where == null || where != null && where.indexOf(ins.where)!=-1);
         }
     }
 
