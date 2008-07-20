@@ -109,7 +109,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         String[] methodReal = {"COS","COSH","EXP","LN","LOG","SIN","SINH","SQRT","TAN","TANH","ACOS","ASIN","ATAN"};
         
         String[] methodChar = {"CHR","CONCAT","INITCAP","LOWER","LPAD","LTRIM","NLS_INITCAP","NLS_LOWER","NLSSORT","NLS_UPPER",
-                "RPAD","RTRIM","SOUNDEX","SUBSTR","TRANSLATE","TREAT","TRIM","UPPER"};
+                "RPAD","RTRIM","SOUNDEX","SUBSTR", "SUBSTRING", "TRANSLATE","TREAT","TRIM","UPPER"};
         
         String[] methodInt = {"ASCII","INSTR","LENGTH", "DAY", "MONTH", "YEAR"};
         
