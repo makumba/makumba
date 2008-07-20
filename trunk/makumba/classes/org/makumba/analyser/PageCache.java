@@ -90,12 +90,22 @@ public class PageCache {
         String result = "== Simple caches\n";
         for (String key : caches.keySet()) {
             result += "  == Key " + key + "\n";
-
+            HashMap<Object, Object> cache = caches.get(key);
+            for (Object key2 : cache.keySet()) {
+                result += "    - " + key2 + " => " + cache.get(key2) + "\n";
+            }
         }
-        result += "== Set caches\n   Not implemented yet.";
+        
+        result += "== Set caches\n";
+        for (String key : setCaches.keySet()) {
+            result += "  == Key " + key + "\n";
+            HashSet<Object> cache = setCaches.get(key);
+            for (Object entry : cache) {
+                result += "    - " + entry + "\n";
+            }
+        }
 
         return result;
-
     }
 
     public String toString(String key) {
