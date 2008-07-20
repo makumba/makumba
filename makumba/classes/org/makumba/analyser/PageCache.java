@@ -31,7 +31,7 @@ public class PageCache {
      *            the value of the object to be cached
      */
     public void cache(String cacheName, Object key, Object value) {
-        HashMap<Object, Object> cache = (HashMap<Object, Object>) caches.get(cacheName);
+        HashMap<Object, Object> cache = caches.get(cacheName);
         if (cache == null) {
             cache = new HashMap<Object, Object>();
             caches.put(cacheName, cache);
@@ -49,15 +49,18 @@ public class PageCache {
      * @return the object corresponding to the cache entry, <code>null</code> if no entry exists
      */
     public Object retrieve(String cacheName, Object key) {
-        HashMap cache = (HashMap) caches.get(cacheName);
-        if (cache == null)
+        HashMap<Object, Object> cache = caches.get(cacheName);
+        if (cache == null) {
             return null;
+        }
         return cache.get(key);
     }
-    
+
     /**
      * Gets a whole cache
-     * @param cacheName the name of the cache
+     * 
+     * @param cacheName
+     *            the name of the cache
      * @return a Map with the content of the cache
      */
     public Map<Object, Object> retrieveCache(String cacheName) {
@@ -81,32 +84,32 @@ public class PageCache {
     public HashSet<Object> retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
     }
-    
+
+    @Override
     public String toString() {
         String result = "== Simple caches\n";
-        for (Iterator iterator = caches.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
-            result +="  == Key "+key+"\n";
-            
+        for (String key : caches.keySet()) {
+            result += "  == Key " + key + "\n";
+
         }
-        result+="== Set caches\n   Not implemented yet.";
-        
+        result += "== Set caches\n   Not implemented yet.";
+
         return result;
-        
+
     }
-    
+
     public String toString(String key) {
-        String result = "== Content of cache "+key+"\n";
+        String result = "== Content of cache " + key + "\n";
         HashMap<Object, Object> cache = caches.get(key);
-        
+
         Iterator<Object> it2 = cache.keySet().iterator();
         while (it2.hasNext()) {
-            Object key2 = (Object) it2.next();
-            if(key2 != null) {
-                result += "  key: "+key2.toString() + "\n    value: "+cache.get(key2).toString()+"\n";
+            Object key2 = it2.next();
+            if (key2 != null) {
+                result += "  key: " + key2.toString() + "\n    value: " + cache.get(key2).toString() + "\n";
             }
         }
-        
+
         return result;
     }
 }
