@@ -13,6 +13,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.ForeignKeyError;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
@@ -32,7 +33,7 @@ import org.makumba.commons.attributes.RequestAttributes;
  * copied from the TagExceptionServlet.<br>
  * FIXME the exception hierarchy needs to be reviewed.<br>
  * FIXME: this class should extend the Filter class (part of refactoring)
- *
+ * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
  * @author Rudolf Mayer
@@ -57,8 +58,8 @@ public class ErrorFormatter {
             { org.makumba.NoSuchLabelException.class, "no such label" },
             { org.makumba.LogicException.class, "business logic" } };
 
-    static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class, NumberFormatException.class,
-            ClassCastException.class };
+    static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class,
+            NumberFormatException.class, ClassCastException.class };
 
     protected ServletContext servletContext;
 
@@ -109,8 +110,8 @@ public class ErrorFormatter {
                 ServletException e = (ServletException) t;
                 t1 = e.getRootCause();
                 t1.setStackTrace(e.getRootCause().getStackTrace());
-            } else if( t instanceof ServletException) {
-                t1= ((ServletException)t).getRootCause();
+            } else if (t instanceof ServletException) {
+                t1 = ((ServletException) t).getRootCause();
             } else {
                 break;
             }
@@ -216,7 +217,7 @@ public class ErrorFormatter {
 
     /**
      * Stores the error details to the database (ErrorLog.mdd)
-     *
+     * 
      * @param t
      *            the exception
      * @param req
@@ -251,20 +252,22 @@ public class ErrorFormatter {
             }
 
             tr.insert("org.makumba.controller.ErrorLog", d);
-        } catch(Throwable t1) {
-            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe("Could not log exception, impossible to get access to the database");
+        } catch (Throwable t1) {
+            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe(
+                "Could not log exception, impossible to get access to the database");
         } finally {
             try {
                 tr.close();
-            } catch(Throwable t2) {
-                java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe("Could not log exception, impossible to get access to the database");
+            } catch (Throwable t2) {
+                java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe(
+                    "Could not log exception, impossible to get access to the database");
             }
         }
     }
 
     /**
      * Displays a knows error in the case of an error originating from a tag
-     *
+     * 
      * @param title
      *            title describing the error
      * @param t
@@ -282,26 +285,13 @@ public class ErrorFormatter {
         String body = t.getMessage();
         String hiddenBody = null;
 
-        // we check whether this exception was thrown at controller or view level
-        if (t instanceof LogicException) {
-            if (((LogicException) t).isControllerOriginated()) {
-
-                boolean foundRootCause = false;
-                int i = 0;
-                while (!foundRootCause && i < t.getStackTrace().length) {
-                    if (t.getStackTrace()[i].getClassName().indexOf("org.makumba") == -1) {
-                        foundRootCause = true;
-                    } else {
-                        i++;
-                    }
-                }
-
-                body = "Exception occured at " + t.getStackTrace()[i].getClassName() + "."
-                        + t.getStackTrace()[i].getMethodName() + "():" + t.getStackTrace()[i].getLineNumber() + "\n\n"
-                        + body;
-            } else {
-                body = formatTagData(req) + body;
-            }
+        // we check whether this exception is a logic exception thrown at controller, or is a foreign key error
+        if (((t instanceof LogicException && ((LogicException) t).isControllerOriginated()) || t instanceof ForeignKeyError)
+                && findNonMakumbaRootCause(t) != -1) {
+            // TODO: // maybe this should not be just for logic exception and foreign key error, but for everything in general?
+            int i = findNonMakumbaRootCause(t);
+            body = "Exception occured at " + t.getStackTrace()[i].getClassName() + "."
+                    + t.getStackTrace()[i].getMethodName() + ":" + t.getStackTrace()[i].getLineNumber() + "\n\n" + body;
         } else {
             body = formatTagData(req) + body;
         }
@@ -320,9 +310,26 @@ public class ErrorFormatter {
         }
     }
 
+    private int findNonMakumbaRootCause(Throwable t) {
+        boolean foundRootCause = false;
+        int i = 0;
+        while (!foundRootCause && i < t.getStackTrace().length) {
+            if (t.getStackTrace()[i].getClassName().indexOf("org.makumba") == -1) {
+                foundRootCause = true;
+            } else {
+                i++;
+            }
+        }
+        if (foundRootCause) {
+            return i;
+        } else {
+            return -1;
+        }
+    }
+
     /**
      * Displays information about the tag in which the error occurs in a nice way
-     *
+     * 
      * @param req
      *            the http request corresponding to the current access
      * @return The tag error, nicely displayed
@@ -372,7 +379,7 @@ public class ErrorFormatter {
 
     /**
      * Prints the stacktrace
-     *
+     * 
      * @param t
      *            the exception
      * @return A String holding the stacktrace
@@ -385,7 +392,7 @@ public class ErrorFormatter {
 
     /**
      * Filters out a short part of the stacktrace
-     *
+     * 
      * @param s
      *            the stacktrace to be filtered
      * @return A short version of the stacktrace, meaning only the beginning
@@ -418,7 +425,7 @@ public class ErrorFormatter {
 
     /**
      * Displays an unknown error
-     *
+     * 
      * @param original
      *            the original error exception, not treated
      * @param t
@@ -477,7 +484,7 @@ public class ErrorFormatter {
 
     /**
      * Returns a string describing the error that occured.
-     *
+     * 
      * @param req
      * @return the described error
      */
@@ -527,7 +534,7 @@ public class ErrorFormatter {
     /**
      * Returns a string describing an unknown error. TODO: this code is more or less a copy of unknownError() --> could
      * be optimised
-     *
+     * 
      * @param original
      * @param t
      * @return
@@ -565,7 +572,7 @@ public class ErrorFormatter {
 
     /**
      * Cuts down a stack trace to the given number of lines.
-     *
+     * 
      * @param s
      *            a stacktrace as string.
      * @param lineNumbers
