@@ -69,6 +69,7 @@ public class FunctionInliner {
             func.replaceParameter(functionDefinition.getParameters().getFieldDefinition(n).getName(), inlineParameter);
             n++;
         }
+
         qsp.addFromWhere(func, functionObject);
         inlinedFunction = func.getProjectionText();
     }
@@ -88,9 +89,29 @@ public class FunctionInliner {
     }
 
     private void findFunctionObject(Matcher m, String from, QueryAnalysisProvider qp) {
-        DataDefinition dd = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
+        DataDefinition dd = null;
+        if (from != null && from.length() > 0)
+            dd = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
         if (dd == null) {
-            throw new org.makumba.NoSuchLabelException("no such label '" + m.group(2) + "'.");
+            String possibleMdd = m.group(1);
+            int n = possibleMdd.lastIndexOf(".");
+            if (n != -1) {
+                String possibleFunction = possibleMdd.substring(n + 1);
+                possibleMdd = possibleMdd.substring(0, n);
+                dd = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
+                if (dd != null)
+                    functionDefinition = dd.getFunction(possibleFunction.trim());
+                else
+                    throw new org.makumba.DataDefinitionNotFoundError(possibleMdd);
+                if (functionDefinition == null)
+                    throw new org.makumba.NoSuchFieldException(dd, possibleFunction);
+                functionObject = null;
+                if (functionDefinition.getQueryFragment().indexOf("this") != -1)
+                    throw new ProgrammerError("Cannot use 'this' in function used statically" + m.group());
+                return;
+            } else
+                throw new org.makumba.NoSuchLabelException("no such label '" + m.group(2) + "'.");
+
         }
         String referenceSequence = m.group(1);
         int dot = referenceSequence.indexOf(".");
@@ -225,7 +246,9 @@ public class FunctionInliner {
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
                 "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
                 "SELECT p.nameMin3CharsLong() FROM test.Person p",
+                "SELECT test.Person.someTest()",
                 "SELECT p.indiv.name AS col1,character_length(p.indiv.name) AS col2 FROM test.Person p WHERE p.someFunctionWithParams(2,5,7)"
+
         //
         };
 
