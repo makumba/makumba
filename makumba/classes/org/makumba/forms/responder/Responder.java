@@ -45,7 +45,7 @@ import org.makumba.controller.http.ControllerFilter;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
- * space, identical respodners are stored only once
+ * space, identical responders are stored only once
  */
 public abstract class Responder implements java.io.Serializable {
     /**
