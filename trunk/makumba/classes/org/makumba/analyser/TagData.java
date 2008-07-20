@@ -16,8 +16,8 @@ public class TagData implements Serializable {
 
     /** Name of the tag */
     public String name;
-    
-    /** Number of the node in the graph of tags of the page **/
+
+    /** Number of the node in the graph of tags of the page * */
     public int nodeNumber;
 
     /** Tag attributes */
@@ -27,17 +27,17 @@ public class TagData implements Serializable {
     public Object tagObject;
 
     int startLine, startColumn, endLine, endColumn;
-    
+
     protected SourceSyntaxPoints sourceSyntaxPoints;
 
     public TagData(String name, SyntaxPoint start, SyntaxPoint end, Map<String, String> attributes) {
-        this.name=name;
-        this.sourceSyntaxPoints= start.getSourceSyntaxPoints();
-        this.startLine=start.getLine();
-        this.startColumn= start.getColumn();
-        this.endLine= end.getLine();
-        this.endColumn= end.getColumn();
-        this.attributes=attributes;
+        this.name = name;
+        this.sourceSyntaxPoints = start.getSourceSyntaxPoints();
+        this.startLine = start.getLine();
+        this.startColumn = start.getColumn();
+        this.endLine = end.getLine();
+        this.endColumn = end.getColumn();
+        this.attributes = attributes;
     }
 
     public Object getTagObject() {
@@ -64,5 +64,10 @@ public class TagData implements Serializable {
         return sourceSyntaxPoints;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Tag " + name + " on " + getStartLine() + ":" + getStartColumn() + " - " + getEndLine() + ":"
+                + getEndColumn() + ", attributes: " + attributes;
+    }
+
 }
