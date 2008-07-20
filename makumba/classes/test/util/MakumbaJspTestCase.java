@@ -80,7 +80,11 @@ public class MakumbaJspTestCase extends JspTestCase {
             while ((strFile = fileIn.readLine()) != null) {
                 fileIntoString += strFile + "\n";
                 strStr = stringIn.readLine();
-                testOk = strFile.equals(strStr);
+                if (!strFile.equals(strStr)) {
+                    // important! set this only to false in case we are different DO NOT set it to true if it is equal,
+                    // otherwise we potentially forget about previously differing lines
+                    testOk = false;
+                }
                 expectedResult.add(strFile);
                 if (strStr != null) { // we need to check if the expected line is not null
                     realResult.add(strStr);
