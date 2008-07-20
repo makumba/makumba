@@ -72,8 +72,7 @@ public class RecordEditor extends RecordFormatter {
 
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldEditor fe = (FieldEditor) formatterArray[i];
-            Collection<InvalidValueException> exceptions = e.getExceptions(fe.getInputName(this, i, suffix));
+            Collection<InvalidValueException> exceptions = e.getExceptions(FieldEditor.getInputName(this, i, suffix));
             if (exceptions != null) {
                 for (InvalidValueException invalidValueException : exceptions) {
                     unassignedExceptions.remove(invalidValueException);
@@ -85,9 +84,8 @@ public class RecordEditor extends RecordFormatter {
 
     public void initClientSideValidation(ClientsideValidationProvider provider, boolean liveValidation, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldEditor fe = (FieldEditor) formatterArray[i];
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
-            String inputName = fe.getInputName(this, i, suffix);
+            String inputName = FieldEditor.getInputName(this, i, suffix);
             if (inputName == null) {
                 continue;
             }
@@ -106,7 +104,7 @@ public class RecordEditor extends RecordFormatter {
         // the declared types in the MDD match with what we have in the form
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
-            String inputName = fe.getInputName(this, i, suffix);
+            String inputName = FieldEditor.getInputName(this, i, suffix);
             if (inputName == null) {
                 continue;
             }
@@ -136,7 +134,6 @@ public class RecordEditor extends RecordFormatter {
         // on those, we apply the user-defined checks from the validation definition
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
             int i = (validatedFieldsOrdered.get(index)).intValue();
-            FieldEditor fe = (FieldEditor) formatterArray[i];
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
             Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
@@ -161,14 +158,14 @@ public class RecordEditor extends RecordFormatter {
                 }
             }
 
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix) + "_type",
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix) + "_type",
                 fieldDefinition);
 
             if (o != null) {
                 // the data is written in the dictionary without the suffix
-                data.put(fe.getInputName(this, i, ""), o);
+                data.put(FieldEditor.getInputName(this, i, ""), o);
             }
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, fe.getInputName(this, i, suffix), o);
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
         }
 
         if (exceptions.size() > 0) {
