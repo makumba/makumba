@@ -146,10 +146,10 @@ public class QuerySectionProcessor {
         }
 
         public void addInsertion(Insertion ins) {
-            if (myFromWhere.isAnalogous(ins))
+            if (myFromWhere.contains(ins))
                 return;
             for (Insertion in : insertions) {
-                if (in.isAnalogous(ins))
+                if (in.contains(ins))
                     return;
             }
             insertions.add(ins);
@@ -360,7 +360,7 @@ public class QuerySectionProcessor {
 
         String where;
 
-        public boolean isAnalogous(Insertion ins) {
+        public boolean contains(Insertion ins) {
             // TODO: this should detect the labels defined in both insertions
             // and name identically the labels that have same definition;
             // then check if all labels are the same and have identical definitions, and if all where conditions are
