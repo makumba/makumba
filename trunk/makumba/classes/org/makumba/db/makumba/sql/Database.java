@@ -394,6 +394,10 @@ public class Database extends org.makumba.db.makumba.Database {
 		return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
 	}
 
+    public boolean isForeignKeyViolationException(SQLException se) {
+        return se.getMessage().toLowerCase().contains("a foreign key constraint fails");
+    }
+	
 	static void logException(SQLException e) {
 		logException(e, null);
 	}
@@ -438,5 +442,6 @@ public class Database extends org.makumba.db.makumba.Database {
 	public boolean isLimitOffsetFirst() {
 		return true;
 	}
+
 
 }
