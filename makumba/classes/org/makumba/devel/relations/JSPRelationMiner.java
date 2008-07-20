@@ -408,7 +408,7 @@ public class JSPRelationMiner extends RelationMiner {
         relationOrigin.put("expr", expr);
         relationOrigin.put("field", field);
 
-        rc.addRelation(fromFile, toFile, relationOrigin);
+        rc.addRelation(fromFile, toFile, "jsp2mdd", relationOrigin);
     }
 
     /**
@@ -428,6 +428,6 @@ public class JSPRelationMiner extends RelationMiner {
         relationOrigin.put("startline", originTagData.getStartLine());
         relationOrigin.put("endline", originTagData.getEndLine());
         relationOrigin.put("tagname", originTagData.name);
-        rc.addRelation(fromFile, toFile, relationOrigin);
+        rc.addRelation(fromFile, toFile, "jsp2jsp", relationOrigin);
     }
 }

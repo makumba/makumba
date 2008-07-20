@@ -67,6 +67,8 @@ public class RelationCrawler {
     private String URLprefix;
 
     private String URLroot;
+    
+    private boolean relationTypeDetail = false;
 
     private TransactionProvider tp = TransactionProvider.getInstance();
 
@@ -86,25 +88,27 @@ public class RelationCrawler {
      *            the prefix of the relation URL, e.g. "file://"
      * @param URLroot
      *            the root of the relation, e.g. a webapp name
+     * @param relationTypeDetail TODO
      * @return a {@link RelationCrawler} instance
      */
     public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget,
-            String URLprefix, String URLroot) {
+            String URLprefix, String URLroot, boolean relationTypeDetail) {
         RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot);
         if (instance == null) {
-            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot);
+            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot, relationTypeDetail);
             relationCrawlers.put(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot, instance);
         }
         return instance;
     }
 
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix,
-            String URLroot) {
+            String URLroot, boolean relationTypeDetail) {
         this.webappRoot = webappRoot;
         this.targetDatabase = targetDatabase;
         this.forceDatabase = forcetarget;
         this.URLprefix = URLprefix;
         this.URLroot = URLroot;
+        this.relationTypeDetail = relationTypeDetail;
 
         // initalise relation miners
         this.JSPRelationMiner = new JSPRelationMiner(this);
@@ -209,6 +213,8 @@ public class RelationCrawler {
             jsap.registerParameter(new FlaggedOption("urlRoot", JSAP.STRING_PARSER, null, false, 'u', "urlRoot"));
             jsap.registerParameter(new FlaggedOption("skipPaths", JSAP.STRING_PARSER, null, false, 's', "skipPaths"));
             jsap.registerParameter(new UnflaggedOption("path", JSAP.STRING_PARSER, null, false, true));
+            jsap.registerParameter(new FlaggedOption("relationTypeDetail", JSAP.STRING_PARSER, null, false, 't', "relationTypeDetail"));
+            
         } catch (JSAPException e) {
             e.printStackTrace();
         }
@@ -236,6 +242,7 @@ public class RelationCrawler {
         String URLroot = result.getString("urlRoot");
         String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
                 : new String[] {};
+        boolean relationTypeDetail = result.getBoolean("relationTypeDetail");
         String[] files = result.getString("path") != null ? result.getString("path").split(",") : new String[] {};
 
         System.out.println("Starting relation crawler, config:");
@@ -245,6 +252,7 @@ public class RelationCrawler {
         System.out.println("\tURLprefix: " + URLprefix);
         System.out.println("\tURLroot: " + URLroot);
         System.out.println("\tSkip: " + Arrays.toString(skipPaths));
+        System.out.println("\trelationTypeDetail: " + relationTypeDetail);
         System.out.println("\tFiles: " + Arrays.toString(files));
         System.out.println("\t(from : " + Arrays.toString(args) + ")");
         Date beginDate = new Date();
@@ -259,7 +267,7 @@ public class RelationCrawler {
         }
 
         RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase, URLprefix == null ? ""
-                : URLprefix, URLroot == null ? "" : URLroot);
+                : URLprefix, URLroot == null ? "" : URLroot, relationTypeDetail);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
@@ -309,13 +317,13 @@ public class RelationCrawler {
 
     /**
      * Adds a relation which will later on be written to the database
-     * 
      * @param toFile
      *            the path to the file there is a relation with
+     * @param type TODO
      * @param relationData
      *            the relation data
      */
-    protected void addRelation(String fromFile, String toFile, Dictionary<String, Object> relationData) {
+    protected void addRelation(String fromFile, String toFile, String type, Dictionary<String, Object> relationData) {
         
         if(!fromFile.equals(toFile)) {
             
@@ -348,12 +356,14 @@ public class RelationCrawler {
 
         Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase);
 
-        for (String toFile : relations.keySet()) {
+        for (String typeAndtoFile : relations.keySet()) {
+            String toFile = typeAndtoFile.substring(typeAndtoFile.indexOf("#") + 1);
+            String type = relationTypeDetail ? typeAndtoFile.substring(0, typeAndtoFile.indexOf("#")) : "dependsOn";
             Map<String, Vector<Dictionary<String, Object>>> map = relations.get(toFile);
             for (String fromFile : map.keySet()) {
                 Vector<Dictionary<String, Object>> origins = map.get(fromFile);
                 Dictionary<String, Object> relationInfo = new Hashtable<String, Object>();
-                relationInfo.put("type", "dependsOn");
+                relationInfo.put("type", type);
                 relationInfo.put("fromFile", fromFile);
 
                 String fromURL = this.URLprefix + this.URLroot
@@ -361,7 +371,7 @@ public class RelationCrawler {
                 String toURL = this.URLprefix + this.URLroot
                         + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
-                System.out.println(fromURL + " -(" + "dependsOn" + ")-> " + toURL);
+                System.out.println(fromURL + " -(" + type + ")-> " + toURL);
 
                 // now we insert the records into the relations table, in the right database
                 Transaction tr2 = null;
