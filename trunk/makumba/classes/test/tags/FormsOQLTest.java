@@ -235,6 +235,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testFormMakNewBinary() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakNewFormBinary.jsp");
+    }
+
+    public void endFormMakNewBinary(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
     public void beginMakAddToNewForm(Request request) throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")

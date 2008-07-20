@@ -35,6 +35,8 @@ comment=text		 ;Comments
 
 picture=binary		;Picture of the person
 
+someAttachment=file
+
 favouriteToy= ptr test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers  ;Favourite toy in a long tablename
 
 brother= ptr test.Person
