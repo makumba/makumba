@@ -255,7 +255,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         // for file types, set the form to multi-part
         // FIXME: this check is a bit duplicated to the one in initialiseState(), but we only know the field-type here
         // need to do it here, to have both the type of this field and the responder available
-        if (type.isBinaryType()) {
+        if (type.isBinaryType() || type.isFileType()) {
             getForm().setMultipart();
         }
 

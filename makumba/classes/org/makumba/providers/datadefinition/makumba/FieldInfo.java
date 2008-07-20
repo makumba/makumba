@@ -157,6 +157,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         integerTypeMap.put("date", new Integer(FieldDefinition._date));
         integerTypeMap.put("dateCreate", new Integer(FieldDefinition._dateCreate));
         integerTypeMap.put("dateModify", new Integer(FieldDefinition._dateModify));
+        integerTypeMap.put("file", new Integer(FieldDefinition._file));
         integerTypeMap.put("set", new Integer(FieldDefinition._set));
         integerTypeMap.put("setComplex", new Integer(FieldDefinition._setComplex));
         integerTypeMap.put("nil", new Integer(FieldDefinition._nil));
@@ -366,7 +367,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._ptrOne:
             case FieldDefinition._ptrRel:
             case FieldDefinition._setComplex:
-                return Pointer.Null;
+                if (isFileType()) { // file is a transformed to a pointer type on MDD parsin
+                    // but the binary input is on the name of the field, not field.content
+                    return Pointer.NullText;
+                } else {
+                    return Pointer.Null;
+                }
             case FieldDefinition._real:
                 return Pointer.NullReal;
             case FieldDefinition._set:
@@ -379,7 +385,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._boolean:
                 return Pointer.NullBoolean;
             default:
-                throw new RuntimeException("Shouldn't be here");
+                throw new RuntimeException("Unknown case handling for field type '" + this + "', integer type "
+                        + getIntegerType());
         }
     }
 
@@ -436,7 +443,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     /** returns field type's integer value */
     public int getIntegerType() {
-        return ((Integer) integerTypeMap.get(getType())).intValue();
+        return (Integer) integerTypeMap.get(getType());
     }
 
     // should be set while parsing
@@ -724,7 +731,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._ptrOne:
             case FieldDefinition._ptrRel:
             case FieldDefinition._setIntEnum:
-                return check_ptrIndex_ValueImpl(value);
+                if (isFileType() && !(value instanceof Pointer)) {// file is a transformed to a pointer type on MDD parsing
+                    // but the binary input is on the name of the field, not field.content
+                    return check_binary_ValueImpl(value);
+                } else {
+                    return check_ptrIndex_ValueImpl(value);
+                }
             case FieldDefinition._real:
                 return check_real_ValueImpl(value);
             case FieldDefinition._set:
@@ -736,11 +748,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._text:
                 return check_text_ValueImpl(value);
             case FieldDefinition._binary:
+            case FieldDefinition._file:
                 return check_binary_ValueImpl(value);
             case FieldDefinition._boolean:
                 return check_boolean_ValueImpl(value);
             default:
-                throw new RuntimeException("Shouldn't be here");
+                throw new RuntimeException("Unknown case handling for field type '" + this + "', integer type "
+                        + getIntegerType());
         }
     }
 
@@ -975,6 +989,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setComplex:
             case FieldDefinition._setIntEnum:
+            case FieldDefinition._file:
                 return get_ptrOne_Subtable();
             case FieldDefinition._set:
                 return get_set_Subtable();
@@ -999,6 +1014,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setComplex:
             case FieldDefinition._setIntEnum:
+            case FieldDefinition._file:
                 return get_ptrOne_PointedType();
             case FieldDefinition._ptrRel:
             case FieldDefinition._ptr:
@@ -1103,6 +1119,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     public boolean isBinaryType() {
         return getIntegerType() == _binary;
+    }
+
+    public boolean isFileType() {
+        return extra1 != null && extra1 instanceof FileRecordInfo;
     }
 
     public boolean isSetType() {
