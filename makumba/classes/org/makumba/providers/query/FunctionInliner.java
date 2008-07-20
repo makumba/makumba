@@ -246,7 +246,7 @@ public class FunctionInliner {
                 "SELECT p FROM test.Person p WHERE p.nameMin3CharsLong() AND p.nameMin2CharsLong() AND p.name<>NIL",
                 "SELECT p FROM test.Person p WHERE p.name<>NIL OR p.nameMin3CharsLong() AND p.nameMin2CharsLong()",
                 "SELECT p.nameMin3CharsLong() FROM test.Person p",
-                "SELECT test.Person.someTest()",
+                "SELECT test.Person.someTest().firstSex, actor(test.Person).gender",
                 "SELECT p.indiv.name AS col1,character_length(p.indiv.name) AS col2 FROM test.Person p WHERE p.someFunctionWithParams(2,5,7)"
 
         //

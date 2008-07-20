@@ -27,6 +27,10 @@ public class QuerySectionProcessor {
 
         private int projectionStart = -1, projectionEnd = -1;
 
+        ArrayList<Insertion> insertions = new ArrayList<Insertion>();
+
+        Insertion myFromWhere = new Insertion();
+
         public void setWhereStart(int index) {
             whereStart = index;
             whereEnd = end;
@@ -82,6 +86,11 @@ public class QuerySectionProcessor {
                 projectionEnd += delta;
         }
 
+        public void addFromWhere() {
+            for (Insertion ins : insertions)
+                addFromWhere(ins.from, ins.where);
+        }
+
         public void addFromWhere(String from, String where) {
             if (fromEnd == -1) {
                 fromStart = end;
@@ -134,6 +143,22 @@ public class QuerySectionProcessor {
 
         public String getProjection() {
             return query.substring(projectionStart, projectionEnd);
+        }
+
+        public void addInsertion(Insertion ins) {
+            if (myFromWhere.isAnalogous(ins))
+                return;
+            for (Insertion in : insertions) {
+                if (in.isAnalogous(ins))
+                    return;
+            }
+            insertions.add(ins);
+        }
+
+        /** the object is now readily constructed */
+        public void pack() {
+            myFromWhere.from = getFrom();
+            myFromWhere.where = getWhere();
         }
     }
 
@@ -264,9 +289,10 @@ public class QuerySectionProcessor {
         StringBuffer from = new StringBuffer();
 
         String separator = "";
-        for (int i = 0; i < subqueries.size(); i++) {
-            if (subqueries.get(i).fromStart != -1) {
-                from.append(separator).append(query, subqueries.get(i).fromStart, subqueries.get(i).fromEnd);
+        for (SubqueryData sd : subqueries) {
+            sd.pack();
+            if (sd.fromStart != -1) {
+                from.append(separator).append(sd.getFrom());
                 separator = ",";
             }
         }
@@ -322,22 +348,28 @@ public class QuerySectionProcessor {
         if (closed)
             throw new IllegalStateException("Cannot add text after getText() was called");
 
-        for (int lev = 0; lev < subqueries.size(); lev++) {
-            subqueries.get(lev).shift(regionStart, text.length() - regionLength);
+        for (SubqueryData dt : subqueries) {
+            dt.shift(regionStart, text.length() - regionLength);
         }
         query.delete(regionStart, regionStart + regionLength);
         query.insert(regionStart, text);
     }
 
     static class Insertion {
-        int queryLevel;
-
         String from;
 
         String where;
-    }
 
-    ArrayList<Insertion> insertions = new ArrayList<Insertion>();
+        public boolean isAnalogous(Insertion ins) {
+            // TODO: this should detect the labels defined in both insertions
+            // and name identically the labels that have same definition;
+            // then check if all labels are the same and have identical definitions, and if all where conditions are
+            // equivalent.
+            // for now we only check if things are identical
+            return ins.from.equals(from)
+                    && (ins.where == null && where == null || where != null && where.equals(ins.where));
+        }
+    }
 
     boolean closed = false;
 
@@ -375,17 +407,15 @@ public class QuerySectionProcessor {
             throw new IllegalStateException("Cannot add text after getText() was called");
 
         Insertion ins = new Insertion();
-        ins.queryLevel = 0;
         ins.from = from;
         ins.where = where;
-        insertions.add(ins);
+        subqueries.get(0).addInsertion(ins);
     }
 
     /** Return the query text */
     public String getText() {
-        for (Insertion ins : insertions) {
-            subqueries.get(ins.queryLevel).addFromWhere(ins.from, ins.where);
-        }
+        for (SubqueryData dt : subqueries)
+            dt.addFromWhere();
         closed = true;
         return query.toString();
     }
@@ -415,40 +445,40 @@ public class QuerySectionProcessor {
 
         // if the expression is already paranthesized, we return
         if (trimExpr.startsWith("(") && trimExpr.trim().endsWith(")"))
-            return expr;
+            return trimExpr;
 
         // we don't paranthesize identifiers or parameters
         if (ident.matcher(trimExpr).matches() || (trimExpr.startsWith("$") || trimExpr.startsWith(":"))
                 && ident.matcher(trimExpr.substring(1)).matches())
-            return expr;
+            return trimExpr;
 
         // we don't paranthesize numbers
         try {
             // TODO: replace with regex
             Double.parseDouble(trimExpr);
-            return expr;
+            return trimExpr;
         } catch (NumberFormatException nfe) {
         }
         // we don't paranthesize 'strings'
         if (trimExpr.startsWith("\'") && trimExpr.endsWith("\'"))
-            return expr;
+            return trimExpr;
 
         // we never paranthesize [a.b.]function() or actor(...)
-        if (allFunctionBegin.matcher(trimExpr).matches() && trimExpr.endsWith(")"))
-            return expr;
+        if (allFunctionBegin.matcher(trimExpr).find() && trimExpr.endsWith(")"))
+            return trimExpr;
 
         // if there are already parantheses before and after the expression, we return
         if (before.endsWith("(") && after.startsWith(")"))
-            return expr;
+            return trimExpr;
 
         // if we are after a select or a comma
         if ((before.toLowerCase().endsWith("select") || before.endsWith(",")) && // and we are before an as or a
                 // comma or a from
                 (after.toLowerCase().startsWith("as") || after.startsWith(",") || after.toLowerCase().startsWith("from")))
-            return expr;
+            return trimExpr;
 
         // otherwise we put the expression in paranthesis
-        return "(" + expr + ")";
+        return "(" + trimExpr + ")";
     }
 
     public static void main(String[] argv) {
