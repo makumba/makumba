@@ -63,8 +63,8 @@ public class RecordEditor extends RecordFormatter {
     protected RecordEditor() {
     }
 
-    public RecordEditor(DataDefinition ri, Hashtable<String, String> h, String database, boolean isSearchForm, String formResponderValue) {
-        super(ri, h, isSearchForm, formResponderValue);
+    public RecordEditor(DataDefinition ri, Hashtable<String, String> h, String database, boolean isSearchForm, Object formIdentifier) {
+        super(ri, h, isSearchForm, formIdentifier);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
         query = new Map[ri.getFieldNames().size()];

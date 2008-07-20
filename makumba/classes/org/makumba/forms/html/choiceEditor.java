@@ -150,7 +150,7 @@ public abstract class choiceEditor extends FieldEditor {
             hcw.setSize(size);
             hcw.setMultiple(!forceSingleSelect && (isMultiple(rf, fieldIndex) || forceMultipleSelect));
             hcw.setLiteralHtml(getExtraFormatting(rf, fieldIndex, formatParams));
-            hcw.setFormResponderValue(rf.getFormResponderValue());
+            hcw.setFormIdentifier(rf.getFormIdentifier());
 
             Object opt = getOptions(rf, fieldIndex, formatParams);
             List<String> values = new ArrayList<String>(getOptionsLength(rf, fieldIndex, opt));

@@ -41,6 +41,7 @@ import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
+import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -99,7 +100,7 @@ public class FormResponder extends Responder {
 
     /** Format a field using the editor, and grow the editor as needed */
     public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
-            String extraFormatting) {
+            String extraFormatting, Object formIdentifier) {
         Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) (formatParams).clone();
 
         // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
@@ -134,7 +135,7 @@ public class FormResponder extends Responder {
         // add more fields. thus, we create too many new responders
         // it seems we can't set the responder value later, when the editors are complete, as the format method needs
         // it, and is called in this current method
-        editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), getResponderValue());
+        editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), formIdentifier);
 
         editor.config();
         // add client side validation, but only for edit operations (not search)
