@@ -35,19 +35,19 @@ import java.util.Hashtable;
 public class ArrayMap extends Dictionary<String, Object> {
     public Object[] data;
 
-    Dictionary keyIndex;
+    Dictionary<String, Integer> keyIndex;
 
-    public ArrayMap(Dictionary d, Object[] o) {
+    public ArrayMap(Dictionary<String, Integer> d, Object[] o) {
         data = o;
         keyIndex = d;
     }
 
     public ArrayMap() {
-        keyIndex = new Hashtable();
+        keyIndex = new Hashtable<String, Integer>();
     }
 
     Integer index(Object key) {
-        return (Integer) keyIndex.get(key);
+        return keyIndex.get(key);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ArrayMap extends Dictionary<String, Object> {
 
             Object next;
 
-            Enumeration e;
+            Enumeration<String> e;
             {
                 e = keyIndex.keys();
                 findNext();
@@ -157,7 +157,7 @@ public class ArrayMap extends Dictionary<String, Object> {
         ret.append("{");
         String sep = "";
         Object o;
-        for (Enumeration e = keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = keys(); e.hasMoreElements();) {
             ret.append(sep);
             sep = ",";
             ret.append(o = e.nextElement()).append("=").append(get(o));
