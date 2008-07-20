@@ -53,7 +53,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     private String[] _optionSeparator = { " " }; // separator between different options
 
-    private String formResponderValue; // the responder value of the form; used for radio button / checbox auto values
+    private Object formIdentifier; // the form counter in the page; used for radio button / checbox auto values
 
     /*******************************************************************************************************************
      * PUBLIC CONSTANTS
@@ -367,7 +367,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 j = (j + 1) % _optionSeparator.length;
                 sep = _optionSeparator[j];
 
-                String id = "AutoLabel_" + formResponderValue + "_" + _name + "_" + optionCount;
+                String id = "AutoLabel_" + formIdentifier + "_" + _name + "_" + optionCount;
                 inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
                 inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\"" + id + "\">"
                         + _tickLabelSeparator + "<LABEL for=\"" + id + "\">" + label + "</LABEL>");
@@ -669,8 +669,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
             optionSeparatorArray, literalHtml, convert2Html);
     }
 
-    public void setFormResponderValue(String formResponderValue) {
-        this.formResponderValue = formResponderValue;
+    public void setFormIdentifier(Object formCount) {
+        this.formIdentifier = formCount;
     }
 
 } // end class

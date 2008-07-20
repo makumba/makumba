@@ -116,6 +116,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
 
+    public static final String __MAKUMBA__FORM__COUNTER__ = "__makumba__form__counter__";
+
     public FormTagBase() {
         // TODO move this somewhere else
         try {
@@ -498,8 +500,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             // retrieves the form dependency graph from the cache
             // this needs to be the last thing done, so we can retrieve the responder code safely
-            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE,
-                MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE);
+            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(
+                MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE);
 
             // form order - add the responders & form names
             FormTagBase rootForm = findRootForm();
@@ -508,8 +510,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             }
             rootForm.responders.put(this.getTagKey(), responder.getResponderValue());
 
-            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS,
-                getTagKey()));
+            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(
+                MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, getTagKey()));
 
             if (findParentForm() == null) { // we are in the end of the root form - all child forms have a responder by
                 // now
@@ -586,7 +588,20 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
-        return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES, findRootForm().getTagKey());
+        return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES,
+            findRootForm().getTagKey());
+    }
+
+    public Object getFormIdentifier() {
+        // FIXME: this is rather a dummy right now, that uses a simple incremental counter
+        // should return one unique ID per form, even those repeated in mak:lists or so
+        Integer formCount = (Integer) pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
+        if (formCount == null) {
+            formCount = 1;
+        }
+        formCount += 1;
+        pageContext.setAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__, formCount);
+        return "form" + formCount;
     }
 
 }

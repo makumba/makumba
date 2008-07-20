@@ -24,6 +24,7 @@
 package org.makumba.forms.tags;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -351,7 +352,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
         }
 
-        String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString());
+        System.out.println("Form: " + getForm() + " -> " + getForm().getFormIdentifier());
+        String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
+            getForm().getFormIdentifier());
         String fieldName = name + getForm().responder.getSuffix();
 
         if (nameVar != null) {
