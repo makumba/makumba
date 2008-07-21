@@ -1,5 +1,6 @@
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
+!title=indiv.name
 
 indiv= unique fixed not null ptr test.Individual
 
