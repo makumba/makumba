@@ -335,8 +335,15 @@ public abstract class Responder implements java.io.Serializable {
     /** reads the HTTP base pointer */
     public Pointer getHttpBasePointer(HttpServletRequest req, String suffix) {
         // for add forms, the result of the enclosing new form may be used
-        return new Pointer(basePointerType, (String) RequestAttributes.getParameters(req).getParameter(
-            basePointerName + suffix));
+        String basePointer = (String) RequestAttributes.getParameters(req).getParameter(basePointerName + suffix);
+        if (basePointer.startsWith("valueOf_")) {
+            // a base pointer that was not determined on form creation time
+            // it contains the name of the attribute to get the value from -> evaluate it now
+            String attributeName = basePointer.substring("valueOf_".length());
+            return new Pointer(basePointerType, (String) RequestAttributes.getParameters(req).getParameter(
+                attributeName));
+        }
+        return new Pointer(basePointerType, basePointer);
     }
 
     /**

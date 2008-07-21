@@ -1,7 +1,11 @@
 package org.makumba.list;
 
-import javax.servlet.jsp.PageContext;
+import java.util.Map;
 
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
@@ -9,15 +13,19 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.forms.tags.CriterionTag;
+import org.makumba.forms.tags.FormTagBase;
+import org.makumba.forms.tags.InputTag;
 import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
 /**
@@ -45,11 +53,47 @@ public class ListFormDataProvider implements FormDataProvider {
             ptrExpr += ".id";
         MultipleKey parentListKey = QueryTag.getParentListKey(tag, pageCache);
         if (parentListKey == null) {
-            // if we are not enclosed in a list or object, throw programmer error
-            throw new ProgrammerError("mak:addForm needs to be enclosed in a list, object or form tag");
+            // if we are not enclosed in a list or object, try to find the input with the object name
+            FormTagBase form = (FormTagBase) TagSupport.findAncestorWithClass(tag, FormTagBase.class);
+            if (form == null) { // if we are also not inf a form, throw an error
+                throw new ProgrammerError("mak:addForm needs to be enclosed in a list, object or form tag");
+            }
+            // get all the tags already parsed in the page
+            Map<Object, Object> cache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
+            boolean found = false;
+            DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+            for (Object key : cache.keySet()) {
+                // we loop all inputs, even if we already found a match; thus, we will always use the input closest to
+                // the addForm, for good or bad..
+                TagData tagData = (TagData) cache.get(key);
+                if (tagData.getTagObject() instanceof InputTag) { // consider only input tags
+                    if (tagData.attributes.get("name").equals(ptrExpr)) {
+                        // and only the one that has the same name as the addForm base object
+                        String dataType = tagData.attributes.get("dataType");
+                        if (StringUtils.isBlank(dataType)) {
+                            throw new ProgrammerError(
+                                    "Currently, only inputs with dataType=\"..\" are supported as addForm base objects");
+                        }
+                        FieldDefinition fd = ddp.makeFieldDefinition("dummyName", dataType);
+                        if (fd.isPointer()) {
+                            pageCache.cache(MakumbaJspAnalyzer.ADD_FORM_DATA_TYPE, tag.getTagKey(), new Object[] {
+                                    fd.getPointedType(), ptrExpr });
+                            found = true;
+                        } else {
+                            throw new ProgrammerError("Can use only 'ptr' type inputs for addForms, given expr '"
+                                    + ptrExpr + "' is denoting an input of type '" + fd + "'");
+                        }
+                    }
+                }
+            }
+            if (!found) { // if we did not find any input matching, throw an error
+                throw new ProgrammerError("Did not find any input with the name '" + ptrExpr
+                        + "' to be used as base object for the addForm");
+            }
+        } else { // enclosed in list or form
+            pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
+                ValueComputer.getValueComputerAtAnalysis(tag, parentListKey, ptrExpr, pageCache));
         }
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
-            tag, parentListKey, ptrExpr, pageCache));
     }
 
     /*
@@ -156,9 +200,14 @@ public class ListFormDataProvider implements FormDataProvider {
      *      org.makumba.analyser.PageCache)
      */
     public FieldDefinition getTypeOnEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
-        vc.doEndAnalyze(pageCache);
-        return vc.getType();
+        if (retrieveBaseObjectInputInfo(tagKey, pageCache) != null) {
+            DataDefinition addToPtrInput = (DataDefinition) retrieveBaseObjectInputInfo(tagKey, pageCache)[0];
+            return addToPtrInput.getFieldDefinition(addToPtrInput.getIndexPointerFieldName());
+        } else {
+            ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
+            vc.doEndAnalyze(pageCache);
+            return vc.getType();
+        }
     }
 
     /*
@@ -168,7 +217,11 @@ public class ListFormDataProvider implements FormDataProvider {
      *      org.makumba.analyser.PageCache, java.lang.String)
      */
     public DataDefinition getBasePointerType(AnalysableTag tag, PageCache pageCache, String baseObject) {
-        return QueryTag.getQuery(pageCache, getParentListKey(tag)).getLabelType(baseObject);
+        if (retrieveBaseObjectInputInfo(tag.getTagKey(), pageCache) != null) {
+            return (DataDefinition) retrieveBaseObjectInputInfo(tag.getTagKey(), pageCache)[0];
+        } else {
+            return QueryTag.getQuery(pageCache, getParentListKey(tag)).getLabelType(baseObject);
+        }
     }
 
     /*
@@ -178,12 +231,19 @@ public class ListFormDataProvider implements FormDataProvider {
      *      javax.servlet.jsp.PageContext)
      */
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
-
-        Object o = ((ValueComputer) GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieve(
-            MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
+        PageCache pageCache = GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+        if (retrieveBaseObjectInputInfo(tagKey, pageCache) != null) {
+            return "valueOf_" + retrieveBaseObjectInputInfo(tagKey, pageCache)[1];
+        }
+        Object o = ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
         if (!(o instanceof Pointer))
             throw new RuntimeException("Pointer expected, got instead " + o);
         return ((Pointer) o).toExternalForm();
+    }
+
+    /** Retrieves the data type and the name of the input associated with this form from the page cache */
+    private Object[] retrieveBaseObjectInputInfo(MultipleKey tagKey, PageCache pageCache) {
+        return (Object[]) pageCache.retrieve(MakumbaJspAnalyzer.ADD_FORM_DATA_TYPE, tagKey);
     }
 
     /*

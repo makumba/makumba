@@ -74,6 +74,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
 
+    public static final String ADD_FORM_DATA_TYPE = "org.makumba.addFormDataType";
+
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
             "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag" };
