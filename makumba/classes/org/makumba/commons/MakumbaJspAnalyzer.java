@@ -45,13 +45,13 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
-    
+
     // cache keys, centralised in one place to have an overview of what is cached
 
     public static final String TAG_CACHE = "org.makumba.tags";
 
     public static final String TAG_DATA_CACHE = "org.makumba.tagData";
-    
+
     public static final String FORM_TAGS_DEPENDENCY_CACHE = "org.makumba.dependency";
 
     public static final String NESTED_FORM_NAMES = "org.makumba.nestedFormNames";
@@ -74,7 +74,6 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
 
-    
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
             "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag" };
@@ -92,13 +91,14 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             "org.makumba.forms.tags.DeleteTag", "delete", "org.makumba.forms.tags.DeleteTag", "input",
             "org.makumba.forms.tags.InputTag", "action", "org.makumba.forms.tags.ActionTag", "option",
             "org.makumba.forms.tags.OptionTag" };
-    
-    static String[] formTagNames = {"form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm", "new", "add", "edit"};
+
+    static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
+            "new", "add", "edit" };
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
-    
+
     static final List<String> formTagNamesList = Arrays.asList(formTagNames);
-    
+
     /**
      * Puts the Makumba tags into a Map
      */
@@ -210,7 +210,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     public void simpleTag(TagData td, Object status) {
         String makumbaPrefix = ((ParseStatus) status).makumbaPrefix + ":";
         String formsPrefix = ((ParseStatus) status).formPrefix + ":";
-        
+
         // we handle only Makumba tags
         if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix)) {
             handleNonMakumbaTags(td, status);
@@ -222,7 +222,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             } else if (td.name.startsWith(formsPrefix)) {
                 tagName = td.name.substring(formsPrefix.length());
             }
-    
+
             Class<?> c = tagClasses.get(tagName);
             if (c == null) {
                 return;
@@ -244,22 +244,27 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     /**
      * Handles non-mak tags. To be implemented by classes that extend this one
-     * @param td the TagData holding the information
-     * @param status the status of the parsing
+     * 
+     * @param td
+     *            the TagData holding the information
+     * @param status
+     *            the status of the parsing
      */
     protected void handleNonMakumbaTags(TagData td, Object status) {
     }
 
     /**
      * Handles non-mak system tags. To be implemented by classes that extend this one
-     * @param td the TagData holding the information
-     * @param status the status of the parsing
+     * 
+     * @param td
+     *            the TagData holding the information
+     * @param status
+     *            the status of the parsing
      */
 
     protected void handleNonMakumbaSystemTags(TagData td, Object status) {
     }
 
-    
     /**
      * Performs analysis for the start of a tag
      * 
@@ -297,15 +302,15 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     }
 
     public static String getQueryLanguage(PageCache pageCache) {
-        return (String)pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE);
+        return (String) pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE);
     }
-    
+
     public static boolean isOQLPage(PageCache pageCache) {
         return getQueryLanguage(pageCache).equals(QL_OQL);
     }
-    
+
     public static boolean isHQLPage(PageCache pageCache) {
         return getQueryLanguage(pageCache).equals(QL_HQL);
     }
-    
+
 }
