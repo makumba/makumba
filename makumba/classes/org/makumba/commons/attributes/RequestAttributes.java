@@ -271,8 +271,10 @@ public class RequestAttributes implements Attributes {
     }
 
     public Object checkServletLoginForAttribute(String s) {
-        if (request.getRemoteUser() != null && request.isUserInRole(s))
+        if (request.getRemoteUser() != null && request.isUserInRole(s)){
+            request.getSession(true).setAttribute(s, request.getRemoteUser());
             return request.getRemoteUser();
+        }
         return notFound;
     }
 
