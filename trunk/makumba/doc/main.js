@@ -17,7 +17,9 @@ function makeNavBar(pathToBase)
 	document.write('<a href="'+bDir+'index.html"><b>Home</b></a><br>');	
 	document.write('<br>');
 	document.write('<a href="http://blog.makumba.org"><b>Blog</b></a><br>');	
-
+	document.write('<br>');
+	document.write('<a href="makumba-showcases.html"><b>Showcases</b></a><br>');
+	
 	document.write('<br>');
 	document.write('<a href="'+bDir+'documentation.html"><b>Documentation</b></a><br>');
 	document.write('- <a href="'+bDir+'makumba-install.html">Quick start</a><br/>');
