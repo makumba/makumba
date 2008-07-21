@@ -431,94 +431,95 @@ public class Logic {
                 throw new ProgrammerError("Unknown actor: " + type + "." + field);
         }
 
-        StringBuffer error = new StringBuffer();
-        String errorSep = "";
-        boolean foundFunction = false;
+        DataDefinition.QueryFragmentFunction match = null;
+        HashMap<String, Object> matchValues = null;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
         nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions()) {
             if (f.getName().startsWith("actor")) {
-                StringBuffer funcCall1 = new StringBuffer();
-                funcCall1.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
-                    " x WHERE x.").append(f.getName());
-                StringBuffer funcCall = funcCall1;
-                funcCall.append("(");
-                String separator = "";
-                DataDefinition params = f.getParameters();
                 HashMap<String, Object> values = new HashMap<String, Object>();
+                DataDefinition params = f.getParameters();
+                if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size())
+                    continue;
                 for (String para : params.getFieldNames()) {
                     try {
-                        funcCall.append(separator);
-                        separator = ", ";
-                        funcCall.append(qap.getParameterSyntax()).append(para);
                         values.put(para, a.getAttribute(para));
                         // TODO: check if the value is assignable to the function parameter type
                     } catch (LogicException ae) {
                         continue nextFunction;
                     }
                 }
-                funcCall.append(")");
-                foundFunction = true;
-                Transaction connection = dbcp.getConnectionTo(db);
-                Vector<Dictionary<String, Object>> v;
-                try {
-                    v = connection.executeQuery(funcCall.toString(), values);
-                } catch (MakumbaError e) {
-                    throw new ProgrammerError("Error while computing actor " + attname + " during execution of query "
-                            + funcCall.toString() + " " + e.getMessage());
-                }
-                if (v.size() == 0) {
-                    if (f.getErrorMessage().trim().length() > 0) {
-                        error.append(errorSep).append(f.getErrorMessage());
-                        errorSep = ", ";
-                    }
-                    continue nextFunction;
-                } else if (v.size() > 1)
-                    throw new LogicException("Multiple " + type + " objects fit the actor function " + f);
-
-                Pointer p = (Pointer) v.elementAt(0).get("col1");
-                Dictionary<String, Object> obj = connection.read(p, null);
-
-                Map<String, Object> ret = new HashMap<String, Object>();
-                String att = actorPrefix(dd);
-                ret.put(att, p);
-
-                for (Enumeration<String> e = obj.keys(); e.hasMoreElements();) {
-                    String k = e.nextElement();
-                    ret.put(att + "_" + k, obj.get(k));
-                }
-
-                // now we call all functions with no parameters
-                Map<String, Object> param = new HashMap<String, Object>();
-                param.put("x", p);
-                for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
-                    if (!isSessionFunction(g))
-                        continue;
-                    StringBuffer fc = new StringBuffer();
-                    fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
-                        " x WHERE x=").append(qap.getParameterSyntax()).append("x");
-                    Object result;
-                    try {
-                        result = connection.executeQuery(fc.toString(), param).elementAt(0).get("col1");
-                    } catch (MakumbaError e) {
-                        throw new ProgrammerError("Error while computing function " + g.getName() + " of actor "
-                                + attname + " during execution of query " + fc.toString() + " " + e.getMessage());
-                    }
-                    ret.put(att + "_" + g.getName(), result);
-                    if (g.getSessionVariableName() != null) {
-                        ret.put(g.getSessionVariableName(), result);
-                    }
-                }
-
-                return ret;
+                match = f;
+                matchValues = values;
             }
         }
-        if (!foundFunction)
+        if (match == null)
             throw new ProgrammerError("No fitting actor() function was found in " + type);
-        if (error.length() > 0) {
-            throw new UnauthenticatedException(error.toString());
-        }
-        throw new UnauthenticatedException("Could not instantiate actor of type " + type);
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(match + " \n" + a);
 
+        StringBuffer funcCall = new StringBuffer();
+        funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
+            " x WHERE x.").append(match.getName());
+        funcCall.append("(");
+        String separator = "";
+
+        DataDefinition params = match.getParameters();
+        for (String para : params.getFieldNames()) {
+            funcCall.append(separator);
+            separator = ", ";
+            funcCall.append(qap.getParameterSyntax()).append(para);
+        }
+        funcCall.append(")");
+        Transaction connection = dbcp.getConnectionTo(db);
+        Vector<Dictionary<String, Object>> v;
+        try {
+            v = connection.executeQuery(funcCall.toString(), matchValues);
+        } catch (MakumbaError e) {
+            throw new ProgrammerError("Error while computing actor " + attname + " during execution of query "
+                    + funcCall.toString() + " " + e.getMessage());
+        }
+        if (v.size() == 0) {
+            if (match.getErrorMessage().trim().length() > 0)
+                throw new UnauthenticatedException(match.getErrorMessage().trim());
+            else
+                throw new UnauthenticatedException("Could not instantiate actor of type " + type);
+        } else if (v.size() > 1)
+            throw new LogicException("Multiple " + type + " objects fit the actor function " + match);
+
+        Pointer p = (Pointer) v.elementAt(0).get("col1");
+        Dictionary<String, Object> obj = connection.read(p, null);
+
+        Map<String, Object> ret = new HashMap<String, Object>();
+        String att = actorPrefix(dd);
+        ret.put(att, p);
+
+        for (Enumeration<String> e = obj.keys(); e.hasMoreElements();) {
+            String k = e.nextElement();
+            ret.put(att + "_" + k, obj.get(k));
+        }
+
+        // now we call all functions with no parameters
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("x", p);
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
+            if (!isSessionFunction(g))
+                continue;
+            StringBuffer fc = new StringBuffer();
+            fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
+                " x WHERE x=").append(qap.getParameterSyntax()).append("x");
+            Object result;
+            try {
+                result = connection.executeQuery(fc.toString(), param).elementAt(0).get("col1");
+            } catch (MakumbaError e) {
+                throw new ProgrammerError("Error while computing function " + g.getName() + " of actor " + attname
+                        + " during execution of query " + fc.toString() + " " + e.getMessage());
+            }
+            ret.put(att + "_" + g.getName(), result);
+            if (g.getSessionVariableName() != null) {
+                ret.put(g.getSessionVariableName(), result);
+            }
+        }
+
+        return ret;
     }
 
     private static boolean isSessionFunction(DataDefinition.QueryFragmentFunction g) {
@@ -528,18 +529,18 @@ public class Logic {
     private static String actorPrefix(DataDefinition dd) {
         return "actor_" + dd.getName().replace(".", "_");
     }
-    
-    public static Set<String> logoutActor(DataDefinition dd){
-        Set<String >ret= new HashSet<String>();
-        String att= actorPrefix(dd);
+
+    public static Set<String> logoutActor(DataDefinition dd) {
+        Set<String> ret = new HashSet<String>();
+        String att = actorPrefix(dd);
         ret.add(att);
-        for(String s:dd.getFieldNames()){
-            ret.add(att+"_"+s);
+        for (String s : dd.getFieldNames()) {
+            ret.add(att + "_" + s);
         }
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) 
-            if(isSessionFunction(g))
-                ret.add(att+"_"+g.getName());
-        return ret;        
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions())
+            if (isSessionFunction(g))
+                ret.add(att + "_" + g.getName());
+        return ret;
     }
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
