@@ -352,7 +352,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
         }
 
-        System.out.println("Form: " + getForm() + " -> " + getForm().getFormIdentifier());
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
             getForm().getFormIdentifier());
         String fieldName = name + getForm().responder.getSuffix();
