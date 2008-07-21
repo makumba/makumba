@@ -6,12 +6,14 @@
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
-<mak:form action="testMakAddToNewForm.jsp" clientSideValidation="false">
-  <mak:input name="p" dataType="ptr test.Person" /><br>
+<mak:form action="beginMakAddFormAddToMakInput.jsp" clientSideValidation="false">
+  Select person: <mak:input name="p" dataType="ptr test.Person" /><br/>
+  Add address:<br/>
   <mak:addForm object="p" field="address" clientSideValidation="false">
-    <mak:input name="description"/>
-    <mak:input name="email"/>
+    Description: <mak:input name="description"/>
+    E-mail: <mak:input name="email"/>
   </mak:addForm>
+  <br/>
   <input type="submit" name="addemail" value="Add!">    
 </mak:form>
 
