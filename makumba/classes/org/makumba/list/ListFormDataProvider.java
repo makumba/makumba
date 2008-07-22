@@ -76,6 +76,8 @@ public class ListFormDataProvider implements FormDataProvider {
                         }
                         FieldDefinition fd = ddp.makeFieldDefinition("dummyName", dataType);
                         if (fd.isPointer()) {
+                            // FIXME: in nested forms, ptrExpr is most likely not specific enough to identify an input,
+                            // as repeated inputs with the same name will get a suffix added, e.g. _1
                             pageCache.cache(MakumbaJspAnalyzer.ADD_FORM_DATA_TYPE, tag.getTagKey(), new Object[] {
                                     fd.getPointedType(), ptrExpr });
                             found = true;
