@@ -183,16 +183,16 @@ public class mddViewer extends LineViewer {
         }
         String name = htmlEscape(s.substring(0, s.indexOf("(")));
         String params = htmlEscape(s.substring(s.indexOf("("), s.indexOf(")") + 1));
-        String definition = htmlEscape(s.substring(s.indexOf(")") + 1, s.indexOf(":")));
-        String message = htmlEscape(s.substring(s.indexOf(":"), commentBegin));
+        String definition = htmlEscape(s.substring(s.indexOf("{"), s.indexOf("}")+1));
+        String message = htmlEscape(s.substring(s.indexOf("}")+1, commentBegin));
         result.append("<span class=\"mddFunctionName\">" + name + "</span>");
         result.append("<span class=\"mddFunctionParams\">" + params + "</span>");
         result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");  
         result.append("<span class=\"mddFunctionMessage\">" + message + "</span>");
+        result.append("</span>");
         if (s.indexOf(";") != -1) {
             result.append("<span class=\"mddComment\">" + htmlEscape(s.substring(commentBegin)) + "</span>");
         }
-        result.append("</span>");
         return super.parseLine(result.toString());
     }
 
