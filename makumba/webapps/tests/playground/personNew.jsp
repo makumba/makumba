@@ -17,7 +17,7 @@ Languages:  <a href="languageNew.jsp">New</a> | <a href="languageList.jsp">List<
 response:<mak:response/><br><br><br>
 
 <h1>New Person</h1>
-<mak:newForm type="test.Person" action="personList.jsp" clientSideValidation="live" annotation="after" reloadFormOnError="true" method="post">  
+<mak:newForm type="test.Person" action="personView.jsp" name="person" clientSideValidation="live" annotation="after" reloadFormOnError="true" method="post">  
 <table>
   <tr><th>indiv.name</th><td><mak:input name="indiv.name" /></td></tr>  
   <tr><th>indiv.surname</th><td><mak:input name="indiv.surname" /></td></tr>  
