@@ -38,6 +38,8 @@ import org.makumba.commons.formatters.timestampFormatter;
 import org.makumba.list.engine.ComposedQuery;
 
 public class RecordViewer extends RecordFormatter {
+    private static final long serialVersionUID = 1L;
+
     public RecordViewer(ComposedQuery q) {
         dd = (DataDefinition) q.getResultType();
         initFormatters();
@@ -91,7 +93,11 @@ public class RecordViewer extends RecordFormatter {
 			case FieldDefinition._ptrIndex:
 			case FieldDefinition._ptrOne:
 			case FieldDefinition._ptrRel:
-				formatterArray[i] = ptrFormatter.getInstance();
+			    if (fd.isFileType()) {
+	                formatterArray[i] = binaryViewer.getInstance();
+			    } else {
+			        formatterArray[i] = ptrFormatter.getInstance();
+			    }
 				break;
 			default:
 				formatterArray[i] = FieldViewer.getInstance();
