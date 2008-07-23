@@ -23,20 +23,27 @@
 
 package org.makumba.commons.attributes;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.Text;
+
+import eu.medsea.util.MimeUtil;
 
 /**
  * Parses the input stream of a http request as a multipart/form-data. Stores uploaded files as org.makumba.Text. Normal
@@ -89,7 +96,7 @@ public class MultipartHttpParameters extends HttpParameters {
         // Process the uploaded items
         Iterator iter = items.iterator();
         while (iter.hasNext()) {
-            FileItem item = (FileItem) iter.next();
+            DiskFileItem item = (DiskFileItem) iter.next();
 
             if (item.isFormField()) { // Process a regular form field
                 String name = item.getFieldName();
@@ -106,21 +113,46 @@ public class MultipartHttpParameters extends HttpParameters {
                     fileName = FilenameUtils.getName(fileName);
                 }
 
-                String type = item.getContentType();
+                // mime-type detection
+                String mimeType = MimeUtil.getMimeType(item.getStoreLocation()); // first try content analysis
+                String browserContentType = item.getContentType();
+                if (mimeType == MimeUtil.UNKNOWN_MIME_TYPE) { // if the content type analysis does not work
+                    mimeType = browserContentType; // get the type from the browser
+                    if (StringUtils.isBlank(mimeType)) { // if that is empty
+                        mimeType = MimeUtil.getMimeType(item.getName()); // guess from the file name
+                    }
+                }
+
+                // If we have an image content type, determine image width and height
+                if (MimeUtil.getMajorComponent(mimeType).equals("image")) {
+                    try {
+                        // using image readers is faster than reading the image itself
+                        Iterator<ImageReader> iterator = ImageIO.getImageReadersByMIMEType(mimeType);
+                        ImageReader reader = iterator.next();
+                        ImageInputStream iis = ImageIO.createImageInputStream(item.getInputStream());
+                        reader.setInput(iis, false);
+                        parameters.put(name + "_imageWidth", reader.getWidth(0));
+                        parameters.put(name + "_imageHeight", reader.getHeight(0));
+                        reader.dispose();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 // ---- read the content and set parameters
                 Text contentToSave = new Text(item.get());
                 int contentSize = contentToSave.length();
 
                 // FIXME: what to do if content type is null? not set, or set to an empty String / String constant?
-                parameters.put(name + "_contentType", type);
+                parameters.put(name + "_contentType", mimeType);
 
                 parameters.put(name + "_filename", fileName);
                 parameters.put(name + "_contentLength", contentSize);
                 parameters.put(name, contentToSave);
 
                 java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
-                    "Parameters set: contentType=" + type + ", fileName=" + fileName + ", contentSize=" + contentSize);
+                    "Parameters set: contentType=" + mimeType + ", fileName=" + fileName + ", contentSize="
+                            + contentSize);
 
             }
         }

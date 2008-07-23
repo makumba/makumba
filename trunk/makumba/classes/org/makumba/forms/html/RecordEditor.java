@@ -173,6 +173,12 @@ public class RecordEditor extends RecordFormatter {
                     data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
                     data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
                     data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
+                    if (parameters.getParameter(inputName + "_imageWidth") != null) {
+                        data.put(inputName + ".imageWidth", parameters.getParameter(inputName + "_imageWidth"));
+                    }
+                    if (parameters.getParameter(inputName + "_imageHeight") != null) {
+                        data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
+                    }
                 } else {
                 // the data is written in the dictionary without the suffix
                 data.put(inputName, o);

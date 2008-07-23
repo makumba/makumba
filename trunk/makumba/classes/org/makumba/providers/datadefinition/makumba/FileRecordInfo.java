@@ -38,6 +38,8 @@ public class FileRecordInfo extends RecordInfo {
         addField1(new FieldInfo("contentType", "char[255]"));
         addField1(new FieldInfo("originalName", "char[255]"));
         addField1(new FieldInfo("name", "char[255]"));
+        addField1(new FieldInfo("imageWidth", "int"));
+        addField1(new FieldInfo("imageHeight", "int"));
     }
 
     private static final long serialVersionUID = 1L;

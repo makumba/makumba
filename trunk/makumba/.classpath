@@ -61,6 +61,7 @@
 	<classpathentry kind="lib" path="lib/diff-bmsi.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6-bin.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/mime-util.jar" sourcepath="lib-src/mime-util-src.zip"/>
 	<classpathentry kind="var" path="ANTLR_HOME/antlr.jar" sourcepath="ANTLR_HOME/antlrsrc.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/prefuse.jar"/>
