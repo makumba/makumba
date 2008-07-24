@@ -2439,8 +2439,13 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         </tr>
         <tr>
           <td>text</td>
-          <td>text area&nbsp; <br>
-          or file upload</td>
+          <td>text area</td>
+          <td>unlimited characters</td>
+          <td>org.makumba.Text</td>
+        </tr>
+        <tr>
+          <td>binary</td>
+          <td>binary area</td>
           <td>unlimited byte</td>
           <td>org.makumba.Text</td>
         </tr>
@@ -2456,12 +2461,18 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td>dropdown select of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for
           set/ptr choosers with Makumba.</td>
           <td>preferably a long (foreign index)</td>
-          <td rowspan="3"><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+          <td rowspan="4"><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
         </tr>
         <tr>
           <td>xx=ptr <br>
           xx-&gt;...</td>
           <td><span class="futfeat">(the record, if any)</span></td>
+          <td>preferably a long (foreign index) <br>
+          + table</td>
+        </tr>
+        <tr>
+          <td>file</td>
+          <td>file upload</td>
           <td>preferably a long (foreign index) <br>
           + table</td>
         </tr>
