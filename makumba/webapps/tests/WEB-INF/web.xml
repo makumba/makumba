@@ -14,19 +14,29 @@
   </filter-mapping>
 
   <servlet>
-    <servlet-name>makumbaResources</servlet-name>
-    <servlet-class>org.makumba.commons.MakumbaResourceServlet</servlet-class>
+    <servlet-name>makumbaDownload</servlet-name>
+    <servlet-class>org.makumba.list.MakumbaDownloadServlet</servlet-class>
   </servlet>
 
+  <servlet-mapping>
+    <servlet-name>makumbaDownload</servlet-name>
+    <url-pattern>/makumbaDownload/*</url-pattern>
+  </servlet-mapping>
+
   <servlet>
-    <servlet-name>makumbaUnique</servlet-name>
-    <servlet-class>org.makumba.db.makumba.UniquenessServlet</servlet-class>
+    <servlet-name>makumbaResources</servlet-name>
+    <servlet-class>org.makumba.commons.MakumbaResourceServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
     <servlet-name>makumbaResources</servlet-name>
     <url-pattern>/makumbaResources/*</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>makumbaUnique</servlet-name>
+    <servlet-class>org.makumba.db.makumba.UniquenessServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>makumbaUnique</servlet-name>
