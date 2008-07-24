@@ -48,6 +48,7 @@
         <li class="sectionLevel2"><a href="#char">char</a></li>
         <li class="sectionLevel2"><a href="#boolean">boolean</a></li>
         <li class="sectionLevel2"><a href="#text">text</a></li>
+        <li class="sectionLevel2"><a href="#binary">binary</a></li>
         <li class="sectionLevel2"><a href="#date">date</a></li>
       </ul>
       </li>
@@ -55,6 +56,7 @@
       <ul class="navbarPage">
         <li class="sectionLevel2"><a href="#ptr">ptr</a></li>
         <li class="sectionLevel2"><a href="#set">set</a></li>
+        <li class="sectionLevel2"><a href="#file">file</a></li>
       </ul>
       </li>
       <li class="section"><a href="#MacroTypes">Macro types</a></li>
@@ -182,9 +184,16 @@
     
     
     <h4><a name="text">text</a></h4>
-    <p>An unlimited-length string of bytes or characters. This type was designed to accomodate large text or binary
-    content. It is implemented with LONGVARBINARY or its counterparts, depending on the underlying DB engine.</p>
-    <pre class="example">application= text ; Application letter<br>description=text  ; Description of object<br>image= text	  ; Picture attachment</pre>
+    <p>An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its
+    counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.</p>
+    <pre class="example">application= text ; Application letter<br>description=text  ; Description of object</pre>
+
+    <h4><a name="binary">binary</a></h4>
+    <p>An unlimited-length field designed for binary content. In contrast to the <code>text</code> data type, binary will always be of 8 bit
+    length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary
+    data, for storing files along with meta-data like a file name, content type, etc., you should rather use the <a href="#file">file data type</a>.</p>
+    <pre class="example">singature= binary    ; a binary digital signature</pre>
+    
     <h4><a name="date">date</a></h4>
     <p>A date and/or time.</p>
     <pre class="example">birthdate= date; Date of birth<br>arrivalTime= date; Arrival time<br></pre> <!-- FIXME. (fred, 2003-10-13) bug 606
@@ -214,6 +223,7 @@
     <div class="note futfeat">future parsers might read this: <pre class="example">address= ptr{<br>    street= char[80]; Street<br>    number= int; Number}; address<br></pre>
     </div>
     <div class="note internals">this type is known internally as ptrOne</div>
+
     <h4><a name="set">Sets (set, bag, list)</a></h4>
     <p>Sets define a number of references to multiple objects of a certain type. For example:</p>
     <pre class="example">language= set general.Language; Spoken languages<br></pre>
@@ -232,6 +242,23 @@
     <pre class="example">place= set char {"home", "away"} ; Home or away<br></pre>
     <div class="note">It means that place is a set that can take only the "home" and "away" values.</div>
     <div class="note internals">This is currently known internally as setcharEnum</div>
+
+    <h4><a name="file">File</a></h4>
+    <p>A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:
+    <ul>
+      <li>content (<a href="#binary">binary</a>): the actual binary data of the file.</li>
+      <li>name (<a href="#char">char</a>): the file name.</li>
+      <li>originalName (<a href="#char">char</a>): the original file name.</li>
+      <li>contentType (<a href="#char">char</a>): the MIME content-type of the file.</li>
+      <li>contentLength (<a href="#int">int</a>): the content length in byte.</li>
+      <li>imageWidth (<a href="#int">int</a>): (only for images) the image width.</li>
+      <li>imageHeight (<a href="#int">int</a>): (only for images) the image height.</li>
+    </ul>
+    <pre class="example">image= file    ; Picture attachment</pre>
+    All fields are automatically set by Makumba, all needed to do is to make a &lt;mak:input&gt; on the field name.</p>
+    <p>This type should be used in favour of the <a href="#binary">binary data type</a> when you don't want to store only the raw binary data, but
+    also meta-data as in the fields above.</p>
+
     <h3><a name="MacroTypes">Macro types</a></h3>
     <p>A name can be defined for a more complex type and it can be reused in the file. This can be done with a !type
     directive</p>
