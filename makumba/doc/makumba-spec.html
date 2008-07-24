@@ -557,7 +557,7 @@ function(int a) { level+a }</pre>
       <li>reuse of query code</li>
       <li>query simplification and improved lisibility</li>
       <li>authentication using well-known function names</li>
-      <li>authorization using well-known function names</li>
+      <li>authorisation using well-known function names</li>
       <li>data view using well-known function names</li>
     </ul>
 
@@ -633,19 +633,19 @@ actor2(char[] user, char []pass){ username=user AND password=pass }</pre>
     with the results of functions with no parameters, and along with related objects.</p>
 
 
-    <h2 id="explAutho">Explicit authorization constraints</h2>
-    <p>Explicit authorization constraints are associations between web application paths and query language expressions. When an access is made to
-    a resource whose path matches an authorization constraint (partial matches supported, longest match considered), the corresponding expression is
+    <h2 id="explAutho">Explicit authorisation constraints</h2>
+    <p>Explicit authorisation constraints are associations between web application paths and query language expressions. When an access is made to
+    a resource whose path matches an authorisation constraint (partial matches supported, longest match considered), the corresponding expression is
     evaluated. If the expression produces an error (like UnauthenticatedException), that will be handled. If the exception returns 0, false or null an
     UnauthorizedException is raised with an error message indicated in the constraint.</p>
-    <p>Currently explicit authorization constraints can be put in the file MakumbaController.properties. Authorization constraints  looks like: </p>
+    <p>Currently explicit authorisation constraints can be put in the file MakumbaController.properties. authorisation constraints  looks like: </p>
 <pre class="example">authorize%/={actor(Person)}
 authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator </pre>
     <p>The first example makes the whole site accessible to users who can authenticate as a Person actor.</p>
     <p>The second example makes the /admin part of the site accesible only if there   is an admin attribute in the context, and if that is the username of the Person actor. If any constraint fails, an UnauthorizedException will be raised. The second example also shows how to indicate a specific message for the exception, which will then be displayed to the user.</p>
 
-    <h2 id="implAutho" class="futfeat">Implicit authorization constraints (not yet implemented) </h2>
-    <p>Implicit authorization constraints are defined in functions like canRead(), canInsert(), canUpdate(), canDelete() in the respective MDDs.
+    <h2 id="implAutho" class="futfeat">Implicit authorisation constraints (not yet implemented) </h2>
+    <p>Implicit authorisation constraints are defined in functions like canRead(), canInsert(), canUpdate(), canDelete() in the respective MDDs.
     These functions will be used whenever a <a href="http://www.makumba.org/makumba-spec.html#tab_list">mak:list</a>, <a
       href="http://www.makumba.org/makumba-spec.html#makobject">mak:object</a> or <a href="http://www.makumba.org/makumba-spec.html#makobject">mak:*Form</a>
     attempts to view, create, change or delete an obect of the respective type. The following features are intended:</p>
