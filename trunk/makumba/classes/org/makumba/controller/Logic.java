@@ -282,8 +282,9 @@ public class Logic {
 
             @Override
             protected Object makeResource(Object p) {
-                if (controllerConfig == null)
+                if (controllerConfig == null) {
                     return "none";
+                }
                 String path = (String) p;
                 int n = path.lastIndexOf(".");
                 if (n != -1) {
@@ -296,8 +297,9 @@ public class Logic {
 
                 for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
                     String k = (String) e.nextElement();
-                    if (!k.startsWith("authorize%"))
+                    if (!k.startsWith("authorize%")) {
                         continue;
+                    }
                     String k1 = k.substring("authorize%".length());
                     if (path.startsWith(k1) && k1.length() > maxKey.length()) {
                         maxKey = k1;
@@ -306,8 +308,9 @@ public class Logic {
                 }
                 String originalRule = rule;
 
-                if (rule.equals("none"))
+                if (rule.equals("none")) {
                     return rule;
+                }
 
                 AuthorizationConstraint ac = new AuthorizationConstraint();
                 ac.key = maxKey;
@@ -318,23 +321,27 @@ public class Logic {
                 int lpar = rule.indexOf("(");
                 if (lpar == 0) {
                     int rpar = rule.indexOf(")");
-                    if (rpar == -1)
+                    if (rpar == -1) {
                         throw new ProgrammerError("Parameter list should end with ) in authorization constraint "
                                 + maxKey);
+                    }
                     params = rule.substring(1, rpar);
                     rule = rule.substring(rpar + 1).trim();
-                    if (params.trim().length() == 0)
+                    if (params.trim().length() == 0) {
                         throw new ProgrammerError("Parameter list should not be empty in authorization constraint "
                                 + maxKey);
+                    }
                 }
                 int ms = rule.indexOf("}");
-                if (!rule.startsWith("{") || ms < 2)
+                if (!rule.startsWith("{") || ms < 2) {
                     throw new ProgrammerError("body not found for authorization constraint " + maxKey);
+                }
                 ac.message = rule.substring(ms + 1);
                 rule = rule.substring(1, ms);
                 ac.rule = rule.trim();
-                if (rule.trim().length() == 0)
+                if (rule.trim().length() == 0) {
                     throw new ProgrammerError("empty body for authorization constraint " + maxKey);
+                }
                 if (params.length() > 0) {
                     QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(getTransactionProvider(getLogic(path)).getQueryLanguage());
                     Map<String, DataDefinition> m = qap.getQueryAnalysis("SELECT 1 FROM " + params).getLabelTypes();
@@ -391,8 +398,9 @@ public class Logic {
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
-        if (attname.startsWith("actor_"))
+        if (attname.startsWith("actor_")) {
             return computeActor(attname, a, db, dbcp);
+        }
         if (controller instanceof LogicNotFoundException) {
             throw new NoSuchMethodException("no controller=> no attribute method");
         }
@@ -422,13 +430,15 @@ public class Logic {
         String field = null;
         if (dd == null) {
             int lastDot = type.lastIndexOf('.');
-            if (lastDot == -1)
+            if (lastDot == -1) {
                 throw new ProgrammerError("Unknown actor: " + type);
+            }
             type = type.substring(0, lastDot);
             field = type.substring(lastDot + 1);
             dd = ddp.getDataDefinition(type);
-            if (dd == null)
+            if (dd == null) {
                 throw new ProgrammerError("Unknown actor: " + type + "." + field);
+            }
         }
 
         DataDefinition.QueryFragmentFunction match = null;
@@ -438,8 +448,9 @@ public class Logic {
             if (f.getName().startsWith("actor")) {
                 HashMap<String, Object> values = new HashMap<String, Object>();
                 DataDefinition params = f.getParameters();
-                if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size())
+                if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
                     continue;
+                }
                 for (String para : params.getFieldNames()) {
                     try {
                         values.put(para, a.getAttribute(para));
@@ -452,8 +463,9 @@ public class Logic {
                 matchValues = values;
             }
         }
-        if (match == null)
+        if (match == null) {
             throw new ProgrammerError("No fitting actor() function was found in " + type);
+        }
         java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(match + " \n" + a);
 
         StringBuffer funcCall = new StringBuffer();
@@ -478,12 +490,14 @@ public class Logic {
                     + funcCall.toString() + " " + e.getMessage());
         }
         if (v.size() == 0) {
-            if (match.getErrorMessage().trim().length() > 0)
+            if (match.getErrorMessage().trim().length() > 0) {
                 throw new UnauthenticatedException(match.getErrorMessage().trim());
-            else
+            } else {
                 throw new UnauthenticatedException("Could not instantiate actor of type " + type);
-        } else if (v.size() > 1)
+            }
+        } else if (v.size() > 1) {
             throw new LogicException("Multiple " + type + " objects fit the actor function " + match);
+        }
 
         Pointer p = (Pointer) v.elementAt(0).get("col1");
         Dictionary<String, Object> obj = connection.read(p, null);
@@ -501,8 +515,9 @@ public class Logic {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("x", p);
         for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
-            if (!isSessionFunction(g))
+            if (!isSessionFunction(g)) {
                 continue;
+            }
             StringBuffer fc = new StringBuffer();
             fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
                 " x WHERE x=").append(qap.getParameterSyntax()).append("x");
@@ -537,9 +552,11 @@ public class Logic {
         for (String s : dd.getFieldNames()) {
             ret.add(att + "_" + s);
         }
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions())
-            if (isSessionFunction(g))
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
+            if (isSessionFunction(g)) {
                 ret.add(att + "_" + g.getName());
+            }
+        }
         return ret;
     }
 
@@ -588,8 +605,9 @@ public class Logic {
     public static void doInit(String path, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
         Object o = getAuthorizationConstraint(path);
-        if (!(o instanceof AuthorizationConstraint))
+        if (!(o instanceof AuthorizationConstraint)) {
             return;
+        }
         AuthorizationConstraint constraint = (AuthorizationConstraint) o;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
 
@@ -604,23 +622,27 @@ public class Logic {
                 throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
                         + " during inlining of query " + constraint.rule + " " + e.getMessage());
             }
-            if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*"))
+            if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*")) {
                 result = a.getAttribute(q1.substring(1));
+            }
             // then we try a number
-            if (result == null)
+            if (result == null) {
                 try {
                     result = Double.parseDouble(q1);
                 } catch (NumberFormatException e) {
                 }
+            }
             // then we try a string
-            if (result == null && q1.startsWith("(") && q1.endsWith(")"))
+            if (result == null && q1.startsWith("(") && q1.endsWith(")")) {
                 result = q1;
+            }
         }
 
         if (result == null) {
             String query = "SELECT " + constraint.rule + " AS col1 ";
-            if (constraint.fromWhere != null)
+            if (constraint.fromWhere != null) {
                 query += constraint.fromWhere;
+            }
             query = qap.inlineFunctions(query);
             Vector<Dictionary<String, Object>> v;
             try {
@@ -629,15 +651,18 @@ public class Logic {
                 throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
                         + " during execution of query " + query + " " + e.getMessage());
             }
-            if (v.size() > 1)
+            if (v.size() > 1) {
                 throw new ProgrammerError("Authorization constraint returned multiple values: " + constraint.key + "="
                         + constraint.value);
-            if (v.size() == 0)
+            }
+            if (v.size() == 0) {
                 throw new UnauthorizedException(constraint.message);
+            }
             result = v.elementAt(0).get("col1");
         }
-        if (result == null || result.equals(Pointer.Null) || result.equals(0) || result.equals(false))
+        if (result == null || result.equals(Pointer.Null) || result.equals(0) || result.equals(false)) {
             throw new UnauthorizedException(constraint.message);
+        }
     }
 
     public static void doInit(Object controller, Attributes a, String dbName, DbConnectionProvider dbcp)
@@ -701,12 +726,14 @@ public class Logic {
 
     public static TransactionProviderInterface getTransactionProvider(Object controller) throws LogicInvocationError {
         Method connectionProvider = null;
-        if (controller != null)
+        if (controller != null) {
             connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
+        }
         String transactionProviderClass = null;
         try {
-            if (connectionProvider != null)
+            if (connectionProvider != null) {
                 transactionProviderClass = (String) connectionProvider.invoke(controller);
+            }
 
             if (transactionProviderClass == null) {
                 transactionProviderClass = configuration.getDefaultTransactionProviderClass();
