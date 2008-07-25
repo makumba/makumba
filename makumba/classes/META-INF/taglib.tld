@@ -96,6 +96,12 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+     
+    <attribute>
+      <name>authorise</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
     
     <attribute>
       <name>editable</name>
@@ -113,9 +119,7 @@
       <name>editPage</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    
-    
+    </attribute>    
   </tag>
 
 
@@ -187,6 +191,12 @@
     </attribute>
     
     <attribute>
+      <name>authorise</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    
+    <attribute>
       <name>editable</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -202,8 +212,7 @@
       <name>editPage</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    
+    </attribute>    
   </tag>
 
 

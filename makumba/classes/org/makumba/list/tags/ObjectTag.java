@@ -25,14 +25,16 @@ package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
 
-
 /**
  * mak:object tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
 public class ObjectTag extends QueryTag {
-
+    public ObjectTag() {
+        authorise = "binding";
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -41,4 +43,5 @@ public class ObjectTag extends QueryTag {
             throw new MakumbaJspException(this, "Object tag should have only one result");
         super.setNumberOfIterations(max);
     }
+
 }
