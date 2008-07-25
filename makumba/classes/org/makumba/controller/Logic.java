@@ -544,10 +544,6 @@ public class Logic {
         return ret;
     }
 
-    private static boolean isSessionFunction(DataDefinition.QueryFragmentFunction g) {
-        return !g.getName().startsWith("actor") && g.getParameters().getFieldNames().size() == 0;
-    }
-
     private static String actorPrefix(DataDefinition dd) {
         return "actor_" + dd.getName().replace(".", "_");
     }
