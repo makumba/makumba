@@ -444,28 +444,37 @@ public class Logic {
         DataDefinition.QueryFragmentFunction match = null;
         HashMap<String, Object> matchValues = null;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
-        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions()) {
-            if (f.getName().startsWith("actor")) {
-                HashMap<String, Object> values = new HashMap<String, Object>();
-                DataDefinition params = f.getParameters();
-                if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
-                    continue; // don't look at this function if we already have a match with more parameters
-                }
-                for (String para : params.getFieldNames()) {
-                    try {
-                        // check if all the params defined in the function exist as parameter
-                        values.put(para, a.getAttribute(para));
-                        // TODO: check if the value is assignable to the function parameter type
-                    } catch (LogicException ae) {
-                        continue nextFunction;
-                    }
-                }
-                match = f;
-                matchValues = values;
+        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getActorFunctions()) {
+            HashMap<String, Object> values = new HashMap<String, Object>();
+            DataDefinition params = f.getParameters();
+            if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
+                continue; // don't look at this function if we already have a match with more parameters
             }
+            for (String para : params.getFieldNames()) {
+                try {
+                    // check if all the params defined in the function exist as parameter
+                    values.put(para, a.getAttribute(para));
+                    // TODO: check if the value is assignable to the function parameter type
+                } catch (LogicException ae) {
+                    continue nextFunction;
+                }
+            }
+            match = f;
+            matchValues = values;
         }
         if (match == null) {
-            throw new ProgrammerError("No fitting actor() function was found in " + type);
+            if (dd.getActorFunctions().size() == 0) { // if we have no actor function at all
+                // report this as programmer error
+                throw new ProgrammerError("No fitting actor() function was found in " + type);
+            } else {
+                // otherwise, if there is no fitting function, throw UnauthenticatedException to trigger login
+                // 
+                // FIXME: this is not totally correct, cause in the case of having an actor function defined
+                // and coming from the login page, but having a mismatch of the parameter names in the function with the
+                // inputs in the login form, we will still report UnauthenticatedException, even though we should throw
+                // a ProgrammerError
+                throw new UnauthenticatedException("Please provide username and password");
+            }
         }
         java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(match + " \n" + a);
 
