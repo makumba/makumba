@@ -559,10 +559,8 @@ public class Logic {
         for (String s : dd.getFieldNames()) {
             ret.add(att + "_" + s);
         }
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
-            if (isSessionFunction(g)) {
-                ret.add(att + "_" + g.getName());
-            }
+        for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
+            ret.add(att + "_" + g.getName());
         }
         return ret;
     }
