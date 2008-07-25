@@ -124,6 +124,9 @@ public interface DataDefinition {
     /** returns all actor functions in this data definition. */
     public Collection<QueryFragmentFunction> getActorFunctions();
 
+    /** returns all actor functions in this data definition. */
+    public Collection<QueryFragmentFunction> getSessionFunctions();
+
     class QueryFragmentFunction implements Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -169,6 +172,14 @@ public interface DataDefinition {
 
         public String getErrorMessage() {
             return errorMessage;
+        }
+        
+        public boolean isActorFunction() {
+            return getName().startsWith("actor");
+        }
+
+        public boolean isSessionFunction() {
+            return !isActorFunction() && getParameters().getFieldNames().size() == 0;
         }
 
         @Override
