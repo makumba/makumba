@@ -36,7 +36,7 @@ public class textViewer extends FieldViewer {
     static String[] params = { "default", "empty", "lineSeparator", "longLineLength", "html", "format" };
 
     static String[][] paramValues = { null, null, null, null, { "true", "false", "auto" },
-            { "raw", "htmlescape", "urlencode", "wiki", "auto" } };
+            { "raw", "htmlescape", "stripHTML", "urlencode", "wiki", "auto" } };
 
     public String[] getAcceptedParams() {
         return params;
@@ -77,6 +77,10 @@ public class textViewer extends FieldViewer {
             return MakumbaSystem.getWikiFormatter().wiki2html(txt);
         } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);
+        }
+
+        if (StringUtils.equals(format, "stripHTML")) {
+            txt = HtmlUtils.stripHTMLTags(txt);
         }
 
         String startSeparator = "<p>";
