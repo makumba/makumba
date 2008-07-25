@@ -37,7 +37,8 @@ public class charViewer extends FieldViewer {
             "ellipsisLength", "addTitle" };
 
     static String[][] paramValues = { null, null, { "true", "false" }, { "true", "false", "auto" },
-            { "raw", "htmlescape", "urlencode", "wiki", "auto" }, null, null, null, { "true", "false", "auto" } };
+            { "raw", "htmlescape", "stripHTML", "urlencode", "wiki", "auto" }, null, null, null,
+            { "true", "false", "auto" } };
 
     public String[] getAcceptedParams() {
         return params;
@@ -77,6 +78,9 @@ public class charViewer extends FieldViewer {
         } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);
         } else {
+            if (StringUtils.equals(format, "stripHTML")) {
+                txt = HtmlUtils.stripHTMLTags(txt);
+            }
             return formatMaxLengthEllipsis(rf, fieldIndex, txt, formatParams);
         }
     }
