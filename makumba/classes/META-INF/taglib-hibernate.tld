@@ -96,6 +96,24 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
   </tag>
 
 
@@ -165,6 +183,24 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
   </tag>
 
 
@@ -225,6 +261,12 @@
 
     <attribute>
       <name>limit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>defaultLimit</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
@@ -321,6 +363,25 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
   </tag>
 
   <tag>
@@ -2177,7 +2238,7 @@
       <rtexprvalue>yes</rtexprvalue>
     </attribute>
     <attribute>
-      <name>title</name>
+      <name>paginationLinkTitle</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
     </attribute>
