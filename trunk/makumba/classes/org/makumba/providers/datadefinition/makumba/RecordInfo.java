@@ -81,7 +81,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     Vector<String> fieldOrder = new Vector<String>();
 
     Hashtable<String, QueryFragmentFunction> functionNames = new Hashtable<String, QueryFragmentFunction>();
-
+    
     String title;
 
     String indexName;
@@ -380,11 +380,21 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     public Collection<QueryFragmentFunction> getActorFunctions() {
         ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
         for (QueryFragmentFunction function : functionNames.values()) {
-            if (function.getName().startsWith("actor")) {
+            if (function.isActorFunction()) {
                 actorFunctions.add(function);
             }
         }
         return actorFunctions;
+    }
+    
+    public Collection<QueryFragmentFunction> getSessionFunctions() {
+        ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
+        for (QueryFragmentFunction function : functionNames.values()) {
+            if (function.isSessionFunction()) {
+                sessionFunctions.add(function);
+            }
+        }
+        return sessionFunctions;
     }
 
     /** returns the path-like abstract-level name of this record info */

@@ -524,10 +524,7 @@ public class Logic {
         // now we call all functions with no parameters
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("x", p);
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions()) {
-            if (!isSessionFunction(g)) {
-                continue;
-            }
+        for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
             fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
                 " x WHERE x=").append(qap.getParameterSyntax()).append("x");
