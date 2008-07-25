@@ -376,6 +376,16 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     public Collection<QueryFragmentFunction> getFunctions() {
         return functionNames.values();
     }
+    
+    public Collection<QueryFragmentFunction> getActorFunctions() {
+        ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
+        for (QueryFragmentFunction function : functionNames.values()) {
+            if (function.getName().startsWith("actor")) {
+                actorFunctions.add(function);
+            }
+        }
+        return actorFunctions;
+    }
 
     /** returns the path-like abstract-level name of this record info */
     public String getName() {
