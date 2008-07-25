@@ -449,10 +449,11 @@ public class Logic {
                 HashMap<String, Object> values = new HashMap<String, Object>();
                 DataDefinition params = f.getParameters();
                 if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
-                    continue;
+                    continue; // don't look at this function if we already have a match with more parameters
                 }
                 for (String para : params.getFieldNames()) {
                     try {
+                        // check if all the params defined in the function exist as parameter
                         values.put(para, a.getAttribute(para));
                         // TODO: check if the value is assignable to the function parameter type
                     } catch (LogicException ae) {
