@@ -121,6 +121,9 @@ public interface DataDefinition {
     /** returns all functions in this data definition. */
     public Collection<QueryFragmentFunction> getFunctions();
 
+    /** returns all actor functions in this data definition. */
+    public Collection<QueryFragmentFunction> getActorFunctions();
+
     class QueryFragmentFunction implements Serializable {
         private static final long serialVersionUID = 1L;
 
