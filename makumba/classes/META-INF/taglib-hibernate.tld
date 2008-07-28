@@ -98,7 +98,7 @@
     </attribute>
      
     <attribute>
-      <name>authorise</name>
+      <name>authorize</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
@@ -191,7 +191,7 @@
     </attribute>
     
     <attribute>
-      <name>authorise</name>
+      <name>authorize</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
