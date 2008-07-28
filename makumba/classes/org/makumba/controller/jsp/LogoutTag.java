@@ -33,6 +33,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -77,11 +78,14 @@ public class LogoutTag extends TagSupport {
         } else if (pageContext.getAttribute(attr, PageContext.SESSION_SCOPE) != null) {
             pageContext.removeAttribute(attr, PageContext.SESSION_SCOPE);
         } else {
-            DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(attr);
-            if (dd != null) {
-                for (String s : Logic.logoutActor(dd)) {
-                    pageContext.removeAttribute(s, PageContext.SESSION_SCOPE);
+            try {
+                DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(attr);
+                if (dd != null) {
+                    for (String s : Logic.logoutActor(dd)) {
+                        pageContext.removeAttribute(s, PageContext.SESSION_SCOPE);
+                    }
                 }
+            } catch (DataDefinitionNotFoundError e) {
             }
         }
         return EVAL_BODY_INCLUDE;
