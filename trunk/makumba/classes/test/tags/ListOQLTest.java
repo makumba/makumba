@@ -198,6 +198,8 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakValueTS_create() throws ServletException, IOException {
+        // FIXME: this test will fail
+        // a line-by-line comparison can not work for the dynamic values TS_create & TS_ modify
         pageContext.include("list-oql/testMakValueTS_create.jsp");
     }
 
@@ -211,6 +213,8 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakValueTS_modify() throws ServletException, IOException {
+        // FIXME: this test will fail
+        // a line-by-line comparison can not work for the dynamic values TS_create & TS_ modify
         pageContext.include("list-oql/testMakValueTS_modify.jsp");
     }
 
