@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
  */
 public class ObjectTag extends QueryTag {
     public ObjectTag() {
-        authorise = "binding";
+        authorize = "binding";
     }
 
     private static final long serialVersionUID = 1L;
