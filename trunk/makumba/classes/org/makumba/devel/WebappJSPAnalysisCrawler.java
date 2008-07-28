@@ -45,6 +45,44 @@ public class WebappJSPAnalysisCrawler {
     public static final FileFilter filter = new JSPFileFilter();
 
     public static void main(String[] args) {
+        JSAPResult result = parseCrawlParams(args);
+
+        String webappRoot = result.getString("webappRoot");
+        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
+                : new String[] {};
+        String analysisOutputFile = "analysis-errors.txt";
+        if (result.getString("analysisOutputFile") != null) {
+            analysisOutputFile = result.getString("analysisOutputFile");
+        }
+
+        System.out.println("Starting relation crawler, config:");
+        System.out.println("\twebappRoot: " + webappRoot);
+        System.out.println("\tanalysisOutputFile: " + analysisOutputFile);
+        System.out.println("\tSkip: " + Arrays.toString(skipPaths));
+        System.out.println("\t(from : " + Arrays.toString(args) + ")");
+        Date beginDate = new Date();
+        System.out.println("\nCrawling starts at " + beginDate + "\n");
+
+        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, filter);
+        Collections.sort(allFilesInDirectory);
+        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+
+        for (int i = 0; i < files.length; i++) {
+            JspParseData jpd = JspParseData.getParseData(webappRoot, files[i], JspRelationsAnalyzer.getInstance());
+            try {
+                jpd.getAnalysisResult(new RelationParseStatus());
+            } catch (Throwable t) {
+                // page analysis failed
+                logger.warning("Page analysis for page " + files[i] + " failed due to error: " + t.getMessage());
+                JSPAnalysisErrors.put(files[i], t);
+            }
+        }
+        RelationCrawler.writeJSPAnalysisError(analysisOutputFile, JSPAnalysisErrors, files.length);
+        System.out.println("\n\nCrawling finished, took: "
+                + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
+    }
+
+    public static JSAPResult parseCrawlParams(String[] args) {
         JSAP jsap = new JSAP();
         try {
             jsap.registerParameter(new FlaggedOption("webappRoot", JSAP.STRING_PARSER, ".", false, 'w', "root"));
@@ -68,48 +106,7 @@ public class WebappJSPAnalysisCrawler {
             System.err.println(jsap.getHelp());
             System.exit(-1);
         }
-
-        String webappRoot = result.getString("webappRoot");
-        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
-                : new String[] {};
-        String analysisOutputFile = "analysis-errors.txt";
-        if (result.getString("analysisOutputFile") != null) {
-            analysisOutputFile = result.getString("analysisOutputFile");
-        }
-
-        System.out.println("Starting relation crawler, config:");
-        System.out.println("\twebappRoot: " + webappRoot);
-        System.out.println("\tanalysisOutputFile: " + analysisOutputFile);
-        System.out.println("\tSkip: " + Arrays.toString(skipPaths));
-        System.out.println("\t(from : " + Arrays.toString(args) + ")");
-        Date beginDate = new Date();
-        System.out.println("\nCrawling starts at " + beginDate + "\n");
-
-        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, filter);
-        Collections.sort(allFilesInDirectory);
-        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
-
-        for (int i = 0; i < files.length; i++) {
-            Throwable t = crawl(files[i], webappRoot);
-            if (t != null) {
-                JSPAnalysisErrors.put(files[i], t);
-            }
-        }
-        RelationCrawler.writeJSPAnalysisError(analysisOutputFile, JSPAnalysisErrors, files.length);
-        System.out.println("\n\nCrawling finished, took: "
-                + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
-    }
-
-    public static Throwable crawl(String path, String root) {
-        JspParseData jpd = JspParseData.getParseData(root, path, JspRelationsAnalyzer.getInstance());
-        try {
-            jpd.getAnalysisResult(new RelationParseStatus());
-        } catch (Throwable t) {
-            // page analysis failed
-            logger.warning("Page analysis for page " + path + " failed due to error: " + t.getMessage());
-            return t;
-        }
-        return null;
+        return result;
     }
 
 }
