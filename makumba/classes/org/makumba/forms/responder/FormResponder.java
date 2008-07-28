@@ -108,7 +108,7 @@ public class FormResponder extends Responder {
         if (!ftype.isDateType()
                 && !org.makumba.commons.StringUtils.equalsAny(formatParams.get("type"), new String[] { "radio",
                         "checkbox", "tickbox" })) {
-            extraFormatting += "id=\"" + fname + storedSuffix + "\" ";
+            extraFormatting += "id=\"" + fname + storedSuffix + "_" + formIdentifier + "\" ";
         }
 
         FieldEditor.setSuffix(paramCopy, storedSuffix);

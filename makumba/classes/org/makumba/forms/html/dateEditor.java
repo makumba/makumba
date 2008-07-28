@@ -119,7 +119,7 @@ public class dateEditor extends FieldEditor {
         String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
         String calendarEditor = (String) formatParams.get("calendarEditor");
         if (calendarEditor!=null && !"false".equals(calendarEditor)) {
-            sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName,
+            sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
                 (String) formatParams.get("calendarEditorLink")));
         }
 
@@ -132,21 +132,22 @@ public class dateEditor extends FieldEditor {
         df.setCalendar(dateFormatter.calendar);
 
         String name = getComponentName(rf, fieldIndex, component, formatParams);
+        String id = " id=\"" + name + "_" + rf.getFormIdentifier() + "\"";
 
         if (hidden) {
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
             c.setTime(d);
-            sb.append("<input type=\"hidden\" name=\"").append(name).append("\" id=\"").append(name).append(
-                "\" value=\"").append(c.get(components[component])).append("\">");
+            sb.append("<input type=\"hidden\" name=\"").append(name).append("\"").append(id).append(" value=\"").append(
+                c.get(components[component])).append("\">");
         } else {
             String val = df.format(d);
 
             if (lowLimits[component] == -1) {// year
-                sb.append("<input type=\"text\" name=\"").append(name).append("\" id=\"").append(name).append(
-                    "\" value=\"").append(val).append("\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(
-                    fmt.length()).append("\"").append(getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
+                sb.append("<input type=\"text\" name=\"").append(name).append("\"").append(id).append(" value=\"").append(
+                    val).append("\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(fmt.length()).append(
+                    "\"").append(getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
             } else {
-                sb.append("<select name=\"").append(name).append("\" id=\"").append(name).append("\"").append(
+                sb.append("<select name=\"").append(name).append("\"").append(id).append(
                     getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
                 Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
                 c.clear();
