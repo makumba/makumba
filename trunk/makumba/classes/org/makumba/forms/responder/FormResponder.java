@@ -141,7 +141,7 @@ public class FormResponder extends Responder {
         // add client side validation, but only for edit operations (not search)
         if (!operation.equals("search")
                 && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            provider.initField(fname + storedSuffix, ftype, clientSideValidation.equals("live"));
+            provider.initField(fname + storedSuffix + "_" + formIdentifier, ftype, clientSideValidation.equals("live"));
         }
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
