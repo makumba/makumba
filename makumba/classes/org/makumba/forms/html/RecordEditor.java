@@ -42,7 +42,6 @@ import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 
 /**
@@ -82,17 +81,6 @@ public class RecordEditor extends RecordFormatter {
             }
         }
         return unassignedExceptions;
-    }
-
-    public void initClientSideValidation(ClientsideValidationProvider provider, boolean liveValidation, String suffix) {
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
-            String inputName = FieldEditor.getInputName(this, i, suffix);
-            if (inputName == null) {
-                continue;
-            }
-            provider.initField(inputName, fieldDefinition, /* validationDefinition, */liveValidation);
-        }
     }
 
     public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {

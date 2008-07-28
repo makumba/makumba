@@ -16,15 +16,15 @@
         comment: <TEXTAREA name="comment_1" id="comment_1_form6"  ></TEXTAREA><br>
         weight: <input name="weight_1" type="text" value="" maxlength="10" id="weight_1_form7" >
     <script type="text/javascript">
-var indiv__name_1Validation = new LiveValidation('indiv.name_1', { validMessage: " " });
-indiv__name_1Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+var indiv__name_1_form2Validation = new LiveValidation('indiv.name_1_form2', { validMessage: " " });
+indiv__name_1_form2Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
 
-var weight_1Validation = new LiveValidation('weight_1', { validMessage: " " });
-weight_1Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
-weight_1Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+var weight_1_form7Validation = new LiveValidation('weight_1_form7', { validMessage: " " });
+weight_1_form7Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_1_form7Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_indiv__name_1Validation_weight_1Validation() {
-  valid = LiveValidation.massValidate( [indiv__name_1Validation, weight_1Validation] );
+function validateForm_indiv__name_1_form2Validation_weight_1_form7Validation() {
+  valid = LiveValidation.massValidate( [indiv__name_1_form2Validation, weight_1_form7Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
@@ -40,15 +40,15 @@ function validateForm_indiv__name_1Validation_weight_1Validation() {
         comment: <TEXTAREA name="comment_2" id="comment_2_form12"  >This is a text field. It's a comment about this person.</TEXTAREA><br>
         weight: <input name="weight_2" type="text" value="85.7" maxlength="10" id="weight_2_form13" >
     <script type="text/javascript">
-var indiv__name_2Validation = new LiveValidation('indiv.name_2', { validMessage: " " });
-indiv__name_2Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+var indiv__name_2_form8Validation = new LiveValidation('indiv.name_2_form8', { validMessage: " " });
+indiv__name_2_form8Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
 
-var weight_2Validation = new LiveValidation('weight_2', { validMessage: " " });
-weight_2Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
-weight_2Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+var weight_2_form13Validation = new LiveValidation('weight_2_form13', { validMessage: " " });
+weight_2_form13Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_2_form13Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_indiv__name_2Validation_weight_2Validation() {
-  valid = LiveValidation.massValidate( [indiv__name_2Validation, weight_2Validation] );
+function validateForm_weight_2_form13Validation_indiv__name_2_form8Validation() {
+  valid = LiveValidation.massValidate( [weight_2_form13Validation, indiv__name_2_form8Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
@@ -64,15 +64,15 @@ function validateForm_indiv__name_2Validation_weight_2Validation() {
         comment: <TEXTAREA name="comment_3" id="comment_3_form18"  ></TEXTAREA><br>
         weight: <input name="weight_3" type="text" value="" maxlength="10" id="weight_3_form19" >
     <script type="text/javascript">
-var indiv__name_3Validation = new LiveValidation('indiv.name_3', { validMessage: " " });
-indiv__name_3Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+var indiv__name_3_form14Validation = new LiveValidation('indiv.name_3_form14', { validMessage: " " });
+indiv__name_3_form14Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
 
-var weight_3Validation = new LiveValidation('weight_3', { validMessage: " " });
-weight_3Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
-weight_3Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+var weight_3_form19Validation = new LiveValidation('weight_3_form19', { validMessage: " " });
+weight_3_form19Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_3_form19Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_weight_3Validation_indiv__name_3Validation() {
-  valid = LiveValidation.massValidate( [weight_3Validation, indiv__name_3Validation] );
+function validateForm_weight_3_form19Validation_indiv__name_3_form14Validation() {
+  valid = LiveValidation.massValidate( [weight_3_form19Validation, indiv__name_3_form14Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
