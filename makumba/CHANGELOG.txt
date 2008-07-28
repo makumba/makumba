@@ -6,6 +6,34 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
+
+-----------------------------------------------
+
+NOT TO BE RELEASED YET (need more testing)
+
+------------------------------------------
+- add your changes -
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.8.0.2 ; 28 Jul 2008
+rudi: updated doc with file & binary type & MDD function
+rudi: download for file type, using content-based mime detection, adding imageWidth & imageHeight to file type
+
+0.8.0.1 ; 22 Jul 2008 (http://makumba.svn.sourceforge.net/viewvc/makumba/tags/makumba-0_8_0_1/makumba/?sortby=date&view=log)
+rudi: better exception support for foreign keys 
+rudi: support for file type 
+rudi: fix form form-identifier in autoLabels 
+
+0.8.0 ; 21 Jul 2008 (http://makumba.svn.sourceforge.net/viewvc/makumba/tags/makumba-0_8_0/makumba/?sortby=date&view=log)
+cristi: MDD functions, start for authorise in MakumbaController.properties
+
+0.7.0.1 ; 7 Jul 2008 (http://makumba.svn.sourceforge.net/viewvc/makumba/tags/makumba-0_7_0_1/?sortby=date&view=log)
+
+0.7.0 ; 7 Jul 2008 (http://makumba.svn.sourceforge.net/viewvc/makumba/tags/makumba-0_7/?sortby=date&view=log)
+(many of those changes below have been there before, but this is the first time they were released in a regression-tested released)
+(it might be good to add them to the right release, though)
+
 manu: fixing various bugs with hibernate database management
 manu: fixing bug with display of AttributeNotFoundException / LogicException depending on its source
 rudi: fixing bug 958, reserved tomcat keywords
@@ -27,15 +55,6 @@ rudi: fixing bugs introduced to addToNew with refactoring of responders
 rudi: implementing basic version of nested new forms (bug 1026) 
 rudi: implemented pagination
 
------------------------------------------------
-
-NOT TO BE RELEASED YET (need more testing)
-rudi: implemented query functions inlining in WHERE sections and BL queries
-
-------------------------------------------
-- add your changes -
-<!-- ============================================================================= -->
-<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
 0.7 ALPHA3; 22 May 2008
 rudi: reverting form order in responder factory
