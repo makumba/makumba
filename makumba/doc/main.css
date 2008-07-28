@@ -261,3 +261,13 @@ li.sectionLevel2 {
 div.navbarPage {
 	margin-left: -50px;
 }
+
+div.renderExample {
+	position: relative; 
+	left: 50px; 
+	border: thin; 
+	border-color: black; 
+	border-style: solid;
+	padding: 5px;
+	width: 60%;
+}

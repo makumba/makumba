@@ -1272,6 +1272,34 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
     689</a>)</p>
     <pre class="example">&lt;mak:form action="blabla"&gt;<br>&lt;%-- the topmost form, will result in a HTML form, may or may not have logic, <br>     or it can be a specialized form (new, edit, add...)<br>--%&gt;<br><br>  &lt;mak:input name="first" /&gt; &lt;%-- the topmost form can have fields of its own --%&gt;<br><br>&lt;mak:list .... &gt; <br>&nbsp; &lt;mak:addForm object="bla" field="bla" &gt;<br>  &lt;%-- note that there is no action indicated here, it's the action of the <br>       topmost form a normal on_add BL method will be called <br>   --%&gt;<br>&nbsp;&nbsp;   &lt;mak:input name="second" /&gt;&lt;%-- the topmost form can have fields of its own, <br>                                     even repeated in loops <br>                                --%&gt;<br>     ...<br>  &lt;/mak:addForm&gt;<br>&lt;/mak:list&gt;<br><br>&lt;mak:list .... &gt; &lt;%-- there can be more than one loop in a root form -- %&gt;<br>...<br>&lt;/mak:list&gt;<br>&lt;input type=submit&gt; &lt;%-- it's easy to add a submit button anywhere --%&gt;<br>&lt;/mak:form&gt;<!-- bug: the after_ BL method should be invoked after the subform responders : http://bugs.best.eu.org/show_bug.cgi?id=689 --></pre>
     <p class="futfeat">(Later, new and edit forms that have no body, will build default forms. )</p>
+
+    <p><strong>Form annotation</strong> <br />
+    Form validation errors are either reported in the <a href="#response">Makumba response</a> which would be displayed on the form action
+    page, or can for improved usability be annotated in the form itself. In the latter case, on a form validation error, the form page itself would be
+    displayed again, and errors are displayed next to the inputs that failed validation.<br/>
+    An example can be seen below:
+
+    <div class="renderExample">
+      <table>
+        <tr>
+          <td>age</td>
+          <td><input name="age" value="1r" maxlength="10" id="age" type="text"> &nbsp; <span style="color: red; font-weight: bold">invalid integer: 1r</span></td>
+        </tr>
+        <tr>
+          <td>weight</td>
+          <td><input name="weight" value="24b" maxlength="10" id="weight" type="text"> &nbsp; <span style="color: red; font-weight: bold">invalid real: 24b</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <p>The annotation message will be put inside a <code>&lt;span class="formAnnotation"&gt;</code>; this CSS-class can be used to add custom
+    formatting to the message.</p>
+
+    <p>Reloading the form page on errors can be triggered by the attribute <code>reloadFormOnError</code>, the location of the annotation message
+    by the attribute <code>annotation</code>.</p>
+    <p>Additionally, form validation can be done also on the client-side, i.e. in the browser. Client-side validation can be either live, i.e. on
+    entering data in an input, or before form submission; this is controlled by the attribute <code>clientSideValidation</code>.</p>
+
     <h4><a name="maknew">&lt;mak:newForm&nbsp; ...&gt;.... &lt;/mak:newForm&gt;</a></h4>
     <p>Makes a form for creating a new object of the indicated type. <!-- FIXME (fred 2003-10-18) should include description of
 
@@ -1288,8 +1316,18 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
 --></p>
     <p>Example (personNew.jsp):</p>
     <pre class="example">&lt;mak:newForm type="general.Person" action="personList.jsp" method="post"&gt;<br>        &lt;mak:input name="name"/&gt;<br>        &lt;mak:input name="surname"/&gt;<br>        &lt;input type="submit"&gt;<br>&lt;/mak:newForm&gt;<br></pre>
-    <br>
-    <p></p>
+
+    <p id="multiFormSubmission"><strong>Multiple submission of forms</strong><!-- http://bugs.best.eu.org/show_bug.cgi?id=37 --> <br>
+    
+    <p>If new forms are submitted more than once (intentionally or by accident, e.g. impatient users pressing twice one a submit button, reloading
+    a form result page, ...), problems might occur in the data integrity.<br>
+    Makumba has a built-int mechanism to prevent multiple submission of forms; a ticket will be generated on form load, containing a form-specific key
+    and a time stamp. Each ticket is only valid for a single form submission. Upon subsequent submission of the very same form, an error message will
+    be displayed.</p>
+    <div class="note">Note that this does not prevent duplicate entries, it just prevents double submission of one specific form instance. To
+    prevent duplicate entries, define unique keys.</div>
+
+    <br/>
     <table class="tagParamDef">
       <tbody>
         <tr>
@@ -1331,11 +1369,8 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         </tr>
         <tr>
           <td><tt>multipleSubmitErrorMsg</tt></td>
-          <td>Enables multiple form submission prevention, and sets the given value as the error message.</td>
-          <td>For a form with multiple submission prevention, a ticket will be generated on form load, containing a
-          form-specific key and a time stamp. Each ticket is only valid for a single form submission. Upon subsequent
-          submission, the error message will be displyed. Note that this does not prevent duplicate entries, it just
-          prevents double submission of one specific form instance. To prevent duplicate entries, define unique keys.</td>
+          <td>Enables <a href="#multiFormSubmission">multiple form submission prevention</a>, and sets the given value as the error message.</td>
+          <td>Rtexpr.</td>
         </tr>
         <tr>
           <td><tt>reloadFormOnError</tt></td>
@@ -1346,14 +1381,18 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <td><tt>annotation</tt></td>
           <td>Indicates that validation whether errors should be shown in the form, or be displayed in the <code>&lt;mak:response/&gt;.</td>.
           <td>Taken into account only if <code>reloadFormOnError</code> is not set to <code>false</code>.<br>
-          Values are <code>none</code> (displayed in the <code>&lt;mak:response/&gt;</code>), <code>before</code> (displayed before the input), <code>after</code> (displayed after the input) or <code>both</code> (displayed both before and after the input).
-          Defaults to <code>none</code>. <br>
-          Additionally, the annotation message will be put inside a <code>&lt;span class="formAnnotation"&gt;</code>; the CSS-class can be used to add custom formatting to the message.
+          Values are <code>none</code> (displayed in <code>&lt;mak:response/&gt;</code>), <code>before</code> (before the input), <code>after</code> (after the input) or <code>both</code> (displayed both before and after the input).
+          Defaults to <code>none</code>.
         </tr>
         <tr>
           <td><tt>annotationSeparator</tt></td>
           <td>Fixed. Prints the given separator between the annotation and the input field.</td>
           <td>Also HTML can be used, e.g. printing an error icon.</td>
+        </tr>
+        <tr>
+          <td><tt>clientSideValidation</tt></td>
+          <td>Controls whether client side validation shall be used.</td></td>
+          <td>Rtexpr. Values are <code>false</code> (off), <code>true</code> (on submission) or <code>live</code> (while tpying).</td>
         </tr>
         <!--form specific:-->
         <tr>
