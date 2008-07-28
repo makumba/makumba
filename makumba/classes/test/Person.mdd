@@ -62,8 +62,7 @@ email%matches = .+@.+\.[a-z]+ : Email address is not valid!
 address=set			 ;Addresses
   address->!title=description
   address->description=char[30]	;Description (home address, study-time address, ...)
-  address->streetno=char[100]	      ;Street
-  
+  address->streetno=char[100]	      ;Street  
   address->zipcode=char[10]		;Zipcode
   address->city=char[40]		;City
   address->country=char[20]             ;Country
@@ -74,6 +73,7 @@ address=set			 ;Addresses
   address->usageend=date		;Use till
   address->sth=ptr
   address->sth->aaa=char[20]
+  address->languages = set test.Language ; languages spoken in that address
 
 toys=set
   toys->name=char[30]
