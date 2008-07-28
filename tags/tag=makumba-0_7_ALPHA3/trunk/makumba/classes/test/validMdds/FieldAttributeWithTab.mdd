@@ -1,4 +1,0 @@
-#demonstrating bug 661
-theName1=fixed	char[10]
-theName2=not	null	char[20]
-theName3=unique	char[30]

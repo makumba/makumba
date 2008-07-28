@@ -1,3 +1,0 @@
-name=char[40]            ;First Name
-color=char[20]	;Color
-serial = char[8]
