@@ -25,7 +25,6 @@ package org.makumba.controller.jsp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -53,6 +52,7 @@ public class LogoutTag extends TagSupport {
         attr = a;
     }
 
+    @Override
     public int doStartTag() throws JspException {
         if (attr == null) {
             // should not happen. Actor is a required field.
@@ -70,17 +70,19 @@ public class LogoutTag extends TagSupport {
                     removableAttributes.add(name);
                 }
             }
-            for (Iterator it = removableAttributes.iterator(); it.hasNext();) {
-                pageContext.removeAttribute((String) it.next(), PageContext.SESSION_SCOPE);
+            for (String element : removableAttributes) {
+                pageContext.removeAttribute(element, PageContext.SESSION_SCOPE);
             }
 
         } else if (pageContext.getAttribute(attr, PageContext.SESSION_SCOPE) != null) {
             pageContext.removeAttribute(attr, PageContext.SESSION_SCOPE);
-        } else{
-            DataDefinition dd=  DataDefinitionProvider.getInstance().getDataDefinition(attr);
-            if(dd!=null)
-                for(String s:Logic.logoutActor(dd))
+        } else {
+            DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(attr);
+            if (dd != null) {
+                for (String s : Logic.logoutActor(dd)) {
                     pageContext.removeAttribute(s, PageContext.SESSION_SCOPE);
+                }
+            }
         }
         return EVAL_BODY_INCLUDE;
     }
@@ -98,16 +100,19 @@ public class LogoutTag extends TagSupport {
         int pos = 0; // keeps track where we are (advancing) in s
 
         // special cases: special patterns
-        if (pattern.length() == 0)
+        if (pattern.length() == 0) {
             return false; // ""
-        if (!st.hasMoreTokens())
+        }
+        if (!st.hasMoreTokens()) {
             return true; // "*****"
+        }
 
         // special case: pattern starts NOT with wildcard
         if (!pattern.startsWith("*")) {
             token = st.nextToken();
-            if (!s.startsWith(token))
+            if (!s.startsWith(token)) {
                 return false;
+            }
             pos += token.length();
         }
 
@@ -115,8 +120,9 @@ public class LogoutTag extends TagSupport {
         while (st.hasMoreTokens()) {
             token = st.nextToken();
             int p = s.substring(pos).indexOf(token); // p = distance within substring
-            if (p == -1)
+            if (p == -1) {
                 return false;
+            }
             pos += p + token.length();
         }
 
