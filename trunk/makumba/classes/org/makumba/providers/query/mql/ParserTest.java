@@ -25,9 +25,10 @@ public class ParserTest {
                 "org/makumba/providers/query/mql/queries.txt").getContent()));
             String query = null;
             while ((query = rd.readLine()) != null) {
+                query = preProcess(query);
                 AST a = analyseQuery(line, query);
                 if (line == 1075) {
-                    ASTFrame frame = new ASTFrame("normal",a);
+                    ASTFrame frame = new ASTFrame("normal", a);
                     frame.setVisible(true);
                 }
                 line++;
@@ -51,5 +52,14 @@ public class ParserTest {
             System.out.println(line + ": " + t.getMessage() + " " + query);
             return null;
         }
+    }
+
+    public static String preProcess(String query) {
+        // replace -> (subset separators) with __
+        query = query.replaceAll("->", "__");
+        // replace IN SET with IN.
+        // FIXME: too simplistic approach
+        query = query.replaceAll("IN SET", "IN    ");
+        return query;
     }
 }
