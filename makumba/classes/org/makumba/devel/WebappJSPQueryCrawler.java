@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -20,15 +19,10 @@ import org.makumba.commons.FileUtils;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.JspRelationsAnalyzer;
-import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.RelationParseStatus;
 import org.makumba.list.engine.ComposedQuery;
 
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.UnflaggedOption;
 
 /**
  * Analyses all JSP pages of a webapp and writes the queries found in the pages to a file. Inspired from
