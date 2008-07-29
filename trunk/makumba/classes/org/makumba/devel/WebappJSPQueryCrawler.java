@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.makumba.analyser.PageCache;
@@ -18,6 +19,7 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.FileUtils;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.ReadableFormatter;
+import org.makumba.devel.relations.JavaMDDParser;
 import org.makumba.devel.relations.JspRelationsAnalyzer;
 import org.makumba.devel.relations.RelationParseStatus;
 import org.makumba.list.engine.ComposedQuery;
@@ -33,9 +35,9 @@ import com.martiansoftware.jsap.JSAPResult;
  */
 public class WebappJSPQueryCrawler {
     /** A file filter that accepts JSP files and directories. */
-    private static final class JSPFileFilter implements FileFilter {
+    private static final class JavaFileFilter implements FileFilter {
         public boolean accept(File pathname) {
-            return pathname.getName().endsWith(".jsp") || pathname.isDirectory();
+            return pathname.getName().endsWith(".java") || pathname.isDirectory();
         }
     }
 
@@ -43,7 +45,9 @@ public class WebappJSPQueryCrawler {
 
     public static Hashtable<String, Throwable> JSPAnalysisErrors = new Hashtable<String, Throwable>();
 
-    public static final FileFilter filter = new JSPFileFilter();
+    public static final FileFilter jspFilter = new WebappJSPAnalysisCrawler.JSPFileFilter();
+
+    public static final FileFilter javaFilter = new JavaFileFilter();
 
     public static void main(String[] args) throws FileNotFoundException {
         JSAPResult result = WebappJSPAnalysisCrawler.parseCrawlParams(args);
@@ -67,14 +71,13 @@ public class WebappJSPQueryCrawler {
         File f = new File(analysisOutputFile);
         PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
-        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, filter);
-        Collections.sort(allFilesInDirectory);
-        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
-
-        for (int i = 0; i < files.length; i++) {
-            JspParseData jpd = JspParseData.getParseData(webappRoot, files[i], JspRelationsAnalyzer.getInstance());
+        String[] jspFiles = getFiles(webappRoot, skipPaths, jspFilter);
+        for (int i = 0; i < jspFiles.length; i++) {
             try {
-                Object analysisResult = jpd.getAnalysisResult(new RelationParseStatus());
+                Object analysisResult;
+                JspParseData jpd = JspParseData.getParseData(webappRoot, jspFiles[i],
+                    JspRelationsAnalyzer.getInstance());
+                analysisResult = jpd.getAnalysisResult(new RelationParseStatus());
                 if (analysisResult != null && analysisResult instanceof PageCache) {
                     PageCache pageCache = (PageCache) analysisResult;
                     Map<Object, Object> cache = pageCache.retrieveCache(MakumbaJspAnalyzer.QUERY);
@@ -90,9 +93,26 @@ public class WebappJSPQueryCrawler {
             }
         }
 
+        pw.println();
+        String[] javaFiles = getFiles(webappRoot, skipPaths, javaFilter);
+        for (int i = 0; i < javaFiles.length; i++) {
+            JavaMDDParser jqp = new JavaMDDParser(webappRoot + File.separator + javaFiles[i]);
+            Vector<String> queries = jqp.getQueries();
+            for (String query : queries) {
+                pw.println(query);
+            }
+        }
+
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
         System.out.println("Wrote queries to file: " + f.getAbsolutePath());
+    }
+
+    private static String[] getFiles(String webappRoot, String[] skipPaths, FileFilter fileFilter) {
+        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, fileFilter);
+        Collections.sort(allFilesInDirectory);
+        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+        return files;
     }
 
 }
