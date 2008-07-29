@@ -5254,14 +5254,14 @@ SELECT rfn.name AS rfnName FROM best.internal.Region r, r.formerNames rfn WHERE 
 SELECT rfn.name AS rfnName, rfn.fromDate AS rfnFromDate FROM best.internal.Region r, r.formerNames rfn WHERE r=$1 ORDER BY rfn.fromDate DESC
 SELECT rfn.name AS rfnName FROM best.internal.Region r, r.formerNames rfn WHERE r=$1 AND rfn<>$2 ORDER BY rfn.fromDate DESC
 SELECT p.name as name, p.surname as surname FROM general.Person p WHERE p=$1
-SELECT dl.when AS calWhen, dl.what AS calWhat, s.name AS calLink, \'johnnyDeadline\' as calCategory FROM best.johnny.Season s, s.deadlines dl WHERE dl.when>=$1 AND dl.when<=$2 ORDER BY dl.when
-SELECT e.generalEvent.start AS calWhen, e.generalEvent.end AS calTill, e.generalEvent.name AS calWhat, e AS calLink, \'internalEvent\' as calCategory FROM best.internal.Event e WHERE e.generalEvent.end>=$1 AND e.generalEvent.start<=$2 ORDER BY e.generalEvent.start
-SELECT p.birthdate AS calWhen, p.name AS calWhat, p.surname AS calWhat2, p AS calLink, \'birthday\' as calCategory FROM best.internal.Student bis, bis.student.person p WHERE p.birthdate<>nil AND p.birthdate<=$2 AND bis.account_active=1 ORDER BY p.birthdate, p.name, p.surname
+SELECT dl.when AS calWhen, dl.what AS calWhat, s.name AS calLink, 'johnnyDeadline' as calCategory FROM best.johnny.Season s, s.deadlines dl WHERE dl.when>=$1 AND dl.when<=$2 ORDER BY dl.when
+SELECT e.generalEvent.start AS calWhen, e.generalEvent.end AS calTill, e.generalEvent.name AS calWhat, e AS calLink, 'internalEvent' as calCategory FROM best.internal.Event e WHERE e.generalEvent.end>=$1 AND e.generalEvent.start<=$2 ORDER BY e.generalEvent.start
+SELECT p.birthdate AS calWhen, p.name AS calWhat, p.surname AS calWhat2, p AS calLink, 'birthday' as calCategory FROM best.internal.Student bis, bis.student.person p WHERE p.birthdate<>nil AND p.birthdate<=$2 AND bis.account_active=1 ORDER BY p.birthdate, p.name, p.surname
 SELECT person as memberPerson FROM best.internal.Student bis, bis.student.person person WHERE bis=$1
-SELECT t as pointer FROM general.Team t WHERE t.name=\"challenge\"
+SELECT t as pointer FROM general.Team t WHERE t.name='challenge'
 SELECT t as p FROM general.Team t WHERE t.name=$1
 SELECT t as p FROM general.Team t WHERE t.name=$1
-SELECT t as team FROM best.internal.Student s,general.Team t, t.members tm WHERE s=$1 AND (tm.member=s.student.person) AND t.description=\"PGForum\"
+SELECT t as team FROM best.internal.Student s,general.Team t, t.members tm WHERE s=$1 AND (tm.member=s.student.person) AND t.description='PGForum'
 SELECT p as person FROM best.internal.Student bis, bis.student.person p WHERE bis = $1
 SELECT f as forum, p.recipients as recipients, p.viewTeam as oldView, p.type as oldType FROM best.pgforum.Post p, p.forum f WHERE p = $1
 SELECT p.TS_create as creation_date, doc AS doc_pointer FROM best.pgforum.Post p, p.message doc WHERE p = $1
@@ -5360,7 +5360,7 @@ SELECT a.shortname AS shortname FROM best.Auth a WHERE a.shortname=$1
 SELECT t FROM general.Team t, t.aliases a WHERE a.alias=$1
 SELECT t.name as teamName FROM general.Team t
 SELECT l as lbg FROM best.internal.Lbg l WHERE l.logo=$1
-SELECT p FROM general.Team  t, t.members tm, tm.member p WHERE t.name=\"lbgadmins\" AND p=$1
+SELECT p FROM general.Team  t, t.members tm, tm.member p WHERE t.name='lbgadmins' AND p=$1
 SELECT p as person FROM best.internal.Student bis, bis.student s, s.person p WHERE bis.account_active=1 AND p=$1
 SELECT bis as student, bis.lbg as lbg2 FROM best.internal.Student bis, bis.student s, s.authentication a WHERE a.n_username like $1 AND bis.account_active=1
 SELECT bis as student, p.name as name, p.surname as surname, g as guest FROM best.internal.Student bis, bis.student.person p, bis.guest g WHERE p=$1 AND g.guestLbg=$2
@@ -5376,7 +5376,7 @@ SELECT ge.name FROM general.event.Event ge, ge.organisingLBGs AS lbg WHERE lbg =
 SELECT event.generalEvent as generalEvent FROM best.local.Event event WHERE event = $1
 SELECT auth.password as password from best.Auth auth where auth.karamba_username=$1
 SELECT auth.password as password from best.Auth auth where auth.karamba_username=$1
-SELECT s FROM best.internal.Student s, s.lbg l WHERE s=$1 AND (l=$2 or l.name=$2 or l.id=$2 or l.iname=$2 or l.iname2=$2) AND s.isLbgAdmin=\"Yes\"
+SELECT s FROM best.internal.Student s, s.lbg l WHERE s=$1 AND (l=$2 or l.name=$2 or l.id=$2 or l.iname=$2 or l.iname2=$2) AND s.isLbgAdmin='Yes'
 SELECT cpy FROM general.company.Company cpy WHERE cpy.name=$1 and cpy.lbg=nil
 SELECT p FROM best.internal.Student s, s.student.person p WHERE s=$1
 SELECT bsp FROM best.internal.Student s, s.student.person bsp WHERE s=$1
@@ -5385,7 +5385,7 @@ SELECT t FROM general.Team t, t.aliases a WHERE (a.alias=$1 or a.alias=$2)
 SELECT t.name as teamName FROM general.Team t
 SELECT collaboration as collaboration FROM general.company.Collaboration collaboration where collaboration.project = $1
 SELECT task as task FROM best.internal.tasklist.Task task WHERE task.project = $1
-SELECT t as pointer FROM general.Team t WHERE t.name=\"BEST Board\"
+SELECT t as pointer FROM general.Team t WHERE t.name='BEST Board'
 SELECT ec FROM best.internal.Event e, e.coordinator ec, best.internal.Student bis, bis.student.person p WHERE e=$1 AND ec=p AND bis=$2
 SELECT p as person FROM best.internal.Student bis, bis.student s, s.person p,s.authentication a WHERE a.n_username like $1 AND bis.account_active=1
 SELECT p as person FROM best.internal.Student bis, bis.student s, s.person p,s.authentication a WHERE a.n_username like $1 AND bis.account_active=1
@@ -5571,3 +5571,76 @@ SELECT transfer FROM general.accounting.Transfer transfer WHERE transfer.categor
 SELECT account FROM general.accounting.Account account WHERE  account.number=$1
 SELECT account.balance as balance FROM general.accounting.Account account WHERE account = $1
 SELECT transfer FROM general.accounting.Transfer transfer WHERE (transfer.fromAccount = $1 OR transfer.toAccount = $1)
+SELECT account.balance as balance FROM general.accounting.Account account WHERE account = $1
+SELECT b as budget, b.startDate as budgetStartDate, b.endDate as budgetEndDate FROM general.accounting.Budget b WHERE b=$1
+SELECT transfer.amount as previousAmount, transfer.fromAccount as fromAccount, transfer.fromAccount.balance as previousFromBalance, transfer.toAccount as toAccount, transfer.toAccount.balance as previousToBalance FROM general.accounting.Transfer transfer WHERE transfer = $1
+SELECT reconciliationItem as reconciliationItem FROM general.accounting.Transfer transfer, transfer.reconciliationSet reconciliationItem WHERE transfer = $1
+SELECT reconciliationItem FROM general.accounting.Transfer transfer, transfer.reconciliationSet reconciliationItem WHERE transfer = $1
+SELECT transfer.amount as amount, transfer.fromAccount.category as fromCategory, transfer.toAccount.category as toCategory FROM general.accounting.Transfer transfer WHERE transfer = $1
+SELECT reconciliationItem as reconciliationItem FROM general.accounting.Transfer transfer, transfer.reconciliationSet reconciliationItem WHERE transfer = $1
+SELECT transfer as transfer FROM general.accounting.Transfer transfer WHERE transfer = $1
+SELECT rr as refundRequest FROM best.internal.RefundRequest rr WHERE rr.status=20 and rr.TS_create>$1 and rr.transferedToAccounting=0
+SELECT productOrder as productOrder FROM best.internal.prop.ProductOrder productOrder WHERE productOrder.transferedToAccounting=0 AND productOrder.product.orderDL<$2 AND productOrder.product.sent=1 AND productOrder.TS_create>$1 
+SELECT season as season, season.name as seasonName, season.missingEvaluationDebtsPosted as missingEvaluationDebtsStatus FROM best.johnny.Season season WHERE season=$1
+SELECT lbg as lbg, lbg.name as lbgName FROM best.internal.Lbg lbg WHERE lbg.name <> 'CFES' and lbg.name <> 'bonding'
+SELECT p.name as participantName, p.surname as participantSurname  FROM best.johnny.Application bjap, bjap.activ bjac, bjac.season season, bjap.stud bjs, bjs.validatingLBG sendingLbg, bjs.student bs, bs.person p  WHERE season=$1 and sendingLbg=$2 and bjap.participated=1 and (bjap.evaluated=0 or bjap.evaluated=nil)
+SELECT cc.depositAmount as unitaryAmount, countries.name as countryName FROM general.event.CountryCategory cc, cc.countries countries, best.johnny.Season season, best.internal.Lbg sendingLbg WHERE season=$1 AND season.start>=cc.fromDate AND season.start<=cc.toDate AND sendingLbg=$2 AND sendingLbg.university.country=countries
+SELECT deadlines.when as evaluationDL FROM best.johnny.Season season, season.deadlines deadlines WHERE season=$1 and deadlines.what=6
+SELECT account as account FROM general.accounting.Account account
+SELECT sum(transfer.amount) as sumAmounts FROM general.accounting.Transfer transfer WHERE transfer.fromAccount = $1
+SELECT sum(transfer.amount) as sumAmounts FROM general.accounting.Transfer transfer WHERE transfer.toAccount = $1
+SELECT budget as budget FROM general.accounting.Budget budget WHERE budget.startDate<=$1 AND budget.endDate>$1 
+SELECT budgetCategory as budgetCategory FROM general.accounting.BudgetCategory budgetCategory WHERE budgetCategory.budget=$1 AND budgetCategory.name=$2 
+SELECT account as account FROM general.accounting.Account account WHERE account.inUse=10 and account.number=$1
+SELECT receipts as receipts FROM best.internal.RefundRequest request, request.expensesReceipts receipts WHERE request = $1
+SELECT request FROM best.internal.RefundRequest request WHERE request.requestor=$1 and request=$2
+SELECT request as request FROM best.internal.RefundRequest request, request.expenses expense WHERE expense = $1
+SELECT request as request FROM best.internal.RefundRequest request, request.expensesReceipts receipts WHERE receipts = $1
+SELECT d as doc FROM general.archive.Document d WHERE d.documentNumber = $1
+SELECT att.currentVersion as doc FROM general.archive.Document d, d.attachments att WHERE d.documentNumber=$1 and (att.title=$2 or att.title=$3)
+SELECT att.currentVersion as doc FROM general.archive.Document d, d.attachments att WHERE d=$1 and (att.title=$2 or att.title=$3)
+SELECT d as doc FROM general.archive.Document d WHERE d.specialName = $1
+SELECT att.currentVersion as doc FROM general.archive.Document d, d.attachments att WHERE d=$1 and (att.title=$2 or att.title=$3)
+SELECT team as team, team.name as name from general.Team team
+SELECT team as team from general.Team team, team.subgroups subgroups WHERE subgroups=$1
+SELECT team as team from general.Team team, team.subgroups subgroups WHERE subgroups=$1
+SELECT e AS event, e.generalEvent AS gevent FROM best.internal.Event e
+SELECT repr.authentication FROM general.company.CompanyRepresentative repr WHERE repr=$1 AND repr.authentication.password=$2
+SELECT bs.authentication AS authentication FROM best.Student bs WHERE bs.authentication.karamba_username=$1 and bs.person.birthdate=$2
+SELECT representative.authentication AS authentication FROM general.company.CompanyRepresentative representative WHERE representative.authentication.karamba_username=$1
+SELECT request FROM best.helpdesk.Request request WHERE request=$1 and request.sender=$2
+SELECT request FROM best.helpdesk.Request request WHERE request=$1 and request.sender=$2
+SELECT request FROM best.helpdesk.Request request WHERE request=$1 and request.sender=$2
+SELECT request FROM best.helpdesk.Request request WHERE request=$1 AND (request.sender_surname=$2 OR request.sender_name=$2 OR request.sender_email=$2)
+SELECT response as response FROM general.survey.Response response WHERE response.survey.name=$1 AND response.responseToActivity=$2 AND response.respondent=$3
+SELECT m.file AS file FROM best.johnny.Activity.materials m WHERE m = $1
+SELECT bjs FROM best.johnny.Student bjs WHERE bjs.student.authentication.karamba_username = $1
+SELECT bms FROM best.minerva.Student bms WHERE bms.student.authentication.karamba_username = $1
+SELECT ssn.name nameOfSeason FROM best.johnny.Activity bjac, bjac.season ssn WHERE bjac=$2 and bjac.season=ssn
+SELECT ssn.name as seasonName FROM best.johnny.Application bjap, bjap.activ bjac, bjac.season ssn WHERE bjap.stud.student=$1 and (bjap.participated=1 or (bjap.participated=nil and bjap.confirmed=1)) and (bjac.type='Learning Event - Technological Course' or bjac.type='Learning Event - Language Course' or bjac.type='Learning Event - Career Related Skill Course' or (bjac.type='Engineering Competition' and bjac.start > $3) or bjac.type='Academic' or bjac.type='Summer Course' or bjac.type='Short Intensive Training' or bjac.type='Language Course')
+SELECT bjap.activ.type AS actType FROM best.johnny.Activity jact, best.johnny.Application bjap WHERE jact=$2 and bjap.stud.student=$1 and bjap.activ.season=jact.season
+SELECT bjap FROM best.johnny.Application bjap WHERE bjap.activ=$2 and bjap.stud.student=$1
+SELECT ac FROM best.johnny.Activity ac WHERE ac=$1 and ac.inSeason=0 
+SELECT bjap FROM best.johnny.Application bjap WHERE bjap.stud.student=$1 and bjap.activ.season=$2 and bjap.activ.inSeason=0
+SELECT ja.activ AS act, ja.activ.season AS ssn, ja.studentRankingPosition AS srPos FROM best.johnny.Application ja WHERE ja=$1 and ja.activ.inSeason=0
+SELECT ja AS appPtr, ja.studentRankingPosition AS srPos FROM best.johnny.Application ja WHERE ja.stud=$1 and ja.activ.season=$2 and ja.studentRankingPosition > $3
+SELECT bjap AS appPtr FROM best.johnny.Application bjap WHERE bjap.stud.student=$1 and bjap.activ.season=$2 and bjap.studentRankingPosition=$3
+SELECT application as application FROM best.johnny.Application application WHERE application.activ=$1 AND application.stud=$2
+SELECT response as response FROM general.survey.Response response WHERE response=$1
+SELECT application as application FROM best.johnny.Application application WHERE application.evaluation=$1
+SELECT question as question FROM general.survey.Question question, question.inQuestionSets.questionSet.threadRoot.inSurveys.survey survey WHERE survey=$1
+SELECT application as application from best.johnny.Application application
+SELECT response as response FROM general.survey.Response response, best.johnny.Application application WHERE response=application.evaluation and application=$1
+SELECT application as application, application.activ as activity, application.activ.end as end, application.participated as participated FROM best.johnny.Application application WHERE application.activ=$1 AND application.stud=$3
+SELECT application as application, application.activ as activity, application.activ.end as end, application.participated as participated FROM best.johnny.Application application WHERE application.evaluation=$2 AND application.stud=$3
+SELECT a FROM best.johnny.Application a WHERE a=$2 and a.stud.student=$1
+SELECT bs FROM best.Student bs, bs.authentication auth WHERE (auth.karamba_username = $1)
+SELECT namespace.name AS name, namespace.team AS team, namespace.type AS type FROM best.wiki.Namespace namespace
+SELECT systempage.name AS name FROM best.wiki.SystemPage systempage
+SELECT wpv as WikiPageVersion FROM best.wiki.WikiPageVersion wpv WHERE wpv.name=$1 AND wpv.num =$2
+SELECT wpv as WikiPageVersion FROM best.wiki.WikiPageVersion wpv WHERE wpv.name=$1 AND wpv.num =$2
+SELECT wpv as WikiPageVersion FROM best.wiki.WikiPageVersion wpv WHERE wpv.name=$1
+SELECT ns.name AS name FROM best.wiki.Namespace ns WHERE ns = $1
+SELECT sp.name AS name FROM best.wiki.SystemPage sp WHERE sp = $1
+SELECT sn.name AS name FROM best.wiki.SpecialName sn WHERE sn = $1
+SELECT sn.name AS name FROM best.wiki.SpecialName sn
