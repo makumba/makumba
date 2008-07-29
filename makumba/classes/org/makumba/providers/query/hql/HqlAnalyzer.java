@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.hibernate.hql.ast.HqlParser;
+import org.hibernate.hql.ast.ParseErrorHandler;
+import org.hibernate.hql.ast.QuerySyntaxException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
@@ -64,6 +66,10 @@ public class HqlAnalyzer implements QueryAnalysis {
         // Parse the input expression
         try {
             parser.statement();
+            ParseErrorHandler parseErrorHandler = parser.getParseErrorHandler();
+            if(parseErrorHandler.getErrorCount()>0)
+                parseErrorHandler.throwQueryException();
+            
             AST t1 = parsedHQL = parser.getAST();
             
             /*
@@ -93,7 +99,10 @@ public class HqlAnalyzer implements QueryAnalysis {
                 frame.setVisible(true); }                
                 */
             }
-        } catch (antlr.ANTLRException f) {
+        } catch(QuerySyntaxException g){
+            throw new OQLParseError("during analysis of query: " + query1, g);           
+        }
+        catch (antlr.ANTLRException f) {
             throw new OQLParseError("during analysis of query: " + query1, f);
         }
         
