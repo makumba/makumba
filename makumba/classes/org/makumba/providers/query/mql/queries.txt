@@ -5644,3 +5644,12 @@ SELECT ns.name AS name FROM best.wiki.Namespace ns WHERE ns = $1
 SELECT sp.name AS name FROM best.wiki.SystemPage sp WHERE sp = $1
 SELECT sn.name AS name FROM best.wiki.SpecialName sn WHERE sn = $1
 SELECT sn.name AS name FROM best.wiki.SpecialName sn
+
+SELECT question in SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question iN SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question In SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question IN Set   ($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question in   SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question in SeT($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question in	 SeT($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT question in SeT		($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
