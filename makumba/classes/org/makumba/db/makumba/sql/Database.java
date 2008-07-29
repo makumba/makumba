@@ -443,5 +443,10 @@ public class Database extends org.makumba.db.makumba.Database {
 		return true;
 	}
 
+	/** Implementing classes can override this method to extract a more readable error message on foreign key errors. */
+    public String parseReadableForeignKeyErrorMessage(SQLException se) {
+        return se.getMessage();
+    }
+
 
 }

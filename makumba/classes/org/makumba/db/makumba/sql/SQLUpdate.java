@@ -184,10 +184,11 @@ public class SQLUpdate implements Update {
             try {
                 rez = ps.executeUpdate();
             } catch (SQLException se) {
-                if (((Database) dbc.getHostDatabase()).isForeignKeyViolationException(se)) {
-                    throw new org.makumba.ForeignKeyError(se);
-                } else if (((Database) dbc.getHostDatabase()).isDuplicateException(se)) {
-                    // FIXME: need to determine the field that produced the error
+                Database db = (Database) dbc.getHostDatabase();
+                if (db.isForeignKeyViolationException(se)) {
+                    throw new org.makumba.ForeignKeyError(db.parseReadableForeignKeyErrorMessage(se));
+                } else if (db.isDuplicateException(se)) {
+                    // FIXME: should determine the field that produced the error to 
                     throw new org.makumba.NotUniqueError(se);
                 }
                 org.makumba.db.makumba.sql.Database.logException(se);
