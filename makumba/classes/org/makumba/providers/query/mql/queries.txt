@@ -2076,7 +2076,7 @@ SELECT s AS col1,a AS col2,a.lbg.name AS col3,a.name AS col4,a.start AS col5 FRO
 SELECT s AS col1 FROM best.johnny.Season s,best.johnny.Application appOut
 SELECT s AS col1,s.name AS col2 FROM best.johnny.Season s
 SELECT s AS col1,appOut.activ AS col2,appOut.activ.lbg.name AS col3,appOut.activ.name AS col4,appOut.activ.start AS col5,count(appOut) AS col6 FROM best.johnny.Season s,best.johnny.Application appOut
-SELECT ssn AS col1,($1 like "Invalid" and  (bjs.validatedUntil=nil OR bjs.validatedUntil < ssn.start)) or ($1 like "New" and bjs.validatedUntil=nil) or ($1 like "Valid" and bjs.validatedUntil > ssn.start) or $1 like "All" AS col2,bjs AS col3,p.surname AS col4,p.name AS col5,s.authentication.karamba_username AS col6,p.gender AS col7,p.birthdate AS col8,bjs.localIdNumber AS col9,bjs.validatedUntil AS col10,s.authentication.migratedCode AS col11,bjs.TS_create AS col12,bjs.altEmail AS col13,bjs.canEmail AS col14 FROM best.johnny.Season ssn,best.johnny.Student bjs, bjs.student s, s.person p
+SELECT ssn AS col1,($1 like 'Invalid' and  (bjs.validatedUntil=nil OR bjs.validatedUntil < ssn.start)) or ($1 like 'New' and bjs.validatedUntil=nil) or ($1 like 'Valid' and bjs.validatedUntil > ssn.start) or $1 like 'All' AS col2,bjs AS col3,p.surname AS col4,p.name AS col5,s.authentication.karamba_username AS col6,p.gender AS col7,p.birthdate AS col8,bjs.localIdNumber AS col9,bjs.validatedUntil AS col10,s.authentication.migratedCode AS col11,bjs.TS_create AS col12,bjs.altEmail AS col13,bjs.canEmail AS col14 FROM best.johnny.Season ssn,best.johnny.Student bjs, bjs.student s, s.person p
 SELECT ssn AS col1,lbg.name AS col2,ssn.name AS col3,ssn.start AS col4 FROM best.johnny.Season ssn,best.internal.Lbg lbg
 SELECT ssn AS col1,ssn.name AS col2 FROM best.johnny.Season ssn
 SELECT ssnChoice.name AS col1 FROM best.johnny.Season ssnChoice
@@ -5195,11 +5195,6 @@ SELECT p as person FROM general.Person p WHERE p.photo=$1
 SELECT repr FROM general.company.CompanyRepresentative repr WHERE repr.authentication.karamba_username=$1
 SELECT application as application FROM general.event.Application application WHERE application.event=$1 AND application.applicant=$2
 SELECT file as file FROM general.archive.File file 
-SELECT count(doc) as totalCount FROM general.archive.Document doc, doc.parts.doc file, doc.inArchives a WHERE a.name=$1 OR a.name=$2
-SELECT count(doc) as totalCount FROM general.archive.Document doc, doc.parts.doc file, doc.inArchives a
-SELECT file.content AS content, file AS file, file.title AS title, file.TS_create AS creationDate, file.content_length AS content_length, file.content_type AS content_type, file.charset AS charset, doc AS doc FROM general.archive.Document doc, doc.parts.doc file, doc.inArchives a
-SELECT count(doc) as totalCount FROM general.archive.Document doc, doc.parts.doc file, doc.inArchives a
-SELECT file.content AS content, file AS file, file.title AS title, file.TS_create AS creationDate, file.content_length AS content_length, file.content_type AS content_type, file.charset AS charset, doc AS doc FROM general.archive.Document doc, doc.parts.doc file, doc.inArchives a
 SELECT file as file FROM general.archive.Document doc, doc.attachments att, att.currentVersion file WHERE file.title = $1 and file.contentLength = $2
 SELECT bms.student.person.email as email, bms.student.person.name as name FROM best.minerva.Student bms WHERE (bms.account_active=1 OR bms.account_active = nil) AND bms.student.receiveCareerNewsletter=1 AND (bms.student.hasBAS = nil OR bms.student.hasBAS <> 'Yes') AND (bms.student.hasPA = nil OR bms.student.hasPA <> 'Yes')
 SELECT bjs.student.authentication.karamba_username as email, bjs.student.person.name as name FROM best.johnny.Student bjs WHERE bjs.student.receiveCareerNewsletter=1  AND (bjs.student.hasBCC = nil OR bjs.student.hasBCC <> 'Yes') AND (bjs.student.hasPA = nil OR bjs.student.hasPA <> 'Yes')
@@ -5208,7 +5203,6 @@ SELECT s.person.email as email, s.person.name as name FROM best.Student s WHERE 
 SELECT bis.student.person.email as email, bis.student.person.name as name FROM best.internal.Student bis WHERE bis.student.receiveCareerNewsletter=1  AND (bis.student.hasBAS = 'Yes' OR bis.student.hasBCC = 'Yes')
 SELECT bms.student.person.email as email, bms.student.person.name as name FROM best.minerva.Student bms WHERE (bms.account_active=1 OR bms.account_active = nil) AND bms.student.receiveCareerNewsletter=1 AND bms.student.hasBAS = 'Yes' AND (bms.student.hasPA = nil OR bms.student.hasPA <> 'Yes')
 SELECT cR.authentication as authentication FROM general.company.CompanyRepresentative cR WHERE cR=$1
-SELECT ad.authentication FROM best.minerva.Admin ad WHERE ad=$1 AND ad.authentication.password=$2
 SELECT u as university FROM general.University u WHERE u.logo=$1
 SELECT repr.authentication FROM general.company.CompanyRepresentative repr, best.minerva.Company bmc WHERE bmc=repr.company AND repr.company=$1 AND repr.authentication.password=$2
 SELECT bms AS bms, bms.student.person AS person FROM best.minerva.Student bms WHERE bms.student.authentication.karamba_username=$1 and bms.student.person.birthdate=$2
@@ -5223,7 +5217,7 @@ SELECT bms FROM best.minerva.Student bms WHERE bms.student=$1 OR bms.student.aut
 SELECT bms FROM best.minerva.Student bms, bms.student s, s.authentication auth WHERE (auth.karamba_username = $1)
 SELECT p.name as name, p.surname as surname, auth as auth FROM best.internal.Student bis, bis.student.person p, bis.student.authentication auth ORDER BY auth.username
 SELECT d as doc, d.documentNumber as documentNumber FROM general.archive.Document d WHERE d.documentNumber <> NIL AND d.approved = 1
-SELECT d as doc, d.threadRoot as threadRoot, d.TS_creat as tsCreate, d.title as docTitle FROM general.archive.Document d WHERE d.threadLevel > 0
+SELECT d as doc, d.threadRoot as threadRoot, d.TS_create as tsCreate, d.title as docTitle FROM general.archive.Document d WHERE d.threadLevel > 0
 SELECT root as root FROM general.archive.Document root where root=$1
 SELECT q as question, s.surveyType as surveyType FROM general.survey.Question q, q.inQuestionSets iq, iq.questionSet qs, qs.inSurveys ins, ins.survey s ORDER BY q ASC
 SELECT team as team, team.name as teamName FROM general.Team team, best.internal.Lbg lbg WHERE lbg.members=team
@@ -5346,9 +5340,6 @@ SELECT t as p FROM general.Team t WHERE t.name=$1
 SELECT t as p FROM general.Team t WHERE t.name=$1
 SELECT t as team FROM best.internal.Student s,general.Team t, t.members tm WHERE s=$1 AND (tm.member=s.student.person) AND t.description='PGForum'
 SELECT p as person FROM best.internal.Student bis, bis.student.person p WHERE bis = $1
-SELECT f as forum, p.recipients as recipients, p.viewTeam as oldView, p.type as oldType FROM best.pgforum.Post p, p.forum f WHERE p = $1
-SELECT p.TS_create as creation_date, doc AS doc_pointer FROM best.pgforum.Post p, p.message doc WHERE p = $1
-SELECT m.threadLevel as level, m.threadRoot as root, m.threadPath as path, p.category as category FROM best.pgforum.Post p, p.message m WHERE p = $1
 SELECT gt from general.Team gt WHERE gt.name=$1
 SELECT p as person from best.internal.Student ins, ins.student s, s.person p WHERE ins=$1
 SELECT t as team FROM general.Team t, t.members tm WHERE tm.member=$1 AND t.description='PGForum'
@@ -5391,7 +5382,6 @@ SELECT count(t) as taskCount FROM best.internal.eec.competition.Task t WHERE t.c
 SELECT task FROM best.internal.eec.competition.Task task WHERE (task <> $1 AND task.name like $2 AND task.category = $3)
 SELECT task FROM best.internal.eec.competition.Task task WHERE (task.name like $1 AND task.category = $2)
 SELECT task FROM best.internal.eec.competition.Task task WHERE (task = $1 AND task.submittedBy = $2)
-SELECT tbe as toolboxEntry FROM best.internal.marketeam.ToolboxEntry tbe WHERE tbe.thumbnail=$1
 SELECT s.student.person FROM best.internal.Student s WHERE s=$1
 SELECT ea FROM general.event.Application ea WHERE ea.applicant=$1 and ea=$2
 SELECT s.student.person FROM best.internal.Student s WHERE s=$1
@@ -5699,7 +5689,7 @@ SELECT response as response FROM general.survey.Response response WHERE response
 SELECT m.file AS file FROM best.johnny.Activity.materials m WHERE m = $1
 SELECT bjs FROM best.johnny.Student bjs WHERE bjs.student.authentication.karamba_username = $1
 SELECT bms FROM best.minerva.Student bms WHERE bms.student.authentication.karamba_username = $1
-SELECT ssn.name nameOfSeason FROM best.johnny.Activity bjac, bjac.season ssn WHERE bjac=$2 and bjac.season=ssn
+SELECT ssn.name AS nameOfSeason FROM best.johnny.Activity bjac, bjac.season ssn WHERE bjac=$2 and bjac.season=ssn
 SELECT ssn.name as seasonName FROM best.johnny.Application bjap, bjap.activ bjac, bjac.season ssn WHERE bjap.stud.student=$1 and (bjap.participated=1 or (bjap.participated=nil and bjap.confirmed=1)) and (bjac.type='Learning Event - Technological Course' or bjac.type='Learning Event - Language Course' or bjac.type='Learning Event - Career Related Skill Course' or (bjac.type='Engineering Competition' and bjac.start > $3) or bjac.type='Academic' or bjac.type='Summer Course' or bjac.type='Short Intensive Training' or bjac.type='Language Course')
 SELECT bjap.activ.type AS actType FROM best.johnny.Activity jact, best.johnny.Application bjap WHERE jact=$2 and bjap.stud.student=$1 and bjap.activ.season=jact.season
 SELECT bjap FROM best.johnny.Application bjap WHERE bjap.activ=$2 and bjap.stud.student=$1
