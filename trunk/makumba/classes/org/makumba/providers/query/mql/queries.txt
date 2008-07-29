@@ -5092,6 +5092,89 @@ SELECT app AS col1,event AS col2,q AS col3,question AS col4,answer AS col5,answe
 SELECT app AS col1,event AS col2,q AS col3,question AS col4,answer AS col5,answer_selectedOptions AS col6,answer_selectedOptions.name AS col7 FROM general.event.Application app,app.event event, event.applicationQuestions q, q.question question,app.answers answer,answer.selectedOptions answer_selectedOptions
 SELECT app AS col1,app.event.name AS col2,app.event.applicationThrough ='PA' AS col3,app.applyAs AS col4,app.motivationLetter AS col5,app.arrival AS col6,app.arrivalRef AS col7,app.arrivalPlace AS col8,app.arrivalMean AS col9,app.departure AS col10,app.departureRef AS col11,app.departurePlace AS col12,app.departureMean AS col13 FROM general.event.Application app
 SELECT ble AS col1,e AS col2,univ AS col3,univ.url AS col4,univ.name AS col5 FROM best.local.Event ble, ble.generalEvent e,ble.generalEvent.targetUniversities univ
+SELECT ble AS col1,e AS col2,ble.generalEvent.name AS col3,ble.generalEvent.start AS col4,ble.generalEvent.start <> ble.generalEvent.end AS col5,ble.generalEvent.end AS col6,ble.generalEvent.actualPlace <> NIL AND ble.generalEvent.actualPlace <> '' AS col7,ble.generalEvent.actualPlace AS col8,ble.companiesNumber <> NIL AS col9,ble.companiesNumber AS col10,ble.visitorsNumber <> NIL AS col11,ble.visitorsNumber AS col12,(ble.generalEvent.url <> NIL AND ble.generalEvent.url <> '') OR (ble.generalEvent.contactEmail <> NIL AND ble.generalEvent.contactEmail <> '') AS col13,ble.generalEvent.url <> NIL AND ble.generalEvent.url <> '' AS col14,ble.generalEvent.url AS col15,ble.generalEvent.contactEmail <> NIL AND ble.generalEvent.contactEmail <> '' AS col16,ble.generalEvent.contactEmail AS col17,(ble.contactDeadline <> NIL) OR (ble.feeForCompanies <> NIL AND ble.feeForCompanies <> '') AS col18,(ble.generalEvent.url = NIL OR ble.generalEvent.url = '') AND (ble.generalEvent.contactEmail = NIL OR ble.generalEvent.contactEmail = '') AS col19,ble.contactDeadline <> NIL AS col20,ble.contactDeadline AS col21,ble.feeForCompanies <> NIL AND ble.feeForCompanies <> '' AS col22,ble.feeForCompanies AS col23,(ble.generalEvent.fee <> NIL AND ble.generalEvent.fee <> '' AND ble.generalEvent.fee <> '0') OR ble.generalEvent.applicationDeadline <> NIL AS col24,ble.generalEvent.applicationDeadline <> NIL AS col25,ble.generalEvent.applicationDeadline AS col26,(ble.generalEvent.fee <> NIL AND ble.generalEvent.fee <> '' AND ble.generalEvent.fee <> '0') AS col27,ble.generalEvent.fee AS col28,ble.targetStudentsDescription <> NIL AND ble.targetStudentsDescription <> '' AS col29,ble.targetStudentsDescription AS col30,ble.generalEvent.descr <> NIL AND ble.generalEvent.descr <> '' AS col31,ble.generalEvent.descr AS col32,ble.eventAgenda <> NIL AND ble.eventAgenda <> '' AS col33,ble.eventAgenda AS col34,ble.meanOfPromotion <> NIL AND ble.meanOfPromotion <> '' AS col35,ble.meanOfPromotion AS col36 FROM best.local.Event ble, ble.generalEvent e
+SELECT ble AS col1,e AS col2 FROM best.local.Event ble, ble.generalEvent e,ble.generalEvent.targetUniversities uni
+SELECT ble AS col1,e AS col2,univ AS col3,univ.country.name AS col4 FROM best.local.Event ble, ble.generalEvent e,ble.generalEvent.targetUniversities univ
+SELECT bs.hasBAS AS col1,bs.hasBCC AS col2 FROM best.Student bs
+SELECT bjs AS col1,s AS col2,auth AS col3,p AS col4 FROM best.johnny.Student bjs, bjs.student s, s.authentication auth, s.person p
+SELECT ms AS col1,s AS col2,auth AS col3,p AS col4 FROM best.minerva.Student ms, ms.student s, s.authentication auth, s.person p
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,ed AS col5,ed.university.name AS col6,ed.typeofstud AS col7,ed.startdate AS col8,ed.finishdate AS col9,ed.faculty AS col10 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p,bs.education ed
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,ed AS col5,ed_studyfields AS col6,ed_studyfields.name AS col7 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p,bs.education ed,ed.studyfields ed_studyfields
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,ad AS col5,ad.country.name AS col6 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p,p.address ad
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,bs.hasBCC = 1 AS col5,bs.hasBAS = 1 AS col6,auth.karamba_username AS col7,bs.person.gender AS col8,bs.person.birthdate AS col9,bs.partyWebpage AS col10,bs.person.webpage AS col11,bs.person.citizenship AS col12,bs.person.passportno AS col13,bs.person.T_shirt AS col14,bs.person.allergies AS col15,bs.person.specialDiet AS col16,bs.person.icq AS col17,bs.person.skype AS col18,bs.person.mobilePhone AS col19,bs.extracurr AS col20 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,ad AS col5,ad.description AS col6,ad.streetno AS col7,ad.zipcode AS col8,ad.city AS col9,ad.phone AS col10,ad.otherphone AS col11,ad.fax AS col12,ad.usage AS col13 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p,p.address ad
+SELECT bjs AS col1,bs AS col2,auth AS col3,p AS col4,la AS col5,la.language.name AS col6,la.underlevel AS col7,la.readlevel AS col8,la.speaklevel AS col9,la.writing AS col10,la.comment AS col11 FROM best.johnny.Student bjs, bjs.student bs, bs.authentication auth, bs.person p,bs.lang la
+SELECT ja.activ.name AS col1,ja.finalStatus AS col2,ja.extraAccepted AS col3,ja.confirmed AS col4,ja.participated AS col5,ja.evaluation AS col6,ja AS col7,ja.arrival AS col8,ja.arrivalRef AS col9,ja.arrivalPlace AS col10,ja.arrivalMean AS col11,ja.departure AS col12,ja.departureRef AS col13,ja.departurePlace AS col14,ja.departureMean AS col15 FROM best.johnny.Application ja, ja.activ bjac
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,orgs AS col4,bis AS col5,s AS col6,p AS col7,p.photo = NIL AS col8,p.photo <> NIL AS col9,p.name AS col10,p.surname AS col11,bis.lbg.id AS col12,bis.lbg.name AS col13 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs,bjac.organisers orgs, orgs.organiser bis, bis.student s, s.person p
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,bjap2 AS col4,bjs2 AS col5,s AS col6,p AS col7,p.photo.title AS col8 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs,best.johnny.Application bjap2, bjap2.stud bjs2, bjs2.student s, s.person p
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,bjap2 AS col4,bjs2 AS col5,s AS col6,p AS col7,p.photo = NIL AS col8,p.photo <> NIL AS col9,p.name AS col10,p.surname AS col11,s.hasPA = 'Yes' AS col12 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs,best.johnny.Application bjap2, bjap2.stud bjs2, bjs2.student s, s.person p
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,bjac.name AS col4 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,orgs AS col4,bis AS col5,s AS col6,p AS col7,p.photo.title AS col8 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs,bjac.organisers orgs, orgs.organiser bis, bis.student s, s.person p
+SELECT bjap AS col1,bjac AS col2,bjs AS col3,bjap2 AS col4,bjs2 AS col5,s AS col6,p AS col7,bjs2.validatingLBG.id AS col8,bjs2.validatingLBG.name AS col9 FROM best.johnny.Application bjap, bjap.activ bjac, bjap.stud bjs,best.johnny.Application bjap2, bjap2.stud bjs2, bjs2.student s, s.person p
+SELECT p AS col1,s AS col2,p.photo.title AS col3 FROM general.Person p, best.Student s
+SELECT p AS col1,s AS col2,ad AS col3,ad.description AS col4,ad.streetno AS col5,ad.zipcode AS col6,ad.city AS col7,(ad.phone <> NIL) AND (ad.phone <> '') AS col8,ad.phone AS col9,(ad.otherphone <> NIL) AND (ad.otherphone <> '') AS col10,ad.otherphone AS col11,(ad.fax <> NIL) AND (ad.fax <> '') AS col12,ad.fax AS col13,(ad.usage <> NIL) AND (ad.usage <> '') AS col14,ad.usage AS col15 FROM general.Person p, best.Student s,p.address ad
+SELECT p AS col1,s AS col2,ed AS col3,ed.university.name AS col4,ed.typeofstud AS col5,ed.startdate AS col6,ed.graduated = 1 AS col7,ed.finishdate AS col8,ed.graduated = 0 OR ed.graduated = NIL AS col9 FROM general.Person p, best.Student s,s.education ed
+SELECT bjs AS col1,bjap AS col2,bjap.arrival AS col3,bjap.arrivalRef AS col4,bjap.arrivalPlace AS col5,bjap.arrivalMean AS col6,bjap.departure AS col7,bjap.departureRef AS col8,bjap.departurePlace AS col9,bjap.departureMean AS col10,bjs.shareEmail AS col11,bjs.shareMobilePhone AS col12,bjs.shareSnailMail AS col13,bjs.shareMessengers AS col14,bjs.shareBirthday AS col15,bjs.shareArrivalDeparture AS col16 FROM best.johnny.Student bjs, best.johnny.Application bjap
+SELECT bjs AS col1,bjap AS col2,bjs.validatingLBG.name AS col3,bjs.validatingLBG.id AS col4 FROM best.johnny.Student bjs, best.johnny.Application bjap
+SELECT p AS col1,s AS col2,p.name AS col3,p.surname AS col4,p.photo = NIL AS col5,p.photo <> NIL AS col6,s.hasPA AS col7,p.mobilePhone AS col8,s.authentication.karamba_username AS col9,p.icq AS col10,p.birthdate AS col11,p.gender AS col12 FROM general.Person p, best.Student s
+SELECT p AS col1,s AS col2,ed AS col3,f.name AS col4 FROM general.Person p, best.Student s,s.education ed,ed.studyfields f
+SELECT bis.lbg.name AS col1,bis.lbg.id AS col2 FROM best.internal.Student bis, bis.student s, s.person p
+SELECT bjac.name AS col1 FROM best.johnny.Activity bjac
+SELECT p AS col1,s AS col2,ad AS col3,ad.country.name AS col4 FROM general.Person p, best.Student s,p.address ad
+SELECT bjs AS col1,bs AS col2,bjs.validatingLBG.name AS col3,bjs.validatingLBG.id AS col4,bjs.validatingLBG.johnnyLocalValidationInformation <> nil AS col5,bjs.validatingLBG.johnnyLocalValidationInformation AS col6 FROM best.johnny.Student bjs, bjs.student bs
+SELECT bjs AS col1,bs AS col2,ssn.name AS col3 FROM best.johnny.Student bjs, bjs.student bs,best.johnny.Season ssn, ssn.deadlines DLs
+SELECT bjs AS col1,bs AS col2,bjs.validatedUntil >= $1 AS col3,bjs.validatedUntil = NIL OR bjs.validatedUntil < $1 AS col4 FROM best.johnny.Student bjs, bjs.student bs
+SELECT bjs AS col1,bs AS col2,ssn.name AS col3 FROM best.johnny.Student bjs, bjs.student bs,best.johnny.Season ssn, ssn.deadlines DLs
+SELECT s AS col1,p AS col2 FROM best.Student s, s.person p,general.event.Application gapp, gapp.event ge, best.local.Event le
+SELECT s AS col1,p AS col2,applySeason AS col3,seasonDl1 AS col4,seasonDl0 AS col5 FROM best.Student s, s.person p,best.johnny.Season applySeason, applySeason.deadlines seasonDl1, applySeason.deadlines seasonDl0,best.johnny.Activity activityCnt
+SELECT s AS col1,p AS col2,futureSeason.name AS col3,seasonDl0.when AS col4 FROM best.Student s, s.person p,best.johnny.Season futureSeason, futureSeason.deadlines seasonDl0
+SELECT s AS col1,p AS col2,applySeason AS col3,seasonDl1 AS col4,seasonDl0 AS col5,applySeason.name AS col6,seasonDl1.when AS col7 FROM best.Student s, s.person p,best.johnny.Season applySeason, applySeason.deadlines seasonDl1, applySeason.deadlines seasonDl0
+SELECT s AS col1,p AS col2,p.name AS col3,s.receiveCareerNewsletter = nil or s.receiveCareerNewsletter = 0 AS col4,s.receiveCareerNewsletter = 1 AS col5 FROM best.Student s, s.person p
+SELECT s AS col1,p AS col2,bms.account_active=1 OR bms.account_active = nil AS col3,s.TS_modify AS col4,bms.account_active=0 AS col5 FROM best.Student s, s.person p,best.minerva.Student bms
+SELECT s AS col1,p AS col2,openSeason AS col3,seasonDl6 AS col4 FROM best.Student s, s.person p,best.johnny.Season openSeason, openSeason.deadlines seasonDl6,best.johnny.Application japp
+SELECT s AS col1,p AS col2,ge AS col3,tu AS col4,seu AS col5,le AS col6 FROM best.Student s, s.person p,general.event.Event ge, ge.targetUniversities tu, s.education.university seu, best.local.Event le,general.event.Application gapp
+SELECT s AS col1,p AS col2,openSeason AS col3,seasonDl6 AS col4 FROM best.Student s, s.person p,best.johnny.Season openSeason, openSeason.deadlines seasonDl6
+SELECT s AS col1,p AS col2 FROM best.Student s, s.person p,s.education edu, best.internal.Lbg lbg
+SELECT s AS col1,p AS col2,applySeason.name AS col3,count(actOpenCNT) AS col4 FROM best.Student s, s.person p,best.johnny.Season applySeason, applySeason.deadlines seasonDl1, applySeason.deadlines seasonDl6, best.johnny.Activity actOpenCNT
+SELECT s AS col1,p AS col2,ge AS col3,tu AS col4,seu AS col5,le AS col6,ge.name AS col7,ge.applicationDeadline AS col8 FROM best.Student s, s.person p,general.event.Event ge, ge.targetUniversities tu, s.education.university seu, best.local.Event le
+SELECT choice AS col1,choice.name AS col2 FROM general.Country choice
+SELECT ins.negotiated <> 0 OR ins.negotiated = nil AS col1,ins.student.person.name AS col2,ins.lastlogin AS col3,ins.negotiated AS col4,ins.student.wantsToMerge AS col5,ins.student AS col6 FROM best.internal.Student ins
+SELECT ins AS col1,ea AS col2,e AS col3,bis AS col4,bie AS col5,bie.generalEvent.name AS col6 FROM best.internal.Student ins,general.event.Application ea, ea.event e, best.internal.Student bis, best.internal.Event bie
+SELECT ins AS col1,ins.student.wantsToMerge AS col2,ins.student AS col3 FROM best.internal.Student ins
+SELECT ins AS col1,ie.bestNo AS col2,ie.generalEvent.name AS col3 FROM best.internal.Student ins,best.internal.Event ie
+SELECT ins AS col1,ie.generalEvent.applicationDeadline AS col2,ie.generalEvent.start AS col3,ie.bestNo AS col4,ie.generalEvent.name AS col5 FROM best.internal.Student ins,best.internal.Event ie
+SELECT ins AS col1,n.related_link AS col2,n.publication_date AS col3,n.short_text AS col4,n AS col5,n.title AS col6,n.picture <> NIL AS col7,n.picture AS col8 FROM best.internal.Student ins,general.WebNews n, n.locations location
+SELECT ins AS col1,ea AS col2,e AS col3,bis AS col4,bie AS col5 FROM best.internal.Student ins,general.event.Application ea, ea.event e, best.internal.Student bis, best.internal.Event bie,general.survey.Response gsr
+SELECT ins AS col1,ea AS col2,e AS col3,bis AS col4,bie AS col5,bie.survey.startDate AS col6,bie.survey.endDate AS col7 FROM best.internal.Student ins,general.event.Application ea, ea.event e, best.internal.Student bis, best.internal.Event bie
+SELECT sn AS col1 FROM best.wiki.SpecialName sn
+SELECT wp AS col1 FROM best.wiki.WikiPage wp
+SELECT ns AS col1 FROM best.wiki.Namespace ns
+SELECT sp AS col1 FROM best.wiki.SystemPage sp
+SELECT wp AS col1 FROM best.wiki.WikiPage wp
+SELECT wpv AS col1 FROM best.wiki.WikiPageVersion wpv
+SELECT n AS col1,n.name AS col2,n.description AS col3,n.team AS col4,n.type AS col5 FROM best.wiki.Namespace n
+SELECT n AS col1,n.team.name AS col2 FROM best.wiki.Namespace n
+SELECT n AS col1,n.name AS col2,n.description AS col3 FROM best.wiki.Namespace n
+SELECT n AS col1,n.name AS col2,n.description AS col3 FROM best.wiki.Namespace n
+SELECT n AS col1,n.team.name AS col2 FROM best.wiki.Namespace n
+SELECT n AS col1,n.name AS col2,n.description AS col3 FROM best.wiki.Namespace n
+SELECT n AS col1,n.team.name AS col2 FROM best.wiki.Namespace n
+SELECT n AS col1,n.name AS col2,n.description AS col3 FROM best.wiki.Namespace n
+SELECT n AS col1,n.team.name AS col2 FROM best.wiki.Namespace n
+SELECT sn.name AS col1,sn AS col2 FROM best.wiki.SpecialName sn
+SELECT sp.name AS col1,sp AS col2 FROM best.wiki.SystemPage sp
+SELECT ns AS col1,ns.name AS col2 FROM best.wiki.Namespace ns
+SELECT wp AS col1,wp.name AS col2,wp.modified AS col3 FROM best.wiki.WikiPage wp
+SELECT wp AS col1,wpv AS col2,p AS col3,p.name AS col4,p.surname AS col5 FROM best.wiki.WikiPage wp,best.wiki.WikiPageVersion wpv,general.Person p
+SELECT wp AS col1,wpv AS col2,p AS col3,p.name AS col4,p.surname AS col5 FROM best.wiki.WikiPage wp,best.wiki.WikiPageVersion wpv,general.Person p
+SELECT wp AS col1,wpv AS col2,wpv.num = wp.version AS col3,wp.name AS col4,wp.modified AS col5,wp.modified_by AS col6,wpv.num AS col7,wpv.modified AS col8,wpv.modified_by AS col9 FROM best.wiki.WikiPage wp,best.wiki.WikiPageVersion wpv
+SELECT wp AS col1,wp.name AS col2 FROM best.wiki.WikiPage wp
+SELECT wp.name AS col1,wp.content AS col2 FROM best.wiki.WikiPage wp
+SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
+SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
+SELECT ns.name AS col1 FROM best.wiki.Namespace ns
+SELECT n.type <> 'Private' AS col1,p.content AS col2,n.type = 'Private' AS col3 FROM best.wiki.WikiPage p, p.namespace n
+SELECT n AS col1,n.publication_date AS col2,n.expiry_date AS col3,n.related_link AS col4,n.short_text AS col5,n.title AS col6,n.picture <> NIL AS col7,n.picture AS col8 FROM general.WebNews n, n.locations location
 
 SELECT ns.name AS name, ns.type AS type FROM best.wiki.Namespace ns ORDER BY ns.name
 SELECT p.name AS name, p.surname AS surname FROM general.Person p WHERE p = $1
