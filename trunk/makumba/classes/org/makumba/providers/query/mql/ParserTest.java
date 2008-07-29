@@ -16,6 +16,8 @@ import org.makumba.commons.ClassResource;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
+import org.makumba.providers.query.hql.HqlAnalyzeWalker;
+import org.makumba.providers.query.hql.MddObjectType;
 
 import antlr.collections.AST;
 
@@ -23,12 +25,12 @@ import antlr.collections.AST;
 
 public class ParserTest {
 
-    private static QueryAnalysisProvider qap;
+    private static QueryAnalysisProvider qap= new HQLQueryAnalysisProvider();
+    private static PrintWriter pw = new PrintWriter(System.out);
+    private static ASTPrinter printer = new ASTPrinter(HqlTokenTypes.class);
 
     public static void main(String[] argv) {
-        qap = new HQLQueryAnalysisProvider();
-        ASTPrinter printer = new ASTPrinter(HqlTokenTypes.class);
-        PrintWriter pw = new PrintWriter(System.out);
+        
         int line = 1;
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
@@ -36,16 +38,7 @@ public class ParserTest {
             String query = null;
             while ((query = rd.readLine()) != null) {
                 query = preProcess(query);
-                AST a = analyseQuery(line, query);
-                transformOQL(a);
-
-                if (line == 295) {
-
-                    // ASTFrame frame = new ASTFrame("normal",a);
-                    // frame.setVisible(true);
-
-                    printer.showAst(a, pw);
-                }
+                analyseQuery(line, query);                   
                 line++;
             }
         } catch (IOException e) {
@@ -96,16 +89,29 @@ public class ParserTest {
         return a.getType() == HqlTokenTypes.IDENT && a.getText().equals("NIL");
     }
 
-    private static AST analyseQuery(int line, String query) {
+    private static void analyseQuery(int line, String query) {
         try {
             HqlParser parser = HqlParser.getInstance(query);
             parser.statement();
             if (parser.getParseErrorHandler().getErrorCount() > 0)
                 parser.getParseErrorHandler().throwQueryException();
-            return parser.getAST();
+            AST a= parser.getAST();
+            transformOQL(a);
+
+            if (line == 295) {
+
+                // ASTFrame frame = new ASTFrame("normal",a);
+                // frame.setVisible(true);
+
+                printer.showAst(a, pw);
+            }
+            HqlAnalyzeWalker walker = new HqlAnalyzeWalker();
+            walker.setTypeComputer(new MddObjectType());
+            walker.setDebug(query);
+            walker.statement(a);
+
         } catch (Throwable t) {
             System.out.println(line + ": " + t.getMessage() + " " + query);
-            return null;
         }
     }
 
