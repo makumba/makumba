@@ -102,6 +102,9 @@ public class WebappJSPQueryCrawler {
                 pw.println(query);
             }
         }
+        
+        pw.flush();
+        pw.close();
 
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
