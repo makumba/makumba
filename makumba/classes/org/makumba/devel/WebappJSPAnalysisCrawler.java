@@ -32,7 +32,7 @@ import com.martiansoftware.jsap.UnflaggedOption;
  */
 public class WebappJSPAnalysisCrawler {
     /** A file filter that accepts JSP files and directories. */
-    private static final class JSPFileFilter implements FileFilter {
+    public static final class JSPFileFilter implements FileFilter {
         public boolean accept(File pathname) {
             return pathname.getName().endsWith(".jsp") || pathname.isDirectory();
         }
