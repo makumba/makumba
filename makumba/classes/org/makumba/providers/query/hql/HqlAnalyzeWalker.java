@@ -247,4 +247,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     public String toString() {
         return query;
     }
+
+    public void setTypeComputer(MddObjectType mddObjectType) {
+        typeComputer=mddObjectType;
+        
+    }
 }
