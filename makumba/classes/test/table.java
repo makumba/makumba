@@ -50,218 +50,204 @@ import org.makumba.providers.TransactionProvider;
  * @author Cristian Bogdan
  */
 public class table extends TestCase {
-    
-	static Transaction db;
 
-	static long epsilon = 2000;
+    static Transaction db;
 
-	public table(String name) {
-		super(name);
-	}
+    static long epsilon = 2000;
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(suite());
-	}
+    public table(String name) {
+        super(name);
+    }
 
-	public static Test suite() {
-		return new TestSuite(table.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
 
-	public void setUp() {
-		db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-	}
+    public static Test suite() {
+        return new TestSuite(table.class);
+    }
 
-	public void tearDown() {
-		db.close();
-	}
+    public void setUp() {
+        db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+    }
+
+    public void tearDown() {
+        db.close();
+    }
 
     private TransactionProvider tp = TransactionProvider.getInstance();
 
-	static Pointer ptr, ptr1;
+    static Pointer ptr, ptr1;
 
     static Pointer fptr1, fptr2, fptr;
-    
-	static Date create;
 
-	static String[] personFields = { "TS_modify", "TS_create", "extraData",
-			"birthdate" };
+    static Date create;
 
-	static String[] ptrOneFields = { "something" };
+    static String[] personFields = { "TS_modify", "TS_create", "extraData", "birthdate" };
 
-	static String[] subsetFields = { "description" };
+    static String[] ptrOneFields = { "something" };
 
-	static Dictionary<String, Object> pc, pc1;
+    static String[] subsetFields = { "description" };
 
-	static Date now;
+    static Dictionary<String, Object> pc, pc1;
 
-	static Pointer ptrOne;
+    static Date now;
 
-	static Pointer set1, set2;
+    static Pointer ptrOne;
 
-	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
+    static Pointer set1, set2;
 
-	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
+    String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
+
+    String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
-	String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
+    String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
-	String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
+    String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
 
-	static InputStream getExampleData() {
-		try {
-			return new BufferedInputStream(new FileInputStream("lib/antlr-2.7.6.jar"
-					.replace('/', File.separatorChar)));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public void testQueryValidMdds() {
-		Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
-        DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-           
-		Vector<String> errors = new Vector<String>();
-		for (int i = 0; i < v.size(); i++) {
-			try {
-				db.executeQuery("SELECT t FROM test.validMdds."
-						+ (String) v.elementAt(i) + " t", null);
-				Vector<String> fields = ddp.getDataDefinition(
-						"test.validMdds." + v.elementAt(i))
-						.getFieldNames();
-				String what = "";
-				for (String string : fields) {
-					String fname = (String) string;
-					String ftype = ddp.getDataDefinition(
-							"test.validMdds." + (String) v.elementAt(i))
-							.getFieldDefinition(fname).getDataType();
-					// System.out.println(fname+": "+ftype);
-					if (ftype != null && !ftype.equals("null")
-							&& !ftype.startsWith("set")) {
-                        // fields
-						what = what + (what.length() > 0 ? ", " : "") + "t."
-								+ fname;
-                    }
-				}
-				// System.out.println(what);
-				if (what.length() > 0) {
-                    db.executeQuery("SELECT " + what
-							+ " FROM test.validMdds." + (String) v.elementAt(i)
-							+ " t", null);
-                }
-			} catch (Exception e) {
-				errors.add("\n ." + (errors.size() + 1)
-						+ ") Error querying valid MDD <"
-						+ (String) v.elementAt(i) + ">:\n\t " + e);
-			}
-		}
-		if (errors.size() > 0) {
-            fail("\n  Tested " + v.size() + " valid MDDs, of which "
-					+ errors.size() + " cant be used for DB queries:"
-					+ errors.toString());
+    static InputStream getExampleData() {
+        try {
+            return new BufferedInputStream(new FileInputStream("lib/antlr-2.7.6.jar".replace('/', File.separatorChar)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-	}
+    }
 
-	public void testInsert() {
-		Hashtable<String, Object> p = new Hashtable<String, Object>();
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(1977, 2, 5);
-		Date birth = c.getTime();
-        
+    public void testQueryValidMdds() {
+        Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("test/validMdds");
+        DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+
+        Vector<String> errors = new Vector<String>();
+        for (int i = 0; i < v.size(); i++) {
+            try {
+                db.executeQuery("SELECT t FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
+                Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
+                String what = "";
+                for (String string : fields) {
+                    String fname = (String) string;
+                    String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
+                        fname).getDataType();
+                    // System.out.println(fname+": "+ftype);
+                    if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
+                        // fields
+                        what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
+                    }
+                }
+                // System.out.println(what);
+                if (what.length() > 0) {
+                    db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
+                }
+            } catch (Exception e) {
+                errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
+                        + ">:\n\t " + e);
+            }
+        }
+        if (errors.size() > 0) {
+            fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
+                    + errors.toString());
+        }
+    }
+
+    public void testInsert() {
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
+        Calendar c = Calendar.getInstance();
+        c.clear();
+        c.set(1977, 2, 5);
+        Date birth = c.getTime();
+
         Text comment = new Text("Itrntinliztin");
 
-		p.put("birthdate", birth);
+        p.put("birthdate", birth);
         p.put("comment", comment);
-		p.put("picture", new Text(getExampleData()));
+        p.put("picture", new Text(getExampleData()));
 
-		p.put("weight", new Double(85.7d));
+        p.put("weight", new Double(85.7d));
 
-		p.put("indiv.name", "john");
-		p.put("indiv.surname", "doe");
-		p.put("extraData.something", "else");
+        p.put("indiv.name", "john");
+        p.put("indiv.surname", "doe");
+        p.put("extraData.something", "else");
 
-		Vector<Integer> setintElem = new Vector<Integer>();
-		setintElem.addElement(new Integer(1));
-		setintElem.addElement(new Integer(0));
+        Vector<Integer> setintElem = new Vector<Integer>();
+        setintElem.addElement(new Integer(1));
+        setintElem.addElement(new Integer(0));
 
-		Vector<String> setcharElem = new Vector<String>();
-		setcharElem.addElement("f");
-		setcharElem.addElement("e");
+        Vector<String> setcharElem = new Vector<String>();
+        setcharElem.addElement("f");
+        setcharElem.addElement("e");
 
-		p.put("intSet", setintElem);
-		p.put("charSet", setcharElem);
+        p.put("intSet", setintElem);
+        p.put("charSet", setcharElem);
 
-		ptr = db.insert("test.Person", p);
-		assertNotNull(ptr);
-		assertEquals(ptr.getType(), "test.Person");
+        ptr = db.insert("test.Person", p);
+        assertNotNull(ptr);
+        assertEquals(ptr.getType(), "test.Person");
 
-		now = new Date();
+        now = new Date();
 
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
 
-		assertEquals(1, v.size());
+        assertEquals(1, v.size());
 
-		pc = v.elementAt(0);
+        pc = v.elementAt(0);
 
-		create = (Date) pc.get("TS_create");
-		ptrOne = (Pointer) pc.get("extraData");
-		assertEquals("Name", "john", pc.get("name"));
-		assertEquals("Surname", "doe", pc.get("surname"));
-		assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
-		assertEquals("Birthdate", birth, pc.get("birthdate"));
-		assertEquals("Something else", "else", pc.get("something"));
-		assertEquals("Comment text", pc.get("comment"), comment.toString());
+        create = (Date) pc.get("TS_create");
+        ptrOne = (Pointer) pc.get("extraData");
+        assertEquals("Name", "john", pc.get("name"));
+        assertEquals("Surname", "doe", pc.get("surname"));
+        assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
+        assertEquals("Birthdate", birth, pc.get("birthdate"));
+        assertEquals("Something else", "else", pc.get("something"));
+        assertEquals("Comment text", pc.get("comment"), comment.toString());
         assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
         assertNotNull(ptrOne);
 
-		v = db.executeQuery(readIntSet, ptr);
-		assertEquals(2, v.size());
-		assertEquals(new Integer(0), v.elementAt(0)
-				.get("member"));
-		assertEquals(new Integer(1), (v.elementAt(1))
-				.get("member"));
+        v = db.executeQuery(readIntSet, ptr);
+        assertEquals(2, v.size());
+        assertEquals(new Integer(0), v.elementAt(0).get("member"));
+        assertEquals(new Integer(1), (v.elementAt(1)).get("member"));
 
-		v = db.executeQuery(readCharSet, ptr);
-		assertEquals(v.size(), 2);
-		assertEquals("e", v.elementAt(0).get("member"));
-		assertEquals("f", (v.elementAt(1)).get("member"));
+        v = db.executeQuery(readCharSet, ptr);
+        assertEquals(v.size(), 2);
+        assertEquals("e", v.elementAt(0).get("member"));
+        assertEquals("f", (v.elementAt(1)).get("member"));
 
-		assertEquals(create, pc.get("TS_modify"));
-		assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
-	}
+        assertEquals(create, pc.get("TS_modify"));
+        assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
+    }
 
     public void testForeignKeys() {
         assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
-        
+
         // try to delete brother = that ID
         // try to delete the other brother
-        
+
         // insert the first person
         Hashtable<String, Object> p = new Hashtable<String, Object>();
-        
+
         Text comment = new Text("Hello world!!!!");
-        
+
         p.put("comment", comment);
-        
+
         p.put("indiv.name", "john");
         p.put("indiv.surname", "doe_1");
         p.put("extraData.something", "else");
 
         fptr = db.insert("test.Person", p);
-        
+
         // check if he got inserted
         assertNotNull(fptr);
         assertEquals(fptr.getType(), "test.Person");
 
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson2, fptr);
-        //System.out.println(v.size()); 
+        // System.out.println(v.size());
         assertEquals(1, v.size());
 
         // insert the second person (brother)
         p = new Hashtable<String, Object>();
-        
+
         comment = new Text("Itrntinliztin");
 
         p.put("comment", comment);
@@ -278,436 +264,397 @@ public class table extends TestCase {
         v = db.executeQuery(readPerson2, fptr1);
 
         assertEquals(1, v.size());
-        
+
         pc = v.elementAt(0);
-        
+
         fptr2 = (Pointer) pc.get("brother");
         assertNotNull(fptr2);
         assertEquals("Brother", fptr2, fptr);
-        
+
         // try to delete the first guy (who was set as a brother. should fail)
-        try
-        {
+        try {
             db.delete(fptr);
             // we could delete him... the foreign keys don't work
             assertTrue(false);
-        } catch(org.makumba.DBError e) {
+        } catch (org.makumba.DBError e) {
         }
-        
+
         // try to delete the second guy
         db.delete(fptr1);
-        
+
         // delete the first guy again, this time he shouldn't be linked to from anywhere
         db.delete(fptr);
 
     }
-    
-	static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
-	public void testSetInsert() {
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("description", "home");
-		p.put("sth.aaa", "bbb");
+    static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
-		set1 = db.insert(ptr, "address", p);
+    public void testSetInsert() {
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("description", "home");
+        p.put("sth.aaa", "bbb");
 
-		assertNotNull(set1);
-		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
-		assertEquals(1, v.size());
-		assertEquals("home", v.elementAt(0).get("col1"));
-		assertEquals(set1, v.elementAt(0).get("col2"));
-		assertEquals("home", v.elementAt(0).get("col3"));
-		assertEquals("bbb", v.elementAt(0).get("col4"));
+        set1 = db.insert(ptr, "address", p);
 
-		p.put("description", "away");
+        assertNotNull(set1);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
+        assertEquals(1, v.size());
+        assertEquals("home", v.elementAt(0).get("col1"));
+        assertEquals(set1, v.elementAt(0).get("col2"));
+        assertEquals("home", v.elementAt(0).get("col3"));
+        assertEquals("bbb", v.elementAt(0).get("col4"));
 
-		set2 = db.insert(ptr, "address", p);
-		assertNotNull(set2);
-		assertEquals("away", db.read(set2, subsetFields).get("description"));
-		v = db.executeQuery(subsetQuery, ptr);
-		assertEquals(2, v.size());
-		assertEquals("away", v.elementAt(0).get("col1"));
-		assertEquals(set2, v.elementAt(0).get("col2"));
-		assertEquals("home", (v.elementAt(1)).get("col1"));
-		assertEquals(set1, (v.elementAt(1)).get("col2"));
-	}
+        p.put("description", "away");
 
-	public void testSetMemberUpdate() {
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("description", "somewhere");
+        set2 = db.insert(ptr, "address", p);
+        assertNotNull(set2);
+        assertEquals("away", db.read(set2, subsetFields).get("description"));
+        v = db.executeQuery(subsetQuery, ptr);
+        assertEquals(2, v.size());
+        assertEquals("away", v.elementAt(0).get("col1"));
+        assertEquals(set2, v.elementAt(0).get("col2"));
+        assertEquals("home", (v.elementAt(1)).get("col1"));
+        assertEquals(set1, (v.elementAt(1)).get("col2"));
+    }
 
-		db.update(set2, p);
+    public void testSetMemberUpdate() {
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("description", "somewhere");
 
-		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
+        db.update(set2, p);
 
-		assertEquals("somewhere", db.read(set2, subsetFields)
-				.get("description"));
-		v = db.executeQuery(subsetQuery, ptr);
-		assertEquals(v.size(), 2);
-		assertEquals("home", v.elementAt(0).get("col1"));
-		assertEquals(set1, v.elementAt(0).get("col2"));
-		assertEquals("somewhere", v.elementAt(1).get("col1"));
-		assertEquals(set2, v.elementAt(1).get("col2"));
-	}
+        Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
 
-	public void testSetMemberDelete() {
-		db.delete(set1);
-		assertNull(db.read(set1, subsetFields));
-		Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
-		assertEquals(1, v.size());
-		assertEquals("somewhere", v.elementAt(0).get("col1"));
-		assertEquals(set2, v.elementAt(0).get("col2"));
+        assertEquals("somewhere", db.read(set2, subsetFields).get("description"));
+        v = db.executeQuery(subsetQuery, ptr);
+        assertEquals(v.size(), 2);
+        assertEquals("home", v.elementAt(0).get("col1"));
+        assertEquals(set1, v.elementAt(0).get("col2"));
+        assertEquals("somewhere", v.elementAt(1).get("col1"));
+        assertEquals(set2, v.elementAt(1).get("col2"));
+    }
 
-		// we put it back
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("description", "home");
+    public void testSetMemberDelete() {
+        db.delete(set1);
+        assertNull(db.read(set1, subsetFields));
+        Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
+        assertEquals(1, v.size());
+        assertEquals("somewhere", v.elementAt(0).get("col1"));
+        assertEquals(set2, v.elementAt(0).get("col2"));
 
-		set1 = db.insert(ptr, "address", p);
-	}
+        // we put it back
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("description", "home");
 
-	public void testSubrecordUpdate() {
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("something", "else2");
+        set1 = db.insert(ptr, "address", p);
+    }
 
-		db.update(ptrOne, p);
+    public void testSubrecordUpdate() {
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("something", "else2");
 
-		Dictionary<String, Object> d = db.read(ptr, personFields);
-		assertNotNull(d);
-		assertEquals(ptrOne, d.get("extraData"));
+        db.update(ptrOne, p);
 
-		d = db.read(ptrOne, ptrOneFields);
-		assertNotNull(d);
-		assertEquals("else2", d.get("something"));
-	}
+        Dictionary<String, Object> d = db.read(ptr, personFields);
+        assertNotNull(d);
+        assertEquals(ptrOne, d.get("extraData"));
 
-	static String[][] languageData = { { "English", "en" }, { "French", "fr" },
-			{ "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
+        d = db.read(ptrOne, ptrOneFields);
+        assertNotNull(d);
+        assertEquals("else2", d.get("something"));
+    }
 
-	static String[] toInsert = { "German", "Italian" };
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
+            { "Italian", "it" }, { "Spanish", "sp" } };
 
-	static String langQuery = "SELECT l FROM test.Language l WHERE l.name=$1";
+    static String[] toInsert = { "German", "Italian" };
 
-	static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p, p.speaks l WHERE p=$1";
+    static String langQuery = "SELECT l FROM test.Language l WHERE l.name=$1";
 
-	static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person.speaks l WHERE l.Person=$1";
+    static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p, p.speaks l WHERE p=$1";
 
-	void workWithSet(String[] t) {
-		Vector<Object> v = new Vector<Object>();
-		for (String element : t) {
-            v.addElement(db.executeQuery(langQuery, element)
-					.elementAt(0).get("col1"));
+    static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person.speaks l WHERE l.Person=$1";
+
+    void workWithSet(String[] t) {
+        Vector<Object> v = new Vector<Object>();
+        for (String element : t) {
+            v.addElement(db.executeQuery(langQuery, element).elementAt(0).get("col1"));
         }
 
-		Hashtable<String, Object> dt = new Hashtable<String, Object>();
-		dt.put("speaks", v);
-		db.update(ptr, dt);
+        Hashtable<String, Object> dt = new Hashtable<String, Object>();
+        dt.put("speaks", v);
+        db.update(ptr, dt);
 
-		Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
-		Vector<Dictionary<String, Object>> result1 = db.executeQuery(checkSpeaksQuery, ptr);
+        Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
+        Vector<Dictionary<String, Object>> result1 = db.executeQuery(checkSpeaksQuery, ptr);
 
-		assertEquals(t.length, result.size());
-		assertEquals(t.length, result1.size());
+        assertEquals(t.length, result.size());
+        assertEquals(t.length, result1.size());
 
-		for (String element : t) {
-			for (int j = 0; j < result.size(); j++) {
-				Dictionary<String, Object> d = result.elementAt(j);
-				if (d.get("name").equals(element)) {
-					for (int k = 0; j < result1.size(); k++) {
-                        if (result1.elementAt(k).get("col2")
-								.equals(d.get("k"))) {
-							result1.removeElementAt(k);
-							break;
-						}
+        for (String element : t) {
+            for (int j = 0; j < result.size(); j++) {
+                Dictionary<String, Object> d = result.elementAt(j);
+                if (d.get("name").equals(element)) {
+                    for (int k = 0; j < result1.size(); k++) {
+                        if (result1.elementAt(k).get("col2").equals(d.get("k"))) {
+                            result1.removeElementAt(k);
+                            break;
+                        }
                     }
-					result.removeElementAt(j);
-					break;
-				}
-			}
-		}
-		assertEquals(0, result.size());
-		assertEquals(0, result1.size());
-	}
-
-	public void testSetUpdate() {
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		if (db.executeQuery("SELECT l FROM test.Language l", null).size() == 0) {
-            for (String[] element : languageData) {
-				p.put("name", element[0]);
-				p.put("isoCode", element[1]);
-				db.insert("test.Language", p);
-			}
+                    result.removeElementAt(j);
+                    break;
+                }
+            }
         }
-		p = new Hashtable<String, Object>();
+        assertEquals(0, result.size());
+        assertEquals(0, result1.size());
+    }
 
-		workWithSet(toInsert);
-	}
+    public void testSetUpdate() {
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        if (db.executeQuery("SELECT l FROM test.Language l", null).size() == 0) {
+            for (String[] element : languageData) {
+                p.put("name", element[0]);
+                p.put("isoCode", element[1]);
+                db.insert("test.Language", p);
+            }
+        }
+        p = new Hashtable<String, Object>();
 
-	static String[] toInsert2 = { "English", "Italian", "French" };
+        workWithSet(toInsert);
+    }
 
-	public void testSetUpdate2() {
-		workWithSet(toInsert2);
-	}
+    static String[] toInsert2 = { "English", "Italian", "French" };
 
-	static String[] toInsert3 = { "English", "German", "French" };
+    public void testSetUpdate2() {
+        workWithSet(toInsert2);
+    }
 
-	public void testSetDelete() {
-		Hashtable<String, Object> dt = new Hashtable<String, Object>();
-		dt.put("speaks", new Vector<Object>());
+    static String[] toInsert3 = { "English", "German", "French" };
 
-		db.update(ptr, dt);
-		Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
-		assertEquals(0, result.size());
+    public void testSetDelete() {
+        Hashtable<String, Object> dt = new Hashtable<String, Object>();
+        dt.put("speaks", new Vector<Object>());
 
-		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr)
-				.size());
+        db.update(ptr, dt);
+        Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
+        assertEquals(0, result.size());
 
-		workWithSet(toInsert3);
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
 
-		// clear the speaks set, so we can delete the languages w/o a foreign key error
+        workWithSet(toInsert3);
+
+        // clear the speaks set, so we can delete the languages w/o a foreign key error
         dt.put("speaks", new Vector<Object>());
         db.update(ptr, dt);
-		db.delete("test.Language l", "1=1", null); //delete garbage
-	}
+        db.delete("test.Language l", "1=1", null); // delete garbage
+    }
 
-	public void testPtrOneDelete() {
-		db.delete(ptrOne);
+    public void testPtrOneDelete() {
+        db.delete(ptrOne);
 
-		Dictionary<String, Object> d = db.read(ptr, personFields);
-		assertNotNull(d);
-		assertNull(d.get("extraData"));
+        Dictionary<String, Object> d = db.read(ptr, personFields);
+        assertNotNull(d);
+        assertNull(d.get("extraData"));
 
-		assertNull(db.read(ptrOne, ptrOneFields));
-	}
+        assertNull(db.read(ptrOne, ptrOneFields));
+    }
 
-	public void testPtrOneReInsert() {
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("extraData.something", "else2");
-		db.update(ptr, p);
-		Dictionary<String, Object> d = db.read(ptr, personFields);
-		ptrOne = (Pointer) d.get("extraData");
-		assertNotNull(ptrOne);
-		Dictionary<String, Object> read;
-		assertNotNull(read = db.read(ptrOne, ptrOneFields));
-		assertEquals("else2", read.get("something"));
-	}
+    public void testPtrOneReInsert() {
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("extraData.something", "else2");
+        db.update(ptr, p);
+        Dictionary<String, Object> d = db.read(ptr, personFields);
+        ptrOne = (Pointer) d.get("extraData");
+        assertNotNull(ptrOne);
+        Dictionary<String, Object> read;
+        assertNotNull(read = db.read(ptrOne, ptrOneFields));
+        assertEquals("else2", read.get("something"));
+    }
 
-	public void testUpdate() {
-		Hashtable<String, Object> pmod = new Hashtable<String, Object>();
-		String val = "A completely new guy";
-		pmod.put("indiv.name", val);
+    public void testUpdate() {
+        Hashtable<String, Object> pmod = new Hashtable<String, Object>();
+        String val = "A completely new guy";
+        pmod.put("indiv.name", val);
 
-		Vector<Integer> setintElem = new Vector<Integer>();
-		setintElem.addElement(new Integer(2));
+        Vector<Integer> setintElem = new Vector<Integer>();
+        setintElem.addElement(new Integer(2));
 
-		Vector<String> setcharElem = new Vector<String>();
-		setcharElem.addElement("d");
+        Vector<String> setcharElem = new Vector<String>();
+        setcharElem.addElement("d");
 
-		pmod.put("intSet", setintElem);
-		pmod.put("charSet", setcharElem);
+        pmod.put("intSet", setintElem);
+        pmod.put("charSet", setcharElem);
 
-		int updateReturn = db.update(ptr, pmod);
+        int updateReturn = db.update(ptr, pmod);
 
-		now = new Date();
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
-		assertEquals(1, v.size());
-		assertEquals(1, updateReturn);
+        now = new Date();
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
+        assertEquals(1, v.size());
+        assertEquals(1, updateReturn);
 
-		Dictionary<String, Object> modc = v.elementAt(0);
+        Dictionary<String, Object> modc = v.elementAt(0);
 
-		assertNotNull(modc);
-		create = (Date) modc.get("TS_create");
-		assertEquals(val, modc.get("name"));
-		assertEquals("doe", modc.get("surname"));
-		assertTrue(now.getTime() - ((Date) modc.get("TS_modify")).getTime() < epsilon);
-		assertNotNull(db.read(ptrOne, ptrOneFields));
+        assertNotNull(modc);
+        create = (Date) modc.get("TS_create");
+        assertEquals(val, modc.get("name"));
+        assertEquals("doe", modc.get("surname"));
+        assertTrue(now.getTime() - ((Date) modc.get("TS_modify")).getTime() < epsilon);
+        assertNotNull(db.read(ptrOne, ptrOneFields));
 
-		v = db.executeQuery(readIntSet, ptr);
-		assertEquals(1, v.size());
-		assertEquals(new Integer(2), v.elementAt(0)
-				.get("member"));
+        v = db.executeQuery(readIntSet, ptr);
+        assertEquals(1, v.size());
+        assertEquals(new Integer(2), v.elementAt(0).get("member"));
 
-		v = db.executeQuery(readCharSet, ptr);
-		assertEquals(1, v.size());
-		assertEquals("d", v.elementAt(0).get("member"));
-	}
+        v = db.executeQuery(readCharSet, ptr);
+        assertEquals(1, v.size());
+        assertEquals("d", v.elementAt(0).get("member"));
+    }
 
-	public void testDelete() {
-		db.delete(ptr);
+    public void testDelete() {
+        db.delete(ptr);
 
-		assertNull(db.read(ptr, personFields));
-		assertNull(db.read(ptrOne, ptrOneFields));
-		assertEquals(0, db.executeQuery(subsetQuery, ptr).size());
-		assertNull(db.read(set1, subsetFields));
-		assertNull(db.read(set2, subsetFields));
-		assertEquals(0, db.executeQuery(speaksQuery, ptr).size());
-		assertEquals(0, db.executeQuery(readIntSet, ptr).size());
-		assertEquals(0, db.executeQuery(readCharSet, ptr).size());
-		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr)
-				.size());
-		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr)
-				.size());
-		assertEquals(0, db.executeQuery(
-				"SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr)
-				.size());
+        assertNull(db.read(ptr, personFields));
+        assertNull(db.read(ptrOne, ptrOneFields));
+        assertEquals(0, db.executeQuery(subsetQuery, ptr).size());
+        assertNull(db.read(set1, subsetFields));
+        assertNull(db.read(set2, subsetFields));
+        assertEquals(0, db.executeQuery(speaksQuery, ptr).size());
+        assertEquals(0, db.executeQuery(readIntSet, ptr).size());
+        assertEquals(0, db.executeQuery(readCharSet, ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr).size());
 
-		// delete all entries, bug 673:
-		db
-				.delete("test.validMdds.CharWithLength name",
-						"name.name='bla'", null);
-		db.delete("test.validMdds.CharWithLength t", "5=5", null);
-		db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \"www\"",
-				null);
-		db.delete("test.validMdds.CharWithLength bla", "'x'=bla.name", null);
-	}
+        // delete all entries, bug 673:
+        db.delete("test.validMdds.CharWithLength name", "name.name='bla'", null);
+        db.delete("test.validMdds.CharWithLength t", "5=5", null);
+        db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \"www\"", null);
+        db.delete("test.validMdds.CharWithLength bla", "'x'=bla.name", null);
+    }
 
-	public void testRealAggregation() {
-		db.delete("test.validMdds.Real r", "r=r", null); // delete all
-		// entries first
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("r", new Double(.5d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(.2d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(1.8d));
-		db.insert("test.validMdds.Real", p);
-		p.put("r", new Double(.0008d));
-		db.insert("test.validMdds.Real", p);
-		Vector<Dictionary<String, Object>> v = db
-				.executeQuery(
-						"SELECT avg(r.r) as av, sum(r.r) as su FROM  test.validMdds.Real r",
-						null);
-		assertEquals("Real aggregation", 1, v.size());
-		assertEquals("Avg(reals)", new Double(0.6252d), v
-				.firstElement().get("av"));
-		assertEquals("Sum(reals)", new Double(2.5008d), v
-				.firstElement().get("su"));
+    public void testRealAggregation() {
+        db.delete("test.validMdds.Real r", "r=r", null); // delete all
+        // entries first
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("r", new Double(.5d));
+        db.insert("test.validMdds.Real", p);
+        p.put("r", new Double(.2d));
+        db.insert("test.validMdds.Real", p);
+        p.put("r", new Double(1.8d));
+        db.insert("test.validMdds.Real", p);
+        p.put("r", new Double(.0008d));
+        db.insert("test.validMdds.Real", p);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(
+            "SELECT avg(r.r) as av, sum(r.r) as su FROM  test.validMdds.Real r", null);
+        assertEquals("Real aggregation", 1, v.size());
+        assertEquals("Avg(reals)", new Double(0.6252d), v.firstElement().get("av"));
+        assertEquals("Sum(reals)", new Double(2.5008d), v.firstElement().get("su"));
 
-		Object[] args = { new Double(0.2), new Double(1.8) };
-		v = db
-				.executeQuery(
-						"SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2",
-						args);
-		assertEquals("Real comparisment", 2, v.size());
+        Object[] args = { new Double(0.2), new Double(1.8) };
+        v = db.executeQuery("SELECT r FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args);
+        assertEquals("Real comparisment", 2, v.size());
 
-		// should we allow this? FIXME!
-		Object[] args2 = { new Integer(-1), new Double(1.5) };
-		v = db
-				.executeQuery(
-						"SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2",
-						args2);
-		assertEquals("Real comparison with integer parameter", new Integer(3),
-				v.firstElement().get("cnt"));
+        // should we allow this? FIXME!
+        Object[] args2 = { new Integer(-1), new Double(1.5) };
+        v = db.executeQuery("SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>$1 AND r.r<=$2", args2);
+        assertEquals("Real comparison with integer parameter", new Integer(3), v.firstElement().get("cnt"));
 
-		Object[] args3 = { new Double(1.5) };
-		v = db
-				.executeQuery(
-						"SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>-1 AND r.r<=$1",
-						args3);
-		assertEquals("Real comparison with hardcoded integer", new Integer(3),
-				v.firstElement().get("cnt"));
+        Object[] args3 = { new Double(1.5) };
+        v = db.executeQuery("SELECT count(r) as cnt FROM  test.validMdds.Real r WHERE r.r>-1 AND r.r<=$1", args3);
+        assertEquals("Real comparison with hardcoded integer", new Integer(3), v.firstElement().get("cnt"));
 
-		db.delete("test.validMdds.Real r", "r=r", null); // delete garbage
-	}
+        db.delete("test.validMdds.Real r", "r=r", null); // delete garbage
+    }
 
-	public void testIntAggregation() {
-		db.delete("test.validMdds.Int iii", "5=5", null); // delete all
-		// entries first
-		Dictionary<String, Object> p = new Hashtable<String, Object>();
-		p.put("i", new Integer(0));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(1));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(2));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(3));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(4));
-		db.insert("test.validMdds.Int", p);
-		p.put("i", new Integer(5));
-		db.insert("test.validMdds.Int", p);
-		Vector<Dictionary<String, Object>> v = db
-				.executeQuery(
-						"SELECT avg(i.i) as av, sum(i.i) as su FROM  test.validMdds.Int i",
-						null);
-		assertEquals("Int aggregation", 1, v.size());
-		assertEquals("Avg(ints)", new Double(2.5d), v
-				.firstElement().get("av"));
-		assertEquals("Sum(ints)", new Integer(15), v
-				.firstElement().get("su"));
+    public void testIntAggregation() {
+        db.delete("test.validMdds.Int iii", "5=5", null); // delete all
+        // entries first
+        Dictionary<String, Object> p = new Hashtable<String, Object>();
+        p.put("i", new Integer(0));
+        db.insert("test.validMdds.Int", p);
+        p.put("i", new Integer(1));
+        db.insert("test.validMdds.Int", p);
+        p.put("i", new Integer(2));
+        db.insert("test.validMdds.Int", p);
+        p.put("i", new Integer(3));
+        db.insert("test.validMdds.Int", p);
+        p.put("i", new Integer(4));
+        db.insert("test.validMdds.Int", p);
+        p.put("i", new Integer(5));
+        db.insert("test.validMdds.Int", p);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(
+            "SELECT avg(i.i) as av, sum(i.i) as su FROM  test.validMdds.Int i", null);
+        assertEquals("Int aggregation", 1, v.size());
+        assertEquals("Avg(ints)", new Double(2.5d), v.firstElement().get("av"));
+        assertEquals("Sum(ints)", new Integer(15), v.firstElement().get("su"));
 
-		db.delete("test.validMdds.Int iii", "5=5", null); // delete garbage
-	}
+        db.delete("test.validMdds.Int iii", "5=5", null); // delete garbage
+    }
 
-	public void testCopy() {
+    public void testCopy() {
         Hashtable<String, Object> p = new Hashtable<String, Object>();
-		p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7)
-				.getTime());
-		p.put("indiv.name", "john");
-		p.put("indiv.surname", "Copy");
-		p.put("extraData.something", "else");
+        p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7).getTime());
+        p.put("indiv.name", "john");
+        p.put("indiv.surname", "Copy");
+        p.put("extraData.something", "else");
 
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(1976, 2, 9);
+        Calendar c = Calendar.getInstance();
+        c.clear();
+        c.set(1976, 2, 9);
 
-		Date cr = c.getTime();
-		p.put("TS_create", cr);
+        Date cr = c.getTime();
+        p.put("TS_create", cr);
 
-		c.clear();
-		c.set(1976, 2, 10);
+        c.clear();
+        c.set(1976, 2, 10);
 
-		Date mod = c.getTime();
-		p.put("TS_modify", mod);
+        Date mod = c.getTime();
+        p.put("TS_modify", mod);
 
-		ptr1 = db.insert("test.Person", p);
-		assertNotNull(ptr1);
+        ptr1 = db.insert("test.Person", p);
+        assertNotNull(ptr1);
 
-		now = new Date();
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr1);
-		assertEquals(1, v.size());
+        now = new Date();
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr1);
+        assertEquals(1, v.size());
 
-		pc1 = v.elementAt(0);
-		assertNotNull(pc1);
+        pc1 = v.elementAt(0);
+        assertNotNull(pc1);
 
-		assertEquals("john", pc1.get("name"));
-		assertEquals("Copy", pc1.get("surname"));
-		assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
-		assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
-		db.delete(ptr1);
-		db.delete("test.Individual i","1=1",null);
-	}
-	
-	public void run(TestResult r){
-		try{
-			super.run(r);
+        assertEquals("john", pc1.get("name"));
+        assertEquals("Copy", pc1.get("surname"));
+        assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
+        assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
+        db.delete(ptr1);
+        db.delete("test.Individual i", "1=1", null);
+    }
 
-		}catch(Throwable t){ t.printStackTrace();  }
-		
-		/* very shitty solution, more JUnit should be studied for a better one...
-		 * we want to find out whether we just finished the last test
-		 * if yes, we do cleanup
-		 */
-		if(toString().equals("testCopy(test.table)")){
-			String nm = tp.getDataSourceName("test/testDatabase.properties");
-	
-			System.out.println("\nworked with: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
-			+ " version: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version")
-			+ "\njdbc driver: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name")
-			+ " version: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
-			+ "\njdbc connections allocated: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
-			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
-	
-	);
-			 java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+    public void run(TestResult r) {
+        try {
+            super.run(r);
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        /*
+         * very shitty solution, more JUnit should be studied for a better one... we want to find out whether we just
+         * finished the last test if yes, we do cleanup
+         */
+        if (toString().equals("testCopy(test.table)")) {
+            String nm = tp.getDataSourceName("test/testDatabase.properties");
+
+            System.out.println("\nworked with: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
+                    + " version: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
+                    + org.makumba.commons.NamedResources.getCacheInfo()
+
+            );
+            java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
             NamedResources.cleanup();
-		}
-	}
-	}
+        }
+    }
+}
