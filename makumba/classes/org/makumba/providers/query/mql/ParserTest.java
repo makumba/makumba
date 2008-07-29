@@ -86,7 +86,7 @@ public class ParserTest {
     }
 
     private static boolean isNil(AST a) {
-        return a.getType() == HqlTokenTypes.IDENT && a.getText().equals("NIL");
+        return a.getType() == HqlTokenTypes.IDENT && a.getText().toUpperCase().equals("NIL");
     }
 
     private static void analyseQuery(int line, String query) {
