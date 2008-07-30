@@ -35,6 +35,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     private FormDataProvider fdp;
 
+    private String matchMode;
+
     public CriterionTag() {
         // TODO move this somewhere else
         try {
@@ -120,7 +122,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) {
         if (fieldDef == null) {
-            parseFieldList(pageCache);
+            parseFieldList(pageCache);            
+            getForm().responder.setDefaultMatchMode(getInputName(), matchMode);
         }
         return EVAL_BODY_BUFFERED;
     }
@@ -189,10 +192,18 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         this.isRange = isRange;
     }
     
+    public void setMatchMode(String matchMode) {
+        this.matchMode = matchMode;
+    }
+    
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         bodyContent = null;
         fieldDef = null;
+    }
+    
+    public String getMatchMode() {
+        return matchMode;
     }
 }
