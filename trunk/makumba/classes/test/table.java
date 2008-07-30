@@ -592,6 +592,30 @@ public class table extends TestCase {
         db.delete("test.validMdds.Int iii", "5=5", null); // delete garbage
     }
 
+    public void testDeleteSetWithSet() {
+        Hashtable<String, Object> personData = new Hashtable<String, Object>();
+        personData.put("indiv.name", "rudi");
+        personData.put("indiv.surname", "doe");
+        Pointer ptrPerson = db.insert("test.Person", personData);
+
+        Vector<Object> languages = new Vector<Object>();
+
+        Hashtable<String, Object> language = new Hashtable<String, Object>();
+        for (String[] element : languageData) {
+            language.put("name", element[0]);
+            language.put("isoCode", element[1]);
+            languages.add(db.insert("test.Language", language));
+        }
+
+        Hashtable<String, Object> address = new Hashtable<String, Object>();
+        address.put("streetno", "Sesame Street 15");
+        address.put("languages", languages);
+        db.insert(ptrPerson, "address", address);
+        db.delete(ptrPerson);
+
+        db.delete("test.Language l", "1=1", null); // delete garbage
+    }
+
     public void testCopy() {
         Hashtable<String, Object> p = new Hashtable<String, Object>();
         p.put("birthdate", new java.util.GregorianCalendar(1977, 7, 7).getTime());
