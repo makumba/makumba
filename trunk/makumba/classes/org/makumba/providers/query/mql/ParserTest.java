@@ -27,8 +27,8 @@ public class ParserTest {
 
     private static QueryAnalysisProvider qap= new HQLQueryAnalysisProvider();
     private static PrintWriter pw = new PrintWriter(System.out);
-    private static ASTPrinter printer = new ASTPrinter(HqlTokenTypes.class);
-
+    private static ASTPrinter printerHql = new ASTPrinter(HqlTokenTypes.class);
+    private static ASTPrinter printerHqlSql = new ASTPrinter(HqlSqlTokenTypes.class);
     public static void main(String[] argv) {
         
         int line = 1;
@@ -90,30 +90,60 @@ public class ParserTest {
     }
 
     private static void analyseQuery(int line, String query) {
+        AST hql=null;
+        AST hql_sql=null;
+        
         try {
             HqlParser parser = HqlParser.getInstance(query);
             parser.statement();
             if (parser.getParseErrorHandler().getErrorCount() > 0)
                 parser.getParseErrorHandler().throwQueryException();
-            AST a= parser.getAST();
-            transformOQL(a);
+            hql= parser.getAST();
+   
+            transformOQL(hql);
 
-            if (line == 295) {
-
-                // ASTFrame frame = new ASTFrame("normal",a);
-                // frame.setVisible(true);
-
-                printer.showAst(a, pw);
-            }
+            MqlSqlWalker m= new MqlSqlWalker();
+            m.statement(hql);
+            if(m.error!=null)
+                throw m.error;
+            hql_sql=m.getAST();            
+            
+            MqlSqlGenerator mg= new MqlSqlGenerator();
+            mg.statement(hql_sql);
+            if(mg.error!=null)
+                throw mg.error;
+            //System.out.println(mg);
+            
             HqlAnalyzeWalker walker = new HqlAnalyzeWalker();
             walker.setTypeComputer(new MddObjectType());
             walker.setDebug(query);
-            walker.statement(a);
-
-        } catch (Throwable t) {
+            walker.statement(hql);
+        } catch (Throwable t) {     
             System.out.println(line + ": " + t.getMessage() + " " + query);
+            if(t.getMessage().indexOf("defined twice")!=-1)
+                return;
+            if(t.getMessage().indexOf("FROM expected")!=-1)
+                return;
+            if(t.getMessage().indexOf("Unknown label")!=-1)
+                return;
+            if(t.getMessage().indexOf("unknown alias")!=-1)
+                return;
+            if(t.getMessage().indexOf("No such field")!=-1)
+                return;
+            if(t.getMessage().indexOf("survey")!=-1)
+                return;
+            
+            if(hql!=null && hql_sql==null){
+                printerHql.showAst(hql, pw);
+            }
+            if(hql_sql!=null){
+                printerHqlSql.showAst(hql_sql, pw);
+            }
+                
+            t.printStackTrace();
         }
     }
+//    {new org.hibernate.hql.ast.util.ASTPrinter(HqlSqlTokenTypes.class).showAst(#f, new java.io.PrintWriter(System.out)); } 
 
     public static final String regExpInSET = "in" + RegExpUtils.minOneWhitespace + "set" + RegExpUtils.whitespace
             + "\\(";

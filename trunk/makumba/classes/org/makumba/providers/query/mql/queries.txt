@@ -1,3 +1,5 @@
+SELECT s.hasPA='Yes' AS col8, s.TS_modify AS col13,s.TS_create AS col14 FROM best.Student s, s.person p, s.authentication auth
+SELECT ms.id FROM projman.Message ms, ms.item msit WHERE d in (SELECT a FROM msit.attachments a)
 SELECT s AS col1,p AS col2,auth AS col3,bms.lastlogin AS col4 FROM best.Student s, s.person p, s.authentication auth,best.minerva.Student bms
 SELECT s AS col1,p AS col2,auth AS col3,p.surname AS col4,p.name AS col5,auth.karamba_username AS col6,p.birthdate AS col7,s.hasPA='Yes' AS col8,s.hasPA='Yes' and s.hasBAS='Yes' AS col9,s.hasBAS='Yes' AS col10,(s.hasPA='Yes' and s.hasBCC='Yes') or (s.hasBAS='Yes' and s.hasBCC='Yes') AS col11,s.hasBCC='Yes' AS col12,s.TS_modify AS col13,s.TS_create AS col14 FROM best.Student s, s.person p, s.authentication auth
 SELECT s AS col1,p AS col2,auth AS col3,bmz.account_active AS col4 FROM best.Student s, s.person p, s.authentication auth,best.minerva.Student bmz
@@ -13,6 +15,7 @@ SELECT c AS col1,n AS col2,n.language.name AS col3 FROM general.address.City c,c
 SELECT c AS col1,c.name AS col2,c.country AS col3,c.mapPositionX AS col4,c.mapPostionY AS col5,c.longitute AS col6,c.lattitute AS col7 FROM general.address.City c
 SELECT c AS col1,n AS col2,n.name AS col3 FROM general.address.City c,c.nativeNames n
 SELECT city.name AS col1,city AS col2 FROM general.address.City city
+SELECT c AS col1,l.name='' AS col2,langs.status AS col3,langs AS col4 FROM general.Country c JOIN c.languages langs JOIN langs.language l
 SELECT c AS col1,l.name AS col2,langs.status AS col3,langs AS col4 FROM general.Country c,c.languages langs, langs.language l
 SELECT c AS col1,c_noVisaCitizens AS col2 FROM general.Country c,c.noVisaCitizens c_noVisaCitizens
 SELECT c AS col1,c.name AS col2,c.inEU AS col3,c.iso2LetterCode AS col4,c.iso3LetterCode AS col5,c.numericalCode AS col6,c.population AS col7,c.area AS col8,c.visaInfoIncomingURL AS col9,c.visaInfoOutgoingURL AS col10 FROM general.Country c
@@ -1926,7 +1929,7 @@ SELECT sol AS col1,bis AS col2,r AS col3,r.solver.solver.student.person.name AS 
 SELECT sol AS col1,bis AS col2,r AS col3,r.type.color AS col4,r.type.name AS col5 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
 SELECT sol AS col1,bis AS col2,r AS col3,r.solver.solver.student.person.name AS col4 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
 SELECT sol AS col1,bis AS col2,r AS col3,r.type.color AS col4,r.type.name AS col5 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
-SELECT sol AS col1,bis AS col2,r AS col3,r.status=0 AS col4,r.status=2 AS col5,r.status=4 AS col6,r.title AS col7,r.sender_name AS col8,r.sender_surname AS col9,r.sender_email AS col10,r.TS_create AS col11,r.priority AS col12,r.status=2 || r.status=4 AS col13,r.body AS col14 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
+SELECT sol AS col1,bis AS col2,r AS col3,r.status=0 AS col4,r.status=2 AS col5,r.status=4 AS col6,r.title AS col7,r.sender_name AS col8,r.sender_surname AS col9,r.sender_email AS col10,r.TS_create AS col11,r.priority AS col12,r.status=2 OR r.status=4 AS col13,r.body AS col14 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
 SELECT sol AS col1,bis AS col2,r AS col3,r.status=0 AS col4,r.status=2 AS col5,r.title AS col6,r.sender_name AS col7,r.sender_surname AS col8,r.sender_email AS col9,r.TS_create AS col10,r.priority AS col11,r.body AS col12 FROM best.helpdesk.Solver sol, sol.solver bis,best.helpdesk.Request r
 SELECT sol AS col1,bis AS col2 FROM best.helpdesk.Solver sol, sol.solver bis
 SELECT sol AS col1,bis AS col2,sol_types AS col3,sol_types.name AS col4 FROM best.helpdesk.Solver sol, sol.solver bis,sol.types sol_types
@@ -2567,7 +2570,7 @@ SELECT a AS col1 FROM best.johnny.Activity a
 SELECT l.url AS col1 FROM best.internal.Lbg l
 SELECT js AS col1,s AS col2,p AS col3,bjs AS col4,japp1 AS col5,bjs.name AS col6 FROM best.johnny.Student js, js.student s, s.person p,best.johnny.Season bjs, best.johnny.Application japp1
 SELECT js AS col1,s AS col2,p AS col3,bjs AS col4,japp1 AS col5,dl.when AS col6 FROM best.johnny.Student js, js.student s, s.person p,best.johnny.Season bjs, best.johnny.Application japp1,best.johnny.Season season, season.deadlines dl
-SELECT js AS col1,s AS col2,p AS col3,bjs AS col4,japp1 AS col5,japp.activ AS col6,japp.activ.lbg.name AS col7,japp.activ.name AS col8,japp.participated=1 AS col9,japp.participated=0 or japp.participated=2 AS col10,japp.confirmed and japp.participated=nil AS col11,japp AS col12,japp.participated=1 or japp.participated=0 or japp.participated=2 or (japp.confirmed and japp.participated=nil) AS col13 FROM best.johnny.Student js, js.student s, s.person p,best.johnny.Season bjs, best.johnny.Application japp1,best.johnny.Application japp
+SELECT js AS col1,s AS col2,p AS col3,bjs AS col4,japp1 AS col5,japp.activ AS col6,japp.activ.lbg.name AS col7,japp.activ.name AS col8,japp.participated=1 AS col9,japp.participated=0 or japp.participated=2 AS col10,japp.confirmed=1 and japp.participated=nil AS col11,japp AS col12,japp.participated=1 or japp.participated=0 or japp.participated=2 or (japp.confirmed=1 and japp.participated=nil) AS col13 FROM best.johnny.Student js, js.student s, s.person p,best.johnny.Season bjs, best.johnny.Application japp1,best.johnny.Application japp
 SELECT js AS col1,s AS col2,p AS col3,js.student.wantsToMerge AS col4,js.student.hasBCC AS col5 FROM best.johnny.Student js, js.student s, s.person p
 SELECT response AS col1,bja AS col2 FROM general.survey.Response response, response.responseToActivity bja
 SELECT bja AS col1,bjat AS col2,cr AS col3,fos.name AS col4 FROM best.johnny.Activity bja, bja.teachers bjat, general.company.CompanyRepresentative cr,cr.fieldsOfSpecialisation fos
