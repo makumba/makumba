@@ -12,6 +12,9 @@
     birthdate: <mak:input name="birthdate" format="yyyy-MM-dd" calendarEditor="true" /><br>
   </mak:editForm>
 </mak:list>
-
+<mak:form action="">
+  <jsp:useBean id="now" class="java.util.Date" />
+  <mak:input name="hiddenDate" dataType="date" type="hidden" value="$now" calendarEditor="true" />
+</mak:form>
 </body>
 </html>

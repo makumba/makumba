@@ -1,0 +1,80 @@
+
+
+<html>
+<head><title>Multiple forms</title></head>
+<body>
+
+
+
+  <script type="text/javascript" src="/tests/makumbaResources/javaScript/makumbaDateFunctions.js"></script>
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/kruseDateFunctions.js"></script>
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/kruseAnchorPosition.js"></script>
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/krusePopupWindow.js"></script>
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/kruseCalendarPopup.js"></script>
+<form action="testCalendarEditor.jsp" method="GET">
+    name: <input name="indiv.name" type="text" value="bart" maxlength="40" id="indiv.name_form2" >
+    surname: <input name="indiv.surname" type="password" value="" maxlength="5" id="indiv.surname_form3" >
+    birthdate: <input type="hidden" name="birthdate_null"><input type="text" name="birthdate_2" id="birthdate_2_form4" value="1900" maxlength="4" size="4">-<select name="birthdate_1" id="birthdate_1_form4"><option value="0" selected>01</option><option value="1">02</option><option value="2">03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_0" id="birthdate_0_form4"><option value="1" selected>01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><a class="calendarEditor" href="#" onClick="birthdate_form4_Calendar.showCalendar('birthdate_form4_Anchor', getDateString(document.getElementById('birthdate_2_form4'), document.getElementById('birthdate_1_form4'), document.getElementById('birthdate_0_form4'))); return false;" title="Pick date in calendar" name="birthdate_form4_Anchor" ID="birthdate_form4_Anchor"><img border="0" src="/tests/makumbaResources/image/calendar.gif"></a>
+<div id="birthdate_form4_makCalendarDiv" style="position:absolute; visibility:hidden; background-color:white; layer-background-color:white;"></div>
+
+<script language="javascript" type="text/javascript">
+var birthdate_form4_Calendar = new CalendarPopup("birthdate_form4_makCalendarDiv");
+birthdate_form4_Calendar.showYearNavigation();
+birthdate_form4_Calendar.setReturnFunction("setMultipleValuesbirthdate_form4");
+function setMultipleValuesbirthdate_form4(y,m,d) {
+  document.getElementById('birthdate_0_form4').selectedIndex=LZ(d)-1;
+  document.getElementById('birthdate_1_form4').selectedIndex=LZ(m)-1;
+  document.getElementById('birthdate_2_form4').value=y;
+};
+</script>
+<br>
+  <input type="hidden" name="__makumba__base__" value="34dqsls"><input type="hidden" name="__makumba__responder__" value="1078846038">
+</form>
+
+  <form action="testCalendarEditor.jsp" method="GET">
+    name: <input name="indiv.name" type="text" value="john" maxlength="40" id="indiv.name_form5" >
+    surname: <input name="indiv.surname" type="password" value="" maxlength="5" id="indiv.surname_form6" >
+    birthdate: <input type="text" name="birthdate_2" id="birthdate_2_form7" value="1977" maxlength="4" size="4">-<select name="birthdate_1" id="birthdate_1_form7"><option value="0">01</option><option value="1">02</option><option value="2" selected>03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_0" id="birthdate_0_form7"><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5" selected>05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><a class="calendarEditor" href="#" onClick="birthdate_form7_Calendar.showCalendar('birthdate_form7_Anchor', getDateString(document.getElementById('birthdate_2_form7'), document.getElementById('birthdate_1_form7'), document.getElementById('birthdate_0_form7'))); return false;" title="Pick date in calendar" name="birthdate_form7_Anchor" ID="birthdate_form7_Anchor"><img border="0" src="/tests/makumbaResources/image/calendar.gif"></a>
+<div id="birthdate_form7_makCalendarDiv" style="position:absolute; visibility:hidden; background-color:white; layer-background-color:white;"></div>
+
+<script language="javascript" type="text/javascript">
+var birthdate_form7_Calendar = new CalendarPopup("birthdate_form7_makCalendarDiv");
+birthdate_form7_Calendar.showYearNavigation();
+birthdate_form7_Calendar.setReturnFunction("setMultipleValuesbirthdate_form7");
+function setMultipleValuesbirthdate_form7(y,m,d) {
+  document.getElementById('birthdate_0_form7').selectedIndex=LZ(d)-1;
+  document.getElementById('birthdate_1_form7').selectedIndex=LZ(m)-1;
+  document.getElementById('birthdate_2_form7').value=y;
+};
+</script>
+<br>
+  <input type="hidden" name="__makumba__base__" value="34dqslv"><input type="hidden" name="__makumba__responder__" value="-786954241">
+</form>
+
+  <form action="testCalendarEditor.jsp" method="GET">
+    name: <input name="indiv.name" type="text" value="addToNewPerson" maxlength="40" id="indiv.name_form8" >
+    surname: <input name="indiv.surname" type="password" value="" maxlength="5" id="indiv.surname_form9" >
+    birthdate: <input type="hidden" name="birthdate_null"><input type="text" name="birthdate_2" id="birthdate_2_form10" value="1900" maxlength="4" size="4">-<select name="birthdate_1" id="birthdate_1_form10"><option value="0" selected>01</option><option value="1">02</option><option value="2">03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_0" id="birthdate_0_form10"><option value="1" selected>01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><a class="calendarEditor" href="#" onClick="birthdate_form10_Calendar.showCalendar('birthdate_form10_Anchor', getDateString(document.getElementById('birthdate_2_form10'), document.getElementById('birthdate_1_form10'), document.getElementById('birthdate_0_form10'))); return false;" title="Pick date in calendar" name="birthdate_form10_Anchor" ID="birthdate_form10_Anchor"><img border="0" src="/tests/makumbaResources/image/calendar.gif"></a>
+<div id="birthdate_form10_makCalendarDiv" style="position:absolute; visibility:hidden; background-color:white; layer-background-color:white;"></div>
+
+<script language="javascript" type="text/javascript">
+var birthdate_form10_Calendar = new CalendarPopup("birthdate_form10_makCalendarDiv");
+birthdate_form10_Calendar.showYearNavigation();
+birthdate_form10_Calendar.setReturnFunction("setMultipleValuesbirthdate_form10");
+function setMultipleValuesbirthdate_form10(y,m,d) {
+  document.getElementById('birthdate_0_form10').selectedIndex=LZ(d)-1;
+  document.getElementById('birthdate_1_form10').selectedIndex=LZ(m)-1;
+  document.getElementById('birthdate_2_form10').value=y;
+};
+</script>
+<br>
+  <input type="hidden" name="__makumba__base__" value="53euuky"><input type="hidden" name="__makumba__responder__" value="-786954241">
+</form>
+
+<form action="" method="GET">
+  
+  <input type="hidden" name="hiddenDate_0" id="hiddenDate_0_form11" value="31"><input type="hidden" name="hiddenDate_1" id="hiddenDate_1_form11" value="6"><input type="hidden" name="hiddenDate_2" id="hiddenDate_2_form11" value="2008">
+<input type="hidden" name="__makumba__responder__" value="-910556321">
+</form>
+</body>
+</html>
