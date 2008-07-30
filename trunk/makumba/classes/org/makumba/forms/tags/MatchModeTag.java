@@ -16,9 +16,9 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.tags.GenericMakumbaTag;
 
 /**
- * Implements a match mode choser, which can take the form of a select box or a radio button, and allows to select the
+ * Implements a match mode chooser, which can take the form of a select box or a radio button, and allows to select the
  * type of match mode for the enclosing search criterion. Different modes apply for string (char, text), number (int,
- * real) and date types. The latter two can also be mathed against a range.
+ * real) and date types. The latter two can also be matched against a range.
  * 
  * @author Rudolf Mayer
  * @version $Id: MatchModeTag.java,v 1.1 Oct 21, 2007 1:37:25 PM rudi Exp $
@@ -74,6 +74,9 @@ public class MatchModeTag extends GenericMakumbaTag {
     }
 
     public void setMatchModes(String s) {
+        if (getCriterionTag().getMatchMode() != null) {
+            throw new ProgrammerError("Cannot have a matchMode tag if the criterion tag already defines a matchMode!");
+        }
         ArrayList<String> keys = new ArrayList<String>();
         ArrayList<String> values = new ArrayList<String>();
         String[] modes = s.split(",");
@@ -91,6 +94,10 @@ public class MatchModeTag extends GenericMakumbaTag {
             } else {
                 values.add(allMatchModes.get(mode));
             }
+        }
+        if (keys.size() < 2) {
+            throw new ProgrammerError("matchMode tag should contain at least two modes, but only '" + s
+                    + "' was provided.");
         }
         matchModes = new String[][] { keys.toArray(new String[values.size()]),
                 values.toArray(new String[values.size()]) };
