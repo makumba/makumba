@@ -29,6 +29,19 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class binaryEditor extends FieldEditor {
+    static String[] params = { "type" };
+
+    static String[][] paramValues = { { "hidden", "file" } };
+
+    @Override
+    public String[] getAcceptedParams() {
+        return params;
+    }
+
+    @Override
+    public String[][] getAcceptedValue() {
+        return paramValues;
+    }
 
     private static final class SingletonHolder {
         static final FieldEditor singleton = new binaryEditor();
