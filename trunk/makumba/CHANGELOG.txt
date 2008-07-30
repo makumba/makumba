@@ -16,6 +16,10 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.0.5 ; 31 Jul 2008
+rudi: fix for calendar editor - not showing for hidden inputs
+rudi: fix for search form: allowing to set one specific matchMode in criterion tag
+
 0.8.0.4 ; 30 Jul 2008
 rudi: fix for also deleting ptrOne and set/setComplex inside a to-be-deleted setComplex
 
