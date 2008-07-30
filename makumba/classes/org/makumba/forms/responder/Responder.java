@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -48,6 +49,8 @@ import org.makumba.controller.http.ControllerFilter;
  * space, identical responders are stored only once
  */
 public abstract class Responder implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * the name of the CGI parameter that passes the responder key, so the responder can be retrieved from the cache,
      * "__makumba__responder__"
@@ -146,6 +149,16 @@ public abstract class Responder implements java.io.Serializable {
 
     /** order of the forms in the page * */
     protected ArrayList<String> formOrder;
+    
+    protected HashMap<String, String> defaultMatchModes = new HashMap<String, String>();
+
+    public String getDefaultMatchMode(String inputName) {
+        return defaultMatchModes.get(inputName);
+    }
+
+    public void setDefaultMatchMode(String inputName, String matchMode) {
+        defaultMatchModes.put(inputName, matchMode);
+    }
 
     public String getHandler() {
         return handler;

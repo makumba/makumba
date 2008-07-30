@@ -27,7 +27,7 @@ import org.makumba.providers.DataDefinitionProvider;
 /**
  * This class provides a search form. It slightly differs from other forms in the way that it uses it's own tags, namely
  * <ul>
- * <li>{@link CriterionTag}, neede for each search criterion to appear in the form</>
+ * <li>{@link CriterionTag}, needed for each search criterion to appear in the form</>
  * <li> {@link SearchFieldTag}, nested in a {@link CriterionTag}, generates an input</li>
  * <li> {@link MatchModeTag} will generate an input that allows to select the match mode, e.g. exact or range searching.
  * </li>
@@ -184,7 +184,7 @@ public class SearchTag extends FormTagBase {
             // indicate that the form is reloaded, similar as for validation errors
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");
 
-            // set the from part & set a lable name
+            // set the from part & set a label name
             req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + OBJECT_NAME);
 
             HashSet<String> variableFroms = new HashSet<String>(1); // hold variable from selections
@@ -229,6 +229,8 @@ public class SearchTag extends FormTagBase {
                         Object matchMode = parameters.getParameter(inputName + SearchTag.SUFFIX_INPUT_MATCH);
                         if (StringUtils.notEmpty(matchMode)) {
                             appendParams(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
+                        } else { // check if there is a default match mode
+                            matchMode = resp.getDefaultMatchMode(inputName);
                         }
 
                         if (whereThisField.length() > 0) {
@@ -253,7 +255,7 @@ public class SearchTag extends FormTagBase {
                         } else {
                             // other comparison
                             whereThisField += computeTypeSpecificQuery(req, parameters, objectName, finalFieldName,
-                                attributeName, fd);
+                                attributeName, matchMode, fd);
                         }
                     }
                     if (whereThisField.trim().length() > 0) {
@@ -348,7 +350,7 @@ public class SearchTag extends FormTagBase {
         }
 
         private String computeTypeSpecificQuery(HttpServletRequest req, HttpParameters parameters, String objectName,
-                String fieldName, String attributeName, FieldDefinition fd) throws LogicException {
+                String fieldName, String attributeName, Object matchMode, FieldDefinition fd) throws LogicException {
             String where = "";
             Object value = parameters.getParameter(attributeName);
             if (value instanceof Vector || fd.isSetType()) {
@@ -361,30 +363,29 @@ public class SearchTag extends FormTagBase {
                 }
                 where += labelName + " IN SET ($" + attributeName + ")";
             } else if (isSingleValue(value)) {
-                Object advancedMatch = parameters.getParameter(attributeName + SearchTag.SUFFIX_INPUT_MATCH);
                 where += objectName + "." + fieldName;
 
-                if (advancedMatch == null || advancedMatch.equals(SearchTag.MATCH_EQUALS)) {
+                if (matchMode == null || matchMode.equals(SearchTag.MATCH_EQUALS)) {
                     // do a normal match
                     where += "=$" + attributeName;
                 } else { // do a more sophisticated matching
                     if (fd.isStringType()) {
                         String keyLike = attributeName + "__Like";
-                        if (advancedMatch.equals(SearchTag.MATCH_CONTAINS)) {
+                        if (matchMode.equals(SearchTag.MATCH_CONTAINS)) {
                             value = "%" + value + "%";
-                        } else if (advancedMatch.equals(SearchTag.MATCH_BEGINS)) {
+                        } else if (matchMode.equals(SearchTag.MATCH_BEGINS)) {
                             value = value + "%";
-                        } else if (advancedMatch.equals(SearchTag.MATCH_ENDS)) {
+                        } else if (matchMode.equals(SearchTag.MATCH_ENDS)) {
                             value = "%" + value;
                         }
                         req.setAttribute(keyLike, value);
                         where += " LIKE $" + keyLike + "";
                     } else if (fd.isDateType() || fd.isNumberType()) { // matches for numbers & dates
                         // before or < match
-                        if (StringUtils.equalsAny(advancedMatch, SearchTag.MATCH_BEFORE_LESS)) {
+                        if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BEFORE_LESS)) {
                             where += "<$" + attributeName;
                             // after or > match
-                        } else if (StringUtils.equalsAny(advancedMatch, SearchTag.MATCH_AFTER_GREATER)) {
+                        } else if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_AFTER_GREATER)) {
                             where += ">$" + attributeName;
                         }
                     }
