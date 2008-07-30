@@ -248,6 +248,8 @@ public abstract class TransactionImplementation implements Transaction {
         DataDefinition ri = ddp.getDataDefinition(ptrDD);
         Object param[] = { ptr };
 
+        // FIXME: deleting the ptrOnes and set entries could potentially be skipped, by automatically creating
+        
         // delete the ptrOnes
         Vector<String> ptrOnes = new Vector<String>();
 
@@ -268,6 +270,12 @@ public abstract class TransactionImplementation implements Transaction {
             FieldDefinition fi = ri.getFieldDefinition(string);
             if (fi.getType().startsWith("set")) {
                 if (fi.getType().equals("setComplex")) {
+                    // recursively process all set entries, to delete their subSets and ptrOnes
+                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType as pointedType FROM " + ptr.getType() + " ptr, ptr." + fi.getName() + " pointedType WHERE ptr="+getParameterName(), ptr);
+                    for (Dictionary<String, Object> dictionary : v) {
+                        Pointer p = (Pointer) dictionary.get("pointedType");
+                        delete1(p);
+                    }
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
                             + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName()
                             + "= " + getParameterName(), param);
