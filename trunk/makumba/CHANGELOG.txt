@@ -16,6 +16,9 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.0.4 ; 30 Jul 2008
+rudi: fix for also deleting ptrOne and set/setComplex inside a to-be-deleted setComplex
+
 0.8.0.3 ; 29 Jul 2008
 rudi: fix for logout tag when trying to remove actor() based session variables
 rudi: fix for <input id=".."> to be unique in a page, including fixes for calendarEditor & live validation to work with identical forms repeated in the page

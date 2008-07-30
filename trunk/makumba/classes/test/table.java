@@ -610,8 +610,21 @@ public class table extends TestCase {
         Hashtable<String, Object> address = new Hashtable<String, Object>();
         address.put("streetno", "Sesame Street 15");
         address.put("languages", languages);
+        address.put("sth.aaa", "someAAA");
+        
         db.insert(ptrPerson, "address", address);
+        address.put("streetno", "Sesame Street 16");
+        Pointer ptrAddress2 = db.insert(ptrPerson, "address", address);
+        // check that we have two subsets
+        assertEquals(2, db.executeQuery("SELECT a as a FROM test.Person p, p.address a WHERE p=$1", ptrPerson).size());
+        // delete one including deleting subsets, and check that we have now 1 address, and still 45 languages
+        db.delete(ptrAddress2);
+        assertEquals(1, db.executeQuery("SELECT a as a FROM test.Person p, p.address a WHERE p=$1", ptrPerson).size());
+        assertEquals(5, db.executeQuery("SELECT l as l FROM test.Language l", null).size());
+
+        // delte the person (should delete all subPtrs/Sets), check that we still have 5 languages
         db.delete(ptrPerson);
+        assertEquals(5, db.executeQuery("SELECT l as l FROM test.Language l", null).size());
 
         db.delete("test.Language l", "1=1", null); // delete garbage
     }
