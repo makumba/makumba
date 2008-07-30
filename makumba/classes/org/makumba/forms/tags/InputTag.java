@@ -24,7 +24,6 @@
 package org.makumba.forms.tags;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -213,7 +212,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         boolean dataTypeIsDate = dataType != null && ddp.makeFieldDefinition("dummyName", dataType) != null
                 && ddp.makeFieldDefinition("dummyName", dataType).isDateType();
         boolean contextTypeIsDate = contextType != null && contextType.isDateType();
-        if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor) {
+        if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor
+                && !StringUtils.equals(params.get("type"), "hidden")) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
@@ -343,7 +343,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             params.put("nullOption", nullOption);
         }
 
-        if (type.isDateType()) {// for dates we add info about calendarEditor
+        if (type.isDateType() && !StringUtils.equals(params.get("type"), "hidden")) {
+            // for dates (not hidden) we add info about calendarEditor
             if (calendarEditor) {
                 params.put("calendarEditor", String.valueOf(calendarEditor));
             }
