@@ -410,7 +410,9 @@ fromElement! {
 	}
 	// A simple class name, alias element.
 	: #(RANGE p=path (a:ALIAS)? (pf:FETCH)? ) {
-		#fromElement = createFromElement(p,a, pf);
+		AST x=createFromElement(p,a, pf);
+		if(x!=null)
+			#fromElement =x; 
 	}
 	| je:joinElement {
 		#fromElement = #je;
