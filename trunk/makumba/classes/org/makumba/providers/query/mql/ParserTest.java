@@ -112,7 +112,7 @@ public class ParserTest {
             mg.statement(hql_sql);
             if(mg.error!=null)
                 throw mg.error;
-            //System.out.println(mg);
+            System.out.println(query+"\n\t"+mg);
             
             HqlAnalyzeWalker walker = new HqlAnalyzeWalker();
             walker.setTypeComputer(new MddObjectType());
@@ -120,17 +120,17 @@ public class ParserTest {
             walker.statement(hql);
         } catch (Throwable t) {     
             System.out.println(line + ": " + t.getMessage() + " " + query);
-            if(t.getMessage().indexOf("defined twice")!=-1)
+            if(t.toString().indexOf("defined twice")!=-1)
                 return;
-            if(t.getMessage().indexOf("FROM expected")!=-1)
+            if(t.toString().indexOf("FROM expected")!=-1)
                 return;
-            if(t.getMessage().indexOf("Unknown label")!=-1)
+            if(t.toString().indexOf("Unknown label")!=-1)
                 return;
-            if(t.getMessage().indexOf("unknown alias")!=-1)
+            if(t.toString().indexOf("unknown alias")!=-1)
                 return;
-            if(t.getMessage().indexOf("No such field")!=-1)
+            if(t.toString().indexOf("No such field")!=-1)
                 return;
-            if(t.getMessage().indexOf("survey")!=-1)
+            if(t.toString().indexOf("survey")!=-1)
                 return;
             
             if(hql!=null && hql_sql==null){
