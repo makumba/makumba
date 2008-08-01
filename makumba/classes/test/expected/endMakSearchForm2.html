@@ -10,13 +10,15 @@
 <form action="testMakSearchForm2.jsp" method="GET" name="searchPerson" >
   name or surname  <input name="indiv.name" type="text" value="a" maxlength="40" id="indiv.name_form2" > 
   <input type="submit" value="search">
-<input type="hidden" name="__makumba__responder__" value="-807421728">
+<input type="hidden" name="__makumba__responder__" value="-2061319746">
 </form>
 
 
   <hr>
-  searchPersonWhere:  (o_indiv.name=$indiv.name OR o_indiv.surname=$indiv.name) <br>
+  searchPersonWhere:  (o_indiv.name LIKE $indiv.name__Like OR o_indiv.surname LIKE $indiv.name__Like) <br>
   searchPersonFrom: test.Person o<br>  
+  
+    addToNewPerson <br>
   
 
 
