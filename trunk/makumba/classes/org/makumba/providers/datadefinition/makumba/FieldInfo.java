@@ -788,7 +788,17 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from intHandler
     public Object check_int_ValueImpl(Object value) {
-        return normalCheck(value);
+        // we allow Integer and Long types (Long might come e.g. from JSTL <ftm:parseNumber ...> which returns a Long
+        if (!(value instanceof Integer || value instanceof Long))
+            throw new org.makumba.InvalidValueException(this, getJavaType(), value);
+        if (value instanceof Integer) {
+            return value;
+        } else { // if it is a Long, we convert it to an Integer
+            // FIXME: this might potentially mean losing some data, if the Long is too long for an Integer
+            // Solution: Either makumba stores the date as long, or we throw an error if the value is too big?
+            // See: http://bugs.best.eu.org/1071
+            return ((Long) value).intValue();
+        }
     }
 
     // moved from intEnumHandler
