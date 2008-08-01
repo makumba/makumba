@@ -238,14 +238,15 @@ public class SearchTag extends FormTagBase {
                             whereThisField = whereThisField + " OR ";
                         }
                         String finalFieldName = fieldName;
-
-                        if (fd.getDataDefinition() != dd) { // we are searching on a sub-field
-                            finalFieldName = fd.getName();
-                            final int lastIndexOf = inputName.lastIndexOf(finalFieldName);
+                        
+                        FieldDefinition thisFd = dd.getFieldOrPointedFieldDefinition(finalFieldName);
+                        if (thisFd.getDataDefinition() != dd) { // we are searching on a sub-field
+                            int lastIndexOf = finalFieldName.lastIndexOf(thisFd.getName());
                             // FIXME: this takes into account only one level of subfields
                             String subfieldName = inputName.substring(0, lastIndexOf - 1);
                             objectName = OBJECT_NAME + "_" + subfieldName;
                             variableFroms.add(OBJECT_NAME + "." + subfieldName + " " + objectName);
+                            finalFieldName = thisFd.getName();
                         }
 
                         if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {

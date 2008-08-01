@@ -13,7 +13,7 @@
   </mak:editForm>
 </mak:list>
 <mak:form action="">
-  <jsp:useBean id="now" class="java.util.Date" />
+  <% pageContext.setAttribute("now", new java.util.Date(108, 6, 31)); %>
   <mak:input name="hiddenDate" dataType="date" type="hidden" value="$now" calendarEditor="true" />
 </mak:form>
 </body>
