@@ -220,19 +220,19 @@ public class SearchTag extends FormTagBase {
                         where += " AND ";
                     }
 
+                    String attributeName = inputName;
+                    Object matchMode = parameters.getParameter(inputName + SearchTag.SUFFIX_INPUT_MATCH);
+                    if (StringUtils.notEmpty(matchMode)) {
+                        appendParams(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
+                    } else { // check if there is a default match mode
+                        matchMode = resp.getDefaultMatchMode(inputName);
+                    }
+
                     String whereThisField = "";
                     // iterate over all data fields this input is associated with
                     for (int i = 0; i < multiFieldSearchCriterion.length; i++) {
                         String objectName = OBJECT_NAME;
                         String fieldName = multiFieldSearchCriterion[i];
-                        String attributeName = inputName;
-                        Object matchMode = parameters.getParameter(inputName + SearchTag.SUFFIX_INPUT_MATCH);
-                        if (StringUtils.notEmpty(matchMode)) {
-                            appendParams(queryString, inputName + SearchTag.SUFFIX_INPUT_MATCH, matchMode);
-                        } else { // check if there is a default match mode
-                            matchMode = resp.getDefaultMatchMode(inputName);
-                        }
-
                         if (whereThisField.length() > 0) {
                             // if we are having a multi-field match, we might need to combine rules
                             whereThisField = whereThisField + " OR ";

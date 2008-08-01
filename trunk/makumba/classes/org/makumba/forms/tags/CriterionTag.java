@@ -122,8 +122,10 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) {
         if (fieldDef == null) {
-            parseFieldList(pageCache);            
-            getForm().responder.setDefaultMatchMode(getInputName(), matchMode);
+            parseFieldList(pageCache);
+            if (matchMode != null) {
+                getForm().responder.setDefaultMatchMode(getInputName(), matchMode);
+            }
         }
         return EVAL_BODY_BUFFERED;
     }
