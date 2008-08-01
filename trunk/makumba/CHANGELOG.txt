@@ -16,6 +16,10 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.0.6 ; 1 Aug 2008
+rudi: fix in search forms when searching in several fields
+rudi: fix for int datatype accepting values of class java.lang.Long (produced e.g. by JSTL ftm:parseNumber)
+
 0.8.0.5 ; 31 Jul 2008
 rudi: fix for calendar editor - not showing for hidden inputs
 rudi: fix for search form: allowing to set one specific matchMode in criterion tag
