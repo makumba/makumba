@@ -1,0 +1,131 @@
+@CHARSET "ISO-8859-1";
+
+th {
+  background-color: #ddddff;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+td {
+  background-color: #f5f5ff; 
+}
+
+.formAnnotation {
+  font-weight: bold;
+  color: red;
+}
+
+.formAnnotation {
+  font-weight: bold;
+  color: red;
+}
+
+.cpYearNavigation,.cpMonthNavigation {
+  background-color: #6677DD;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.cpDayColumnHeader,.cpYearNavigation,.cpMonthNavigation,.cpCurrentMonthDate,.cpCurrentMonthDateDisabled,.cpOtherMonthDate,.cpOtherMonthDateDisabled,.cpCurrentDate,.cpCurrentDateDisabled,.cpTodayText,.cpTodayTextDisabled,.cpText {
+  font-family: arial;
+  font-size: 8pt;
+}
+
+TD.cpDayColumnHeader {
+  text-align: right;
+  border: solid thin #6677DD;
+  border-width: 0px 0px 1px 0px; 
+}
+
+.cpCurrentMonthDate,.cpOtherMonthDate,.cpCurrentDate {
+  text-align: right;
+  text-decoration: none;
+}
+
+.cpCurrentMonthDateDisabled,.cpOtherMonthDateDisabled,.cpCurrentDateDisabled {
+  color: #D0D0D0;
+  text-align: right;
+  text-decoration: line-through;
+}
+
+.cpCurrentMonthDate {
+  color: #6677DD;
+  font-weight: bold;
+}
+
+.cpCurrentDate {
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.cpOtherMonthDate {
+  color: #808080;
+}
+
+TD.cpCurrentDate {
+  color: #FFFFFF;
+  background-color: #6677DD;
+  border-width: 1px;
+  border: solid thin #000000;
+}
+
+TD.cpCurrentDateDisabled {
+  border-width: 1px;
+  border: solid thin #FFAAAA;
+}
+
+TD.cpTodayText,TD.cpTodayTextDisabled {
+  border: solid thin #6677DD;
+  border-width: 1px 0px 0px 0px;
+}
+
+A.cpTodayText,SPAN.cpTodayTextDisabled {
+  height: 20px;
+}
+
+A.cpTodayText {
+  color: #6677DD;
+  font-weight: bold;
+}
+
+SPAN.cpTodayTextDisabled {
+  color: #D0D0D0;
+}
+
+.cpBorder {
+  border: solid thin #6677DD;
+}
+
+.calendarEditor {
+  background: url(/tests/style/calendar.gif) left center no-repeat;
+  padding-left: 16px;
+  height: 16px;
+}
+
+.LV_validation_message {
+  font-weight: bold;
+  margin: 0 0 0 5px;
+}
+
+.LV_valid {
+  color: #00CC00;
+}
+
+.LV_invalid {
+  color: #CC0000;
+}
+
+.LV_valid_field,input.LV_valid_field:hover,input.LV_valid_field:active,textarea.LV_valid_field:hover,textarea.LV_valid_field:active {
+  
+}
+
+.LV_invalid_field,input.LV_invalid_field:hover,input.LV_invalid_field:active,textarea.LV_invalid_field:hover,textarea.LV_invalid_field:active {
+  border: 1px solid #CC0000;
+}
+
+.makumbaPagination {
+  background-color: #f5f5ff; border: thin; border-style: solid; border-color: #ddddff; padding: 1px;
+}
