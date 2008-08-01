@@ -46,7 +46,7 @@ public class InvalidValueException extends RuntimeException {
     }
 
     public InvalidValueException(FieldDefinition fi, String message) {
-        this(fi.getDataDefinition().getName() + "#" + fi.getName(), message);
+        this(fi.getDataDefinition() != null ? (fi.getDataDefinition().getName() + "#") : "" + fi.getName(), message);
         this.fieldDefinition = fi;
         this.shortMessage = message;
     }
