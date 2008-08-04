@@ -230,6 +230,8 @@ tokens
 	protected void prepareLogicOperator(AST operator) throws SemanticException { }
 
 	protected void prepareArithmeticOperator(AST operator) throws SemanticException { }
+
+	protected void setFromEnded() throws SemanticException { }
 }
 
 // The main statement rule.
@@ -310,6 +312,8 @@ query!
 			// The first phase places the FROM first to make processing the SELECT simpler.
 			#(SELECT_FROM
 				f:fromClause
+				//**** MQL addition, we need to know when the from has ended
+						 {setFromEnded();}
 				(s:selectClause)?
 			)
 			(w:whereClause)?
@@ -368,7 +372,7 @@ selectExpr
 	| collectionFunction			// elements() or indices()
 	| literal
 	| arithmeticExpr
-// ********* addition	
+// ********* Mql addition	
 	| logicalExpr
 	| query
 	;
@@ -410,6 +414,7 @@ fromElement! {
 	}
 	// A simple class name, alias element.
 	: #(RANGE p=path (a:ALIAS)? (pf:FETCH)? ) {
+		//****** Mql change, we might decide not to create a new token here
 		AST x=createFromElement(p,a, pf);
 		if(x!=null)
 			#fromElement =x; 
