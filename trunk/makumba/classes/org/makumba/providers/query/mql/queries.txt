@@ -1,4 +1,6 @@
-SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (SELECT a FROM msit.attachments a)
+SELECT file as file1 FROM general.archive.Document doc, doc.attachments att, att.currentVersion file WHERE file.title = $1 and file.contentLength = $2
+#SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (SELECT a FROM msit.attachments a)
+#SELECT lbg.name AS col1,lbg.status AS col2,lbg.vivaldiSendingAllowed AS col3,lbg.canApply() AS col4,lbg.canApply2() AS col5 FROM best.internal.Lbg lbg
 SELECT s AS col1,p AS col2,auth AS col3,bms.lastlogin AS col4 FROM best.Student s, s.person p, s.authentication auth,best.minerva.Student bms
 SELECT s AS col1,p AS col2,auth AS col3,p.surname AS col4,p.name AS col5,auth.karamba_username AS col6,p.birthdate AS col7,s.hasPA='Yes' AS col8,s.hasPA='Yes' and s.hasBAS='Yes' AS col9,s.hasBAS='Yes' AS col10,(s.hasPA='Yes' and s.hasBCC='Yes') or (s.hasBAS='Yes' and s.hasBCC='Yes') AS col11,s.hasBCC='Yes' AS col12,s.TS_modify AS col13,s.TS_create AS col14 FROM best.Student s, s.person p, s.authentication auth
 SELECT s AS col1,p AS col2,auth AS col3,bmz.account_active AS col4 FROM best.Student s, s.person p, s.authentication auth,best.minerva.Student bmz
@@ -4338,7 +4340,6 @@ SELECT s AS col1,c.name AS col2 FROM best.internal.Student s,general.Country c
 SELECT s AS col1,s.uid AS col2,s.student.person.surname AS col3,s.student.person.name AS col4,s.student.person.birthdate AS col5,s.isAlumnus AS col6 FROM best.internal.Student s
 SELECT p.T_shirt AS col1,s AS col2,s.person.T_shirt AS col3 FROM best.Student s, s.person p
 SELECT b.person.surname AS col1,b.person.webpage AS col2 FROM best.Student b
-SELECT lbg.name AS col1,lbg.status AS col2,lbg.vivaldiSendingAllowed AS col3,lbg.canApply() AS col4,lbg.canApply2() AS col5 FROM best.internal.Lbg lbg
 SELECT bjs.student.authentication.username AS col1,p.name AS col2,p.surname AS col3 FROM best.johnny.Student bjs, bjs.student.person p, bjs.validatingLBG vLBG
 SELECT ins.negotiated <> 0 OR ins.negotiated = nil AS col1,ins.student.person.name AS col2,ins.lastlogin AS col3,ins.negotiated AS col4,ins.student.wantsToMerge AS col5,ins.student AS col6 FROM best.internal.Student ins
 SELECT d AS col1 FROM general.archive.Document d
