@@ -1,6 +1,7 @@
 package org.makumba.providers.query;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.ProgrammerError;
@@ -465,9 +466,21 @@ public class QuerySectionProcessor {
             return trimExpr;
 
         // we never paranthesize [a.b.]function() or actor(...)
-        if (allFunctionBegin.matcher(trimExpr).find() && trimExpr.endsWith(")"))
-            return trimExpr;
 
+        Matcher func = allFunctionBegin.matcher(trimExpr);
+        if (func.find() && func.start()==0 && trimExpr.endsWith(")")){
+            int level=1;
+            for(int i=func.group().length(); i<trimExpr.length()-1; i++){
+                if(trimExpr.charAt(i)=='(')
+                    level++;
+                if(trimExpr.charAt(i)==')')
+                    level--;
+                if(level==0)
+                    break;
+            }
+            if(level==1)
+                return trimExpr;
+        }
         // if there are already parantheses before and after the expression, we return
         if (before.endsWith("(") && after.startsWith(")"))
             return trimExpr;
