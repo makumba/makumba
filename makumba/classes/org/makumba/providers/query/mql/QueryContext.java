@@ -14,7 +14,7 @@ import antlr.SemanticException;
 import antlr.collections.AST;
 
 public class QueryContext {
-    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+    DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     private QueryContext parent;
 
@@ -35,9 +35,9 @@ public class QueryContext {
         return parent;
     }
 
-    public AST createFromElement(String path, AST alias) throws SemanticException {
-        addFrom(path, alias.getText(), false);
-        
+    public AST createFromElement(String path, AST alias, int joinType) throws SemanticException {
+        addFrom(path, alias.getText(), joinType);
+
         if (inTree == null)
             return inTree = ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
         else
@@ -45,22 +45,21 @@ public class QueryContext {
     }
 
     public void close() {
-        if(inTree!=null)
-            inTree.setText(getFrom());        
+        if (inTree != null)
+            inTree.setText(getFrom());
     }
 
     private String getFrom() {
-     
-        StringBuffer sb=new StringBuffer();
+
+        StringBuffer sb = new StringBuffer();
         writeFrom(walker.nr, sb);
         writeJoins(walker.nr, sb);
-        
+
         return sb.toString();
     }
 
-    ////-----------
-    
-    
+    // //-----------
+
     /** associate each label to its makumba type */
     Hashtable<String, DataDefinition> labels = new Hashtable<String, DataDefinition>();
 
@@ -86,14 +85,14 @@ public class QueryContext {
 
         String field2;
 
-        boolean leftJoin;
+        int joinType;
 
-        public Join(String l1, String f1, String l2, String f2, boolean leftJoin) {
+        public Join(String l1, String f1, String l2, String f2, int joinType) {
             label1 = l1;
             label2 = l2;
             field1 = f1;
             field2 = f2;
-            this.leftJoin = leftJoin;
+            this.joinType = joinType;
         }
 
         public String toString() {
@@ -104,12 +103,12 @@ public class QueryContext {
     /**
      * make a new join with the name and associate teh label with the type
      * 
-     * @param leftJoin
+     * @param joinType
      * @throws SemanticException
      */
-    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, boolean leftJoin)
+    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, int joinType)
             throws SemanticException {
-        joins.addElement(new Join(l1, f1, name, f2, leftJoin));
+        joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type);
         return name;
@@ -120,9 +119,9 @@ public class QueryContext {
      * field exists in the type of the label determine the type of the result label if more joins are necesary inbetween
      * (e.g. for sets), add these joins as well
      * 
-     * @param leftJoin
+     * @param joinType
      */
-    String join(String label, String field, String labelf, boolean leftJoin) throws SemanticException {
+    String join(String label, String field, String labelf, int joinType) throws SemanticException {
         String s = (String) joinNames.get(label + "." + field);
         if (s != null)
             return s;
@@ -154,20 +153,20 @@ public class QueryContext {
             label2 += "x";
 
         if (fi.getType().equals("ptr"))
-            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, leftJoin);
+            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType);
         else if (fi.getType().equals("ptrOne"))
-            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, leftJoin);
+            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType);
 
         else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum"))
-            return addJoin(label, index, label2, index, sub, leftJoin);
+            return addJoin(label, index, label2, index, sub, joinType);
         else if (fi.getType().equals("set")) {
             label2 = label + "x";
             while (findLabelType(label2) != null)
                 label2 += "x";
 
             // FIXME: pointers from set tables are never null, so probably leftJoin should always be false for sets
-            addJoin(label, index, label2, index, sub, false);
+            addJoin(label, index, label2, index, sub, HqlSqlTokenTypes.INNER);
             labels.put(label2, sub);
 
             String label3 = label;
@@ -177,15 +176,13 @@ public class QueryContext {
                 label3 += "x";
 
             return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign,
-                leftJoin);
+                joinType);
         } else
-            throw new SemanticException("\"" + field + "\" is not a set or pointer in makumba type \""
-                    + type.getName() + "\"");
+            throw new SemanticException("\"" + field + "\" is not a set or pointer in makumba type \"" + type.getName()
+                    + "\"");
     }
 
-
-    
-    public void addFrom(String frm, String label, boolean leftJoin) throws SemanticException {
+    public void addFrom(String frm, String label, int joinType) throws SemanticException {
         String iterator = frm;
         DataDefinition type = null;
         try {
@@ -212,11 +209,11 @@ public class QueryContext {
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
-                    join(lbl, field, label, leftJoin);
+                    join(lbl, field, label, joinType);
                     break;
                 }
                 field = iterator.substring(0, i);
-                lbl = join(lbl, field, null, leftJoin);
+                lbl = join(lbl, field, null, joinType);
             }
         } else {
             if (findLabelType(frm) == null)
@@ -230,11 +227,10 @@ public class QueryContext {
         if (labels.get(lbl) == null) {
             String lbl1 = (String) aliases.get(lbl);
             if (lbl1 == null)
-                if(parent!=null)
-                    lbl1=parent.findLabel(frm, lbl);
+                if (parent != null)
+                    lbl1 = parent.findLabel(frm, lbl);
                 else
-                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl
-                        + "\"");
+                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"");
             lbl = lbl1;
         }
         return lbl;
@@ -246,9 +242,9 @@ public class QueryContext {
         labels.put(label, type);
     }
 
-    private DataDefinition findLabelType(String label) {
-        DataDefinition d= labels.get(label);
-        if(d==null && parent!=null)
+    DataDefinition findLabelType(String label) {
+        DataDefinition d = labels.get(label);
+        if (d == null && parent != null)
             return parent.findLabelType(label);
         return d;
     }
@@ -271,7 +267,7 @@ public class QueryContext {
     }
 
     /** return the database-level name of the type of the given label */
-    protected String getTableName(String label, NameResolver nr) {
+    String getTableName(String label, NameResolver nr) {
         DataDefinition ri = (DataDefinition) findLabelType(label);
         try {
             // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
@@ -283,7 +279,7 @@ public class QueryContext {
     }
 
     /** return the database-level name of the given field of the given label */
-    protected String getFieldName(String label, String field, NameResolver nr) {
+    String getFieldName(String label, String field, NameResolver nr) {
         DataDefinition ri = (DataDefinition) findLabelType(label);
         try {
             // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
@@ -302,8 +298,14 @@ public class QueryContext {
             // ret.append(" AND ");
             // and = true;
 
-            if (j.leftJoin)
-                ret.append(" LEFT");
+            switch (j.joinType) {
+                case HqlSqlTokenTypes.LEFT_OUTER:
+                    ret.append(" LEFT");
+                case HqlSqlTokenTypes.RIGHT_OUTER:
+                    ret.append(" RIGHT");
+                case HqlSqlTokenTypes.FULL:
+                    ret.append(" FULL");
+            }
             ret.append(" JOIN ");
             ret.append(getTableName(j.label2, nr))
             // .append(" AS ")
@@ -314,6 +316,6 @@ public class QueryContext {
         }
     }
 
-    
+
 
 }
