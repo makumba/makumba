@@ -21,6 +21,13 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     private List<AST> result;
     private String query;
+    
+    private boolean allowLogicalExprInSelect=false;
+
+    void checkLogicalExprInSelect(AST logical) throws SemanticException{
+        if(!allowLogicalExprInSelect)
+            throw new SemanticException("logical expressions not allowed in SELECT projections ");
+    }          
 
     void setAliasType(AST alias, String type) throws antlr.RecognitionException{
         if (aliasTypes.get(alias.getText()) != null)
@@ -249,7 +256,15 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     public void setTypeComputer(MddObjectType mddObjectType) {
-        typeComputer=mddObjectType;
-        
+        typeComputer=mddObjectType;   
     }
+    
+    public boolean isAllowLogicalExprInSelect() {
+        return allowLogicalExprInSelect;
+    }
+
+    public  void setAllowLogicalExprInSelect(boolean allowLogicalExprInSelect) {
+        this.allowLogicalExprInSelect = allowLogicalExprInSelect;
+    }
+
 }
