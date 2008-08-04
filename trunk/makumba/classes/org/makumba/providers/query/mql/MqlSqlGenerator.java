@@ -41,5 +41,10 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase{
                 out(" ");
         }
     }
+    
+    protected void separator(AST n, String sep) {
+        if (n.getNextSibling() != null && n.getNextSibling().getType()!=HqlSqlTokenTypes.ALIAS_REF)
+            out(sep);
+    }
 
 }
