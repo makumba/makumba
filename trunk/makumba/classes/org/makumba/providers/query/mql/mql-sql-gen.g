@@ -213,7 +213,7 @@ selectExpr
 	| aggregate
 	| c:constant { out(c); }
 	| arithmeticExpr
-// ********* addition
+// *********  Mql addition
 	| booleanExpr[false]
 	| PARAM { out("?"); }
 	| sn:SQL_NODE { out(sn); }
@@ -272,7 +272,8 @@ booleanOp[ boolean parens ]
 booleanExpr[ boolean parens ]
 	: booleanOp [ parens ]
 	| comparisonExpr [ parens ]
-	| st:SQL_TOKEN { out(st); } // solely for the purpose of mapping-defined where-fragments
+	// *** MQL change: this leads to a conflict with selectExpr on SQL_TOKEN, we would need to have another booleanExpr but we don't have mapping so we comment it out for now
+//	| st:SQL_TOKEN { out(st); } // solely for the purpose of mapping-defined where-fragments
 	;
 	
 comparisonExpr[ boolean parens ]
