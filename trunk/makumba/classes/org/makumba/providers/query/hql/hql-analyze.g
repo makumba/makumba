@@ -72,7 +72,7 @@ tokens
 		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
  
   void getReturnTypes(AST a, java.util.Stack stackAliases) throws antlr.RecognitionException { }
-		  		
+	void checkLogicalExprInSelect(AST logical) throws SemanticException{}	  		
 
 	private int level = 0;
 	private boolean inSelect = false;
@@ -295,7 +295,7 @@ selectExpr
 	| collectionFunction			// elements() or indices()
 	| literal //***already done
 	| are:arithmeticExpr { #selectExpr= deriveArithmethicExpr(#are); }
-		| logicalExpr
+		| lg:logicalExpr { checkLogicalExprInSelect(#lg);}
 		| qr: query { #selectExpr=deriveQueryExpr(#qr); }
 	;
 
@@ -382,6 +382,10 @@ pathAsIdent {
     }
     ;
 
+withClause :
+        WITH logicalExpr
+        ;
+
 whereClause
 	: #(w:WHERE { handleClauseStart( WHERE ); } b:logicalExpr ) {
 		// Use the *output* AST for the boolean expression!
@@ -398,32 +402,29 @@ logicalExpr
 
 // TODO: Add any other comparison operators here.
 comparisonExpr
-	: #(EQ exprOrSubquery exprOrSubquery)
+	:
+	( #(EQ exprOrSubquery exprOrSubquery)
 	| #(NE exprOrSubquery exprOrSubquery)
 	| #(LT exprOrSubquery exprOrSubquery)
 	| #(GT exprOrSubquery exprOrSubquery)
 	| #(LE exprOrSubquery exprOrSubquery)
 	| #(GE exprOrSubquery exprOrSubquery)
-	| #(LIKE expr expr ( #(ESCAPE expr) )? )
-	| #(NOT_LIKE expr expr ( #(ESCAPE expr) )? )
-	| #(BETWEEN expr expr expr)
-	| #(NOT_BETWEEN expr expr expr)
-	| #(IN inLhs inRhs )
-	| #(NOT_IN inLhs inRhs )
-	| #(IS_NULL expr)
+	| #(LIKE exprOrSubquery expr ( #(ESCAPE expr) )? )
+	| #(NOT_LIKE exprOrSubquery expr ( #(ESCAPE expr) )? )
+	| #(BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery)
+	| #(NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery)
+	| #(IN exprOrSubquery inRhs )
+	| #(NOT_IN exprOrSubquery inRhs )
+	| #(IS_NULL exprOrSubquery)
+	| #(IS_NOT_NULL exprOrSubquery)
 //	| #(IS_TRUE expr)
 //	| #(IS_FALSE expr)
-	| #(IS_NOT_NULL expr)
 	| #(EXISTS ( expr | collectionFunctionOrSubselect ) )
+  )
 	;
 
 inRhs
 	: #(IN_LIST ( collectionFunctionOrSubselect | ( (expr)* ) ) )
-	;
-
-inLhs
-	: expr
-//	| #( VECTOR_EXPR (expr)* )
 	;
 
 exprOrSubquery
@@ -490,8 +491,8 @@ constant
 
 literal
 	: NUM_INT {#literal= new ExprTypeAST(ExprTypeAST.INT); } 
-	| NUM_FLOAT {#literal= new ExprTypeAST(ExprTypeAST.FLOAT); } 
 	| NUM_LONG {#literal= new ExprTypeAST(ExprTypeAST.LONG); } 
+	| NUM_FLOAT {#literal= new ExprTypeAST(ExprTypeAST.FLOAT); } 
 	| NUM_DOUBLE  {#literal= new ExprTypeAST(ExprTypeAST.DOUBLE); } 
 	| QUOTED_STRING {#literal= new ExprTypeAST(ExprTypeAST.STRING); } 
 	;
