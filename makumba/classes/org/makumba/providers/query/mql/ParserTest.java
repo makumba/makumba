@@ -6,27 +6,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.hibernate.hql.antlr.HqlTokenTypes;
-import org.hibernate.hql.ast.HqlParser;
-import org.hibernate.hql.ast.tree.Node;
 import org.hibernate.hql.ast.util.ASTPrinter;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
-import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
-import org.makumba.providers.query.hql.HqlAnalyzeWalker;
-import org.makumba.providers.query.hql.MddObjectType;
-import org.makumba.providers.query.oql.OQLQueryAnalysisProvider;
 import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.collections.AST;
 
-//import antlr.debug.misc.ASTFrame;
-
+/**
+ * Test the Mql analyzer against a query corpus found in queries.txt. Compare the generated sql with the one of the old
+ * OQL parser.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id: ParserTest.java,v 1.1 Aug 5, 2008 5:55:08 PM cristi Exp $
+ */
 public class ParserTest {
 
     private static QueryAnalysisProvider qap = new HQLQueryAnalysisProvider();
@@ -48,7 +45,7 @@ public class ParserTest {
             throw new org.makumba.ConfigFileError(databaseProperties);
         }
 
-        nr = new NameResolver(p);
+        nr = new NameResolver();
     }
 
     public static void main(String[] argv) {
@@ -60,7 +57,6 @@ public class ParserTest {
             String query = null;
             while ((query = rd.readLine()) != null) {
                 if (!query.trim().startsWith("#")) {
-                    query = preProcess(query);
                     analyseQuery(line, query);
                 }
                 line++;
@@ -73,58 +69,7 @@ public class ParserTest {
 
     }
 
-    private static void transformOQL(AST a) {
-        if (a == null)
-            return;
-        if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$")) {
-            a.setType(HqlTokenTypes.COLON);
-            AST para = new Node();
-            para.setType(HqlTokenTypes.IDENT);
-            para.setText("makumbaParam" + a.getText().substring(1));
-            a.setFirstChild(para);
-            a.setText(":");
-        } else 
-            if (a.getType() == HqlTokenTypes.EQ || a.getType() == HqlTokenTypes.NE) {
-                if (isNil(a.getFirstChild())) {
-                    setNullTest(a);
-                    a.setFirstChild(a.getFirstChild().getNextSibling());
-                } else if (isNil(a.getFirstChild().getNextSibling())) {
-                    setNullTest(a);
-                    a.getFirstChild().setNextSibling(null);
-                }
-
-            }
-       else
-            if(a.getType()== HqlTokenTypes.AGGREGATE && a.getText().toLowerCase().equals("avg")){
-                AST plus= new Node();
-                plus.setType(HqlTokenTypes.PLUS);
-                plus.setText("+");
-                AST zero= new Node();
-                zero.setType(HqlTokenTypes.NUM_DOUBLE);
-                zero.setText("0.0");
-                plus.setFirstChild(zero);
-                zero.setNextSibling(a.getFirstChild());
-                a.setFirstChild(plus);
-            }
-        
-        transformOQL(a.getFirstChild());
-        transformOQL(a.getNextSibling());
-    }
-
-    private static void setNullTest(AST a) {
-        if (a.getType() == HqlTokenTypes.EQ) {
-            a.setType(HqlTokenTypes.IS_NULL);
-            a.setText("is null");
-        } else {
-            a.setType(HqlTokenTypes.IS_NOT_NULL);
-            a.setText("is not null");
-        }
-    }
-
-    private static boolean isNil(AST a) {
-        return a.getType() == HqlTokenTypes.IDENT && a.getText().toUpperCase().equals("NIL");
-    }
-
+    /** cleanup of generated SQL code for MQL-OQL comparison purposes */
     static String cleanUp(String s, String toRemove) {
         StringBuffer ret = new StringBuffer();
         char lastNonSpace = 0;
@@ -149,119 +94,58 @@ public class ParserTest {
     }
 
     private static void analyseQuery(int line, String query) {
-        AST hql = null;
         AST hql_sql = null;
         boolean passedMql = false;
-        MqlSqlWalker m = new MqlSqlWalker(nr);
-        MqlSqlGenerator mg = new MqlSqlGenerator();
-        Throwable thr=null;
+        Throwable thr = null;
         boolean printedError;
-        String oql_sql=null;
-        try {
-            HqlParser parser = HqlParser.getInstance(query);
-            parser.statement();
-            if (parser.getParseErrorHandler().getErrorCount() > 0)
-                parser.getParseErrorHandler().throwQueryException();
-            hql = parser.getAST();
+        String oql_sql = null;
 
-            transformOQL(hql);
-            
-            m.statement(hql);
-            if (m.error == null){
-                hql_sql = m.getAST();
-                mg.statement(hql_sql);
-            }
-            oql_sql = ((QueryAST) OQLQueryAnalysisProvider.parseQueryFundamental(query)).writeInSQLQuery(nr).toLowerCase();
-            if(m.error==null && mg.error==null){
-                String mql_sql = mg.toString().toLowerCase();
+        MqlQueryAnalysis mq = null;
+        Throwable mqlThr=null;
+        try {
+            mq = new MqlQueryAnalysis(query);
+        } catch (Throwable t) {
+            mqlThr=t;
+        }
+        try {
+            oql_sql = ((QueryAST) QueryAST.parseQueryFundamental(query)).writeInSQLQuery(nr).toLowerCase();
+            if (mqlThr==null) {
+                String mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
 
                 oql_sql = cleanUp(oql_sql, " ").replace('\"', '\'');
                 mql_sql = cleanUp(mql_sql, " ");
 
                 if (!oql_sql.equals(mql_sql) && !cleanUp(oql_sql, "()").equals(cleanUp(mql_sql, "()"))) {
-                    System.out.println(line + ": " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
+                    System.out.println(line + ": OQL!=MQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
                 }
+             
             }
-            HqlAnalyzeWalker walker = new HqlAnalyzeWalker();
-            walker.setAllowLogicalExprInSelect(true);
-            walker.setTypeComputer(new MddObjectType());
-            walker.setDebug(query);
-            walker.statement(hql);
+            /*
+             * HqlAnalyzeWalker walker = new HqlAnalyzeWalker(); walker.setAllowLogicalExprInSelect(true);
+             * walker.setTypeComputer(new MddObjectType()); walker.setDebug(query); walker.statement(hql);
+             */
         } catch (Throwable t) {
-            if(m.error!=null || mg.error!=null){
-                if(m.error!=null)
-                    thr=m.error;
-                if(mg.error!=null)
-                    thr=mg.error;
-                System.err.println(line + ": " + thr.getMessage() + " " + query);
-                if(t!=null)
-                    System.err.println(line + ": " + t.getMessage() + " " + query);
-                if(oql_sql!=null)
-                    System.out.println("OQL SQL: "+oql_sql);
-                return;                
-            }
+            if(mqlThr!=null)
+                System.err.println(line + ": MQL: " + t.getMessage() + " " + query);
+            if (mqlThr!=null // we also had an MQL problem
+                    || "survey".equals(t.getMessage()) // HQL analyzer fails stuff like FROM T t, t n
+                    || t.toString().indexOf("FROM expected") != -1 // FROM-less queries can't pass
+                    || t.toString().indexOf("In operand") != -1 // OQL has issues with set operands
+                    || t.toString().indexOf("unexpected token: JOIN") != -1 // OQL doesn't know join
+                    || t.toString().indexOf("defined twice") != -1 // HQLAnalyzer is really strict
+            ) {
+                System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
 
-            if ("survey".equals(t.getMessage()) // HQL analyzer fails stuff like FROM T t, t n
-                    ||
-            t.toString().indexOf("FROM expected") != -1 // FROM-less queries can't pass
-                    ||
-            t.toString().indexOf("In operand") != -1 // OQL has issues with set operands
-                ||
-           t.toString().indexOf("defined twice") != -1 // HQLAnalyzer is really strict
-                ){
-                System.err.println(line + ": " + t.getMessage() + " " + query);
-                               
                 return;
             }
-
-            thr=t;
-            System.err.println("Only outside MQL");
+            System.err.println("Unchecked error only in OQL: ");
+            t.printStackTrace();
+            return;
         }
-        if(m.error!=null)
-            thr=m.error;
-        if(mg.error!=null)
-            thr=mg.error;
-        if(thr!=null){
-            System.err.println(line + ": " + thr.getMessage() + " " + query);
-            if(oql_sql!=null)
-                System.out.println("OQL SQL: "+oql_sql);
-            
-            if (hql != null && hql_sql == null) {
-                printerHql.showAst(hql, pw);
-            }
-            if (hql_sql != null) {
-                printerHqlSql.showAst(hql_sql, pw);
-            }
-
-            thr.printStackTrace();
+        if(mqlThr!=null){
+            System.err.println(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
+            System.out.println(line+": OQL SQL: " + oql_sql);
         }
-    }
-
-    // {new org.hibernate.hql.ast.util.ASTPrinter(HqlSqlTokenTypes.class).showAst(#f, new
-    // java.io.PrintWriter(System.out)); }
-
-    public static final String regExpInSET = "in" + RegExpUtils.minOneWhitespace + "set" + RegExpUtils.whitespace
-            + "\\(";
-
-    public static final Pattern patternInSet = Pattern.compile(regExpInSET);
-
-    public static String preProcess(String query) {
-        // replace -> (subset separators) with __
-        query = query.replaceAll("->", "__");
-
-        // replace IN SET with IN.
-        Matcher m = patternInSet.matcher(query.toLowerCase()); // find all occurrences of lower-case "in set"
-        while (m.find()) {
-            int start = m.start();
-            int beginSet = m.group().indexOf("set"); // find location of "set" keyword
-            // System.out.println(query);
-            // composing query by concatenating the part before "set", 3 space and the part after "set"
-            query = query.substring(0, start + beginSet) + "   " + query.substring(start + beginSet + 3);
-            // System.out.println(query);
-            // System.out.println();
-        }
-        query = query.replaceAll("IN SET", "IN    ");
-        return query;
     }
 
 }

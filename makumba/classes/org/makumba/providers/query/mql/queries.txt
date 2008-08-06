@@ -1,3 +1,7 @@
+#
+# This is the corpus of (mostly OQL) queries on which we test MQL. 
+# Created by Rudolf Mayer using the makumba relation crawler on Karamba. 
+#
 SELECT file as file1 FROM general.archive.Document doc, doc.attachments att, att.currentVersion file WHERE file.title = $1 and file.contentLength = $2
 #SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (SELECT a FROM msit.attachments a)
 #SELECT lbg.name AS col1,lbg.status AS col2,lbg.vivaldiSendingAllowed AS col3,lbg.canApply() AS col4,lbg.canApply2() AS col5 FROM best.internal.Lbg lbg
@@ -5177,8 +5181,8 @@ SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
 SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
 SELECT ns.name AS col1 FROM best.wiki.Namespace ns
 SELECT n.type <> 'Private' AS col1,p.content AS col2,n.type = 'Private' AS col3 FROM best.wiki.WikiPage p, p.namespace n
+#
 SELECT n AS col1,n.publication_date AS col2,n.expiry_date AS col3,n.related_link AS col4,n.short_text AS col5,n.title AS col6,n.picture <> NIL AS col7,n.picture AS col8 FROM general.WebNews n, n.locations location
-
 SELECT ns.name AS name, ns.type AS type FROM best.wiki.Namespace ns ORDER BY ns.name
 SELECT p.name AS name, p.surname AS surname FROM general.Person p WHERE p = $1
 SELECT wp.version AS version FROM best.wiki.WikiPage wp WHERE wp.name = $1
@@ -5720,7 +5724,7 @@ SELECT ns.name AS name FROM best.wiki.Namespace ns WHERE ns = $1
 SELECT sp.name AS name FROM best.wiki.SystemPage sp WHERE sp = $1
 SELECT sn.name AS name FROM best.wiki.SpecialName sn WHERE sn = $1
 SELECT sn.name AS name FROM best.wiki.SpecialName sn
-
+#
 SELECT question in SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
 SELECT question iN SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
 SELECT question In SET($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
