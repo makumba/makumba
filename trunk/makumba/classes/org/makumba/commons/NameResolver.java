@@ -1,5 +1,6 @@
 package org.makumba.commons;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -24,14 +25,81 @@ public class NameResolver {
     protected HashMap<String, HashMap<String, String>> fieldDBNames = new HashMap<String, HashMap<String, String>>();
 
     public NameResolver() {
-
+        this(null);
     }
 
     public NameResolver(Properties configurationProperties) {
         this.config = configurationProperties;
+        if(config==null)
+            config= new Properties();
     }
 
+    public String getKey(){ return getClass().getName()+config;}
     
+    public static class TextList {
+        ArrayList<Object> content= new ArrayList<Object>();
+        
+        StringBuffer lastBuffer;
+        public TextList append(Object o){
+            if(o instanceof String){
+                if(lastBuffer!=null)
+                    lastBuffer.append(o);
+                else{
+                    lastBuffer= new StringBuffer();
+                    lastBuffer.append(o);
+                    content.add(lastBuffer);
+                }    
+                return this;
+            }
+            lastBuffer=null;
+            if(o instanceof DataDefinition){
+                Resolvable r= new Resolvable();
+                r.dd=(DataDefinition)o;
+                o=r;
+            }
+                content.add(o);
+            return this;
+        }
+        
+        public TextList append(DataDefinition dd, String field) {
+            Resolvable r= new Resolvable();
+            r.dd=dd;
+            r.field=field;
+            return append(r);
+        }
+        
+        private static NameResolver defaultNameResolver= new NameResolver();
+        public String toString(){
+            return toString(defaultNameResolver);
+        }
+
+        public String toString(NameResolver nr){
+            StringBuffer ret= new StringBuffer(); 
+            for(Object o:content){
+                if(o instanceof StringBuffer){
+                    ret.append(o);
+                }else if(o instanceof Resolvable){
+                    Resolvable rs= (Resolvable)o;
+                    ret.append(rs.resolve(nr));
+                }else if(o instanceof TextList){
+                    ret.append(((TextList)o).toString(nr));
+                }
+            }
+            return ret.toString();
+        }
+    }
+    
+    public static class Resolvable{
+        DataDefinition dd;
+        String field;
+        public String resolve(NameResolver nr) {
+            if(field!=null)
+                return nr.resolveFieldName(dd, field);
+            else
+                return nr.resolveTypeName(dd);                
+        }        
+    }
+
     /**
      * Resolves the database level name for a type, based on Makumba business rules and specific configuration done by the user.
      * @param dd the {@link DataDefinition} corresponding to the type to resolve

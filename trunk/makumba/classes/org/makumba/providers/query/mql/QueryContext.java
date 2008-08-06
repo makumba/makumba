@@ -8,11 +8,19 @@ import org.hibernate.hql.ast.util.ASTUtil;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.SemanticException;
 import antlr.collections.AST;
 
+/** FROM analysis code. Each query/subquery has its own QueryContext.
+ * This is ported from the old OQL parser. Additions:
+ * 1) look in the parent query context for labels unknown here
+ * 2) more than just LEFT JOIN is supported
+ * @author Cristian Bogdan
+ * @version $Id: QueryContext.java,v 1.1 Aug 5, 2008 5:50:39 PM cristi Exp $
+ */
 public class QueryContext {
     DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
@@ -20,7 +28,7 @@ public class QueryContext {
 
     MqlSqlWalker walker;
 
-    AST inTree = null;
+    MqlNode inTree = null;
 
     public QueryContext(MqlSqlWalker mqlSqlWalker) {
         walker = mqlSqlWalker;
@@ -39,23 +47,22 @@ public class QueryContext {
         addFrom(path, alias.getText(), joinType);
 
         if (inTree == null)
-            return inTree = ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
+            return inTree = (MqlNode)ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
         else
             return null;
     }
 
     public void close() {
         if (inTree != null)
-            inTree.setText(getFrom());
+            inTree.setTextList(getFrom());
     }
 
-    private String getFrom() {
+    private TextList getFrom() {
+        TextList tl= new TextList();
+        writeFrom(tl);
+        writeJoins(tl);
 
-        StringBuffer sb = new StringBuffer();
-        writeFrom(walker.nr, sb);
-        writeJoins(walker.nr, sb);
-
-        return sb.toString();
+        return tl;
     }
 
     // //-----------
@@ -250,7 +257,7 @@ public class QueryContext {
     }
 
     /** writes the iterator definitions (FROM part) */
-    protected void writeFrom(NameResolver nr, StringBuffer ret) {
+    protected void writeFrom(TextList ret) {
         boolean comma = false;
 
         for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
@@ -260,22 +267,15 @@ public class QueryContext {
                 ret.append(" JOIN ");
             comma = true;
 
-            ret.append(getTableName(label, nr))
+            ret.append(getTableName(label))
             // .append(" AS ")
             .append(" ").append(label);
         }
     }
 
     /** return the database-level name of the type of the given label */
-    String getTableName(String label, NameResolver nr) {
-        DataDefinition ri = (DataDefinition) findLabelType(label);
-        try {
-            // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getDBName();
-            return nr.resolveTypeName(ri);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return ri.getName();
-        }
+    DataDefinition getTableName(String label) {
+        return (DataDefinition) findLabelType(label);
     }
 
     /** return the database-level name of the given field of the given label */
@@ -290,7 +290,7 @@ public class QueryContext {
     }
 
     /** write the translator-generated joins */
-    protected void writeJoins(NameResolver nr, StringBuffer ret) {
+    protected void writeJoins(TextList ret) {
         // boolean and = false;
         for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
@@ -307,12 +307,12 @@ public class QueryContext {
                     ret.append(" FULL");
             }
             ret.append(" JOIN ");
-            ret.append(getTableName(j.label2, nr))
+            ret.append(getTableName(j.label2))
             // .append(" AS ")
             .append(" ").append(j.label2);
             ret.append(" ON ");
-            ret.append(j.label1).append(".").append(getFieldName(j.label1, j.field1, nr)).append("= ").append(j.label2).append(
-                ".").append(getFieldName(j.label2, j.field2, nr));
+            ret.append(j.label1).append(".").append(getTableName(j.label1), j.field1).append("= ").append(j.label2).append(
+                ".").append(getTableName(j.label2), j.field2);
         }
     }
 
