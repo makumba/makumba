@@ -31,7 +31,7 @@ import org.makumba.providers.CRUDOperationProvider;
  */
 public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
-    private NameResolver nr = new NameResolver();
+    private static NameResolver nr = new NameResolver();
 
     @Override
     public void checkInsert(Transaction t, String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore,

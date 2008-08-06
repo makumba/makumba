@@ -33,6 +33,7 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.query.hql.HqlAnalyzer;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -50,7 +51,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private String dataSource;
 
-    private NameResolver nr = new NameResolver();
+    private static NameResolver nr = new NameResolver();
 
     public HibernateTransaction(TransactionProviderInterface tp) {
         super(tp);
@@ -276,7 +277,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
         // workaround for Hibernate bug HHH-2390
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
-        query = analyzer.getPreProcessedQuery(query);
+        query = ((HqlAnalyzer)analyzer).getHackedQuery(query);
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -466,6 +467,10 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public String getPrimaryKeyName() {
         return ".id";
+    }
+    @Override
+    public String getSetJoinSyntax() {
+        return "JOIN";
     }
 
     @Override
