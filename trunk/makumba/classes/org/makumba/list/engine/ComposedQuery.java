@@ -439,8 +439,6 @@ public class ComposedQuery {
             typeAnalyzerOQL = computeQuery(derivedSections, true);
     }
 
- 
-
     /**
      * allows to directly set a projection. Used for totalCount in
      * {@link QueryTag#doAnalyzedStartTag(org.makumba.analyser.PageCache)} to compose a query with 'count(*)' as the
@@ -480,31 +478,6 @@ public class ComposedQuery {
      */
     public DataDefinition getProjectionTypes() {
         return qep.getQueryAnalysis(typeAnalyzerOQL).getProjectionType();
-    }
-
-    /**
-     * Computes the type that contains the field pointed by an expression, e.g. in the expression
-     * "activity.season.responsible.name", this will return the type of "responsible".<br>
-     * 
-     * @param expr
-     *            the expression of which to evaluate the parent type
-     * @return a {@link DataDefinition} corresponding to the type containing the field. This can also return a
-     *         setComplex, e.g. "general.Person->address"
-     */
-    public DataDefinition getTypeOfExprField(String expr) {
- 
-        return qep.getQueryAnalysis(typeAnalyzerOQL).getTypeOfExprField(expr);
-    }
-
-    /**
-     * Gets the field pointed by an expression
-     * 
-     * @param expr
-     *            the expression to analyse
-     * @return the last field in an expression of the kind "a.b.c", the expression itself if there's no subfield
-     */
-    public String getFieldOfExpr(String expr) {
-        return qep.getQueryAnalysis(typeAnalyzerOQL).getFieldOfExpr(expr);
     }
 
     /**

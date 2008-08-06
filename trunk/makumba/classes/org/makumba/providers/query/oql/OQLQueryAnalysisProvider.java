@@ -1,7 +1,5 @@
 package org.makumba.providers.query.oql;
 
-import java.io.StringReader;
-import java.util.Date;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -18,7 +16,7 @@ public class OQLQueryAnalysisProvider extends QueryAnalysisProvider {
         private static final long serialVersionUID = 1L;
     
         protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return OQLQueryAnalysisProvider.parseQueryFundamental((String) nm);
+            return QueryAST.parseQueryFundamental((String) nm);
         }
     }, true);
 
@@ -54,41 +52,6 @@ public class OQLQueryAnalysisProvider extends QueryAnalysisProvider {
         return label;
     }
     
-    /**
-     * Performs the analysis of an OQL query
-     * @param oqlQuery the query to analyse
-     * @return the OQL analysis correponding to the query
-     * @throws antlr.RecognitionException
-     */
-    public static QueryAnalysis parseQueryFundamental(String oqlQuery) throws antlr.RecognitionException {
-        Date d = new Date();
-        OQLLexer lexer = new OQLLexer(new StringReader(oqlQuery));
-        OQLParser parser = new OQLParser(lexer);
-        // Parse the input expression
-        QueryAST t = null;
-        try {
-    
-            parser.setASTNodeClass("org.makumba.providers.query.oql.OQLAST");
-            parser.queryProgram();
-            t = (QueryAST) parser.getAST();
-            t.setOQL(oqlQuery);
-            // Print the resulting tree out in LISP notation
-            // MakumbaSystem.getLogger("debug.db").severe(t.toStringTree());
-    
-            // see the tree in a window
-            /*
-             * if(t!=null) { ASTFrame frame = new ASTFrame("AST JTree Example", t); frame.setVisible(true); }
-             */
-        } catch (antlr.TokenStreamException f) {
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").warning(f + ": " + oqlQuery);
-            throw new org.makumba.MakumbaError(f, oqlQuery);
-        }
-        long diff = new java.util.Date().getTime() - d.getTime();
-        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
-        return t;
-    }
-
-
     @Override
     public String getParameterSyntax() {
         return "$";

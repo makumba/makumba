@@ -15,7 +15,7 @@ import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.JavaSourceAnalyzer;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.query.oql.OQLQueryAnalysisProvider;
+import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.RecognitionException;
 
@@ -53,11 +53,16 @@ public class JavaRelationMiner extends RelationMiner {
         Vector<String> queries = jqp.getQueries();
 
         // let's try to analyse the queries and extract the relations due to projections and labels
+
+        // FIXME: this should use MQL to do analysis
+        // that will work for both HQL and MQL (and thus OQL) queries
+        // the query parsers already know well which MDDs and relations are used, they could simply be asked to produce the list
+        // that would be just one method in QueryaAnalysis (or in MqlQueryAnalysis directly!) instead of three as it was
         for (String query : queries) {
             // FIXME for the moment, we only have OQL queries in BL. but this won't be necessarily true in the future.
-            QueryAnalysis qA = null;
+            QueryAST qA = null;
             try {
-                qA = OQLQueryAnalysisProvider.parseQueryFundamental(query);
+                 qA = (QueryAST)QueryAST.parseQueryFundamental(query);
             } catch (RecognitionException e) {
                 String s = "Could not parse query "+query+" from file "+path+": "+e.getMessage();
                 logger.warning(s);
@@ -68,11 +73,10 @@ public class JavaRelationMiner extends RelationMiner {
                 logger.warning(s);
                 continue;
             }
-            
-
-            Dictionary<String, String> projections = qA.getProjections();
-            for (Enumeration<String> e = projections.elements(); e.hasMoreElements();) {
-                String expr = e.nextElement();
+                        
+            Map<String, String> projections = qA.getProjections();
+            for (Iterator<String> e = projections.keySet().iterator(); e.hasNext();) {
+                String expr = e.next();
                 String field = qA.getFieldOfExpr(expr);
                 DataDefinition dd = qA.getTypeOfExprField(expr);
                 String realExpr;

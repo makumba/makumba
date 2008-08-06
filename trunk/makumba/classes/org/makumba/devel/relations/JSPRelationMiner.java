@@ -25,7 +25,7 @@ import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
-import org.makumba.providers.query.oql.OQLQueryAnalysisProvider;
+import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.RecognitionException;
 
@@ -176,7 +176,7 @@ public class JSPRelationMiner extends RelationMiner {
                     String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
                     if (ql.equals("oql")) {
                         try {
-                            qA = OQLQueryAnalysisProvider.parseQueryFundamental(typeDeterminationQuery);
+                            qA = QueryAST.parseQueryFundamental(typeDeterminationQuery);
                         } catch (RecognitionException e) {
                             logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
                             return;
@@ -300,11 +300,11 @@ public class JSPRelationMiner extends RelationMiner {
             if (valueTagKey != null) {
                 TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, valueTagKey);
 
-                String field = cq.getFieldOfExpr(projectionExpr);
+                String field = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(projectionExpr);
                 String realExpr = null;
                 DataDefinition projectionParentType = null;
                 try {
-                    projectionParentType = cq.getTypeOfExprField(projectionExpr);
+                    projectionParentType = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
                 } catch(RuntimeWrappedException e) {
                     rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
                 } catch (RuntimeException e1) {
@@ -321,13 +321,13 @@ public class JSPRelationMiner extends RelationMiner {
                             // count(*)
                             continue;
                         }
-                        field = cq.getFieldOfExpr(realExpr);
-                        projectionParentType = cq.getTypeOfExprField(realExpr);
+                        field = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(realExpr);
+                        projectionParentType = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
                     } else {
                         // this is something like p.indiv.age + 3
                         projectionExpr = getAnalysableExpression(projectionExpr);
                         try {
-                            projectionParentType = cq.getTypeOfExprField(projectionExpr);
+                            projectionParentType =((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
                         } catch(RuntimeWrappedException e) {
                             rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
                         } catch (RuntimeException e1) {

@@ -1,6 +1,5 @@
 package org.makumba.providers.query.hql;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -15,6 +14,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -111,10 +111,6 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     }
 
-    public String getOQL() {
-        return query;
-    }
-
     public synchronized DataDefinition getProjectionType() {
         if (projTypes != null)
             return projTypes;
@@ -201,7 +197,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     public String toString() {
-        String result = "Query:\n" + this.getOQL() + "\n";
+        String result = "Query:\n" + this.getQuery() + "\n";
         Vector<String> w = this.getProjectionType().getFieldNames();
         result += "Number of projections: " + w.size() + "\n";
 
@@ -281,11 +277,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     public String getQuery() {
-        return getOQL();
-    }
-
-    public String getPreProcessedQuery(String query) {
-        return getHackedQuery(query);
+        return query;
     }
 
     public Map<String, DataDefinition> getLabelTypes() {
@@ -307,47 +299,8 @@ public class HqlAnalyzer implements QueryAnalysis {
         
     }
 
-    public DataDefinition getTypeOfExprField(String expr) {
-
-        if (expr.indexOf(".") == -1) {
-            return getLabelType(expr);
-        } else {
-            DataDefinition result;
-            int lastDot = expr.lastIndexOf(".");
-            String beforeLastDot = expr.substring(0, lastDot);
-            if (beforeLastDot.indexOf(".") == -1) {
-                result = getLabelType(beforeLastDot);
-            } else {
-                // compute dummy query for determining pointed type
-                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM "+getFrom();
-                FieldDefinition fieldDefinition = HQLQueryAnalysisProvider.getHqlAnalyzer(dummyQuery).getProjectionType().getFieldDefinition("projection");
-                result = fieldDefinition.getPointedType();
-            }
-            return result;
-
-        }
-
-    }
-    
-    private String getFrom() {
-
-        String[] splitAtFrom = query.split("\\s[f|F][r|R][o|O][m|M]\\s");
-        String[] splitAtWhere = splitAtFrom[1].split("\\s[w|W][h|H][e|E][r|R][e|E]\\s");
-        
-        return splitAtWhere[0];
-        
-    }
-
-    public Dictionary<String, String> getProjections() {
+    public String writeInSQLQuery(NameResolver nr) {
         throw new RuntimeException("not implemented");
     }
-
-    public String getFieldOfExpr(String expr) {
-        if (expr.indexOf(".") > -1)
-            return expr.substring(expr.lastIndexOf(".") + 1);
-        else
-            return expr;
-    }
-
 
 }
