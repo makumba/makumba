@@ -3,33 +3,61 @@ package org.makumba.providers.query.mql;
 import java.io.PrintWriter;
 import org.hibernate.hql.ast.util.ASTPrinter;
 import org.hibernate.hql.ast.util.ASTUtil;
-import org.makumba.commons.NameResolver;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.ASTFactory;
 import antlr.RecognitionException;
 import antlr.SemanticException;
 import antlr.collections.AST;
 
+/**
+ * Analysis operations. This extends the class produced by mql-sql.g which is adapted from Hibernate.
+ * To simplify porting of new versions, the class mostly redefines methods declared in mql-sql.g.
+ * @author Cristian Bogdan
+ * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
+ */
 public class MqlSqlWalker extends MqlSqlBaseWalker {
     // TODO:
     // finish subqueries
-   
-    // TODO: analysis (HqlAnalyzer can be used for now)
-    // projections
-    // parameters
-    // labels
+    // simplify FROM section for sets 
+    // use a subclass for analysing hql
     
     ASTFactory fact ;
     RecognitionException error;
     QueryContext currentContext;
-    NameResolver nr;
     private boolean fromEnded;
     static PrintWriter pw = new PrintWriter(System.out);
     static ASTPrinter printer = new ASTPrinter(HqlSqlTokenTypes.class);
+    DataDefinition paramInfo;
+    private AST select;
+    QueryContext rootContext;
+    
+    public MqlSqlWalker(DataDefinition paramInfo){
+        setASTFactory(fact= new MqlSqlASTFactory(this));
+        this.paramInfo=paramInfo;
+    }
  
+    public void reportError(RecognitionException e) {
+        if(error==null)
+            error=e;
+    }
+
+    public void reportError(String s) {
+        if(error== null)
+            error= new RecognitionException(s);
+    }
+
+    public void reportWarning(String s) {
+        System.out.println(s);
+    }
+    
     protected void pushFromClause(AST fromClause,AST inputFromNode) {
         QueryContext c= new QueryContext(this);
         c.setParent(currentContext);
+        if(currentContext==null)
+            rootContext=c;
         currentContext=c;
     }
     
@@ -40,14 +68,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     protected void processQuery(AST select,AST query) throws SemanticException { 
         currentContext.close(); 
         currentContext=currentContext.getParent();
+        this.select= select;
     }
 
-
-    public MqlSqlWalker(NameResolver nr){
-        setASTFactory(fact= new MqlSqlASTFactory(this));
-        this.nr=nr;
-        
-    }
     protected AST createFromElement(String path, AST alias, AST propertyFetch) throws SemanticException {
        return currentContext.createFromElement(path, alias, HqlSqlTokenTypes.INNER);
     }
@@ -58,7 +81,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
        ((MqlDotNode)path).processInFrom();
        currentContext.createFromElement(path.getText(), alias, joinType);
     }
-
     
     protected AST lookupProperty(AST dot,boolean root,boolean inSelect) throws SemanticException {
         if(error!=null || !fromEnded)
@@ -75,34 +97,61 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         if(node.getType()==HqlSqlTokenTypes.IDENT)
             ((MqlIdentNode)node).resolve();
     }
+    
     protected void setAlias(AST selectExpr, AST ident) {
-        // we add the label to the output
         if(error!=null)
             return;
-        selectExpr.setNextSibling(ASTUtil.create(fact, HqlSqlTokenTypes.ALIAS_REF, " AS "+ident.getText()));
+        // we add the label to the output, this is a bit of a hack!
+        MqlNode as = (MqlNode)ASTUtil.create(fact, HqlSqlTokenTypes.ALIAS_REF, ident.getText());
+        selectExpr.setNextSibling(as);
+        // the projection name is going to be the original text
+        // now we set it to the SQL form
+        as.setText(" AS "+as.getText());
+        
     }
 
     
     protected AST generateNamedParameter(AST delimiterNode, AST nameNode) throws SemanticException {
-        return ASTUtil.create(fact, MqlSqlWalker.NAMED_PARAM, "?");
+        MqlNode para= (MqlNode)ASTUtil.create(fact, MqlSqlWalker.NAMED_PARAM, nameNode.getText());
+        // old name will be preserved as para.originalText
+        para.setText("?");
+        return para;
     }
 
     protected AST generatePositionalParameter(AST inputNode) throws SemanticException {
         return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
     }
+
+    void setParameterType(MqlNode param, MqlNode likewise) {
+        String paramName = param.getOriginalText();
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise.getMakType());
+        param.setMakType(fd);
+        if(paramInfo.getFieldDefinition(paramName)==null)
+            paramInfo.addField(fd);
+    }
     
-    public void reportError(RecognitionException e) {
-        if(error==null)
-            error=e;
+    void setProjectionTypes(DataDefinition proj){
+        if(select==null )
+            // there are no projections, we leave this pass
+            // we could chose to throw something
+            return;
+        
+        int i=0;        
+        for(AST a= select.getFirstChild(); a!=null; a=a.getNextSibling()){
+            if(a.getType()==ALIAS_REF)
+                continue;
+            String name= "col"+(i+1);
+            if(a.getNextSibling()!= null && a.getNextSibling().getType()==ALIAS_REF)
+                name=((MqlNode)a.getNextSibling()).getOriginalText();
+            
+            FieldDefinition makType = ((MqlNode)a).getMakType();
+            if(makType==null){
+                printer.showAst(a, pw);
+                throw new IllegalStateException("no type set for projection "+name);
+            }
+            else
+                proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
+            i++;
+        }
     }
-
-    public void reportError(String s) {
-        if(error== null)
-            error= new RecognitionException(s);
-    }
-
-    public void reportWarning(String s) {
-        System.out.println(s);
-    }
-
 }
