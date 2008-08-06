@@ -27,15 +27,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private String query;
 
-    List<String> parameterOrder = new ArrayList<String>();
+    private List<String> parameterOrder = new ArrayList<String>();
 
     private DataDefinition proj;
 
-    boolean noFrom = false;
-
-    Throwable mqlAnalyzerError;
-
-    Throwable sqlGeneratorError;
+    private boolean noFrom = false;
 
     private Hashtable<String, DataDefinition> labels;
 
@@ -65,9 +61,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(DataDefinitionProvider.getInstance().getVirtualDataDefinition(
             "Parameters for " + query));
         mqlAnalyzer.statement(hql);
-        mqlAnalyzerError = mqlAnalyzer.error;
-        doThrow(mqlAnalyzerError);
-        
+        doThrow(mqlAnalyzer.error);
+
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = mqlAnalyzer.paramInfo;
@@ -76,9 +71,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         MqlSqlGenerator mg = new MqlSqlGenerator();
         mg.statement(mqlAnalyzer.getAST());
-        sqlGeneratorError = mg.error;
-        doThrow(sqlGeneratorError);
-        
+        doThrow(mg.error);
+
         text = mg.text;
 
     }
@@ -93,9 +87,12 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     }
 
     public String writeInSQLQuery(NameResolver nr) {
+        // TODO: we can cache these SQL results by the key of the NameResolver
+        // still we should first check if this is needed, maybe the generated SQL (or processing of it)
+        // is cached already somewhere else
         String sql = text.toString(nr);
         if (noFrom)
-            sql = sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
+            return sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
         return sql;
     }
 
