@@ -24,9 +24,17 @@ public class MqlSqlASTFactory extends ASTFactory  {
             case HqlSqlTokenTypes.DOT:
                return MqlDotNode.class;
             case HqlSqlTokenTypes.EQ:
-                return MqlComparisonNode.class;
             case HqlSqlTokenTypes.NE:
+            case HqlSqlTokenTypes.LE:
+            case HqlSqlTokenTypes.LT:
+            case HqlSqlTokenTypes.GE:
+            case HqlSqlTokenTypes.GT:
                 return MqlComparisonNode.class;
+            case HqlSqlTokenTypes.PLUS:
+            case HqlSqlTokenTypes.MINUS:
+            case HqlSqlTokenTypes.STAR:
+            case HqlSqlTokenTypes.DIV:
+                return MqlAritmeticNode.class;   
             default:
                 return MqlNode.class;
         }
