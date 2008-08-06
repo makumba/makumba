@@ -68,7 +68,7 @@ public class Query implements org.makumba.db.makumba.Query {
         return command;
     }
 
-    public Query(org.makumba.db.makumba.Database db, String OQLQuery, String insertIn) {
+    public Query(Database db, String OQLQuery, String insertIn) {
         QueryAnalysisProvider qap= null;
         try {
            qap=(QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
@@ -83,14 +83,14 @@ public class Query implements org.makumba.db.makumba.Query {
   
         QueryAnalysis qA= qap.getQueryAnalysis(OQLQuery);
         
-        command = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
+        command = qA.writeInSQLQuery(db.getNameResolverHook());
             
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
         assigner = new ParameterAssigner(db, qA);
-        limitSyntax = ((org.makumba.db.makumba.sql.Database) db).getLimitSyntax();
-        offsetFirst = ((org.makumba.db.makumba.sql.Database) db).isLimitOffsetFirst();
-        supportsLimitInQuery = ((org.makumba.db.makumba.sql.Database) db).supportsLimitInQuery();
+        limitSyntax = db.getLimitSyntax();
+        offsetFirst = db.isLimitOffsetFirst();
+        supportsLimitInQuery = db.supportsLimitInQuery();
         this.insertIn = insertIn;
         if (insertIn != null && insertIn.length() > 0) {
             analyzeInsertIn(qA.getProjectionType(), db);

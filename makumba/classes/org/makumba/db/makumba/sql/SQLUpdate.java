@@ -46,15 +46,15 @@ public class SQLUpdate implements Update {
     
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
-    SQLUpdate(org.makumba.db.makumba.Database db, String from, String setWhere, String DELIM) {
-        int whereMark=setWhere.indexOf(DELIM);
-        String set=setWhere.substring(0, whereMark);
-        String where=setWhere.substring(whereMark+DELIM.length());
+    SQLUpdate(Database db, String from, String setWhere, String DELIM) {
+        int whereMark = setWhere.indexOf(DELIM);
+        String set = setWhere.substring(0, whereMark);
+        String where = setWhere.substring(whereMark + DELIM.length());
         debugString = (set == null ? "delete" : "update") + " on type: <" + from + ">"
                 + (set == null ? " " : " setting: <" + set + ">") + " where: <" + where + ">";
 
         if (set.trim().length() == 0) {
-            set=null;
+            set = null;
         }
 
         if (where.trim().length() == 0) {
@@ -82,7 +82,7 @@ public class SQLUpdate implements Update {
         if (where != null) {
             OQLQuery += " WHERE " + where;
         }
-        
+
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
         try {
             // FIXME: we should make sure here that the tree contains one single type!
@@ -92,18 +92,19 @@ public class SQLUpdate implements Update {
         }
 
         String fakeCommand;
+        String fakeCommandUpper;
         try {
-            fakeCommand = ((QueryAST) qA).writeInSQLQuery(new NameResolverHook(db));
+            fakeCommand = qA.writeInSQLQuery(db.getNameResolverHook());
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
-
+        fakeCommandUpper= fakeCommand.toUpperCase();
         StringBuffer replaceLabel = new StringBuffer();
 
         // we remove all "label." sequences from the SELECT part of the command
         int n = 0;
         int lastN;
-        int maxN = fakeCommand.indexOf(" FROM ");
+        int maxN = fakeCommandUpper.indexOf(" FROM ");
         while (true) {
             lastN = n;
             n = fakeCommand.indexOf(label + ".", lastN);
@@ -116,7 +117,7 @@ public class SQLUpdate implements Update {
         }
 
         // we remove the last instance of " label" from the FROM part of command
-        lastN = fakeCommand.indexOf(" WHERE ");
+        lastN = fakeCommandUpper.indexOf(" WHERE ");
         if (lastN < 0) {
             lastN = fakeCommand.length();
         }
@@ -137,18 +138,19 @@ public class SQLUpdate implements Update {
         }
 
         fakeCommand = replaceLabel.toString();
+        fakeCommandUpper= fakeCommand.toUpperCase();
 
         // now we break the query SQL in pieces to form the update SQL
         StringBuffer command = new StringBuffer();
         command.append(set == null ? "DELETE FROM" : "UPDATE");
-        command.append(fakeCommand.substring(fakeCommand.indexOf(" FROM ") + 5, fakeCommand.indexOf(" WHERE ")));
+        command.append(fakeCommand.substring(fakeCommandUpper.indexOf(" FROM ") + 5, fakeCommandUpper.indexOf(" WHERE ")));
         if (set != null) {
-            String setString = fakeCommand.substring(fakeCommand.indexOf("SELECT ") + 7, fakeCommand.indexOf(" FROM "));
+            String setString = fakeCommand.substring(fakeCommandUpper.indexOf("SELECT ") + 7, fakeCommandUpper.indexOf(" FROM "));
             n = 0;
             while (true) {
-                n = setString.indexOf("is null", n);
+                n = setString.toLowerCase().indexOf("is null", n);
                 if (n == -1) {
-                    n = setString.indexOf("is  null", n);
+                    n = setString.toLowerCase().indexOf("is  null", n);
                     if (n == -1) {
                         break;
                     }
@@ -160,7 +162,7 @@ public class SQLUpdate implements Update {
             command.append(" SET ").append(setString);
         }
         if (where != null) {
-            command.append(fakeCommand.substring(fakeCommand.indexOf(" WHERE ")));
+            command.append(fakeCommand.substring(fakeCommandUpper.indexOf(" WHERE ")));
         }
 
         debugString += "\n generated SQL: " + command;
@@ -188,18 +190,19 @@ public class SQLUpdate implements Update {
                 if (db.isForeignKeyViolationException(se)) {
                     throw new org.makumba.ForeignKeyError(db.parseReadableForeignKeyErrorMessage(se));
                 } else if (db.isDuplicateException(se)) {
-                    // FIXME: should determine the field that produced the error to 
+                    // FIXME: should determine the field that produced the error to
                     throw new org.makumba.NotUniqueError(se);
                 }
                 org.makumba.db.makumba.sql.Database.logException(se);
                 throw new DBError(se, debugString);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba." + "db.update.performance").fine("" + diff + " ms " + debugString);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.update.performance").fine(
+                "" + diff + " ms " + debugString);
             return rez;
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
-        }finally{
+        } finally {
             try {
                 ps.close();
             } catch (SQLException e) {
