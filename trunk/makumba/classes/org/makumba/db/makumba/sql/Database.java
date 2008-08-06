@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import org.makumba.DBError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
@@ -56,6 +57,8 @@ public class Database extends org.makumba.db.makumba.Database {
 	boolean addUnderscore = true;
 
 	Hashtable<String, Vector<Hashtable<String, Object>>> catalog = null;
+
+    private NameResolver nrh;
 
 	static final int DESIRED_TRANSACTION_LEVEL = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
@@ -147,7 +150,7 @@ public class Database extends org.makumba.db.makumba.Database {
 	 */
 	public Database(Properties p) {
 		super(p);
-
+		nrh= new NameResolverHook(this);
 		try {
 			url = getJdbcUrl(p);
 			p.put("jdbc_url", url);
@@ -446,6 +449,10 @@ public class Database extends org.makumba.db.makumba.Database {
 	/** Implementing classes can override this method to extract a more readable error message on foreign key errors. */
     public String parseReadableForeignKeyErrorMessage(SQLException se) {
         return se.getMessage();
+    }
+
+    public NameResolver getNameResolverHook() {
+        return nrh;
     }
 
 
