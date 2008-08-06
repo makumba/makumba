@@ -1,12 +1,36 @@
 package org.makumba.providers.query.mql;
 
 
+import org.makumba.commons.NameResolver;
+
 import antlr.RecognitionException;
 import antlr.collections.AST;
+
+/**
+ * Writing to SQL. This extends the class produced by mql-sql-gen.g which is adapted from Hibernate.
+ * To simplify porting of new versions, the class only redefines methods declared in mql-sql-gen.g.
+ * Operations redefined:
+ * 1) writing is done to a NameRsolver.TextList instead of a StringBuffer to allow name-resolving later on
+ * 2) minor separator redefinitions
+ * @author Cristian Bogdan
+ * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
+ */
 public class MqlSqlGenerator extends MqlSqlGeneratorBase{
 
-    public String toString(){ return getStringBuffer().toString(); } 
+    NameResolver.TextList text= new NameResolver.TextList();
+    
+    protected void out(String s) {
+        text.append(s);
+    }
 
+    protected void out(AST n) {
+        ((MqlNode)n).writeTo(text);
+    }
+
+    public String toString(){
+        return text.toString();
+    }
+    
     RecognitionException error;
   
     public void reportError(RecognitionException e) {
