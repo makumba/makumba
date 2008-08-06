@@ -271,7 +271,7 @@ public abstract class TransactionImplementation implements Transaction {
             if (fi.getType().startsWith("set")) {
                 if (fi.getType().equals("setComplex")) {
                     // recursively process all set entries, to delete their subSets and ptrOnes
-                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType as pointedType FROM " + ptr.getType() + " ptr, ptr." + fi.getName() + " pointedType WHERE ptr="+getParameterName(), ptr);
+                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType"+ getPrimaryKeyName()+ " as pointedType FROM " + ptr.getType() + " ptr "+getSetJoinSyntax()+" ptr." + fi.getName() + " pointedType WHERE ptr"+getPrimaryKeyName()+"="+getParameterName(), ptr);
                     for (Dictionary<String, Object> dictionary : v) {
                         Pointer p = (Pointer) dictionary.get("pointedType");
                         delete1(p);
@@ -287,6 +287,10 @@ public abstract class TransactionImplementation implements Transaction {
         // delete the record
         executeUpdate(transformTypeName(ptrDD) + " this", null, "this." + getPrimaryKeyName(ptrDD) + "="
                 + getParameterName(), ptr);
+    }
+
+    public String getSetJoinSyntax() {
+        return ",";
     }
 
     protected Map<String, Object> paramsToMap(Object args) {
