@@ -1,5 +1,9 @@
 package org.makumba.providers.query.mql;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NameResolver.TextList;
@@ -7,16 +11,17 @@ import org.makumba.commons.NameResolver.TextList;
 import antlr.CommonAST;
 import antlr.collections.AST;
 
-/** 
- * The root of Mql analysis tree nodes. It performs analysis as the tree is built.
- * It should know how to determine its Makumba type, if it is not a parameter. 
+/**
+ * The root of Mql analysis tree nodes. It performs analysis as the tree is built. It should know how to determine its
+ * Makumba type, if it is not a parameter.
+ * 
  * @author Cristian Bogdan
  * @version $Id: MqlNode.java,v 1.1 Aug 5, 2008 5:38:16 PM cristi Exp $
  */
 
 public class MqlNode extends CommonAST {
     NameResolver.TextList text;
-    
+
     MqlSqlWalker walker;
 
     private MqlNode father;
@@ -71,6 +76,8 @@ public class MqlNode extends CommonAST {
             // if their args are parameters, set parameter types
 
             // TODO: type of ANY and ALL is the type of the (only) projection of the subquery
+            case HqlSqlTokenTypes.METHOD_CALL:
+                return getFunctionType(child);
             case HqlSqlTokenTypes.AGGREGATE:
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:
@@ -86,6 +93,22 @@ public class MqlNode extends CommonAST {
         return null;
     };
 
+    private FieldDefinition getFunctionType(MqlNode child) {
+        String type = null;
+        String name = child.getText();
+        if (dateFunctions.contains(name))
+            type = "date";
+        if (intFunctions.contains(name))
+            type = "int";
+        if (stringFunctions.contains(name))
+            type = "char[255]";
+        if (type != null){
+            child.setType(HqlSqlTokenTypes.METHOD_NAME);
+            return walker.currentContext.ddp.makeFieldDefinition("x", type);
+        }
+        return null;
+    }
+
     protected void setMakType(FieldDefinition fieldDefinition) {
         makType = fieldDefinition;
     }
@@ -96,7 +119,7 @@ public class MqlNode extends CommonAST {
 
     public void setText(String text) {
         super.setText(text);
-        if (originalText == null && text.length()>0)
+        if (originalText == null && text.length() > 0)
             originalText = text;
     }
 
@@ -137,7 +160,7 @@ public class MqlNode extends CommonAST {
 
     protected void checkForOperandType(MqlNode ast) {
         if (!ast.isParam() && ast.getMakType() == null)
-            throw new IllegalStateException("No makumba type computed for " + walker.printer.showAsString(ast, ""));
+            throw new IllegalStateException("No makumba type computed for " + MqlSqlWalker.printer.showAsString(ast, ""));
     }
 
     boolean isParam() {
@@ -149,20 +172,57 @@ public class MqlNode extends CommonAST {
     }
 
     public void writeTo(TextList t) {
-        if(text==null)
+        if (text == null)
             t.append(getText());
         else
             t.append(text);
     }
 
-    public String getText(){
-        if(text!=null)
+    public String getText() {
+        if (text != null)
             return text.toString();
-        else 
+        else
             return super.getText();
     }
 
     public void setTextList(TextList tl) {
-        text=tl;        
+        text = tl;
     }
+
+    // ------ function part, ported from OQL, might move somewhere else------
+    /** Simple string-to-string functions with one argument. */
+    public static String[] simpleStringFunctions = { "lower", "upper", "trim", "rtrim", "ltrim" };
+
+    /** int-to-string functions. */
+    public static String[] intToStringFunctions = { "char" };
+
+    /** string-to-int functions. */
+    public static String[] stringToIntFunctions = { "ascii", "character_length" };
+
+    /** date-to-int functions. */
+    public static String[] dateToIntFunctions = { "dayOfMonth", "dayOfWeek", "dayOfYear", "month", "hour", "minute(",
+            "second(" };
+
+    /** date-to-String functions. */
+    public static String[] dateToStringFunctions = { "monthName", "dayName" };
+
+    public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp" };
+
+    public static HashSet<String> stringFunctions = new HashSet<String>();
+
+    public static HashSet<String> intFunctions = new HashSet<String>();
+
+    public static HashSet<String> dateFunctions = new HashSet<String>();
+
+    static {
+        CollectionUtils.addAll(stringFunctions, simpleStringFunctions);
+        CollectionUtils.addAll(stringFunctions, intToStringFunctions);
+        CollectionUtils.addAll(stringFunctions, dateToStringFunctions);
+
+        CollectionUtils.addAll(intFunctions, stringToIntFunctions);
+        CollectionUtils.addAll(intFunctions, dateToIntFunctions);
+
+        CollectionUtils.addAll(dateFunctions, nonParametricDateFunctions);
+    }
+
 }

@@ -17,6 +17,7 @@ import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
+import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
@@ -41,7 +42,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private TextList text;
 
-    public MqlQueryAnalysis(String query) throws RecognitionException, TokenStreamException {
+    public MqlQueryAnalysis(String query) throws ANTLRException {
         this.query = query;
         query = preProcess(query);
 
@@ -54,15 +55,21 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         parser.statement();
         if (parser.getParseErrorHandler().getErrorCount() > 0)
             parser.getParseErrorHandler().throwQueryException();
-        AST hql = parser.getAST();
 
-        transformOQL(hql);
+        transformOQL(parser.getAST());
+
+        String hqlDebug= MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(DataDefinitionProvider.getInstance().getVirtualDataDefinition(
             "Parameters for " + query));
-        mqlAnalyzer.statement(hql);
-        doThrow(mqlAnalyzer.error);
-
+        try{
+        mqlAnalyzer.statement(parser.getAST());
+        }catch(ANTLRException e){
+            doThrow(e, hqlDebug);
+        }
+        doThrow(mqlAnalyzer.error, hqlDebug);
+        String mqlDebug= MqlSqlWalker.printer.showAsString(mqlAnalyzer.getAST(), "");
+        
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = mqlAnalyzer.paramInfo;
@@ -70,20 +77,24 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         mqlAnalyzer.setProjectionTypes(proj);
 
         MqlSqlGenerator mg = new MqlSqlGenerator();
-        mg.statement(mqlAnalyzer.getAST());
-        doThrow(mg.error);
+        try{
+            mg.statement(mqlAnalyzer.getAST());
+        }catch(Throwable e){
+            doThrow(e, mqlDebug);
+        }
+        doThrow(mg.error, mqlDebug);
 
         text = mg.text;
-
     }
 
-    private void doThrow(Throwable t) throws RecognitionException {
+    private void doThrow(Throwable t, String debugTree) throws ANTLRException {
         if (t == null)
             return;
+        System.err.println(query+" "+debugTree);
         if (t instanceof RuntimeException)
             throw (RuntimeException) t;
-        if (t instanceof RecognitionException)
-            throw (RecognitionException) t;
+        if (t instanceof ANTLRException)
+            throw (ANTLRException) t;
     }
 
     public String writeInSQLQuery(NameResolver nr) {

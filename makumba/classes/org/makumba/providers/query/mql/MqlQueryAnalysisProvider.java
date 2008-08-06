@@ -26,8 +26,8 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         try {
             return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
         } catch (RuntimeWrappedException e) {
-            if (e.getCause() instanceof antlr.RecognitionException) {
-                Exception f = (antlr.RecognitionException) e.getCause();
+            if (e.getCause() instanceof antlr.ANTLRException) {
+                Exception f = (antlr.ANTLRException) e.getCause();
                 String s = f.getMessage();
                 if (s.startsWith("line"))
                     s = s.substring(s.indexOf(':') + 1);
