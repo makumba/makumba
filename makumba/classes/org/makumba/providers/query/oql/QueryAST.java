@@ -23,15 +23,20 @@
 
 package org.makumba.providers.query.oql;
 
+import java.io.StringReader;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
@@ -39,10 +44,11 @@ import org.makumba.providers.QueryAnalysis;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
+import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /** an OQL query, writes out the translated SQL query */
-public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAnalysis {
+public class QueryAST extends OQLAST implements QueryAnalysis {
     /**
      * 
      */
@@ -61,10 +67,6 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     public void setOQL(String s) {
         originalQuery = s;
-    }
-
-    public String getOQL() {
-        return originalQuery;
     }
 
     /** markers in the chain of tokens for the different parts of the query */
@@ -587,10 +589,10 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     /** writes the where conditions */
     protected void writeConditions(NameResolver nr, StringBuffer ret) {
-        ret.append("(");
+        //ret.append("(");
         for (AST a = whereAST.getNextSibling(); a != afterWhereAST; a = a.getNextSibling())
             ret.append(" ").append(((OQLAST) a).writeInSQLQuery(nr));
-        ret.append(")");
+        //ret.append(")");
     }
 
     /** writes the rest of the query, after the WHERE part */
@@ -633,15 +635,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      * @see org.makumba.providers.QueryAnalysis#getQuery()
      */
     public String getQuery() {
-        return getOQL();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.makumba.providers.QueryAnalysis#getPreProcessedQuery(java.lang.String)
-     */
-    public String getPreProcessedQuery(String query) {
-        return getQuery();
+        return originalQuery;
     }
 
     /*
@@ -672,7 +666,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
                 String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + getFrom();
                 try {
-                    result = OQLQueryAnalysisProvider.parseQueryFundamental(dummyQuery).getProjectionType().getFieldDefinition(
+                    result = QueryAST.parseQueryFundamental(dummyQuery).getProjectionType().getFieldDefinition(
                         "projection").getPointedType();
                 } catch (RecognitionException e) {
                     throw new RuntimeWrappedException(e);
@@ -684,6 +678,7 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
 
     }
 
+    // this of course will not work for subqueries but OQL doesn't support them
     private String getFrom() {
 
         String[] splitAtFrom = originalQuery.split("\\s[f|F][r|R][o|O][m|M]\\s");
@@ -697,9 +692,9 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
      * (non-Javadoc)
      * @see org.makumba.providers.QueryAnalysis#getProjections()
      */
-    public Dictionary<String, String> getProjections() {
+    public Map<String, String> getProjections() {
 
-        Dictionary<String, String> result = new Hashtable<String, String>();
+        Map<String, String> result = new HashMap<String, String>();
         for (int i = 0; i < projections.size(); i++) {
             String expr = projections.get(i).expr.getText();
             if (expr.indexOf("count(") > -1 || expr.indexOf("max(") > -1 || expr.indexOf("min(") > -1
@@ -723,6 +718,40 @@ public class QueryAST extends OQLAST implements org.makumba.OQLAnalyzer, QueryAn
             return expr.substring(expr.lastIndexOf(".") + 1);
         else
             return expr;
+    }
+
+    /**
+     * Performs the analysis of an OQL query
+     * @param oqlQuery the query to analyse
+     * @return the OQL analysis correponding to the query
+     * @throws antlr.RecognitionException
+     */
+    public static QueryAnalysis parseQueryFundamental(String oqlQuery) throws antlr.RecognitionException {
+        Date d = new Date();
+        OQLLexer lexer = new OQLLexer(new StringReader(oqlQuery));
+        OQLParser parser = new OQLParser(lexer);
+        // Parse the input expression
+        QueryAST t = null;
+        try {
+    
+            parser.setASTNodeClass("org.makumba.providers.query.oql.OQLAST");
+            parser.queryProgram();
+            t = (QueryAST) parser.getAST();
+            t.setOQL(oqlQuery);
+            // Print the resulting tree out in LISP notation
+            // MakumbaSystem.getLogger("debug.db").severe(t.toStringTree());
+    
+            // see the tree in a window
+            /*
+             * if(t!=null) { ASTFrame frame = new ASTFrame("AST JTree Example", t); frame.setVisible(true); }
+             */
+        } catch (antlr.TokenStreamException f) {
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").warning(f + ": " + oqlQuery);
+            throw new org.makumba.MakumbaError(f, oqlQuery);
+        }
+        long diff = new java.util.Date().getTime() - d.getTime();
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
+        return t;
     }
 
 }

@@ -27,6 +27,7 @@ import java.util.Dictionary;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
+import org.makumba.commons.NameResolver;
 
 /**
  * This interface describes the result of a query analysis.
@@ -39,23 +40,9 @@ import org.makumba.DataDefinition;
  */
 public interface QueryAnalysis {
     /**
-     * Gets the original OQL query that is analyzed by this object
-     * 
-     * @deprecated Use {@link #getQuery()} instead
-     */
-    String getOQL();
-
-    
-    /**
      * Gets the original query that is analyzed by this object
      */
     String getQuery();
-    
-    /**
-     * Gets the pre-processed query
-     * @return
-     */
-    String getPreProcessedQuery(String query);
 
     /**
      * Gets the type of the fields between SELECT and FROM
@@ -74,6 +61,9 @@ public interface QueryAnalysis {
 
     /**
      * Gets the type of a label used within the query
+     * FIXME: remove, inline everywhere as getLabelTypes().get(labelName)
+     * for that to work, OQL and MQL need to put their aliases also in the Map returned by getLabelTypes()
+     * HQL does not support aliases in the first place
      * @param labelName the name of the label
      * @return The type of the label as declared in the FROM part of the query
      */
@@ -105,30 +95,9 @@ public interface QueryAnalysis {
     public int parameterAt(int index);
     
     /**
-     * Computes the type that contains the field pointed by an expression, e.g. in the expression
-     * "activity.season.responsible.name", this will return the type of "responsible".<br>
-     * 
-     * @param expr
-     *            the expression of which to evaluate the parent type
-     * @return a {@link DataDefinition} corresponding to the type containing the field. This can also return a
-     *         setComplex, e.g. "general.Person->address"
+     * generate SQL
+     * @param nr the NameResolver that maps DataDefinition names to database names
+     * @return a SQL string
      */
-    public DataDefinition getTypeOfExprField(String expr);
-    
-    /**
-     * Gets the projections of the query
-     * @return a Dictionary containing the projection name and its alias
-     */
-    public Dictionary<String, String> getProjections();
-
-
-
-    /**
-     * Gets the field pointed by an expression
-     * 
-     * @param expr
-     *            the expression to analyse
-     * @return the last field in an expression of the kind "a.b.c", the expression itself if there's no subfield
-     */
-    String getFieldOfExpr(String expr);
+    public String writeInSQLQuery(NameResolver nr);
 }
