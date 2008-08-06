@@ -529,7 +529,7 @@ public class table extends TestCase {
         // delete all entries, bug 673:
         db.delete("test.validMdds.CharWithLength name", "name.name='bla'", null);
         db.delete("test.validMdds.CharWithLength t", "5=5", null);
-        db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \"www\"", null);
+        db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \'www\'", null);
         db.delete("test.validMdds.CharWithLength bla", "'x'=bla.name", null);
     }
 
