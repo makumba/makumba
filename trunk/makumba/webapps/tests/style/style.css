@@ -99,33 +99,44 @@ SPAN.cpTodayTextDisabled {
   border: solid thin #6677DD;
 }
 
-.calendarEditor {
-  background: url(/tests/style/calendar.gif) left center no-repeat;
-  padding-left: 16px;
-  height: 16px;
-}
+/* ========== MAKUMBA VALIDATION STYLES  ==================== */
 
-.LV_validation_message {
+.LV_validation_message{
+  color: red;
   font-weight: bold;
-  margin: 0 0 0 5px;
+  background: url(/tests/style/exclamation.gif) left center no-repeat;
+  padding-left: 16;  height: 16;
+  margin:0 0 0 5px;
 }
 
 .LV_valid {
-  color: #00CC00;
+  color:#00CC00;
 }
-
-.LV_invalid {
-  color: #CC0000;
-}
-
-.LV_valid_field,input.LV_valid_field:hover,input.LV_valid_field:active,textarea.LV_valid_field:hover,textarea.LV_valid_field:active {
   
+.LV_invalid {
+  color:#CC0000;
+}
+    
+.LV_valid_field,input.LV_valid_field:hover,input.LV_valid_field:active,textarea.LV_valid_field:hover,textarea.LV_valid_field:active	{
+  background: none;
 }
 
 .LV_invalid_field,input.LV_invalid_field:hover,input.LV_invalid_field:active,textarea.LV_invalid_field:hover,textarea.LV_invalid_field:active {
   border: 1px solid #CC0000;
 }
 
+.LV_valid {
+  background: none;
+}
+
 .makumbaPagination {
   background-color: #f5f5ff; border: thin; border-style: solid; border-color: #ddddff; padding: 1px;
+}
+
+.invalidValueException {
+  font-weight: bold;
+  background: url(/tests/style/exclamation.gif) left center no-repeat;
+  display: block;
+  padding-left: 16;  height: 16;
+  margin:0 0 0 5px;
 }
