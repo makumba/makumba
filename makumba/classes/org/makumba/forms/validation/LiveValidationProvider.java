@@ -41,47 +41,58 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      */
     private HashSet<String> definitionVarNames = new HashSet<String>();
 
-    /** initialises a field, basically does create the variables and calls for this field. */
-    public void initField(String inputName, FieldDefinition fieldDefinition, boolean validateLive) {
-        Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();// def.getValidationRules(inputName);
+    /** Initialises a field, basically does create the variables and calls for this field. */
+    public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean validateLive) {
+        inputName = inputName + formIdentifier;
+        Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
         int size = validationRules != null ? validationRules.size() : 1;
         StringBuffer validations = new StringBuffer(100 + size * 50);
         String inputVarName = inputName.replaceAll("\\.", "__") + "Validation";
 
         if (fieldDefinition == null) {
-            System.out.println("null def for " + inputName);
+            System.out.println("Null field definition for " + inputName);
         }
-        
-        if (fieldDefinition.isNotNull()) {
+
+        // add validation rules automatically inferred from field modifiers - not null, not empty, numerically
+        if (fieldDefinition.isNotNull() && !fieldDefinition.isDateType()) {
+            // FIXME: not-null check for dates needed
+            // FIXME: fix for checkboxes (and radio buttons?) needed?
             validations.append(getValidationLine(inputVarName, "Validate.Presence", FieldDefinition.ERROR_NOT_NULL));
+        } else if (fieldDefinition.isNotEmpty()) { // add a length validation, minimum length 1
+            validations.append(getValidationLine(inputVarName, "Validate.Length", FieldDefinition.ERROR_NOT_EMPTY,
+                getRangeLimits("1", "?")));
         }
+
         if (fieldDefinition.isIntegerType()) {
             validations.append(getValidationLine(inputVarName, "Validate.Numericality", FieldEditor.ERROR_NO_INT,
                 "onlyInteger: true,"));
         } else if (fieldDefinition.isRealType()) {
-            validations.append(getValidationLine(inputVarName, "Validate.Numericality", FieldEditor.ERROR_NO_INT));
+            validations.append(getValidationLine(inputVarName, "Validate.Numericality", FieldEditor.ERROR_NO_REAL));
         }
+        
         if (validationRules != null) {
             for (ValidationRule validationRule : validationRules) {
                 ValidationRule rule = validationRule;
                 if (rule instanceof StringLengthValidationRule) {
-                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule, getRangeLimits(rule)));
+                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
+                        getRangeLimits((RangeValidationRule) rule)));
                 } else if (rule instanceof NumberRangeValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
-                        getRangeLimits(rule)));
+                        getRangeLimits((RangeValidationRule) rule)));
                 } else if (rule instanceof RegExpValidationRule) {
                     validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
                             + ((RegExpValidationRule) rule).getRegExp() + "$/i, "));
                 } else if (rule instanceof ComparisonValidationRule) {
                     ComparisonValidationRule c = (ComparisonValidationRule) rule;
 
-                    // FIXME: need to implement date comparisions
+                    // FIXME: need to implement date comparisons
                     if (c.getFieldDefinition().isDateType()) {
                         continue;
                     }
 
-                    String arguments = "element1: \"" + c.getFieldName() + "\", element2: \"" + c.getOtherFieldName()
-                            + "\", comparisonOperator: \"" + c.getCompareOperator() + "\", ";
+                    String arguments = "element1: \"" + c.getFieldName() + formIdentifier + "\", element2: \""
+                            + c.getOtherFieldName() + formIdentifier + "\", comparisonOperator: \""
+                            + c.getCompareOperator() + "\", ";
 
                     if (c.getFieldDefinition().isNumberType()) {
                         validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
@@ -98,11 +109,12 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 }
             }
         }
-        if (fieldDefinition.isUnique() && !fieldDefinition.isDateType( )) {
-            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness", FieldDefinition.ERROR_NOT_UNIQUE,
-                    "table: \""+fieldDefinition.getDataDefinition().getName()+"\", "+"field: \""+fieldDefinition.getName()+"\", "));
+        if (fieldDefinition.isUnique() && !fieldDefinition.isDateType()) {
+            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness",
+                FieldDefinition.ERROR_NOT_UNIQUE, "table: \"" + fieldDefinition.getDataDefinition().getName() + "\", "
+                        + "field: \"" + fieldDefinition.getName() + "\", "));
         }
-        
+
         if (validations.length() > 0) {
             definitionVarNames.add(inputVarName);
             validationObjects.append("var " + inputVarName + " = new LiveValidation('" + inputName
@@ -167,9 +179,13 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 + "\" } );\n";
     }
 
-    private String getRangeLimits(ValidationRule rule) {
-        String lower = ((RangeValidationRule) rule).getLowerLimitString();
-        String upper = ((RangeValidationRule) rule).getUpperLimitString();
+    private String getRangeLimits(RangeValidationRule rule) {
+        String lower = rule.getLowerLimitString();
+        String upper = rule.getUpperLimitString();
+        return getRangeLimits(lower, upper);
+    }
+
+    private String getRangeLimits(String lower, String upper) {
         String s = "";
         if (!lower.equals("?")) {
             s += "minimum: " + lower;
