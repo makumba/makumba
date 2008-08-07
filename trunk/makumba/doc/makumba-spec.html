@@ -317,12 +317,12 @@
     and java.lang.Integer.MAX_VALUE, respectively, i.e. +/- 2<sup>31</sup>-1.</p>
     <p>To require that the age needs to be between 12 and 99:</p>
     <pre class="example">age%range = [12..99] : Age must be between 12 and 99!</pre>
-    <p>To define that we need to be at least 5 year old:</p>
+    <p>To define that we need to be at least 5 year old, but without any upper limit:</p>
     <pre class="example">age%range = [5..?] : Age must be at least 5!</pre>
 
     <h4 name="stringLength">String length rule</h4>
-    <p>The length definition rule applies for <code>string</code> types, i.e. <code>char</code> and <char>text</char>. The
-    [validation rule] is defined as:</p>
+    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <char>text</char>.
+    The [validation rule] is defined as:</p>
     <pre class="example">[fieldName]%length = [1..10]</pre>
     <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
     maxium length of 255</p>
@@ -372,17 +372,17 @@
         The function takes up to six arguments, for day, month, year, hours, minutes and seconds. If less than six
         arguments are passed, the missing values will be automatically set to the current date.<br />
         $now is available as a constant for the current date value, and + and - operators can be used to modify that
-        value. e.g. <pre class="example">date($now,$now,$now - 5)</pre> evaluates as the current date & month 5 years
+        value. e.g. <pre class="example">date($now,$now,$now - 5)</pre> evaluates as the current date 5 years
         ago.</td>
         <td><code>date</code> types</td>
       </tr>
       <tr>
-        <td>$lower</td>
+        <td>lower(..)</td>
         <td>Converts a string to lower case.</td>
         <td rowspan="2"><code>String</code>, i.e. 'char' and 'text' types</td>
       </tr>
       <tr>
-        <td>$upper</td>
+        <td>upper(..)</td>
         <td>Converts a string to upper case.</td>
       </tr>
     </table>
@@ -420,13 +420,13 @@
     </table>
 
     <p>To compare if someone is at least 15 years old, define the following validation rule:</p>
-    <pre class="example">birthday%compare = date($now,$now,$now - 15) : You have to be at least 15 years old!</pre>
+    <pre class="example">minimumAge%compare = birthdate >= date($now,$now,$now - 15) : You have to be at least 15 years old!</pre>
 
     <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
-    <pre class="example">birthday%name = lower(name) != name : Your name must not contain only lower-case letters!</pre>
+    <pre class="example">nameNotAllLower%compare = lower(name) != name : Your name must not contain only lower-case letters!</pre>
 
     <p>Two fields can be compared in a similar way</p>
-    <pre class="example">birthdate%compare = birthdate < graduationDate : You cannot finish school before your birthdate!</pre>
+    <pre class="example">graduationCheck%compare = birthdate < graduationDate : You cannot finish school before your birthdate!</pre>
 
     <h4 name="multiFielUnique">Multi-field uniqueness definition</h4>
     <p>Similar to the <a href="#FieldAttributes"><i>unique</i> field attribute</a>, you can also define multi-field
@@ -2232,7 +2232,9 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     <!-- ========================================================= --> 
     <!-- ==================== mak:searchForm ===================== -->
     <h4><a name="searchForm">&lt;mak:searchForm&gt;...&lt;/mak:searchForm&gt;</a></h4>
-    <p>Produces a form to search in the datbase. In principal related to <a href="tab_forms">mak:forms</a>, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
+    <p>Produces a form to search for records in the database.<br />
+    Search forms are in principal related to <a href="tab_forms">mak:forms</a>, i.e. attributes allowed there are also allowed in search forms.
+    Additionally, the following attributes are defined.</p>
     <table class="tagParamDef">
       <tbody>
         <tr>
@@ -2248,7 +2250,8 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         <tr>
           <td><tt>name</tt></td>
           <td>Name of the form</td>
-          <td>As in mak:forms, but mandatory. Name is used in connection with <a href="#resultList">mak:resultList</a>, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</td>
+          <td>As in mak:forms, but mandatory. Name is used in connection with <a href="#resultList">mak:resultList</a>, and is the prefix for
+          several pageContext attributes set, which can be used to perform searching manually.</td>
         </tr>
       </tbody>
     </table>
@@ -2259,18 +2262,52 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
 &lt;/mak:searchForm&gt;
 </pre>
 
+    <p>If you want to do more advanced things in the search page, e.g. sorting of the parameters, you might need to access the pageContext
+    attributes describing the search and the results. They are as follows:</p>
+    <table class="tagParamDef">
+      <thead>
+        <tr>
+          <th>Attribute name</th>
+          <th>description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><tt>&lt;searchFormName&gt;Done</tt></td>
+          <td>Boolean, saying whether a search was performed (or this is the first time accessing the form). Can be used e.g. as <pre
+            class="example">&lt;c:if test="${&lt;searchFormName&gt;Done}"/&gt; Do something when the search was done &lt;/c:if&gt;</pre></td>
+        </tr>
+        <tr>
+          <td><tt>&lt;searchFormName&gt;QueryString</tt></td>
+          <td>The query string containing the values for the form fields filled in in the search.<br />
+          Use this e.g. in as <pre class="example">&lt;a href="searchPage.jsp?${&lt;searchFormName&gt;QueryString}&sortBy=name"&gt;</pre> when you
+          want to provide sorting by a specific field.</td>
+        </tr>
+        <tr>
+          <td><tt>&lt;searchFormName&gt;VariableFrom</tt></td>
+          <td>The additional data definitions needed to perform the query, will be used by <a href="#resultList">mak:resultList</a> in the
+          variableFrom=".." attribute.</td>
+        </tr>
+        <tr>
+          <td><tt>&lt;searchFormName&gt;Where</tt></td>
+          <td>The filter conditions for the matching records, will be used by <a href="#resultList">mak:resultList</a> in the where=".." attribute.</td>
+        </tr>
+      </tbody>
+    </table>
 
     <!-- ========================================================= --> 
     <!-- ==================== mak:criterion ===================== -->
     <h4><a name="criterion">&lt;mak:criterion&gt;...&lt;/mak:criterion&gt;</a></h4>
     <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
     <table class="tagParamDef">
-      <tbody>
+      <thead>
         <tr>
           <th>tag parameter</th>
           <th>description</th>
           <th>comments</th>
         </tr>
+      </thead>
+      <tbody>
         <tr>
           <td><tt>fields</tt></td>
           <td>The MDD fields to apply this criterion upon</td>
