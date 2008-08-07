@@ -2,6 +2,7 @@
 <!-- //Begin
 
 // Original:  Bob Rockers (brockers@subdimension.com)
+// http://javascript.internet.com/forms/list-organizer.html
 // This script and many more are available free online at
 // The JavaScript Source!! http://javascript.internet.com
 
