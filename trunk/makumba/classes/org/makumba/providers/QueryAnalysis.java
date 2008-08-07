@@ -72,8 +72,8 @@ public interface QueryAnalysis {
     /**
      * Gets the types of the query parameters, as resulted from the query analysis.
      * 
-     * @return A DataDefinition containing in the first field the type of the QL parameter $1, the second field the
-     *         type of the QL parameter $2 etc
+     * @return A DataDefinition containing in the first field the type of the QL parameter mentioned first in the query. 
+     * Each mentioning of a parameter new will get a new field in this DataDefinition!  
      */
     DataDefinition getParameterTypes();
 
