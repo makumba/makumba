@@ -367,7 +367,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 j = (j + 1) % _optionSeparator.length;
                 sep = _optionSeparator[j];
 
-                String id = "AutoLabel_" + formIdentifier + "_" + _name + "_" + optionCount;
+                String id = _name + "_" + optionCount + "_" + formIdentifier;
                 inputStatement.append("<INPUT TYPE=" + type + " NAME=\"" + _name + "\" " + _literalHtml + " ");
                 inputStatement.append("VALUE=\"" + value + "\"" + selected + " id=\"" + id + "\">"
                         + _tickLabelSeparator + "<LABEL for=\"" + id + "\">" + label + "</LABEL>");
