@@ -12,9 +12,9 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
 
     public StringBuffer formatEditorCode(String inputName, Object formIdentifier, String calendarLinkFormatting) {
         StringBuffer sb = new StringBuffer();
-        String calendarName = inputName + "_" + formIdentifier + "_Calendar";
-        String anchorname = inputName + "_" + formIdentifier + "_Anchor";
-        String divname = inputName + "_" + formIdentifier + "_makCalendarDiv";
+        String calendarName = inputName + formIdentifier + "_Calendar";
+        String anchorname = inputName + formIdentifier + "_Anchor";
+        String divname = inputName + formIdentifier + "_makCalendarDiv";
 
         String dayInput = "document.getElementById('" + inputName + "_0" + formIdentifier + "')";
         String monthInput = "document.getElementById('" + inputName + "_1" + formIdentifier + "')";

@@ -12,7 +12,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
 public interface CalendarEditorProvider {
     /**
      * Write the code to display the calendar, and to connect it to the input boxes of the Makumba-internal
-     * {@link dateEditor}. This method has to provide all needed java-script callse.
+     * {@link dateEditor}. This method has to provide all needed java-script calls.
      */
     public StringBuffer formatEditorCode(String inputName, Object formIdentifier, String calendarLinkFormatting);
 
