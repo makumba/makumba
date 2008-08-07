@@ -127,6 +127,7 @@ public class ParserTest {
                 compareMdds("parameter", sb, mq.getParameterTypes(), oq.getParameterTypes());
                 if(sb.length()>0)
                     System.out.println(line + ": "+ sb+" "+ query); 
+                sb= new StringBuffer();
                 compareMdds("projection", sb, mq.getProjectionType(), oq.getProjectionType());
                 if(sb.length()>0)
                     System.out.println(line + ": "+ sb+" "+ query); 

@@ -123,10 +123,10 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     void setParameterType(MqlNode param, MqlNode likewise) {
-        String paramName = param.getOriginalText();
+        String paramName = "param"+paramInfo.getFieldNames().size();
         FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise.getMakType());
         param.setMakType(fd);
-        if(paramInfo.getFieldDefinition(paramName)==null)
+        //if(paramInfo.getFieldDefinition(paramName)==null)
             paramInfo.addField(fd);
     }
     

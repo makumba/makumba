@@ -56,27 +56,27 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         transformOQL(parser.getAST());
 
-        String hqlDebug= MqlSqlWalker.printer.showAsString(parser.getAST(), "");
+        String hqlDebug = MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(makeParameterInfo(query));
-        try{
+        try {
             mqlAnalyzer.statement(parser.getAST());
-        }catch(ANTLRException e){
+        } catch (ANTLRException e) {
             doThrow(e, hqlDebug);
         }
         doThrow(mqlAnalyzer.error, hqlDebug);
-        String mqlDebug= MqlSqlWalker.printer.showAsString(mqlAnalyzer.getAST(), "");
-        
+        String mqlDebug = MqlSqlWalker.printer.showAsString(mqlAnalyzer.getAST(), "");
+
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = rewriteParameters(makeParameterInfo(query), mqlAnalyzer.paramInfo);
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
-        //System.out.println(mqlDebug);
+        // System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
-        try{
+        try {
             mg.statement(mqlAnalyzer.getAST());
-        }catch(Throwable e){
+        } catch (Throwable e) {
             doThrow(e, mqlDebug);
         }
         doThrow(mg.error, mqlDebug);
@@ -85,27 +85,23 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     }
 
     private DataDefinition rewriteParameters(DataDefinition ret, DataDefinition paramInfo) {
-/*        for(String s:paramInfo.getFieldNames()){
-            int n=0;
-            for(String x:parameterOrder){
-                if(x.equals(s)){
-                    ret.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param"+n, paramInfo.getFieldDefinition(s)));
-                }
-            }
-        }*/
+/*        int n = 0;
+        for (String x : parameterOrder)
+            ret.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + n++,
+                paramInfo.getFieldDefinition(x)));
+        return ret;*/
         return paramInfo;
     }
 
     private DataDefinition makeParameterInfo(String query) {
-        return DataDefinitionProvider.getInstance().getVirtualDataDefinition(
-            "Parameters for " + query);
+        return DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
     }
 
     private void doThrow(Throwable t, String debugTree) throws ANTLRException {
         if (t == null)
             return;
-        if(!(t instanceof antlr.SemanticException))
-            System.err.println(query+" "+debugTree);
+        if (!(t instanceof antlr.SemanticException))
+            System.err.println(query + " " + debugTree);
         if (t instanceof RuntimeException)
             throw (RuntimeException) t;
         if (t instanceof ANTLRException)
