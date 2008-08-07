@@ -289,7 +289,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     public void beginMakSearchForm(Request request) throws Exception {
         WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakSearchForm.jsp");
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm.jsp");
 
         // first, compare that the form generated is ok
         try {
@@ -329,7 +329,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     public void beginMakSearchForm2(Request request) throws Exception {
         WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakSearchForm2.jsp");
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm2.jsp");
 
         // first, compare that the form generated is ok
         try {
