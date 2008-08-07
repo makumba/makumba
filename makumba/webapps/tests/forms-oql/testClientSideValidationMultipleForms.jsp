@@ -1,7 +1,7 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 <html>
-<head><title>Multiple forms</title></head>
+<head><title>Client Side Validation in Multiple forms</title></head>
 <body>
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 <mak:form action="testMakEditForm.jsp" method="post" >

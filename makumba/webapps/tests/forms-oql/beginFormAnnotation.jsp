@@ -2,10 +2,14 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 <html>
-<head><title>Test Form Annotation</title></head>
+<head>
+<title>Test Form Annotation</title>
+<link rel="StyleSheet" href="../style/style.css" type="text/css" media="all"/>
+</head>
 <body>
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<mak:response />
 
 <mak:newForm type="test.Person" action="somethingNonExisting.jsp" name="person" clientSideValidation="false" annotation="after" reloadFormOnError="true" method="post">  
   name <mak:input name="indiv.name" /><br>  
