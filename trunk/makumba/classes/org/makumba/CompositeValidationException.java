@@ -77,15 +77,13 @@ public class CompositeValidationException extends RuntimeException {
     /** Prints the messages of all exceptions gathered */
     @Override
     public String toString() {
-        String message = "";
+        StringBuilder message = new StringBuilder("\n");
         for (Iterator<InvalidValueException> iter = exceptionsHash.values().iterator(); iter.hasNext();) {
             InvalidValueException e = (InvalidValueException) iter.next();
-            message += e.getMessage();
-            if (iter.hasNext()) {
-                message += "\n";
-            }
+            message.append("<span class=\"invalidValueException\">").append(e.getMessage()).append("</span>");
+            message.append("\n");
         }
-        return message;
+        return message.toString();
     }
 
     /** returns the value of {@link #toString()} */
