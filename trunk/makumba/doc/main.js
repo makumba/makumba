@@ -30,6 +30,9 @@ function makeNavBar(pathToBase)
 	document.write('- <a href="'+bDir+'faq.html">FAQ</a><br>');
 	
 	document.write('<br>');
+	document.write('<a href="'+bDir+'libraries.html"><b>Useful Libraries</b></a><br>');
+	
+	document.write('<br>');
 	document.write('<a href="'+bDir+'download.html"><b>Download</b></a><br>');
 
 	document.write('<br>');
