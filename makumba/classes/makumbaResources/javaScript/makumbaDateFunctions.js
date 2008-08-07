@@ -8,3 +8,11 @@ function getDateString(y_obj, m_obj, d_obj) {
   if (d=="") { d=1; }
   return str= y+'-'+m+'-'+d;
 }
+
+// sets the day, month and year values to a makumba date input identified by the inputName and formIdentifier
+// called e.g. by kruseCalendarPopup.js
+function setMultipleValues(inputName, formIdentifier, y, m, d) {
+  document.getElementById(inputName + "_0" + formIdentifier).selectedIndex=LZ(d)-1;
+  document.getElementById(inputName + "_1" + formIdentifier).selectedIndex=LZ(m)-1;
+  document.getElementById(inputName + "_2" + formIdentifier).value=y;
+}
