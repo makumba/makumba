@@ -66,14 +66,14 @@ public class dateEditor extends FieldEditor {
 
     static final String recognized = "dMyHms";
 
-    static int[] lowLimits = { 1, 0, -1, 0, 0, 0 };
+    static final int[] lowLimits = { 1, 0, -1, 0, 0, 0 };
 
-    static int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
+    static final int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
 
-    public static int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
+    public static final int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
             Calendar.MINUTE, Calendar.SECOND };
 
-    static String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
+    static final String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
 
     String getNullName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
@@ -118,7 +118,10 @@ public class dateEditor extends FieldEditor {
 
         String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
         String calendarEditor = (String) formatParams.get("calendarEditor");
-        if (calendarEditor!=null && !"false".equals(calendarEditor)) {
+        
+        // add calendar editor code, if calendarEditor="true" AND if we have all components of day, month & year
+        if (calendarEditor != null && !"false".equals(calendarEditor)
+                && (format.contains("d") && format.contains("M") && format.contains("y"))) {
             sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
                 (String) formatParams.get("calendarEditorLink")));
         }
@@ -132,7 +135,7 @@ public class dateEditor extends FieldEditor {
         df.setCalendar(dateFormatter.calendar);
 
         String name = getComponentName(rf, fieldIndex, component, formatParams);
-        String id = " id=\"" + name + "_" + rf.getFormIdentifier() + "\"";
+        String id = " id=\"" + name + rf.getFormIdentifier() + "\"";
 
         if (hidden) {
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
