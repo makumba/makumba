@@ -93,9 +93,10 @@ public abstract class choiceEditor extends FieldEditor {
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String type = (String) formatParams.get("type");
         boolean hidden = "hidden".equals(type);
-        boolean yn_radio = "radio".equals(type);
-        boolean yn_checkbox = "checkbox".equals(type);
-        boolean yn_tickbox = "tickbox".equals(type);
+        boolean isRadio = "radio".equals(type);
+        boolean isCheckbox = "checkbox".equals(type);
+        boolean isTickbox = "tickbox".equals(type);
+        boolean isSetEditor = "seteditor".equals(type);
         String forceInputStyle = (String) formatParams.get("forceInputStyle");
         formatParams.remove("forceInputStyle");
 
@@ -105,11 +106,11 @@ public abstract class choiceEditor extends FieldEditor {
             this.setNullOption(formatParams.get("nullOption"));
         }
 
-        if (yn_tickbox) {
+        if (isTickbox) {
             if (isMultiple(rf, fieldIndex)) {
-                yn_checkbox = true;
+                isCheckbox = true;
             } else {
-                yn_radio = true;
+                isRadio = true;
             }
         }
 
@@ -132,8 +133,9 @@ public abstract class choiceEditor extends FieldEditor {
                 }
             }
         }
+        String inputName = getInputName(rf, fieldIndex, formatParams);
         if (!hidden) {
-            HtmlChoiceWriter hcw = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
+            HtmlChoiceWriter hcw = new HtmlChoiceWriter(inputName);
 
             boolean forceSingleSelect = StringUtils.equals(forceInputStyle, "single");
             boolean forceMultipleSelect = StringUtils.equals(forceInputStyle, "multiple");
@@ -186,7 +188,7 @@ public abstract class choiceEditor extends FieldEditor {
             }
             hcw.setSelectedValues(valueFormattedList);
 
-            if (yn_radio || yn_checkbox) {
+            if (isRadio || isCheckbox) {
                 String sep = (String) formatParams.get("elementSeparator");
                 if (sep != null) {
                     hcw.setOptionSeparator(sep);
@@ -196,22 +198,40 @@ public abstract class choiceEditor extends FieldEditor {
                     hcw.setTickLabelSeparator(sep);
                 }
 
-                if (yn_radio) {
+                if (isRadio) {
                     return hcw.getRadioSelect();
                 } else {
                     return hcw.getCheckboxSelect();
                 }
+            } else if (isSetEditor) {
+                // FIXME: fix for non-JS clients, most likely hiding everything except the mak:input...
+                StringBuilder sb = new StringBuilder("<table> <tr>\n");
+                sb.append("<td> <select multiple size=\"" + size + "\" name=\"" + inputName
+                        + "selectFrom\"></select> </tf>\n");
+                sb.append("<td> <input type=\"button\" onClick=\"move(this.form." + inputName
+                        + "selectFrom, this.form." + inputName + ")\" value=\"&raquo; add &raquo;\"> <br/> <br/>");
+                sb.append("<input type=\"button\" onClick=\"move(this.form." + inputName + ", this.form." + inputName
+                        + "selectFrom)\" value=\"&laquo; remove &laquo;\"> </td>\n");
+                sb.append("<td> " + hcw.getSelect() + "</td>\n");
+                sb.append("<script language=\"JavaScript\">\n");
+                sb.append("<!-- //\n");
+                sb.append("moveNotSelected(document.forms['" + formatParams.get(formName) + "']." + inputName
+                        + ",document.forms['" + formatParams.get(formName) + "']." + inputName + "selectFrom)\n");
+                sb.append("// -->\n");
+                sb.append("</script>\n");
+                sb.append("</tr> </table>");
+                return sb.toString();
+            } else {
+                return hcw.getSelect();
             }
-
-            return hcw.getSelect();
 
         } else { // hidden
 
             StringBuffer sb = new StringBuffer();
             for (Enumeration f = value.elements(); f.hasMoreElements();) {
                 Object val = f.nextElement();
-                sb.append("<input type=\"hidden\" name=\"").append(getInputName(rf, fieldIndex, formatParams)).append(
-                    "\" value=\"").append(formatOptionValue(rf, fieldIndex, val)).append("\">");
+                sb.append("<input type=\"hidden\" name=\"").append(inputName).append("\" value=\"").append(
+                    formatOptionValue(rf, fieldIndex, val)).append("\">");
             }
             return sb.toString();
         }
