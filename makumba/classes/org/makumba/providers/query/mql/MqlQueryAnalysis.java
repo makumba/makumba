@@ -18,8 +18,6 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
 import antlr.ANTLRException;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 public class MqlQueryAnalysis implements QueryAnalysis {
@@ -60,10 +58,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         String hqlDebug= MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(DataDefinitionProvider.getInstance().getVirtualDataDefinition(
-            "Parameters for " + query));
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(makeParameterInfo(query));
         try{
-        mqlAnalyzer.statement(parser.getAST());
+            mqlAnalyzer.statement(parser.getAST());
         }catch(ANTLRException e){
             doThrow(e, hqlDebug);
         }
@@ -72,10 +69,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
-        paramInfo = mqlAnalyzer.paramInfo;
+        paramInfo = rewriteParameters(makeParameterInfo(query), mqlAnalyzer.paramInfo);
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
-
+        //System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
         try{
             mg.statement(mqlAnalyzer.getAST());
@@ -87,10 +84,28 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         text = mg.text;
     }
 
+    private DataDefinition rewriteParameters(DataDefinition ret, DataDefinition paramInfo) {
+/*        for(String s:paramInfo.getFieldNames()){
+            int n=0;
+            for(String x:parameterOrder){
+                if(x.equals(s)){
+                    ret.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param"+n, paramInfo.getFieldDefinition(s)));
+                }
+            }
+        }*/
+        return paramInfo;
+    }
+
+    private DataDefinition makeParameterInfo(String query) {
+        return DataDefinitionProvider.getInstance().getVirtualDataDefinition(
+            "Parameters for " + query);
+    }
+
     private void doThrow(Throwable t, String debugTree) throws ANTLRException {
         if (t == null)
             return;
-        System.err.println(query+" "+debugTree);
+        if(!(t instanceof antlr.SemanticException))
+            System.err.println(query+" "+debugTree);
         if (t instanceof RuntimeException)
             throw (RuntimeException) t;
         if (t instanceof ANTLRException)
