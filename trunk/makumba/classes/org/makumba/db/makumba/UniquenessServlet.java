@@ -74,10 +74,13 @@ public class UniquenessServlet extends HttpServlet {
 
             // if it's an integer
             if (fd.isIntegerType()) {
-                v = dbc.executeQuery(OQL, Integer.valueOf(value));
-            }
-            // if it's a date
-            else if (fd.isDateType()) {
+                try {
+                    Integer valueOf = Integer.valueOf(value);
+                    v = dbc.executeQuery(OQL, valueOf);
+                } catch (NumberFormatException e) {
+                    // if it is not an integer, do nothing, we'll output "unique" later on
+                }
+            } else if (fd.isDateType()) { // if it's a date
                 if (req.getParameter("year") != null && req.getParameter("month") != null
                         && req.getParameter("day") != null && req.getParameter("year").matches("/[0-9]+/")
                         && req.getParameter("month").matches("/[0-9]+/") && req.getParameter("day").matches("/[0-9]+/")) {
