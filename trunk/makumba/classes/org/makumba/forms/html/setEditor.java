@@ -27,50 +27,68 @@ import java.util.Vector;
 
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.forms.tags.SearchFieldTag;
 
 public class setEditor extends ptrEditor {
 
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new setEditor();
-	}
+    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
+            "forceInputStyle" };
 
-	private setEditor() {}
+    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox", "seteditor" }, null, null, null,
+            null, SearchFieldTag.allowedSelectTypes };
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    @Override
+    public String[] getAcceptedParams() {
+        return _params;
+    }
 
-	@Override
+    @Override
+    public String[][] getAcceptedValue() {
+        return _paramValues;
+    }
+
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new setEditor();
+    }
+
+    private setEditor() {
+    }
+
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
+
+    @Override
     public String getMultiple(RecordFormatter rf, int fieldIndex) {
-		return " multiple";
-	}
+        return " multiple";
+    }
 
-	@Override
+    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
-		return true;
-	}
+        return true;
+    }
 
-	@Override
+    @Override
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
-		return 10;
-	}
+        return 10;
+    }
 
-	@Override
-    public Object readFrom(RecordFormatter rf, int fieldIndex,
-			org.makumba.commons.attributes.HttpParameters p, String suffix) {
-		Object o = super.readFrom(rf, fieldIndex, p, suffix);
-		if (o == null) {
+    @Override
+    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
+            String suffix) {
+        Object o = super.readFrom(rf, fieldIndex, p, suffix);
+        if (o == null) {
             return new Vector();
         }
 
-		/* we remove all nulls from the input */
-		if (o instanceof Vector) {
-			for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();) {
+        /* we remove all nulls from the input */
+        if (o instanceof Vector) {
+            for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();) {
                 if ("".equals(i.next())) {
                     i.remove();
                 }
             }
-		}
-		return o;
-	}
+        }
+        return o;
+    }
 }
