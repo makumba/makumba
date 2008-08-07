@@ -14,7 +14,7 @@
         testBirthdate!<mak:input name="birthdate" format="yyyy-MM-dd" calendarEditor="false" />!endBirthdate
         testComment!<mak:input name="comment" />!endComment
         testWeight!<mak:input name="weight" />!endWeight
-    testMakEditFormEnd!</mak:editForm>!endMakEditFormEnd
+    testMakEditFormEnd!<input type="submit"/></mak:editForm>!endMakEditFormEnd
 </mak:object>
 
 </body>
