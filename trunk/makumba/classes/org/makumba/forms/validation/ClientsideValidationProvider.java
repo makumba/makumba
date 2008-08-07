@@ -19,7 +19,7 @@ public interface ClientsideValidationProvider {
      * validation mechanism, i.e. by having a java-script code prepared. <br>
      * This method is called from the {@link RecordEditor} and the {@link FormResponder}.
      */
-    public void initField(String inputName, FieldDefinition fieldDefinition, boolean liveValidation);
+    public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean liveValidation);
 
     /** Shall provide the calls needed for doing validation on e.g. form submission. */
     public StringBuffer getOnSubmitValidation(boolean validateLive);
