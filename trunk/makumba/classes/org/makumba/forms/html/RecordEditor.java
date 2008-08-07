@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -87,9 +88,8 @@ public class RecordEditor extends RecordFormatter {
 
     public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
-        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>(); // will collect all exceptions
-                                                                                        // from the field validity
-                                                                                        // checks
+        // will collect all exceptions from the field validity checks
+        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
 
         Hashtable<Integer, Object> validatedFields = new Hashtable<Integer, Object>();
         Hashtable<String, Object> validatedFieldsNameCache = new Hashtable<String, Object>();
@@ -104,11 +104,20 @@ public class RecordEditor extends RecordFormatter {
             }
             Object o = null;
             try {
+                FieldDefinition fd = dd.getFieldDefinition(i);
                 o = fe.readFrom(this, i, org.makumba.commons.attributes.RequestAttributes.getParameters(req), suffix);
                 if (o != null) {
-                    o = dd.getFieldDefinition(i).checkValue(o);
+                    o = fd.checkValue(o);
                 } else {
-                    o = dd.getFieldDefinition(i).getNull();
+                    // check for not-null fields
+                    if (fd.isNotNull()) {
+                        throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_NULL);
+                    }
+                    o = fd.getNull();
+                }
+                // for string types (text, char) check not empty
+                if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
+                    throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_EMPTY);
                 }
 
                 validatedFields.put(new Integer(i), o);
@@ -140,6 +149,19 @@ public class RecordEditor extends RecordFormatter {
                                 && !((ComparisonValidationRule) rule).isCompareToExpression()) {
                             FieldDefinition otherFd = ((ComparisonValidationRule) rule).getOtherFd();
                             Object otherValue = validatedFieldsNameCache.get(otherFd.getName());
+                            if (otherValue == null) { // check if the other field definition is maybe in a pointed type
+                                // do this by checking if it equals any of the original field definitions the form field
+                                // definitions are made of
+                                // FIXME: this seems like a hack. maybe on making the new field definition, the
+                                // validation rules should be adapted too?
+                                for (String field : dd.getFieldNames()) {
+                                    FieldDefinition fd = dd.getFieldDefinition(field).getOriginalFieldDefinition();
+                                    if (otherFd == fd) {
+                                        otherValue = o;
+                                        break;
+                                    }
+                                }
+                            }
                             if (otherValue != null) {
                                 rule.validate(new Object[] { o, otherValue });
                             }
