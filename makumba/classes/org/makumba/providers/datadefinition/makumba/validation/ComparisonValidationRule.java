@@ -17,8 +17,8 @@ import org.makumba.forms.html.dateEditor;
 
 /**
  * This validation rule implements comparison validations between two fields, using the syntax &lt;fieldname&gt;
- * <i>comparison operatror</i> &lt;otherFieldname&gt;. Valid operators are {@value #comparisonOperators}. This rule
- * can be used for either two date, number or string types.
+ * <i>comparison operator</i> &lt;otherFieldname&gt;. Valid operators are {@value #comparisonOperators}. This rule can
+ * be used for either two date, number or string types.
  * 
  * @author Rudolf Mayer
  * @version $Id: NumberRangeValidationRule.java,v 1.1 Sep 6, 2007 1:31:27 AM rudi Exp $
@@ -117,7 +117,12 @@ public class ComparisonValidationRule extends BasicValidationRule {
         if (numberComparison) {
             compare = Double.compare(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
         } else if (stringComparison) {
-            compare = ((String) o1).compareTo((String) o2);
+            // FIXME ? compare only if strings are actually entered?
+            if (((String) o1).length() > 0 && ((String) o2).length() > 0) {
+                compare = ((String) o1).compareTo((String) o2);
+            } else {
+                return true;
+            }
         } else {
             compare = ((Date) o1).compareTo(((Date) o2));
         }
