@@ -41,7 +41,6 @@ import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
-import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -108,11 +107,12 @@ public class FormResponder extends Responder {
         if (!ftype.isDateType()
                 && !org.makumba.commons.StringUtils.equalsAny(formatParams.get("type"), new String[] { "radio",
                         "checkbox", "tickbox" })) {
-            extraFormatting += "id=\"" + fname + storedSuffix + "_" + formIdentifier + "\" ";
+            extraFormatting += "id=\"" + fname + formIdentifier + "\" ";
         }
 
         FieldEditor.setSuffix(paramCopy, storedSuffix);
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
+        FieldEditor.setFormName(paramCopy, formName);
 
         boolean display = (formatParams.get("org.makumba.noDisplay") == null);
         Integer i = indexes.get(fname);
@@ -138,10 +138,10 @@ public class FormResponder extends Responder {
         editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), formIdentifier);
 
         editor.config();
-        // add client side validation, but only for edit operations (not search)
-        if (!operation.equals("search")
+        // add client side validation, but only for edit operations (not search), and for fields that are visible
+        if (!operation.equals("search") && display
                 && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            provider.initField(fname + storedSuffix + "_" + formIdentifier, ftype, clientSideValidation.equals("live"));
+            provider.initField(fname, storedSuffix + formIdentifier, ftype, clientSideValidation.equals("live"));
         }
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
