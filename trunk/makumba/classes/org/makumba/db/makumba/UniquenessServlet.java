@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -17,11 +18,10 @@ import org.makumba.db.makumba.sql.TableManager;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.FieldDefinition;
 
-
 /**
  * This servlet checks if a field is unique or not
  * 
- * @author Rudolf Mayer
+ * @author Marius Andra
  * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $
  */
 public class UniquenessServlet extends HttpServlet {
@@ -36,78 +36,81 @@ public class UniquenessServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // get the writer
         PrintWriter writer = resp.getWriter();
-        
+
+        String value = req.getParameter("value");
+        String tableName = req.getParameter("table");
+        String fieldName = req.getParameter("field");
+
         // get the database
         TransactionProvider tp = TransactionProvider.getInstance();
-        DBConnectionWrapper dbc = (DBConnectionWrapper)tp.getConnectionTo(tp.getDefaultDataSourceName());
-        Database db = dbc.getHostDatabase();
-        TableManager table = null;
-        
-        // check if the table exists
-        try
-        {
-            table = (TableManager)db.getTable(req.getParameter("table"));
-        } catch(org.makumba.DataDefinitionNotFoundError e) {
-            writer.println("No such table!");
-            db.close();
-            return;
-        }
-        
-        // check if the field exists
-        FieldDefinition fd = table.getFieldDefinition(req.getParameter("field"));
-        if(fd == null)
-        {
-            writer.println("No such field!");
-            db.close();
-            return;
-        }
-        
-        String OQL = "select 1 from "+req.getParameter("table")+" p where p."+req.getParameter("field")+"=$1";
-        //writer.println(OQL);
-        
-        Vector v = new Vector();
-        
-        // if it's an integer
-        if(fd.isIntegerType())
-        {
-            v = dbc.executeQuery(OQL, Integer.valueOf(req.getParameter("value")));                
-        }
-        // if it's a date
-        else if(fd.isDateType())
-        {
-            if(req.getParameter("year") != null && req.getParameter("month") != null && req.getParameter("day") != null
-                      && req.getParameter("year").matches("/[0-9]+/")
-                      && req.getParameter("month").matches("/[0-9]+/")
-                      && req.getParameter("day").matches("/[0-9]+/"))
-            {
-                Calendar c = Calendar.getInstance();
-                c.clear();
-                c.set(Integer.valueOf(req.getParameter("year")), Integer.valueOf(req.getParameter("month")), Integer.valueOf(req.getParameter("day")));
-                Date date = c.getTime();
-                v = dbc.executeQuery(OQL, date);
-            }
-            else
-            {
-                writer.println("incorrect date");
+        Database db = null;
+        DBConnectionWrapper dbc = null;
+        try {
+            dbc = (DBConnectionWrapper) tp.getConnectionTo(tp.getDefaultDataSourceName());
+            db = dbc.getHostDatabase();
+            TableManager table = null;
+
+            // check if the table exists
+            try {
+                table = (TableManager) db.getTable(tableName);
+            } catch (org.makumba.DataDefinitionNotFoundError e) {
+                writer.println("No such table!");
                 db.close();
                 return;
             }
+
+            // check if the field exists
+            FieldDefinition fd = table.getFieldDefinition(fieldName);
+            if (fd == null) {
+                writer.println("No such field!");
+                db.close();
+                return;
+            }
+
+            String OQL = "select 1 from " + tableName + " p where p." + fieldName + "=$1";
+            // writer.println(OQL);
+
+            Vector<Dictionary<String, Object>> v = new Vector<Dictionary<String, Object>>();
+
+            // if it's an integer
+            if (fd.isIntegerType()) {
+                v = dbc.executeQuery(OQL, Integer.valueOf(value));
+            }
+            // if it's a date
+            else if (fd.isDateType()) {
+                if (req.getParameter("year") != null && req.getParameter("month") != null
+                        && req.getParameter("day") != null && req.getParameter("year").matches("/[0-9]+/")
+                        && req.getParameter("month").matches("/[0-9]+/") && req.getParameter("day").matches("/[0-9]+/")) {
+                    Calendar c = Calendar.getInstance();
+                    c.clear();
+                    c.set(Integer.valueOf(req.getParameter("year")), Integer.valueOf(req.getParameter("month")),
+                        Integer.valueOf(req.getParameter("day")));
+                    Date date = c.getTime();
+                    v = dbc.executeQuery(OQL, date);
+                } else {
+                    writer.println("incorrect date");
+                    db.close();
+                    return;
+                }
+            }
+            // if it's a string
+            else {
+                v = dbc.executeQuery(OQL, value);
+            }
+
+            if (v.size() > 0) {
+                writer.print("not unique");
+            } else {
+                writer.print("unique");
+            }
+        } finally {
+            if (dbc != null) {
+                dbc.close();
+            }
+            if (db != null) {
+                db.close();
+            }
         }
-        // if it's a string
-        else
-        {
-            v = dbc.executeQuery(OQL, req.getParameter("value"));
-        }
-        
-        if(v.size() > 0) 
-        {
-            writer.print("not unique");
-        }
-        else
-        {
-            writer.print("unique");
-        }
-        db.close();
     }
 
 }
