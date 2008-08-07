@@ -217,6 +217,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
+        if (StringUtils.equals(params.get("type"), "seteditor")) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaSetChooser.js" });
+            if (org.apache.commons.lang.StringUtils.isBlank(getForm().formName)) {
+                throw new ProgrammerError(
+                        "For using 'seteditor' input types, you have to give the encosing form a name, using name=\"  \"!");
+            }
+        }
 
         super.doEndAnalyze(pageCache);
     }
