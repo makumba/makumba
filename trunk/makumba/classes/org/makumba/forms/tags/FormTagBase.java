@@ -59,7 +59,7 @@ import org.makumba.providers.FormDataProvider;
  * mak:form base tag
  * 
  * @author Cristian Bogdan
- * @author Rudolf Mayery
+ * @author Rudolf Mayer
  * @version $Id$
  */
 public class FormTagBase extends GenericMakumbaTag implements BodyTag {
@@ -236,7 +236,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     /**
-     * Gets the name of the operation of the tag based on its classname
+     * Gets the name of the operation of the tag based on its class name
      * 
      * @return The name of the operation: Edit, Input, ...
      */
@@ -258,8 +258,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     /**
      * Indicates whether the base pointer should be computed or not
      * 
-     * @return <code>false</code> if we are at runtime (i.e. the baseObject has been set by JSP), <code>true</code>
-     *         if we are at analysis time
+     * @return <code>false</code> if we are at runtime (i.e. the baseObject has been set by JSP), <code>true</code> if
+     *         we are at analysis time
      */
     public boolean shouldComputeBasePointer() {
         return baseObject != null;
@@ -393,6 +393,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (formMessage != null) {
             responder.setMessage(formMessage);
         }
+        responder.setFormName(formName);
 
         responder.setReloadFormOnError(reloadFormOnError);
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
@@ -417,7 +418,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
-
+        // increase the form ID
+        updateFormId();
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
 
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
@@ -440,7 +442,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     /**
-     * Lets the responder write the pre- and postabmble for the form, and writes the bodyContent inside. Resets all the
+     * Lets the responder write the pre- and postamble for the form, and writes the bodyContent inside. Resets all the
      * variables.
      * 
      * @param pageCache
@@ -593,15 +595,18 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     public Object getFormIdentifier() {
-        // FIXME: this is rather a dummy right now, that uses a simple incremental counter
-        // should return one unique ID per form, even those repeated in mak:lists or so
+        return "_form" + pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
+    }
+
+    private Integer updateFormId() {
         Integer formCount = (Integer) pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
         if (formCount == null) {
             formCount = 1;
+        } else {
+            formCount += 1;
         }
-        formCount += 1;
         pageContext.setAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__, formCount);
-        return "form" + formCount;
+        return formCount;
     }
 
 }
