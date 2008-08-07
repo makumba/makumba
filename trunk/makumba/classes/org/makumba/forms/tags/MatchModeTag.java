@@ -2,6 +2,7 @@ package org.makumba.forms.tags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import javax.servlet.jsp.JspException;
@@ -99,8 +100,11 @@ public class MatchModeTag extends GenericMakumbaTag {
             throw new ProgrammerError("matchMode tag should contain at least two modes, but only '" + s
                     + "' was provided.");
         }
-        matchModes = new String[][] { keys.toArray(new String[values.size()]),
-                values.toArray(new String[values.size()]) };
+        matchModes = toMatchModeArrays(keys, values);
+    }
+
+    private String[][] toMatchModeArrays(Collection<String> keys, Collection<String> values) {
+        return new String[][] { keys.toArray(new String[values.size()]), values.toArray(new String[values.size()]) };
     }
 
     @Override
@@ -142,7 +146,7 @@ public class MatchModeTag extends GenericMakumbaTag {
                             + StringUtils.toString(curentModes.keySet()));
                 }
             }
-        }
+        } 
     }
 
     protected CriterionTag getCriterionTag() {
@@ -154,6 +158,21 @@ public class MatchModeTag extends GenericMakumbaTag {
         String matchInputName = getCriterionTag().getInputName() + getCriterionTag().getForm().responder.getSuffix()
                 + SearchTag.SUFFIX_INPUT_MATCH;
         String matchMode = pageContext.getRequest().getParameter(matchInputName);
+        
+        if (matchModes == null) {// if no match modes are provided, set the default ones
+            FieldDefinition fd = getCriterionTag().getTypeFromContext(pageCache);
+            Hashtable<String, String> defaultModes = new Hashtable<String, String>();
+            if (getCriterionTag().isRange()) {
+                defaultModes = knownRangeMatchModes;
+            } else if (fd.isStringType()) {
+                defaultModes = knownStringMatchModes;
+            } else if (fd.isNumberType()) {
+                defaultModes = knownNumberMatchModes;
+            } else if (fd.isDateType()) {
+                defaultModes = knownDateMatchModes;
+            }
+            matchModes = toMatchModeArrays(defaultModes.keySet(), defaultModes.values());
+        }
 
         HtmlChoiceWriter hcw = new HtmlChoiceWriter(matchInputName);
         hcw.setValues(matchModes[0]);
