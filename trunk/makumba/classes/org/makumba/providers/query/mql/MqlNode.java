@@ -68,6 +68,13 @@ public class MqlNode extends CommonAST {
         FieldDefinition tp = findMakType(child);
         if (tp != null)
             makType = tp;
+        if((getType()==HqlSqlTokenTypes.IN || getType()==HqlSqlTokenTypes.NOT_IN)
+                && child.getType()==HqlSqlTokenTypes.IN_LIST 
+                && child.getFirstChild().getType()==HqlSqlTokenTypes.NAMED_PARAM){
+            // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right
+            // we should also check whether IN_LIST contains more things...
+            walker.setParameterType((MqlNode)child.getFirstChild(), (MqlNode)getFirstChild());
+        }
     }
 
     protected FieldDefinition findMakType(MqlNode child) {
