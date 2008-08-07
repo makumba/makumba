@@ -54,8 +54,7 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
     }
 
     public String[] getNeededJavaScriptFileNames() {
-        return new String[] { "kruseAnchorPosition.js", "kruseCalendarPopup.js", "kruseDateFunctions.js",
-                "krusePopupWindow.js", "makumbaDateFunctions.js" };
+        return new String[] { "kruseCalendarPopup_combined_compact.js", "makumbaDateFunctions.js" };
     }
 
 }
