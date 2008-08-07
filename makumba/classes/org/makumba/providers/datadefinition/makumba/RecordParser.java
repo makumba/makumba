@@ -842,10 +842,17 @@ public class RecordParser {
             if (fc.lookup("not")) {
                 if (getFieldInfo(fieldName).notNull) {
                     throw fc.fail("too many not null");
+                } else if (getFieldInfo(fieldName).notEmpty) {
+                    throw fc.fail("too many not empty");
+                } 
+                if (fc.lookup("null")) {
+                    getFieldInfo(fieldName).notNull = true;
+                } else if (fc.lookup("empty")){
+                    getFieldInfo(fieldName).notEmpty = true;
+                } else {
+                    throw fc.fail("null or empty expected");
                 }
-                fc.expect("null");
                 fc.expectWhitespace();
-                getFieldInfo(fieldName).notNull = true;
                 continue;
             }
 

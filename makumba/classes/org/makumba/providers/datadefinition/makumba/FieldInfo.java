@@ -44,6 +44,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
+import org.makumba.commons.StringUtils;
 
 /**
  * This is a structure containing the elementary data about a field: name, type, attributes, description, and other
@@ -56,10 +57,16 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     DataDefinition dd;
 
+    private FieldDefinition originalFieldDefinition;
+
     static final DualHashBidiMap integerTypeMap = new DualHashBidiMap();
 
     public DataDefinition getDataDefinition() {
         return dd;
+    }
+
+    public FieldDefinition getOriginalFieldDefinition() {
+        return originalFieldDefinition;
     }
 
     // TODO adapt setIntEnum and setCharEnum in FieldDefinition
@@ -93,6 +100,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         type = fi.type;
         fixed = fi.fixed;
         notNull = fi.notNull;
+        notEmpty = fi.notEmpty;
         unique = fi.unique;
         defaultValue = fi.defaultValue;
         description = fi.description;
@@ -103,7 +111,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         this.name = name;
         type = fi.type;
         fixed = fi.fixed;
-        notNull = fi.notNull;
+        notEmpty = fi.notEmpty;
         unique = fi.unique;
         defaultValue = fi.defaultValue;
         description = fi.description;
@@ -115,6 +123,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             extra1 = fi.getDataDefinition();
         }
         validationRules = fi.validationRules;
+        originalFieldDefinition = fi;
     }
 
     public FieldInfo(String name, String t) {
@@ -123,6 +132,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             this.type = t;
             fixed = false;
             notNull = false;
+            notEmpty = false;
             unique = false;
             if (type.equals("char"))
                 extra2 = new Integer(255);
@@ -233,6 +243,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     boolean notNull;
 
+    boolean notEmpty;
+
     boolean unique;
 
     Object defaultValue;
@@ -288,8 +300,11 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /** check if the value can be assigned */
     public void checkInsert(Dictionary d) {
         Object o = d.get(getName());
-        if (isNotNull() && (o == null || o.equals(getNull())))
+        if (isNotNull() && (o == null || o.equals(getNull()))) {
             throw new org.makumba.InvalidValueException(this, ERROR_NOT_NULL);
+        } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
+        }
         if (o != null)
             d.put(getName(), checkValue(o));
     }
@@ -297,6 +312,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /** check if the value can be assigned */
     public void checkUpdate(Dictionary d) {
         Object o = d.get(getName());
+        if (isNotEmpty() && StringUtils.isEmpty(o)) {
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
+        }        
         if (o == null)
             return;
         if (isFixed())
@@ -523,22 +541,26 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         }
     }
 
-    /** tells wether this field is fixed */
+    /** tells whether this field is fixed */
     public boolean isFixed() {
         return fixed;
     }
 
-    /** tells wether this field is not null */
+    /** tells whether this field is not null */
     public boolean isNotNull() {
         return notNull;
     }
+    
+    public boolean isNotEmpty() {
+        return notEmpty;
+    }
 
-    /** tells wether this field is unique */
+    /** tells whether this field is unique */
     public boolean isUnique() {
         return unique;
     }
 
-    /** returns the defa()ult value of this field */
+    /** returns the default value of this field */
     public Object getDefaultValue() {
         if (defaultValue == null)
             return getEmptyValue();
