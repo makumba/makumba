@@ -110,13 +110,13 @@ public class RecordEditor extends RecordFormatter {
                     o = fd.checkValue(o);
                 } else {
                     // check for not-null fields
-                    if (fd.isNotNull()) {
+                    if (applyValidationRules && fd.isNotNull()) {
                         throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_NULL);
                     }
                     o = fd.getNull();
                 }
                 // for string types (text, char) check not empty
-                if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
+                if (applyValidationRules && fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
                     throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_EMPTY);
                 }
 

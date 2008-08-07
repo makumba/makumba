@@ -23,6 +23,7 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
+import org.makumba.providers.Configuration;
 
 /**
  * This tag implements an input field to be used within search forms. It slighlty changes some of the functionality of
@@ -119,6 +121,9 @@ public class SearchFieldTag extends InputTag {
 
     @Override
     public void setTagKey(PageCache pageCache) {
+        if (calendarEditorLink == null && pageContext != null) { // initialise default calendar link text
+            calendarEditorLink = Configuration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
+        }
         tagKey = new MultipleKey(new Object[] { getCriterionTag().tagKey, id, role, getClass() });
     }
 
