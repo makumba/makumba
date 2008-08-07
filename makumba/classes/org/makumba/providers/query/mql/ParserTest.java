@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.Properties;
 
 import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.hibernate.hql.ast.util.ASTPrinter;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -108,7 +111,8 @@ public class ParserTest {
             mqlThr=t;
         }
         try {
-            oql_sql = ((QueryAST) QueryAST.parseQueryFundamental(query)).writeInSQLQuery(nr).toLowerCase();
+            QueryAST oq = (QueryAST) QueryAST.parseQueryFundamental(query);
+            oql_sql = oq.writeInSQLQuery(nr).toLowerCase();
             if (mqlThr==null) {
                 String mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
 
@@ -118,7 +122,18 @@ public class ParserTest {
                 if (!oql_sql.equals(mql_sql) && !cleanUp(oql_sql, "()").equals(cleanUp(mql_sql, "()"))) {
                     System.out.println(line + ": OQL!=MQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
                 }
-             
+                
+                StringBuffer sb= new StringBuffer();
+                compareMdds("parameter", sb, mq.getParameterTypes(), oq.getParameterTypes());
+                if(sb.length()>0)
+                    System.out.println(line + ": "+ sb+" "+ query); 
+                compareMdds("projection", sb, mq.getProjectionType(), oq.getProjectionType());
+                if(sb.length()>0)
+                    System.out.println(line + ": "+ sb+" "+ query); 
+                String mqLabels = mq.getLabelTypes().toString();
+                if(!mqLabels.equals(oq.getLabelTypes().toString())&&!mqLabels.equals("{c=org.makumba.db.makumba.Catalog}")){
+                    System.out.println(line + ": "+ query+"\n\t"+mq.getLabelTypes()+"\n\t"+oq.getLabelTypes()); 
+                }
             }
             /*
              * HqlAnalyzeWalker walker = new HqlAnalyzeWalker(); walker.setAllowLogicalExprInSelect(true);
@@ -145,7 +160,45 @@ public class ParserTest {
         if(mqlThr!=null){
             System.err.println(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
             System.out.println(line+": OQL SQL: " + oql_sql);
+            if(!(mqlThr instanceof antlr.ANTLRException))
+                mqlThr.printStackTrace();
         }
+    }
+
+    private static void compareMdds(String what, StringBuffer sb, DataDefinition mdd1, DataDefinition mdd2) {
+        HashSet<String> fieldsDone= new HashSet<String>();
+        for(String s: mdd1.getFieldNames()){
+            FieldDefinition fd1= mdd1.getFieldDefinition(s);
+            FieldDefinition fd2= mdd2.getFieldDefinition(s);
+            
+            if(fd2==null){
+                sb.append("extra MQL ").append(what).append(": ");
+                appendFieldDefinition(sb, fd1);
+                sb.append("\n");
+                continue;
+            }
+            if(!fd1.isAssignableFrom(fd2) && !(fd1.getType().equals("boolean")&&fd2.getType().equals("int"))){
+                sb.append(what).append(" ").append(s).append(" MQL: ");
+                appendFieldDefinition(sb, fd1);
+                sb.append(" OQL: ");
+                appendFieldDefinition(sb, fd2);
+                sb.append("\n");
+            }
+            fieldsDone.add(s);
+        }
+        if(mdd2!=null)
+        for(String s: mdd2.getFieldNames()){
+            if(!fieldsDone.contains(s)){
+                FieldDefinition fd2= mdd2.getFieldDefinition(s);
+                sb.append("extra OQL ").append(what).append(": ");
+                appendFieldDefinition(sb, fd2);
+                sb.append("\n");
+            }
+        }
+    }
+
+    private static void appendFieldDefinition(StringBuffer sb, FieldDefinition fd) {
+        sb.append(fd.getName()).append("=").append(fd.getType());
     }
 
 }
