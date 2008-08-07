@@ -64,14 +64,16 @@ public class RecordEditor extends RecordFormatter {
     protected RecordEditor() {
     }
 
-    public RecordEditor(DataDefinition ri, Hashtable<String, String> h, String database, boolean isSearchForm, Object formIdentifier) {
+    public RecordEditor(DataDefinition ri, Hashtable<String, String> h, String database, boolean isSearchForm,
+            Object formIdentifier) {
         super(ri, h, isSearchForm, formIdentifier);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
         query = new Map[ri.getFieldNames().size()];
     }
 
-    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e, ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
+    public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
+            ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             Collection<InvalidValueException> exceptions = e.getExceptions(FieldEditor.getInputName(this, i, suffix));
             if (exceptions != null) {
@@ -85,7 +87,9 @@ public class RecordEditor extends RecordFormatter {
 
     public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
-        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>(); // will collect all exceptions from the field validity checks
+        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>(); // will collect all exceptions
+                                                                                        // from the field validity
+                                                                                        // checks
 
         Hashtable<Integer, Object> validatedFields = new Hashtable<Integer, Object>();
         Hashtable<String, Object> validatedFieldsNameCache = new Hashtable<String, Object>();
@@ -127,7 +131,7 @@ public class RecordEditor extends RecordFormatter {
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
             Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
-            
+
             if (validationRules != null && applyValidationRules) {
                 for (ValidationRule validationRule : validationRules) {
                     ValidationRule rule = validationRule;
@@ -148,8 +152,8 @@ public class RecordEditor extends RecordFormatter {
                 }
             }
 
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix) + "_type",
-                fieldDefinition);
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
+                FieldEditor.getInputName(this, i, suffix) + "_type", fieldDefinition);
 
             if (o != null) {
                 // if we have a file type data-definition, put all fields in the sub-record
@@ -168,11 +172,12 @@ public class RecordEditor extends RecordFormatter {
                         data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
                     }
                 } else {
-                // the data is written in the dictionary without the suffix
-                data.put(inputName, o);
+                    // the data is written in the dictionary without the suffix
+                    data.put(inputName, o);
                 }
             }
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
+            org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
+                FieldEditor.getInputName(this, i, suffix), o);
         }
 
         if (exceptions.size() > 0) {
@@ -220,8 +225,8 @@ public class RecordEditor extends RecordFormatter {
                     formatterArray[i] = textEditor.getInstance();
                     break;
                 case FieldDefinition._binary:
-                  formatterArray[i] = binaryEditor.getInstance();
-                  break;
+                    formatterArray[i] = binaryEditor.getInstance();
+                    break;
                 case FieldDefinition._boolean:
                     formatterArray[i] = booleanEditor.getInstance();
                     break;
