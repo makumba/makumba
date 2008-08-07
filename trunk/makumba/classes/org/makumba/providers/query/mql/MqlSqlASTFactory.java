@@ -29,6 +29,8 @@ public class MqlSqlASTFactory extends ASTFactory  {
             case HqlSqlTokenTypes.LT:
             case HqlSqlTokenTypes.GE:
             case HqlSqlTokenTypes.GT:
+            case HqlSqlTokenTypes.LIKE:
+            case HqlSqlTokenTypes.NOT_LIKE:
                 return MqlComparisonNode.class;
             case HqlSqlTokenTypes.PLUS:
             case HqlSqlTokenTypes.MINUS:
