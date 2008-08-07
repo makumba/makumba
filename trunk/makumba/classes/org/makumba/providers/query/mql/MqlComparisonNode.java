@@ -25,7 +25,7 @@ public class MqlComparisonNode extends MqlBinaryOperator {
             return;
         String s = right.getText();
         Object arg = s;
-        if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING) {
+        if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
             arg = s.substring(1, s.length() - 1);
 
             Object o = null;
