@@ -77,7 +77,9 @@ public interface FieldDefinition {
 
     public static final int _file = 20;
 
-    public static final String ERROR_NOT_NULL = "A non-null value is needed for notnull fields";
+    public static final String ERROR_NOT_NULL = "A non-null value is required for this field";
+
+    public static final String ERROR_NOT_EMPTY = "A non-empty value is required for this field";
 
     public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
 
@@ -87,6 +89,9 @@ public interface FieldDefinition {
     /** The data definition that contains this field definition */
     public DataDefinition getDataDefinition();
 
+    /** The original field definition this field definition was made of, used e.g. in form responders. */
+    public FieldDefinition getOriginalFieldDefinition();
+    
     /** Indicates whether this field is the index pointer field of the {@link DataDefinition} it belongs to. */
     public boolean isIndexPointerField();
 
@@ -142,6 +147,9 @@ public interface FieldDefinition {
 
     /** tells whether this field is not null */
     public boolean isNotNull();
+
+    /** tells whether this field is not empty */
+    public boolean isNotEmpty();
 
     /** tells whether this field is unique */
     public boolean isUnique();
