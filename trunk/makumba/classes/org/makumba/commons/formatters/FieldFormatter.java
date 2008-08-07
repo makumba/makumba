@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.makumba.ProgrammerError;
 
 /**
  * Formats a specific field. Subclasses of this class are handling the different kind of fields.
@@ -98,15 +99,15 @@ public class FieldFormatter {
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
         Hashtable h = (Hashtable) validParams.get(name);
         if (h == null) {
-            throw new InvalidValueException(rf.expr[fieldIndex], "invalid format parameter \'" + name
-                    + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
+            throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
+                    + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
         }
         if (h.size() == 0) {
             return;
         }
         if (h.get(val) == null) {
-            throw new InvalidValueException(rf.expr[fieldIndex], "invalid value for format parameter \'" + name
-                    + "\': <" + val + ">. Allowed values are: " + ArrayUtils.toString(h.keySet()));
+            throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
+                    + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
         }
     }
 
