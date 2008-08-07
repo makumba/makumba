@@ -66,6 +66,8 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 
 	static final String suffixName = "org.makumba.editorSuffix";
 
+    static final String formName = "org.makumba.formName";
+
 	public static String getSuffix(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
 		return (String) formatParams.get(suffixName);
 	}
@@ -73,6 +75,12 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	public static void setSuffix(Dictionary formatParams, String suffix) {
 		formatParams.put(suffixName, suffix);
 	}
+
+    public static void setFormName(Dictionary formatParams, String formName) {
+        if (formName != null) {
+            formatParams.put(FieldEditor.formName, formName);
+        }
+    }
 
 	@Override
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
