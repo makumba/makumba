@@ -34,6 +34,7 @@ import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
+import org.makumba.Text;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
@@ -189,11 +190,7 @@ public class RequestAttributes implements Attributes {
             String key = (String) enumSession.nextElement();
             s += key + "=";
             Object value = ss.getAttribute(key);
-            if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
-                s += value.getClass();
-            } else {
-                s += value;
-            }
+            s = printElement(s, value);
             if (enumSession.hasMoreElements()) {
                 s += ", ";
             }
@@ -206,11 +203,7 @@ public class RequestAttributes implements Attributes {
             String key = (String) enumRequest.nextElement();
             s += key + "=";
             Object value = request.getAttribute(key);
-            if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
-                s += value.getClass();
-            } else {
-                s += value;
-            }
+            s = printElement(s, value);
             if (enumRequest.hasMoreElements()) {
                 s += ", ";
             }
@@ -227,6 +220,17 @@ public class RequestAttributes implements Attributes {
             }
         }
         s += "}";
+        return s;
+    }
+
+    private String printElement(String s, Object value) {
+        if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
+            s += value.getClass();
+        }else if(value instanceof Text){
+            s+= ((Text)value).toShortString(100);
+        }else {
+            s += value;
+        }
         return s;
     }
 
