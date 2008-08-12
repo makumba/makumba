@@ -109,7 +109,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     if (!(o instanceof Pointer && ((Pointer) o).equals(base))) {
 
                         if (o instanceof Text) {
-                            o = ((Text) o).toString();
+                            o = ((Text) o).getString();
                         }
 
                         col.add(o);
@@ -259,7 +259,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 case FieldDefinition._text:
                     if (!isGenerated(recordClass)) {
                         fieldType = String.class;
-                        fieldValue = ((Text) fieldValue).toString();
+                        // FIXME: this is a memory killer, should use streams
+                        fieldValue = ((Text) fieldValue).getString();
                         if (fieldValue == Pointer.NullText)
                             fieldValue = null;
                         break;

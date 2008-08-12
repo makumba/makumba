@@ -28,6 +28,7 @@ import java.util.Dictionary;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlUtils;
 import org.makumba.MakumbaSystem;
+import org.makumba.Text;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -60,6 +61,8 @@ public class textViewer extends FieldViewer {
     }
 
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        if(o instanceof Text)
+            o=((Text)o).getString();
         String txt = o.toString();
         String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");

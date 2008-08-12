@@ -208,7 +208,7 @@ public class tableHibernate extends TestCase {
 		assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
 		assertEquals("Birthdate", birth, pc.get("birthdate"));
 		assertEquals("Something else", "else", pc.get("something"));
-		assertEquals("Comment text", pc.get("comment").toString(), comment.toString());
+		assertEquals("Comment text", pc.get("comment").toString(), comment.getString());
         assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
         assertNotNull(ptrOne);
 
