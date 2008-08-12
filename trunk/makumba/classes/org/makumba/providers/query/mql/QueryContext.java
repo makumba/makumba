@@ -81,6 +81,9 @@ public class QueryContext {
 
     /** finder for joins in the form label.field, used in order not to repeat the same join */
     Hashtable<String, String> joinNames = new Hashtable<String, String>();
+    
+    /** searcher for projection labels */
+    Hashtable<String, AST> projectionLabelSearch = new Hashtable<String, AST>();
 
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {

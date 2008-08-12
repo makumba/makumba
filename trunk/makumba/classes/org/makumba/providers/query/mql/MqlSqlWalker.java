@@ -108,6 +108,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         // now we set it to the SQL form
         as.setText(" AS "+as.getText());
         
+        currentContext.projectionLabelSearch.put(ident.getText(), selectExpr);
     }
 
     

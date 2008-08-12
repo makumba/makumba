@@ -26,6 +26,9 @@ public class MqlIdentNode extends MqlNode {
         label = getText();
         DataDefinition dd = walker.currentContext.findLabelType(label);
         if (dd == null) {
+            if(walker.currentContext.projectionLabelSearch.get(label)!=null)
+                // FIXME: this is only acceptable in a ORDER or GROUP 
+                return;
             throw new SemanticException("Unknown label: " + label);
         }
 
