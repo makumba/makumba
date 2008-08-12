@@ -93,8 +93,8 @@ public class IfTag extends GenericListTag implements BodyTag {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
         String type = vc.getType().getDataType();
-        if (!"int".equals(type)) {
-            throw new ProgrammerError("mak:if test expression must be of type 'int'. In this case [" + this
+        if (!"int".equals(type) && !"boolean".equals(type)) {
+            throw new ProgrammerError("mak:if test expression must be of type 'int' or 'boolean'. In this case [" + this
                     + "], type is " + type);
         }
     }
@@ -121,6 +121,14 @@ public class IfTag extends GenericListTag implements BodyTag {
                     + exprvalue);
         }
 
+        if (exprvalue instanceof Boolean) {
+            boolean b = ((Boolean) exprvalue).booleanValue();
+            if (b) 
+                return EVAL_BODY_INCLUDE;
+            else 
+                return SKIP_BODY;
+        }  
+            
         // comparison with null, will return null, equivalent to false
         if (exprvalue == null)
             return SKIP_BODY;
