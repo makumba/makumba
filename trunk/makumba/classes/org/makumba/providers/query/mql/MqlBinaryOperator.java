@@ -32,11 +32,6 @@ public class MqlBinaryOperator extends MqlNode{
     protected void analyzeOperands(MqlNode left, MqlNode right) throws SemanticException {
     }
 
-    void checkOperandTypes(MqlNode left, MqlNode right)  throws SemanticException{
-        if (!right.getMakType().isAssignableFrom(left.getMakType()))
-            throw new SemanticException("incompatible operands " + left.getText() + " and "
-                    + right.getText());
-    }
     boolean checkParam(MqlNode left, MqlNode right) {
         if (right.isParam()) {
             walker.setParameterType(right, left);
