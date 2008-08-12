@@ -2,6 +2,11 @@
 # This is the corpus of (mostly OQL) queries on which we test MQL. 
 # Created by Rudolf Mayer using the makumba relation crawler on Karamba. 
 #
+SELECT w.toURI as toURI, w.fromURI as fromURI FROM best.WebRedirect w WHERE w.fromURI IN SET($3,$2,$1)
+SELECT ins AS col1,s AS col2,auth AS col3,p AS col4,t AS col5,t.name AS col6 FROM best.internal.Student ins, ins.student s, s.authentication auth, s.person p,general.Team t, t.aliases a WHERE (p=($2)) AND (t.mail_type in SET (0,1) AND (t.name=$1 OR a.alias=$1))
+SELECT e AS col1,genEvent AS col2,count(d) AS col3 FROM best.internal.Event e, e.generalEvent genEvent,general.archive.Document d, d.events event, d.inArchives archive WHERE (e=$4 OR e.bestNo=$4) AND (event=e AND ($6='yes' OR (archive.accessRightsView='BESTMembers') OR (d.accessRightsView='BESTMembers') OR (archive.accessRightsView='Team' AND archive.owner IN SET($2,$5,$1,$8,$7,$3,$9)))) GROUP BY col1
+SELECT ins AS col1,s AS col2,p AS col3,e AS col4,e.university.name AS col5,e.typeofstud<>'' AS col6,e.typeofstud AS col7,e.faculty<>'' AS col8,e.faculty AS col9,e.startdate AS col10,e.finishdate AS col11,e.minimumlength AS col12,e.graduated='Yes' AS col13,e.title AS col14,e.entitle AS col15,e.thesis AS col16 FROM best.internal.Student ins, ins.student s, s.person p,s.education e
+SELECT choice as choice, choice.name as title FROM test.Language choice ORDER BY title
 SELECT file as file1 FROM general.archive.Document doc, doc.attachments att, att.currentVersion file WHERE file.title = $1 and file.contentLength = $2
 #SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (SELECT a FROM msit.attachments a)
 #SELECT lbg.name AS col1,lbg.status AS col2,lbg.vivaldiSendingAllowed AS col3,lbg.canApply() AS col4,lbg.canApply2() AS col5 FROM best.internal.Lbg lbg
