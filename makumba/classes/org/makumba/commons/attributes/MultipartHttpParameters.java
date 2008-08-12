@@ -93,8 +93,7 @@ public class MultipartHttpParameters extends HttpParameters {
         try {
             items = upload.parseRequest(request);
         } catch (FileUploadException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            throw new RuntimeWrappedException(e1);
         }
 
         // Process the uploaded items
