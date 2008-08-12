@@ -25,18 +25,14 @@ package org.makumba.providers.query.oql;
 
 import java.io.StringReader;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
@@ -44,7 +40,6 @@ import org.makumba.providers.QueryAnalysis;
 
 import antlr.RecognitionException;
 import antlr.SemanticException;
-import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /** an OQL query, writes out the translated SQL query */
