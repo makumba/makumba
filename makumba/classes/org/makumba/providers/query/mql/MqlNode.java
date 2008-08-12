@@ -68,12 +68,17 @@ public class MqlNode extends CommonAST {
         FieldDefinition tp = findMakType(child);
         if (tp != null)
             makType = tp;
-        if((getType()==HqlSqlTokenTypes.IN || getType()==HqlSqlTokenTypes.NOT_IN)
-                && child.getType()==HqlSqlTokenTypes.IN_LIST 
-                && child.getFirstChild().getType()==HqlSqlTokenTypes.NAMED_PARAM){
-            // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right
-            // we should also check whether IN_LIST contains more things...
-            walker.setParameterType((MqlNode)child.getFirstChild(), (MqlNode)getFirstChild());
+        if ((getType() == HqlSqlTokenTypes.IN || getType() == HqlSqlTokenTypes.NOT_IN)
+                && child.getType() == HqlSqlTokenTypes.IN_LIST) {
+            // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right side, where we
+            // expect a parameter list
+            MqlNode param = (MqlNode) child.getFirstChild();
+            do {
+                if (param.getType() == HqlSqlTokenTypes.NAMED_PARAM)
+                    walker.setParameterType(param, (MqlNode) getFirstChild());
+                // FIXME: in else{} here we could check the parameter compatibility with the left operand
+                param = (MqlNode) param.getNextSibling();
+            } while (param != null);
         }
     }
 
@@ -109,7 +114,7 @@ public class MqlNode extends CommonAST {
             type = "int";
         if (stringFunctions.contains(name))
             type = "char[255]";
-        if (type != null){
+        if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
             return walker.currentContext.ddp.makeFieldDefinition("x", type);
         }
@@ -167,7 +172,8 @@ public class MqlNode extends CommonAST {
 
     protected void checkForOperandType(MqlNode ast) {
         if (!ast.isParam() && ast.getMakType() == null)
-            throw new IllegalStateException("No makumba type computed for " + MqlSqlWalker.printer.showAsString(ast, ""));
+            throw new IllegalStateException("No makumba type computed for "
+                    + MqlSqlWalker.printer.showAsString(ast, ""));
     }
 
     boolean isParam() {
