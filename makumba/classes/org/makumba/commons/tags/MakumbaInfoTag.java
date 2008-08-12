@@ -296,7 +296,7 @@ public class MakumbaInfoTag extends TagSupport {
                 Object o = m.get(nm);
 
                 out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
-                out.println("    <td>" + nm + "</td");
+                out.println("    <td>" + nm + "</td>");
 
                 if (o instanceof int[]) {
                     int[] intArray = (int[]) o;
