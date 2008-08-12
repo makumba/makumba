@@ -154,7 +154,7 @@ public class ParserTest {
 
                 return;
             }
-            System.err.println("Unchecked error only in OQL: ");
+            System.err.println(line+": "+query+"\nUnchecked error only in OQL: ");
             t.printStackTrace();
             return;
         }
