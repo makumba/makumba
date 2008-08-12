@@ -45,7 +45,13 @@ public class StringLengthValidationRule extends RangeValidationRule {
         if (!(value instanceof String || value instanceof Text)) {
             return false;// TODO: think of throwing some "cannot validate exception"
         }
-        String s = value.toString();
+        
+        String s;
+        if(value instanceof Text)
+        // FIXME: we actually only need the length of the Text, not the getString()
+            s=((Text)value).getString();
+        else
+            s= (String)value;
         if (lowerLimit.intValue() <= s.length() && s.length() <= upperLimit.intValue()) {
             return true;
         } else {

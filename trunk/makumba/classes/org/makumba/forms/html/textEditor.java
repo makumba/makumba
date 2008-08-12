@@ -26,6 +26,7 @@ package org.makumba.forms.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
+import org.makumba.Text;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -99,6 +100,8 @@ public class textEditor extends FieldEditor {
 	@Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o,
 			Dictionary formatParams) {
+	    if(o instanceof Text)
+	        o=((Text)o).getString();
 		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
 		return resetValueFormat(rf, fieldIndex, s, formatParams);
 	}

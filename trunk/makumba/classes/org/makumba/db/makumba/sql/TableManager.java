@@ -1072,7 +1072,7 @@ public class TableManager extends Table {
     public void set_text_Argument(String fieldName, PreparedStatement ps, int n, Object o) throws SQLException {
 
         Text t = Text.getText(o);
-        ps.setString(n, t.toString());
+        ps.setString(n, t.getString());
 
     }
 
