@@ -31,7 +31,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
                 String s = f.getMessage();
                 if (s.startsWith("line"))
                     s = s.substring(s.indexOf(':') + 1);
-                throw new OQLParseError("\r\nin query:\r\n" + query, f);
+                throw new OQLParseError(s+"\r\nin query:\r\n" + query, f);
             }
             throw e;
         }
