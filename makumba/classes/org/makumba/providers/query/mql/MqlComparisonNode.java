@@ -26,24 +26,27 @@ public class MqlComparisonNode extends MqlBinaryOperator {
         String s = right.getText();
         Object arg = s;
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
-            arg = s.substring(1, s.length() - 1);
-
-            Object o = null;
-            try {
-                o = ((FieldDefinition) left.getMakType()).checkValue(arg);
-            } catch (org.makumba.InvalidValueException e) {
-                // walker.printer.showAst(right, walker.pw);
-               throw new SemanticException(e.getMessage());
+            String arg1 = s.substring(1, s.length() - 1);
+            if (arg1.length() > 0) {
+                // OQL accepts empty strings even for intEnums... 
+                // here we accept it also for pointers, that's a bit too much
+                Object o = null;
+                try {
+                    o = ((FieldDefinition) left.getMakType()).checkValue(arg1);
+                } catch (org.makumba.InvalidValueException e) {
+                    // walker.printer.showAst(right, walker.pw);
+                    throw new SemanticException(e.getMessage());
+                }
+                if (o instanceof Pointer) {
+                    o = new Long(((Pointer) o).longValue());
+                }
+                if (o instanceof Number) {
+                    right.setText(o.toString());
+                } else
+                    right.setText("\'" + o + "\'");
             }
-            if (o instanceof Pointer) {
-                o = new Long(((Pointer) o).longValue());
-            }
-            if (o instanceof Number) {
-                right.setText(o.toString());
-            } else
-                right.setText("\'" + o + "\'");
-            rewroteOperand= true;
-        }else{
+            rewroteOperand = true;
+        } else {
             checkOperandTypes(left, right);
         }
     }
