@@ -70,6 +70,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public Query(Database db, String OQLQuery, String insertIn) {
         QueryAnalysisProvider qap= null;
+        query=OQLQuery;
         try {
            qap=(QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
         } catch (InstantiationException e) {
@@ -137,7 +138,11 @@ public class Query implements org.makumba.db.makumba.Query {
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
-        }finally{
+        }catch (RuntimeException e) {
+            System.out.println(query);
+            throw e;
+        }
+        finally{
             try {
                 ps.close();
             } catch (SQLException e) {
