@@ -12,9 +12,9 @@ import org.makumba.providers.TransactionProvider;
 
 
 public class OQLQueryProvider extends QueryProvider {
-    public static final String OQLQUERY_ANALYSIS_PROVIDER =
-        "org.makumba.providers.query.oql.OQLQueryAnalysisProvider"
-        //"org.makumba.providers.query.mql.MqlQueryAnalysisProvider"
+    public static final String OQLQUERY_ANALYSIS_PROVIDER = 
+      //  "org.makumba.providers.query.oql.OQLQueryAnalysisProvider"
+        "org.makumba.providers.query.mql.MqlQueryAnalysisProvider"
         ;
     private Transaction tr;
 
