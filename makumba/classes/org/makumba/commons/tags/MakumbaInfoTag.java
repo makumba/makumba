@@ -47,6 +47,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaSystem;
+import org.makumba.Text;
 import org.makumba.commons.Base64;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.providers.TransactionProvider;
@@ -331,7 +332,11 @@ public class MakumbaInfoTag extends TagSupport {
 
                 out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
                 out.println("    <td valign=\"top\">" + key + ":</td>");
-                out.println("    <td><pre>" + session.getAttribute(key) + "</pre></td>");
+                Object o= session.getAttribute(key);
+                if(o instanceof Text){
+                    o=((Text)o).toShortString(100);
+                }
+                out.println("    <td><pre>" + o + "</pre></td>");
                 out.println("    <td>" + session.getAttribute(key).getClass().getName() + "</td>");
                 out.println("  </tr>");
             }
