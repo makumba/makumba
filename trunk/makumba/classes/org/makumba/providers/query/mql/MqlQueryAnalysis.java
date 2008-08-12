@@ -69,7 +69,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
-        paramInfo = rewriteParameters(makeParameterInfo(query), mqlAnalyzer.paramInfo);
+        paramInfo = mqlAnalyzer.paramInfo;
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
         // System.out.println(mqlDebug);
@@ -82,15 +82,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         doThrow(mg.error, mqlDebug);
 
         text = mg.text;
-    }
-
-    private DataDefinition rewriteParameters(DataDefinition ret, DataDefinition paramInfo) {
-/*        int n = 0;
-        for (String x : parameterOrder)
-            ret.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + n++,
-                paramInfo.getFieldDefinition(x)));
-        return ret;*/
-        return paramInfo;
     }
 
     private DataDefinition makeParameterInfo(String query) {
