@@ -42,6 +42,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.Text;
+import org.makumba.commons.RuntimeWrappedException;
 
 import eu.medsea.util.MimeUtil;
 
@@ -72,14 +73,17 @@ public class MultipartHttpParameters extends HttpParameters {
         return parameters.get(s) != null;
     }
 
+    // TODO: we should make our own FileItemFactory that writes the content directly to a Text object
+    // so we don't have to copy the Text content from item.getInputStream()
+    // as it is now, the content is cached twice, once by commons.fileupload, and once by Text
+    // this looks very easy, we just need to implement getOuputStream() so that it writes to a stream paired with the Text constructor's inputStream
+    static DiskFileItemFactory factory = new DiskFileItemFactory();
+    
     public MultipartHttpParameters(HttpServletRequest req) {
         super(req);
 
         java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
             "\n\n---- code with apache.commons.fileupload  ------\n");
-
-        // Create a factory for disk-based file items
-        DiskFileItemFactory factory = new DiskFileItemFactory();
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
@@ -140,7 +144,12 @@ public class MultipartHttpParameters extends HttpParameters {
                 }
 
                 // ---- read the content and set parameters
-                Text contentToSave = new Text(item.get());
+                Text contentToSave;
+                try {
+                    contentToSave = new Text(item.getInputStream());
+                } catch (IOException e) {
+                    throw new RuntimeWrappedException(e);
+                }
                 int contentSize = contentToSave.length();
 
                 // FIXME: what to do if content type is null? not set, or set to an empty String / String constant?
