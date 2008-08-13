@@ -75,8 +75,11 @@ public class MultipartHttpParameters extends HttpParameters {
 
     // TODO: we should make our own FileItemFactory that writes the content directly to a Text object
     // so we don't have to copy the Text content from item.getInputStream()
-    // as it is now, the content is cached twice, once by commons.fileupload, and once by Text
-    // this looks very easy, we just need to implement getOuputStream() so that it writes to a stream paired with the Text constructor's inputStream
+    // as it is now, the content is cached twice, once by commons.fileupload, and once by Text.
+    // The longer the content, the bigger the performance penalty.
+    // We just need to implement DiskFileItem.getOuputStream() returning an OutputStream that writes to the Text. 
+    // since Text requires an InputStream, we could use InputStream-OutputStream conversion using java.io.PipedInputStream
+    // see http://ostermiller.org/convert_java_outputstream_inputstream.html method 2
     static DiskFileItemFactory factory = new DiskFileItemFactory();
     
     public MultipartHttpParameters(HttpServletRequest req) {
