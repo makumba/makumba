@@ -74,8 +74,10 @@ public class MqlNode extends CommonAST {
                 && child.getType() == HqlSqlTokenTypes.IN_LIST) {
             // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right side, where we
             // expect a parameter list
-            //FIXME: we assume that the left operand of the IN  expression is not a parameter and therefore has a type assigned.
-            // if it is a parameter, we have to make sure that all things in the right operand (IN_LIST) are of the same type and assign that type to the parameter
+            // FIXME: we assume that the left operand of the IN expression is not a parameter and therefore has a type
+            // assigned.
+            // if it is a parameter, we have to make sure that all things in the right operand (IN_LIST) are of the same
+            // type and assign that type to the parameter
             MqlNode inListMember = (MqlNode) child.getFirstChild();
             do {
                 if (inListMember.getType() == HqlSqlTokenTypes.NAMED_PARAM)
@@ -84,7 +86,7 @@ public class MqlNode extends CommonAST {
                     try {
                         checkAndRewriteOperand((MqlNode) getFirstChild(), inListMember);
                     } catch (SemanticException e) {
-                        walker.error=e;
+                        walker.error = e;
                         return;
                     }
                 inListMember = (MqlNode) inListMember.getNextSibling();
@@ -132,8 +134,8 @@ public class MqlNode extends CommonAST {
     }
 
     protected void setMakType(FieldDefinition fd) {
-        if(fd.getType().equals("ptrIndex")){
-            fd=walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
+        if (fd.getType().equals("ptrIndex")) {
+            fd = walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
         }
         makType = fd;
     }
@@ -194,12 +196,13 @@ public class MqlNode extends CommonAST {
     }
 
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
-        if (!(left.isParam() && left.getMakType()==null) // 
+        if (!(left.isParam() && left.getMakType() == null) // 
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()))
-            throw new SemanticException("incompatible operands " + left.getText() + "("+left.getMakType()+") and " + right.getText()+" ("+right.getMakType()+")");
+            throw new SemanticException("incompatible operands " + left.getText() + "(" + left.getMakType() + ") and "
+                    + right.getText() + " (" + right.getMakType() + ")");
     }
-    
+
     public String getOriginalText() {
         return originalText;
     }
@@ -224,29 +227,25 @@ public class MqlNode extends CommonAST {
 
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
-    
+
             String s = right.getText();
             String arg1 = s.substring(1, s.length() - 1);
-            if (arg1.length() > 0) {
-                // OQL accepts empty strings even for intEnums...
-                // here we accept it also for pointers, that's a bit too much
-                Object o = null;
-                try {
-                    o = ((FieldDefinition) left.getMakType()).checkValue(arg1);
-                } catch (org.makumba.InvalidValueException e) {
-                    // walker.printer.showAst(right, walker.pw);
-                    throw new SemanticException(e.getMessage());
-                }
-                if (o instanceof Pointer) {
-                    o = new Long(((Pointer) o).longValue());
-                }
-                if (o instanceof Number) {
-                    right.setText(o.toString());
-                } else
-                    right.setText("\'" + o + "\'");
+            Object o = null;
+            try {
+                o = ((FieldDefinition) left.getMakType()).checkValue(arg1);
+            } catch (org.makumba.InvalidValueException e) {
+                // walker.printer.showAst(right, walker.pw);
+                throw new SemanticException(e.getMessage());
             }
+            if (o instanceof Pointer) {
+                o = new Long(((Pointer) o).longValue());
+            }
+            if (o instanceof Number) {
+                right.setText(o.toString());
+            } else
+                right.setText("\'" + o + "\'");
             return true;
-    
+
         } else {
             checkOperandTypes(left, right);
             return false;
