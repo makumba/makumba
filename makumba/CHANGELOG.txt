@@ -16,6 +16,7 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.0.7 ; 13 Aug 2008
 cristi: MQL implementation and setting as default query provider
 cristi: file upload fixes related to memory usage and exception handling
 cristi: using Text getString() instead of Text toString() in  preparation to make toString do more useful debugging  
