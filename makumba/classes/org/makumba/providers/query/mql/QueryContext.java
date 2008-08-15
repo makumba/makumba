@@ -1,6 +1,7 @@
 package org.makumba.providers.query.mql;
 
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -90,6 +91,10 @@ public class QueryContext {
     /** correlation conditions */
     Vector<TextList> filters = new Vector<TextList>();
 
+    private Hashtable<String, TextList> labelText= new Hashtable<String, TextList>();
+
+    private HashSet<String> labelFields= new HashSet<String>();
+
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
         String label1;
@@ -123,10 +128,18 @@ public class QueryContext {
      */
     String addJoin(String l1, String f1, String name, String f2, DataDefinition type, int joinType)
             throws SemanticException {
+        addLabelField(l1);
         joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type);
         return name;
+    }
+
+    private void addLabelField(String label) {
+        if(labels.get(label)!=null)
+            labelFields.add(label);
+        else
+            parent.addLabelField(label);
     }
 
     /**
@@ -224,6 +237,8 @@ public class QueryContext {
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
+                    if(findLabelType(label)!=null)
+                        throw new SemanticException("label defined twice: "+label);
                     join(lbl, field, label, joinType);
                     break;
                 }
@@ -302,6 +317,10 @@ public class QueryContext {
         // boolean and = false;
         for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
+            if(!isFieldUsed(j)){
+                rewriteProjections(j);
+                continue;
+            }
             // if (and)
             // ret.append(" AND ");
             // and = true;
@@ -336,6 +355,27 @@ public class QueryContext {
         }
     }
 
+    private void rewriteProjections(Join j) {
+        TextList text= labelText.get(j.label2);
+        if(text==null){
+            java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning("unused label: "+j.label2 +" in query "+walker.query);
+            return;
+        }
+        text.clear();
+        text.append(makeTextList(j.label1, j.field1));
+    }
+
+    private TextList findLabelText(String label) {
+        if(labels.get(label)==null)
+            return parent.findLabelText(label);
+
+       return addLabelText(label, labels.get(label).getIndexPointerFieldName());
+    }
+
+    private boolean isFieldUsed(Join j) {
+        return labelFields.contains(j.label2);
+    }
+
     private boolean isCorrelated(Join j) {
         return labels.get(j.label1) == null;
     }
@@ -344,6 +384,67 @@ public class QueryContext {
         ret.append(j.label1).append(".").append(getTableName(j.label1), j.field1) //
         .append("= ") //
         .append(j.label2).append(".").append(getTableName(j.label2), j.field2);
+    }
+
+    public TextList selectLabel(String label, MqlNode node) {
+        DataDefinition dd = labels.get(label);
+        if(dd==null)
+            return parent.selectLabel(label, node);
+        String field = null;
+        if (dd.getParentField() != null) {
+            String stp = dd.getParentField().getType();
+            if (stp.equals("setintEnum") || stp.equals("setcharEnum")) {
+                field = "enum";
+                // there is no way to take out the joins for setintEnum or setcharEnum value selects
+                labelFields.add(label);
+                node.setMakType(dd.getFieldDefinition(dd.getSetMemberFieldName()));
+            }
+            if(stp.equals("setComplex"))
+                // there is no way to take out the joins for setComplex label selects
+                labelFields.add(label);                
+        }
+        if (field == null) {
+            field = dd.getIndexPointerFieldName();
+            node.setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + dd.getName()));
+        }
+        
+        return addLabelText(label, field);
+    }
+
+    private TextList addLabelText(String label, String field) {
+        TextList text = labelText.get(label);
+        if(text==null){
+            text = makeTextList(label, field);
+            labelText.put(label, text);
+        }
+        return text;
+    }
+
+    private TextList makeTextList(String label, String field) {
+        TextList text=new TextList();
+        text.append(label).append(".").append(labels.get(label), field);
+        return text;
+    }
+
+    public void selectField(String label, String field, MqlDotNode mqlDotNode) throws SemanticException{
+        DataDefinition labelType = labels.get(label);
+        if(labelType==null){
+            parent.selectField(label, field, mqlDotNode);
+            return;
+        }
+
+        if (field.equals("id") && labelType.getFieldDefinition("id") == null){
+            mqlDotNode.text=selectLabel(label, mqlDotNode);
+            return;
+        }
+            
+        if (labelType.getFieldDefinition(field) == null)
+            throw new SemanticException("No such field " + field + " in " + labelType);
+        
+        labelFields.add(label);
+        mqlDotNode.text= makeTextList(label, field);
+        mqlDotNode.setMakType(labelType.getFieldDefinition(field));
+        
     }
 
 }

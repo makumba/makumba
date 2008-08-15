@@ -68,6 +68,10 @@ public class NameResolver {
             return append(r);
         }
         
+        public void clear(){
+            content.clear();
+        }
+        
         private static NameResolver defaultNameResolver= new NameResolver();
         public String toString(){
             return toString(defaultNameResolver);
