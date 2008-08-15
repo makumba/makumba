@@ -32,14 +32,7 @@ public class MqlDotNode extends MqlNode {
         } else
             throw new SemanticException("(expression).field not supported");
 
-        DataDefinition labelType = walker.currentContext.findLabelType(label);
-        if (field.equals("id") && labelType.getFieldDefinition("id") == null)
-            field = labelType.getIndexPointerFieldName();
-        if (labelType.getFieldDefinition(field) == null)
-            throw new SemanticException("No such field " + field + " in " + labelType);
-        text= new TextList();
-        text.append(label).append(".").append(labelType, field);
-        setMakType(labelType.getFieldDefinition(field));
+        walker.currentContext.selectField(label, field, this);
     }
 
     void processInFrom() throws SemanticException {

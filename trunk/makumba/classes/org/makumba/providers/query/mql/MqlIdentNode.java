@@ -40,20 +40,7 @@ public class MqlIdentNode extends MqlNode {
             }
             throw new SemanticException("Unknown label: " + label);
         }
-
-        String field = null;
-        if (dd.getParentField() != null) {
-            String stp = dd.getParentField().getType();
-            if (stp.equals("setintEnum") || stp.equals("setcharEnum")) {
-                field = "enum";
-                setMakType(dd.getFieldDefinition(dd.getSetMemberFieldName()));
-            }
-        }
-        if (field == null) {
-            field = dd.getIndexPointerFieldName();
-            setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + dd.getName()));
-        }
-        text = new TextList();
-        text.append(label).append(".").append(dd, field);
+        
+        text= walker.currentContext.selectLabel(label, this);
     }
 }
