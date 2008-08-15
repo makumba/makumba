@@ -1,5 +1,7 @@
 package org.makumba.providers.query.mql;
 
+import java.util.ArrayList;
+
 import org.makumba.DataDefinition;
 import org.makumba.commons.NameResolver.TextList;
 
@@ -26,9 +28,16 @@ public class MqlIdentNode extends MqlNode {
         label = getText();
         DataDefinition dd = walker.currentContext.findLabelType(label);
         if (dd == null) {
-            if(walker.currentContext.projectionLabelSearch.get(label)!=null)
-                // FIXME: this is only acceptable in a ORDER or GROUP 
+            MqlNode selectExpr = walker.currentContext.projectionLabelSearch.get(label);
+            if(selectExpr!=null){
+                checkAsIds= new ArrayList<String>();
+                checkAsIds.add(label);
+                // if we do this, we practically copy the select expression here
+                // then we don't need to check a label any more
+                //setTextList(selectExpr.text);
+                setMakType(selectExpr.getMakType());
                 return;
+            }
             throw new SemanticException("Unknown label: " + label);
         }
 

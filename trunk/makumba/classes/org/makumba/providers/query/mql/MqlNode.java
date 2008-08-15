@@ -32,6 +32,8 @@ public class MqlNode extends CommonAST {
 
     private String originalText;
 
+    protected ArrayList<String> checkAsIds;
+
     protected MqlSqlWalker getWalker() {
         return walker;
     }
@@ -54,6 +56,7 @@ public class MqlNode extends CommonAST {
         super.setFirstChild(a);
         if (a != null) {
             ((MqlNode) a).setFather(this);
+            addCheckedIds((MqlNode)a);
             oneMoreChild((MqlNode) a);
         }
     }
@@ -62,8 +65,22 @@ public class MqlNode extends CommonAST {
     @Override
     public void setNextSibling(AST a) {
         super.setNextSibling(a);
-        if (father != null)
+        if (father != null){
+            father.addCheckedIds((MqlNode)a);
             father.oneMoreChild((MqlNode) a);
+        }
+    }
+
+    private void addCheckedIds(MqlNode child) {
+        if(child!=null && child.checkAsIds!=null)
+            if(getType()==HqlSqlTokenTypes.WHERE){
+                // there are AS labels used in the WHERE section, we cannot allow that
+                walker.error= new SemanticException("cannot use AS identifiers in WHERE: "+child.checkAsIds);
+            }
+            else if(checkAsIds!=null)
+                checkAsIds.addAll(child.checkAsIds);
+            else
+                checkAsIds=child.checkAsIds;
     }
 
     protected void oneMoreChild(MqlNode child) {
@@ -100,6 +117,18 @@ public class MqlNode extends CommonAST {
             // if their args are parameters, set parameter types
 
             // TODO: type of ANY and ALL is the type of the (only) projection of the subquery
+            case HqlSqlTokenTypes.SELECT:
+                if(child.getType()==HqlSqlTokenTypes.SELECT_CLAUSE)
+                    return child.getMakType();
+                return null;
+            case HqlSqlTokenTypes.SELECT_CLAUSE:
+                if(makType!=null){
+                    // if SELECT_CLAUSE already has children, we have more projections, so for now we set the type back to null
+                    makType=null;
+                    return null;
+                }
+                // otherwise this child is the first projection and we set the type to it
+                return child.getMakType();
             case HqlSqlTokenTypes.METHOD_CALL:
                 return getFunctionType(child);
             case HqlSqlTokenTypes.AGGREGATE:
