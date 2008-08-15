@@ -95,6 +95,8 @@ public class QueryContext {
 
     private HashSet<String> labelFields= new HashSet<String>();
 
+    HashSet<String> explicitLabels= new HashSet<String>();
+
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
         String label1;
@@ -212,6 +214,7 @@ public class QueryContext {
 
     public void addFrom(String frm, String label, int joinType) throws SemanticException {
         String iterator = frm;
+        explicitLabels.add(label);
         DataDefinition type = null;
         try {
             // if it's a type, we just add it as such

@@ -45,11 +45,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     QueryContext rootContext;
 
     boolean hasSubqueries;
-    
+
     String query;
 
     public MqlSqlWalker(String query, DataDefinition paramInfo) {
-        this.query=query;
+        this.query = query;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfo = paramInfo;
     }
@@ -83,24 +83,41 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     protected void processQuery(AST select, AST query) throws SemanticException {
-        if(error!=null)
+        if (error != null)
             return;
+
+        // if we have no projections, we add the explicitly declared labels
+        if (select == null)
+            addDefaultProjections(query);
+        
+        // now we can compute our joins
         currentContext.close();
+        
         // if the currentContext has a filter, we make sure we have a WHERE and we add it there
-        addFilters(query);
-
-        // System.out.println(query.getFirstChild()==select);
-
-        // TODO: if we don't have a SELECT clause, we ask the currentContext to make one
+        if (!currentContext.filters.isEmpty())
+            addFilters(query);
 
         currentContext = currentContext.getParent();
         this.select = select;
     }
 
-    private void addFilters(AST query) {
-        if (currentContext.filters.isEmpty())
-            return;
+    private void addDefaultProjections(AST query) throws SemanticException {
+        AST clause = ASTUtil.create(fact, SELECT_CLAUSE, "");
+        clause.setNextSibling(query.getFirstChild());
+        AST lastProjection = null;
+        for (String label : currentContext.explicitLabels) {
+            MqlIdentNode proj = (MqlIdentNode) ASTUtil.create(fact, IDENT, label);
+            proj.resolve();
+            if (lastProjection == null)
+                clause.setFirstChild(proj);
+            else
+                lastProjection.setNextSibling(proj);
+            lastProjection = proj;
+        }
+        query.setFirstChild(clause);
+    }
 
+    private void addFilters(AST query) {
         // we find the FROM
         AST from = query.getFirstChild();
         while (from.getType() != FROM)
