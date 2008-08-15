@@ -102,11 +102,13 @@ public class ParserTest {
         Throwable thr = null;
         boolean printedError;
         String oql_sql = null;
+        String mql_sql = null; 
 
         MqlQueryAnalysis mq = null;
         Throwable mqlThr=null;
         try {
             mq = new MqlQueryAnalysis(query);
+            mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr=t;
         }
@@ -114,8 +116,6 @@ public class ParserTest {
             QueryAST oq = (QueryAST) QueryAST.parseQueryFundamental(query);
             oql_sql = oq.writeInSQLQuery(nr).toLowerCase();
             if (mqlThr==null) {
-                String mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
-
                 oql_sql = cleanUp(oql_sql, " ").replace('\"', '\'');
                 mql_sql = cleanUp(mql_sql, " ");
 
@@ -142,13 +142,18 @@ public class ParserTest {
              */
         } catch (Throwable t) {
             if(mqlThr!=null)
-                System.err.println(line + ": MQL: " + t.getMessage() + " " + query);
+                System.err.println(line + ": MQL: " + mqlThr.getMessage() + " " + query);
+            else
+                System.out.println(line+": MQL SQL: "+mql_sql);
+            
             if (mqlThr!=null // we also had an MQL problem
                     || "survey".equals(t.getMessage()) // HQL analyzer fails stuff like FROM T t, t n
                     || t.toString().indexOf("FROM expected") != -1 // FROM-less queries can't pass
                     || t.toString().indexOf("In operand") != -1 // OQL has issues with set operands
                     || t.toString().indexOf("unexpected token: JOIN") != -1 // OQL doesn't know join
                     || t.toString().indexOf("defined twice") != -1 // HQLAnalyzer is really strict
+                    || t.toString().indexOf("could not find type") != -1  
+                    || t.toString().indexOf("no makumba type assigned for") != -1  
             ) {
                 System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
 
