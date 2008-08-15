@@ -120,7 +120,7 @@ public class ParserTest {
                 mql_sql = cleanUp(mql_sql, " ");
 
                 if (!oql_sql.equals(mql_sql) && !cleanUp(oql_sql, "()").equals(cleanUp(mql_sql, "()"))) {
-                    System.out.println(line + ": OQL!=MQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
+                    System.out.println(line + ": MQL!=OQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
                 }
                 
                 StringBuffer sb= new StringBuffer();
@@ -143,24 +143,10 @@ public class ParserTest {
         } catch (Throwable t) {
             if(mqlThr!=null)
                 System.err.println(line + ": MQL: " + mqlThr.getMessage() + " " + query);
-            else
-                System.out.println(line+": MQL SQL: "+mql_sql);
             
-            if (mqlThr!=null // we also had an MQL problem
-                    || "survey".equals(t.getMessage()) // HQL analyzer fails stuff like FROM T t, t n
-                    || t.toString().indexOf("FROM expected") != -1 // FROM-less queries can't pass
-                    || t.toString().indexOf("In operand") != -1 // OQL has issues with set operands
-                    || t.toString().indexOf("unexpected token: JOIN") != -1 // OQL doesn't know join
-                    || t.toString().indexOf("defined twice") != -1 // HQLAnalyzer is really strict
-                    || t.toString().indexOf("could not find type") != -1  
-                    || t.toString().indexOf("no makumba type assigned for") != -1  
-            ) {
-                System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
-
-                return;
-            }
-            System.err.println(line+": "+query+"\nUnchecked error only in OQL: ");
-            t.printStackTrace();
+            System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
+            if(mqlThr==null)
+                System.out.println(line+": MQL SQL: "+mql_sql);
             return;
         }
         if(mqlThr!=null){

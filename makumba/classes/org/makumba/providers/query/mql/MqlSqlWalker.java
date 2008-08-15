@@ -45,8 +45,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     QueryContext rootContext;
 
     boolean hasSubqueries;
+    
+    String query;
 
-    public MqlSqlWalker(DataDefinition paramInfo) {
+    public MqlSqlWalker(String query, DataDefinition paramInfo) {
+        this.query=query;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfo = paramInfo;
     }
@@ -80,13 +83,15 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     protected void processQuery(AST select, AST query) throws SemanticException {
+        if(error!=null)
+            return;
         currentContext.close();
         // if the currentContext has a filter, we make sure we have a WHERE and we add it there
         addFilters(query);
 
         // System.out.println(query.getFirstChild()==select);
 
-        // if we don't have a SELECT clause, we ask the currentContext to make one
+        // TODO: if we don't have a SELECT clause, we ask the currentContext to make one
 
         currentContext = currentContext.getParent();
         this.select = select;

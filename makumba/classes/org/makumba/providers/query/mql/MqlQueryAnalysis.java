@@ -58,10 +58,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         String hqlDebug = MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(makeParameterInfo(query));
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query));
         try {
             mqlAnalyzer.statement(parser.getAST());
-        } catch (ANTLRException e) {
+        } catch (Throwable e) {
             doThrow(e, hqlDebug);
         }
         doThrow(mqlAnalyzer.error, hqlDebug);
@@ -72,7 +72,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         paramInfo = mqlAnalyzer.paramInfo;
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
-        // System.out.println(mqlDebug);
+//        if(mqlAnalyzer.hasSubqueries)
+//            System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
         try {
             mg.statement(mqlAnalyzer.getAST());
@@ -93,8 +94,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             return;
         if (!(t instanceof antlr.SemanticException))
             System.err.println(query + " " + debugTree);
-        if (t instanceof RuntimeException)
+        if (t instanceof RuntimeException){
+            t.printStackTrace();
             throw (RuntimeException) t;
+        }
         if (t instanceof ANTLRException)
             throw (ANTLRException) t;
     }
