@@ -14,10 +14,12 @@ import org.makumba.providers.DataDefinitionProvider;
 import antlr.SemanticException;
 import antlr.collections.AST;
 
-/** FROM analysis code. Each query/subquery has its own QueryContext.
+/**
+ * FROM analysis code. Each query/subquery has its own QueryContext. 
  * This is ported from the old OQL parser. Additions:
- * 1) look in the parent query context for labels unknown here
+ * 1) look in the parent query context for labels unknown here 
  * 2) more than just LEFT JOIN is supported
+ * 
  * @author Cristian Bogdan
  * @version $Id: QueryContext.java,v 1.1 Aug 5, 2008 5:50:39 PM cristi Exp $
  */
@@ -47,7 +49,7 @@ public class QueryContext {
         addFrom(path, alias.getText(), joinType);
 
         if (inTree == null)
-            return inTree = (MqlNode)ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
+            return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
         else
             return null;
     }
@@ -58,7 +60,7 @@ public class QueryContext {
     }
 
     private TextList getFrom() {
-        TextList tl= new TextList();
+        TextList tl = new TextList();
         writeFrom(tl);
         writeJoins(tl);
 
@@ -84,9 +86,9 @@ public class QueryContext {
 
     /** searcher for projection labels */
     Hashtable<String, MqlNode> projectionLabelSearch = new Hashtable<String, MqlNode>();
-    
+
     /** correlation conditions */
-    Vector<TextList> filters= new Vector<TextList>();
+    Vector<TextList> filters = new Vector<TextList>();
 
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
@@ -319,17 +321,17 @@ public class QueryContext {
             ret.append(getTableName(j.label2))
             // .append(" AS ")
             .append(" ").append(j.label2);
-            
-            TextList cond= ret;
+
+            TextList cond = ret;
             if (!isCorrelated(j))
                 // if this join is not correlating with a label from a superquery
                 ret.append(" ON ");
-            else{
+            else {
                 // if we are correlated, we add a condition to the filters
-                cond= new TextList();
+                cond = new TextList();
                 filters.add(cond);
             }
-            
+
             joinCondition(cond, j);
         }
     }
