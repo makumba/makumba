@@ -16,6 +16,10 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+cristi: support for subqueries including any(subquery), all (subquery), in(subquery), exists(subquery) and subqueries in expressions 
+cristi: correlation of subquery with the superquery 
+cristi: not accepting AS identifiers in WHERE
+
 0.8.0.7 ; 13 Aug 2008
 cristi: MQL implementation and setting as default query provider
 cristi: file upload fixes related to memory usage and exception handling
