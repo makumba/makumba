@@ -231,9 +231,18 @@ public class MqlNode extends CommonAST {
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
         if (!(left.isParam() && left.getMakType() == null) // 
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
-                && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()))
-            throw new SemanticException("incompatible operands " + left.getText() + "(" + left.getMakType() + ") and "
-                    + right.getText() + " (" + right.getMakType() + ")");
+                && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
+                && !(right.getMakType().isDateType() && left.getMakType().isDateType())
+                )
+            throw new SemanticException("incompatible operands " + left.getText() + "(" + toStringType(left.getMakType()) + ") and "
+                    + right.getText() + " (" + toStringType(right.getMakType()) + ")");
+    }
+
+    private static String toStringType(FieldDefinition makType) {
+        String s= makType.toString();
+        if(!s.equals("ptr"))
+            return s;
+        return s+" "+makType.getPointedType().getName();
     }
 
     public String getOriginalText() {
