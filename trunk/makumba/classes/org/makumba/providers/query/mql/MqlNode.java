@@ -116,7 +116,10 @@ public class MqlNode extends CommonAST {
             // TODO: type of functions
             // if their args are parameters, set parameter types
 
-            // TODO: type of ANY and ALL is the type of the (only) projection of the subquery
+            // type of ANY and ALL is the type of the (only) projection of the subquery
+            case HqlSqlTokenTypes.ANY:
+            case HqlSqlTokenTypes.ALL:
+                return child.getMakType();
             case HqlSqlTokenTypes.SELECT:
                 if(child.getType()==HqlSqlTokenTypes.SELECT_CLAUSE)
                     return child.getMakType();
