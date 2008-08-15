@@ -225,7 +225,7 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-
+        try{
         // we re-use the transaction provider of the request to do our logging
         DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
         Transaction tr = dbc.getTransactionProvider().getConnectionTo(
@@ -252,17 +252,18 @@ public class ErrorFormatter {
             }
 
             tr.insert("org.makumba.controller.ErrorLog", d);
-        } catch (Throwable t1) {
-            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe(
-                "Could not log exception, impossible to get access to the database");
         } finally {
-            try {
                 tr.close();
-            } catch (Throwable t2) {
-                java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").severe(
-                    "Could not log exception, impossible to get access to the database");
-            }
         }
+        }catch (Throwable t1) {
+            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").log(
+                java.util.logging.Level.SEVERE,
+                "Could not log exception to the db, exception to log was", t);
+            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").log(
+                java.util.logging.Level.SEVERE,
+                "Could not log exception to the db, database logging exception was", t1);
+        }
+
     }
 
     /**
