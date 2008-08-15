@@ -81,9 +81,12 @@ public class QueryContext {
 
     /** finder for joins in the form label.field, used in order not to repeat the same join */
     Hashtable<String, String> joinNames = new Hashtable<String, String>();
-    
+
     /** searcher for projection labels */
-    Hashtable<String, AST> projectionLabelSearch = new Hashtable<String, AST>();
+    Hashtable<String, MqlNode> projectionLabelSearch = new Hashtable<String, MqlNode>();
+    
+    /** correlation conditions */
+    Vector<TextList> filters= new Vector<TextList>();
 
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
@@ -300,25 +303,45 @@ public class QueryContext {
             // if (and)
             // ret.append(" AND ");
             // and = true;
-
-            switch (j.joinType) {
-                case HqlSqlTokenTypes.LEFT_OUTER:
-                    ret.append(" LEFT");
-                case HqlSqlTokenTypes.RIGHT_OUTER:
-                    ret.append(" RIGHT");
-                case HqlSqlTokenTypes.FULL:
-                    ret.append(" FULL");
+            if (!isCorrelated(j)) {
+                // if this join is not correlating with a label from a superquery
+                switch (j.joinType) {
+                    case HqlSqlTokenTypes.LEFT_OUTER:
+                        ret.append(" LEFT");
+                    case HqlSqlTokenTypes.RIGHT_OUTER:
+                        ret.append(" RIGHT");
+                    case HqlSqlTokenTypes.FULL:
+                        ret.append(" FULL");
+                }
+                ret.append(" JOIN ");
             }
-            ret.append(" JOIN ");
+
             ret.append(getTableName(j.label2))
             // .append(" AS ")
             .append(" ").append(j.label2);
-            ret.append(" ON ");
-            ret.append(j.label1).append(".").append(getTableName(j.label1), j.field1).append("= ").append(j.label2).append(
-                ".").append(getTableName(j.label2), j.field2);
+            
+            TextList cond= ret;
+            if (!isCorrelated(j))
+                // if this join is not correlating with a label from a superquery
+                ret.append(" ON ");
+            else{
+                // if we are correlated, we add a condition to the filters
+                cond= new TextList();
+                filters.add(cond);
+            }
+            
+            joinCondition(cond, j);
         }
     }
 
+    private boolean isCorrelated(Join j) {
+        return labels.get(j.label1) == null;
+    }
 
+    private void joinCondition(TextList ret, Join j) {
+        ret.append(j.label1).append(".").append(getTableName(j.label1), j.field1) //
+        .append("= ") //
+        .append(j.label2).append(".").append(getTableName(j.label2), j.field2);
+    }
 
 }

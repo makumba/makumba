@@ -5,6 +5,7 @@ import org.hibernate.hql.ast.util.ASTPrinter;
 import org.hibernate.hql.ast.util.ASTUtil;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.ASTFactory;
@@ -33,10 +34,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     DataDefinition paramInfo;
     private AST select;
     QueryContext rootContext;
-    
-    public MqlSqlWalker(DataDefinition paramInfo){
-        setASTFactory(fact= new MqlSqlASTFactory(this));
-        this.paramInfo=paramInfo;
+
+    boolean hasSubqueries;
+
+    public MqlSqlWalker(DataDefinition paramInfo) {
+        setASTFactory(fact = new MqlSqlASTFactory(this));
+        this.paramInfo = paramInfo;
     }
  
     public void reportError(RecognitionException e) {
@@ -56,19 +59,65 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     protected void pushFromClause(AST fromClause,AST inputFromNode) {
         QueryContext c= new QueryContext(this);
         c.setParent(currentContext);
-        if(currentContext==null)
-            rootContext=c;
-        currentContext=c;
+        if (currentContext == null)
+            rootContext = c;
+        else
+            hasSubqueries = true;
+        currentContext = c;
     }
-    
-    protected void setFromEnded() throws SemanticException{
-        fromEnded=true;
+
+    protected void setFromEnded() throws SemanticException {
+        fromEnded = true;
     }
-    
-    protected void processQuery(AST select,AST query) throws SemanticException { 
-        currentContext.close(); 
-        currentContext=currentContext.getParent();
-        this.select= select;
+
+    protected void processQuery(AST select, AST query) throws SemanticException {
+        currentContext.close();
+        // if the currentContext has a filter, we make sure we have a WHERE and we add it there
+        addFilters(query);
+
+        // System.out.println(query.getFirstChild()==select);
+
+        // if we don't have a SELECT clause, we ask the currentContext to make one
+
+        currentContext = currentContext.getParent();
+        this.select = select;
+    }
+
+    private void addFilters(AST query) {
+        if (currentContext.filters.isEmpty())
+            return;
+
+        // we find the FROM
+        AST from = query.getFirstChild();
+        while (from.getType() != FROM)
+            from = from.getNextSibling();
+        
+        // we make sure that there is a where
+        AST where = from.getNextSibling();        
+        if (where == null || where.getType() != WHERE) {
+            AST a = where;
+            where = ASTUtil.create(fact, WHERE, "");
+            from.setNextSibling(where);
+            where.setNextSibling(a);
+        }
+        
+        // we add a FILTERS to the where
+        AST a = where.getFirstChild();
+        AST filters = ASTUtil.create(fact, FILTERS, "");
+        where.setFirstChild(filters);
+        filters.setNextSibling(a);
+        
+        // now we add all the filter conditions as children to the FILTERS
+        AST lastCond = null;
+        for (TextList f : currentContext.filters) {
+            MqlNode sqlToken = (MqlNode) ASTUtil.create(fact, SQL_TOKEN, "");
+            if (lastCond != null)
+                lastCond.setNextSibling(sqlToken);
+            else
+                filters.setFirstChild(sqlToken);
+            lastCond = sqlToken;
+            sqlToken.setTextList(f);
+        }
     }
 
     protected AST createFromElement(String path, AST alias, AST propertyFetch) throws SemanticException {
@@ -106,9 +155,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         selectExpr.setNextSibling(as);
         // the projection name is going to be the original text
         // now we set it to the SQL form
-        as.setText(" AS "+as.getText());
-        
-        currentContext.projectionLabelSearch.put(ident.getText(), selectExpr);
+        as.setText(" AS " + as.getText());
+
+        currentContext.projectionLabelSearch.put(ident.getText(), (MqlNode)selectExpr);
     }
 
     
