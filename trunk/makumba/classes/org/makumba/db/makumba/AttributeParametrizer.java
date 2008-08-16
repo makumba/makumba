@@ -43,9 +43,10 @@ public class AttributeParametrizer {
         return oql;
     }
     
-    /** build a parametrizer from an OQL query, in the given database and with the given example arguments */
-    public AttributeParametrizer(String oql) throws LogicException {
-        ArgumentReplacer ar = new ArgumentReplacer(oql);
+    /** build a parametrizer from an OQL query, in the given database and with the given example arguments 
+     * @param acceptColon accept colon, or just dollar parameters*/
+    public AttributeParametrizer(String oql, boolean acceptColon) throws LogicException {
+        ArgumentReplacer ar = new ArgumentReplacer(oql, acceptColon);
 
         for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
             argumentNames.add(e.next());
