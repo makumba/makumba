@@ -48,8 +48,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     String query;
 
-    public MqlSqlWalker(String query, DataDefinition paramInfo) {
+    boolean optimizeJoins;
+
+    public MqlSqlWalker(String query, DataDefinition paramInfo, boolean optimizeJoins) {
         this.query = query;
+        this.optimizeJoins= optimizeJoins;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfo = paramInfo;
     }
@@ -89,7 +92,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         // if we have no projections, we add the explicitly declared labels
         if (select == null)
             addDefaultProjections(query);
-        
+
+        this.select = query.getFirstChild();
+
         // now we can compute our joins
         currentContext.close();
         
@@ -98,7 +103,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             addFilters(query);
 
         currentContext = currentContext.getParent();
-        this.select = select;
     }
 
     private void addDefaultProjections(AST query) throws SemanticException {
@@ -233,5 +237,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
         }
+    }
+
+    public boolean isAnalysisQuery() {
+        if(select==null || select.getFirstChild()==null)
+            return false;
+        return select.getFirstChild().getNextSibling()==null && select.getFirstChild().getText().equals("1");
     }
 }
