@@ -91,21 +91,33 @@ public class MqlNode extends CommonAST {
                 && child.getType() == HqlSqlTokenTypes.IN_LIST) {
             // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right side, where we
             // expect a parameter list
-            // FIXME: we assume that the left operand of the IN expression is not a parameter and therefore has a type
-            // assigned.
-            // if it is a parameter, we have to make sure that all things in the right operand (IN_LIST) are of the same
-            // type and assign that type to the parameter
+            
             MqlNode inListMember = (MqlNode) child.getFirstChild();
+            
+            // for processing the left operand, we assume either that the list (right operand) 
+            // has one member or that all members are of the same type
+            boolean leftParam=checkParam(inListMember, (MqlNode) getFirstChild());
+            if(!leftParam)
+                try {
+                    checkAndRewriteOperand(inListMember, (MqlNode) getFirstChild());
+                } catch (SemanticException e) {
+                    walker.error = e;
+                    return;
+                }
+            // processing of the right operand, we look for parameters or strings to rewrite
             do {
-                if (inListMember.getType() == HqlSqlTokenTypes.NAMED_PARAM)
-                    walker.setParameterType(inListMember, (MqlNode) getFirstChild());
-                else
-                    try {
-                        checkAndRewriteOperand((MqlNode) getFirstChild(), inListMember);
-                    } catch (SemanticException e) {
-                        walker.error = e;
+                if (checkParam((MqlNode) getFirstChild(), inListMember))
+                    if( leftParam){
+                        walker.error= new SemanticException("cannot have paramters on both sides of IN");
                         return;
                     }
+                    else
+                        try {
+                            checkAndRewriteOperand((MqlNode) getFirstChild(), inListMember);
+                        } catch (SemanticException e) {
+                            walker.error = e;
+                            return;
+                        }
                 inListMember = (MqlNode) inListMember.getNextSibling();
             } while (inListMember != null);
         }
@@ -142,9 +154,8 @@ public class MqlNode extends CommonAST {
                 // TODO: maybe WHEN, THEN or ELSE are parameters
                 // set the WHEN parameter type to boolean, and THEN has the type of ELSE
                 // if both THEN and ELSE are parameters, we're in trouble
-                // TODO: this is untested
-                if (child.getType() == HqlSqlTokenTypes.THEN)
-                    return ((MqlNode) child.getFirstChild()).getMakType();
+                if (child.getType() == HqlSqlTokenTypes.ELSE)
+                    return ((MqlNode) getFirstChild().getFirstChild().getNextSibling()).getMakType();
         }
         return null;
     };
@@ -294,6 +305,14 @@ public class MqlNode extends CommonAST {
             checkOperandTypes(left, right);
             return false;
         }
+    }
+
+    protected boolean checkParam(MqlNode left, MqlNode right) {
+        if (right.isParam()) {
+            walker.setParameterType(right, left);
+            return true;
+        }
+        return false;
     }
 
     // ------ function part, ported from OQL, might move somewhere else------
