@@ -40,7 +40,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private TextList text;
 
-    public MqlQueryAnalysis(String query) throws ANTLRException {
+    public MqlQueryAnalysis(String query, boolean optimizeJoins) throws ANTLRException {
         this.query = query;
         query = preProcess(query);
 
@@ -58,7 +58,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         String hqlDebug = MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query));
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins);
         try {
             mqlAnalyzer.statement(parser.getAST());
         } catch (Throwable e) {

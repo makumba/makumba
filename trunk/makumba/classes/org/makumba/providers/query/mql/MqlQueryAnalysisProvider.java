@@ -16,7 +16,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         private static final long serialVersionUID = 1L;
     
         protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return new MqlQueryAnalysis((String)nm);
+            return new MqlQueryAnalysis((String)nm, true);
         }
     }, true);
 
@@ -44,6 +44,8 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     }
     @Override
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
+        if (fn.equals("id"))
+            return dd.getFieldDefinition(dd.getIndexPointerFieldName());
         return null;
     }
 
