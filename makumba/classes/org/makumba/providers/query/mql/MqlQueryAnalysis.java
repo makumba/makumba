@@ -191,9 +191,42 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 && a.getFirstChild().getType() == HqlTokenTypes.IDENT)
             // we also accept : params though we might not know what to do with them later
             parameterOrder.add(a.getFirstChild().getText());
-
+        else if(a.getType()==HqlTokenTypes.ELEMENTS){
+            makeSubquery(a, a.getFirstChild());  
+        }
+        else if(a.getType()==HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")){
+            makeSelect(a, HqlTokenTypes.COUNT, "count");
+        }
+        else if(a.getType()==HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().endsWith("element")){
+            makeSelect(a, HqlTokenTypes.AGGREGATE, a.getFirstChild().getText().substring(0, 3));
+        }
+        
         transformOQL(a.getFirstChild());
         transformOQL(a.getNextSibling());
+    }
+
+    private void makeSelect(AST a, int type, String text) {
+        makeSubquery(a, a.getFirstChild().getNextSibling().getFirstChild()); 
+        AST from=a.getFirstChild().getFirstChild();
+        from.setNextSibling(makeNode(HqlTokenTypes.SELECT, "select"));
+        from.getNextSibling().setFirstChild(makeNode(type, text));
+        from.getNextSibling().getFirstChild().setFirstChild(makeNode(HqlTokenTypes.IDENT, "makElementsLabel"));
+    }
+
+    private void makeSubquery(AST a, AST type) {
+        a.setType(HqlTokenTypes.QUERY);
+        a.setFirstChild(makeNode(HqlTokenTypes.SELECT_FROM, "select"));
+        a.getFirstChild().setFirstChild(makeNode(HqlTokenTypes.FROM, "from"));
+        a.getFirstChild().getFirstChild().setFirstChild(makeNode(HqlTokenTypes.RANGE, "range"));
+        a.getFirstChild().getFirstChild().getFirstChild().setFirstChild(type);
+        type.setNextSibling(makeNode(HqlTokenTypes.ALIAS, "makElementsLabel"));
+    }
+
+    private AST makeNode(int type, String string) {
+        Node node= new Node();
+        node.setType(type);
+        node.setText(string);
+        return node;
     }
 
     static boolean isNil(AST a) {
