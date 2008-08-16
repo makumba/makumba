@@ -59,10 +59,12 @@ public class ParameterAssigner {
             Hashtable errors = new Hashtable();
             for (int i = 0; i < tree.parameterNumber(); i++) {
                 FieldDefinition fd = (paramHandler.getDataDefinition().getFieldDefinition("param" + i));
+                if(fd==null)
+                    throw new IllegalStateException("No type assigned for "+"param"+i);
+
                 Integer para = new Integer(tree.parameterAt(i));
                 String spara = "$" + para;
                 Object value = args[para.intValue() - 1];
-
                 try {
                     value = fd.checkValue(value);
                 } catch (InvalidValueException e) {
