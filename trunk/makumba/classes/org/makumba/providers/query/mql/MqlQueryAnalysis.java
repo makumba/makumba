@@ -162,7 +162,12 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             a.setType(HqlTokenTypes.COLON);
             AST para = new Node();
             para.setType(HqlTokenTypes.IDENT);
-            para.setText(MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
+            try{
+                para.setText(MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
+            }catch(NumberFormatException e){
+                // we probably are in some query analysis, so we ignore
+                para.setText(a.getText().substring(1));
+            }
             parameterOrder.add(para.getText());
             a.setFirstChild(para);
             a.setText(":");
