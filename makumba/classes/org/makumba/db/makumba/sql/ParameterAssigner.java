@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Pointer;
 import org.makumba.providers.QueryAnalysis;
 
 /**
@@ -65,6 +66,8 @@ public class ParameterAssigner {
                 Integer para = new Integer(tree.parameterAt(i));
                 String spara = "$" + para;
                 Object value = args[para.intValue() - 1];
+                if(value==Pointer.Null)
+                    value=fd.getNull();
                 try {
                     value = fd.checkValue(value);
                 } catch (InvalidValueException e) {

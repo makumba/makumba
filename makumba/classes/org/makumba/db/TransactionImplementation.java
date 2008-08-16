@@ -302,11 +302,11 @@ public abstract class TransactionImplementation implements Transaction {
                 Object o= m.get(key);
                 if(o!=null)
                     return o;
-                if(!contextAttributes.hasAttribute((String)key)){
-                    return null;
-                }
                 try{
-                    return contextAttributes.getAttribute((String)key);
+                    o= contextAttributes.getAttribute((String)key);
+                    if(o==null && contextAttributes.hasAttribute(""+key+"_null"))
+                        o=Pointer.Null;
+                    return o;
                 }catch(LogicException e){
                     return null;
                 }
