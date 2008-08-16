@@ -22,7 +22,7 @@ import antlr.collections.AST;
  */
 
 public class MqlNode extends CommonAST {
-    NameResolver.TextList text;
+    private NameResolver.TextList textList;
 
     MqlSqlWalker walker;
 
@@ -252,21 +252,21 @@ public class MqlNode extends CommonAST {
     }
 
     public void writeTo(TextList t) {
-        if (text == null)
+        if (textList == null)
             t.append(getText());
         else
-            t.append(text);
+            t.append(textList);
     }
 
-    public String getText() {
-        if (text != null)
-            return text.toString();
+    public String toString() {
+        if (textList != null)
+            return textList.toString();
         else
             return super.getText();
     }
 
     public void setTextList(TextList tl) {
-        text = tl;
+        textList = tl;
     }
 
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {

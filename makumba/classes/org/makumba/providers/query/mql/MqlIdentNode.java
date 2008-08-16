@@ -41,6 +41,6 @@ public class MqlIdentNode extends MqlNode {
             throw new SemanticException("Unknown label: " + label);
         }
         
-        text= walker.currentContext.selectLabel(label, this);
+        setTextList(walker.currentContext.selectLabel(label, this));
     }
 }
