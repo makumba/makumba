@@ -320,7 +320,7 @@ public class QueryContext {
         // boolean and = false;
         for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
             Join j = (Join) e.nextElement();
-            if(!isFieldUsed(j)){
+            if(walker.optimizeJoins && !isFieldUsed(j)){
                 rewriteProjections(j);
                 continue;
             }
@@ -361,7 +361,8 @@ public class QueryContext {
     private void rewriteProjections(Join j) {
         TextList text= labelText.get(j.label2);
         if(text==null){
-            java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning("unused label: "+j.label2 +" in query "+walker.query);
+            if(!walker.isAnalysisQuery())
+                java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning("unused label: "+j.label2 +" in query "+walker.query);
             return;
         }
         text.clear();
@@ -437,7 +438,7 @@ public class QueryContext {
         }
 
         if (field.equals("id") && labelType.getFieldDefinition("id") == null){
-            mqlDotNode.text=selectLabel(label, mqlDotNode);
+            mqlDotNode.setTextList(selectLabel(label, mqlDotNode));
             return;
         }
             
@@ -445,7 +446,7 @@ public class QueryContext {
             throw new SemanticException("No such field " + field + " in " + labelType);
         
         labelFields.add(label);
-        mqlDotNode.text= makeTextList(label, field);
+        mqlDotNode.setTextList(makeTextList(label, field));
         mqlDotNode.setMakType(labelType.getFieldDefinition(field));
         
     }
