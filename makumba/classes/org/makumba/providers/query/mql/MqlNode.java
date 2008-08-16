@@ -128,8 +128,7 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.SELECT_CLAUSE:
                 if(makType!=null){
                     // if SELECT_CLAUSE already has children, we have more projections, so for now we set the type back to null
-                    makType=null;
-                    return null;
+                    return makType;
                 }
                 // otherwise this child is the first projection and we set the type to it
                 return child.getMakType();
@@ -229,6 +228,9 @@ public class MqlNode extends CommonAST {
     }
 
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
+        checkForOperandType(left);
+        checkForOperandType(right);
+
         if (!(left.isParam() && left.getMakType() == null) // 
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
