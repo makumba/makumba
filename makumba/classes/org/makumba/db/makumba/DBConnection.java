@@ -199,7 +199,7 @@ public abstract class DBConnection extends TransactionImplementation {
 
         protected Object makeResource(Object nm, Object hashName) {
 
-            return new MultipleAttributeParametrizer((String) nm);
+            return new MultipleAttributeParametrizer((String) nm, db.getConfiguration("acceptColonParams"));
         }
     });
     

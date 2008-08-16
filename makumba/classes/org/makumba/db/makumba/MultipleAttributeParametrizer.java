@@ -45,6 +45,8 @@ public class MultipleAttributeParametrizer {
 
     NamedResources parametrizers;
 
+    boolean acceptColon;
+    
     public String getTransformedQuery(Map<String, Object>  args) throws LogicException {
         return getAttributeParametrizer(args).getTransformedQuery(args);
     }
@@ -52,9 +54,10 @@ public class MultipleAttributeParametrizer {
     public Object[] getTransformedParams(Map<String, Object>  args) throws LogicException{
         return getAttributeParametrizer(args).getTansformedParams(rewriteAttributes(args));
     }
-    public MultipleAttributeParametrizer(String oql) {
+    public MultipleAttributeParametrizer(String oql, String colonParams) {
+        acceptColon="true".equals(colonParams);
         parametrizers = new NamedResources("JSP attribute parametrizer objects", parametrizerFactory);
-        for (Iterator<String> e = new ArgumentReplacer(oql).getArgumentNames(); e.hasNext();)
+        for (Iterator<String> e = new ArgumentReplacer(oql, acceptColon).getArgumentNames(); e.hasNext();)
             mixedArgumentNames.add((String)e.next());
         baseOQL = oql;
     }
@@ -95,7 +98,7 @@ public class MultipleAttributeParametrizer {
         }
 
         protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return new AttributeParametrizer(rewriteOQL((Map) nm));
+            return new AttributeParametrizer(rewriteOQL((Map) nm), acceptColon);
         }
     };
 

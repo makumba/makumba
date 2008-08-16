@@ -76,8 +76,9 @@ public class ArgumentReplacer {
     /**
      * Makes a list of all arguments and where they are
      * @param s the string containing the arguments
+     * @param acceptColon 
      */
-    public ArgumentReplacer(String s) {
+    public ArgumentReplacer(String s, boolean acceptColon) {
         int dollar;
         String prev = "";
         boolean doubledollar;
@@ -86,6 +87,11 @@ public class ArgumentReplacer {
 
         while (true) {
             dollar = s.indexOf('$');
+            if(acceptColon){
+                int colon= s.indexOf(':');
+                if(dollar==-1 || colon!=-1 && colon<dollar)
+                    dollar=colon;
+            }
             if (dollar == -1 || s.length() == dollar + 1) {
                 text.add(prev + s);
                 break;
