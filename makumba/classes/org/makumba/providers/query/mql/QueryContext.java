@@ -97,6 +97,8 @@ public class QueryContext {
 
     HashSet<String> explicitLabels= new HashSet<String>();
 
+    private boolean wroteRange;
+
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
         String label1;
@@ -285,7 +287,7 @@ public class QueryContext {
     /** writes the iterator definitions (FROM part) */
     protected void writeFrom(TextList ret) {
         boolean comma = false;
-
+        wroteRange=false;
         for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
             String label = (String) e.nextElement();
 
@@ -296,6 +298,7 @@ public class QueryContext {
             ret.append(getTableName(label))
             // .append(" AS ")
             .append(" ").append(label);
+            wroteRange=true;
         }
     }
 
@@ -327,7 +330,7 @@ public class QueryContext {
             // if (and)
             // ret.append(" AND ");
             // and = true;
-            if (!isCorrelated(j)) {
+            if (wroteRange) {
                 // if this join is not correlating with a label from a superquery
                 switch (j.joinType) {
                     case HqlSqlTokenTypes.LEFT_OUTER:
@@ -339,7 +342,7 @@ public class QueryContext {
                 }
                 ret.append(" JOIN ");
             }
-
+            wroteRange=true;
             ret.append(getTableName(j.label2))
             // .append(" AS ")
             .append(" ").append(j.label2);
