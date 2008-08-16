@@ -242,6 +242,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     public boolean isAnalysisQuery() {
         if(select==null || select.getFirstChild()==null)
             return false;
-        return select.getFirstChild().getNextSibling()==null && select.getFirstChild().getText().equals("1");
+        return select.getFirstChild().getNextSibling()==null && select.getFirstChild().getType()==HqlSqlTokenTypes.NUM_INT;
     }
 }
