@@ -21,7 +21,8 @@ cristi: correlation of subquery with the superquery
 cristi: not accepting AS identifiers in WHERE
 cristi: optimization of joins
 cristi: support for elements(), size(), maxelement(), minelement()
-cristi: optional support for : parameters in mql queries
+cristi: optional support for : parameters in mql queries, configured by acceptColonParams=true
+cristi: mql independence from hibernate.jar
 
 0.8.0.7 ; 13 Aug 2008
 cristi: MQL implementation and setting as default query provider
