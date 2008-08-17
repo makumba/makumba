@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Properties;
 
-import org.hibernate.hql.ast.util.ASTPrinter;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.ClassResource;
@@ -31,10 +30,6 @@ public class ParserTest {
     private static QueryAnalysisProvider qap = new HQLQueryAnalysisProvider();
 
     private static PrintWriter pw = new PrintWriter(System.out);
-
-    private static ASTPrinter printerHql = new ASTPrinter(HqlTokenTypes.class);
-
-    private static ASTPrinter printerHqlSql = new ASTPrinter(HqlSqlTokenTypes.class);
 
     private static NameResolver nr;
     static {
