@@ -2,7 +2,9 @@ header
 {
 //   $Id: sql-gen.g 10001 2006-06-08 21:08:04Z steve.ebersole@jboss.com $
 package org.makumba.providers.query.mql;
-
+/** Makumba adaptation of the Hibernate sql-gen.g 
+ * The few changes are marked with ********* Mql addition	
+ * */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
