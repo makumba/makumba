@@ -1,8 +1,6 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
-import org.hibernate.hql.ast.util.ASTPrinter;
-import org.hibernate.hql.ast.util.ASTUtil;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver.TextList;
@@ -35,8 +33,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     private boolean fromEnded;
 
     static PrintWriter pw = new PrintWriter(System.out);
-
-    static ASTPrinter printer = new ASTPrinter(HqlSqlTokenTypes.class);
 
     DataDefinition paramInfo;
 
@@ -231,8 +227,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
             FieldDefinition makType = ((MqlNode) a).getMakType();
             if (makType == null) {
-                printer.showAst(a, pw);
-                throw new IllegalStateException("no type set for projection " + name);
+                throw new IllegalStateException("no type set for projection " + name+" "+MqlQueryAnalysis.showAst(a));
             } else
                 proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
