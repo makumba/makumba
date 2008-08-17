@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.hibernate.hql.ast.util.ASTUtil;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver;

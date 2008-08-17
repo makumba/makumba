@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Properties;
 
-import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.hibernate.hql.ast.util.ASTPrinter;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;

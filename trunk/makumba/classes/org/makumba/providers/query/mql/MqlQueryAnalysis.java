@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hibernate.hql.antlr.HqlTokenTypes;
-import org.hibernate.hql.ast.HqlParser;
-import org.hibernate.hql.ast.tree.Node;
 import org.makumba.DataDefinition;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
@@ -51,22 +48,19 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         HqlParser parser = HqlParser.getInstance(query);
         parser.statement();
-        if (parser.getParseErrorHandler().getErrorCount() > 0)
-            parser.getParseErrorHandler().throwQueryException();
-
+        if (parser.error!=null)
+            throw parser.error;
+        
         transformOQL(parser.getAST());
-
-        String hqlDebug = MqlSqlWalker.printer.showAsString(parser.getAST(), "");
 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins);
         try {
             mqlAnalyzer.statement(parser.getAST());
         } catch (Throwable e) {
-            doThrow(e, hqlDebug);
+            doThrow(e, parser.getAST());
         }
-        doThrow(mqlAnalyzer.error, hqlDebug);
-        String mqlDebug = MqlSqlWalker.printer.showAsString(mqlAnalyzer.getAST(), "");
-
+        doThrow(mqlAnalyzer.error, parser.getAST());
+ 
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = mqlAnalyzer.paramInfo;
@@ -78,9 +72,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         try {
             mg.statement(mqlAnalyzer.getAST());
         } catch (Throwable e) {
-            doThrow(e, mqlDebug);
+            doThrow(e, mqlAnalyzer.getAST());
         }
-        doThrow(mg.error, mqlDebug);
+        doThrow(mg.error, mqlAnalyzer.getAST());
 
         text = mg.text;
     }
@@ -89,11 +83,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
     }
 
-    private void doThrow(Throwable t, String debugTree) throws ANTLRException {
+    private void doThrow(Throwable t, AST debugTree) throws ANTLRException {
         if (t == null)
             return;
         if (!(t instanceof antlr.SemanticException))
-            System.err.println(query + " " + debugTree);
+            System.err.println(query + " " + showAst(debugTree));
         if (t instanceof RuntimeException){
             t.printStackTrace();
             throw (RuntimeException) t;
@@ -232,6 +226,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         node.setType(type);
         node.setText(string);
         return node;
+    }
+
+    public static String showAst(AST ast) {
+        return ast.toStringTree();
     }
 
     static boolean isNil(AST a) {

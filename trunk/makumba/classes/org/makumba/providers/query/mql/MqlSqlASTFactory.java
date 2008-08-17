@@ -2,8 +2,6 @@ package org.makumba.providers.query.mql;
 
 import java.lang.reflect.Constructor;
 
-import org.hibernate.hql.antlr.HqlSqlTokenTypes;
-
 import antlr.ASTFactory;
 import antlr.Token;
 import antlr.collections.AST;

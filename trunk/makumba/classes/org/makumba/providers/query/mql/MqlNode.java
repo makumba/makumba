@@ -231,7 +231,7 @@ public class MqlNode extends CommonAST {
     protected void checkForOperandType(MqlNode ast) {
         if (!ast.isParam() && ast.getMakType() == null)
             throw new IllegalStateException("No makumba type computed for "
-                    + MqlSqlWalker.printer.showAsString(ast, ""));
+                    + MqlQueryAnalysis.showAst(ast));
     }
 
     boolean isParam() {
