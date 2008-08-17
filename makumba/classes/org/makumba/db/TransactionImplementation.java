@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.makumba.Attributes;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
@@ -43,6 +42,7 @@ import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
@@ -110,8 +110,14 @@ public abstract class TransactionImplementation implements Transaction {
         // then we do the rest of the delete job
         try {
             delete1(ptr);
-        } catch (ConstraintViolationException e) {
-            throw new DBError(e);
+        } catch (Throwable e) {
+            if(e.getClass().getName().endsWith("ConstraintViolationException"))
+                throw new DBError(e);
+            if(e instanceof Error)
+                throw (Error)e;
+            if(e instanceof RuntimeException)
+                throw (RuntimeException)e;
+            throw new RuntimeWrappedException(e);
         }
 
     }
