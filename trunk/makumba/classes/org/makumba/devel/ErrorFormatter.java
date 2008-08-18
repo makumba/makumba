@@ -153,7 +153,7 @@ public class ErrorFormatter {
                                 t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
                                 t1.setStackTrace(t.getStackTrace());
                                 t = t1;
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 e.printStackTrace();
                             }
                         }
@@ -185,7 +185,7 @@ public class ErrorFormatter {
                     String message = t.getMessage() + "\n\n" + original.getMessage();
                     t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
                     t1.setStackTrace(t.getStackTrace());
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     // if we do not find a standard constructor, make a new throwable
                     t1 = new Throwable(t.getMessage() + "\n\n" + original.getMessage());
                     t1.setStackTrace(t.getStackTrace());
