@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
+import org.makumba.OQLParseError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.NameResolver.TextList;
@@ -15,6 +16,7 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 
 import antlr.ANTLRException;
+import antlr.RecognitionException;
 import antlr.collections.AST;
 
 public class MqlQueryAnalysis implements QueryAnalysis {
@@ -37,7 +39,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private TextList text;
 
-    public MqlQueryAnalysis(String query, boolean optimizeJoins) throws ANTLRException {
+    public MqlQueryAnalysis(String query, boolean optimizeJoins){
         this.query = query;
         query = preProcess(query);
 
@@ -46,11 +48,14 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             query += " FROM org.makumba.db.makumba.Catalog c";
         }
 
-        HqlParser parser = HqlParser.getInstance(query);
-        parser.statement();
-        if (parser.error!=null)
-            throw parser.error;
-        
+        HqlParser parser=null;
+        try{
+            parser = HqlParser.getInstance(query);
+            parser.statement();
+        }catch(Throwable t){
+            doThrow(t, parser.getAST());
+        }
+        doThrow(parser.error, parser.getAST());
         transformOQL(parser.getAST());
 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins);
@@ -60,14 +65,14 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             doThrow(e, parser.getAST());
         }
         doThrow(mqlAnalyzer.error, parser.getAST());
- 
+
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = mqlAnalyzer.paramInfo;
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
-//        if(mqlAnalyzer.hasSubqueries)
-//            System.out.println(mqlDebug);
+        // if(mqlAnalyzer.hasSubqueries)
+        // System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
         try {
             mg.statement(mqlAnalyzer.getAST());
@@ -83,17 +88,30 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
     }
 
-    private void doThrow(Throwable t, AST debugTree) throws ANTLRException {
+    private void doThrow(Throwable t, AST debugTree) {
         if (t == null)
             return;
-        if (!(t instanceof antlr.SemanticException))
-            System.err.println(query + " " + showAst(debugTree));
-        if (t instanceof RuntimeException){
+        if (t instanceof RuntimeException) {
             t.printStackTrace();
             throw (RuntimeException) t;
         }
-        if (t instanceof ANTLRException)
-            throw (ANTLRException) t;
+        String errorLocation = "";
+        String errorLocationNumber="";
+        if (t instanceof RecognitionException) {
+            RecognitionException re = (RecognitionException) t;
+            if (re.getColumn() > 0) {
+                errorLocationNumber= " column "+re.getColumn()+" of ";
+                StringBuffer sb = new StringBuffer();
+                sb.append("\r\n");
+
+                for (int i = 0; i < re.getColumn(); i++) {
+                    sb.append(' ');
+                }
+                sb.append('^');
+                errorLocation = sb.toString();
+            }
+        }
+        throw new OQLParseError("\r\nin "+errorLocationNumber+" query:\r\n" + query + errorLocation+errorLocation+errorLocation, t);
     }
 
     public String writeInSQLQuery(NameResolver nr) {
@@ -156,9 +174,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             a.setType(HqlTokenTypes.COLON);
             AST para = new Node();
             para.setType(HqlTokenTypes.IDENT);
-            try{
+            try {
                 para.setText(MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
-            }catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 // we probably are in some query analysis, so we ignore
                 para.setText(a.getText().substring(1));
             }
@@ -190,23 +208,22 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 && a.getFirstChild().getType() == HqlTokenTypes.IDENT)
             // we also accept : params though we might not know what to do with them later
             parameterOrder.add(a.getFirstChild().getText());
-        else if(a.getType()==HqlTokenTypes.ELEMENTS){
-            makeSubquery(a, a.getFirstChild());  
-        }
-        else if(a.getType()==HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")){
+        else if (a.getType() == HqlTokenTypes.ELEMENTS) {
+            makeSubquery(a, a.getFirstChild());
+        } else if (a.getType() == HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")) {
             makeSelect(a, HqlTokenTypes.COUNT, "count");
-        }
-        else if(a.getType()==HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().endsWith("element")){
+        } else if (a.getType() == HqlTokenTypes.METHOD_CALL
+                && a.getFirstChild().getText().toLowerCase().endsWith("element")) {
             makeSelect(a, HqlTokenTypes.AGGREGATE, a.getFirstChild().getText().substring(0, 3));
         }
-        
+
         transformOQL(a.getFirstChild());
         transformOQL(a.getNextSibling());
     }
 
     private void makeSelect(AST a, int type, String text) {
-        makeSubquery(a, a.getFirstChild().getNextSibling().getFirstChild()); 
-        AST from=a.getFirstChild().getFirstChild();
+        makeSubquery(a, a.getFirstChild().getNextSibling().getFirstChild());
+        AST from = a.getFirstChild().getFirstChild();
         from.setNextSibling(makeNode(HqlTokenTypes.SELECT, "select"));
         from.getNextSibling().setFirstChild(makeNode(type, text));
         from.getNextSibling().getFirstChild().setFirstChild(makeNode(HqlTokenTypes.IDENT, "makElementsLabel"));
@@ -222,7 +239,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     }
 
     private AST makeNode(int type, String string) {
-        Node node= new Node();
+        Node node = new Node();
         node.setType(type);
         node.setText(string);
         return node;
