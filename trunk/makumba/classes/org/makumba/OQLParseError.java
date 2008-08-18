@@ -39,11 +39,6 @@ public class OQLParseError extends MakumbaError {
 		super(cause, cause.getMessage()+" "+explanation);
 	}
 
-	public OQLParseError(org.hibernate.QueryException qe) {
-		super("Error in OQL/HQL query: " + qe.getMessage());
-
-	}
-
 	public OQLParseError(Error e) {
 		super("Error in OQL/HQL query: " + e.getMessage());
 	}
