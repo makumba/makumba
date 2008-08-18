@@ -46,7 +46,7 @@ public class QueryContext {
     }
 
     public AST createFromElement(String path, AST alias, int joinType) throws SemanticException {
-        addFrom(path, alias.getText(), joinType);
+        addFrom(path, alias, joinType);
 
         if (inTree == null)
             return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
@@ -127,14 +127,15 @@ public class QueryContext {
      * make a new join with the name and associate teh label with the type
      * 
      * @param joinType
+     * @param location 
      * @throws SemanticException
      */
-    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, int joinType)
+    String addJoin(String l1, String f1, String name, String f2, DataDefinition type, int joinType, AST location)
             throws SemanticException {
         addLabelField(l1);
         joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
-        setLabelType(name, type);
+        setLabelType(name, type, location);
         return name;
     }
 
@@ -151,8 +152,9 @@ public class QueryContext {
      * (e.g. for sets), add these joins as well
      * 
      * @param joinType
+     * @param  
      */
-    String join(String label, String field, String labelf, int joinType) throws SemanticException {
+    String join(String label, String field, String labelf, int joinType, AST location) throws SemanticException {
         String s = (String) joinNames.get(label + "." + field);
         if (s != null)
             return s;
@@ -164,8 +166,8 @@ public class QueryContext {
 
         FieldDefinition fi = type.getFieldDefinition(field);
         if (fi == null)
-            throw new antlr.SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName()
-                    + "\"");
+            throw new SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName()
+                    + "\"", "", location.getLine(), location.getColumn());
 
         try {
             foreign = fi.getForeignTable();
@@ -184,20 +186,20 @@ public class QueryContext {
             label2 += "x";
 
         if (fi.getType().equals("ptr"))
-            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType);
+            return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
         else if (fi.getType().equals("ptrOne"))
-            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType);
+            return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType, location);
 
         else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum"))
-            return addJoin(label, index, label2, index, sub, joinType);
+            return addJoin(label, index, label2, index, sub, joinType, location);
         else if (fi.getType().equals("set")) {
             label2 = label + "x";
             while (findLabelType(label2) != null)
                 label2 += "x";
 
             // FIXME: pointers from set tables are never null, so probably leftJoin should always be false for sets
-            addJoin(label, index, label2, index, sub, HqlSqlTokenTypes.INNER);
+            addJoin(label, index, label2, index, sub, HqlSqlTokenTypes.INNER, location);
             labels.put(label2, sub);
 
             String label3 = label;
@@ -207,13 +209,14 @@ public class QueryContext {
                 label3 += "x";
 
             return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign,
-                joinType);
+                joinType, location);
         } else
             throw new SemanticException("\"" + field + "\" is not a set or pointer in makumba type \"" + type.getName()
-                    + "\"");
+                    + "\"", "", location.getLine(), location.getColumn());
     }
 
-    public void addFrom(String frm, String label, int joinType) throws SemanticException {
+    public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
+        String label= labelAST.getText();
         String iterator = frm;
         explicitLabels.add(label);
         DataDefinition type = null;
@@ -222,10 +225,10 @@ public class QueryContext {
             type = ddp.getDataDefinition(iterator);
         } catch (org.makumba.DataDefinitionNotFoundError e) {
         } catch (org.makumba.DataDefinitionParseError p) {
-            throw new SemanticException(p.getMessage());
+            throw new SemanticException(p.getMessage(), "", labelAST.getLine(), labelAST.getColumn());
         }
         if (type != null) {
-            setLabelType(label, type);
+            setLabelType(label, type, labelAST);
             fromLabels.put(label, type);
             return;
         }
@@ -236,43 +239,43 @@ public class QueryContext {
         if (i > 0) {
             String lbl = iterator.substring(0, i);
             while (true) {
-                lbl = findLabel(frm, lbl);
+                lbl = findLabel(frm, lbl, labelAST);
                 iterator = iterator.substring(i + 1);
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
                     if(findLabelType(label)!=null)
-                        throw new SemanticException("label defined twice: "+label);
-                    join(lbl, field, label, joinType);
+                        throw new SemanticException("label defined twice: "+label, "", labelAST.getLine(), labelAST.getColumn());
+                    join(lbl, field, label, joinType, labelAST);
                     break;
                 }
                 field = iterator.substring(0, i);
-                lbl = join(lbl, field, null, joinType);
+                lbl = join(lbl, field, null, joinType, labelAST);
             }
         } else {
             if (findLabelType(frm) == null)
-                throw new antlr.SemanticException("could not find type \"" + frm + "\"");
+                throw new antlr.SemanticException("could not find type \"" + frm + "\"", "", labelAST.getLine(), labelAST.getColumn());
             aliases.put(label, frm);
         }
 
     }
 
-    private String findLabel(String frm, String lbl) throws SemanticException {
+    private String findLabel(String frm, String lbl, AST location) throws SemanticException {
         if (labels.get(lbl) == null) {
             String lbl1 = (String) aliases.get(lbl);
             if (lbl1 == null)
                 if (parent != null)
-                    lbl1 = parent.findLabel(frm, lbl);
+                    lbl1 = parent.findLabel(frm, lbl, location);
                 else
-                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"");
+                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "", location.getLine(), location.getColumn());
             lbl = lbl1;
         }
         return lbl;
     }
 
-    private void setLabelType(String label, DataDefinition type) throws SemanticException {
+    private void setLabelType(String label, DataDefinition type, AST location) throws SemanticException {
         if (findLabelType(label) != null)
-            throw new antlr.SemanticException("label defined twice: " + label);
+            throw new antlr.SemanticException("label defined twice: " + label, "", location.getLine(), location.getColumn());
         labels.put(label, type);
     }
 
@@ -448,7 +451,7 @@ public class QueryContext {
         }
             
         if (labelType.getFieldDefinition(field) == null)
-            throw new SemanticException("No such field " + field + " in " + labelType);
+            throw new SemanticException("No such field " + field + " in " + labelType, "", mqlDotNode.getLine(), mqlDotNode.getColumn());
         
         labelFields.add(label);
         mqlDotNode.setTextList(makeTextList(label, field));

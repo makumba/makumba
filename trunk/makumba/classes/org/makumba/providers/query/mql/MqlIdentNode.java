@@ -38,7 +38,7 @@ public class MqlIdentNode extends MqlNode {
                 setMakType(selectExpr.getMakType());
                 return;
             }
-            throw new SemanticException("Unknown label: " + label);
+            throw new SemanticException("Unknown label: " + label, "", getLine(), getColumn());
         }
         
         setTextList(walker.currentContext.selectLabel(label, this));
