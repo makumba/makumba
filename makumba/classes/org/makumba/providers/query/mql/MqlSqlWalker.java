@@ -160,7 +160,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         if(error!=null)
             return;
         if (!(path instanceof MqlDotNode))
-            throw new SemanticException("can only support dot froms " + path);
+            throw new SemanticException("can only support dot froms " + path, "", path.getLine(), path.getColumn());
         ((MqlDotNode) path).processInFrom();
         currentContext.createFromElement(path.getText(), alias, joinType);
     }

@@ -75,7 +75,7 @@ public class MqlNode extends CommonAST {
         if(child!=null && child.checkAsIds!=null)
             if(getType()==HqlSqlTokenTypes.WHERE){
                 // there are AS labels used in the WHERE section, we cannot allow that
-                walker.error= new SemanticException("cannot use AS identifiers in WHERE: "+child.checkAsIds);
+                walker.error= new SemanticException("cannot use AS identifiers in WHERE: "+child.checkAsIds, "", getLine(), getColumn());
             }
             else if(checkAsIds!=null)
                 checkAsIds.addAll(child.checkAsIds);
@@ -110,7 +110,7 @@ public class MqlNode extends CommonAST {
             do {
                 if (checkParam((MqlNode) getFirstChild(), inListMember))
                     if( leftParam){
-                        walker.error= new SemanticException("cannot have paramters on both sides of IN");
+                        walker.error= new SemanticException("cannot have paramters on both sides of IN", "", getLine(), getColumn());
                         return;
                     }
                     else
@@ -250,7 +250,7 @@ public class MqlNode extends CommonAST {
                 && !(right.getMakType().isDateType() && left.getMakType().isDateType())
                 )
             throw new SemanticException("incompatible operands " + left.getText() + "(" + toStringType(left.getMakType()) + ") and "
-                    + right.getText() + " (" + toStringType(right.getMakType()) + ")");
+                    + right.getText() + " (" + toStringType(right.getMakType()) + ")", "", getLine(), getColumn());
     }
 
     private static String toStringType(FieldDefinition makType) {
@@ -292,7 +292,7 @@ public class MqlNode extends CommonAST {
                 o = ((FieldDefinition) left.getMakType()).checkValue(arg1);
             } catch (org.makumba.InvalidValueException e) {
                 // walker.printer.showAst(right, walker.pw);
-                throw new SemanticException(e.getMessage());
+                throw new SemanticException(e.getMessage(), "", getLine(), getColumn());
             }
             if (o instanceof Pointer) {
                 o = new Long(((Pointer) o).longValue());

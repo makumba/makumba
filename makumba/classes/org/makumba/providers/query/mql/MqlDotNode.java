@@ -26,11 +26,11 @@ public class MqlDotNode extends MqlNode {
         field = getFirstChild().getNextSibling().getText();
         if (getFirstChild() instanceof MqlDotNode) {
             MqlDotNode son = (MqlDotNode) getFirstChild();
-            label = walker.currentContext.join(son.label, son.field, null, HqlSqlTokenTypes.INNER);
+            label = walker.currentContext.join(son.label, son.field, null, HqlSqlTokenTypes.INNER, this);
         } else if (getFirstChild() instanceof MqlIdentNode) {
             label = ((MqlIdentNode) getFirstChild()).label;
         } else
-            throw new SemanticException("(expression).field not supported");
+            throw new SemanticException("(expression).field not supported", "", getLine(), getColumn());
 
         walker.currentContext.selectField(label, field, this);
     }
