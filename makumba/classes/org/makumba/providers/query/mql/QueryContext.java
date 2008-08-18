@@ -334,10 +334,13 @@ public class QueryContext {
                 switch (j.joinType) {
                     case HqlSqlTokenTypes.LEFT_OUTER:
                         ret.append(" LEFT");
+                        break;
                     case HqlSqlTokenTypes.RIGHT_OUTER:
                         ret.append(" RIGHT");
+                        break;
                     case HqlSqlTokenTypes.FULL:
                         ret.append(" FULL");
+                        break;
                 }
                 ret.append(" JOIN ");
             }
