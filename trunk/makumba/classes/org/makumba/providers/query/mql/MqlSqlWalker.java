@@ -157,6 +157,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     protected void createFromJoinElement(AST path, AST alias, int joinType, AST fetch, AST propertyFetch, AST with)
             throws SemanticException {
+        if(error!=null)
+            return;
         if (!(path instanceof MqlDotNode))
             throw new SemanticException("can only support dot froms " + path);
         ((MqlDotNode) path).processInFrom();

@@ -84,6 +84,8 @@ public class MqlNode extends CommonAST {
     }
 
     protected void oneMoreChild(MqlNode child) {
+        if(walker.error!=null)
+            return;
         FieldDefinition tp = findMakType(child);
         if (tp != null)
             makType = tp;
