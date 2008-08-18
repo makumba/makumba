@@ -100,6 +100,8 @@ public final class HqlParser extends HqlBaseParser {
 	 * @return AST - The equivalent sub-tree.
 	 */
 	public AST negateNode(AST x) {
+	    if(error!=null)
+	        return null;
 		//TODO: switch statements are always evil! We already had bugs because 
 		//      of forgotten token types. Use polymorphism for this!
 		switch ( x.getType() ) {
