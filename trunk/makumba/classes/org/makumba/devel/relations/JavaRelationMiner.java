@@ -96,13 +96,17 @@ public class JavaRelationMiner extends RelationMiner {
                     }
                 }
                 
-                String type = dd.getName();
-                if (type.indexOf("->") > -1) {
-                    field = type.substring(type.indexOf("->") + 2) + "." + field;
-                    type = type.substring(0, type.indexOf("->"));
+                if(dd == null) {
+                    logger.warning("Could not parse query "+query+ " from file "+path);
+                } else {
+                    String type = dd.getName();
+                    if (type.indexOf("->") > -1) {
+                        field = type.substring(type.indexOf("->") + 2) + "." + field;
+                        type = type.substring(0, type.indexOf("->"));
+                    }
+                    
+                    addJava2MDDRelation(path, type, expr, field, query);
                 }
-                
-                addJava2MDDRelation(path, type, expr, field, query);
             }
 
             Map<String, DataDefinition> labelTypes = qA.getLabelTypes();
