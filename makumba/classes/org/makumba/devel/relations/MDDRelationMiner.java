@@ -59,7 +59,7 @@ public class MDDRelationMiner extends RelationMiner {
                 }
             }
         } catch (Throwable e) {
-            e.printStackTrace();
+            logger.warning("Error while crawling MDD at path "+path+" having as type "+type+": "+e.getMessage());
         }
 
     }

@@ -322,7 +322,11 @@ public class JSPRelationMiner extends RelationMiner {
                             continue;
                         }
                         field = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(realExpr);
+                        try {
                         projectionParentType = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
+                        } catch(RuntimeWrappedException rwe) {
+                            logger.warning("Error getting relations for JSP query "+cq.toString()+" while trying to get the type of the parent of the projection "+realExpr);
+                        }
                     } else {
                         // this is something like p.indiv.age + 3
                         projectionExpr = getAnalysableExpression(projectionExpr);
