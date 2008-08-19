@@ -148,6 +148,7 @@ public class ParseStatus {
         }
 
         // checks if the tag was opened
+        // FIXME there is a bug with the login tag
         if (parents.isEmpty()) {
             StringBuffer sb = new StringBuffer();
             sb.append("Error: Closing tag never opened:\ntag \"").append(td.name).append("\" at line ");
