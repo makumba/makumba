@@ -35,7 +35,7 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.providers.Configuration;
 
 /**
- * This tag implements an input field to be used within search forms. It slighlty changes some of the functionality of
+ * This tag implements an input field to be used within search forms. It slightly changes some of the functionality of
  * {@link InputTag}, e.g. among others:
  * <ul>
  * <li>Not needing the name field, but getting the name & type of the input from the first argument in the fields
