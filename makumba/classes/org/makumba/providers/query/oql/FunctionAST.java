@@ -48,8 +48,8 @@ public class FunctionAST extends OQLAST {
     public static String[] stringToIntFunctions = { "ascii(", "character_length(" };
 
     /** date-to-int functions. */
-    public static String[] dateToIntFunctions = { "dayOfMonth(", "dayOfWeek(", "dayOfYear(", "month(", "hour(",
-            "minute(", "second(" };
+    public static String[] dateToIntFunctions = { "dayOfMonth(", "dayOfWeek(", "dayOfYear(", "year(", "month(",
+            "hour(", "minute(", "second(" };
 
     /** date-to-String functions. */
     public static String[] dateToStringFunctions = { "monthName(", "dayName(" };
