@@ -54,7 +54,7 @@ public class InvalidValueException extends RuntimeException {
 
     /** form an exception message from the required type and the pointer that doesn't respect it */
     public InvalidValueException(FieldDefinition fi, Class<?> requiredClass, Object value) {
-        this(fi, "Required Java type:" + requiredClass.getName() + " ; given value: " + value + " of type "
+        this(fi, "Required Java type:" + requiredClass.getName() + " ; given value '" + value + "' is of type "
                 + value.getClass().getName());
         this.fieldDefinition = fi;
     }
