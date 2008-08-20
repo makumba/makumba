@@ -35,6 +35,9 @@ public class MqlSqlASTFactory extends ASTFactory  {
             case HqlSqlTokenTypes.STAR:
             case HqlSqlTokenTypes.DIV:
                 return MqlAritmeticNode.class;   
+            case HqlSqlTokenTypes.AND:
+            case HqlSqlTokenTypes.OR:
+                return MqlLogicalNode.class; 
             default:
                 return MqlNode.class;
         }
