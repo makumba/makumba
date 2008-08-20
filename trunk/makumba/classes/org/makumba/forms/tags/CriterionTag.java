@@ -37,6 +37,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     private String matchMode;
 
+    private boolean hasMatchModeTag = false;
+
     public CriterionTag() {
         // TODO move this somewhere else
         try {
@@ -72,8 +74,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         String[] fieldsSplit = getFieldsSplit();
         for (int i = 0; i < fieldsSplit.length; i++) {
             String element = fieldsSplit[i];
-            FieldDefinition fd = getForm().fdp.getInputTypeAtAnalysis(this,
-                getForm().getDataTypeAtAnalysis(pageCache), element, pageCache);
+            FieldDefinition fd = getForm().fdp.getInputTypeAtAnalysis(this, getForm().getDataTypeAtAnalysis(pageCache),
+                element, pageCache);
 
             // if the fd is not found, the field is not known
             if (fd == null) {
@@ -103,6 +105,20 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         getForm().responder.addMultiFieldSearchMapping(getInputName(), getFieldsSplit());
+
+        // if matchMode is null, it was not set in the criterionTag
+        // thus if we have no matchMode tag for this criterionTag
+        // get a default mode depending on the type, and whether we do a range comparison
+        if (matchMode == null && !hasMatchModeTag) {
+            if (isRange()) { // for range, we always use between-inclusive
+                matchMode = SearchTag.MATCH_BETWEEN_INCLUSIVE;
+            } else { // for others, use equals as the most logical one
+                matchMode = SearchTag.MATCH_EQUALS;
+            }
+            // need to register it again in the responser
+            getForm().responder.setDefaultMatchMode(getInputName(), matchMode);
+        }
+
         if (bodyContent != null) {
             try {
                 bodyContent.getEnclosingWriter().print(bodyContent.getString());
@@ -128,6 +144,11 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
             }
         }
         return EVAL_BODY_BUFFERED;
+    }
+
+    public void setHasMatchMode(boolean hasMatchMode) {
+        this.hasMatchModeTag = hasMatchMode;
+        System.out.println("setting hasMatchmode = true in " + getInputName());
     }
 
     @Override
@@ -193,18 +214,20 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         checkValidAttributeValues("isRange", isRange, allowedRanges);
         this.isRange = isRange;
     }
-    
+
     public void setMatchMode(String matchMode) {
         this.matchMode = matchMode;
     }
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         bodyContent = null;
         fieldDef = null;
+        matchMode = null;
+        hasMatchModeTag = false;
     }
-    
+
     public String getMatchMode() {
         return matchMode;
     }

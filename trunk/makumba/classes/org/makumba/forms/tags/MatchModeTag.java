@@ -146,7 +146,7 @@ public class MatchModeTag extends GenericMakumbaTag {
                             + StringUtils.toString(curentModes.keySet()));
                 }
             }
-        } 
+        }
     }
 
     protected CriterionTag getCriterionTag() {
@@ -155,10 +155,13 @@ public class MatchModeTag extends GenericMakumbaTag {
 
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws LogicException, JspException {
+        // tell the criterion tag that we have this inner matchMode tag
+        getCriterionTag().setHasMatchMode(true);
+
         String matchInputName = getCriterionTag().getInputName() + getCriterionTag().getForm().responder.getSuffix()
                 + SearchTag.SUFFIX_INPUT_MATCH;
         String matchMode = pageContext.getRequest().getParameter(matchInputName);
-        
+
         if (matchModes == null) {// if no match modes are provided, set the default ones
             FieldDefinition fd = getCriterionTag().getTypeFromContext(pageCache);
             Hashtable<String, String> defaultModes = new Hashtable<String, String>();

@@ -23,6 +23,7 @@ import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.FieldInfo;
 
 /**
  * This class provides a search form. It slightly differs from other forms in the way that it uses it's own tags, namely
@@ -145,7 +146,7 @@ public class SearchTag extends FormTagBase {
 
         private boolean notEmpty(Object value) {
             if (value instanceof Vector) {
-                return ((Vector) value).size() > 0;
+                return ((Vector<?>) value).size() > 0;
             } else {
                 return isSingleValue(value);
             }
@@ -153,7 +154,7 @@ public class SearchTag extends FormTagBase {
 
         private boolean isSingleValue(Object value) {
             return value != null && !(value instanceof Vector) && !Pointer.isNullObject(value)
-                    && value.toString().length() > 0;
+                    && value.toString().length() > 0 && !value.equals(FieldInfo.emptyDate);
         }
 
         /**
@@ -201,7 +202,7 @@ public class SearchTag extends FormTagBase {
                 if (notEmpty(value)) {
                     appendParams(queryString, inputName, value);
                 }
-
+                
                 // special treatment for range end fields
                 if (inputName.endsWith(RANGE_END)) {
                     if (notEmpty(attributes.getAttribute(getRangeBeginName(inputName)))) {
@@ -212,10 +213,10 @@ public class SearchTag extends FormTagBase {
                     }
                 }
 
-                String[] multiFieldSearchCriterion = resp.getMultiFieldSearchCriterion(inputName);
-                FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, inputName, inputName);
-
                 if (notEmpty(value)) { // we only regard fields that have a value entered
+                    String[] multiFieldSearchCriterion = resp.getMultiFieldSearchCriterion(inputName);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, inputName, inputName);
+
                     if (where.length() > 0) { // combine different fields with AND
                         where += " AND ";
                     }
@@ -290,7 +291,7 @@ public class SearchTag extends FormTagBase {
                 link.append("&");
             }
             if (value instanceof Vector) {
-                Vector vector = (Vector) value;
+                Vector<?> vector = (Vector<?>) value;
                 for (int i = 0; i < (vector).size(); i++) {
                     link.append(inputName).append("=").append(treatValue(inputName, (vector).get(i)));
                     if (i + 1 < (vector).size()) {
