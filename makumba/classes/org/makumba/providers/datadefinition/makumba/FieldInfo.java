@@ -409,7 +409,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     // moved from dateHandler
-    static final Date emptyDate;
+    public static final Date emptyDate;
 
     static {
         Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
@@ -679,9 +679,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         switch (getIntegerType()) {
             case FieldDefinition._int:
             case FieldDefinition._intEnum:
-                return ((Integer) getDefaultValue()).intValue();
+                return (Integer) getDefaultValue();
             case FieldDefinition._setIntEnum:
-                return ((Integer) getEnum().defaultValue).intValue();
+                return (Integer) getEnum().defaultValue;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
