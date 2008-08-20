@@ -875,6 +875,7 @@ functionExpr :
             |   dayOfMonth:"dayOfMonth"{#dayOfMonth.setText("dayOfMonth("); }
             |   dayOfWeek:"dayOfWeek"{#dayOfWeek.setText("dayOfWeek("); }
             |   dayOfYear:"dayOfYear"{#dayOfYear.setText("dayOfYear("); }
+            |   year:"year"{#year.setText("year("); }
             |   month:"month"{#month.setText("month("); }
             |   hour:"hour"{#hour.setText("hour("); }
             |   minute:"minute"{#minute.setText("minute("); }
