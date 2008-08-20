@@ -1,10 +1,14 @@
-SELECT ms.id FROM projman.Message ms WHERE exists (SELECT a FROM ms.item.attachments a)
-SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (SELECT a FROM msit.attachments a)
-SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d =ANY(SELECT a FROM msit.attachments a)
+SELECT it AS col1,(SELECT count (*) FROM projman.Document d1 WHERE d1.content.name=d.content.name AND d1.TS_create<= d.TS_create) AS col2,(SELECT count (*) FROM projman.Document d1 WHERE d1.content.name=d.content.name) AS col3,d.id AS col4,it.creator.displayName AS col5,case when it.creator=$2 then 1 else 0 end AS col6,it.creator.id AS col7,d.TS_create AS col8,it.subject AS col9 FROM projman.Message m join m.item mit join mit.attachments d join d.item it WHERE m=$1
+SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE size (msit.attachments) >1
+SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in elements(msit.attachments)
+SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d in (FROM msit.attachments x)
+SELECT ms.id FROM projman.Message ms WHERE exists (FROM ms.item.attachments a)
+SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d =ANY(FROM msit.attachments a)
 #
 # This is the corpus of (mostly OQL) queries on which we test MQL. 
 # Created by Rudolf Mayer using the makumba relation crawler on Karamba. 
 #
+SELECT bis FROM general.event.Event genEvent, general.event.Application ea, ea.applicant p, best.internal.Student bis WHERE  ea.event=genEvent AND bis.student.person=p AND (p.photo<>nil OR $1=$2) ORDER BY p.name, p.surname
 SELECT w.toURI as toURI, w.fromURI as fromURI FROM best.WebRedirect w WHERE w.fromURI IN SET($3,$2,$1)
 SELECT ins AS col1,s AS col2,auth AS col3,p AS col4,t AS col5,t.name AS col6 FROM best.internal.Student ins, ins.student s, s.authentication auth, s.person p,general.Team t, t.aliases a WHERE (p=($2)) AND (t.mail_type in SET (0,1) AND (t.name=$1 OR a.alias=$1))
 SELECT e AS col1,genEvent AS col2,count(d) AS col3 FROM best.internal.Event e, e.generalEvent genEvent,general.archive.Document d, d.events event, d.inArchives archive WHERE (e=$4 OR e.bestNo=$4) AND (event=e AND ($6='yes' OR (archive.accessRightsView='BESTMembers') OR (d.accessRightsView='BESTMembers') OR (archive.accessRightsView='Team' AND archive.owner IN SET($2,$5,$1,$8,$7,$3,$9)))) GROUP BY col1

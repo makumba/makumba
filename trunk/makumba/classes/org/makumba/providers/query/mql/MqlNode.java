@@ -89,6 +89,9 @@ public class MqlNode extends CommonAST {
         FieldDefinition tp = findMakType(child);
         if (tp != null)
             makType = tp;
+        if(getType()== HqlSqlTokenTypes.NOT && child.isParam()){
+            child.setMakType(makeBooleanFieldDefinition());
+        }
         if ((getType() == HqlSqlTokenTypes.IN || getType() == HqlSqlTokenTypes.NOT_IN)
                 && child.getType() == HqlSqlTokenTypes.IN_LIST) {
             // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right side, where we
@@ -151,6 +154,8 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.AGGREGATE:
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:
+                if(child.isParam())
+                    child.setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "int"));
                 return child.getMakType();
             case HqlSqlTokenTypes.CASE:
                 // TODO: maybe WHEN, THEN or ELSE are parameters
@@ -218,8 +223,6 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.TRUE:
             case HqlSqlTokenTypes.EXISTS:
             case HqlSqlTokenTypes.NOT:
-            case HqlSqlTokenTypes.AND:
-            case HqlSqlTokenTypes.OR:
             case HqlSqlTokenTypes.IS_NULL:
             case HqlSqlTokenTypes.IS_NOT_NULL:
             case HqlSqlTokenTypes.IN:
@@ -310,11 +313,20 @@ public class MqlNode extends CommonAST {
     }
 
     protected boolean checkParam(MqlNode left, MqlNode right) {
-        if (right.isParam()) {
-            walker.setParameterType(right, left);
-            return true;
-        }
+        if (right.isParam())
+            if(left.isParam()){
+                walker.error= new SemanticException("can't have two parameters in a non-logical binary operator","", getLine(), getColumn());
+                return true;
+            }
+            else{
+                walker.setParameterType(right, left);
+                return true;
+            }
         return false;
+    }
+
+    protected FieldDefinition makeBooleanFieldDefinition() {
+        return walker.currentContext.ddp.makeFieldDefinition("x", "boolean");
     }
 
     // ------ function part, ported from OQL, might move somewhere else------

@@ -26,6 +26,6 @@ public class MqlComparisonNode extends MqlBinaryOperator {
 
     @Override
     protected void setMakType(MqlNode left, MqlNode right) throws SemanticException {
-        setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "boolean"));
+        setMakType(makeBooleanFieldDefinition());
     }
 }

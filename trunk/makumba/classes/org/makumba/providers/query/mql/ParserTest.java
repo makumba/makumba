@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -146,7 +147,7 @@ public class ParserTest {
         if(mqlThr!=null){
             System.err.println(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
             System.out.println(line+": OQL SQL: " + oql_sql);
-            if(!(mqlThr instanceof antlr.ANTLRException))
+            if(!(mqlThr instanceof OQLParseError))
                 mqlThr.printStackTrace();
         }
     }

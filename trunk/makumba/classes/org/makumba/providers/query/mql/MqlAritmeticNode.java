@@ -2,9 +2,8 @@ package org.makumba.providers.query.mql;
 
 import antlr.SemanticException;
 
-/** We need to treat comparisons specially because
+/** We need to treat aritmethic operations specially because
  * * an operation with a parameter will determine the parameter type
- * TODO: AND and OR should also do similar stuff, they currently don't so expr AND $1 will not correctly set $1 to boolean
  * @author Cristian Bogdan
  * @version $Id: MqlComparisonNode.java,v 1.1 Aug 5, 2008 5:31:13 PM cristi Exp $
  */
