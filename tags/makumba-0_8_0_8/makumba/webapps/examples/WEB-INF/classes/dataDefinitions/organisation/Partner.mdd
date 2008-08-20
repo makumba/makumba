@@ -1,8 +1,0 @@
-name=not null char[40]       ;Name
-city=char[40]                ;City
-country= ptr general.Country ;Country
-phone=char[20]               ;Phone
-fax=char[40]                 ;Fax
-email=char[40]               ;E-Mail
-homepage=char[50]            ;Home Page on the Internet
-comment=text                 ;Other comments
