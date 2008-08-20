@@ -289,9 +289,9 @@ public class JSPRelationMiner extends RelationMiner {
     private void computeJSPMDDProjectionRelations(String fromFile, PageCache pageCache, Object queryKey,
             ComposedQuery cq) {
         // let's see where the projections of the queries come from
-        Vector<Object> projections = cq.getProjections();
+        Vector<String> projections = cq.getProjections();
 
-        for (Iterator<Object> iterator = projections.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = projections.iterator(); iterator.hasNext();) {
             String projectionExpr = (String) iterator.next();
             MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(
                     (MultipleKey) queryKey, projectionExpr));
