@@ -221,7 +221,7 @@ public class RecordEditor extends RecordFormatter {
             FieldDefinition fd = dd.getFieldDefinition(i);
             if (fd.isFileType()) {
                 formatterArray[i] = binaryEditor.getInstance();
-                return;
+                continue;
             }
             switch (fd.getIntegerType()) {
                 case FieldDefinition._ptr:
