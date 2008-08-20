@@ -236,7 +236,7 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private String getBaseURL() {
         HttpServletRequest r = ((HttpServletRequest) pageContext.getRequest());
-        String queryString = this.getQueryString(r.getParameterMap());
+        String queryString = getQueryString(r.getParameterMap());
         StringBuffer url = new StringBuffer(r.getRequestURL().toString().substring(
             r.getRequestURL().toString().indexOf(r.getContextPath())));
         url.append("?").append(queryString);
@@ -247,7 +247,7 @@ public class PaginationTag extends GenericMakumbaTag {
         return (QueryTag) findAncestorWithClass(this, QueryTag.class);
     }
 
-    public String getQueryString(Map<Object, Object> map) {
+    public String getQueryString(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
