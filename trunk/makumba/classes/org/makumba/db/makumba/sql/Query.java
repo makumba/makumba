@@ -134,7 +134,7 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new DBError(se, com);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.performance").fine("" + diff + " ms " + com);
+            java.util.logging.Logger.getLogger("org.makumba." + "db.query.performance").fine("" + diff + " ms " + ps);
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
