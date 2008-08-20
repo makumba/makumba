@@ -28,6 +28,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.IterationTag;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
@@ -64,7 +65,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     String maxCountVar;
 
     String offset, limit;
-    
+
     String editable, logicClass, editPage;
 
     private int defaultOffset = 0;
@@ -134,15 +135,15 @@ public class QueryTag extends GenericListTag implements IterationTag {
         onlyInt("defaultLimit", s);
         defaultLimit = s.trim();
     }
-    
+
     public void setAuthorize(String s) {
-        this.authorize  = s;
+        this.authorize = s;
     }
-    
+
     public void setEditable(String s) {
         editable = s.trim();
     }
-    
+
     public String getLogicClass() {
         return logicClass;
     }
@@ -319,7 +320,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
             query = parentKey == null ? new ComposedQuery(simpleQueryProps, ql) : new ComposedSubquery(
                     simpleQueryProps, QueryTag.getQuery(pageCache, parentKey), ql);
-            query.addProjection("count(*)");
+            query.addProjectionDirectly("count(*)");
             query.init();
             pageCache.cache(MakumbaJspAnalyzer.QUERY, maxResultsKey, query);
             // we need to pass these variables in request to the method doing the query
@@ -534,10 +535,23 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (total == Integer.MIN_VALUE) { // we still need to evaluate this total count
             PageContext pageContext = (PageContext) servletRequest.getAttribute(standardMaxResultsContext);
             MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
+            PageCache pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             try {
                 QueryExecution exec = QueryExecution.getFor(keyMaxResults, pageContext, null, null);
-                exec.getIterationGroupData();
-                total = ((Integer) exec.currentListData().get("col1"));
+                int dataSize = exec.getIterationGroupData();
+                MultipleKey tagKey = (MultipleKey) keyMaxResults.clone();
+                tagKey.remove(standardMaxResultsVar);
+                ComposedQuery query = (ComposedQuery) pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey);
+
+                // if the query has a group-by section, then check the result size of the iteration data
+                // this is because then, we have one row for each key we grouped by
+                // FIXME: This fix is not ideal in performance; better would be to modify the query in case of a group,
+                // in a way that the query would become a subquery to an outer query that would count the resutls
+                if (StringUtils.isNotBlank(query.getGroupBySection())) {
+                    total = dataSize;
+                } else {
+                    total = ((Integer) exec.currentListData().get("col1"));
+                }
                 servletRequest.setAttribute(standardMaxResultsVar, total);
             } catch (LogicException e) {
                 e.printStackTrace();

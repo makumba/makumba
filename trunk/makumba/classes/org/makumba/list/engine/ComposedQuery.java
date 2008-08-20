@@ -82,7 +82,7 @@ public class ComposedQuery {
     int subqueries = 0;
 
     /** The projections made in this query */
-    Vector<Object> projections = new Vector<Object>();
+    Vector<String> projections = new Vector<String>();
 
     /** The expression associated to each projection */
     Hashtable<String, Integer> projectionExpr = new Hashtable<String, Integer>();
@@ -119,16 +119,16 @@ public class ComposedQuery {
     Vector<Integer> keyset;
 
     /** The keyset of all the parent queries */
-    Vector previousKeyset;
+    Vector<Vector<Integer>> previousKeyset;
 
     /** The labels of the keyset */
     Vector<String> keysetLabels;
 
-    /** A Vector containing and empty vector. Used for empty keysets */
-    static Vector empty;
+    /** A Vector containing an empty vector. Used for empty keysets */
+    static Vector<Vector<Integer>> empty;
     static {
-        empty = new Vector();
-        empty.addElement(new Vector());
+        empty = new Vector<Vector<Integer>>();
+        empty.addElement(new Vector<Integer>());
     }
 
     /**
@@ -179,6 +179,15 @@ public class ComposedQuery {
     }
 
     /**
+     * Gets the GROUP BY section
+     * 
+     * @return A String containing the GROUP BY section of the query
+     */
+    public String getGroupBySection() {
+        return derivedSections[GROUPBY];
+    }
+
+    /**
      * Initializes the keysets. previousKeyset is "empty"
      */
     protected void initKeysets() {
@@ -205,7 +214,7 @@ public class ComposedQuery {
      */
     protected void prependFromToKeyset() {
         projectionExpr.clear();
-        Enumeration e = ((Vector) projections.clone()).elements();
+        Enumeration<String> e = ((Vector<String>) projections.clone()).elements();
         projections.removeAllElements();
 
         // add the previous keyset
@@ -361,7 +370,7 @@ public class ComposedQuery {
 
         int i = 0;
 
-        for (Enumeration e = projections.elements(); e.hasMoreElements();) {
+        for (Enumeration<String> e = projections.elements(); e.hasMoreElements();) {
             sb.append(sep);
             sep = ",";
             sb.append(e.nextElement()).append(" AS ").append(columnName(new Integer(i++)));
@@ -445,8 +454,8 @@ public class ComposedQuery {
      * {@link QueryTag#doAnalyzedStartTag(org.makumba.analyser.PageCache)} to compose a query with 'count(*)' as the
      * only projection.
      */
-    public void addProjection(Object o) {
-        projections.add(o);
+    public void addProjectionDirectly(String s) {
+        projections.add(s);
     }
 
     public String toString() {
@@ -468,7 +477,7 @@ public class ComposedQuery {
      * 
      * @return a {@link Vector} containing the projections of this ComposedQuery
      */
-    public Vector<Object> getProjections() {
+    public Vector<String> getProjections() {
         return projections;
     }
 
@@ -493,4 +502,5 @@ public class ComposedQuery {
     public Object checkExprSetOrNullable(String expr) {
         return qep.checkExprSetOrNullable(getFromSection(), expr);
     }
+    
 }
