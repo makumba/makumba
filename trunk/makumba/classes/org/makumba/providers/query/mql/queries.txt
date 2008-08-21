@@ -8,6 +8,7 @@ SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d =
 # This is the corpus of (mostly OQL) queries on which we test MQL. 
 # Created by Rudolf Mayer using the makumba relation crawler on Karamba. 
 #
+SELECT count(distinct p) AS col1 FROM test.Person p, p.indiv i
 SELECT bis FROM general.event.Event genEvent, general.event.Application ea, ea.applicant p, best.internal.Student bis WHERE  ea.event=genEvent AND bis.student.person=p AND (p.photo<>nil OR $1=$2) ORDER BY p.name, p.surname
 SELECT w.toURI as toURI, w.fromURI as fromURI FROM best.WebRedirect w WHERE w.fromURI IN SET($3,$2,$1)
 SELECT ins AS col1,s AS col2,auth AS col3,p AS col4,t AS col5,t.name AS col6 FROM best.internal.Student ins, ins.student s, s.authentication auth, s.person p,general.Team t, t.aliases a WHERE (p=($2)) AND (t.mail_type in SET (0,1) AND (t.name=$1 OR a.alias=$1))
