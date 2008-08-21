@@ -226,7 +226,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-
+    
     public void testMakPagination() throws ServletException, IOException {
         pageContext.include("list-oql/testMakPaginationTag.jsp");
     }
@@ -246,7 +246,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakPaginationGroupBy(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, true);
+            output = response.getText(); fetchValidTestResult(output, false);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
@@ -265,4 +265,18 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
+
+    public void testMakValueDistinct() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakValueDistinct.jsp");
+    }
+
+    public void endMakValueDistinct(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
 }
