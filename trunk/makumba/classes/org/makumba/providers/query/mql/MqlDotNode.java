@@ -26,7 +26,7 @@ public class MqlDotNode extends MqlNode {
         field = getFirstChild().getNextSibling().getText();
         if (getFirstChild() instanceof MqlDotNode) {
             MqlDotNode son = (MqlDotNode) getFirstChild();
-            label = walker.currentContext.join(son.label, son.field, null, HqlSqlTokenTypes.INNER, this);
+            label = walker.currentContext.join(son.label, son.field, null, -1, this);
         } else if (getFirstChild() instanceof MqlIdentNode) {
             label = ((MqlIdentNode) getFirstChild()).label;
         } else

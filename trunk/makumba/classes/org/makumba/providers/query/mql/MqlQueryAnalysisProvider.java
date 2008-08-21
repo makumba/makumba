@@ -15,7 +15,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         private static final long serialVersionUID = 1L;
 
         protected Object makeResource(Object nm, Object hashName) throws Exception {
-            return new MqlQueryAnalysis((String) nm, true);
+            return new MqlQueryAnalysis((String) nm, true, false);
         }
     }, true);
 

@@ -39,7 +39,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private TextList text;
 
-    public MqlQueryAnalysis(String query, boolean optimizeJoins){
+    public MqlQueryAnalysis(String query, boolean optimizeJoins, boolean autoLeftJoin){
         this.query = query;
         query = preProcess(query);
 
@@ -58,7 +58,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         doThrow(parser.error, parser.getAST());
         transformOQL(parser.getAST());
 
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins);
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins, autoLeftJoin);
         try {
             mqlAnalyzer.statement(parser.getAST());
         } catch (Throwable e) {

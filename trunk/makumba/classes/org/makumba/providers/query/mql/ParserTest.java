@@ -102,7 +102,7 @@ public class ParserTest {
         MqlQueryAnalysis mq = null;
         Throwable mqlThr=null;
         try {
-            mq = new MqlQueryAnalysis(query, false);
+            mq = new MqlQueryAnalysis(query, false, false);
             mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr=t;
