@@ -279,4 +279,17 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakListAggregation() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListAggregation.jsp");
+    }
+
+    public void endMakListAggregation(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
 }
