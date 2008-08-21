@@ -49,7 +49,7 @@ public class QueryContext {
         addFrom(path, alias, joinType);
 
         if (inTree == null)
-            return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "");
+            return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "fromFragment");
         else
             return null;
     }
@@ -184,7 +184,12 @@ public class QueryContext {
 
         while (findLabelType(label2) != null)
             label2 += "x";
+        if(joinType==-1){
+            joinType= HqlSqlTokenTypes.INNER;
 
+            if(walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull())
+                joinType= HqlSqlTokenTypes.LEFT_OUTER;
+        }
         if (fi.getType().equals("ptr"))
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
         else if (fi.getType().equals("ptrOne"))
