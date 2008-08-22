@@ -7,6 +7,7 @@ SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE d =
 #
 # This is the corpus of (mostly OQL) queries on which we test MQL. 
 # Created by Rudolf Mayer using the makumba relation crawler on Karamba. 
+# automaticLeftJoin is off when comparing queries from JSPs. It is then turned on by a comment line saying "automaticLeftJoin"
 #
 SELECT count(distinct p) AS col1 FROM test.Person p, p.indiv i
 SELECT bis FROM general.event.Event genEvent, general.event.Application ea, ea.applicant p, best.internal.Student bis WHERE  ea.event=genEvent AND bis.student.person=p AND (p.photo<>nil OR $1=$2) ORDER BY p.name, p.surname
@@ -5192,7 +5193,7 @@ SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
 SELECT p AS col1,p.name AS col2,p.surname AS col3 FROM general.Person p
 SELECT ns.name AS col1 FROM best.wiki.Namespace ns
 SELECT n.type <> 'Private' AS col1,p.content AS col2,n.type = 'Private' AS col3 FROM best.wiki.WikiPage p, p.namespace n
-#
+#automaticLeftJoin
 SELECT n AS col1,n.publication_date AS col2,n.expiry_date AS col3,n.related_link AS col4,n.short_text AS col5,n.title AS col6,n.picture <> NIL AS col7,n.picture AS col8 FROM general.WebNews n, n.locations location
 SELECT ns.name AS name, ns.type AS type FROM best.wiki.Namespace ns ORDER BY ns.name
 SELECT p.name AS name, p.surname AS surname FROM general.Person p WHERE p = $1
