@@ -47,15 +47,17 @@ public class ParserTest {
     }
 
     public static void main(String[] argv) {
-
+        boolean automaticLeftJoin=false;
         int line = 1;
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
                 "org/makumba/providers/query/mql/queries.txt").getContent()));
             String query = null;
             while ((query = rd.readLine()) != null) {
+                if(query.startsWith("#automaticLeftJoin"))
+                    automaticLeftJoin=true;
                 if (!query.trim().startsWith("#")) {
-                    analyseQuery(line, query);
+                    analyseQuery(line, query, automaticLeftJoin);
                 }
                 line++;
             }
@@ -91,7 +93,7 @@ public class ParserTest {
         return ret.toString();
     }
 
-    private static void analyseQuery(int line, String query) {
+    private static void analyseQuery(int line, String query, boolean automaticLeftJoin) {
         AST hql_sql = null;
         boolean passedMql = false;
         Throwable thr = null;
@@ -102,7 +104,7 @@ public class ParserTest {
         MqlQueryAnalysis mq = null;
         Throwable mqlThr=null;
         try {
-            mq = new MqlQueryAnalysis(query, false, false);
+            mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
             mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr=t;
