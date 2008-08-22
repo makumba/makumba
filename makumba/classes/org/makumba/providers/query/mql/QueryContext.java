@@ -92,8 +92,10 @@ public class QueryContext {
 
     private Hashtable<String, TextList> labelText= new Hashtable<String, TextList>();
 
+    /** labels that have fields selected, not just the primary key */
     private HashSet<String> labelFields= new HashSet<String>();
 
+    /** labels defined explicitly in the FROM section of this subquery */
     HashSet<String> explicitLabels= new HashSet<String>();
 
     private boolean wroteRange;
@@ -155,11 +157,11 @@ public class QueryContext {
      * @param  
      */
     String join(String label, String field, String labelf, int joinType, AST location) throws SemanticException {
+        // need protection to avoid repeating a join
         String s = (String) joinNames.get(label + "." + field);
         if (s != null)
             return s;
 
-        // need protection to avoid repeating a join
         DataDefinition foreign = null, sub = null;
         DataDefinition type = (DataDefinition) findLabelType(label);
         String index = type.getIndexPointerFieldName();
@@ -168,6 +170,10 @@ public class QueryContext {
         if (fi == null)
             throw new SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName()
                     + "\"", "", location.getLine(), location.getColumn());
+
+        // if the label is defined in a parent, and this is a pointer, we let the parent do the join
+        if(fi.getType().startsWith("ptr") && labels.get(label)==null && parent!=null)
+            return parent.join(label, field, labelf, joinType, location);
 
         try {
             foreign = fi.getForeignTable();
