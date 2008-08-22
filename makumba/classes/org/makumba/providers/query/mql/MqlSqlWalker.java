@@ -51,6 +51,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     public MqlSqlWalker(String query, DataDefinition paramInfo, boolean optimizeJoins, boolean autoLeftJoin) {
         this.query = query;
         this.optimizeJoins= optimizeJoins;
+        this.autoLeftJoin= autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfo = paramInfo;
     }
