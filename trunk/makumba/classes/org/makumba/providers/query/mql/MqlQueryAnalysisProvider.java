@@ -26,7 +26,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
     public boolean selectGroupOrOrderAsLabels() {
-        return true;
+        return false;
     }
 
     @Override
