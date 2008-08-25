@@ -316,12 +316,12 @@ public class ComposedQuery {
      * @return The checked expression, transformed according to the projections
      */
     String checkExpr(String str) {
-        if (!qep.selectGroupOrOrderAsLabels())
-            return str;
         if (str == null)
             return null;
         if (str.trim().length() == 0)
             return null;
+        if (!qep.selectGroupOrOrderAsLabels())
+            return str;
         // if(projections.size()==1)
         // new Throwable().printStackTrace();
 
