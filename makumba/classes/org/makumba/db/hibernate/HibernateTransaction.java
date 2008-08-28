@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +28,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.StacktraceUtil;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -303,11 +305,11 @@ public class HibernateTransaction extends TransactionImplementation {
             results = getConvertedQueryResult(analyzer, q.list());
 
         } catch (Exception e) {
+             
             throw new ProgrammerError(
-                    "Error while trying to compute the results for query "
-                            + q.getQueryString()
-                            + ": are you sure you did not try to compare two incompatible types? (remember, in HQL you need to select an object's id for comparison)\n"
-                            + e.getMessage());
+                    "Error while trying to execute query "
+                            + q.getQueryString() + ":\n"
+                            + StacktraceUtil.getStackTrace(e));
         }
         return results;
     }
@@ -322,9 +324,8 @@ public class HibernateTransaction extends TransactionImplementation {
      */
     private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
-
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
-
+        
         String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
         Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>(projections.length);
         for (int i = 0; i < projections.length; i++) {
