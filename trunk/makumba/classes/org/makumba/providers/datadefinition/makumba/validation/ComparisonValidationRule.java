@@ -256,10 +256,10 @@ public class ComparisonValidationRule extends BasicValidationRule {
                 "birthdate <= date($now, $now, $now + 105, 0, 0, 0)", " beginDate >= date($now,$now,$now - 5)",
                 "beginDate >= date($now-5,$now,$now - 5)", "birthdate >= date($now, $now, $now - 15, 0, 0, 0)",
                 "lower(indiv.name) != indiv.name" };
-        RegExpUtils.evaluate(pattern, rules, false);
+        RegExpUtils.evaluate(pattern, false, rules);
 
         rules = new String[] { "birthdate <= date($now, $now, $now - 15, 0, 0, 0)", "lower(indiv.name) != indiv.name" };
-        RegExpUtils.evaluate(pattern, rules, false);
+        RegExpUtils.evaluate(pattern, false, rules);
     }
 
     public static String getOperator() {

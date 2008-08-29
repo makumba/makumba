@@ -73,7 +73,7 @@ public class RegExpUtils {
     }
 
     /** Testing method to see if some Strings match a pattern. */
-    public static void evaluate(Pattern p, String[] rules, boolean details) {
+    public static void evaluate(Pattern p, boolean details, String... rules) {
         System.out.println(p.pattern());
         for (int i = 0; i < rules.length; i++) {
             Matcher matcher = p.matcher(rules[i].trim());
@@ -89,7 +89,7 @@ public class RegExpUtils {
     }
 
     public static void evaluate(Pattern p, String... rules) {
-        evaluate(p, rules, true);
+        evaluate(p, true, rules);
     }
 
 }
