@@ -196,7 +196,7 @@ public interface DataDefinition {
             s += "";
             return "QueryFragment Function: "
                     + (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
-                            : "") + getName() + "(" + s + ")" + " = " + queryFragment + ":" + errorMessage;
+                            : "") + getName() + "(" + s + ")" + " { " + queryFragment.trim() + " } " + errorMessage;
         }
 
     }
