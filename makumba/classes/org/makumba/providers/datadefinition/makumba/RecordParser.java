@@ -674,7 +674,8 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation.mdd
+            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
             JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
@@ -703,8 +704,10 @@ public class RecordParser {
                 lineWithoutComment = st.substring(0, st.indexOf(";"));
             }
 
-            // check if the line is a validation definition
-            Matcher matcher = validationDefinitionPattern.matcher(lineWithoutComment);
+            // check if the line is a validation definition; also treat validation definitions in subfields
+            String lineToCheck = lineWithoutComment.contains("->") ? lineWithoutComment.split("->")[lineWithoutComment.split("->").length - 1].trim()
+                    : lineWithoutComment;
+            Matcher matcher = validationDefinitionPattern.matcher(lineToCheck);
             if (matcher.matches()) {
                 // we parse them later
                 unparsedValidationDefinitions.add(lineWithoutComment);
@@ -844,10 +847,10 @@ public class RecordParser {
                     throw fc.fail("too many not null");
                 } else if (getFieldInfo(fieldName).notEmpty) {
                     throw fc.fail("too many not empty");
-                } 
+                }
                 if (fc.lookup("null")) {
                     getFieldInfo(fieldName).notNull = true;
-                } else if (fc.lookup("empty")){
+                } else if (fc.lookup("empty")) {
                     getFieldInfo(fieldName).notEmpty = true;
                 } else {
                     throw fc.fail("null or empty expected");
@@ -1209,22 +1212,30 @@ public class RecordParser {
 
     public void parseValidationDefinition() throws ValidationDefinitionParseError {
         ValidationDefinitionParseError mpe = new ValidationDefinitionParseError();
-        for (int i = 0; i < unparsedValidationDefinitions.size(); i++) {
-            String line = unparsedValidationDefinitions.get(i);
+        for (String line : unparsedValidationDefinitions) {
             try {
                 line = line.trim();
                 if (line.indexOf(";") != -1) { // cut off end-of-line comments
                     line = line.substring(0, line.indexOf(";")).trim();
                 }
 
+                String subFieldName = null;
+                RecordInfo targetDD = dd;
+                if (line.contains("->")) {
+                    int index = line.lastIndexOf("->");
+                    subFieldName = line.substring(0, index).replace("->", ".");
+                    line = line.substring(index + 2);
+                    targetDD = (RecordInfo) dd.getFieldOrPointedFieldDefinition(subFieldName).getPointedType();
+                }
+
                 // check if the line is a validation definition
                 Matcher singleValidationMatcher = validationDefinitionPattern.matcher(line);
                 if (!singleValidationMatcher.matches()) {
-                    throw new ValidationDefinitionParseError(dd.getName(), "Illegal rule definition!", line);
+                    throw new ValidationDefinitionParseError(targetDD.getName(), "Illegal rule definition!", line);
                 }
                 String[] definitionParts = line.split(":");
                 if (definitionParts.length < 2) {
-                    throw new ValidationDefinitionParseError(dd.getName(),
+                    throw new ValidationDefinitionParseError(targetDD.getName(),
                             "Rule does not consist of the two parts <rule>:<message>!", line);
                 }
                 String fieldName = singleValidationMatcher.group(1).trim();
@@ -1238,12 +1249,12 @@ public class RecordParser {
                 // check all possible validation types
                 if (StringUtils.equals(operation, RegExpValidationRule.getOperator())) {
                     // regexp validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
                     rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, ruleDef);
 
                 } else if (StringUtils.equals(operation, NumberRangeValidationRule.getOperator())) {
                     // number (int or real) validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1253,7 +1264,7 @@ public class RecordParser {
 
                 } else if (StringUtils.equals(operation, StringLengthValidationRule.getOperator())) {
                     // string lenght (char or text) validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1268,7 +1279,7 @@ public class RecordParser {
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal comparison definition", line);
                     }
-                    if (dd.getFieldDefinition(fieldName) == null) { // let's see if the first part is a field name
+                    if (targetDD.getFieldDefinition(fieldName) == null) { // let's see if the first part is a field name
                         fieldName = matcher.group(1);
                     }
                     String functionName = null;
@@ -1276,7 +1287,7 @@ public class RecordParser {
                         functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
                         fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
                     }
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, fieldName, line);
+                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
                     String operator = matcher.group(2).trim();
                     String compareTo = matcher.group(3).trim();
                     if (fd.getIntegerType() == FieldDefinition._date
@@ -1284,7 +1295,7 @@ public class RecordParser {
                         // we have a comparison to a date constant / expression
                         rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage, operator);
                     } else {
-                        FieldDefinition otherFd = DataDefinitionProvider.getFieldDefinition(dd, compareTo, line);
+                        FieldDefinition otherFd = DataDefinitionProvider.getFieldDefinition(targetDD, compareTo, line);
                         rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo, ruleName,
                                 errorMessage, operator);
                     }
@@ -1302,7 +1313,7 @@ public class RecordParser {
                         }
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
-                    dd.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
+                    targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
                         "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     continue;
@@ -1312,7 +1323,7 @@ public class RecordParser {
                 }
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
-                dd.addValidationRule(rule);
+                targetDD.addValidationRule(rule);
                 java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
                     "added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
@@ -1333,28 +1344,24 @@ public class RecordParser {
     public static void main(String[] args) {
         // test some function definition
         System.out.println("Testing some reg-exps:");
-        RegExpUtils.evaluate(RecordParser.funcDefPattern, new String[] { " someFunc() { abc } errorMessage",
-                " someFunc(char[] a, int 5) {abc}errorMessages", "someFunction(int a, char[] b) { yeah}errorMessage3",
-                "someOtherFunction(int age, char[] b) { this.age > age } You are too young!" });
+        RegExpUtils.evaluate(RecordParser.funcDefPattern, " someFunc() { abc } errorMessage",
+            " someFunc(char[] a, int 5) {abc}errorMessages", "someFunction(int a, char[] b) { yeah}errorMessage3",
+            "someOtherFunction(int age, char[] b) { this.age > age } You are too young!");
 
         // test some mdd reading
         System.out.println("\n\n*****************************************************************************");
-        System.out.println("Testing reading test.Person MDD:\n");
+        System.out.println("Testing reading test.Person MDD:");
         DataDefinition recordInfo = RecordInfo.getRecordInfo("test.Person");
-        System.out.println("Functions in " + recordInfo);
-        Collection<QueryFragmentFunction> functions = recordInfo.getFunctions();
-        for (QueryFragmentFunction queryFragmentFunction : functions) {
-            System.out.println("\t" + queryFragmentFunction);
-            System.out.println("\t\tparameters:");
-            DataDefinition parameters = queryFragmentFunction.getParameters();
-            for (int i = 0; i < parameters.getFieldNames().size(); i++) {
-                FieldDefinition fieldDefinition = parameters.getFieldDefinition(i);
-                System.out.println("\t\t\t" + fieldDefinition.getDataType() + " " + fieldDefinition.getName());
-            }
-            if (parameters.getFieldNames().size() == 0) {
-                System.out.println("\t\t\t--None--");
-            }
-        }
+
+        System.out.println("\n\n*****************************************************************************");
+        printFunctions(recordInfo);
+        printFunctions(recordInfo.getFieldDefinition("address").getPointedType());
+        printFunctions(recordInfo.getFieldOrPointedFieldDefinition("address.sth").getPointedType());
+
+        System.out.println("\n\n*****************************************************************************");
+        printValidationDefinitions(recordInfo);
+        printValidationDefinitions(recordInfo.getFieldDefinition("address").getPointedType());
+        printValidationDefinitions(recordInfo.getFieldOrPointedFieldDefinition("address.sth").getPointedType());
 
         System.out.println("\n\n*****************************************************************************");
         FieldDefinition fi = recordInfo.getFieldDefinition("someAttachment");
@@ -1369,6 +1376,38 @@ public class RecordParser {
         for (String string : pointedType.getFieldNames()) {
             System.out.println("\t\t" + string + ": " + pointedType.getFieldDefinition(string));
         }
+    }
+
+    private static void printValidationDefinitions(DataDefinition recordInfo) {
+        System.out.println("Validation definitions in " + recordInfo);
+        for (String field : recordInfo.getFieldNames()) {
+            Collection<ValidationRule> validationRules = recordInfo.getValidationDefinition().getValidationRules(field);
+            if (validationRules.size() > 0) {
+                System.out.println("\t" + field);
+            }
+            for (ValidationRule validationRule : validationRules) {
+                System.out.println("\t\t" + validationRule);
+            }
+        }
+        System.out.println("\n");
+    }
+
+    private static void printFunctions(DataDefinition dd) {
+        System.out.println("Functions in " + dd);
+        Collection<QueryFragmentFunction> functions = dd.getFunctions();
+        for (QueryFragmentFunction queryFragmentFunction : functions) {
+            System.out.println("\t" + queryFragmentFunction);
+            System.out.println("\t\tparameters:");
+            DataDefinition parameters = queryFragmentFunction.getParameters();
+            for (int i = 0; i < parameters.getFieldNames().size(); i++) {
+                FieldDefinition fieldDefinition = parameters.getFieldDefinition(i);
+                System.out.println("\t\t\t" + fieldDefinition.getDataType() + " " + fieldDefinition.getName());
+            }
+            if (parameters.getFieldNames().size() == 0) {
+                System.out.println("\t\t\t--None--");
+            }
+        }
+        System.out.println("\n");
     }
 
 }
