@@ -29,6 +29,10 @@ designer = yesNo	; are you a designer?
 
 weight=real ; weight in kilos
 
+# test some QL functions as field names
+length=int ; height in cm
+max=int ; max value
+
 hobbies=text             ;Hobbies
 hobbies%length = [1..?] : Hobbies must not be empty! 
 
@@ -73,7 +77,11 @@ address=set			 ;Addresses
   address->usageend=date		;Use till
   address->sth=ptr
   address->sth->aaa=char[20]
+  address->sth->aaa%length = [3..?] : aaa must be at least 3 letters long!
+  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
   address->languages = set test.Language ; languages spoken in that address
+  address->someFunction() { 1 + 2 } Some nested message 
+  address->description%length = [3..?] : Description must be at least 3 letters long!
 
 toys=set
   toys->name=char[30]
