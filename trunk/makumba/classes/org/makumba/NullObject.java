@@ -1,6 +1,10 @@
 package org.makumba;
 
-public class NullObject {
+import java.io.Serializable;
+
+public class NullObject implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     String s;
 
     NullObject(String s) {
