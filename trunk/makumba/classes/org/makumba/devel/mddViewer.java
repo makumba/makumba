@@ -29,7 +29,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.StringTokenizer;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
@@ -54,13 +53,11 @@ public class mddViewer extends LineViewer {
 
     private DataDefinition dd = null;
 
-    public mddViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
-        super(true, req, sv);
+    public mddViewer(HttpServletRequest req) throws Exception {
+        super(true, req);
         setSearchLevels(false, false, false, true);
-        virtualPath = req.getPathInfo();
         contextPath = req.getContextPath();
-        if (virtualPath == null)
-            virtualPath = "/";
+        virtualPath = getVirtualPath(req);
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null)
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");

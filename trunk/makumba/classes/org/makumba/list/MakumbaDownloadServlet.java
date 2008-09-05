@@ -24,15 +24,16 @@
 package org.makumba.list;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Dictionary;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
@@ -58,13 +59,17 @@ public class MakumbaDownloadServlet extends HttpServlet {
             "image/pjpeg", "image/gif", "image/png" };
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         Transaction t = null;
         try {
             t = TransactionProvider.getInstance().getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
-            ServletOutputStream out = response.getOutputStream();
             String ptr = req.getParameter("value");
             String type = req.getParameter("type");
+            if (StringUtils.isBlank(ptr) || StringUtils.isBlank(type)) {
+                PrintWriter w = response.getWriter();
+                w.println("Both 'value' and 'type' parameters need to be not-empty!");
+                return;
+            }
             Vector<Dictionary<String, Object>> v = t.executeQuery(QUERY_SELECT + type + QUERY_WHERE, new Pointer(type,
                     ptr));
             if (v.size() == 1) {
@@ -80,8 +85,7 @@ public class MakumbaDownloadServlet extends HttpServlet {
                 response.setContentType(contentType);
                 response.setContentLength(((Integer) contentLength).intValue());
 
-                content.writeTo(out);
-
+                content.writeTo(response.getOutputStream());
             } else {
                 throw new RuntimeWrappedException(new LogicException("Error retrieving file of type '" + type
                         + "', id '" + ptr + "', found " + v.size() + " matching results."));

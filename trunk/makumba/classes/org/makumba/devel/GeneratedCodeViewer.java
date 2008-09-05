@@ -16,10 +16,8 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.loader.hql.QueryLoader;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
@@ -149,11 +147,10 @@ public class GeneratedCodeViewer extends jspViewer {
     
     private String queryLanguageParam;
 
-    public GeneratedCodeViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
-        super(req, sv, true);
+    public GeneratedCodeViewer(HttpServletRequest req) throws Exception {
+        super(req, true);
         // initTemplates(); // uncomment this for testing template purposes.
 
-        servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
 
         setSearchLevels(false, false, false, true);

@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.DataDefinition;
@@ -127,13 +126,12 @@ public class javaViewer extends LineViewer {
         }
     }
 
-    public javaViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
-        super(true, req, sv);
-        servletContext = sv.getServletContext();
-        jspClasspath = TomcatJsp.getContextCompiledJSPDir(sv.getServletContext());
+    public javaViewer(HttpServletRequest req) throws Exception {
+        super(true, req);
+        jspClasspath = TomcatJsp.getContextCompiledJSPDir(request.getSession().getServletContext());
 
         contextPath = req.getContextPath();
-        virtualPath = req.getPathInfo();
+        virtualPath = getVirtualPath(req);
         if (virtualPath == null) {
             virtualPath = "/";
         } else {

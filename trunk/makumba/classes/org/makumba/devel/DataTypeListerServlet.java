@@ -204,7 +204,7 @@ public class DataTypeListerServlet extends DataServlet {
             writer.println("<b><a href=\"../\">../</a></b> (up one level)");
         }
         // process and display directories
-        SourceViewServlet.processDirectory(writer, dir, "dd");
+        SourceViewControllerHandler.processDirectory(writer, dir, "dd");
 
         // process and display files
         String[] list = dir.list();

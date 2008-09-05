@@ -51,6 +51,7 @@ import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.relations.FileRelations;
 import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
+import org.makumba.providers.Configuration;
 
 /**
  * a viewer that shows everything per line
@@ -69,8 +70,6 @@ public abstract class LineViewer implements SourceViewer {
     private static final Pattern patternUrl = Pattern.compile("[http:|/|\\w]+\\.\\w+[\\.\\w]*[/|\\w]*");
 
     protected static final String PARAM_HIDE_LINES = "hideLines";
-
-    protected ServletContext servletContext;
 
     protected String realPath;
 
@@ -154,30 +153,19 @@ public abstract class LineViewer implements SourceViewer {
         }
     }
 
-    public LineViewer(boolean printLineNumbers, HttpServletRequest request, HttpServlet servlet) {
+    public LineViewer(boolean printLineNumbers, HttpServletRequest request) {
         this.request = request;
-        this.servlet = servlet;
         this.printLineNumbers = printLineNumbers;
-        versionControlRepositoryURL = servlet.getServletConfig().getInitParameter(
-            SourceViewServlet.PARAM_REPOSITORY_URL);
-        if (versionControlRepositoryURL != null && !versionControlRepositoryURL.endsWith("/")) {
-            versionControlRepositoryURL += "/";
-        }
-        if (servlet.getServletConfig().getInitParameter(SourceViewServlet.PARAM_REPOSITORY_LINK_TEXT) != null) {
-            versionControlRepositoryLinkText = servlet.getServletConfig().getInitParameter(
-                SourceViewServlet.PARAM_REPOSITORY_LINK_TEXT);
-        }
+        versionControlRepositoryURL = Configuration.getRepositoryURL();
+        versionControlRepositoryLinkText = Configuration.getRepositoryLinkText();
 
-        servletContext = servlet.getServletContext();
         contextPath = request.getContextPath();
-        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null
-                && request.getParameter(PARAM_HIDE_LINES).equals("true");
+        hideLineNumbers = StringUtils.equals(request.getParameter(PARAM_HIDE_LINES), "true");
     }
 
     public LineViewer(boolean printLineNumbers, HttpServletRequest request, ServletContext servletContext) {
         this.request = request;
         this.printLineNumbers = printLineNumbers;
-        this.servletContext = servletContext;
         contextPath = request.getContextPath();
         hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) != null
                 && request.getParameter(PARAM_HIDE_LINES).equals("true");
@@ -302,13 +290,13 @@ public abstract class LineViewer implements SourceViewer {
     protected void printFileRelations(PrintWriter writer) {
         writer.println("<a href=\"javascript:toggleFileRelationsDisplay();\">Relations</a>");
         writer.println("<div id=\"fileRelations\" style=\"display:none; padding: 5px; position: absolute; top: 88px; background-color: lightblue\">");
-        String webAppRoot = servletContext.getRealPath("/");
+        String webAppRoot = request.getSession().getServletContext().getRealPath("/");
         int maxDisplay = 10;
         if (webAppRoot.endsWith("/")) {
             webAppRoot = webAppRoot.substring(0, webAppRoot.length() - 1);
         }
         RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, "", false, "", "", false);
-        if (realPath.startsWith(webAppRoot)) {
+        if (realPath!= null && realPath.startsWith(webAppRoot)) {
             String filePath = realPath.substring(webAppRoot.length());
             FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
 
@@ -413,7 +401,7 @@ public abstract class LineViewer implements SourceViewer {
                 path = "WEB-INF/classes/" + path.replace('.', '/') + ".java";
             } else if (this instanceof mddViewer) {
                 String additionalPath = "WEB-INF/classes/";
-                if (realPath.contains("classes/dataDefinitions")) {
+                if (realPath!= null && realPath.contains("classes/dataDefinitions")) {
                     additionalPath += "dataDefinitions/";
                 }
                 path = additionalPath + path.replace('.', '/') + ".mdd";
@@ -607,7 +595,7 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String findPage(String s) {
         if (s.startsWith("/")) { // absolute reference to file
-            File file = new File(servletContext.getRealPath(s));
+            File file = new File(request.getSession().getServletContext().getRealPath(s));
             if (file.exists()) {
                 return contextPath + s;
             } else {
@@ -756,6 +744,24 @@ public abstract class LineViewer implements SourceViewer {
         } else {
             return null;
         }
+    }
+
+    public static String getVirtualPath(HttpServletRequest req) {
+        String path = req.getRequestURI();
+        if (path == null)
+            path = "/";
+        if (path.startsWith(req.getContextPath())) {
+            path = path.substring(req.getContextPath().length());
+        }
+        if (path.startsWith(Configuration.getMddViewerLocation())) {
+            path = path.substring(Configuration.getMddViewerLocation().length());
+        } else if (path.startsWith(Configuration.getJavaViewerLocation())) {
+            path = path.substring(Configuration.getJavaViewerLocation().length());
+        } 
+        if (path.equals("")) {
+            path = "/";
+        }
+        return path;
     }
 
     public static void main(String[] args) {
