@@ -1933,6 +1933,12 @@
     </attribute>
 
     <attribute>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
       <name>format</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
