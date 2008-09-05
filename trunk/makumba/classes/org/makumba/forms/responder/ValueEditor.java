@@ -14,18 +14,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.db.makumba.sql.TableManager;
-import org.makumba.db.makumba.DBConnectionWrapper;
-import org.makumba.providers.TransactionProvider;
-import org.makumba.db.makumba.Database;
+import org.apache.commons.lang.StringUtils;
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
-
+import org.makumba.Transaction;
+import org.makumba.db.makumba.DBConnectionWrapper;
+import org.makumba.db.makumba.Database;
+import org.makumba.db.makumba.sql.TableManager;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * This servlet updates values in the database
  * 
- * @author Rudolf Mayer
+ * @author Manuel Gay
  * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $
  */
 public class ValueEditor extends HttpServlet {
@@ -37,101 +40,94 @@ public class ValueEditor extends HttpServlet {
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
-    TransactionProvider tp = null;
     DBConnectionWrapper dbc = null;
+
     Database db = null;
+
     TableManager table = null;
 
-    @Override
-    public void init() throws ServletException {
-        // get the database
-        tp = TransactionProvider.getInstance();
-        
-        super.init();
-    }
-    
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // get the writer
         PrintWriter writer = resp.getWriter();
-        dbc = (DBConnectionWrapper)tp.getConnectionTo(tp.getDefaultDataSourceName());
-        db = dbc.getHostDatabase();
-        
+
         resp.setContentType("text/plain");
-        
-        try
-        {
-            
-            if(req.getParameter("table") == null || req.getParameter("field") == null || req.getParameter("value") == null)
-            {
-                writer.println("Tastes like chicken");
-                return;
-            }
-            
+
+        // FIXME: a lot of code is similar to UniquenessServlet, and should be unified
+
+        String value = req.getParameter("value");
+        String tableName = req.getParameter("table");
+        String fieldName = req.getParameter("field");
+        String pointer = req.getParameter("pointer");
+        if (StringUtils.isBlank(value) || StringUtils.isBlank(tableName) || StringUtils.isBlank(fieldName)
+                || StringUtils.isBlank(pointer)) {
+            writer.println("All 'value', 'table', 'pointer' and 'field' parameters need to be not-empty!");
+            return;
+        }
+
+        Transaction transaction = null;
+        try {
+            DataDefinition dd;
+            transaction = TransactionProvider.getInstance().getConnectionTo(
+                TransactionProvider.getInstance().getDefaultDataSourceName());
             // check if the table exists
-            try
-            {
-                table = (TableManager)db.getTable(req.getParameter("table"));
-            } catch(org.makumba.DataDefinitionNotFoundError e) {
+            try {
+                dd = DataDefinitionProvider.getInstance().getDataDefinition(tableName);
+                if (dd == null) {
+                    writer.println("No such table!");
+                    return;
+                }
+            } catch (Throwable e) {
                 writer.println("No such table!");
                 return;
             }
-            
+
             // check if the field exists
-            FieldDefinition fd = table.getFieldDefinition(req.getParameter("field"));
-            if(fd == null)
-            {
+            FieldDefinition fd = dd.getFieldDefinition(fieldName);
+            if (fd == null) {
                 writer.println("No such field!");
                 return;
             }
-            
-            Pointer ptr = new Pointer(req.getParameter("table"), req.getParameter("pointer"));
-            //System.out.println("SELECT l FROM "+req.getParameter("table")+" l WHERE l=$1");
-            Vector v = dbc.executeQuery("SELECT l FROM "+req.getParameter("table")+" l WHERE l=$1", ptr);
-            
-            if(v.size() < 1){
+
+            // check if the pointer exists
+            Pointer ptr = new Pointer(tableName, pointer);
+            Vector<Dictionary<String, Object>> v = dbc.executeQuery("SELECT l FROM " + tableName + " l WHERE l=$1", ptr);
+            if (v.size() < 1) {
                 writer.println("No such data");
             }
-            
-            Dictionary p = new Hashtable();
-            
+
+            Hashtable<String, Object> p = new Hashtable<String, Object>();
+
             // if it's an integer
-            if(fd.isIntegerType())
-            {
-                p.put(req.getParameter("field"), Integer.valueOf(req.getParameter("value")));
+            if (fd.isIntegerType()) {
+                p.put(fieldName, Integer.valueOf(value));
             }
             // if it's a date
-            else if(fd.isDateType())
-            {
-                if(req.getParameter("year") != null && req.getParameter("month") != null && req.getParameter("day") != null
-                          && req.getParameter("year").matches("/[0-9]+/")
-                          && req.getParameter("month").matches("/[0-9]+/")
-                          && req.getParameter("day").matches("/[0-9]+/"))
-                {
+            else if (fd.isDateType()) {
+                if (req.getParameter("year") != null && req.getParameter("month") != null
+                        && req.getParameter("day") != null && req.getParameter("year").matches("/[0-9]+/")
+                        && req.getParameter("month").matches("/[0-9]+/") && req.getParameter("day").matches("/[0-9]+/")) {
                     Calendar c = Calendar.getInstance();
                     c.clear();
-                    c.set(Integer.valueOf(req.getParameter("year")), Integer.valueOf(req.getParameter("month")), Integer.valueOf(req.getParameter("day")));
+                    c.set(Integer.valueOf(req.getParameter("year")), Integer.valueOf(req.getParameter("month")),
+                        Integer.valueOf(req.getParameter("day")));
                     Date date = c.getTime();
-                    p.put(req.getParameter("field"), date);
-                }
-                else
-                {
+                    p.put(fieldName, date);
+                } else {
                     writer.println("incorrect date");
                     return;
                 }
             }
             // if it's a string
-            else
-            {
-                p.put(req.getParameter("field"), req.getParameter("value"));
+            else {
+                p.put(fieldName, value);
             }
-    
-            dbc.update(ptr, p);
+
+            transaction.update(ptr, p);
             writer.println("success");
-        }
-        finally
-        {
-            dbc.close();
-            db.close();
+        } finally {
+            if (transaction != null) {
+                transaction.close();
+            }
         }
     }
 }
