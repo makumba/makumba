@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Transaction;
@@ -34,29 +35,32 @@ public class UniquenessServlet extends HttpServlet {
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // get the writer
         PrintWriter writer = resp.getWriter();
 
         String value = req.getParameter("value");
         String tableName = req.getParameter("table");
         String fieldName = req.getParameter("field");
+        if (StringUtils.isBlank(value) || StringUtils.isBlank(tableName) || StringUtils.isBlank(fieldName)) {
+            writer.println("All 'value', 'table' and 'field' parameters need to be not-empty!");
+            return;
+        }
 
-        Transaction transaction = TransactionProvider.getInstance().getConnectionTo(
-            TransactionProvider.getInstance().getDefaultDataSourceName());
-        DataDefinition dd;
+        Transaction transaction = null;
         try {
+            DataDefinition dd;
+            transaction = TransactionProvider.getInstance().getConnectionTo(
+                TransactionProvider.getInstance().getDefaultDataSourceName());
             // check if the table exists
             try {
                 dd = DataDefinitionProvider.getInstance().getDataDefinition(tableName);
                 if (dd == null) {
                     writer.println("No such table!");
-                    transaction.close();
                     return;
                 }
             } catch (Throwable e) {
                 writer.println("No such table!");
-                transaction.close();
                 return;
             }
 
@@ -64,7 +68,6 @@ public class UniquenessServlet extends HttpServlet {
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
             if (fd == null) {
                 writer.println("No such field!");
-                transaction.close();
                 return;
             }
 
@@ -93,7 +96,6 @@ public class UniquenessServlet extends HttpServlet {
                     v = transaction.executeQuery(OQL, date);
                 } else {
                     writer.println("incorrect date");
-                    transaction.close();
                     return;
                 }
             }
@@ -112,6 +114,8 @@ public class UniquenessServlet extends HttpServlet {
                 transaction.close();
             }
         }
+        writer.flush();
+        writer.close();
     }
 
 }
