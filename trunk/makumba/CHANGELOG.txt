@@ -18,6 +18,9 @@ NOT TO BE RELEASED YET (need more testing)
 
 cristi: support for automatic left join for SELECT or WHERE expressions that contain nullable pointers.
 cristi: we don't transform JSP orderby and groupby expressions in select expressions any longer, because the ComposedQuery code for that is very limited and does not allow for complex expressions, subqueries, etc. pages seem to work without it anyway
+rudi: allowing validation definition in subsets
+rudi: adding more SQL functions to MQL
+rudi: refactoring servlets into controller handler, small fixes on various developer support tools
 
 0.8.0.8 ; 20 Aug 2008
 cristi: support for subqueries including any(subquery), all (subquery), in(subquery), exists(subquery), some(subquery) and subqueries in expressions 
