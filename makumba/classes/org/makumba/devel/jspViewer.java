@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -43,19 +42,17 @@ import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.ClassResource;
 
 /**
- * 
  * This classe implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
  * 
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
- *  
  */
 public class jspViewer extends LineViewer {
     /**
-     * Usage: put the beginning of the tag-name as key, and the style-info you want for the created span around that tag. both 'key' and /'key' will
-     * be matched - if you want a different colouring for /'key', put that as an own entry, and make sure it is put <b>before </b> the 'key' entry -
-     * otherwise it will get matched twice.
+     * Usage: put the beginning of the tag-name as key, and the style-info you want for the created span around that
+     * tag. both 'key' and /'key' will be matched - if you want a different colouring for /'key', put that as an own
+     * entry, and make sure it is put <b>before </b> the 'key' entry - otherwise it will get matched twice.
      */
 
     private static final String PROPERTIES_FILE_NAME = "jspSyntax.properties";
@@ -92,8 +89,8 @@ public class jspViewer extends LineViewer {
     }
 
     /**
-     * Loads the properties file, if that fails uses {@link org.makumba.devel.javaViewer#initDefaultProperties() initDefaultProperties}to get default
-     * values.
+     * Loads the properties file, if that fails uses {@link org.makumba.devel.javaViewer#initDefaultProperties()
+     * initDefaultProperties}to get default values.
      */
     private static void initProperties() {
         // TODO: should we parse the tag-lib import and check for the prefix?
@@ -104,13 +101,13 @@ public class jspViewer extends LineViewer {
 
             // we load from the properties file the non-taglib properties, using defaults when necessary
             SystemStyleProperties.put("ExpressionLanguage", jspSyntaxProperties.getProperty("ExpressionLanguage",
-                    DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE));
+                DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE));
             SystemStyleProperties.put("JspScriptlet", jspSyntaxProperties.getProperty("JspScriptlet",
-                    DEFAULT_JSPSCRIPLET_STYLE));
+                DEFAULT_JSPSCRIPLET_STYLE));
             SystemStyleProperties.put("JspComment", jspSyntaxProperties.getProperty("JspComment",
-                    DEFAULT_JSPCOMMENT_STYLE));
+                DEFAULT_JSPCOMMENT_STYLE));
             SystemStyleProperties.put("JSPSystemTag", jspSyntaxProperties.getProperty("JSPSystemTag",
-                    jspSyntaxProperties.getProperty("jsp", DEFAULT_JSPSYSTEMTAG_STYLE)));
+                jspSyntaxProperties.getProperty("jsp", DEFAULT_JSPSYSTEMTAG_STYLE)));
 
             // now we remove the non-taglib properties, and use the remainders as taglib properties fiel
             jspSyntaxProperties.remove("JspScriptlet");
@@ -120,14 +117,13 @@ public class jspViewer extends LineViewer {
             taglibgSytleProperties = jspSyntaxProperties;
 
             // set background colour for hibernate code
-            hibernateCodeBackgroundStyle = jspSyntaxProperties.getProperty("HibernatePage",
-                    DEFAULT_HIBERNATEPAGE_STYLE);
+            hibernateCodeBackgroundStyle = jspSyntaxProperties.getProperty("HibernatePage", DEFAULT_HIBERNATEPAGE_STYLE);
 
         } catch (Throwable t) { // the properties file was not found / readable / etc.
 
             java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
-                    "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
-                            + "' not found! Using default values.");
+                "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
+                        + "' not found! Using default values.");
 
             // we use only default values
             SystemStyleProperties.put("ExpressionLanguage", DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE);
@@ -163,18 +159,16 @@ public class jspViewer extends LineViewer {
         return 1;
     }
 
-    public jspViewer(HttpServletRequest req, HttpServlet sv, boolean printLineNumbers) throws Exception {
-        super(printLineNumbers, req, sv);
+    public jspViewer(HttpServletRequest req, boolean printLineNumbers) throws Exception {
+        super(printLineNumbers, req);
         setSearchLevels(true, false, false, true);
-        this.servlet = sv;
-
-        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) == null || request.getParameter(PARAM_HIDE_LINES).equals("true");
+        hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) == null
+                || request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
-    
-    public jspViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
-        super(true, req, sv);
+
+    public jspViewer(HttpServletRequest req) throws Exception {
+        super(true, req);
         setSearchLevels(true, false, false, true);
-        this.servlet = sv;
         hideComments = Boolean.valueOf(String.valueOf(req.getParameter("hideComments"))).booleanValue();
         hideHTML = Boolean.valueOf(String.valueOf(req.getParameter("hideHTML"))).booleanValue();
         hideJSTLCore = Boolean.valueOf(String.valueOf(req.getParameter("hideJSTLCore"))).booleanValue();
@@ -189,21 +183,21 @@ public class jspViewer extends LineViewer {
         String _servletPath = req.getServletPath();
         virtualPath = _servletPath.substring(0, _servletPath.length() - extraLength());
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
-        realPath = sv.getServletConfig().getServletContext().getRealPath(virtualPath);
+        realPath = request.getSession().getServletContext().getRealPath(virtualPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
         logicPath = contextPath + "/logic" + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
 
-        JspParseData jspParseData = new JspParseData(sv.getServletContext().getRealPath("/"), thisFile,
-                JspxJspAnalyzer.getInstance());
+        JspParseData jspParseData = new JspParseData(request.getSession().getServletContext().getRealPath("/"),
+                thisFile, JspxJspAnalyzer.getInstance());
         try {
-            sourceSyntaxPoints= jspParseData.getSyntaxPointArray(null);
-        
+            sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
+
             // set background colour for hibernate code
             if (jspParseData.isUsingHibernate()) {
                 codeBackgroundStyle = hibernateCodeBackgroundStyle;
             }
-    
+
             syntaxPoints = jspParseData.getSyntaxPoints();
         } catch (ProgrammerError e) {
             caughtError = e;
@@ -233,14 +227,18 @@ public class jspViewer extends LineViewer {
         w.println("<tr>");
         w.println("<td align=\"right\" style=\" font-size: smaller;\">");
         w.println("<form method=\"get\" action>");
-        w.println("Hide:" + " <input type=\"checkbox\" name=\"hideComments\" value=\"true\"" + (hideComments ? " checked=\"checked\"" : "")
-                + ">Comments  ");
-        w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\"" + (hideHTML ? " checked=\"checked\"" : "") + ">HML  ");
-        w.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\"" + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\"" + (hideJSTLCore ? " checked=\"checked\"" : "") + ">JSTL Core  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\"" + (hideJSTLFormat ? " checked=\"checked\"" : "")
-                + ">JSTL Format  ");
-        w.println("<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\"" + (hideMakumba ? " checked=\"checked\"" : "") + ">Makumba  ");
+        w.println("Hide:" + " <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
+                + (hideComments ? " checked=\"checked\"" : "") + ">Comments  ");
+        w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
+                + (hideHTML ? " checked=\"checked\"" : "") + ">HML  ");
+        w.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\""
+                + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
+        w.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\""
+                + (hideJSTLCore ? " checked=\"checked\"" : "") + ">JSTL Core  ");
+        w.println("<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\""
+                + (hideJSTLFormat ? " checked=\"checked\"" : "") + ">JSTL Format  ");
+        w.println("<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\""
+                + (hideMakumba ? " checked=\"checked\"" : "") + ">Makumba  ");
         w.println("<input type=\"submit\" value=\"apply\"> ");
         w.println("</form>");
         w.println("</td>");
@@ -248,15 +246,15 @@ public class jspViewer extends LineViewer {
 
     /**
      * Parse the text and write the output <br>
-     * Known problems: when hiding parts of the code (e.g. HTML, JSTL,..) nested tags work only up to one level (i.e. a tag nested in a tag nested in
-     * a tag might not be hidden/shown as expected)
+     * Known problems: when hiding parts of the code (e.g. HTML, JSTL,..) nested tags work only up to one level (i.e. a
+     * tag nested in a tag nested in a tag might not be hidden/shown as expected)
      */
     public void parseText(PrintWriter writer) throws IOException {
         // if we have no syntaxpoints, maybe due to an exception, we just display the text w/o highlighting
         if (sourceSyntaxPoints == null) {
             super.parseText(writer);
             return;
-        } 
+        }
         Date begin = new Date();
         Object[] syntaxElements = syntaxKeys.toArray();
         printPageBegin(writer);
@@ -277,22 +275,23 @@ public class jspViewer extends LineViewer {
 
             if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > syntaxPoints.getLineText(currentLine).length() + 1) {
                 java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").finest(
-                        "skipped syntax Point due to wrong offset: "
-                                + (currentSyntaxPoint.isBegin() ? "begin " : "end ") + currentSyntaxPoint.getType()
-                                + " " + currentSyntaxPoint.getLine() + ":" + currentSyntaxPoint.getColumn()
-                                + ":; linelength is: " + syntaxPoints.getLineText(currentLine).length());
+                    "skipped syntax Point due to wrong offset: " + (currentSyntaxPoint.isBegin() ? "begin " : "end ")
+                            + currentSyntaxPoint.getType() + " " + currentSyntaxPoint.getLine() + ":"
+                            + currentSyntaxPoint.getColumn() + ":; linelength is: "
+                            + syntaxPoints.getLineText(currentLine).length());
                 continue;
             }
-            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we just move the last point marker
+            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we just move the
+                                                                           // last point marker
                 lastSyntaxPoint = currentSyntaxPoint;
-            } else if (type.equals("TextLine") && !currentSyntaxPoint.isBegin()) { //end of line found
+            } else if (type.equals("TextLine") && !currentSyntaxPoint.isBegin()) { // end of line found
 
                 // we write if we are not on column 1 (empty text line) and either are showing HTML or are in a tag
                 if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && (!hideHTML || inTag > 0)
                         && shallWrite) {
                     currentText.append(parseLine(htmlEscape(lineText.substring(
-                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                        lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                        currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                 }
 
                 // if the current line contained any text to write or we are outside a tag & shall write html
@@ -301,7 +300,7 @@ public class jspViewer extends LineViewer {
                     writer.print("\n");
                     if (!hideLineNumbers) {
                         writer.print("<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
-                            + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
+                                + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
                     }
                 }
                 writer.print(currentText.toString());
@@ -314,14 +313,20 @@ public class jspViewer extends LineViewer {
                         lastShallWrite = shallWrite;
                         if (lastShallWrite) {
                             currentText.append(parseLine(htmlEscape(lineText.substring(
-                                    lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                                    currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
-                        }
-                    } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) { // not in a tag, but maybe
-                        // there was HTMl before?
-                        currentText.append(parseLine(htmlEscape(lineText.substring(
                                 lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
                                 currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                        }
+                    } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) { // not
+                                                                                                                         // in
+                                                                                                                         // a
+                                                                                                                         // tag
+                                                                                                                         // ,
+                                                                                                                         // but
+                                                                                                                         // maybe
+                        // there was HTMl before?
+                        currentText.append(parseLine(htmlEscape(lineText.substring(
+                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                     }
 
                     String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
@@ -365,8 +370,8 @@ public class jspViewer extends LineViewer {
                 } else { // we have an end-tag
                     if (shallWrite) {// write content & end of highlighting?
                         currentText.append((parseLine(htmlEscape(lineText.substring(
-                                lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                                currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1)))));
+                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1)))));
                         currentText.append("</span>");
                     }
                     if (inTag > 1) { // in a nested tag?
@@ -383,7 +388,7 @@ public class jspViewer extends LineViewer {
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
         java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").finer(
-                "Sourcecode viewer took :" + (time / 1000) + " seconds");
+            "Sourcecode viewer took :" + (time / 1000) + " seconds");
     }
 
     /**
@@ -400,4 +405,3 @@ public class jspViewer extends LineViewer {
     }
 
 }
-

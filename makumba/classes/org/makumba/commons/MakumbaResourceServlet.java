@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.devel.DevelUtils;
-import org.makumba.devel.SourceViewServlet;
+import org.makumba.devel.SourceViewControllerHandler;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.LiveValidationProvider;
 
@@ -71,7 +71,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (SourceViewServlet.redirected(req, resp, servletPath)) {
+                if (SourceViewControllerHandler.redirected(req, resp, servletPath)) {
                     return;
                 }
                 String relativeDirectory = file.getName();
@@ -79,14 +79,14 @@ public class MakumbaResourceServlet extends HttpServlet {
                     relativeDirectory = file.getAbsolutePath().substring(
                         file.getAbsolutePath().indexOf(resourceDirectory));
                 }
-                SourceViewServlet.printDirlistingHeader(writer, file.getCanonicalPath(), relativeDirectory);
+                SourceViewControllerHandler.printDirlistingHeader(writer, file.getCanonicalPath(), relativeDirectory);
 
                 if (!(relativeDirectory.equals(resourceDirectory))) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");
                 }
 
                 // process and display directories
-                SourceViewServlet.processDirectory(writer, file, null);
+                SourceViewControllerHandler.processDirectory(writer, file, null);
 
                 // process and display files
                 String[] list = file.list();
@@ -110,11 +110,11 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (SourceViewServlet.redirected(req, resp, servletPath)) {
+                if (SourceViewControllerHandler.redirected(req, resp, servletPath)) {
                     return;
                 }
                 String relativeDirectory = jarEntry.getName();
-                SourceViewServlet.printDirlistingHeader(writer, url.toExternalForm(), relativeDirectory);
+                SourceViewControllerHandler.printDirlistingHeader(writer, url.toExternalForm(), relativeDirectory);
 
                 if (!relativeDirectory.equals(resourceDirectory) && !relativeDirectory.equals(resourceDirectory + "/")) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");

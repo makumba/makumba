@@ -26,16 +26,14 @@ package org.makumba.devel;
 import java.io.PrintWriter;
 import java.io.StringReader;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.controller.Logic;
 
 /** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used. */
 public class logicViewer extends LineViewer {
-    public logicViewer(HttpServletRequest req, HttpServlet sv) throws Exception {
-        super(false, req, sv);
-        //this.request=req;
+    public logicViewer(HttpServletRequest req) throws Exception {
+        super(false, req);
         virtualPath = req.getPathInfo();
         contextPath = req.getContextPath();
         Logic.getLogic(virtualPath);

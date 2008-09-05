@@ -2,12 +2,28 @@ package org.makumba.providers;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.commons.MakumbaResourceServlet;
+import org.makumba.db.makumba.UniquenessServlet;
+import org.makumba.devel.CodeGenerator;
+import org.makumba.devel.DataObjectViewerServlet;
+import org.makumba.devel.DataPointerValueConverter;
+import org.makumba.devel.DataQueryServlet;
+import org.makumba.devel.DataTypeListerServlet;
+import org.makumba.devel.ReferenceChecker;
+import org.makumba.devel.javaViewer;
+import org.makumba.devel.logicViewer;
+import org.makumba.devel.mddViewer;
+import org.makumba.forms.responder.ValueEditor;
+import org.makumba.list.MakumbaDownloadServlet;
 
 /**
- * This class knows how to read Makumba configuration and is used internally by different classes that need specifc
+ * This class knows how to read Makumba configuration and is used internally by different classes that need specific
  * services. It can be seen as a service dispatcher in a way.
  * 
  * @author Manuel Gay
@@ -21,12 +37,6 @@ public class Configuration implements Serializable {
 
     public static boolean defaultReloadFormOnError = true;
 
-    private static boolean defaultCalendarEditor = true;
-
-    private static String defaultCalendarEditorLink = "<img border=\"0\" src=\"" + PLACEHOLDER_CONTEXT_PATH + "/"
-            + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_IMAGES
-            + "calendar.gif\">";
-
     private static final long serialVersionUID = 1L;
 
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
@@ -34,6 +44,62 @@ public class Configuration implements Serializable {
     private String defaultTransactionProvider = "org.makumba.db.makumba.MakumbaTransactionProvider";
 
     private static Properties controllerConfig;
+
+    // calendar editor
+    private static final String KEY_CALENDAR_EDITOR = "calendarEditor";
+
+    private static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
+
+    // developer tools
+    private static final String KEY_MDD_VIEWER = "mddViewer";
+
+    private static final String KEY_JAVA_VIEWER = "javaViewer";
+
+    private static final String KEY_LOGIC_DISCOVERY = "logicDiscovery";
+
+    private static final String KEY_CODE_GENERATOR = "codeGenerator";
+
+    private static final String KEY_DATA_QUERY_TOOL = "dataQueryTool";
+
+    private static final String KEY_DATA_OBJECT_VIEWER = "dataObjectViewer";
+
+    private static final String KEY_DATA_LISTER = "dataLister";
+
+    private static final String KEY_OBJECT_ID_CONVERTER = "objectIdConverter";
+
+    private static final String KEY_REFERENCE_CHECKER = "referenceChecker";
+
+    private static final String KEY_REPOSITORY_URL = "repositoryURL";
+
+    private static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
+
+    // makumba servlets
+    private static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
+
+    private static final String KEY_MAKUMBA_UNIQUENESS_VALIDATOR = "makumbaUniquenessValidator";
+
+    private static final String KEY_MAKUMBA_RESOURCES = "makumbaResources";
+
+    private static final String KEY_MAKUMBA_DOWNLOAD = "makumbaDownload";
+
+    private static Properties makumbaDefaults = new Properties();
+
+//    public static final ArrayList<String> allMakumbaPaths = new ArrayList<String>();
+//
+//    /** All the known paths of makumba */
+//    public static final Map<String, String> f = ArrayUtils.toMap(new Object[][] { { "mddViewer", mddViewer.class },
+//            { "javaViewer", javaViewer.class }, { "logicDiscovery", logicViewer.class },
+//            { "dataQueryTool", DataQueryServlet.class }, { "referenceChecker", ReferenceChecker.class },
+//            { "codeGenerator", CodeGenerator.class }, { "dataObjectViewer", DataObjectViewerServlet.class },
+//            { "dataLister", DataTypeListerServlet.class }, { "objectIdConverter", DataPointerValueConverter.class },
+//            { "makumbaValueEditor", ValueEditor.class }, { "makumbaUniquenessValidator", UniquenessServlet.class },
+//            { "makumbaResources", MakumbaResourceServlet.class }, { "makumbaDownload", MakumbaDownloadServlet.class } });
+//
+//    public static final ArrayList<String> pathsSourceViewers = new ArrayList<String>();
+//
+//    public static final ArrayList<String> pathsDataTools = new ArrayList<String>();
+//
+//    public static final ArrayList<String> pathsMakumbaTools = new ArrayList<String>();
 
     static {
         controllerConfig = new Properties();
@@ -47,13 +113,29 @@ public class Configuration implements Serializable {
             defaultReloadFormOnError = Boolean.parseBoolean(controllerConfig.getProperty("defaultReloadFormOnError",
                 String.valueOf(defaultReloadFormOnError)));
 
-            defaultCalendarEditorLink = controllerConfig.getProperty("defaultCalendarEditorLink",
-                defaultCalendarEditorLink);
-            defaultCalendarEditor = Boolean.parseBoolean(controllerConfig.getProperty("defaultCalendarEditor",
-                String.valueOf(defaultCalendarEditor)));
-            
         } catch (Exception e) {
             controllerConfig = null;
+        }
+        try {
+            URL urlMakumbaDefaults = org.makumba.commons.ClassResource.get("MakumbaDefaults-default.properties");
+            makumbaDefaults.load(urlMakumbaDefaults.openStream());
+            Properties appMakumbaDefaults = new Properties();
+            URL urlAppMakumbaDefaults = org.makumba.commons.ClassResource.get("MakumbaDefaults.properties");
+            if (urlAppMakumbaDefaults != null) {
+                appMakumbaDefaults.load(urlAppMakumbaDefaults.openStream());
+                for (Object keyObject : makumbaDefaults.keySet()) {
+                    String key = (String) keyObject;
+                    if (StringUtils.isNotBlank(appMakumbaDefaults.getProperty(key))) {
+                        makumbaDefaults.setProperty(key, appMakumbaDefaults.getProperty(key));
+//                        if (key.equals(KEY_MDD_VIEWER) || key.equals(KEY_JAVA_VIEWER)
+//                                || key.equals(KEY_LOGIC_DISCOVERY)) {
+//                            pathsSourceViewers.add(key);
+//                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -107,11 +189,75 @@ public class Configuration implements Serializable {
     }
 
     public static boolean getCalendarEditorDefault() {
-        return defaultCalendarEditor;
+        return makumbaDefaults.getProperty(KEY_CALENDAR_EDITOR).equals("true");
     }
 
     public static String getDefaultCalendarEditorLink(String contextPath) {
-        return defaultCalendarEditorLink.replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
+        return makumbaDefaults.getProperty(KEY_CALENDAR_EDITOR_LINK).replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
     }
+
+    public static String getMddViewerLocation() {
+        return makumbaDefaults.getProperty(KEY_MDD_VIEWER);
+    }
+
+    public static String getJavaViewerLocation() {
+        return makumbaDefaults.getProperty(KEY_JAVA_VIEWER);
+    }
+
+    public static String getLogicDiscoveryViewerLocation() {
+        return makumbaDefaults.getProperty(KEY_LOGIC_DISCOVERY);
+    }
+
+    public static String getDataViewerLocation() {
+        return makumbaDefaults.getProperty(KEY_DATA_OBJECT_VIEWER);
+    }
+
+    public static String getDataListerLocation() {
+        return makumbaDefaults.getProperty(KEY_DATA_LISTER);
+    }
+
+    public static String getDataQueryLocation() {
+        return makumbaDefaults.getProperty(KEY_DATA_QUERY_TOOL);
+    }
+
+    public static String getObjectIdConverterLocation() {
+        return makumbaDefaults.getProperty(KEY_OBJECT_ID_CONVERTER);
+    }
+
+    public static String getReferenceCheckerLocation() {
+        return makumbaDefaults.getProperty(KEY_REFERENCE_CHECKER);
+    }
+
+    public static String getCodeGeneratorLocation() {
+        return makumbaDefaults.getProperty(KEY_CODE_GENERATOR);
+    }
+
+    public static String getRepositoryURL() {
+        return makumbaDefaults.getProperty(KEY_REPOSITORY_URL);
+    }
+
+    public static String getRepositoryLinkText() {
+        return makumbaDefaults.getProperty(KEY_REPOSITORY_LINK_TEXT);
+    }
+
+    public static String getMakumbaValueEditorLocation() {
+        return makumbaDefaults.getProperty(KEY_MAKUMBA_VALUE_EDITOR);
+    }
+
+    public static String getMakumbaUniqueLocation() {
+        return makumbaDefaults.getProperty(KEY_MAKUMBA_UNIQUENESS_VALIDATOR);
+    }
+
+    public static String getMakumbaResourcesLocation() {
+        return makumbaDefaults.getProperty(KEY_MAKUMBA_RESOURCES);
+    }
+
+    public static String getMakumbaDownloadLocation() {
+        return makumbaDefaults.getProperty(KEY_MAKUMBA_DOWNLOAD);
+    }
+
+//    public static ArrayList<String> getAllMakumbaPaths() {
+//        return allMakumbaPaths;
+//    }
 
 }
