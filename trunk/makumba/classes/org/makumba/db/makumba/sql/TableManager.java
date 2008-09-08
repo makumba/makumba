@@ -34,6 +34,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -1707,9 +1708,29 @@ public class TableManager extends Table {
 
     /** Syntax for unique index creation. */
     public String foreignKeyCreateSyntax(String fieldName, String fkTableName, String fkFieldName) {
-        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY (" + getFieldDBName(fieldName) + ") REFERENCES "
+        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY " + shortIndexName(((TableManager) getDatabase().getTable(fkTableName)).getDBName(), fieldName) + " (" + getFieldDBName(fieldName) + ") REFERENCES "
                 + ((TableManager) getDatabase().getTable(fkTableName)).getDBName() + " ("
                 + ((TableManager) getDatabase().getTable(fkTableName)).getFieldDBName(fkFieldName) + ")";
+    }
+    
+    /** Makes a short index based on the table and field name, if needed **/
+    private String shortIndexName(String tableName, String fieldName) {
+        //FIXME this may not be true for other DBMS than mysql
+        String standardIndex = tableName + "__" + fieldName;
+        if(standardIndex.length() > 64) {
+            // general_archive_Email__fromPerson --> g_a_E__fromPerson
+            String shortIndex = "";
+            StringTokenizer st = new StringTokenizer(tableName, "_");
+            while(st.hasMoreTokens()) {
+                shortIndex += st.nextToken().substring(0,1);
+                if(st.hasMoreTokens())
+                    shortIndex += "_";
+            }
+            shortIndex += "__" + fieldName;
+            return shortIndex;
+        } else {
+            return standardIndex;
+        }
     }
 
     // ALTER TABLE child ADD FOREIGN KEY (parent_id) REFERENCES parent(id)
