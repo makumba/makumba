@@ -103,6 +103,10 @@ public class table extends TestCase {
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
+    String readToy1 = "SELECT t.name AS name, t.color AS color, t.serial AS serial FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
+
+    String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
+    
     String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
     String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
@@ -282,6 +286,69 @@ public class table extends TestCase {
         // try to delete the second guy
         db.delete(fptr1);
 
+        // delete the first guy again, this time he shouldn't be linked to from anywhere
+        db.delete(fptr);
+
+    }
+    
+    public void testForeignKeysWithLongMDDName() {
+        assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
+
+        // try to delete toy = that ID
+        // try to delete the other toy
+
+        // insert the first toy
+        Hashtable<String, Object> r = new Hashtable<String, Object>();
+        
+        r.put("name", "car");
+        r.put("color", "red");
+        r.put("serial", "mak111");
+
+        fptr = db.insert("test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
+        
+        // check if he got inserted
+        assertNotNull(fptr);
+        assertEquals(fptr.getType(), "test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
+
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readToy1, fptr);
+        //System.out.println(v.size()); 
+        assertEquals(1, v.size());
+
+        // insert the second toy
+        r = new Hashtable<String, Object>();
+        
+        r.put("relatedToy", fptr);
+        r.put("name", "helicopter");
+        r.put("color", "rosa");
+        r.put("serial", "mak121");
+
+        fptr1 = db.insert("test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
+        assertNotNull(fptr1);
+        assertEquals(fptr.getType(), "test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
+
+        // check if it links to the first one correctly
+        v = db.executeQuery(readToy2, fptr1);
+
+        assertEquals(1, v.size());
+        
+        pc = v.elementAt(0);
+        
+        fptr2 = (Pointer) pc.get("relatedToy");
+        assertNotNull(fptr2);
+        assertEquals("relatedToy", fptr2, fptr);
+        
+        // try to delete the first guy (who was set as a related toy. should fail)
+        try
+        {
+            db.delete(fptr);
+            // we could delete him... the foreign keys don't work
+            assertTrue(false);
+        } catch(org.makumba.DBError e) {
+        }
+        
+        // try to delete the second guy
+        db.delete(fptr1);
+        
         // delete the first guy again, this time he shouldn't be linked to from anywhere
         db.delete(fptr);
 
