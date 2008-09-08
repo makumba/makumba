@@ -56,7 +56,7 @@ public class ResponderCacheManager {
 
     /** Sets the responder working directory from the given temp directory and context path. */
     public void setResponderWorkingDir(Object tempDir, String contextPath) {
-        System.out.println("had an empty responder dir - working dir ==> " + tempDir);
+        java.util.logging.Logger.getLogger("org.makumba.controller").info("had an empty responder dir - working dir ==> " + tempDir);
         String baseDir = tempDir + System.getProperty("file.separator") + "makumba-responders"
                 + System.getProperty("file.separator");
         makumbaResponderBaseDirectory = baseDir + contextPath;
@@ -64,7 +64,7 @@ public class ResponderCacheManager {
             new File(baseDir).mkdir();
             new File(makumbaResponderBaseDirectory).mkdir();
         }
-        System.out.println("base dir: " + makumbaResponderBaseDirectory);
+        java.util.logging.Logger.getLogger("org.makumba.controller").info("base dir: " + makumbaResponderBaseDirectory);
     }
 
     /**
