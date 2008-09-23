@@ -27,6 +27,7 @@ import org.makumba.devel.DevelUtils;
 import org.makumba.devel.SourceViewControllerHandler;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.LiveValidationProvider;
+import org.makumba.providers.Configuration;
 
 /**
  * This servlet provides resources needed by makumba, e.g. JavaScript for the date editor {@link KruseCalendarEditor}
@@ -49,7 +50,7 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String servletPath = req.getServletPath();
+        String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
         String requestURI = req.getRequestURI();
         String resource = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         URL url = ClassResource.get(resourceDirectory + resource);
@@ -71,7 +72,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (SourceViewControllerHandler.redirected(req, resp, servletPath)) {
+                if (SourceViewControllerHandler.redirected(req, resp, resource)) {
                     return;
                 }
                 String relativeDirectory = file.getName();
