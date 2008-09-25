@@ -2,25 +2,10 @@ package org.makumba.providers;
 
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.Hashtable;
 import java.util.Properties;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.makumba.commons.MakumbaResourceServlet;
-import org.makumba.db.makumba.UniquenessServlet;
-import org.makumba.devel.CodeGenerator;
-import org.makumba.devel.DataObjectViewerServlet;
-import org.makumba.devel.DataPointerValueConverter;
-import org.makumba.devel.DataQueryServlet;
-import org.makumba.devel.DataTypeListerServlet;
-import org.makumba.devel.ReferenceChecker;
-import org.makumba.devel.javaViewer;
-import org.makumba.devel.logicViewer;
-import org.makumba.devel.mddViewer;
-import org.makumba.forms.responder.ValueEditor;
-import org.makumba.list.MakumbaDownloadServlet;
 
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
@@ -84,22 +69,11 @@ public class Configuration implements Serializable {
 
     private static Properties makumbaDefaults = new Properties();
 
-//    public static final ArrayList<String> allMakumbaPaths = new ArrayList<String>();
-//
-//    /** All the known paths of makumba */
-//    public static final Map<String, String> f = ArrayUtils.toMap(new Object[][] { { "mddViewer", mddViewer.class },
-//            { "javaViewer", javaViewer.class }, { "logicDiscovery", logicViewer.class },
-//            { "dataQueryTool", DataQueryServlet.class }, { "referenceChecker", ReferenceChecker.class },
-//            { "codeGenerator", CodeGenerator.class }, { "dataObjectViewer", DataObjectViewerServlet.class },
-//            { "dataLister", DataTypeListerServlet.class }, { "objectIdConverter", DataPointerValueConverter.class },
-//            { "makumbaValueEditor", ValueEditor.class }, { "makumbaUniquenessValidator", UniquenessServlet.class },
-//            { "makumbaResources", MakumbaResourceServlet.class }, { "makumbaDownload", MakumbaDownloadServlet.class } });
-//
-//    public static final ArrayList<String> pathsSourceViewers = new ArrayList<String>();
-//
-//    public static final ArrayList<String> pathsDataTools = new ArrayList<String>();
-//
-//    public static final ArrayList<String> pathsMakumbaTools = new ArrayList<String>();
+    private static final Hashtable<String, String> allGenericDeveloperToolsMap = new Hashtable<String, String>();
+
+    public static Hashtable<String, String> getAllGenericDeveloperToolsMap() {
+        return allGenericDeveloperToolsMap;
+    }
 
     static {
         controllerConfig = new Properties();
@@ -117,7 +91,7 @@ public class Configuration implements Serializable {
             controllerConfig = null;
         }
         try {
-            URL urlMakumbaDefaults = org.makumba.commons.ClassResource.get("MakumbaDefaults-default.properties");
+            URL urlMakumbaDefaults = org.makumba.commons.ClassResource.get("internalDefaultMakumbaDefaults.properties");
             makumbaDefaults.load(urlMakumbaDefaults.openStream());
             Properties appMakumbaDefaults = new Properties();
             URL urlAppMakumbaDefaults = org.makumba.commons.ClassResource.get("MakumbaDefaults.properties");
@@ -127,16 +101,18 @@ public class Configuration implements Serializable {
                     String key = (String) keyObject;
                     if (StringUtils.isNotBlank(appMakumbaDefaults.getProperty(key))) {
                         makumbaDefaults.setProperty(key, appMakumbaDefaults.getProperty(key));
-//                        if (key.equals(KEY_MDD_VIEWER) || key.equals(KEY_JAVA_VIEWER)
-//                                || key.equals(KEY_LOGIC_DISCOVERY)) {
-//                            pathsSourceViewers.add(key);
-//                        }
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        allGenericDeveloperToolsMap.put(KEY_MDD_VIEWER, "Mdd viewer");
+        allGenericDeveloperToolsMap.put(KEY_JAVA_VIEWER, "Business logics viewer");
+        allGenericDeveloperToolsMap.put(KEY_DATA_LISTER, "Data browser");
+        allGenericDeveloperToolsMap.put(KEY_DATA_QUERY_TOOL, "Data query");
+        allGenericDeveloperToolsMap.put(KEY_OBJECT_ID_CONVERTER, "Pointer value converter");
+        allGenericDeveloperToolsMap.put(KEY_REFERENCE_CHECKER, "Reference checker");
     }
 
     public Configuration() {
@@ -256,8 +232,8 @@ public class Configuration implements Serializable {
         return makumbaDefaults.getProperty(KEY_MAKUMBA_DOWNLOAD);
     }
 
-//    public static ArrayList<String> getAllMakumbaPaths() {
-//        return allMakumbaPaths;
-//    }
+    public static String getConfigProperty(String key) {
+        return makumbaDefaults.getProperty(key);
+    }
 
 }
