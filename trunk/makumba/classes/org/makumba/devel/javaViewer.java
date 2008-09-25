@@ -44,6 +44,7 @@ import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.StringUtils;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -131,7 +132,7 @@ public class javaViewer extends LineViewer {
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(request.getSession().getServletContext());
 
         contextPath = req.getContextPath();
-        virtualPath = getVirtualPath(req);
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getJavaViewerLocation());
         if (virtualPath == null) {
             virtualPath = "/";
         } else {

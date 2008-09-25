@@ -36,6 +36,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -53,7 +54,7 @@ public class DataObjectViewerServlet extends DataServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + "/dataList/" + browsePath;
+        browsePath = contextPath + Configuration.getDataListerLocation() + "/" + browsePath;
 
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);

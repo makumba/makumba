@@ -36,6 +36,7 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
@@ -57,7 +58,7 @@ public class mddViewer extends LineViewer {
         super(true, req);
         setSearchLevels(false, false, false, true);
         contextPath = req.getContextPath();
-        virtualPath = getVirtualPath(req);
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation());
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null)
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
