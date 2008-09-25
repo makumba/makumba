@@ -12,11 +12,11 @@ function toggleStackTrace() {
     }
 }
 
-function toggleFileRelationsDisplay() {
-    if (document.getElementById('fileRelations').style.display == 'none') {
-        document.getElementById('fileRelations').style.display = 'block';
+function toggleElementDisplay(element) {
+    if (element.style.display == 'none') {
+    	element.style.display = 'block';
     } else {
-        document.getElementById('fileRelations').style.display = 'none';
+    	element.style.display = 'none';
     }
 }
 
