@@ -40,8 +40,6 @@ import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.providers.Configuration;
 
-import bmsi.util.DiffPrint.ContextPrint;
-
 /**
  * invoke the necessary SourceViewer, depending on the type of the source the architecture should change, and be
  * organized in filters. example:
@@ -95,7 +93,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 e.printStackTrace();
             }
         } else {// try to handle anyway
-            if (redirected(req, res, servletPath)) {
+            if (DevelUtils.redirected(req, res, servletPath)) {
                 return false;
             }
             if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) {
@@ -137,7 +135,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 String[] list = dir.list(new SuffixFileFilter(new String[] { ".idd", ".mdd" }));
                 Arrays.sort(list);
                 for (int i = 0; i < list.length; i++) {
-                    String s = LineViewer.getVirtualPath(req) + list[i];
+                    String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + list[i];
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
                     String addr = req.getContextPath() + Configuration.getMddViewerLocation() + "/" + s;
                     w.println("<a href=\"" + addr + "\">" + s + "</a>");
@@ -149,15 +147,6 @@ public class SourceViewControllerHandler extends ControllerHandler {
             w.println("</pre>");
             DevelUtils.printDeveloperSupportFooter(w);
             w.println("</body></html>");
-        }
-        return false;
-    }
-
-    public static boolean redirected(HttpServletRequest req, HttpServletResponse res, String servletPath)
-            throws IOException {
-        if (!servletPath.endsWith("/")) {
-            res.sendRedirect(req.getRequestURI() + "/");
-            return true;
         }
         return false;
     }

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
+import org.makumba.providers.Configuration;
 
 /**
  * This class provides basic functionality for data viewing and querying servlets.
@@ -21,6 +22,7 @@ import org.makumba.Pointer;
  * @version $Id$
  */
 public abstract class DataServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     public static final int MODE_LIST = 10;
 
@@ -36,8 +38,6 @@ public abstract class DataServlet extends HttpServlet {
 
     protected Pointer dataPointer;
 
-    protected String pathInfo;
-
     protected String type;
 
     protected String virtualPath;
@@ -50,8 +50,7 @@ public abstract class DataServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
         contextPath = request.getContextPath();
-        pathInfo = request.getPathInfo();
-        virtualPath = pathInfo;
+        virtualPath = DevelUtils.getVirtualPath(request, Configuration.getDataListerLocation());
         if (virtualPath == null) {
             virtualPath = "/";
         }

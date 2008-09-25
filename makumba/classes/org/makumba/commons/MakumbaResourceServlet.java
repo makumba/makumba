@@ -72,7 +72,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (SourceViewControllerHandler.redirected(req, resp, resource)) {
+                if (DevelUtils.redirected(req, resp, resource)) {
                     return;
                 }
                 String relativeDirectory = file.getName();
@@ -111,7 +111,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (SourceViewControllerHandler.redirected(req, resp, servletPath)) {
+                if (DevelUtils.redirected(req, resp, servletPath)) {
                     return;
                 }
                 String relativeDirectory = jarEntry.getName();

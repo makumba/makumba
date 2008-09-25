@@ -17,6 +17,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.db.makumba.DBConnection;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
@@ -176,11 +177,10 @@ public class DataTypeListerServlet extends DataServlet {
 
     private void doDirectoryListing(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
             throws IOException, FileNotFoundException {
-        if (pathInfo == null) {
-            pathInfo = "";
-        }
-        if (!pathInfo.endsWith("/")) {
-            response.sendRedirect(contextPath + request.getServletPath() + pathInfo + "/");
+        String servletPath = request.getContextPath() + Configuration.getDataListerLocation();
+        String requestURI = request.getRequestURI();
+        String pathInfo = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
+        if (DevelUtils.redirected(request, response, pathInfo)) {
             return;
         }
         // FIXME should not depend directly on RecordParser
@@ -214,7 +214,7 @@ public class DataTypeListerServlet extends DataServlet {
             if (s.indexOf(".") != -1 && s.endsWith("dd")) {
                 String ddname = pathInfo + s;
                 ddname = ddname.substring(1, ddname.lastIndexOf(".")).replace('/', '.');
-                String addr = contextPath + "/dataList/" + ddname;
+                String addr = contextPath + Configuration.getDataListerLocation() + "/" + ddname;
                 writer.println("<a href=\"" + addr + "\">" + s + "</a>");
             }
         }

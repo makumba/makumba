@@ -3,10 +3,15 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Hashtable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.MakumbaResourceServlet;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -106,6 +111,44 @@ public class DevelUtils {
         w.println("<script type=\"text/javascript\" src=\"" + contextPath + "/"
                 + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT
                 + "makumbaDevelScripts.js\">" + "</script>\n");
+    }
+
+    public static void writeDevelUtilLinks(PrintWriter writer, String toolKey, String contextPath) {
+        Hashtable<String, String> allGenericDeveloperToolsMap = Configuration.getAllGenericDeveloperToolsMap();
+        writer.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">other tools</a>");
+        writer.println("<div id=\"developerTools\" style=\"display:none; padding: 5px; position: absolute; top: 88px; background-color: lightblue\">");
+        for (String key : allGenericDeveloperToolsMap.keySet()) {
+            if (!key.equals(toolKey)) {
+                writer.print("<a href=\"" + contextPath + "/" + Configuration.getConfigProperty(key) + ">"
+                        + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
+            }
+        }
+        writer.println("</div>");
+    }
+
+    public static String getVirtualPath(HttpServletRequest req, String toolLocation) {
+        String path = req.getRequestURI();
+        if (path == null)
+            path = "/";
+        if (path.startsWith(req.getContextPath())) {
+            path = path.substring(req.getContextPath().length());
+        }
+        if (path.startsWith(toolLocation)) {
+            path = path.substring(toolLocation.length());
+        }
+        if (path.equals("")) {
+            path = "/";
+        }
+        return path;
+    }
+
+    public static boolean redirected(HttpServletRequest req, HttpServletResponse res, String servletPath)
+            throws IOException {
+        if (!servletPath.endsWith("/")) {
+            res.sendRedirect(req.getRequestURI() + "/");
+            return true;
+        }
+        return false;
     }
 
 }
