@@ -67,7 +67,7 @@ public class ListFormDataProvider implements FormDataProvider {
                 // the addForm, for good or bad..
                 TagData tagData = (TagData) cache.get(key);
                 if (tagData.getTagObject() instanceof InputTag) { // consider only input tags
-                    if (tagData.attributes.get("name").equals(ptrExpr)) {
+                    if (tagData.attributes.get("name")!=null && tagData.attributes.get("name").equals(ptrExpr)) {
                         // and only the one that has the same name as the addForm base object
                         String dataType = tagData.attributes.get("dataType");
                         if (StringUtils.isBlank(dataType)) {
