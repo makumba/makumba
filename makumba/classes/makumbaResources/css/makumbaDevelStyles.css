@@ -66,3 +66,14 @@ span.active {
 .mddFunctionMessage {
   font-style: italic;
 }
+
+div.popup {
+  display:none; 
+  position: absolute; 
+  top: 45px; 
+  background-color: lightblue;
+  border: 1px; 
+  border-style:solid; 
+  border-color: black; 
+  padding: 5px;
+}
