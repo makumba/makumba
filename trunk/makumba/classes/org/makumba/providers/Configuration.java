@@ -36,23 +36,23 @@ public class Configuration implements Serializable {
     private static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
 
     // developer tools
-    private static final String KEY_MDD_VIEWER = "mddViewer";
+    public static final String KEY_MDD_VIEWER = "mddViewer";
 
-    private static final String KEY_JAVA_VIEWER = "javaViewer";
+    public static final String KEY_JAVA_VIEWER = "javaViewer";
 
     private static final String KEY_LOGIC_DISCOVERY = "logicDiscovery";
 
     private static final String KEY_CODE_GENERATOR = "codeGenerator";
 
-    private static final String KEY_DATA_QUERY_TOOL = "dataQueryTool";
+    public static final String KEY_DATA_QUERY_TOOL = "dataQueryTool";
 
     private static final String KEY_DATA_OBJECT_VIEWER = "dataObjectViewer";
 
-    private static final String KEY_DATA_LISTER = "dataLister";
+    public static final String KEY_DATA_LISTER = "dataLister";
 
-    private static final String KEY_OBJECT_ID_CONVERTER = "objectIdConverter";
+    public static final String KEY_OBJECT_ID_CONVERTER = "objectIdConverter";
 
-    private static final String KEY_REFERENCE_CHECKER = "referenceChecker";
+    public static final String KEY_REFERENCE_CHECKER = "referenceChecker";
 
     private static final String KEY_REPOSITORY_URL = "repositoryURL";
 
