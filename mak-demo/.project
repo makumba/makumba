@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>makumba-svnbroken</project>
+		<project>makumba</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
