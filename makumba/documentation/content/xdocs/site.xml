@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+Forrest site.xml
+
+This file contains an outline of the site's information content.  It is used to:
+- Generate the website menus (though these can be overridden - see docs)
+- Provide semantic, location-independent aliases for internal 'site:' URIs, eg
+<link href="site:changes"> links to changes.html (or ../changes.html if in
+  subdir).
+- Provide aliases for external URLs in the external-refs section.  Eg, <link
+  href="ext:cocoon"> links to http://cocoon.apache.org/ 
+
+See http://forrest.apache.org/docs/linking.html for more info
+-->
+<!-- The label attribute of the outer "site" element will only show
+  in the linkmap (linkmap.html).
+  Use elements project-name and group-name in skinconfig to change name of 
+  your site or project that is usually shown at the top of page.
+  No matter what you configure for the href attribute, Forrest will
+  always use index.html when you request http://yourHost/
+  See FAQ: "How can I use a start-up-page other than index.html?"
+-->
+<site label="Makumba" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
+  <home label="Home" tab="home">
+    <index label="Index" href="index.html" description="Welcome to Makumba"/>
+    <linkmap label="Documentation ToC" href="linkmap.html" description="Table of Contents for this example site"/>
+  </home>
+  <quickstart label="Quick start" href="quickstart/" description="Getting started with Makumba" tab="quickstart" />
+  <installation label="Installation" href="installation/" description="Installing and configuring Makumba" tab="installation"/>
+  <documentation label="Documentation" href="doc/" description="Makuma reference documentation" tab="documentation">
+    <overview label="Overview" href="doc/overview.html" description="Overview of Makumba">
+      <architecture label="Makumba architecture" description="Makumba architecture"/>
+    </overview>
+    <datadef label="Data definitions" href="doc/datadef.html" description="Makumba Data Definitions"/>
+    <valdef label="Validation definitions" href="doc/valdef.html" description="Makumba Validation Definitions"/>
+    <querylang label="Query languages" href="doc/querylang.html" description="Query languages"/>
+    <taglib label="JSP tag library" href="doc/taglib/" description="Makumba tag library">
+      <list label="mak:list" href="doc/taglib/list.html" description="mak:list tag" />
+    </taglib>
+    <bl label="Business Logics" href="doc/businesslogic.html" description="Makumba Business Logics" />
+    <future label="Future features" href="doc/future.html" description="Future Makumba features"/>
+  
+  </documentation>
+  <develdoc label="Developer documentation" href="develdoc/" description="Developer documentation" tab="develdoc"/>
+  <files>
+    <hello_print href="hello.pdf"/>
+    <test1 href="test1.html"/>
+  </files>
+<!--
+  The href must be wholesite.html/pdf  You can change the labels and node names
+  <all label="All">
+    <whole_site_html label="Whole Site HTML" href="wholesite.html"/>
+    <whole_site_pdf label="Whole Site PDF" href="wholesite.pdf"/>
+  </all>
+  -->
+  <external-refs>
+    <forrest href="http://forrest.apache.org/">
+      <linking href="docs/linking.html"/>
+      <validation href="docs/validation.html"/>
+      <webapp href="docs/your-project.html#webapp"/>
+      <dtd-docs href="docs/dtd-docs.html"/>
+      <new_content_type href="docs/your-project.html#adding_new_content_type"/>
+      <buildPlugin href="docs/howto/howto-buildPlugin.html"/>
+    </forrest>
+    <forrest-zone href="http://forrest.zones.apache.org/"/>
+    <cocoon href="http://cocoon.apache.org/"/>
+    <xml.apache.org href="http://xml.apache.org/"/>
+  </external-refs>
+</site>
