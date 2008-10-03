@@ -100,7 +100,7 @@ which will be used to configure the chosen Forrest skin.
   <trail>
     <link1 name="Makumba" href="http://www.makumba.org/"/>
     <link2 name="Documentation" href="http://www.makumba.org/documentation"/>
-    <link3 name="" href="">
+    <link3 name="" href=""/>
   </trail>
 <!-- Configure the TOC, i.e. the Table of Contents.
   @max-depth
