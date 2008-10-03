@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.commons.SQLPointer;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -56,7 +57,7 @@ public class DataPointerValueConverter extends DataServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + "/dataList";
+        browsePath = contextPath + Configuration.getObjectIdConverterLocation();
 
         String paramDataType = request.getParameter("dataType");
         String paramValue = request.getParameter("value");

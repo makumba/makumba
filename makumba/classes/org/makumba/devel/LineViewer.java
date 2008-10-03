@@ -43,7 +43,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -99,8 +98,6 @@ public abstract class LineViewer implements SourceViewer {
     protected String jspClasspath;
 
     protected HttpServletRequest request;
-
-    protected HttpServlet servlet;
 
     protected String servletPath;
 
@@ -289,7 +286,7 @@ public abstract class LineViewer implements SourceViewer {
 
     protected void printFileRelations(PrintWriter writer) {
         writer.println("<a href=\"javascript:toggleElementDisplay(fileRelations);\">Relations</a>");
-        writer.println("<div id=\"fileRelations\" style=\"display:none; padding: 5px; position: absolute; top: 88px; background-color: lightblue\">");
+        writer.println("<div id=\"fileRelations\" class=\"popup\" style=\"display: none;\">");
         String webAppRoot = request.getSession().getServletContext().getRealPath("/");
         int maxDisplay = 10;
         if (webAppRoot.endsWith("/")) {

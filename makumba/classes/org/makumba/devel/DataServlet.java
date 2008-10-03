@@ -67,6 +67,7 @@ public abstract class DataServlet extends HttpServlet {
         w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
         w.println("  <tr>");
         w.println("    <td>");
+        String toolKey = null;
         if (mode == MODE_VIEW || mode == MODE_LIST) {
             if (type != null && !type.equals("")) {
                 w.println("      <a href=\"" + contextPath + "/dataDefinitions/" + type
@@ -80,25 +81,20 @@ public abstract class DataServlet extends HttpServlet {
                         + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">" + dataPointer.longValue() + "</span>)</i>");
             }
             w.println("<br>in Makumba database: " + dataBaseName);
+            toolKey = Configuration.KEY_DATA_LISTER;
         } else if (mode == MODE_QUERY) {
             w.println("      <span style=\"font-size: x-large\">Query translater & executer</span><br>");
             w.println("      <span style=\"font-size: small\">Insert your query in OQl here, and get the created SQL and the results of the query.</span>");
+            toolKey = Configuration.KEY_DATA_QUERY_TOOL;
         } else if (mode == MODE_CONVERTOR) {
             w.println("      <span style=\"font-size: x-large\">Makumba Pointer value convertor</span>");
             w.println("<br>in Makumba database: " + dataBaseName);
+            toolKey = Configuration.KEY_OBJECT_ID_CONVERTER;
         }
         w.println("    </td>");
         w.println("    <td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
         if (mode == MODE_CONVERTOR) {
             w.println("      <span class=\"active\">Pointer value converter</span>");
-        } else {
-            w.println("      <a href=\"" + contextPath + "/valueConverter\">Pointer value converter</a>");
-        }
-        w.println("      &nbsp;&nbsp;&nbsp;");
-        if (mode == MODE_QUERY) {
-            w.println("      <span class=\"active\">custom query</span>");
-        } else {
-            w.println("      <a href=\"" + contextPath + "/dataQuery\">custom query</a>");
         }
         w.println("      &nbsp;&nbsp;&nbsp;");
         if ((mode == MODE_LIST && !type.equals("")) || mode == MODE_VIEW) {
@@ -110,6 +106,10 @@ public abstract class DataServlet extends HttpServlet {
         } else {
             w.println("      <span class=\"active\">browse</span>");
         }
+        
+        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.writeDevelUtilLinks(w, toolKey, contextPath);
+        
         w.println("    </td>");
         w.println("  </tr>");
         w.println("</table>");

@@ -29,6 +29,7 @@ import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
@@ -149,13 +150,13 @@ public class GeneratedCodeViewer extends jspViewer {
 
     public GeneratedCodeViewer(HttpServletRequest req) throws Exception {
         super(req, true);
+
         // initTemplates(); // uncomment this for testing template purposes.
+        
+        setSearchLevels(false, false, false, true);
 
         contextPath = request.getContextPath();
-
-        setSearchLevels(false, false, false, true);
-        virtualPath = req.getPathInfo();
-        contextPath = req.getContextPath();
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getCodeGeneratorLocation());
         if (virtualPath == null) {
             virtualPath = "/";
         }
@@ -212,7 +213,7 @@ public class GeneratedCodeViewer extends jspViewer {
             SourceSyntaxPoints.PreprocessorClient jspParseData = null;
 
             // initialise file handlers
-            String rootPath = servlet.getServletContext().getRealPath("/");
+            String rootPath = request.getSession().getServletContext().getRealPath("/");
             fileRoot = new File(rootPath + File.separator + GENERATED_CODE_DIRECTORY);
             fileRoot.mkdirs();
             File allPagesFile = null;
@@ -312,11 +313,12 @@ public class GeneratedCodeViewer extends jspViewer {
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
         w.println("<a style=\"color: darkblue;\" href=\"" + mddViewerPath + "\">mdd</a>&nbsp;&nbsp;&nbsp;");
-        if (dd.getValidationDefinition() != null) {
-            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/validationDefinitions/" + virtualPath) + "\">validation definition</a>&nbsp;&nbsp;&nbsp;");
-        }
         w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">code generator</span>&nbsp;&nbsp;&nbsp;");
         w.println("<a style=\"color: darkblue;\"href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
+
+        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_MDD_VIEWER, contextPath);
+
         w.println("</td>");
     }
 
