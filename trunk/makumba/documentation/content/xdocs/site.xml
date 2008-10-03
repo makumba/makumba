@@ -41,9 +41,10 @@ See http://forrest.apache.org/docs/linking.html for more info
     <index label="Index" href="index.html" description="Welcome to Makumba"/>
     <linkmap label="Documentation ToC" href="linkmap.html" description="Table of Contents for this example site"/>
   </home>
-  <quickstart label="Quick start" href="quickstart/" description="Getting started with Makumba" tab="quickstart" />
+  <quickstart label="Quick start" href="quickstart.html" description="Getting started with Makumba" tab="quickstart" />
   <installation label="Installation" href="installation/" description="Installing and configuring Makumba" tab="installation"/>
-  <documentation label="Documentation" href="doc/" description="Makuma reference documentation" tab="documentation">
+  
+  <documentation label="Documentation" href="doc/index.html" description="Makuma reference documentation" tab="documentation">
     <overview label="Overview" href="doc/overview.html" description="Overview of Makumba">
       <architecture label="Makumba architecture" description="Makumba architecture"/>
     </overview>
@@ -55,9 +56,8 @@ See http://forrest.apache.org/docs/linking.html for more info
     </taglib>
     <bl label="Business Logics" href="doc/businesslogic.html" description="Makumba Business Logics" />
     <future label="Future features" href="doc/future.html" description="Future Makumba features"/>
-  
   </documentation>
-  <develdoc label="Developer documentation" href="develdoc/" description="Developer documentation" tab="develdoc"/>
+  <develdoc label="Developer documentation" href="develdoc/index.html" description="Developer documentation" tab="develdoc"/>
   <files>
     <hello_print href="hello.pdf"/>
     <test1 href="test1.html"/>

@@ -32,7 +32,8 @@
   -->
   <tab id="" label="Home" dir="" indexfile="index.html"/>
   <tab id="quickstart" label="Quick start" href="quickstart.html" />
-  <tab id="documentation" label="Documentation" dir="doc" indexfile="index.html"/>
-  <tab id="develdoc" label="Developer documentation" dir="develdoc" indexfile="index.html"/>
+  <tab id="installation" label="Installation" dir="installation" />
+  <tab id="documentation" label="Documentation" dir="doc"/>
+  <tab id="develdoc" label="Developer documentation" dir="develdoc"/>
   
 </tabs>
