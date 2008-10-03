@@ -37,27 +37,27 @@ See http://forrest.apache.org/docs/linking.html for more info
   See FAQ: "How can I use a start-up-page other than index.html?"
 -->
 <site label="Makumba" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
-  <home label="Home" tab="home">
-    <index label="Index" href="index.html" description="Welcome to Makumba"/>
-    <linkmap label="Documentation ToC" href="linkmap.html" description="Table of Contents for this example site"/>
+  <home label="Home" href="/index.html" tab="home">
+    <index label="Index" href="/index.html" description="Welcome to Makumba"/>
+    <linkmap label="Documentation ToC" href="/linkmap.html" description="Table of Contents for this example site"/>
   </home>
-  <quickstart label="Quick start" href="quickstart.html" description="Getting started with Makumba" tab="quickstart" />
-  <installation label="Installation" href="installation/index.html" description="Installing and configuring Makumba" tab="installation"/>
+  <quickstart label="Quick start" href="/quickstart.html" description="Getting started with Makumba" tab="quickstart" />
+  <installation label="Installation" href="/installation/index.html" description="Installing and configuring Makumba" tab="installation"/>
   
-  <documentation label="Documentation" href="doc/index.html" description="Makuma reference documentation" tab="documentation">
-    <overview label="Overview" href="doc/overview.html" description="Overview of Makumba">
+  <documentation label="Documentation" href="/doc/index.html" description="Makuma reference documentation" tab="documentation">
+    <overview label="Overview" href="/doc/overview.html" description="Overview of Makumba">
       <architecture label="Makumba architecture" description="Makumba architecture"/>
     </overview>
-    <datadef label="Data definitions" href="doc/datadef.html" description="Makumba Data Definitions"/>
-    <valdef label="Validation definitions" href="doc/valdef.html" description="Makumba Validation Definitions"/>
-    <querylang label="Query languages" href="doc/querylang.html" description="Query languages"/>
-    <taglib label="JSP tag library" href="doc/taglib/" description="Makumba tag library">
-      <list label="mak:list" href="doc/taglib/list.html" description="mak:list tag" />
+    <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
+    <valdef label="Validation definitions" href="/doc/valdef.html" description="Makumba Validation Definitions"/>
+    <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
+    <taglib label="JSP tag library" href="/doc/taglib/" description="Makumba tag library">
+      <list label="mak:list" href="/doc/taglib/list.html" description="mak:list tag" />
     </taglib>
-    <bl label="Business Logics" href="doc/businesslogic.html" description="Makumba Business Logics" />
-    <future label="Future features" href="doc/future.html" description="Future Makumba features"/>
+    <bl label="Business Logics" href="/doc/businesslogic.html" description="Makumba Business Logics" />
+    <future label="Future features" href="/doc/future.html" description="Future Makumba features"/>
   </documentation>
-  <develdoc label="Developer documentation" href="develdoc/index.html" description="Developer documentation" tab="develdoc"/>
+  <develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/>
   <files>
     <hello_print href="hello.pdf"/>
     <test1 href="test1.html"/>
