@@ -1906,11 +1906,18 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
             <li>default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>, <code>ptr</code> and <code>set</code>
             is "<code>select</code>" (dropdown or scroll list depending on <code>size</code>). Alternative is "<code>tickbox</code>"
             (checkboxes or radio buttons). Can be forced to a specific type by using "<code>radio</code>" or "<code>checkbox</code>"</li>
+            <li>for <code>set</code>, type can be <code>seteditor</code>, which will create two multiple-select boxes (see an <a
+              href="scripts/makumba-JavaScriptChooser.html">example</a>).</li>
+            <li>for <code>int</code>, <code>spinner</code> creates a spinner input with increase/decrease buttons; if a <a href="#validation">validation
+            definition</a> defines a range for the field, <code>select</code> and <code>radio</code> are will create select boxes and radio buttons.</li>
             <li><code>date</code> is split in 3 inputs, <code>&lt;fieldname&gt;_0</code> (day), <code>_1</code>
             (month), <code>_2</code> (year), and likewise for <code>time</code> elements</li>
             <li>for <code>text</code>, default is "<code>textarea</code>"; "<code>file</code>" will create file
             upload box, and will create supplementary attributes <code>&lt;fieldname&gt;_filename</code>, <code>&lt;fieldname&gt;_contentType</code>
             and <code>&lt;fieldname&gt;_contentLength</code> that have to be handled separately by the handler method</li>
+            <li>for <code>file</code>, a file upload box will automatically created, and handling of file name, content type and length will be
+            done automatically.</li>
+            
           </ul>
           </td>
           <td>Fixed</td>
@@ -1934,6 +1941,12 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <code>'the day' dd 'of the month' MMMM 'in the year' yyyy</code>. <br>
           Default is "<code>dd MMMM yyyy</code>"</td>
           <td>Rtexpr. Only for date.</td>
+        </tr>
+        <tr>
+          <td><tt>stepSize</tt></td>
+          <td>For <code>int</code> data with <code>type</code> <code>select</code> or <code>radio</code>, the step size defines the steps between
+          each option. The default stepsize is 1.</td>
+          <td>Rtexpr. Only for int with <code>type=select/radio</code>.</td>
         </tr>
         <tr>
           <td><tt>size</tt></td>
