@@ -115,11 +115,11 @@ public class DevelUtils {
 
     public static void writeDevelUtilLinks(PrintWriter writer, String toolKey, String contextPath) {
         Hashtable<String, String> allGenericDeveloperToolsMap = Configuration.getAllGenericDeveloperToolsMap();
-        writer.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">other tools</a>");
-        writer.println("<div id=\"developerTools\" style=\"display:none; padding: 5px; position: absolute; top: 88px; background-color: lightblue\">");
+        writer.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">Other tools</a>");
+        writer.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
         for (String key : allGenericDeveloperToolsMap.keySet()) {
             if (!key.equals(toolKey)) {
-                writer.print("<a href=\"" + contextPath + "/" + Configuration.getConfigProperty(key) + ">"
+                writer.print("<a href=\"" + contextPath + Configuration.getConfigProperty(key) + "\">"
                         + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
             }
         }

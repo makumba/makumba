@@ -423,10 +423,10 @@ public class javaViewer extends LineViewer {
 
     @Override
     public void intro(PrintWriter w) {
-        w.println("<td align=\"center\" >");
+        w.println("<td align=\"right\" >");
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
-        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">Java</span></td>");
+        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">Java</span>");
         String p = virtualPath;
         if (p.endsWith(".java")) {
             p = p.substring(0, p.indexOf(".java"));
@@ -436,7 +436,11 @@ public class javaViewer extends LineViewer {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        w.print("<td align=\"center\"><a href=\"/" + path + "\"><font color=\"darkblue\">browse</font></a></td>");
+        w.println("&nbsp;&nbsp;&nbsp;");
+        w.println("<a href=\"/" + path + "\"><font color=\"darkblue\">browse</font></a>");
+        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_JAVA_VIEWER, contextPath);
+        w.println("</td>");
     }
 
 }

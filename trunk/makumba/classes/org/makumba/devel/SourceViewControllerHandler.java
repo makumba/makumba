@@ -65,7 +65,8 @@ public class SourceViewControllerHandler extends ControllerHandler {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        String path = req.getRequestURI().replace(req.getContextPath(), "");
+        String requestURI = req.getRequestURI();
+        String path = requestURI.replace(req.getContextPath(), "");
         SourceViewer sw = null;
         if (path.startsWith(Configuration.getMddViewerLocation())) {
             sw = new mddViewer(req);
@@ -96,9 +97,10 @@ public class SourceViewControllerHandler extends ControllerHandler {
             if (DevelUtils.redirected(req, res, servletPath)) {
                 return false;
             }
-            if (sw instanceof GeneratedCodeViewer && req.getPathInfo().endsWith("/")) {
-                // redirect browsing of directories to mdd Viewer
-                res.sendRedirect(req.getContextPath() + "/dataDefinitions" + req.getPathInfo());
+
+            if (sw instanceof GeneratedCodeViewer && requestURI.endsWith("/")) {
+                String location = requestURI.substring((req.getContextPath() + Configuration.getCodeGeneratorLocation()).length() + 1);
+                res.sendRedirect((req.getContextPath() + Configuration.getMddViewerLocation()) + location);
                 return false;
             }
 
@@ -110,7 +112,8 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
             }
             res.setContentType("text/html");
-            printDirlistingHeader(w, dir.getCanonicalPath(), relativeDirectory);
+            printDirlistingHeader(w, dir.getCanonicalPath(), relativeDirectory, req.getContextPath(),
+                sw instanceof javaViewer ? Configuration.KEY_JAVA_VIEWER : Configuration.KEY_MDD_VIEWER);
 
             if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
                 w.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -137,7 +140,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 for (int i = 0; i < list.length; i++) {
                     String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + list[i];
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
-                    String addr = req.getContextPath() + Configuration.getMddViewerLocation() + "/" + s;
+                    String addr = (req.getContextPath() + Configuration.getMddViewerLocation()) + "/" + s;
                     w.println("<a href=\"" + addr + "\">" + s + "</a>");
                 }
             } else {
@@ -151,14 +154,17 @@ public class SourceViewControllerHandler extends ControllerHandler {
         return false;
     }
 
-    public static void printDirlistingHeader(PrintWriter w, String dir, String relativeDirectory) throws IOException {
+    public static void printDirlistingHeader(PrintWriter w, String dir, String relativeDirectory, String contextPath,
+            String key) throws IOException {
         w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         w.println("<html><head><title>" + relativeDirectory + "</title>");
         w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
-
+        DevelUtils.writeStylesAndScripts(w, contextPath);
         w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
         w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">" + relativeDirectory + "</font></a></font>");
         w.print("<font size=\"-1\"><br>" + dir + "</font>");
+        w.print("</td><td align=\"right\">");
+        DevelUtils.writeDevelUtilLinks(w, key, contextPath);
         w.print("</td>");
 
         w.print("</tr></table>\n<pre style=\"margin-top:0\">");

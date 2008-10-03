@@ -221,6 +221,9 @@ public class jspViewer extends LineViewer {
         if (lg != null) {
             w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
         }
+        
+        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.writeDevelUtilLinks(w, "", contextPath);
 
         w.println("</td>");
         w.println("</tr>");
@@ -402,6 +405,11 @@ public class jspViewer extends LineViewer {
 
     private boolean isSystemtag(String type) {
         return type.equals("JspComment") || type.equals("JspScriptlet") || type.equals("JSPSystemTag");
+    }
+    
+    @Override
+    protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
+        super.printPageBeginAdditional(writer);
     }
 
 }

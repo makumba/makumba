@@ -131,6 +131,10 @@ public class mddViewer extends LineViewer {
             w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         }
         w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
+
+        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_MDD_VIEWER, contextPath);
+
         w.println("</td>");
     }
 

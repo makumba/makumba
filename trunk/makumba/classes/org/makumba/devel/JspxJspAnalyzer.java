@@ -24,6 +24,7 @@
 package org.makumba.devel;
 
 import org.makumba.analyser.TagData;
+import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 
 /**
