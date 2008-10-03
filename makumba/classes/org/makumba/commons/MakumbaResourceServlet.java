@@ -80,7 +80,8 @@ public class MakumbaResourceServlet extends HttpServlet {
                     relativeDirectory = file.getAbsolutePath().substring(
                         file.getAbsolutePath().indexOf(resourceDirectory));
                 }
-                SourceViewControllerHandler.printDirlistingHeader(writer, file.getCanonicalPath(), relativeDirectory);
+                SourceViewControllerHandler.printDirlistingHeader(writer, file.getCanonicalPath(), relativeDirectory,
+                    req.getContextPath(), null);
 
                 if (!(relativeDirectory.equals(resourceDirectory))) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -115,7 +116,8 @@ public class MakumbaResourceServlet extends HttpServlet {
                     return;
                 }
                 String relativeDirectory = jarEntry.getName();
-                SourceViewControllerHandler.printDirlistingHeader(writer, url.toExternalForm(), relativeDirectory);
+                SourceViewControllerHandler.printDirlistingHeader(writer, url.toExternalForm(), relativeDirectory,
+                    req.getContextPath(), null);
 
                 if (!relativeDirectory.equals(resourceDirectory) && !relativeDirectory.equals(resourceDirectory + "/")) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -185,31 +187,22 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static void writeStyles(StringBuffer sb, String contextPath, String styleSheet) {
         sb.append("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath + "/"
-                + resourceDirectory + "/" + RESOURCE_PATH_CSS
-                + styleSheet + "\"/>");
+                + resourceDirectory + "/" + RESOURCE_PATH_CSS + styleSheet + "\"/>");
     }
 
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
         for (Object object : resources) {
-                
-                if(((String)object).endsWith(".css")) {
-                    MakumbaResourceServlet.writeStyles(sb, contextPath, (String)object);
-    
-                } else if(((String)object).endsWith(".js")) {
-                    writeScripts(sb, contextPath, (String)object);
-                    
-                }
-    
-            
-            
-            
+            if (((String) object).endsWith(".css")) {
+                MakumbaResourceServlet.writeStyles(sb, contextPath, (String) object);
+            } else if (((String) object).endsWith(".js")) {
+                writeScripts(sb, contextPath, (String) object);
+            }
         }
     }
 
     public static void writeScripts(StringBuffer sb, String contextPath, String script) {
-        sb.append("<script type=\"text/javascript\" src=\"" + contextPath + "/"
-                + resourceDirectory + "/" + RESOURCE_PATH_JAVASCRIPT
-                + script + "\">" + "</script>\n");
+        sb.append("<script type=\"text/javascript\" src=\"" + contextPath + "/" + resourceDirectory + "/"
+                + RESOURCE_PATH_JAVASCRIPT + script + "\">" + "</script>\n");
     }
 
     public static String getContentType(URL url) {
