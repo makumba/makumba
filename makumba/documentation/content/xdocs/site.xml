@@ -42,7 +42,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <linkmap label="Documentation ToC" href="linkmap.html" description="Table of Contents for this example site"/>
   </home>
   <quickstart label="Quick start" href="quickstart.html" description="Getting started with Makumba" tab="quickstart" />
-  <installation label="Installation" href="installation/" description="Installing and configuring Makumba" tab="installation"/>
+  <installation label="Installation" href="installation/index.html" description="Installing and configuring Makumba" tab="installation"/>
   
   <documentation label="Documentation" href="doc/index.html" description="Makuma reference documentation" tab="documentation">
     <overview label="Overview" href="doc/overview.html" description="Overview of Makumba">
