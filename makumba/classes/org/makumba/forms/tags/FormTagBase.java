@@ -461,6 +461,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             // if we are at the first form
             if (findParentForm() == null && pageContext.getAttribute("firstFormPassed") == null) {
                 // included needed resources
+                sb.append("<script type=\"text/javascript\">var context_path = \""+(request).getContextPath()+"\"</script>\n");
+
                 HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                 if (resources != null) {
                     for (Object object : resources) {

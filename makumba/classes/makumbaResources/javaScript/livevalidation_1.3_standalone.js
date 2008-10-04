@@ -245,7 +245,7 @@ LiveValidation.prototype = {
      *	@var validationParamsObj {Object} - parameters for doing the validation, if wanted or necessary
      * @return {Boolean} - whether the all the validations passed or if one failed
      */
-    doValidations: function(){
+    doValidations: function(e){
       	this.validationFailed = false;
       	for(var i = 0, len = this.validations.length; i < len; ++i){
     	 	var validation = this.validations[i];
@@ -254,10 +254,10 @@ LiveValidation.prototype = {
                 case Validate.Confirmation:
                 case Validate.Acceptance:
     		   		this.displayMessageWhenEmpty = true;
-    		   		this.validationFailed = !this.validateElement(validation.type, validation.params); 
+    		   		this.validationFailed = !this.validateElement(validation.type, validation.params, e); 
     				break;
     		   	default:
-    		   		this.validationFailed = !this.validateElement(validation.type, validation.params);
+    		   		this.validationFailed = !this.validateElement(validation.type, validation.params, e);
     		   		break;
     		}
     		if(this.validationFailed) return false;	
@@ -273,15 +273,15 @@ LiveValidation.prototype = {
      *	@var validationParamsObj {Object} - parameters for doing the validation, if wanted or necessary
      * @return {Boolean} - whether the validation has passed or failed
      */
-    validateElement: function(validationFunction, validationParamsObj){
+    validateElement: function(validationFunction, validationParamsObj, e){
       	var value = (this.elementType == LiveValidation.SELECT) ? this.element.options[this.element.selectedIndex].value : this.element.value;     
         if(validationFunction == Validate.Acceptance){
     	    if(this.elementType != LiveValidation.CHECKBOX) throw new Error('LiveValidation::validateElement - Element to validate acceptance must be a checkbox!');
     		value = this.element.checked;
     	}
         var isValid = true;
-      	try{    
-    		validationFunction(value, validationParamsObj);
+      	try{
+    		validationFunction(value, validationParamsObj, e, this.element);
     	} catch(error) {
     	  	if(error instanceof Validate.Error){
     			if( value !== '' || (value === '' && this.displayMessageWhenEmpty) ){
@@ -302,9 +302,9 @@ LiveValidation.prototype = {
      *
      * @return {Boolean} - whether the all the validations passed or if one failed
      */
-    validate: function(){
+    validate: function(e){
       if(!this.element.disabled){
-		var isValid = this.doValidations();
+		var isValid = this.doValidations(e);
 		if(isValid){
 			this.onValid();
 			return true;
@@ -317,6 +317,12 @@ LiveValidation.prototype = {
     }
     },
 	
+    
+    closeIt: function(e, message) {
+    	this.message = message;
+    	this.onInvalid();
+    },
+    
  /**
    *  enables the field
    *
@@ -544,7 +550,7 @@ var Validate = {
      *							failureMessage {String} - the message to show when the field fails validation 
      *													  (DEFAULT: "Can't be empty!")
      */
-    Presence: function(value, paramsObj){
+    Presence: function(value, paramsObj, e){
       	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Can't be empty!";
     	if(value === '' || value === null || value === undefined){ 
@@ -579,7 +585,7 @@ var Validate = {
      *  NB. can be checked if it is within a range by specifying both a minimum and a maximum
      *  NB. will evaluate numbers represented in scientific form (ie 2e10) correctly as numbers				
      */
-    Numericality: function(value, paramsObj){
+    Numericality: function(value, paramsObj, e){
         var suppliedValue = value;
         var value = Number(value);
     	var paramsObj = paramsObj || {};
@@ -629,7 +635,7 @@ var Validate = {
      *		If you do not want this to be the case then you must either add a LiveValidation.PRESENCE validation
      *		or build it into the regular expression pattern
      */
-    Format: function(value, paramsObj){
+    Format: function(value, paramsObj, e){
       var value = String(value);
     	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Not valid!";
@@ -650,7 +656,7 @@ var Validate = {
      *							failureMessage {String} - the message to show when the field fails validation
      *													  (DEFAULT: "Must be a number!" or "Must be an integer!")
      */
-    Email: function(value, paramsObj){
+    Email: function(value, paramsObj, e){
     	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Must be a valid email address!";
     	Validate.Format(value, { failureMessage: message, pattern: /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i } );
@@ -676,7 +682,7 @@ var Validate = {
      *
      *  NB. can be checked if it is within a range by specifying both a minimum and a maximum				
      */
-    Length: function(value, paramsObj){
+    Length: function(value, paramsObj, e){
     	var value = String(value);
     	var paramsObj = paramsObj || {};
         var minimum = ((paramsObj.minimum) || (paramsObj.minimum == 0)) ? paramsObj.minimum : null;
@@ -725,7 +731,7 @@ var Validate = {
      *             negate {Bool} 		- if true, will validate that the value is not within the given set of values
      *													  (DEFAULT: false)			
      */
-    Inclusion: function(value, paramsObj){
+    Inclusion: function(value, paramsObj, e){
     	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Must be included in the list!";
       var caseSensitive = (paramsObj.caseSensitive === false) ? false : true;
@@ -772,7 +778,7 @@ var Validate = {
      *             caseSensitive {Bool} - if false will compare strings case insensitively
      *                          (DEFAULT: true)			
      */
-    Exclusion: function(value, paramsObj){
+    Exclusion: function(value, paramsObj, e){
       var paramsObj = paramsObj || {};
     	paramsObj.failureMessage = paramsObj.failureMessage || "Must not be included in the list!";
       paramsObj.negate = true;
@@ -791,7 +797,7 @@ var Validate = {
      *													  (DEFAULT: "Does not match!")
      *							match {String} 			- id of the field that this one should match						
      */
-    Confirmation: function(value, paramsObj){
+    Confirmation: function(value, paramsObj, e){
       	if(!paramsObj.match) throw new Error("Validate::Confirmation - Error validating confirmation: Id of element to match must be provided!");
     	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Does not match!";
@@ -813,7 +819,7 @@ var Validate = {
      *							failureMessage {String} - the message to show when the field fails validation 
      *													  (DEFAULT: "Must be accepted!")
      */
-    Acceptance: function(value, paramsObj){
+    Acceptance: function(value, paramsObj, e){
       	var paramsObj = paramsObj || {};
     	var message = paramsObj.failureMessage || "Must be accepted!";
     	if(!value){ 
@@ -836,7 +842,7 @@ var Validate = {
      *							args {Object} 		- an object of named arguments that will be passed to the custom function so are accessible through this object within it 
      *													  (DEFAULT: {})
      */
-	Custom: function(value, paramsObj){
+	Custom: function(value, paramsObj, e){
 		var paramsObj = paramsObj || {};
 		var against = paramsObj.against || function(){ return true; };
 		var args = paramsObj.args || {};

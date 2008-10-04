@@ -163,7 +163,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
 
     public String[] getNeededJavaScriptFileNames() {
         // the order gets reversed for some reason... therefore we reverse it here as well
-        return new String[] { "makumba-livevalidation.js", "livevalidation_1.3_standalone.js" };
+        return new String[] { "prototype.js", "makumba-livevalidation.js", "livevalidation_1.3_standalone.js" };
     }
 
     private String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {
