@@ -23,17 +23,15 @@ public class TransactionProvider implements TransactionProviderInterface {
     
     private TransactionProviderInterface transactionProviderImplementation;    
     
-    private static TransactionProvider singleton;
-    
+    private static class SingletonHolder {
+        private static final TransactionProvider singleton = new TransactionProvider();
+    }
     private TransactionProvider() {
         this(new Configuration());
     }
     
     public static TransactionProvider getInstance() {
-        if(singleton == null) {
-            singleton = new TransactionProvider();
-        }
-        return singleton;
+        return SingletonHolder.singleton;
     }
     
     public TransactionProvider(TransactionProviderInterface tpi){

@@ -17,14 +17,13 @@ import org.makumba.FieldDefinition;
 public class DataDefinitionProvider implements DataDefinitionProviderInterface {
 
     private DataDefinitionProviderInterface dataDefinitionProviderImplementation;
-    
-    private static DataDefinitionProvider singleton;
+
+    private static final class SingletonHolder {
+        private static final DataDefinitionProvider singleton = new DataDefinitionProvider();
+    }
     
     public static DataDefinitionProvider getInstance() {
-        if(singleton == null) {
-            singleton = new DataDefinitionProvider();
-        }
-        return singleton;
+        return SingletonHolder.singleton;
     }
 
     /**
