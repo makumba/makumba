@@ -54,8 +54,12 @@ See http://forrest.apache.org/docs/linking.html for more info
     <taglib label="JSP tag library" href="/doc/taglib/" description="Makumba tag library">
       <list label="mak:list" href="/doc/taglib/list.html" description="mak:list tag" />
     </taglib>
-    <bl label="Business Logics" href="/doc/businesslogic.html" description="Makumba Business Logics" />
-    <future label="Future features" href="/doc/future.html" description="Future Makumba features"/>
+    <bl label="Business Logics" href="/doc/BL/bl.html" description="Makumba Business Logics">
+ 		<login label="Attributes" href="/doc/BL/bl.html" description="Attributes"/>
+ 		<javahandlerclasses label="Java Handler Classes" href="/doc/BL/JavaHandlerClasses.html" description="Java Handler Classes"/>
+ 		<login label="Login" href="/doc/BL/login.html" description="Login"/>
+ 	</bl>
+    <future label="Future features" href="doc/future.html" description="Future Makumba features"/>
   </documentation>
   <develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/>
   <files>
