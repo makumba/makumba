@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
+  <header>
+    <title>Java Handler Classes</title>
+  </header>
+  <body>
+  <p>
+  Java handler classes are classes that implement the "business logic" of the organisation. Every makumba page will look for a handler, and will call its methods when needed. 
+  Check also the &lt;mak:newForm&gt; Java handler classes are classes that implement the "business logic" of the organisation. Every makumba page will look for a handler, and will call its methods when needed. Check also the &lt;mak:newForm&gt; to know which methods are called. If a handler class exists, then some operations cannot be performed if these methods are not defined in the handler class. to know which methods are called. If a handler class exists, then some operations cannot be performed if these methods are not defined in the handler class.
+  </p>
+  
+    <section id="handler">
+      <title>Handler Discovery</title>
+      <p>
+      Each page will determine its handler class on first access, after being compiled. If the class changes on disk, a webapp reload is generally needed for the new class to take effect.
+      </p>
+  	  <p>
+      The handler is 'discovered' by decomposing the full path of the JSP page, and finding a class with a matching name. 
+      Decomposition breaks the full path at every capital letter, or forward slash. For example, with the page path /student/mycv/indexPersonal.jsp, the following criteria are applied, in order:
+      </p>
+      
+    
+     
+     		<table>
+   				<tr>
+   					<th>criterium</th>
+   					<th>Java classes checked for</th>
+   				</tr>   				
+   				<tr>
+   					<td>page name</td>
+   					<td>StudentMycvIndexPersonalLogic</td>
+   				</tr>
+   				   				<tr>
+   					<td>caps parts of page/directory name</td>
+   					<td>StudentMycvIndexLogic</td>
+   				</tr>
+   				   				<tr>
+   					<td>directory name</td>
+   					<td>StudentMycvLogic</td>
+   				</tr>
+   				   				<tr>
+   					<td>parent directory name(s)</td>
+   					<td>StudentLogic, Logic</td>
+   				</tr>
+			</table>
+
+  	  	<p>
+      		The class name prefix (e.g. java package name) can be regulated per parts of the site in a file called MakumbaController.properties  which can be found in the CLASSPATH (just like MakumbaDatabase.properties). 
+      		For example, the file can contain:
+      	</p>
+		<p>
+			/student=org.eu.best<br/>
+			/makumba=org.makumba<br/>
+			/=test
+			
+		</p>
+		
+		<table>
+   				<tr>
+   					<th>path</th>
+   					<th>Java classes checked for</th>
+   				</tr>   				
+   				<tr>
+   					<td>/student/mycv/index.jsp</td>
+   					<td>org.eu.best.MycvIndexLogic<br/>org.eu.best.MycvLogic<br/>org.eu.best.Logic</td>
+   				</tr>				
+   				<tr>
+   					<td>/makumba/tests/x.jsp</td>
+   					<td>org.makumba.TestsXLogic<br/>org.makumba.TestsLogic<br/>org.makumba.Logic</td>
+   				</tr>
+   				<tr>
+   					<td>/some.jsp</td>
+   					<td>test.SomeLogic<br/>test.Logic</td>
+   				</tr>
+			</table>
+			
+		<p>
+		There are good reasons to take into account the name of the response page of a form when looking for the business logic. Still, it is the name of the page that contains the form which matters not the name of the action page.
+		It is good practice for both pages to actually have the same handler class.
+		</p>
+				
+    </section>
+     <section id="role">
+      <title>Role of Java Handlers</title>
+      <p>
+       
+      </p>
+    </section>
+     <section id="initialization">
+      <title>Handler Initialization</title>
+      <p>
+        
+      </p>
+    </section>
+    <section id="transaction">
+      <title>Transaction provider configuration</title>
+      <p>
+
+      </p>
+    </section>
+  </body>
+</document>
