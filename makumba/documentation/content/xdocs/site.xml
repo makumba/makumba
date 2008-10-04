@@ -85,5 +85,14 @@ See http://forrest.apache.org/docs/linking.html for more info
     <forrest-zone href="http://forrest.zones.apache.org/"/>
     <cocoon href="http://cocoon.apache.org/"/>
     <xml.apache.org href="http://xml.apache.org/"/>
+    
+    <hibernate href="http://www.hibernate.org">
+      <hql href="/hib_docs/reference/en/html/queryhql.html" />
+    </hibernate>
+    <mysql href="http://www.mysql.org">
+      <mysql-subqueries href="http://dev.mysql.com/doc/refman/5.0/en/subqueries.html" />
+    </mysql>
+    <odmg href="http://www.odmg.org" />
+    
   </external-refs>
 </site>
