@@ -36,6 +36,9 @@ public class UniquenessServlet extends HttpServlet {
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        
+        resp.setContentType("application/json");
+        
         // get the writer
         PrintWriter writer = resp.getWriter();
 
@@ -43,7 +46,7 @@ public class UniquenessServlet extends HttpServlet {
         String tableName = req.getParameter("table");
         String fieldName = req.getParameter("field");
         if (StringUtils.isBlank(value) || StringUtils.isBlank(tableName) || StringUtils.isBlank(fieldName)) {
-            writer.println("All 'value', 'table' and 'field' parameters need to be not-empty!");
+            writer.println("{error: \"All 'value', 'table' and 'field' parameters need to be not-empty!\"}");
             return;
         }
 
@@ -56,18 +59,18 @@ public class UniquenessServlet extends HttpServlet {
             try {
                 dd = DataDefinitionProvider.getInstance().getDataDefinition(tableName);
                 if (dd == null) {
-                    writer.println("No such table!");
+                    writer.println("{error: \"No such table!\"}");
                     return;
                 }
             } catch (Throwable e) {
-                writer.println("No such table!");
+                writer.println("{error: \"No such table!\"}");
                 return;
             }
 
             // check if the field exists
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
             if (fd == null) {
-                writer.println("No such field!");
+                writer.println("{error: \"No such field!\"}");
                 return;
             }
 
@@ -95,7 +98,7 @@ public class UniquenessServlet extends HttpServlet {
                     Date date = c.getTime();
                     v = transaction.executeQuery(OQL, date);
                 } else {
-                    writer.println("incorrect date");
+                    writer.println("{error: \"incorrect date\"}");
                     return;
                 }
             }
@@ -105,9 +108,9 @@ public class UniquenessServlet extends HttpServlet {
             }
 
             if (v.size() > 0) {
-                writer.print("not unique");
+                writer.print("{success: \"not unique\"}");
             } else {
-                writer.print("unique");
+                writer.print("{success: \"unique\"}");
             }
         } finally {
             if (transaction != null) {

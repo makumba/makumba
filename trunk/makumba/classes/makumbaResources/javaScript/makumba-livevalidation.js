@@ -41,7 +41,7 @@ MakumbaValidate.compare = function(comparisonOperator, value1, value2) {
 }
 
 // perform a number comparison
-MakumbaValidate.NumberComparison = function(value1, paramsObj){
+MakumbaValidate.NumberComparison = function(value1, paramsObj, e){
     var paramsObj = paramsObj || {};
     var value1 = Number(value1) || null;
     var value2 = Number(document.getElementById(paramsObj.element2).value) || null;
@@ -57,7 +57,7 @@ MakumbaValidate.NumberComparison = function(value1, paramsObj){
 }
 
 
-MakumbaValidate.StringComparison = function(value1, paramsObj){
+MakumbaValidate.StringComparison = function(value1, paramsObj, e){
     var paramsObj = paramsObj || {};
     var value2 = (document.getElementById(paramsObj.element2).value) || null;
     var comparisonOperator = (paramsObj.comparisonOperator) || null;
@@ -85,64 +85,31 @@ MakumbaValidate.StringComparison = function(value1, paramsObj){
 }
 
 
-function getHTTPObject() {
-    var xmlhttp;
-    /*@cc_on
-        @if (@_jscript_version >= 5)
-            try 
-            {
-                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } 
-            catch (e) 
-            {
-                try 
-                {
-                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                }
-                catch (E)
-                {
-                    xmlhttp = false;
-                }
-            }
-        @else
-            xmlhttp = false;
-    @end @*/
-    if (!xmlhttp && typeof XMLHttpRequest != 'undefined') {
-        try {
-            xmlhttp = new XMLHttpRequest();
-        } catch (e) {
-            xmlhttp = false;
-        }
-    }
-    return xmlhttp;
-}
-
-var httpObject = getHTTPObject(); // We create the HTTP Object
-
-
-
-MakumbaValidate.Uniqueness = function(value, paramsObj) {
+MakumbaValidate.Uniqueness = function(value, paramsObj, e, elem) {
     var paramsObj = paramsObj || {};
     
     var table = (paramsObj.table) || "";
     var field = (paramsObj.field) || "";
     
-    var yes = 1;
+    new Ajax.Request(context_path+"/makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), 
+    { 
+    	method:'get',
+    	onSuccess: function(transport)
+    	{
+    		var json = transport.responseText.evalJSON();
+    		
+    		if(json.success == "not unique")
+    		{
+    		    //alert(elem.id+"Validate.closeIt(e, paramsObj.failureMessage);");
+    		    eval(elem.id+"Validation.closeIt(e, paramsObj.failureMessage);");
+    		    
+//    			LiveValidation.closeIt(e, paramsObj.failureMessage);
+    			//Validate.fail();
+    		}
+	}});
     
-    httpObject.open("GET", "../makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), false);
-    httpObject.onreadystatechange = function() { 
-      if(httpObject.readyState == 4) { 
-        if(httpObject.responseText == "unique") {
-          yes = 0;
-        }
-      }; 
-    };
-    httpObject.send(null);
+    
 
-    if (yes == 1) {
-      Validate.fail(paramsObj.failureMessage);
-    }
-    
     return true;
 }
 

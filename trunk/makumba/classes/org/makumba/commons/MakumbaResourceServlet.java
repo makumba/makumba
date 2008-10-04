@@ -191,6 +191,7 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
+        writeContextPath(sb, contextPath);
         for (Object object : resources) {
             if (((String) object).endsWith(".css")) {
                 MakumbaResourceServlet.writeStyles(sb, contextPath, (String) object);
@@ -198,6 +199,10 @@ public class MakumbaResourceServlet extends HttpServlet {
                 writeScripts(sb, contextPath, (String) object);
             }
         }
+    }
+
+    public static void writeContextPath(StringBuffer sb, String contextPath) {
+        sb.append("<script type=\"text/javascript\">var context_path = \""+contextPath+"\";</script>\n");
     }
 
     public static void writeScripts(StringBuffer sb, String contextPath, String script) {
