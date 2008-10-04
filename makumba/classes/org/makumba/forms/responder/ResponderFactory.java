@@ -38,14 +38,12 @@ public class ResponderFactory {
 
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 
-    private static ResponderFactory instance = null;
-
+    private static class SingletonHolder {
+        private static final ResponderFactory singleton = new ResponderFactory();
+    }
+    
     public static ResponderFactory getInstance() {
-        if (instance == null) {
-            instance = new ResponderFactory();
-            instance.init();
-        }
-        return instance;
+        return SingletonHolder.singleton;
     }
 
     /**

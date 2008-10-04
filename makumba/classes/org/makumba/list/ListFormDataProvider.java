@@ -40,7 +40,7 @@ public class ListFormDataProvider implements FormDataProvider {
 
     private static final String[] dummyQuerySections = { null, null, null, null, null };
 
-    private static ListFormDataProvider singleton;
+    
 
     /*
      * (non-Javadoc)
@@ -295,14 +295,15 @@ public class ListFormDataProvider implements FormDataProvider {
         return QueryTag.getParentListKey(tag, null);
     }
 
+    private static class SingletonHolder {
+        private final static ListFormDataProvider singleton = new ListFormDataProvider();
+    }
+    
     public static ListFormDataProvider getInstance() {
-        if (singleton == null) {
-            singleton = new ListFormDataProvider();
-        }
-        return singleton;
+        return SingletonHolder.singleton;
     }
 
-    public ListFormDataProvider() {
+    private ListFormDataProvider() {
 
     }
 

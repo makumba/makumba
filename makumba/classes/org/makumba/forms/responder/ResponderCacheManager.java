@@ -24,15 +24,13 @@ import org.makumba.controller.Logic;
  */
 public class ResponderCacheManager {
 
+    private static class SingletonHolder {
+        private static final ResponderCacheManager singleton = new ResponderCacheManager();
+    }
     private ResponderFactory factory;
 
-    private static ResponderCacheManager instance = null;
-
     public static ResponderCacheManager getInstance() {
-        if (instance == null) {
-            instance = new ResponderCacheManager();
-        }
-        return instance;
+        return SingletonHolder.singleton;
     }
 
     static Hashtable<Integer, Object> indexedCache = new Hashtable<Integer, Object>();

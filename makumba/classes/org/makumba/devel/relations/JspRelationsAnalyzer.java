@@ -12,17 +12,16 @@ import org.makumba.commons.MakumbaJspAnalyzer;
  */
 public class JspRelationsAnalyzer extends MakumbaJspAnalyzer implements JspAnalyzer {
     
+    private static class SingletonHolder {
+        private final static JspRelationsAnalyzer singleton = new JspRelationsAnalyzer();
+    }
     private JspRelationsAnalyzer() {
         super();
     }
     
-    private static JspRelationsAnalyzer singleton;
     
     public static JspRelationsAnalyzer getInstance() {
-        if(singleton == null) {
-            singleton = new JspRelationsAnalyzer();
-        }
-        return singleton;
+        return SingletonHolder.singleton;
     }
 
     @Override

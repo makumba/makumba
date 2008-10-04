@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
+import org.makumba.commons.formatters.FieldFormatter;
+
 
 import com.ecyrd.jspwiki.FileUtil;
 import com.ecyrd.jspwiki.TestEngine;
@@ -28,15 +30,9 @@ public class JspWikiFormatter implements WikiFormatter {
 
     protected static WikiContext context;
 
-    protected static JspWikiFormatter jspWikiUtils = null;
-
-    /**
-     * Returns the singleton instance of this formatter, or creates it if it did not exist yet.
-     * 
-     * @return
-     */
-    public static JspWikiFormatter getInstance() {
-        if (jspWikiUtils == null) {
+    private static final class SingletonHolder {
+        
+        static {
             props.put("jspwiki.workDir", ".");
             props.put("jspwiki.pageProvider", "com.ecyrd.jspwiki.providers.FileSystemProvider");
             props.put("jspwiki.fileSystemProvider.pageDir", "@tests.pagedir@");
@@ -47,9 +43,19 @@ public class JspWikiFormatter implements WikiFormatter {
                 e.printStackTrace();
             }
             context = new WikiContext(testEngine, new WikiPage("TestPage"));
-            jspWikiUtils = new JspWikiFormatter();
+            singleton = new JspWikiFormatter();
         }
-        return jspWikiUtils;
+        
+        static JspWikiFormatter singleton;
+    }
+    
+    /**
+     * Returns the singleton instance of this formatter, or creates it if it did not exist yet.
+     * 
+     * @return
+     */
+    public static JspWikiFormatter getInstance() {
+        return SingletonHolder.singleton;
     }
 
     /**
