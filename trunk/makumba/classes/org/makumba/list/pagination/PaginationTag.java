@@ -127,7 +127,7 @@ public class PaginationTag extends GenericMakumbaTag {
             try {
                 JspWriter out = pageContext.getOut();
                 sb.append("<div class=\"" + styleClass + "\">\n");
-                sb.append("  <div style=\"float: left; width: 23%;\" >\n    ");
+                sb.append("  <div style=\"float: left; width: 50px\" >\n    ");
                 if (hasPreviousPage) {
                     sb.append(getAnchor(baseUrl, 0, limit, FIRST)).append("\n    ");
                     sb.append(getAnchor(baseUrl, (currentIndex - 1) * limit, limit, PREVIOUS));
@@ -137,16 +137,7 @@ public class PaginationTag extends GenericMakumbaTag {
                 }
                 sb.append("\n  </div>\n");
 
-                sb.append("  <div style=\"float: left; width: 50%; margin: 0 15px;\" align=\"center\">\n    ");
-
-                int itemCountLower = offset + 1;
-                int itemCountUpper = Math.min(maxResults, (currentIndex + 1) * limit);
-                sb.append("Showing ").append(itemName).append(" ").append(itemCountLower).append(" to ").append(
-                    itemCountUpper).append("").append(" out of ").append(maxResults).append(" (Page ").append(
-                    (currentIndex + 1)).append(" out of ").append(pages).append(")\n");
-                sb.append("  </div>\n");
-
-                sb.append("  <div style=\"float: right; width: 23%;\" align=\"right\">\n    ");
+                sb.append("  <div style=\"float: right; width: 50px\" align=\"right\">\n    ");
                 if (hasNextPage) {
                     sb.append(getAnchor(baseUrl, (currentIndex + 1) * limit, limit, NEXT)).append("\n    ");
                     sb.append(getAnchor(baseUrl, (pages - 1) * limit, limit, LAST));
@@ -155,6 +146,16 @@ public class PaginationTag extends GenericMakumbaTag {
                     sb.append(getLink(LAST, navigationNALinkStyle));
                 }
                 sb.append("  </div>\n");
+
+                sb.append("  <div style=\"text-align: center; margin: 0 15px;\" align=\"center\">\n    ");
+
+                int itemCountLower = offset + 1;
+                int itemCountUpper = Math.min(maxResults, (currentIndex + 1) * limit);
+                sb.append("Showing ").append(itemName).append(" ").append(itemCountLower).append(" to ").append(
+                    itemCountUpper).append("").append(" out of ").append(maxResults).append(" (Page ").append(
+                    (currentIndex + 1)).append(" out of ").append(pages).append(")\n");
+                sb.append("  </div>\n");
+
                 sb.append("  <div style=\"clear: both; font-size: 1px;\">&nbsp;</div>\n");
                 sb.append("</div>\n");
                 out.println(sb);
