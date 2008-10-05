@@ -302,9 +302,11 @@ public class ListFormDataProvider implements FormDataProvider {
     public static ListFormDataProvider getInstance() {
         return SingletonHolder.singleton;
     }
-
-    private ListFormDataProvider() {
-
+    /*
+     * This needs to be public because of forms.tags.FormTagBase which uses reflection to get an instance
+     */
+    public ListFormDataProvider() {
+        
     }
 
 }
