@@ -26,6 +26,7 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -153,7 +154,7 @@ public class ReferenceChecker extends HttpServlet {
         String title = "Broken references in " + MakumbaSystem.getDefaultDatabaseName();
         DevelUtils.writeTitleAndHeaderEnd(w, title);
         DevelUtils.printPageHeader(w, title);
-        writeHeader(w);
+        writeHeader(w, contextPath);
         Vector<String> mdds = MakumbaSystem.mddsInDirectory("dataDefinitions");
         Vector<String> clean = (Vector<String>) mdds.clone();
         for (int i = 0; i < mdds.size(); i++) {
@@ -268,7 +269,7 @@ public class ReferenceChecker extends HttpServlet {
         String title = "Broken references in " + dd.getName() + "#" + fd.getName();
         DevelUtils.writeTitleAndHeaderEnd(w, title);
         DevelUtils.printPageHeader(w, title);
-        writeHeader(w);
+        writeHeader(w, contextPath);
         w.println("<h3>Type: " + dd.getName() + "</h3>");
         w.println("<h3>Field: " + fd.getName() + "</h3>");
 
@@ -306,11 +307,16 @@ public class ReferenceChecker extends HttpServlet {
         return getRefText(countMissing, null, base, f);
     }
 
-    private void writeHeader(PrintWriter w) {
+    private void writeHeader(PrintWriter w, String contextPath) {
         w.println("<div>Checking " + MakumbaSystem.getDefaultDatabaseName()
                 + " <span style=\"font-size: small\">using Makumba version " + MakumbaSystem.getVersion()
                 + "</span></div>");
         w.println("</td>");
+
+        w.println("<td align=\"right\">");
+        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_REFERENCE_CHECKER, contextPath);
+        w.println("</td>");
+        
         w.println("</tr>");
         w.println("</table>");
     }
