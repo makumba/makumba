@@ -85,6 +85,33 @@ a:hover
 {
 	text-decoration:underline;
 }
+.fixme, .note
+{
+	border: 1px solid  #848579;
+	margin: 10px 0px;
+}
+.fixme div, .note div
+{
+	padding: 2px 5px;
+}
+.fixme .label
+{
+	text-transform: uppercase;
+	font-weight:bold;
+	background:#fffe65;
+	
+}
+.fixme .content
+{
+	background:#ebe9dc;
+}
+.note .label
+{
+	text-transform: uppercase;
+	font-weight:bold;
+	background:#9fb03e;
+}	
+
 #header
 {
 	background: red url('images/header.png') no-repeat;
@@ -222,4 +249,37 @@ a:hover
 #menu .level2
 {
 	padding-left: 10px;
+}
+.codefrag 
+{
+	background: #e3f28a;	
+}
+.code, .codefrag
+{
+	font-family:monospace;
+}
+.code
+{
+	font-size:12px;
+	color:black;
+	border: 1px solid #848579;
+	padding:3px;
+}
+div.future .label 
+{
+	color: #feffff;
+	background:#3c3f36;
+}
+div.old .label 
+{
+	color: #feffff;
+	background:#72918b;
+}
+p.future, em.future, li.future
+{
+	color:red;
+}
+p.old, em.old
+{
+	color:blue;
 }
