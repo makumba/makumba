@@ -49,7 +49,7 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
-      <comments>Deprecated, use &lt;c:if test="${mak:count<mak:maxCount()}"&gt; instead.</comments>
+      <comments>Deprecated, use &lt;c:if test="${mak:count&lt;mak:maxCount()}"&gt; instead.</comments>
     </attribute>
 
     <attribute>
@@ -827,7 +827,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>the response page of the form</description>
-      <comments>Mandatory if a <mak:action> is absent</comments>
+      <comments>Mandatory if a &lt;mak:action&gt; is absent</comments>
     </attribute>
 
 
@@ -844,8 +844,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>the name of the created object in the response page</description>
-      <comments>Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (&lt;form
-          name="..." ...&gt;)</comments>
+      <comments>Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (&lt;form name="..." ...&gt;)</comments>
     </attribute>
 
     <attribute>
@@ -1053,7 +1052,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.EditTag</tag-class>
     <body-content>JSP</body-content>
     <description>Forms to create new data</description>
-    <web-description>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list>. Also linked objects can be edited through the same form.</web-description>
+    <web-description>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.</web-description>
     
     <attribute>
       <name>object</name>
@@ -1280,7 +1279,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.AddTag</tag-class>
     <body-content>JSP</body-content>
     <description>Forms to create new data</description>
-    <web-description>Makes a form for creating a sub-object of the mandatory enclosing <mak:object> (e.g. a language of a student, an address for a person).</web-description>
+    <web-description>Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object$rt; (e.g. a language of a student, an address for a person).</web-description>
     
     <attribute>
       <name>object</name>
@@ -1514,7 +1513,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <description>Links to delete data</description>
-    <web-description>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list></web-description>
+    <web-description>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;</web-description>
     
     <attribute>
       <name>object</name>
@@ -3041,8 +3040,8 @@ This can be used for http authentication with no session tracking. )
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
     <bodycontent>EMPTY</bodycontent>
     <info>Prints links for pagination navigation</info>
-    <web-description>Provides pagination of the results in an enclosing <mak:list>. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed.
-To achieve this, pagination makes use of the information provided by the enclosing <mak:list>, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
+    <web-description>Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed.
+To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
 </web-description>
     
     <attribute>
