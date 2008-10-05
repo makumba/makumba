@@ -1,0 +1,3077 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
+
+  <description>Makumba @version@ http://www.makumba.org</description>
+  <tlib-version>2.0</tlib-version>
+  <short-name>mak</short-name>
+  <uri>http://www.makumba.org/presentation</uri>
+
+  <listener>
+    <listener-class>org.makumba.commons.NamedResourcesContextListener</listener-class>
+
+  </listener>
+
+  <tag>
+    <name>list</name>
+    <tag-class>org.makumba.list.tags.QueryTag</tag-class>
+    <tei-class>org.makumba.list.tags.CountTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>manipulate lists</description>
+    <web-description>Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</web-description>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Tag's identifier</description>
+      <comments>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</comments>
+    </attribute>
+
+    <attribute>
+      <name>countVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated, use mak:count() expression language function instead</comments>
+    </attribute>
+
+    <attribute>
+      <name>maxCountVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated, use mak:maxCount() expression language function instead</comments>
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
+      <comments>Deprecated, use &lt;c:if test="${mak:count&lt;mak:maxCount()}"&gt; instead.</comments>
+    </attribute>
+
+    <attribute>
+      <name>from</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</description>
+      <comments>Fixed, Mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>variableFrom</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>supplementary, variable OQL FROM section.</description>
+      <comments>Fixed, can contain #{ JSP EL expressions }</comments>
+    </attribute>
+
+    <attribute>
+      <name>where</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</description>
+      <comments>Fixed, can contain #{ JSP EL expressions }</comments>
+    </attribute>
+
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL ORDER BY  section</description>
+      <comments>Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore</comments>
+    </attribute>
+
+    <attribute>
+      <name>groupBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL GROUP BY  section</description>
+      <comments>Fixed, can contain #{ JSP EL expressions }</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</description>
+      <comments>Fixed, cannot contain attributes, for now. 
+The default database is chosen if this argument is not set. 
+Can only be set for top-level (root) query tags
+Can be a Rtexpr &lt;%= ...%&gt;</comments>
+    </attribute>
+
+    <attribute>
+      <name>offset</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the offset of the result to show (0 for starting from the first result)</description>
+      <comments>Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list</comments>
+    </attribute>
+
+    <attribute>
+      <name>limit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the maximum numbers of results to show (-1 for all results)</description>
+      <comments>Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found, defaults to the value of defaultLimit, if present, or -1 otherwise.
+LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.</comments>
+    </attribute>
+    
+    <attribute>
+      <name>defaultLimit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description>
+      <comments>Fixed ($attribute allowed). Only allowed for the outermost mak:list.</comments>
+    </attribute>
+     
+    <attribute>
+      <name>authorize</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>    
+  </tag>
+
+
+  <tag>
+    <name>object</name>
+    <tag-class>org.makumba.list.tags.ObjectTag</tag-class>
+    <tei-class>org.makumba.list.tags.CountTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>manipulate record</description>
+    <web-description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</web-description>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>countVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>maxCountVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>from</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>variableFrom</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>where</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>groupBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>authorize</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>    
+  </tag>
+
+
+  <tag>
+    <name>resultList</name>
+    <tag-class>org.makumba.list.tags.ResultListTag</tag-class>
+    <tei-class>org.makumba.list.tags.CountTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>display result from a search form</description>
+    <web-description>Document me please</web-description>
+
+    <attribute>
+      <name>resultsFrom</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>from</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>groupBy</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>offset</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>limit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>defaultLimit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+
+  <tag>
+    <name>value</name>
+    <tag-class>org.makumba.list.tags.ValueTag</tag-class>
+    <tei-class>org.makumba.list.tags.VarTEI</tei-class>
+    <body-content>empty</body-content>
+    <description>Value of an expression</description>
+    <web-description>Displays the value of an expression from within the query.</web-description>
+
+    <attribute>
+      <name>expr</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
+      <comments>Fixed, Mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The value of the expression is set to a new java.lang.Object variable by this name, as well as to a page-scope attribute, also by the same name (accessible as $attributename).</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. 
+Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it as such.</comments>
+    </attribute>
+
+    <attribute>
+      <name>printVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The formatted output as it would have been printed, is instead stored in a new java.lang.String variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename). </description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP.</comments>
+    </attribute>
+
+    <attribute>
+      <name>urlEncode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false".</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+
+    <attribute>
+      <name>html</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any. Default is "false".</description>
+      <comments>Rtexpr. Only char[] and text</comments>
+    </attribute>
+
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat </description>
+      <comments>Rtexpr. Only for date. Defaults to "dd MMMM yyyy"</comments>
+    </attribute>
+
+    <attribute>
+      <name>lineSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre&gt;...&lt;/pre&gt;. Default is "&lt;p&gt;".</description>
+      <comments>Rtexpr. Only for text. Current implementation is buggy: separator is added before every long line, instead of between every long line.</comments>
+    </attribute>
+
+    <attribute>
+      <name>longLineLength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The length of a long line. If a text contains long lines, it will be printed differently. See lineSeparator. Default is "30"</description>
+      <comments>Rtexpr. Only for text.</comments>
+    </attribute>
+
+    <attribute>
+      <name>maxLength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is added to indicate the cut. If not set (default), there is no maximum.</description>
+      <comments>Rtexpr. Only applies for char[] AND if it is not already HTML formatted (cfr. html).</comments>
+    </attribute>
+
+    <attribute>
+      <name>ellipsis</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The character string to print to indicate that the text extended the maxLength. Default is "...". The final printed string, including the ellipsis, will not exceed maxLength.</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>ellipsisLength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The equivalent character length of ellipsis. By default, this is the number of characters in ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.</description>
+      <comments>Rtexpr. 
+Example, the ellipsis is an image of approx 3 characters wide. ellipsis="&lt;img src=icon.gif width=10 height=10&gt;" ellipsisLength="3"</comments>
+    </attribute>
+
+    <attribute>
+      <name>addTitle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if the printed output is cut (cfr maxLength). Default is "false". </description>
+      <comments>Rtexpr. Note: implementated by producing as output: &lt;span title="printVar"&gt;possibly-cut-printVar&lt;/span&gt; </comments>
+    </attribute>
+
+    <attribute>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The character string to print if the expr results in a NULL value. Default is default="" (i.e. zero-length string)
+Support not available for: date, "choice" = ptr, set, setCharEnum</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>empty</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The character string to print if the normal printed output would be empty (i.e. zero-length string). Therefore, this is also used for case expr=NULL and default="".</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+    
+  </tag>
+
+  <tag>
+    <name>if</name>
+    <tag-class>org.makumba.list.tags.IfTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Evaluates a test-expression and shows body only if true</description>
+    <web-description>Displays the body of the tag only if the OQL expression evaluates to true.</web-description>
+
+    <attribute>
+      <name>test</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+
+for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
+</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+  </tag>
+
+
+  <tag>
+    <name>attribute</name>
+    <tag-class>org.makumba.list.tags.AttributeTag</tag-class>
+    <tei-class>org.makumba.list.tags.AttrTEI</tei-class>
+    <body-content>empty</body-content>
+    <description>Value of an expression</description>
+    <web-description>Displays the value of an attribute, or sets it to a Java variable.</web-description>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</description>
+      <comments>Fixed, Mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</description>
+      <comments>Fixed, Mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>exceptionVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The database in which the business logic (if any) will compute the attribute. The default database is normally used.</description>
+      <comments>Fixed</comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>form</name>
+    <tag-class>org.makumba.forms.tags.FormTagBase</tag-class>
+    <body-content>JSP</body-content>
+    <description>Forms to create new data</description>
+    <web-description>Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</web-description>
+
+    <attribute>
+      <name>handler</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the Java method that handles the response</description>
+      <comments>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) 
+Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>annotation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>annotationSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>reloadFormOnError</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>clientSideValidation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <!--form specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onReset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm</description>
+      <comments>Generic html tag attributes, see newForm</comments>
+    </attribute>
+  </tag>
+
+
+  <tag>
+    <name>newForm</name>
+    <tag-class>org.makumba.forms.tags.NewTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Forms to create new data</description>
+    <web-description>Makes a form for creating a new object of the indicated type.</web-description>
+    
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Makumba type for record creation, or OQL label for subrecord creation</description>
+      <comments>Fixed, mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>the response page of the form</description>
+      <comments>Mandatory if a &lt;mak:action&gt; is absent</comments>
+    </attribute>
+
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>the HTTP method (get or post)</description>
+      <comments>Defaults to get</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>the name of the created object in the response page</description>
+      <comments>Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (&lt;form name="..." ...&gt;)</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>the message that is displayed in the response page upon success</description>
+      <comments>Fixed. Defaults to "changes done".</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>results in id="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>results in class="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>annotation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Indicates that validation whether errors should be shown in the form, or be displayed in the &lt;mak:response/&gt;.</description>
+      <comments>Taken into account only if reloadFormOnError is not set to false.
+Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. </comments>
+    </attribute>
+
+    <attribute>
+      <name>annotationSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Fixed. Prints the given separator between the annotation and the input field.</description>
+      <comments>Also HTML can be used, e.g. printing an error icon.</comments>
+    </attribute>
+
+    <attribute>
+      <name>reloadFormOnError</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>clientSideValidation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Controls whether client side validation shall be used.</description>
+      <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
+    </attribute>
+
+    <!--form specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes</description>
+      <comments>The content is copied to the resulting &lt;form...&gt; tag. Careful with
+          (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onReset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes</description>
+      <comments>The content is copied to the resulting &lt;form...&gt; tag. Careful with
+          (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes</description>
+      <comments>The content is copied to the resulting &lt;form...&gt; tag. Careful with
+          (escaping) quotes.</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
+      <name>multipleSubmitErrorMsg</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+  </tag>
+
+  <tag>
+    <name>editForm</name>
+    <tag-class>org.makumba.forms.tags.EditTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Forms to create new data</description>
+    <web-description>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.</web-description>
+    
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The label of the OQL object to edit</description>
+      <comments>Fixed, mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>handler</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the Java class.method that handles the response</description>
+      <comments>defaults to on_edit+MakumbaTypeOfEditedObject. Arguments: (Pointer object, Dictionary changedFields, Attributes a, Database db)</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>annotation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>annotationSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>reloadFormOnError</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>clientSideValidation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <!--form specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onReset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+  </tag>
+
+
+  <tag>
+    <name>addForm</name>
+    <tag-class>org.makumba.forms.tags.AddTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Forms to create new data</description>
+    <web-description>Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object$rt; (e.g. a language of a student, an address for a person).</web-description>
+    
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The label of the object whose sub-object will be created</description>
+      <comments>Fixed, mandatory</comments>
+    </attribute>
+
+    <attribute>
+      <name>field</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The field name that denotes the sub-object.</description>
+      <comments>Fixed, mandatory.</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>annotation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>annotationSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>reloadFormOnError</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>clientSideValidation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Dokument me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <!--form specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onReset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Form-specific html tag attributes, see newForm</description>
+      <comments>Form-specific html tag attributes, see newForm</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>multipleSubmitMsg</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Dokument me please</description>
+      <comments>Dokument me please</comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>delete</name>
+    <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Links to delete data</description>
+    <web-description>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;</web-description>
+    
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL label of the object to delete</description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+
+
+    <attribute>
+      <name>widget</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>UI element of the delete</description>
+      <comments>Fixed, can be one of button or link; defaults to link.</comments>
+    </attribute>
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Dokument me please</description>
+      <comments>Dokument me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>preserveWhitespace</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>All white space inside a &lt;mak:delete&gt; will be trimmed, unless specifically preserved.</description>
+      <comments>Fixed, can be one of true or false; defaults to false.</comments>
+    </attribute>
+
+    <!--link specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>deleteLink</name>
+    <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Links to delete data</description>
+    <web-description>The usage of &lt;mak:deleteLink&gt; is deprecated, and should be replaced by the equivalent:&lt;mak:delete widget="link"&gt;</web-description>
+    
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL label of the object to delete</description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+
+
+    <attribute>
+      <name>widget</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>UI element of the delete</description>
+      <comments>Fixed, can be one of button or link; defaults to link.</comments>
+    </attribute>
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Dokument me please</description>
+      <comments>Dokument me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>preserveWhitespace</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>All white space inside a &lt;mak:delete&gt; will be trimmed, unless specifically preserved.</description>
+      <comments>Fixed, can be one of true or false; defaults to false.</comments>
+    </attribute>
+
+    <!--link specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>see newForm</description>
+      <comments>see newForm</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+  </tag>
+
+
+  <tag>
+    <name>input</name>
+    <tag-class>org.makumba.forms.tags.InputTag</tag-class>
+    <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>Input control for a field</description>
+    <web-description>An input field to be created, depending on the makumba type of the field.
+
+Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
+
+Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day, month, year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar widget can be used, as shown in an example.
+
+The difference between &lt;mak:input &gt; and normal HTML &lt;input&gt; in a makumba form are:
+
+&lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text). 
+the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String 
+the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</web-description>
+
+    <attribute>
+      <name>field</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Makumba field (from the edited record or via base pointers or sub-record pointers)</description>
+      <comments>Fixed, mandatory</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Makumba field (from the edited record or via base pointers or sub-record pointers)</description>
+      <comments>Fixed, mandatory</comments>
+    </attribute>
+
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with &lt;mak:value var=.../&gt; or pageContext.setAttribute(...)), or read by in the previous page by an &lt;mak:input /&gt;</description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>FIXME</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>empty</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>FIXME</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>dataType</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)</description>
+      <comments>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</comments>
+    </attribute>
+
+    <attribute>
+      <name>display</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>If "false", it will not show the &lt;input&gt; but it will expect to read it in the next page. This allows the page designer to format the input control manually</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Format string, according to java.text.SimpleDateFormat 
+Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
+'the day' dd 'of the month' MMMM 'in the year' yyyy. 
+Default is "dd MMMM yyyy"</description>
+      <comments>Rtexpr. Only for date.</comments>
+    </attribute>
+
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>HTML INPUT type to be used 
+"hidden" works for all fields 
+for char[] , type can be "text" or "password", default is "text" 
+default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox" 
+for set, type can be seteditor, which will create two multiple-select boxes (see an example). 
+for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio are will create select boxes and radio buttons. 
+date is split in 3 inputs, &lt;fieldname&gt;_0 (day), _1 (month), _2 (year), and likewise for time elements 
+for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes &lt;fieldname&gt;_filename, &lt;fieldname&gt;_contentType and &lt;fieldname&gt;_contentLength that have to be handled separately by the handler method 
+for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically. </description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>stepSize</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>For int data with type select or radio, the step size defines the steps between each option. The default stepsize is 1.</description>
+      <comments>Rtexpr. Only for int with type=select/radio.</comments>
+    </attribute>
+
+    <attribute>
+      <name>calendarEditor</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>FIXME</description>
+      <comments>Rtexpr</comments>
+    </attribute>
+
+    <attribute>
+      <name>calendarEditorLink</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The formatting that appears on the link to the calendar date-choser. 
+See the detailed example for more information. </description>
+      <comments>Fixed. Only for date.</comments>
+    </attribute>
+
+    <attribute>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Size of the input control</description>
+      <comments>Rtexpr. Only for char[], int (size of the textbox) and set, ptr (height of the select)</comments>
+    </attribute>
+
+    <attribute>
+      <name>maxlength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Max length of a text control</description>
+      <comments>Rtexpr. Only for char[] and int. Defaults to makumba width of the char[]</comments>
+    </attribute>
+
+    <attribute>
+      <name>rows</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Number of textarea rows and columns</description>
+      <comments>only for text</comments>
+    </attribute>
+
+    <attribute>
+      <name>cols</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Number of textarea rows and columns</description>
+      <comments>only for text</comments>
+    </attribute>
+
+    <attribute>
+      <name>nameVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</description>
+      <comments>Fixed</comments>
+    </attribute>
+
+    <attribute>
+      <name>nullOption</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>labelSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
+The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>elementSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The string that separates the different options. Default is " " (space). 
+The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic html tag attributes, see newForm </description>
+      <comments>Generic html tag attributes, see newForm </comments>
+    </attribute>
+
+    <!--input specific-->
+    <attribute>
+      <name>accessKey</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onChange</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onBlur</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onFocus</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSelect</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>tabIndex</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+
+
+  <tag>
+    <name>searchForm</name>
+    <tag-class>org.makumba.forms.tags.SearchTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Forms to search</description>
+    <web-description>Produces a form to search for records in the database.
+Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</web-description>
+
+    <attribute>
+      <name>in</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The MDD to search in</description>
+      <comments>Fixed, mandatory</comments>
+    </attribute>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Name of the form</description>
+      <comments>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</comments>
+    </attribute>
+
+    <attribute>
+      <name>message</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+
+    <!--form specific:-->
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onReset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <!-- generic: -->
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+  </tag>
+
+
+  <tag>
+    <name>criterion</name>
+    <tag-class>org.makumba.forms.tags.CriterionTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Search criterion</description>
+    <web-description>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </web-description>
+
+    <attribute>
+      <name>fields</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The MDD fields to apply this criterion upon</description>
+      <comments>Fixed, mandatory; for multiple fields, provide a comma-separated list.</comments>
+    </attribute>
+
+    <attribute>
+      <name>isRange</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Toggles range searching on the field(s)</description>
+      <comments>Fixed. Values are true or false; defaults to false.</comments>
+    </attribute>
+
+    <attribute>
+      <name>matchMode</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>matchMode</name>
+    <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
+    <body-content>empty</body-content>
+    <description>create a match-mode input</description>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>matchModes</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>labelSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>elementSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>searchField</name>
+    <tag-class>org.makumba.forms.tags.SearchFieldTag</tag-class>
+    <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
+    <body-content>JSP</body-content>
+    <description>Search input control for a field</description>
+    <web-description>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the&lt;:input/&gt; tag, and provides additionally the following attributes:</web-description>
+    
+
+    <attribute>
+      <name>role</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>dataType</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>default</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>forceInputStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Changes the style/type of the input as it would be normally computed for the data type.</description>
+      <comments>Fixed; applicable for the following data types: 
+text: 'input' forces an &lt;input&gt; tag rather than a &lt;textArea&gt;. 
+ptr: 'multiple' forces a multiple-select rather than a single-select, and check-boxes rather than radio-buttons. 
+set: 'single' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes. </comments>
+    </attribute>
+
+    <attribute>
+      <name>calendarEditor</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>calendarEditorLink</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>maxlength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>rows</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>cols</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>nameVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>nullOption</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>labelSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>elementSeparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onDblClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onKeyPress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseDown</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseUp</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseMove</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onMouseOut</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+
+    <attribute>
+      <name>onMouseOver</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <!--input specific-->
+    <attribute>
+      <name>accessKey</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onChange</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onBlur</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onFocus</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>onSelect</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+
+    <attribute>
+      <name>tabIndex</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+
+
+  <tag>
+    <name>action</name>
+    <tag-class>org.makumba.forms.tags.ActionTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>set an "action" for a form or deleteLink</description>
+    <web-description>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</web-description>
+  </tag>
+
+  <tag>
+    <name>option</name>
+    <tag-class>org.makumba.forms.tags.OptionTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Option to describe option lists in an input</description>
+    <web-description>By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag. 
+Text inside mak:option will become an option title. The value attribute will become the option. Text inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.
+
+If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
+
+If an option value appears many times it will only be shown the first time it occurs.
+</web-description>
+
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value of the option, can be an OQL expression or a $attribute</description>
+      <comments>Fixed, if not indicated, nil (null option) is default</comments>
+    </attribute>
+    
+    <attribute>
+      <name>selected</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Whether this option is selected or not</description>
+      <comments>False by default</comments>
+    </attribute>
+
+  </tag>
+
+  <tag>
+    <name>response</name>
+    <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
+    <body-content>empty</body-content>
+    <description>display response and status from forms or delete</description>
+    <web-description>&lt;mak:response/&gt; prints information about the results of the actions that were performed by the makumba controller (e.g. for a form submit or deleteLink): It either displays the message="..." parameter of the form tag (in green) in case of success, or (in red) the message of a uncaught LogicException resulting from Business Logic. Other exception types will provoke an exception page. 
+
+The unformatted message is available as request-scope attribute makumba.response. The jsp page can get hold of the message using e.g.
+
+&lt;% String s = (String) request.getAttribute("makumba.response") %&gt;Similarly, request-scope attribute makumba.successfulResponse is set only in case of successful action execution.
+
+&lt;% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %&gt;(A body-tag style (&lt;mak:response&gt;...&lt;/mak:response&gt;) will be added later, to display different messages for different circumstances (errors). It will also be possible to get hold of the actual exception object. )
+</web-description>
+  </tag>
+
+
+
+  <tag>
+    <name>login</name>
+    <tag-class>org.makumba.controller.jsp.LoginTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>a login form that takes care of passing the existing arguments</description>
+    <web-description>Login is done as a result of a missing attribute (possibly invoked in checkAttributes), when a find{AttributeName} method is called. The missing attribute is the principal that needs to log in. 
+If the attribute cannot be found due to wrong login information, org.makumba.UnauthenticatedException is usually thrown.
+
+The principal (the person who logs in) can have more members (e.g. group, Lbg, Company representatives). E.g. the findCompany() method will check to see if the authentication (email_address and password) corresponds to any company representative of that company. If yes, it will return that company.
+Login can be done in 2 ways:
+
+(Http basic authentication login: will set the attributes $username, $password ) 
+cookie login: done in a page called login.jsp, in the same directory or (if missing) in any of the parents. It should contain at least: 
+The login form will pass further (as hidden arguments) all the http parameters it got. Note that &lt;mak:login&gt; is only needed upon automatic login (a page displayed when the user requested another page, that needs authentication). If you wish to ask for login manually in a startup page, a normal HTML form is enough.
+
+To cancel out a certain attribute, in order to produce a new login, the logout tag is available
+You can remove (cancel-out, logout) multiple attributes from the session by using &lt;mak:logout actor="attribute name"&gt; several times and/or by using the star (*) wildcard, e.g.:
+(Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
+(Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
+
+(&lt;mak:object from="best.Student stud" where ="stud.$login()"&gt; ...</mak:object> 
+then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
+This can be used for http authentication with no session tracking. )
+(Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
+</web-description>
+  </tag>
+
+
+  <tag>
+    <name>logout</name>
+    <tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
+    <body-content>empty</body-content>
+    <description>remove the reference to the actor logged in</description>
+    <web-description>To cancel out a certain attribute, in order to produce a new login, the logout tag is available
+You can remove (cancel-out, logout) multiple attributes from the session by using &lt;mak:logout actor="attribute name"&gt; several times and/or by using the star (*) wildcard, e.g.:
+(Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
+(Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
+
+(&lt;mak:object from="best.Student stud" where ="stud.$login()"&gt; ...</mak:object> 
+then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
+This can be used for http authentication with no session tracking. )
+(Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
+</web-description>
+    
+    <attribute>
+      <name>actor</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>version</name>
+    <tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
+    <body-content>empty</body-content>
+    <description>prints Makumba version (a CVS tag)</description>
+    <web-description>Document me please</web-description>
+  </tag>
+
+  <tag>
+    <name>info</name>
+    <tag-class>org.makumba.commons.tags.MakumbaInfoTag</tag-class>
+    <body-content>empty</body-content>
+    <description>prints Makumba and environment information</description>
+    <web-description>Document me please</web-description>
+    
+    <attribute>
+      <name>applicationProperties</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
+    </attribute>
+  </tag>
+
+  <function>
+    <name>count</name>
+    <description>the count of the enclosing mak:list</description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int count()</function-signature>
+  </function>
+
+  <function>
+    <name>maxCount</name>
+    <description>the maximum count of the enclosing mak:list</description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int maxCount()</function-signature>
+  </function>
+
+  <function>
+    <name>lastCount</name>
+    <description>the maximum count of the previous mak:list</description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int lastCount()</function-signature>
+  </function>
+
+  <function>
+    <name>maxResults</name>
+    <description>
+      the maximum count of the enclosing mak:list, disregarding potential limit and offset values
+    </description>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int maxResults()</function-signature>
+  </function>
+  
+  <tag>
+    <name>pagination</name>
+    <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
+    <bodycontent>EMPTY</bodycontent>
+    <info>Prints links for pagination navigation</info>
+    <web-description>Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed.
+To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
+</web-description>
+    
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>Generic html tag attribute, see newForm</description>
+      <comments>Generic html tag attribute, see newForm</comments>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The target page to go to when clicking on a pagination link.</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+    <attribute>
+      <name>paginationLinkTitle</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>Whether or not to display title="..." elements on the pagination links.</description>
+      <comments>Fixed; defaults to true</comments>
+    </attribute>
+    <attribute>
+      <name>itemName</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+  </tag>
+
+</taglib>
