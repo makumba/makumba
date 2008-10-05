@@ -1,3 +1,0 @@
-username = char[30];
-password = char[32];
-email = char[255];

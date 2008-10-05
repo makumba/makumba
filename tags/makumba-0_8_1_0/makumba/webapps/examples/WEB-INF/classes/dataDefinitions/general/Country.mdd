@@ -1,2 +1,0 @@
-name=char[60]               ;Country
-iso2letterCode=fixed char[2];2-letter ISO code
