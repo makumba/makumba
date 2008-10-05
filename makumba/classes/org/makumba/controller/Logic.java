@@ -762,10 +762,13 @@ public class Logic {
         Method op = null;
         op = getMethod(opName, opArgs, controller);
         if (op == null) {
+            return null;
+            /*
             throw new ProgrammerError("Class " + controller.getClass().getName() + " (" + getControllerFile(controller)
                     + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD + opName
                     + "(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
                     + "The method is declared as a makumba form handler, so it has to be defined");
+            */
         }
 
         try {
@@ -792,6 +795,8 @@ public class Logic {
         Object[] editArg = { p, data, a, db };
         Method edit = null;
         Method afterEdit = null;
+        
+        /*
         if (!(controller instanceof LogicNotFoundException)) {
             edit = getMethod(handlerName, editArgs, controller);
             afterEdit = getMethod(afterHandlerName, editArgs, controller);
@@ -803,6 +808,7 @@ public class Logic {
                         + "\nDefine that method (even with an empty body) to allow such operations.");
             }
         }
+        */
 
         try {
             if (edit != null) {
@@ -835,6 +841,7 @@ public class Logic {
         Method afterDelete = null;
         String upper = upperCase(typename);
 
+        /*
         if (!(controller instanceof LogicNotFoundException)) {
             delete = getMethod("on_delete" + upper, deleteArgs, controller);
             afterDelete = getMethod("after_delete" + upper, deleteArgs, controller);
@@ -848,6 +855,7 @@ public class Logic {
                         + "\nDefine that method (even with an empty body) to allow such operations.");
             }
         }
+        */
 
         try {
             if (delete != null) {
@@ -881,6 +889,7 @@ public class Logic {
         String field = typename.substring(n + 2);
         typename = typename.substring(0, n);
 
+        /*
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, editArgs, controller);
             after = getMethod(afterHandlerName, editArgs, controller);
@@ -895,7 +904,7 @@ public class Logic {
                         + "\nDefine any of the methods (even with an empty body) to allow such operations.");
             }
         }
-
+        */
         try {
             if (on != null) {
                 on.invoke(controller, addArg);
@@ -927,7 +936,7 @@ public class Logic {
         Object[] afterArgs = { null, data, a, db };
         Method on = null;
         Method after = null;
-
+        /*
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, newArgs, controller);
             after = getMethod(afterHandlerName, editArgs, controller);
@@ -941,6 +950,7 @@ public class Logic {
                         + ".\nDefine any of the methods (even with an empty body) to allow such operations.");
             }
         }
+        */
         try {
             if (on != null) {
                 on.invoke(controller, onArgs);
