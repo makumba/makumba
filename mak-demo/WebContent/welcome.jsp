@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <jsp:include page="/layout/header.jsp?pageTitle=Welcome+page" flush="false"/>
 
+<mak:rickroll/>
 
 <mak:list from="blog.Post p" orderBy="p.TS_create desc" offset="$offset" limit="$limit" defaultLimit="10">
 	<div class='blogpost'>

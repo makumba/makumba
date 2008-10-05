@@ -11,6 +11,11 @@ body
 	font-size: 12px;
 }
 
+table
+{
+	font-size: 12px;
+}
+
 a
 {
 	color: #055a05;
@@ -39,6 +44,12 @@ a
 	background: url('${path}/images/logo_bg.jpg') no-repeat;
 	height: 220px;
 	margin-bottom: 10px;
+}
+
+#logo_bg a
+{
+	color: #fff;
+	text-decoration: none;
 }
 
 #logo_bg h1
@@ -144,4 +155,8 @@ a
 	
 }
 
+.LV_validation_message
+{
+	margin-left: 5px;
+}
 
