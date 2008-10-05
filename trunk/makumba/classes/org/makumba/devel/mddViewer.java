@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
@@ -51,7 +52,7 @@ public class mddViewer extends LineViewer {
     protected MakumbaError err = null;
 
     private static final String subFieldSeperator = "-&gt;";
-
+    
     private DataDefinition dd = null;
 
     public mddViewer(HttpServletRequest req) throws Exception {
@@ -64,6 +65,7 @@ public class mddViewer extends LineViewer {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
         readFromURL(u);
         virtualPath = virtualPath.substring(1);
+
         try {
             dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
@@ -121,11 +123,16 @@ public class mddViewer extends LineViewer {
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
+
+        
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
 
         // link to code generator
         if (dd != null) {
-            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + "/codeGenerator/" + virtualPath)
+            
+            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + Configuration.getBLMethodsLocation()+"/" + virtualPath)
+                + "\">bl methods</a>&nbsp;&nbsp;&nbsp;");
+            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + Configuration.getCodeGeneratorLocation()+"/" + virtualPath)
                     + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         } else {
             w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
