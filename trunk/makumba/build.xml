@@ -2,7 +2,7 @@
 
 <project name="Makumba" default="compile" basedir=".">
 	<path id="project.class.path">
-		<fileset dir="lib">
+		<fileset dir="${basedir}/lib">
 			<include name="**/*.jar" />
 			<exclude name="**/makumba.jar" />
 		</fileset>
@@ -196,7 +196,7 @@
 		</jar>
 	</target>
 
-	<target name="jar" description="make a jar in ./lib" depends="compile">
+	<target name="jar" description="make a jar in ./lib" depends="compile, generateTLDs">
 		<antcall target="jarOnly" />
 	</target>
 
@@ -374,7 +374,7 @@
 	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
 </target>
 
-<target name="uploadJar" depends="compile" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version">
+<target name="uploadJar" depends="compile, generateTLDs" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<antcall target="makeJar">
@@ -404,7 +404,7 @@
 	</echo>
 </target>
 
-<target name="publishJar" depends="compile" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web">
+<target name="publishJar" depends="compile, generateTLDs" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web">
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<echo>Warning! publishJar changed semantics. You have to tag the version manually</echo>
@@ -635,4 +635,17 @@ package org.makumba]]>
 	
 </target>
 
+	<target name="generateTLDs" depends="compile">
+
+		<java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
+			<classpath>
+				<pathelement path="${java.class.path}" />
+				<pathelement location="classes"/>
+				<fileset dir="${basedir}/lib/"><include name="dom4j-1.6.1.jar"/></fileset>
+			</classpath>
+			<arg value="${basedir}/classes/META-INF" />
+		</java>
+
+	</target>
+	
 </project>
