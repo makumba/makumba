@@ -442,10 +442,10 @@ public class Logic {
         }
 
         DataDefinition.QueryFragmentFunction match = null;
-        HashMap<String, Object> matchValues = null;
+        MakumbaActorHashMap matchValues = null;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
         nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getActorFunctions()) {
-            HashMap<String, Object> values = new HashMap<String, Object>();
+            MakumbaActorHashMap values = new MakumbaActorHashMap();
             DataDefinition params = f.getParameters();
             if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
                 continue; // don't look at this function if we already have a match with more parameters
