@@ -138,6 +138,7 @@ footer, searchbar, css etc.  As input, it takes XML of the form:
             <xsl:call-template name="menu"/>
           </xsl:if>
          </div>
+         <div id="menuback"></div>
     </div>
     
           <xsl:comment>+
