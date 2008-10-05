@@ -31,12 +31,13 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
@@ -52,7 +53,7 @@ public class mddViewer extends LineViewer {
     protected MakumbaError err = null;
 
     private static final String subFieldSeperator = "-&gt;";
-    
+
     private DataDefinition dd = null;
 
     public mddViewer(HttpServletRequest req) throws Exception {
@@ -124,15 +125,20 @@ public class mddViewer extends LineViewer {
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
 
-        
+        w.println("<a href=\"javascript:toggleElementDisplay(blMethods);\">BL methods</a>");
+        w.println("<div id=\"blMethods\" class=\"popup\" style=\"display: none;\">");
+
+        writeBLHandlers(w, dd);
+
+        w.println("</div>");
+        w.println("&nbsp;&nbsp;&nbsp;");
+
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
 
         // link to code generator
         if (dd != null) {
-            
-            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + Configuration.getBLMethodsLocation()+"/" + virtualPath)
-                + "\">bl methods</a>&nbsp;&nbsp;&nbsp;");
-            w.print("<a style=\"color: darkblue;\" href=\"" + (contextPath + Configuration.getCodeGeneratorLocation()+"/" + virtualPath)
+            w.print("<a style=\"color: darkblue;\" href=\""
+                    + (contextPath + Configuration.getCodeGeneratorLocation() + "/" + virtualPath)
                     + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         } else {
             w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
@@ -143,6 +149,30 @@ public class mddViewer extends LineViewer {
         DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_MDD_VIEWER, contextPath);
 
         w.println("</td>");
+    }
+
+    private void writeBLHandlers(PrintWriter w, DataDefinition dataDef) {
+        w.println("<b>BL Method signatures for " + dataDef.getName() + "</b>:<br/>");
+        w.println("<span style=\"font-size: smaller; \">");
+        StringBuffer sb = new StringBuffer();
+        String ddMethodName = Logic.upperCase(dataDef.getName());
+        if (dataDef.getParentField() != null) {
+            CodeGenerator.addOnAddHandler(sb, 0, ddMethodName);
+        } else {
+            CodeGenerator.addOnNewHandler(sb, 0, ddMethodName);
+        }
+        sb.append("<br/>");
+        CodeGenerator.addOnEditHandler(sb, 0, ddMethodName);
+        sb.append("<br/>");
+        CodeGenerator.addOnDeleteHandler(sb, 0, ddMethodName);
+        sb.append("<br/>");
+        w.println(sb);
+        w.println("</span>");
+
+        for (FieldDefinition fd : CodeGenerator.extractSetComplex(dataDef)) {
+            w.println("<br/>");
+            writeBLHandlers(w, fd.getPointedType());
+        }
     }
 
     public String parseLine(String s) {
@@ -192,11 +222,11 @@ public class mddViewer extends LineViewer {
         }
         String name = htmlEscape(s.substring(0, s.indexOf("(")));
         String params = htmlEscape(s.substring(s.indexOf("("), s.indexOf(")") + 1));
-        String definition = htmlEscape(s.substring(s.indexOf("{"), s.indexOf("}")+1));
-        String message = htmlEscape(s.substring(s.indexOf("}")+1, commentBegin));
+        String definition = htmlEscape(s.substring(s.indexOf("{"), s.indexOf("}") + 1));
+        String message = htmlEscape(s.substring(s.indexOf("}") + 1, commentBegin));
         result.append("<span class=\"mddFunctionName\">" + name + "</span>");
         result.append("<span class=\"mddFunctionParams\">" + params + "</span>");
-        result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");  
+        result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");
         result.append("<span class=\"mddFunctionMessage\">" + message + "</span>");
         result.append("</span>");
         if (s.indexOf(";") != -1) {

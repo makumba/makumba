@@ -70,8 +70,6 @@ public class SourceViewControllerHandler extends ControllerHandler {
         SourceViewer sw = null;
         if (path.startsWith(Configuration.getMddViewerLocation())) {
             sw = new mddViewer(req);
-        } else if (path.startsWith(Configuration.getBLMethodsLocation())) {
-            sw = new BLMethods(req);
         } else if (path.startsWith(Configuration.getJavaViewerLocation())) {
             sw = new javaViewer(req);
         } else if (path.startsWith(Configuration.getLogicDiscoveryViewerLocation())) {

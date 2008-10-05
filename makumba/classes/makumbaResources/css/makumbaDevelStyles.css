@@ -76,4 +76,5 @@ div.popup {
   border-style:solid; 
   border-color: black; 
   padding: 5px;
+  text-align: left;
 }
