@@ -59,6 +59,9 @@ public class DataToolsControllerHandler extends ControllerHandler {
         } else if (path.startsWith(Configuration.getObjectIdConverterLocation())) {
             new DataPointerValueConverter().doGet(request, response);
             return false;
+        } else if (path.startsWith(Configuration.getReferenceCheckerLocation())) {
+            new ReferenceChecker().doGet(request, response);
+            return false;
         } else {
             return true;
         }
