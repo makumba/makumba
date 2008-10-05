@@ -39,6 +39,7 @@ import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.controller.Logic;
+import org.makumba.controller.MakumbaActorHashMap;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -289,8 +290,8 @@ public class RequestAttributes implements Attributes {
         try {
             value = Logic.getAttribute(getRequestController(), s, this, getRequestDatabase(),
                 getConnectionProvider(request));
-            if (value instanceof Map) {
-                Map<String, Object> mp = (Map<String, Object>) value;
+            if (value instanceof MakumbaActorHashMap) {
+                MakumbaActorHashMap mp = (MakumbaActorHashMap) value;
                 value = mp.get(s);
                 for (Map.Entry<String, Object> entr : mp.entrySet()) {
                     if (entr.getKey().equals(s))
@@ -301,8 +302,9 @@ public class RequestAttributes implements Attributes {
                         ss.setAttribute(entr.getKey(), entr.getValue());
                 }
             }
-            if (value == null || value == Pointer.Null)
+            if (value == null || value == Pointer.Null) {
                 nullValue = true;
+            }
         } catch (NoSuchMethodException e) {
         } catch (UnauthenticatedException ue) {
             ue.setAttributeName(s);
