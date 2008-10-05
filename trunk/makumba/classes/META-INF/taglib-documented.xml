@@ -2912,6 +2912,13 @@ If an option value appears many times it will only be shown the first time it oc
   </tag>
 
   <tag>
+    <name>rickroll</name>
+    <tag-class>org.makumba.forms.tags.ContextualTag</tag-class>
+    <body-content>empty</body-content>
+    <description></description>
+  </tag>
+  
+  <tag>
     <name>response</name>
     <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
     <body-content>empty</body-content>
