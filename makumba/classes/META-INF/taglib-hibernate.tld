@@ -2861,6 +2861,13 @@
   </tag>
 
   <tag>
+    <name>rickroll</name>
+    <tag-class>org.makumba.forms.tags.ContextualTag</tag-class>
+    <body-content>empty</body-content>
+    <description/>
+  </tag>
+  
+  <tag>
     <name>response</name>
     <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
     <body-content>empty</body-content>
