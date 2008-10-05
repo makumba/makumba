@@ -51,6 +51,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
     <valdef label="Validation definitions" href="/doc/valdef.html" description="Makumba Validation Definitions"/>
     <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
+    <queryfrag label="Query fragmnets" href="/doc/queryfrag.html" description="Query fragments"/>
     <taglib label="JSP tag library" href="/doc/taglib/" description="Makumba tag library">
       <list label="mak:list" href="/doc/taglib/list.html" description="mak:list tag" />
     </taglib>
@@ -93,6 +94,16 @@ See http://forrest.apache.org/docs/linking.html for more info
       <mysql-subqueries href="http://dev.mysql.com/doc/refman/5.0/en/subqueries.html" />
     </mysql>
     <odmg href="http://www.odmg.org" />
+    
+    <bug href="http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=">
+      <bug1052 href="1052"/>
+      <bug1053 href="1053"/>
+      <bug1064 href="1064"/>
+      <bug1063 href="1063"/>
+      <bug1056 href="1056"/>
+      <bug1052 href="1052"/>
+      <bug1052 href="1052"/>
+    </bug>
     
   </external-refs>
 </site>
