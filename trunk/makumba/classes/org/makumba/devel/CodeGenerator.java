@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -43,6 +42,7 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.StringUtils;
+import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -198,7 +198,7 @@ public class CodeGenerator {
             packageName = "";
         }
 
-        String ddMethodName = getMethodHandlerName(dd.getName());
+        String ddMethodName = Logic.upperCase(dd.getName());
 
         if (!packageName.equals("")) {
             appendLine(sb, "package org.eu.best.privatearea;");
@@ -260,7 +260,7 @@ public class CodeGenerator {
         Vector<FieldDefinition> fields = extractSetComplex(dd);
         for (int i = 0; i < fields.size(); i++) {
             FieldDefinition fd = (FieldDefinition) fields.elementAt(i);
-            String handlerName = getMethodHandlerName(dd.getName() + "." + fd.getName());
+            String handlerName = Logic.upperCase(dd.getName() + "->" + fd.getName());
             addOnAddHandler(sb, indent, handlerName);
             addOnEditHandler(sb, indent, handlerName);
             addOnDeleteHandler(sb, indent, handlerName);
@@ -269,24 +269,24 @@ public class CodeGenerator {
         appendLine(sb, "}");
     }
 
-    private void addOnAddHandler(StringBuffer sb, int indent, String ddMethodName) {
+    public static void addOnAddHandler(StringBuffer sb, int indent, String ddMethodName) {
         writeHandler(sb, "add", "Pointer p, Dictionary d, Attributes a, Transaction t", indent, ddMethodName);
     }
 
-    private void addOnDeleteHandler(StringBuffer sb, int indent, String ddMethodName) {
+    public static void addOnDeleteHandler(StringBuffer sb, int indent, String ddMethodName) {
         writeHandler(sb, "delete", "Pointer p, Attributes a, Transaction t", indent, ddMethodName);
     }
 
-    private void addOnEditHandler(StringBuffer sb, int indent, String ddMethodName) {
+    public static void addOnEditHandler(StringBuffer sb, int indent, String ddMethodName) {
         writeHandler(sb, "edit", "Pointer p, Dictionary d, Attributes a, Transaction t", indent, ddMethodName);
     }
 
-    private void addOnNewHandler(StringBuffer sb, int indent, String ddMethodName) {
+    public static void addOnNewHandler(StringBuffer sb, int indent, String ddMethodName) {
         writeHandler(sb, "new", "Dictionary d, Attributes a, Transaction t", indent, ddMethodName);
     }
 
     /** Writes a handler method of the given type. */
-    private void writeHandler(StringBuffer sb, String type, String params, int indent, String ddMethodName) {
+    public static void writeHandler(StringBuffer sb, String type, String params, int indent, String ddMethodName) {
         appendJavaLine(sb, indent, "public void on_" + type + ddMethodName + "(" + params + ") throws LogicException {");
         indent++;
         appendJavaLine(sb, indent, "");
@@ -308,7 +308,7 @@ public class CodeGenerator {
     }
 
     /** Adds a java-style indented line to the given StringBuffer and adds a line break. */
-    private void appendJavaLine(StringBuffer sb, int indent, String s) {
+    private static void appendJavaLine(StringBuffer sb, int indent, String s) {
         sb.append(getJavaIndentation(indent)).append(s).append("\n");
     }
 
@@ -323,7 +323,7 @@ public class CodeGenerator {
     }
 
     /** Appends the given String and a line break, if the String is not empty. */
-    private void appendLine(StringBuffer sb, String s) {
+    private static void appendLine(StringBuffer sb, String s) {
         if (s != null && !s.equals("")) {
             sb.append(s).append("\n");
         }
@@ -679,7 +679,7 @@ public class CodeGenerator {
     }
 
     /** Java-style indenting of 4 spaces. */
-    private StringBuffer getJavaIndentation(int indent) {
+    private static StringBuffer getJavaIndentation(int indent) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < indent; i++) {
             sb.append("    ");
@@ -694,17 +694,6 @@ public class CodeGenerator {
             sb.append("  ");
         }
         return sb;
-    }
-
-    /** Construct the name of a form handler from a given DataDefinition. */
-    private String getMethodHandlerName(String ddName) {
-        String methodName = "";
-        StringTokenizer st = new StringTokenizer(ddName, ".");
-        while (st.hasMoreElements()) {
-            String s = (String) st.nextElement();
-            methodName += StringUtils.upperCaseBeginning(s);
-        }
-        return methodName;
     }
 
     /**
@@ -785,7 +774,7 @@ public class CodeGenerator {
     }
 
     /** Extracts all complex sets from a given DataDefinition. */
-    private Vector<FieldDefinition> extractSetComplex(DataDefinition dd) {
+    public static Vector<FieldDefinition> extractSetComplex(DataDefinition dd) {
         Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
