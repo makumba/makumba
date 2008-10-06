@@ -33,7 +33,7 @@ public class DataTypeListerServlet extends DataServlet {
 
     protected static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
 
         PrintWriter writer = response.getWriter();

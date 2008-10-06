@@ -64,7 +64,7 @@ public class ReferenceChecker extends HttpServlet {
         return executeIntQuery(query);
     }
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String contextPath = req.getContextPath();
         resp.setContentType("text/html");
         PrintWriter w = resp.getWriter();
