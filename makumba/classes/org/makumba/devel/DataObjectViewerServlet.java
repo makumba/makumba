@@ -52,7 +52,7 @@ public class DataObjectViewerServlet extends DataServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + Configuration.getDataListerLocation() + "/" + browsePath;
 

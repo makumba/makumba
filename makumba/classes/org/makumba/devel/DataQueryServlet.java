@@ -55,7 +55,7 @@ public class DataQueryServlet extends DataServlet {
     public final int QUERY_LANGUAGE_HQL = 20;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
         browsePath = contextPath + "/dataList";
         String query = request.getParameter("query");
