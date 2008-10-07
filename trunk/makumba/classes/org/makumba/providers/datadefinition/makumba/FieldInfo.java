@@ -45,6 +45,7 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * This is a structure containing the elementary data about a field: name, type, attributes, description, and other
@@ -57,7 +58,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     DataDefinition dd;
 
-    private FieldDefinition originalFieldDefinition;
+    private String originalFieldDefinitionParent;
+
+    private String originalFieldDefinitionName;
 
     static final DualHashBidiMap integerTypeMap = new DualHashBidiMap();
 
@@ -66,7 +69,11 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     public FieldDefinition getOriginalFieldDefinition() {
-        return originalFieldDefinition;
+        // we can't store a reference to the original field definition, otherwise it will be serialised in the form
+        // responder, and in turn will serialise it's data definition, which might cause issues like locking..
+        // thus, we do a lookup here
+        return DataDefinitionProvider.getInstance().getDataDefinition(originalFieldDefinitionParent).getFieldDefinition(
+            originalFieldDefinitionName);
     }
 
     // TODO adapt setIntEnum and setCharEnum in FieldDefinition
@@ -123,7 +130,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             extra1 = fi.getDataDefinition();
         }
         validationRules = fi.validationRules;
-        originalFieldDefinition = fi;
+
+        // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
+        originalFieldDefinitionParent = fi.getDataDefinition().getName();
+        originalFieldDefinitionName = fi.getName();
     }
 
     public FieldInfo(String name, String t) {
@@ -314,7 +324,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         Object o = d.get(getName());
         if (isNotEmpty() && StringUtils.isEmpty(o)) {
             throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
-        }        
+        }
         if (o == null)
             return;
         if (isFixed())
@@ -550,7 +560,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public boolean isNotNull() {
         return notNull;
     }
-    
+
     public boolean isNotEmpty() {
         return notEmpty;
     }
@@ -753,8 +763,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._ptrOne:
             case FieldDefinition._ptrRel:
             case FieldDefinition._setIntEnum:
-                if (isFileType() && !(value instanceof Pointer)) {// file is a transformed to a pointer type on MDD parsing
-                    // but the binary input is on the name of the field, not field.content
+                if (isFileType() && !(value instanceof Pointer)) {// file is a transformed to a pointer type on MDD
+                    // parsing but the binary input is on the name of the field, not field.content
                     return check_binary_ValueImpl(value);
                 } else {
                     return check_ptrIndex_ValueImpl(value);
