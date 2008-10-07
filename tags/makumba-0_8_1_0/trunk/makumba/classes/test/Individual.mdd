@@ -1,6 +1,0 @@
-surname=not empty char[40]         ;Family Name
-name=not empty char[40]            ;First Name
-person=ptr test.Person
-
-nameMin3CharsLong() { character_length(name) > 3 } Your name is not long enough!
-fullName() { concat(name, ' ', surname) } 
