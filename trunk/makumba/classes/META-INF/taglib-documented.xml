@@ -2433,8 +2433,6 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
 
     <attribute>
       <name>onMouseOut</name>
@@ -2492,8 +2490,6 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
     <body-content>empty</body-content>
     <description>create a match-mode input</description>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
 
     <attribute>
       <name>id</name>
