@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
 <document>
 <header>
@@ -18,7 +18,7 @@
     	dashes and cannot contain slashes and dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 -->
     	Usually, the directories are used to separate organisations and projects.</p>
 
-    		<p>Current Java implementation finds the data definition files as follows: <!-- Put this inside notelist! --><!-- FIXME: is this still correct? Bug 602 -->
+    		<p>Current Java implementation finds the data definition files as follows: <!-- Put this inside notelist! --><!-- FIXME: is this still correct? Bug 602 --></p>
     		<ul> <!-- Need to change <ul> to <ul class="notelist" -->
       			<li>the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
       			<li>relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
@@ -26,7 +26,6 @@
       			<li>OLDSTYLE: if no mdd file is present, the no-extension file (i.e. best/Student) is looked
       			up</li>
     		</ul>
-    		</p>
     		
     	<p><strong>Data objects (records)</strong> are stored in <strong>databases</strong>.</p>
     	<p>The actual implementation of the database is not part of this specification but implementation suggestions
@@ -93,10 +92,14 @@
     	<p>If the int can have a limited number of values, it can be described as follows</p>
     	<source>gender= int{ "male"=0, "female"=1 }; Sex<br/></source>
     	<p>This will help the presentation layer to present a suitable input control (e.g.</p> 
+      
+      <!-- FIXME
     	<select>
       	<option value="0">male</option>
       	<option value="1">female</option>
-    	</select> <em>)</em>
+    	</select>
+      -->
+      
     	<note>"deprecated" can be used in this way to denote a deprecated option:<br/>
     	userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}</note>
     	<note class="internal">In the present implementation, this type is called "intEnum" internally.<br/>
@@ -122,9 +125,10 @@
     		explained below.</p>
     		<note>Pay close attention to the character set (charset) for encoding the characters. In Java the
     		charset is Unicode, but the JSP/HTML pages have their own encoding settings, as well as the database, etc.</note>
+        
     		<p><strong>DEPRECATED (use int{...} instead):</strong> If the char can have a limited number of value, it can be described
     		as follows</p>
-    		<source>gender= char{ "male", "female" }; Sex</source><br/>
+    		<source>gender= char{ "male", "female" }; Sex</source>
     		<p>This will help the presentation layer to present a suitable input control (e.g. a HTML SELECT)</p>
     		<note class="internal">in the present implementation, this type is called "charEnum" internally</note>
         </section>
@@ -182,7 +186,11 @@
     	an internal set of some host object (Person X) also can't be used in a set of some other host object (Company Y).</note>
 
     	<!-- FIXME. Is there any relevance to this? bug 607 -->
-    	<note class="future">future parsers might read this: <source>address= ptr{<br/>    street= char[80]; Street<br/>    number= int; Number}; address<br/></source>
+    	<note class="future">future parsers might read this:<br/>
+      <code>address= ptr{
+      street= char[80]; Street
+      number= int; Number}; address
+      </code>
     	</note>
     	<note class="internal">this type is known internally as ptrOne</note>
         </section>
@@ -196,7 +204,11 @@
 	    represent, just having an integer field, for the order.</p>
 	    <p>The type which the set is made of can be defined on the spot:</p>
 	    <source>addresses= set; Addresses<br/>  addresses-&gt;street= char[80]; Street<br/>  addresses-&gt; number= int; Number<br/></source>
-	    <note class="future">the future parser might recognize this form: <source>addresses: set{<br/>    street: char[80]; Street<br/>    number: int; Number }; Addresses<br/></source>
+	    <note class="future">the future parser might recognize this form:<br/>
+      <code>
+      addresses: set{
+      street: char[80]; Street
+      number: int; Number }; Addresses</code>
 	    </note>
 	    <note class="internal">this type is known internally as setComplex</note>
 	    <p>The set can contain enumerated int values :</p>
@@ -204,8 +216,8 @@
 	    <note class="internal">this is currently known internally as setintEnum</note>
 	    <p><strong>DEPRECATED:</strong> The set can contain enumerated char values :</p>
 	    <source>place= set char {"home", "away"} ; Home or away<br/></source>
-	    <div class="note">It means that place is a set that can take only the "home" and "away" values.</div>
-	    <div class="note internals">This is currently known internally as setcharEnum</div>
+	    <note>It means that place is a set that can take only the "home" and "away" values.</note>
+	    <note class="internals">This is currently known internally as setcharEnum</note>
         
         </section>
         
@@ -258,8 +270,8 @@
 	    know what field to display. The default is the field called "name" if that exists, otherwise it is the first
 	    non-pointer field in the record description. If another field needs to be title, it can be specified like</p>
 	    <source>!title=gender</source>
-	    <note>for the on-the spot types in the current implementation, the following notation works: <source>
-	    address-&gt;!title= street<br/></source></note>
+	    <note>for the on-the spot types in the current implementation, the following notation works:<br/> <code>
+	    address-&gt;!title= street</code></note>
       </section>
       
       <section id="Include"><title>Include mechanism</title>
@@ -282,7 +294,7 @@
     	<p>The general syntax of a validation rule definition is as follows:</p>
     	<source>[validation rule name] : [validation rule] : [error message]</source> 
        
-       <section id="validation rules name"><title>Validation rule names</title>
+       <section id="validation_rules_name"><title>Validation rule names</title>
 	    <p>The validation rule name is an identifier which should be unique. The exact usage is not yet specified, but
 	    it could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
        </section>  
@@ -424,8 +436,7 @@
 	
 	    <p>Multi-field uniqueness can be defined as follows</p>
 	    <source>uniqueAgeEmail%unique = age, email : the combination of age and email must be unique! </source>
-	    <br/>
-	
+	    	
 	    <note class="internal">If the fields are in the same data definition, the uniqueness definition will
 	    translate into a database level multi-field key and uniqueness will be enforced there.<br/>
 	    Otherwise, Makumba will issue a query checking the uniqueness before new or edit operations.</note>
