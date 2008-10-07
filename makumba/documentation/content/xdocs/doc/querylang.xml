@@ -28,12 +28,13 @@
     </p>
     <section id="MQL">
       <title>MQL</title>
-      <p>
       <fixme author="manu">Put a link to the Pointer once we have the doc</fixme>
+      <p>
         MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based on HQL in many regards
         (see the
         <a href="ext:hql">reference documentation</a>
         ), except following:
+        </p>
         <ul>
           <li>it accepts boolean projections: SELECT a=1 AS col1 ... etc</li>
           <li>selecting an object will lead in selecting the external form of its Makumba pointer</li>
@@ -49,7 +50,6 @@
             don't make sense.</li>
           <li>some of the HQL functions are not yet implemented (e.g. current_date())</li>
         </ul>
-      </p>
     </section>
     <section id="HQL">
       <title>HQL</title>
@@ -63,7 +63,6 @@
       <title>OQL</title>
       <note>OQL is not any longer used in Makumba, but here is the previous documentation as support for earlier
         Makumba versions.</note>
-      <br />
       <p>
         The database can be interrogated using the following language ( [] means optional, {} means any number of
         repetitions). OQL is similar to SQL, a specification can be found at
