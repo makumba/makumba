@@ -39,7 +39,6 @@
 				<pathelement path="classes" />
 			</classpath>
 		</java>
-		<copy file="classes/org/makumba/providers/query/hql/HqlTokenTypes.txt" toFile="classes/org/makumba/providers/query/mql/HqlTokenTypes.txt" />
 		<antcall target="eclipse-antlr-warning">
 		</antcall>
 	</target>
@@ -63,6 +62,9 @@
 				<uptodate targetfile="classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
 					<srcfiles dir="classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
 				</uptodate>
+					<uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
+						<srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/hql.g" />
+					</uptodate>
 				<uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
 					<srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/mql-sql.g" />
 				</uptodate>
@@ -79,6 +81,10 @@
 		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
 			<arg value="hql-analyze.g" />
+		</java>
+		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/mql/" failonerror="true" taskname="antlr">
+			<classpath refid="project.class.path" />
+			<arg value="hql.g" />
 		</java>
 		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/mql/" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
