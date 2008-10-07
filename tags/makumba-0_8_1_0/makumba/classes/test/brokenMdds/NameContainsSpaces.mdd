@@ -1,2 +1,0 @@
-#$Id$
-name of person = not null char[10]	;See http://bugs.best.eu.org/show_bug.cgi?id=526

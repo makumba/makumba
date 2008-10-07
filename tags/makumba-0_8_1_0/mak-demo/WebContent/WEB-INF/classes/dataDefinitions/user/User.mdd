@@ -1,6 +1,0 @@
-username = unique char[30]; 
-password = char[32];
-email = char[255];
-activated = int {"true" = 1, "false" = 0};
-isAdmin =  int {"true" = 1, "false" = 0};
-
