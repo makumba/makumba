@@ -246,7 +246,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     public void endMakPaginationGroupBy(WebResponse response) throws Exception {
         try {
-            output = response.getText(); fetchValidTestResult(output, false);
+            output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
