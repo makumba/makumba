@@ -112,7 +112,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 DevelUtils.writePageBegin(writer);
                 DevelUtils.writeTitleAndHeaderEnd(writer, "Makumba resources");
-                if (DevelUtils.redirected(req, resp, servletPath)) {
+                if (DevelUtils.redirected(req, resp, resource)) {
                     return;
                 }
                 String relativeDirectory = jarEntry.getName();
@@ -160,6 +160,15 @@ public class MakumbaResourceServlet extends HttpServlet {
                 resp.setHeader("Last-Modified", dfLastModified.format(new Date()));
                 return;
             } else { // file or file in jar entry
+
+                if (jarEntry != null && jarEntry.getSize() == 0) {
+                    // for some reason, sometimes an entry w/o the leading / is not recognised as directory
+                    // check whether there is 0 file-size
+                    if (DevelUtils.redirected(req, resp, resource)) {
+                        return;
+                    }
+                }
+                    
                 final Date lastModified;
                 if (url.toExternalForm().startsWith("jar:")) { // for jar files, read from the jar
                     JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
