@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -80,7 +80,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     Vector<String> fieldOrder = new Vector<String>();
 
-    Hashtable<String, QueryFragmentFunction> functionNames = new Hashtable<String, QueryFragmentFunction>();
+    HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
     
     String title;
 
@@ -100,7 +100,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     // nr of relations, 0= none, 1= 1:n, 2= m:n
     int relations = 0;
 
-    Hashtable<String, FieldDefinition> fields = new Hashtable<String, FieldDefinition>();
+    HashMap<String, FieldDefinition> fields = new HashMap<String, FieldDefinition>();
 
     // Hashtable fieldIndexes=null;
 
@@ -113,9 +113,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     RecordInfo papa;
 
-    private Hashtable<String, ValidationRule> validationRuleNames = new Hashtable<String, ValidationRule>();
+    private HashMap<String, ValidationRule> validationRuleNames = new HashMap<String, ValidationRule>();
 
-    private Hashtable<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new Hashtable<Object, MultipleUniqueKeyDefinition>();
+    private HashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new HashMap<Object, MultipleUniqueKeyDefinition>();
 
     void addStandardFields(String name) {
         FieldInfo fi;
