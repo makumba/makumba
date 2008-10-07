@@ -72,8 +72,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
-        return DataDefinitionProvider.getInstance().getDataDefinition(originalFieldDefinitionParent).getFieldDefinition(
-            originalFieldDefinitionName);
+        DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
+            originalFieldDefinitionParent);
+        return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
     }
 
     // TODO adapt setIntEnum and setCharEnum in FieldDefinition
@@ -132,8 +133,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         validationRules = fi.validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
-        originalFieldDefinitionParent = fi.getDataDefinition().getName();
-        originalFieldDefinitionName = fi.getName();
+        if (fi.getDataDefinition() != null) {
+            originalFieldDefinitionParent = fi.getDataDefinition().getName();
+            originalFieldDefinitionName = fi.getName();
+        }
     }
 
     public FieldInfo(String name, String t) {
