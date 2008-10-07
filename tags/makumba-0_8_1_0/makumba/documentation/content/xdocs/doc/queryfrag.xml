@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE
+    file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file
+    to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+    governing permissions and limitations under the License.
+  -->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
+  <header>
+    <title>Makumba Documentation - Query Fragments</title>
+  </header>
+  <body>
+  
+  <p>Makumba focuses on combining query fragments to obtain high-performance systems with a minimum number of queries sent to the database
+    back-end, while keeping its concerns about easy learnability and rapid development. The <a href="taglib/maklist.html">mak:list engine</a>
+    already combines query fragments for embedded mak:lists by combining their FROM and WHERE sections, but we found a need for a better formalization
+    and sharing of query fragments across the system. The elementary concept of such formalization is the MDD function.</p>
+    
+<section id="mddFunctions"><title>MDD functions</title>
+
+<p>A simple function for an MDD called <em>Leveler</em> that has a <em>level </em> integer field looks like</p>
+    <source>
+level=int
+
+function(int a) { level+a }
+</source>
+    <note>In principle, a function is <strong>inlined</strong> in queries whenever it is encountered in a SELECT projection or WHERE
+    condition as follows: <code>SELECT label.function($param) FROM Leveler label</code></note>
+    <note>The above query is inlined like this: <code>SELECT label.level + $param FROM Leveler label</code></note>
+    <p>Some properties of MDD functions:</p>
+    <ul>
+      <li>If the underlying query language allows it, functions can use subqueries.</li>
+      <li>If functions wish to refer to the owner object, functions can use <code>this</code> which will be inlined with the label or the
+      expression denoting the object in the query</li>
+      <li>If a function is not using MDD fields at all, then it is <code>static</code> and can be invoked like <code>MDDname.function(params</code>)</li>
+      <li>If functions wish to define labels, they can use a FROM section and if needed a WHERE section to constrain the labels defined.</li>
+    </ul>
+    
+    <note class="internals">In principle it is possible to translate the functions into database-level stored procedures or equivalent but a lot
+    can be achieved already just by inlining the functions.</note>
+    <p>The main uses of MDD functions are:</p>
+    <ul>
+      <li>reuse of query code</li>
+      <li>query simplification and improved lisibility</li>
+      <li>authentication using well-known function names</li>
+      <li>authorisation using well-known function names</li>
+      <li>data view using well-known function names</li>
+    </ul>
+</section>
+
+<section id="funcSpec"><title>Function specification</title>
+
+    <p>The complete specification of function definition is as follows: </p>
+<source>
+[sessionVar%]function([type parameter]*){ expression [FROM supplementaryLabels [WHERE condition]]} [errorMessage] [; comment]</source>
+    <ul>
+      <li><em>sessionVar</em> <a href="ext:bug1052">may be used</a> for MDDs that define actors
+      (or those related to them) to indicate the name of a session variable where the function result will be stored. This is only possible for
+      functions with no parameters. (this is currently implemented but may be deprecated)</li>
+      <li>parameter <em>type</em> can be either the primitive types (int, char, date, text, binary, boolean) or an MDD name</li>
+      <li><em>expression </em>is a query language expression and may use MDD field names, this, function parameter names, supplementary labels
+      (see below), other functions calls, actor invocations and $attributes from the query context
+      <ul>
+        <li>Since functions are inlined, recursive calls are not possible (this is not yet checked though)
+        </li>
+        <li>$attributes are discouraged because using them would mean counting on &quot;global variables&quot;, it is advised that they are
+        passed as function parameters (in case of e.g. page parameters or page/request attributes), or that actor invocations are used to retrieve
+        session attributes</li>
+      </ul>
+      </li>
+      <li><em>supplementaryLabels </em>may need to be defined, in which case a normal query language FROM section is used</li>
+      <li>sometimes <em>conditions</em> are needed to join the <em>supplementary labels </em>with this.
+      <ul>
+        <li>supplementaryLabels and WHERE conditions are currently <a href="ext:bug1053">not
+        implemented</a></li>
+      </ul>
+      </li>
+      <li>if the function is boolean and returns false, an <em>error message</em> will be needed to construct an exception e.g. when an actor()
+      function fails (UnauthenticatedException) or when a canRead() function fails (UnauthorizedException). If that functions calls other functions,
+      their error messages <a href="ext:bug1064">might be composed</a> to provide a more accurate
+      reason for failure.</li>
+    </ul>
+    <note class="internals">Currently <a href="ext:bug1063">two functions with the same name
+    are not accepted</a>.</note>
+    <note class="internals">A <a href="ext:bug1056">static keyword may be added</a> to function
+    definitions.</note>
+    <note class="internals">A <a href="ext:bug1056">return type may be added</a> to function
+    definitions.</note>
+</section>
+
+<section id="actor"><title>Actor functions</title>
+
+    <p>Actors are a special type of function that, when mentioned in queries or functions, may trigger authentication. An <em>actor invocation</em> looks like</p>
+    <source>actor(MDDName)</source>
+    <p>and a query invoking it may be</p>
+    <source>
+SELECT actor(Person).name 
+SELECT obj.hasDoneJob(actor(Person)) FROM SomeType obj</source>
+    <p>These queries are inlined as follows:</p>
+    <source>
+SELECT actor_Person.name FROM Person actor_Person WHERE actor_Person=$actor_Person
+SELECT obj.hasDoneJob($actor_Person) FROM SomeType obj </source>
+    <p>(in the second example, the function <em>hasDoneJob() </em>will be inlined further)</p>
+    <p> <em>$actor_Person</em> is a special attribute retrieved from the query context.  The query context handler  will check for the attribute and if it is not defined, it will look in the MDD indicated by the actor attribute name (<em>Person</em>) for <em>actor functions</em>. Assuming that Person has a username and a passoword field, some actor functions may look like</p>
+    <source>
+username=char[255]
+password=char[255]
+actor(char[] user){username=user }
+actor1(char[] admin){ username=admin }
+actor2(char[] user, char []pass){ username=user AND password=pass }</source>
+    <p>First, the context handler will look for a suitable function to use. For example if the attribute <em>user</em> is defined in the context,
+    the first function (<em>actor()</em>) will match. However if both the attributes<em> user </em>and <em>pass</em> are defined in the context, the <em>actor2()
+    </em>function will match (so the function with most matching parameters will be chosen). Finally, if the <em>admin</em> attribute is found, the <em>actor1()</em>
+    function will match.</p>
+    <p>The  functions above correspond to different authentication mechanisms that may be used. The first two functions use an external authentication mechanism, where  the <em>role</em> of a correctly authenticated user is provided. In such a case, the Makumba query context handler will define an attribute with th role as name (<em>user</em>, <em>admin</em>) and the username as value. The third function (<em>actor2()</em>) will be useful when authentication is managed by the web application (for example using the <a href="http://www.makumba.org/makumba-spec.html#Login">mak:login</a> feature) and the authentication data is passed as request parameter, in this case they are expected to be called <em>user</em> and <em>pass.</em></p>
+    <p>Once a function has been selected (say <em>actor2()</em>) the following query is ran:</p>
+    <source>SELECT x FROM Person x WHERE x.actor($user, $pass)</source>
+    <p>which inlines to</p>
+    <source>SELECT x FROM Person x WHERE x.username=$user AND x.password=$pass</source>
+    <p>Once the actor is authenticated, the <em>$actor_Person</em> attribute is put in the session part of the query context. It can be removed
+    using <em>&lt;<a href="taglib/maklogout.html">mak:logout</a> actor=&quot;Person&quot; /&gt; </em>. Some fields of Person
+    (the MDD declaring the actor) <a href="ext:bug1052">may also be put in the session</a>, along
+    with the results of functions with no parameters, and along with related objects.</p>
+
+
+</section>
+
+<section id="explAutho"><title>Explicit authorisation</title>
+    <p>Explicit authorisation constraints are associations between web application paths and query language expressions. When an access is made to
+    a resource whose path matches an authorisation constraint (partial matches supported, longest match considered), the corresponding expression is
+    evaluated. If the expression produces an error (like UnauthenticatedException), that will be handled. If the exception returns 0, false or null an
+    UnauthorizedException is raised with an error message indicated in the constraint.</p>
+    <p>Currently explicit authorisation constraints can be put in the file MakumbaController.properties. authorisation constraints  looks like: </p>
+<source>authorize%/={actor(Person)}
+authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator </source>
+    <p>The first example makes the whole site accessible to users who can authenticate as a Person actor.</p>
+    <p>The second example makes the /admin part of the site accesible only if there   is an admin attribute in the context, and if that is the username of the Person actor. If any constraint fails, an UnauthorizedException will be raised. The second example also shows how to indicate a specific message for the exception, which will then be displayed to the user.</p>
+
+
+</section>
+
+<section id="implAutho"><title>Implicit authorisation (not yet implemented)</title>
+
+    <p>Implicit authorisation constraints are defined in functions like canRead(), canInsert(), canUpdate(), canDelete() in the respective MDDs.
+    These functions will be used whenever a <a href="taglib/maklist.html">mak:list</a>, <a
+      href="taglib/makobject.html">mak:object</a> or <a href="taglib/makform.html">mak:*Form</a>
+    attempts to view, create, change or delete an object of the respective type. The following features are intended:</p>
+      <fixme author="cristi"><a href="ext:bug1059">filter out</a> from mak:list and mak:object
+      objects that the user is not authorized to see, but do not raise any exception if there are such objects.This will probably be the default for <a
+        href="taglib/maklist.html">mak:list</a></fixme>
+      <fixme author="cristi"><a href="ext:bug1061">block access</a> to the whole page if the
+      user is not authorized. This will probably be the default for <a href="taglib/makobject.html">mak:object</a>, and <a
+        href="taglib/makform.html">mak:*Form</a></fixme>
+      <fixme author="cristi"><a href="ext:bug1060">not link</a> to a page that is not authorized</fixme>
+
+</section>
+
+<section id="queryContext"><title>Query context</title>
+</section>
+    <p>A query execution context is a set of known attributes. In the case of JSP this concept maps on the page, request, and session attributes, as well as request parameters. If however application logic is executed before launching a JSP, the context will be made of the session and request attributes and of request parameters. This is managed by two different <em>query context handlers </em>(implementing the interface Attrributes)  and other such handlers can be defined.  </p>
+    <p>Actor functions define a special type of session attributes that are computed based on other attributes from the query context.</p>
+
+  </body>
+</document>
