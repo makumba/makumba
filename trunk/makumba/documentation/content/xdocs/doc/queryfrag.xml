@@ -28,7 +28,7 @@ level=int
 
 function(int a) { level+a }
 </source>
-    <note>In principle, a function is <b>inlined</b> in queries whenever it is encountered in a SELECT projection or WHERE
+    <note>In principle, a function is <strong>inlined</strong> in queries whenever it is encountered in a SELECT projection or WHERE
     condition as follows: <code>SELECT label.function($param) FROM Leveler label</code></note>
     <note>The above query is inlined like this: <code>SELECT label.level + $param FROM Leveler label</code></note>
     <p>Some properties of MDD functions:</p>

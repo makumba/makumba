@@ -22,10 +22,11 @@
     </p>
     <section id="MQL">
       <title>The title of a section</title>
-      <p>
+      
       <fixme author="Jasper">I want to say that this doesn't need to be fixed, it's ok!</fixme>
-        Inside a section, we can type a lof of bullshit about the <em class="future">future</em> or about <em class="old">
-        things</em> that are just <em>emphasized</em>
+      <p>
+        Inside a section, we can type a lot of bullshit about the <em class="future">future</em> or about <em class="old">
+        things</em> that are just <em>emphasized</em></p>
         <ul>
           <li>You can make a list of items</li>
           <li>or 2 items</li>
@@ -38,13 +39,12 @@
             Or talk about the <em class="future">future</em> as well
           </li>
         </ul>
-      </p>
     </section>
     <section id="OQL">
       <title>Section number 2! Full of notes</title>
-      <P>
+      <p>
       What I didn't mention yet is how you can insert <code>code snippets</code> into text.
-      </P>
+      </p>
       <note class="future" label="This is a future note">
 		Notes are ways to frame your information. This is one about future feats.
       	<ul>

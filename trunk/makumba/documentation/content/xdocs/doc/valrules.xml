@@ -30,7 +30,7 @@
     <source>[range validation | string length | regular expression | comparison]</source>
     
     <section id="range"><title>Number range rule</title>
-    <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <i>real</i>. The
+    <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <em>real</em>. The
     [validation rule] is defined as:</p>
     <source>[fieldName]%range = [1..10]</source>
     <p>Using <code>?</code> allows to keep one parameter unbound, which will default to java.lang.Integer.MIN_VALUE
@@ -42,7 +42,7 @@
     </section>
 
     <section id="stringLength"><title>String length rule</title>
-    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <char>text</char>.
+    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <code>text</code>.
     The [validation rule] is defined as:</p>
     <source>[fieldName]%length = [1..10]</source>
     <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
@@ -53,13 +53,15 @@
 
     <section id="regexp"><title>Regular expression rule</title>
     <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
-    but also for <char>text</char>. The [validation rule] is defined as:</p>
-    <code>[fieldName]%matches = <em>regular expression</em></code>
+    but also for <code>text</code>. The [validation rule] is defined as:</p>
+    <p>
+    <code>[fieldName]%matches = regular expression</code></p>
     <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
       href="ext:javaregexp">specification</a> and <a
       href="ext:javaregexptutorial">tutorial</a>.</p>
     <p>To compare if a field contains a valid e-mail address, define:</p>
-    <code>email%matches = .+@.+\.[a-z]+ : Email address is not valid!</code>
+    <p>
+    <code>email%matches = .+@.+\.[a-z]+ : Email address is not valid!</code></p>
     </section>
 
   
@@ -155,7 +157,7 @@
     </section>
 
     <section><title>Multi-field uniqueness definition</title>
-    <p>Similar to the <a href="datadef.html#FieldAttributes"><i>unique</i> field attribute</a>, you can also define multi-field
+    <p>Similar to the <a href="datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
     uniqueness contraints. These constraints can even span over several data definitions, if they are related via
     pointers.</p>
 
