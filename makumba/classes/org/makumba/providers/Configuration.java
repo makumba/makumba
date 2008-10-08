@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Configuration implements Serializable {
 
-    private static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
+    public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
 
     public static String defaultClientSideValidation = "live";
 
