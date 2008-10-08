@@ -139,7 +139,7 @@ public class DataObjectViewerServlet extends DataServlet {
                                     writer.print(" "
                                             + DevelUtils.writePointerValueLink(contextPath,
                                                 (Pointer) dictionary.get("setEntry"),
-                                                (String) dictionary.get("setTitle"), false) + " ");
+                                                dictionary.get("setTitle").toString(), false) + " ");
                                 }
                                 if (vSet.size() == 0) {
                                     writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">(empty)</span>");
