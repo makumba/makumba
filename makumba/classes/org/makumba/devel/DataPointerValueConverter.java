@@ -51,8 +51,10 @@ public class DataPointerValueConverter extends DataServlet {
     public final static int FROM_DB = 10;
 
     public final static int FROM_EXTERNAL = 20;
-   
 
+    public DataPointerValueConverter() {
+        toolLocation = Configuration.getObjectIdConverterLocation();
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -76,7 +78,8 @@ public class DataPointerValueConverter extends DataServlet {
         DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
-        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(), MODE_CONVERTOR);
+        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(),
+            MODE_CONVERTOR);
 
         writer.println("<form>");
         writer.println("<table>");

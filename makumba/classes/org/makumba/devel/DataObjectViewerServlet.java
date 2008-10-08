@@ -50,6 +50,10 @@ import org.makumba.providers.TransactionProvider;
 public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    public DataObjectViewerServlet() {
+        toolLocation = Configuration.getDataViewerLocation();
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

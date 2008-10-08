@@ -43,6 +43,8 @@ public abstract class DataServlet extends HttpServlet {
     protected String virtualPath;
 
     static final Logger logger = java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator");
+    
+    protected String toolLocation = null;
 
     public DataServlet() {
     }
@@ -50,7 +52,7 @@ public abstract class DataServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
         contextPath = request.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(request, Configuration.getDataListerLocation());
+        virtualPath = DevelUtils.getVirtualPath(request, toolLocation);
         if (virtualPath == null) {
             virtualPath = "/";
         }

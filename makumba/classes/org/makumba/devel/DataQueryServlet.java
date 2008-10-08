@@ -38,6 +38,7 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -54,10 +55,14 @@ public class DataQueryServlet extends DataServlet {
 
     public final int QUERY_LANGUAGE_HQL = 20;
 
+    public DataQueryServlet() {
+        toolLocation = Configuration.getDataQueryLocation();
+    }
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + "/dataList";
+        browsePath = contextPath + Configuration.getDataListerLocation();
         String query = request.getParameter("query");
         if (query == null) {
             query = "";
