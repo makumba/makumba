@@ -1,6 +1,0 @@
-<Files ~ "\.(dtd|mod)$">
-  ForceType application/xml-dtd
-</Files>
-<Files ~ "\.(pen|ent)$">
-  ForceType application/xml-external-parsed-entity
-</Files>
