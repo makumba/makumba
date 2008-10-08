@@ -168,7 +168,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                         return;
                     }
                 }
-                    
+
                 final Date lastModified;
                 if (url.toExternalForm().startsWith("jar:")) { // for jar files, read from the jar
                     JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
@@ -186,7 +186,13 @@ public class MakumbaResourceServlet extends HttpServlet {
                         outputStream.write(((byte[]) cachedResource)[i]);
                     }
                 } else {
-                    outputStream.print(cachedResource.toString());
+                    if (cachedResource.toString().contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
+                        // exchange placeholders with dynamic values
+                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH,
+                            req.getContextPath()));
+                    } else {
+                        outputStream.print(cachedResource.toString());
+                    }
                 }
             }
         } catch (URISyntaxException e) {
@@ -200,7 +206,6 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
-        writeContextPath(sb, contextPath);
         for (Object object : resources) {
             if (((String) object).endsWith(".css")) {
                 MakumbaResourceServlet.writeStyles(sb, contextPath, (String) object);
@@ -208,10 +213,6 @@ public class MakumbaResourceServlet extends HttpServlet {
                 writeScripts(sb, contextPath, (String) object);
             }
         }
-    }
-
-    public static void writeContextPath(StringBuffer sb, String contextPath) {
-        sb.append("<script type=\"text/javascript\">var context_path = \""+contextPath+"\";</script>\n");
     }
 
     public static void writeScripts(StringBuffer sb, String contextPath, String script) {
@@ -286,7 +287,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                     while ((b = (byte) bis.read()) != -1) {
                         sb.append(String.valueOf((char) b));
                     }
-                    return sb;
+                    return sb.toString();
                 }
             }
         }, true);
