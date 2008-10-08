@@ -80,7 +80,7 @@ public abstract class LineViewer implements SourceViewer {
 
     protected boolean printLineNumbers;
 
-    private File dir;
+    protected File dir;
 
     protected String title;
 

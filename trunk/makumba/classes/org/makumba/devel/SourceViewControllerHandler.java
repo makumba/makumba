@@ -141,7 +141,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                     String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + list[i];
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
                     String addr = (req.getContextPath() + Configuration.getMddViewerLocation()) + "/" + s;
-                    w.println("<a href=\"" + addr + "\">" + s + "</a>");
+                    w.println("<a href=\"" + addr + "\">" + list[i] + "</a>");
                 }
             } else {
                 java.util.logging.Logger.getLogger("org.makumba." + "devel").warning(

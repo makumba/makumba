@@ -125,12 +125,16 @@ public class mddViewer extends LineViewer {
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
 
-        w.println("<a href=\"javascript:toggleElementDisplay(blMethods);\">BL methods</a>");
-        w.println("<div id=\"blMethods\" class=\"popup\" style=\"display: none;\">");
-
-        writeBLHandlers(w, dd);
-
-        w.println("</div>");
+        if (dd != null) {
+            w.println("<a href=\"javascript:toggleElementDisplay(blMethods);\">BL methods</a>");
+            w.println("<div id=\"blMethods\" class=\"popup\" style=\"display: none;\">");
+            writeBLHandlers(w, dd);
+            w.println("</div>");
+        } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
+            w.print("<span style=\"color:gray;\" title=\"There's no BL for .idd files!\">BL methods</span>&nbsp;&nbsp;&nbsp;");
+        } else {
+            w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">BL methods</span>&nbsp;&nbsp;&nbsp;");
+        }
         w.println("&nbsp;&nbsp;&nbsp;");
 
         w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
@@ -140,6 +144,8 @@ public class mddViewer extends LineViewer {
             w.print("<a style=\"color: darkblue;\" href=\""
                     + (contextPath + Configuration.getCodeGeneratorLocation() + "/" + virtualPath)
                     + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+        } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
+            w.print("<span style=\"color:gray;\" title=\"There's no code to be generated for .idd files!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         } else {
             w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         }
