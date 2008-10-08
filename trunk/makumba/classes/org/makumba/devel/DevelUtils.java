@@ -72,7 +72,7 @@ public class DevelUtils {
         }
         result += " <span style=\"color: green; afont-size: x-small;\">[";
         boolean haveTitle = StringUtils.isNotBlank(pointerTitle);
-        result += "<a href=\"" + contextPath + "/dataView/" + pointer.getType() + "?ptr=" + pointer.toExternalForm()
+        result += "<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + pointer.getType() + "?ptr=" + pointer.toExternalForm()
                 + "\" style=\"color: green\" title=\""
                 + (haveTitle ? "Pointer: " + pointer.toExternalForm() + "; " : "") + "Database Value: "
                 + pointer.longValue() + "; DBSV|Unique Index: " + pointer.getDbsv() + "|" + pointer.getUid() + "\">"

@@ -33,6 +33,10 @@ public class DataTypeListerServlet extends DataServlet {
 
     protected static final long serialVersionUID = 1L;
 
+    public DataTypeListerServlet() {
+        toolLocation = Configuration.getDataListerLocation();
+    }
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
 
@@ -130,8 +134,8 @@ public class DataTypeListerServlet extends DataServlet {
                     writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
-                    writer.println("<a href=\"" + contextPath + "/dataView/" + type + "?ptr="
-                            + ((Pointer) (results.elementAt(i)).get("ptr")).toExternalForm() + "\">");
+                    writer.println("<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + type
+                            + "?ptr=" + ((Pointer) (results.elementAt(i)).get("ptr")).toExternalForm() + "\">");
                     Dictionary<String, Object> dictionary = results.elementAt(i);
                     Object value = dictionary.get("title");
                     if (value == null || value.equals("")) {
@@ -161,10 +165,10 @@ public class DataTypeListerServlet extends DataServlet {
 
                 writer.println("</table>");
 
-                org.makumba.db.makumba.Query oqlQuery = ((DBConnection)t).getQuery(query);
+                org.makumba.db.makumba.Query oqlQuery = ((DBConnection) t).getQuery(query);
                 if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                     writer.println("<hr>");
-                    org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection)t).getQuery(query);
+                    org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
                     writer.println("SQL query: " + sqlQuery.getCommand() + ";<br>");
                 }
 
