@@ -39,8 +39,6 @@ public class Configuration implements Serializable {
     // developer tools
     public static final String KEY_MDD_VIEWER = "mddViewer";
     
-    public static final String KEY_BL_METHODS = "blMethods";
-
     public static final String KEY_JAVA_VIEWER = "javaViewer";
 
     private static final String KEY_LOGIC_DISCOVERY = "logicDiscovery";
@@ -178,10 +176,6 @@ public class Configuration implements Serializable {
 
     public static String getMddViewerLocation() {
         return makumbaDefaults.getProperty(KEY_MDD_VIEWER);
-    }
-
-    public static String getBLMethodsLocation() {
-        return makumbaDefaults.getProperty(KEY_BL_METHODS);
     }
 
     public static String getJavaViewerLocation() {
