@@ -113,7 +113,6 @@ public class DataObjectViewerServlet extends DataServlet {
                     writer.println("  </tr>");
                     for (int i = 0; i < fields.size(); i++) {
                         FieldDefinition fd = fields.get(i);
-                        System.out.println(fd.getName());
                         if (fd.isIndexPointerField()) {
                             continue;
                         }
