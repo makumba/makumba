@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.MakumbaSystem;
 
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
@@ -94,6 +95,7 @@ public class Configuration implements Serializable {
         }
         try {
             URL urlMakumbaDefaults = org.makumba.commons.ClassResource.get("internalDefaultMakumbaDefaults.properties");
+            MakumbaSystem.getMakumbaLogger("config").info("Loading internal default configuration from " + urlMakumbaDefaults);
             makumbaDefaults.load(urlMakumbaDefaults.openStream());
             Properties appMakumbaDefaults = new Properties();
             URL urlAppMakumbaDefaults = org.makumba.commons.ClassResource.get("MakumbaDefaults.properties");
