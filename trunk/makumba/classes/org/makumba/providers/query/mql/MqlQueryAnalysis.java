@@ -1,6 +1,7 @@
 package org.makumba.providers.query.mql;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     private TextList text;
 
     public MqlQueryAnalysis(String query, boolean optimizeJoins, boolean autoLeftJoin){
+        Date d = new Date();
+        
         this.query = query;
         query = preProcess(query);
 
@@ -82,6 +85,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         doThrow(mg.error, mqlAnalyzer.getAST());
 
         text = mg.text;
+        
+        long diff = new java.util.Date().getTime() - d.getTime();
+        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("MQL to SQL: " + diff + " ms: " + query);
+
     }
 
     private DataDefinition makeParameterInfo(String query) {
