@@ -98,6 +98,9 @@ public class QueryContext {
     /** labels defined explicitly in the FROM section of this subquery */
     HashSet<String> explicitLabels= new HashSet<String>();
 
+    /** labels that have fields selected, not just the primary key */
+    private HashSet<String> leftJoinedImplicit= new HashSet<String>();
+    
     private boolean wroteRange;
 
     /** the four elements of a join: label1.field1 = label2.field2 */
@@ -126,7 +129,7 @@ public class QueryContext {
     }
 
     /**
-     * make a new join with the name and associate teh label with the type
+     * make a new join with the name and associate the label with the type
      * 
      * @param joinType
      * @param location 
@@ -138,6 +141,8 @@ public class QueryContext {
         joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type, location);
+        if(leftJoinedImplicit.contains(l1) && joinType==HqlSqlTokenTypes.LEFT_OUTER)
+            leftJoinedImplicit.add(name);
         return name;
     }
 
@@ -190,11 +195,19 @@ public class QueryContext {
 
         while (findLabelType(label2) != null)
             label2 += "x";
+        if(joinType==-1 && leftJoinedImplicit.contains(label)){
+            joinType= HqlSqlTokenTypes.LEFT_OUTER;            
+        }
+
         if(joinType==-1){
             joinType= HqlSqlTokenTypes.INNER;
 
-            if(walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull())
+            if(walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull()){
                 joinType= HqlSqlTokenTypes.LEFT_OUTER;
+                String ret= addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
+                leftJoinedImplicit.add(ret);
+                return ret;
+            } 
         }
         if (fi.getType().equals("ptr"))
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
@@ -209,9 +222,10 @@ public class QueryContext {
             while (findLabelType(label2) != null)
                 label2 += "x";
 
-            // FIXME: pointers from set tables are never null, so probably leftJoin should always be false for sets
-            addJoin(label, index, label2, index, sub, HqlSqlTokenTypes.INNER, location);
+            addJoin(label, index, label2, index, sub, joinType, location);
             labels.put(label2, sub);
+            if(joinType==HqlSqlTokenTypes.LEFT_OUTER && leftJoinedImplicit.contains(label))
+                leftJoinedImplicit.add(label2);
 
             String label3 = label;
             if (labelf != null)

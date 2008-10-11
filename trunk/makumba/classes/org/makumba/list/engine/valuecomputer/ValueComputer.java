@@ -73,7 +73,7 @@ public class ValueComputer {
         if (check instanceof FieldDefinition)
             set = (FieldDefinition) check;
 
-        if (nullableExpr == null && set == null)
+        if (/*nullableExpr == null && */ set == null)
             return new ValueComputer(analyzed, parentListKey, expr, pageCache);
 
         if (set == null)
