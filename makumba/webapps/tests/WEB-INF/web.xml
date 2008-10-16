@@ -3,6 +3,16 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
 
+  <taglib>
+    <taglib-uri>http://www.makumba.org/presentation</taglib-uri>
+    <taglib-location>../../../classes/META-INF/taglib.tld</taglib-location>
+  </taglib>
+
+  <taglib>
+    <taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
+    <taglib-location>../../../classes/META-INF/taglib-hibernate.tld</taglib-location>
+  </taglib>
+
   <filter>
     <filter-name>makumba_controller</filter-name>
     <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
@@ -10,9 +20,21 @@
 
   <filter-mapping>
     <filter-name>makumba_controller</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>*.jsp</url-pattern>
   </filter-mapping>
-
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>*.jspx</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/mak-tools</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/mak-tools/*</url-pattern>
+  </filter-mapping>
+  
   <servlet>
     <servlet-name>invoker</servlet-name>
     <servlet-class>org.apache.catalina.servlets.InvokerServlet</servlet-class>
@@ -27,21 +49,6 @@
     <servlet-name>invoker</servlet-name>
     <url-pattern>/servlet/*</url-pattern>
   </servlet-mapping>
-
-  <servlet>
-    <servlet-name>codeGenerator</servlet-name>
-    <servlet-class>org.makumba.devel.CodeGenerator</servlet-class>
-  </servlet>
-
-  <taglib>
-    <taglib-uri>http://www.makumba.org/presentation</taglib-uri>
-    <taglib-location>../../../classes/META-INF/taglib.tld</taglib-location>
-  </taglib>
-
-  <taglib>
-    <taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
-    <taglib-location>../../../classes/META-INF/taglib-hibernate.tld</taglib-location>
-  </taglib>
 
   <servlet>
     <servlet-name>JspRedirector</servlet-name>
