@@ -347,10 +347,10 @@ public abstract class LineViewer implements SourceViewer {
             return contextPath + "/" + fileName + "x";
         } else if (fileType.equals(TYPE_MDD)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + "/dataDefinitions/" + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
+            return contextPath + Configuration.getMddViewerLocation() + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
         } else if (fileType.equals(TYPE_JAVA)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + "/classes/" + fileName;
+            return contextPath + Configuration.getJavaViewerLocation() + fileName;
         }
         return fileName;
     }
@@ -537,11 +537,11 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "#" + lineNumber + "\">" + className
-                    + "</a>";
+            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + qualifiedClassName + "#"
+                    + lineNumber + "\">" + className + "</a>";
         } else {
-            return "<a href=\"" + contextPath + "/classes/" + qualifiedClassName + "\">" + className + "</a>";
-
+            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + qualifiedClassName + "\">"
+                    + className + "</a>";
         }
     }
 
@@ -551,7 +551,7 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatMDDLink(String mddName) {
         return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath
-                + "/dataDefinitions/" + mddName + "\">" + mddName + "</a>";
+                + Configuration.getMddViewerLocation() + mddName + "\">" + mddName + "</a>";
     }
 
     /**
@@ -734,7 +734,7 @@ public abstract class LineViewer implements SourceViewer {
                     s += "#" + methodName + "()";
                 }
             } else {
-                s += contextPath + "/classes/" + c.getName().replace('.', '/');
+                s += contextPath + Configuration.getJavaViewerLocation() + c.getName().replace('.', '/');
             }
             return s + "\" title=\"" + (methodName != null ? "Method in " : "") + c.getName() + "\">" + displayName
                     + "</a>";

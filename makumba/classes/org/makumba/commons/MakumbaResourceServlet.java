@@ -37,7 +37,7 @@ import org.makumba.providers.Configuration;
  * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $
  */
 public class MakumbaResourceServlet extends HttpServlet {
-    public static final String resourceDirectory = "makumbaResources";
+    private static final String resourceDirectory = "makumbaResources";
 
     private static final long serialVersionUID = 1L;
 
@@ -201,8 +201,8 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static void writeStyles(StringBuffer sb, String contextPath, String styleSheet) {
-        sb.append("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath + "/"
-                + resourceDirectory + "/" + RESOURCE_PATH_CSS + styleSheet + "\"/>");
+        sb.append("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath
+                + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet + "\"/>");
     }
 
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
@@ -216,8 +216,8 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static void writeScripts(StringBuffer sb, String contextPath, String script) {
-        sb.append("<script type=\"text/javascript\" src=\"" + contextPath + "/" + resourceDirectory + "/"
-                + RESOURCE_PATH_JAVASCRIPT + script + "\">" + "</script>\n");
+        sb.append("<script type=\"text/javascript\" src=\"" + contextPath + Configuration.getMakumbaResourcesLocation()
+                + "/" + RESOURCE_PATH_JAVASCRIPT + script + "\">" + "</script>\n");
     }
 
     public static String getContentType(URL url) {

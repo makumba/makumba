@@ -311,7 +311,7 @@ public class javaViewer extends LineViewer {
                                 String mddName = findMddNameFromHandler(parts[1]);
                                 try {
                                     dd = ddp.getDataDefinition(mddName);
-                                    writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/"
+                                    writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation()
                                             + dd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
                                             + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
@@ -319,7 +319,7 @@ public class javaViewer extends LineViewer {
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
-                                        writer.print(parts[0] + "<a href=\"" + contextPath + "/dataDefinitions/"
+                                        writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation()
                                                 + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
                                                 + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
@@ -432,7 +432,7 @@ public class javaViewer extends LineViewer {
             p = p.substring(0, p.indexOf(".java"));
         }
         p = p.replaceAll("\\.", "/");
-        String path = contextPath + "/classes/" + p.substring(0, p.lastIndexOf('/') + 1);
+        String path = contextPath + Configuration.getJavaViewerLocation() + p.substring(0, p.lastIndexOf('/') + 1);
         if (path.startsWith("/")) {
             path = path.substring(1);
         }

@@ -40,6 +40,7 @@ import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.ClassResource;
+import org.makumba.providers.Configuration;
 
 /**
  * This classe implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
@@ -185,7 +186,7 @@ public class jspViewer extends LineViewer {
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
         realPath = request.getSession().getServletContext().getRealPath(virtualPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
-        logicPath = contextPath + "/logic" + _servletPath;
+        logicPath = contextPath + Configuration.getLogicDiscoveryViewerLocation() + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
 
         JspParseData jspParseData = new JspParseData(request.getSession().getServletContext().getRealPath("/"),

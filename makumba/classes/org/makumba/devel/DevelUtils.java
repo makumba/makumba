@@ -3,7 +3,7 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,22 +23,26 @@ import org.makumba.providers.TransactionProvider;
 public class DevelUtils {
 
     /** Write the page footer to the given writer. */
-    public static void printDeveloperSupportFooter(PrintWriter printWriter) throws IOException {
-        printWriter.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
-                + org.makumba.MakumbaSystem.getVersion()
-                + "; using database "
+    public static void printDeveloperSupportFooter(PrintWriter w) throws IOException {
+        w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
+                + org.makumba.MakumbaSystem.getVersion() + "; using database "
                 + TransactionProvider.getInstance().getDefaultDataSourceName() + "</font>");
+    }
+
+    public static void writeScripts(PrintWriter w, String contextPath) {
+        w.println("<script type=\"text/javascript\" src=\"" + contextPath + Configuration.getMakumbaResourcesLocation()
+                + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\">" + "</script>\n");
+    }
+
+    public static void writeStyles(PrintWriter w, String contextPath) {
+        w.println("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath
+                + Configuration.getMakumbaResourcesLocation() + "/" + MakumbaResourceServlet.RESOURCE_PATH_CSS
+                + "makumbaDevelStyles.css\"/>");
     }
 
     public static void writeStylesAndScripts(PrintWriter w, String contextPath) {
         writeScripts(w, contextPath);
         writeStyles(w, contextPath);
-    }
-
-    public static void writeStyles(PrintWriter w, String contextPath) {
-        w.println("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath + "/"
-                + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_CSS
-                + "makumbaDevelStyles.css\"/>");
     }
 
     public static void writeTitleAndHeaderEnd(PrintWriter w, String title) {
@@ -72,8 +76,8 @@ public class DevelUtils {
         }
         result += " <span style=\"color: green; afont-size: x-small;\">[";
         boolean haveTitle = StringUtils.isNotBlank(pointerTitle);
-        result += "<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + pointer.getType() + "?ptr=" + pointer.toExternalForm()
-                + "\" style=\"color: green\" title=\""
+        result += "<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + pointer.getType()
+                + "?ptr=" + pointer.toExternalForm() + "\" style=\"color: green\" title=\""
                 + (haveTitle ? "Pointer: " + pointer.toExternalForm() + "; " : "") + "Database Value: "
                 + pointer.longValue() + "; DBSV|Unique Index: " + pointer.getDbsv() + "|" + pointer.getUid() + "\">"
                 + (haveTitle ? pointerTitle : pointer.toExternalForm()) + "</a>";
@@ -82,48 +86,42 @@ public class DevelUtils {
         return result;
     }
 
-    public static void printPageHeader(PrintWriter writer, String title) throws IOException {
-        printPageHeader(writer, title, null, null, null);
+    public static void printPageHeader(PrintWriter w, String title) throws IOException {
+        printPageHeader(w, title, null, null, null);
     }
 
-    public static void printPageHeader(PrintWriter writer, String title, String virtualPath, String realPath,
+    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath,
             String repositoryLink) throws IOException {
-        writer.println("<body bgcolor=white>");
-        writer.println("<table width=\"100%\" bgcolor=\"lightblue\">");
-        writer.println("<tr>");
-        writer.println("<td rowspan=\"2\">");
+        w.println("<body bgcolor=white>");
+        w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
+        w.println("<tr>");
+        w.println("<td rowspan=\"2\">");
 
         if (!StringUtils.isBlank(title) && !title.equals(virtualPath)) {
-            writer.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
+            w.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
         } else if (virtualPath != null) {
-            writer.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
+            w.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
                     + "</font></a></font>");
         }
         if (StringUtils.isNotBlank(repositoryLink)) {
-            writer.println(repositoryLink);
+            w.println(repositoryLink);
         }
         if (realPath != null) {
-            writer.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
+            w.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
         }
     }
 
-    public static void writeScripts(PrintWriter w, String contextPath) {
-        w.println("<script type=\"text/javascript\" src=\"" + contextPath + "/"
-                + MakumbaResourceServlet.resourceDirectory + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT
-                + "makumbaDevelScripts.js\">" + "</script>\n");
-    }
-
-    public static void writeDevelUtilLinks(PrintWriter writer, String toolKey, String contextPath) {
-        Hashtable<String, String> allGenericDeveloperToolsMap = Configuration.getAllGenericDeveloperToolsMap();
-        writer.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">Other tools</a>");
-        writer.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
+    public static void writeDevelUtilLinks(PrintWriter w, String toolKey, String contextPath) {
+        Map<String, String> allGenericDeveloperToolsMap = Configuration.getAllGenericDeveloperToolsMap();
+        w.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">Other tools</a>");
+        w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
         for (String key : allGenericDeveloperToolsMap.keySet()) {
             if (!key.equals(toolKey)) {
-                writer.print("<a href=\"" + contextPath + Configuration.getConfigProperty(key) + "\">"
+                w.print("<a href=\"" + contextPath + Configuration.getConfigProperty(key) + "\">"
                         + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
             }
         }
-        writer.println("</div>");
+        w.println("</div>");
     }
 
     public static String getVirtualPath(HttpServletRequest req, String toolLocation) {

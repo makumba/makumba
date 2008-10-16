@@ -306,9 +306,9 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** writes the page header, with links to the mdd and to browse. */
     public void intro(PrintWriter w) {
-        String browsePath = contextPath + "/dataDefinitions/"
+        String browsePath = contextPath + Configuration.getMddViewerLocation()
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
-        String mddViewerPath = contextPath + "/dataDefinitions/" + virtualPath;
+        String mddViewerPath = contextPath + Configuration.getMddViewerLocation() + virtualPath;
         // link to validation definition, if existing
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
@@ -429,7 +429,7 @@ public class GeneratedCodeViewer extends jspViewer {
             }
         }
         if (new File(classesDirectory.getPath() + logicDir + logicFileName).exists()) {
-            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + "/classes/" + logicDir + logicFileName
+            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getJavaViewerLocation() + logicDir + logicFileName
                     + "\"><i>" + logicFileName + "</i></a>");
             w.println("</span>");
         }
