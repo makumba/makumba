@@ -18,6 +18,7 @@ public class FilterConditionControllerHandler extends ControllerHandler {
         String uri = req.getRequestURI();
 
         // accesses to the source viewer are not filtered
+        // FIXME: update this with getting the paths from the configuration, maybe even generally to the mak-tools path
         if (uri.startsWith("/dataDefinitions") || uri.startsWith("/logic") || uri.startsWith("/classes")) {
             return false;
         }

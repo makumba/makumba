@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -60,32 +59,14 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
-/** busines logic administration */
+/** business logic administration */
 public class Logic {
-    static Properties controllerConfig;
-
-    static java.net.URL controllerURL;
-
     static HashMap<String, Object> nameToObject = new HashMap<String, Object>();
 
     /** for the default transaction provider * */
     static Configuration configuration = new Configuration();
 
-    private static final String HANDLER_METHOD_HEAD = "public void ";
-
-    private static final String HANDLER_METHOD_END = " throws LogicException {}";
-
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-
-    static {
-        controllerConfig = new Properties();
-        try {
-            controllerURL = org.makumba.commons.ClassResource.get("MakumbaController.properties");
-            controllerConfig.load(controllerURL.openStream());
-        } catch (Exception e) {
-            controllerConfig = null;
-        }
-    }
 
     static public String getSearchMessage(String cls) {
         return (String) ((Hashtable) NamedResources.getStaticCache(logix).getSupplementary()).get(cls);
@@ -112,8 +93,7 @@ public class Logic {
     }
 
     /**
-     * Finds the name of the package to be used for the given directory. The method uses the {@link #controllerConfig}
-     * to find a matching package name.
+     * Finds the name of the package to be used for the given directory.<br>
      * 
      * @param directory
      *            the directory to find the package for.
@@ -124,15 +104,13 @@ public class Logic {
         String defaultPackage = "";
         String longestKey = "";
 
-        if (controllerConfig != null) {
-            for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
-                String k = (String) e.nextElement();
-
+        if (Configuration.getLogicPackages() != null) {
+            for (String k : Configuration.getLogicPackages().keySet()) {
                 if (k.equals("default") && longestKey.length() == 0) {
-                    defaultPackage = controllerConfig.getProperty(k);
+                    defaultPackage = Configuration.getLogicPackages().get(k).getPropValue();
                 } else if (directory.startsWith(k) && k.length() > longestKey.length()) {
                     longestKey = k;
-                    packageName = controllerConfig.getProperty(k);
+                    packageName = Configuration.getLogicPackages().get(k).getPropValue();
                 }
             }
             if (longestKey.length() == 0 && defaultPackage.length() > 0) {
@@ -143,9 +121,6 @@ public class Logic {
     }
 
     static int logix = NamedResources.makeStaticCache("Business logic classes", new NamedResourceFactory() {
-        /**
-         *
-         */
         private static final long serialVersionUID = 1L;
         {
             supplementary = new Hashtable();
@@ -164,34 +139,34 @@ public class Logic {
             String defa = "";
             String maxKey = "";
 
-            if (controllerConfig != null) {
-                msg += "\nfollowing rules from MakumbaController.properties found at:\n\t" + getFilePath(controllerURL);
-                for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
-                    String k = (String) e.nextElement();
-
+            // FIXME: maybe unify code with public static String findPackageName(String)            
+            if (Configuration.getLogicPackages() != null) {
+                msg += "\nfollowing rules from " + Configuration.MAKUMBA_CONF + " found at:\n\t" + Configuration.getApplicationConfigurationSource();
+                if (Configuration.getLogicPackages() != null) {
+                for (String k : Configuration.getLogicPackages().keySet()) {
                     if (k.equals("default") && maxKey.length() == 0) {
-                        defa = controllerConfig.getProperty(k);
+                        defa = Configuration.getLogicPackages().get(k).getPropValue();
                         continue;
                     }
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
-                        className = controllerConfig.getProperty(k);
+                        className = Configuration.getLogicPackages().get(k).getPropValue();
                         if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1) {
                             className += ".";
                         }
                     }
                 }
-
+                }
                 if (maxKey.length() == 0 && defa.length() > 0) {
-                    msg += "\nfollowing default rule from MakumbaController.properties";
+                    msg += "\nfollowing default rule from " + Configuration.MAKUMBA_CONF;
                     className = defa + ".";
                 } else if (maxKey.length() > 0) {
-                    msg += "\nfollowing rule based on longest matching key from MakumbaController.properties\n\tkey is: \""
+                    msg += "\nfollowing rule based on longest matching key from " + Configuration.MAKUMBA_CONF + "\n\tkey is: \""
                             + maxKey + "\"";
                 }
                 path = path.substring(maxKey.length());
             } else {
-                msg += "\ncould not find MakumbaController.properties in CLASSPATH";
+                msg += "\ncould not find " + Configuration.MAKUMBA_CONF + " in CLASSPATH";
             }
 
             msg += "\ndetermined base: \"" + className + "\"";
@@ -275,14 +250,11 @@ public class Logic {
 
     static int authConstraints = NamedResources.makeStaticCache("Authorization constraints",
         new NamedResourceFactory() {
-            /**
-             *
-             */
             private static final long serialVersionUID = 1L;
 
             @Override
             protected Object makeResource(Object p) {
-                if (controllerConfig == null) {
+                if (Configuration.getAuthorizationDefinitions() == null) {
                     return "none";
                 }
                 String path = (String) p;
@@ -295,15 +267,10 @@ public class Logic {
                 String rule = "none";
                 String params = "";
 
-                for (Enumeration e = controllerConfig.keys(); e.hasMoreElements();) {
-                    String k = (String) e.nextElement();
-                    if (!k.startsWith("authorize%")) {
-                        continue;
-                    }
-                    String k1 = k.substring("authorize%".length());
-                    if (path.startsWith(k1) && k1.length() > maxKey.length()) {
-                        maxKey = k1;
-                        rule = controllerConfig.getProperty(k);
+                for (String k : Configuration.getAuthorizationDefinitions().keySet()) {
+                    if (path.startsWith(k) && k.length() > maxKey.length()) {
+                        maxKey = k;
+                        rule = Configuration.getAuthorizationDefinitions().get(k).getPropValue();
                     }
                 }
                 String originalRule = rule;
