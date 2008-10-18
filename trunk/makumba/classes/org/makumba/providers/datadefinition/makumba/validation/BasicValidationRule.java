@@ -1,6 +1,7 @@
 package org.makumba.providers.datadefinition.makumba.validation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,6 +20,17 @@ import org.makumba.providers.datadefinition.makumba.FieldInfo;
  * @version $Id: BasicValidationRule.java,v 1.1 Sep 17, 2007 12:26:09 AM rudi Exp $
  */
 public abstract class BasicValidationRule implements ValidationRule, Serializable {
+    private static final long serialVersionUID = 1L;
+
+    static ArrayList<String> operators = new ArrayList<String>();
+
+    static {
+        operators.add(RegExpValidationRule.getOperator());
+        operators.add(NumberRangeValidationRule.getOperator());
+        operators.add(StringLengthValidationRule.getOperator());
+        operators.addAll(ComparisonValidationRule.getOperators());
+    }
+
     protected static final String rangeValue = "(" + RegExpUtils.minOneDigit + "|\\?)";
 
     protected static final String rangeDef = "\\[" + rangeValue + "\\.\\." + rangeValue + "\\]";
@@ -174,6 +186,10 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
         } else {
             return 0;
         }
+    }
+
+    public static ArrayList<String> getValidationRuleOperators() {
+        return operators;
     }
 
 }

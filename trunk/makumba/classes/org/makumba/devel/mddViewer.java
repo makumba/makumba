@@ -41,6 +41,7 @@ import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordParser;
+import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
 
 /**
@@ -251,7 +252,7 @@ public class mddViewer extends LineViewer {
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
             ValidationDefinition vd = dd.getValidationDefinition();
-            if (vd != null && vd.getRulesSyntax().contains(token.trim())) {
+            if (BasicValidationRule.getValidationRuleOperators().contains(token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {
                 endsWithComment = true;
