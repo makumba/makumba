@@ -551,7 +551,7 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatMDDLink(String mddName) {
         return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath
-                + Configuration.getMddViewerLocation() + mddName + "\">" + mddName + "</a>";
+                + Configuration.getMddViewerLocation() + "/" + mddName + "\">" + mddName + "</a>";
     }
 
     /**

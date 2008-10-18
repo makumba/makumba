@@ -319,7 +319,7 @@ public class javaViewer extends LineViewer {
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
-                                        writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation()
+                                        writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/"
                                                 + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
                                                 + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
