@@ -72,7 +72,7 @@ public abstract class DataServlet extends HttpServlet {
         String toolKey = null;
         if (mode == MODE_VIEW || mode == MODE_LIST) {
             if (type != null && !type.equals("")) {
-                w.println("      <a href=\"" + contextPath + Configuration.getMddViewerLocation() + type
+                w.println("      <a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/" +type
                         + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
                         + "</span></a> data</span>");
             } else {

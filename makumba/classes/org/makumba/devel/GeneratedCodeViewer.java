@@ -308,7 +308,7 @@ public class GeneratedCodeViewer extends jspViewer {
     public void intro(PrintWriter w) {
         String browsePath = contextPath + Configuration.getMddViewerLocation()
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
-        String mddViewerPath = contextPath + Configuration.getMddViewerLocation() + virtualPath;
+        String mddViewerPath = contextPath + Configuration.getMddViewerLocation() + "/" + virtualPath;
         // link to validation definition, if existing
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
