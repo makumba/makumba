@@ -1,6 +1,5 @@
 package org.makumba;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -29,8 +28,6 @@ public interface ValidationDefinition {
     /** Get the data definition associated with this validation definition. */
     public DataDefinition getDataDefinition();
 
-    /** Get the operator names of known rules. FIXME: this should probably be a static method somewhere else. */
-    public ArrayList<String> getRulesSyntax();
-
     public boolean hasValidationRules();
+    
 }

@@ -43,10 +43,6 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 
 /**
  * This is the internal representation of the org.makumba. One can make RecordHandlers based on an instance of this
@@ -59,15 +55,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     public static void setWebappRoot(String s) {
         webappRoot = s;
-    }
-
-    static ArrayList<String> operators = new ArrayList<String>();
-
-    static {
-        operators.add(RegExpValidationRule.getOperator());
-        operators.add(NumberRangeValidationRule.getOperator());
-        operators.add(StringLengthValidationRule.getOperator());
-        operators.addAll(ComparisonValidationRule.getOperators());
     }
 
     java.net.URL origin;
@@ -523,15 +510,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return this;
     }
 
-    public ArrayList<String> getRulesSyntax() {
-        return operators;
-    }
-
     public boolean hasValidationRules() {
         return validationRuleNames.size() > 0;
     }
 
-    // Mutliple unique keys methods
+    // Multiple unique keys methods
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys() {
         return multiFieldUniqueList.values().toArray(
             new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
