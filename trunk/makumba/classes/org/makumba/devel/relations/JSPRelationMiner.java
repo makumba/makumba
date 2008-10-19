@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.OQLParseError;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
@@ -25,7 +26,7 @@ import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
-import org.makumba.providers.query.oql.QueryAST;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 import antlr.RecognitionException;
 
@@ -176,8 +177,8 @@ public class JSPRelationMiner extends RelationMiner {
                     String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
                     if (ql.equals("oql")) {
                         try {
-                            qA = QueryAST.parseQueryFundamental(typeDeterminationQuery);
-                        } catch (RecognitionException e) {
+                            qA = new MqlQueryAnalysis(typeDeterminationQuery, false, false);
+                        } catch (OQLParseError e) {
                             logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
                             return;
                             
@@ -300,11 +301,11 @@ public class JSPRelationMiner extends RelationMiner {
             if (valueTagKey != null) {
                 TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, valueTagKey);
 
-                String field = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(projectionExpr);
+                String field = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(projectionExpr);
                 String realExpr = null;
                 DataDefinition projectionParentType = null;
                 try {
-                    projectionParentType = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
+                    projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
                 } catch(RuntimeWrappedException e) {
                     rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
                 } catch (RuntimeException e1) {
@@ -321,9 +322,9 @@ public class JSPRelationMiner extends RelationMiner {
                             // count(*)
                             continue;
                         }
-                        field = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(realExpr);
+                        field = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(realExpr);
                         try {
-                        projectionParentType = ((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
+                        projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
                         } catch(RuntimeWrappedException rwe) {
                             logger.warning("Error getting relations for JSP query "+cq.toString()+" while trying to get the type of the parent of the projection "+realExpr);
                         }
@@ -331,7 +332,7 @@ public class JSPRelationMiner extends RelationMiner {
                         // this is something like p.indiv.age + 3
                         projectionExpr = getAnalysableExpression(projectionExpr);
                         try {
-                            projectionParentType =((QueryAST) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
+                            projectionParentType =((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
                         } catch(RuntimeWrappedException e) {
                             rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
                         } catch (RuntimeException e1) {
