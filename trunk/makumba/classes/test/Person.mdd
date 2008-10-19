@@ -82,6 +82,7 @@ address=set			 ;Addresses
   address->languages = set test.Language ; languages spoken in that address
   address->someFunction() { 1 + 2 } Some nested message 
   address->description%length = [3..?] : Description must be at least 3 letters long!
+  address->notAllLowerDescription%compare = lower(description) != description : Description cannot all be lower case!
 
 toys=set
   toys->name=char[30]
