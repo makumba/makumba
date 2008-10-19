@@ -12,9 +12,11 @@ import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.ANTLRException;
 import antlr.RecognitionException;
@@ -153,7 +155,51 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     public DataDefinition getProjectionType() {
         return proj;
     }
+    
+    // FIXME this is ugly, there is for sure a way to get the FROM from the tree
+    private String getFrom() {
 
+        String[] splitAtFrom = query.split("\\s[f|F][r|R][o|O][m|M]\\s");
+        String[] splitAtWhere = splitAtFrom[1].split("\\s[w|W][h|H][e|E][r|R][e|E]\\s");
+
+        return splitAtWhere[0];
+    }
+
+    
+    public String getFieldOfExpr(String expr) {
+        if (expr.indexOf(".") > -1)
+            return expr.substring(expr.lastIndexOf(".") + 1);
+        else
+            return expr;
+    }
+
+    public DataDefinition getTypeOfExprField(String expr) {
+
+        if (expr.indexOf(".") == -1) {
+            return getLabelType(expr);
+        } else {
+            DataDefinition result;
+            int lastDot = expr.lastIndexOf(".");
+            String beforeLastDot = expr.substring(0, lastDot);
+            if (beforeLastDot.indexOf(".") == -1) {
+                result = getLabelType(beforeLastDot);
+            } else {
+                // compute dummy query for determining pointed type
+
+                // FIXME will this work if the FROM contains subqueries?
+                String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + getFrom();
+                try {
+                    result = QueryAST.parseQueryFundamental(dummyQuery).getProjectionType().getFieldDefinition(
+                        "projection").getPointedType();
+                } catch (RecognitionException e) {
+                    throw new RuntimeWrappedException(e);
+                }
+            }
+            return result;
+
+        }
+    }
+    
     public int parameterAt(int index) {
         String s = parameterOrder.get(index);
         if (!s.startsWith(MAKUMBA_PARAM))
