@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
@@ -95,6 +96,11 @@ public class RelationCrawler {
             String URLprefix, String URLroot, boolean relationTypeDetail) {
         RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot);
         if (instance == null) {
+            
+            if(URLprefix == null || URLprefix.trim().length() == 0) {
+                URLprefix = "file://";
+            }
+            
             instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot, relationTypeDetail);
             relationCrawlers.put(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot, instance);
         }
@@ -131,6 +137,10 @@ public class RelationCrawler {
 
     public Hashtable<String, Throwable> getJSPAnalysisErrors() {
         return JSPAnalysisErrors;
+    }
+
+    public int getJSPCrawlCount() {
+        return JSPCrawlCount;
     }
 
     public Vector<String> getJavaAnalysisErrors() {
@@ -213,7 +223,7 @@ public class RelationCrawler {
             jsap.registerParameter(new FlaggedOption("urlRoot", JSAP.STRING_PARSER, null, false, 'u', "urlRoot"));
             jsap.registerParameter(new FlaggedOption("skipPaths", JSAP.STRING_PARSER, null, false, 's', "skipPaths"));
             jsap.registerParameter(new UnflaggedOption("path", JSAP.STRING_PARSER, null, false, true));
-            jsap.registerParameter(new FlaggedOption("relationTypeDetail", JSAP.STRING_PARSER, null, false, 't', "relationTypeDetail"));
+            jsap.registerParameter(new Switch("relationTypeDetail", 't', "relationTypeDetail"));
             
         } catch (JSAPException e) {
             e.printStackTrace();
@@ -354,7 +364,7 @@ public class RelationCrawler {
 
         Map<String, Map<String, Vector<Dictionary<String, Object>>>> relations = getDetectedRelations();
 
-        Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase);
+        Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase, true);
 
         for (String typeAndtoFile : relations.keySet()) {
             String toFile = typeAndtoFile.substring(typeAndtoFile.indexOf("#") + 1);
@@ -366,12 +376,12 @@ public class RelationCrawler {
                 relationInfo.put("type", type);
                 relationInfo.put("fromFile", fromFile);
 
-                String fromURL = this.URLprefix + this.URLroot
-                        + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
-                String toURL = this.URLprefix + this.URLroot
+                String fromURL = this.URLprefix + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
+                + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
+                String toURL = this.URLprefix + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
                         + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
-                System.out.println(fromURL + " -(" + type + ")-> " + toURL);
+                Logger.getLogger("org.makumba.devel.relations").info("Writing relation "+fromURL + " -(" + type + ")-> " + toURL);
 
                 // now we insert the records into the relations table, in the right database
                 Transaction tr2 = null;
@@ -432,6 +442,14 @@ public class RelationCrawler {
         // we now delete the relation itself
         tr2.delete(previousRelationPtr);
     }
+    
+    /**
+     * 
+     * Checks whether this webapp has already been crawled
+     */
+    public boolean wasCrawled() {
+        return determineRelationsDatabase(tp, false, false) != null;
+    }
 
     /**
      * Figures out the relations database, i.e. to which database relations should be written to, and if there's none,
@@ -442,9 +460,10 @@ public class RelationCrawler {
      * @param forceDestination
      *            whether or not to force the database to write to. If enabled, will also update the relations database
      *            record in the default database.
+     * @param createDefaultRecord whether the default database name should be used if there is no existing record for this webappRoot
      * @return a Pointer to the record in the default database that points to the relations database
      */
-    private Pointer determineRelationsDatabase(TransactionProvider tp, boolean forceDestination) {
+    private Pointer determineRelationsDatabase(TransactionProvider tp, boolean forceDestination, boolean createDefaultRecord) {
 
         Pointer webappPointer = null;
 
@@ -470,12 +489,14 @@ public class RelationCrawler {
                     targetDatabase = (String) databaseLocation.get(0).get("relationDatabase");
                     webappPointer = (Pointer) databaseLocation.get(0).get("webappPointer");
                 }
-            } else if (databaseLocation.size() == 0) {
+            } else if (databaseLocation.size() == 0 && createDefaultRecord) {
                 // we set the location to the one provided at execution
                 Dictionary<String, Object> data = new Hashtable<String, Object>();
                 data.put("webappRoot", webappRoot);
                 data.put("relationDatabase", targetDatabase);
                 webappPointer = tr.insert("org.makumba.devel.relations.WebappDatabase", data);
+            } else {
+                return null;
             }
         } finally {
             tr.close();
@@ -675,7 +696,7 @@ public class RelationCrawler {
     }
 
     /** A filenameFilter that accepts .jsp, .mdd and .java files, or directories. */
-    private static final class MakumbaRelatedFileFilter implements FileFilter {
+    public static final class MakumbaRelatedFileFilter implements FileFilter {
 
         public boolean accept(File pathname) {
             return pathname.getAbsolutePath().endsWith(".jsp") || pathname.getAbsolutePath().endsWith(".java")

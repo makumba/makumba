@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.db.makumba.UniquenessServlet;
 import org.makumba.devel.DevelUtils;
+import org.makumba.devel.relations.RelationCrawlerTool;
 import org.makumba.forms.responder.ValueEditor;
 import org.makumba.list.MakumbaDownloadServlet;
 import org.makumba.providers.Configuration;
@@ -61,6 +62,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             return false;
         } else if (path.startsWith(Configuration.getMakumbaValueEditorLocation())) {
             new ValueEditor().doPost(request, response);
+            return false;
+        } else if (path.startsWith(Configuration.getMakumbaRelationCrawlerLocation())) {
+            new RelationCrawlerTool().doPost(request, response);
             return false;
         } else if (path.startsWith(Configuration.getMakumbaToolsLocation())) {
             // redirect if we have a unknown path

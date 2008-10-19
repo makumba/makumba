@@ -87,13 +87,15 @@ public class Configuration implements Serializable {
 
     public static final String KEY_REFERENCE_CHECKER = "referenceChecker";
 
+    public static final String KEY_RELATION_CRAWLER = "relationCrawler";
+
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
 
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
 
     // makumba servlets
     public static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
-
+    
     public static final String KEY_MAKUMBA_UNIQUENESS_VALIDATOR = "makumbaUniquenessValidator";
 
     public static final String KEY_MAKUMBA_RESOURCES = "makumbaResources";
@@ -103,7 +105,8 @@ public class Configuration implements Serializable {
     private static final Map<String, String> allGenericDeveloperToolsMap = ArrayUtils.toMap(new String[][] {
             { KEY_MDD_VIEWER, "Mdd viewer" }, { KEY_JAVA_VIEWER, "Business logics viewer" },
             { KEY_DATA_LISTER, "Data browser" }, { KEY_DATA_QUERY_TOOL, "Data query" },
-            { KEY_OBJECT_ID_CONVERTER, "Pointer value converter" }, { KEY_REFERENCE_CHECKER, "Reference checker" } });
+            { KEY_OBJECT_ID_CONVERTER, "Pointer value converter" }, { KEY_REFERENCE_CHECKER, "Reference checker" },
+            { KEY_RELATION_CRAWLER, "Relation crawler" }});
 
     public static Map<String, String> getAllGenericDeveloperToolsMap() {
         return allGenericDeveloperToolsMap;
@@ -248,7 +251,11 @@ public class Configuration implements Serializable {
     public static String getMakumbaValueEditorLocation() {
         return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_VALUE_EDITOR);
     }
-
+    
+    public static String getMakumbaRelationCrawlerLocation() {
+        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_RELATION_CRAWLER);
+    }
+    
     public static String getMakumbaUniqueLocation() {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);
