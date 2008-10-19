@@ -38,6 +38,22 @@ response:<mak:response/><br><br><br>
       </td>
     </tr>
     <tr>
+      <th>brother's email</th> 
+      <td>
+        <mak:criterion fields="indiv.person.email" matchMode="contains">
+          <mak:searchField /> 
+        </mak:criterion>
+      </td>
+    </tr>
+    <tr>
+      <th>brother's name</th> 
+      <td>
+        <mak:criterion fields="indiv.person.indiv.name, indiv.person.indiv.surname" matchMode="contains">
+          <mak:searchField /> 
+        </mak:criterion>
+      </td>
+    </tr>
+    <tr>
       <th>uniq ptr (language)</th> 
       <td>
         <mak:criterion fields="uniqPtr"> <mak:searchField nullOption="any" /> </mak:criterion>
@@ -57,6 +73,22 @@ response:<mak:response/><br><br><br>
       <td>
         <mak:criterion fields="speaks"> 
           <mak:searchField size="4"/> 
+        </mak:criterion>
+      </td>
+    </tr>
+    <tr>
+      <th>speaks - text</th> 
+      <td>
+        <mak:criterion fields="speaks.name"> 
+          <mak:searchField size="4"/> 
+        </mak:criterion>
+      </td>
+    </tr>
+    <tr>
+      <th>hobbies</th> 
+      <td>
+        <mak:criterion fields="hobbies"> 
+          <mak:searchField forceInputStyle="input"/> 
         </mak:criterion>
       </td>
     </tr>
@@ -82,9 +114,9 @@ response:<mak:response/><br><br><br>
       </td>
     </tr>
     <tr>
-      <th>firstSex</th> 
+      <th>created</th> 
       <td>
-        <mak:criterion fields="firstSex" isRange="true">
+        <mak:criterion fields="TS_create" isRange="true">
           <mak:matchMode matchModes="between, betweenInclusive" /> 
           <mak:searchField role="rangeBegin" /> 
           <mak:searchField role="rangeEnd" /> 
@@ -100,23 +132,28 @@ response:<mak:response/><br><br><br>
 done: ${searchArchiveDone}<br>
 from: ${searchArchiveVariableFrom}<br>
 --%>
+from: ${searchArchiveFrom}<br>
+VariableFrom: ${searchArchiveVariableFrom}<br>
 where: ${searchArchiveWhere}<br>
+searchArchiveDone: ${searchArchiveDone}<br>
 <br>
 
 <c:if test="${searchArchiveDone}">
   <h3>Results with mak:resultList</h3>
   <mak:resultList resultsFrom="searchArchive" offset="$offset" limit="$limit" defaultLimit="2" >
     <c:if test="${mak:count() == mak:maxCount()}">
-      <mak:pagination title="true" />
+      <mak:pagination paginationLinkTitle="true" />
       <table width="100%">
         <%@include file="personListHeaderInclude.jsp" %>
     </c:if>        
       <%@include file="personListDisplayInclude.jsp" %>
     <c:if test="${mak:count() == mak:maxCount()}">
       </table>
-      <mak:pagination title="true" />
+      <mak:pagination paginationLinkTitle="true" />
     </c:if>
   </mak:resultList>
+  
+  <Amak:pagination paginationLinkTitle="true" />
   
   <h3>Results with standard mak:list</h3>
   <table width="100%">
