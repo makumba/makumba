@@ -51,6 +51,7 @@ import org.makumba.devel.relations.FileRelations;
 import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * a viewer that shows everything per line
@@ -292,7 +293,8 @@ public abstract class LineViewer implements SourceViewer {
         if (webAppRoot.endsWith("/")) {
             webAppRoot = webAppRoot.substring(0, webAppRoot.length() - 1);
         }
-        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, "", false, "", "", false);
+        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, TransactionProvider.getInstance().getDefaultDataSourceName(), false, "file://", "", false);
+        
         if (realPath!= null && realPath.startsWith(webAppRoot)) {
             String filePath = realPath.substring(webAppRoot.length());
             FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
@@ -301,7 +303,12 @@ public abstract class LineViewer implements SourceViewer {
             printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
             printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
             if (fileDependents.isEmpty()) {
-                writer.println("No relations found for this file!");
+                if(!relationCrawler.wasCrawled()) {
+                    // TODO make nicer, i.e. display something else while it crawls using some JS
+                    writer.println("No relations have been computed for this webapp.<br><a href=\""+ request.getContextPath() + Configuration.getMakumbaRelationCrawlerLocation() + "\">Crawl now</a> (this will take some time)");
+                } else {
+                    writer.println("No relations found for this file!");
+                }
             }
         } else {
             writer.println("Could not crawl relations, file not in webapp root!");
