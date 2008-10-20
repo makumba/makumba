@@ -245,7 +245,7 @@ public class SearchTag extends FormTagBase {
                             int lastIndexOf = finalFieldName.lastIndexOf(thisFd.getName());
                             // FIXME: this takes into account only one level of subfields
                             String subfieldName = inputName.substring(0, lastIndexOf - 1);
-                            objectName = OBJECT_NAME + "_" + subfieldName;
+                            objectName = OBJECT_NAME + "_" + subfieldName.replace('.', '_');
                             variableFroms.add(OBJECT_NAME + "." + subfieldName + " " + objectName);
                             finalFieldName = thisFd.getName();
                         }
