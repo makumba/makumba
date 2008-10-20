@@ -3,8 +3,12 @@ package org.makumba.commons;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 /**
@@ -52,6 +56,16 @@ public class FileUtils {
                     logger.warning("Could not compute canonical path for " + fileList[i].getAbsolutePath());
                 }
             }
+        }
+    }
+    
+    /** Gets an input stream from a file-system file or JAR file */
+    public static InputStream getInputStream(URL url) throws IOException {
+        if (!url.toExternalForm().startsWith("jar:")) {
+            return url.openStream();
+        } else {
+            final JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
+            return jar.getInputStream(((JarURLConnection) url.openConnection()).getJarEntry());
         }
     }
 
