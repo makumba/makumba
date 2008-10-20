@@ -30,8 +30,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import com.freeware.inifiles.INIFile.INIProperty;
-
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
  * services. It can be seen as a service dispatcher in a way.
@@ -118,20 +116,23 @@ public class Configuration implements Serializable {
     static {
         try {
             // the internal default configuration
-            defaultConfig = new MakumbaINIFileReader(
-                    org.makumba.commons.ClassResource.get("Makumba.conf.default").getPath());
+            URL path = org.makumba.commons.ClassResource.get("Makumba.conf.default");
             Logger.getLogger("org.makumba.config").info(
-                "Loading internal default configuration from " + defaultConfig.getFileName());
-
+                "Loading internal default configuration from " + path.getPath());
+            defaultConfig = new MakumbaINIFileReader(path);
+            
             // application-specific configuration
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
-                applicationConfig = new MakumbaINIFileReader(url.getPath());
                 Logger.getLogger("org.makumba.config").info(
-                    "Loading application configuration from " + applicationConfig.getFileName());
+                    "Loading application configuration from " + url.getPath());
+                applicationConfig = new MakumbaINIFileReader(url);
             } else { // if we did not find any configuration, we use the default one
+                Logger.getLogger("org.makumba.config").severe(
+                    "No application configuration found -> using internal default configuration!");
                 applicationConfig = defaultConfig;
-                Logger.getLogger("org.makumba.config").severe("No application configuration found!");
+                System.out.println(applicationConfig.sectionNames());
+                System.out.println(applicationConfig.optionNames("controllerConfig"));
             }
 
             defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
@@ -273,15 +274,15 @@ public class Configuration implements Serializable {
         return applicationConfig.getProperty("makumbaToolPaths", key);
     }
 
-    public static Map<String, INIProperty> getLogicPackages() {
+    public static Map<String, String> getLogicPackages() {
         return applicationConfig.getProperties("businessLogicPackages");
     }
 
-    public static Map<String, INIProperty> getAuthorizationDefinitions() {
+    public static Map<String, String> getAuthorizationDefinitions() {
         return applicationConfig.getProperties("authorization");
     }
 
     public static String getApplicationConfigurationSource() {
-        return applicationConfig != null ? applicationConfig.getFileName() : null;
+        return applicationConfig != null ? applicationConfig.getSource() : null;
     }
 }

@@ -23,7 +23,15 @@
 
 package org.makumba.providers;
 
-import com.freeware.inifiles.INIFile;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.makumba.commons.FileUtils;
+
+import ch.ubique.inieditor.IniEditor;
 
 /**
  * This INI file reader builds on {@link INIFile}, and adds other methods useful for Makumba.
@@ -31,24 +39,58 @@ import com.freeware.inifiles.INIFile;
  * @author Rudolf Mayer
  * @version $Id: AdvancedINIFileReader.java,v 1.1 Oct 6, 2008 2:52:01 AM rudi Exp $
  */
-public class MakumbaINIFileReader extends INIFile {
+public class MakumbaINIFileReader extends IniEditor {
 
-    public MakumbaINIFileReader(String name) {
-        super(name);
+    private URL url;
+
+    public MakumbaINIFileReader(URL url) throws IOException {
+        super(true); // use case-sensitive section names
+        this.url = url;
+        load(FileUtils.getInputStream(url));
     }
 
     public String getStringProperty(String section, String property, MakumbaINIFileReader otherConfig) {
-        return getStringProperty(section, property) != null ? getStringProperty(section, property)
-                : otherConfig.getStringProperty(section, property);
+        return get(section, property) != null ? get(section, property) : otherConfig.get(section, property);
     }
 
     public String getProperty(String section, String property) {
-        return getStringProperty(section, property) != null ? getStringProperty(section, property) : "__NOT__SET__";
+        return get(section, property) != null ? get(section, property) : "__NOT__SET__";
     }
 
     public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {
-        return Boolean.parseBoolean(getStringProperty(section, property) != null ? getStringProperty(section, property)
-                : otherConfig.getStringProperty(section, property));
+        return Boolean.parseBoolean(get(section, property) != null ? get(section, property) : otherConfig.get(section,
+            property));
     }
+
+    public Map<String, String> getProperties(String section) {
+        List optionNames = optionNames(section);
+        HashMap<String, String> ret = new HashMap<String, String>();
+        for (Object object : optionNames) {
+            ret.put((String) object, getProperty(section, (String) object));
+        }
+        return ret;
+    }
+
+    public String getSource() {
+        return url.getPath();
+    }
+
+    // public MakumbaINIFileReader(String name) {
+    // super(name);
+    // }
+    //
+    // public String getStringProperty(String section, String property, MakumbaINIFileReader otherConfig) {
+    // return getStringProperty(section, property) != null ? getStringProperty(section, property)
+    // : otherConfig.getStringProperty(section, property);
+    // }
+    //
+    // public String getProperty(String section, String property) {
+    // return getStringProperty(section, property) != null ? getStringProperty(section, property) : "__NOT__SET__";
+    // }
+    //
+    // public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {
+    // return Boolean.parseBoolean(getStringProperty(section, property) != null ? getStringProperty(section, property)
+    // : otherConfig.getStringProperty(section, property));
+    // }
 
 }

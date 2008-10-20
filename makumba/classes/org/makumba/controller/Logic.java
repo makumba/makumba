@@ -107,10 +107,10 @@ public class Logic {
         if (Configuration.getLogicPackages() != null) {
             for (String k : Configuration.getLogicPackages().keySet()) {
                 if (k.equals("default") && longestKey.length() == 0) {
-                    defaultPackage = Configuration.getLogicPackages().get(k).getPropValue();
+                    defaultPackage = Configuration.getLogicPackages().get(k);
                 } else if (directory.startsWith(k) && k.length() > longestKey.length()) {
                     longestKey = k;
-                    packageName = Configuration.getLogicPackages().get(k).getPropValue();
+                    packageName = Configuration.getLogicPackages().get(k);
                 }
             }
             if (longestKey.length() == 0 && defaultPackage.length() > 0) {
@@ -145,12 +145,12 @@ public class Logic {
                 if (Configuration.getLogicPackages() != null) {
                 for (String k : Configuration.getLogicPackages().keySet()) {
                     if (k.equals("default") && maxKey.length() == 0) {
-                        defa = Configuration.getLogicPackages().get(k).getPropValue();
+                        defa = Configuration.getLogicPackages().get(k);
                         continue;
                     }
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
-                        className = Configuration.getLogicPackages().get(k).getPropValue();
+                        className = Configuration.getLogicPackages().get(k);
                         if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1) {
                             className += ".";
                         }
@@ -270,7 +270,7 @@ public class Logic {
                 for (String k : Configuration.getAuthorizationDefinitions().keySet()) {
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
-                        rule = Configuration.getAuthorizationDefinitions().get(k).getPropValue();
+                        rule = Configuration.getAuthorizationDefinitions().get(k);
                     }
                 }
                 String originalRule = rule;
