@@ -2,6 +2,7 @@ package org.makumba.providers;
 
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.makumba.Transaction;
 import org.makumba.commons.ClassResource;
@@ -40,6 +41,8 @@ public class TransactionProvider implements TransactionProviderInterface {
     
     public TransactionProvider(Configuration config) {
         try {
+            Logger.getLogger("org.makumba.providers").info(
+                "Instantiating TransactionProvider '" + config.getDefaultTransactionProviderClass() + "'");
             this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getDefaultTransactionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
