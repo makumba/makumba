@@ -56,4 +56,4 @@ repositoryLinkText=SVN
 
 [inputStyleConfig]
 calendarEditor=true
-calendarEditorLink=<img border="0" src="_CONTEXT_PATH_/makumbaResources/image/calendar.gif">
+calendarEditorLink=<img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">
