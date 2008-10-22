@@ -2796,9 +2796,9 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
       <name>onMouseOut</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-    </attribute>
       <description>Document me please</description>
       <comments>Document me please</comments>
+    </attribute>
 
     <attribute>
       <name>onMouseOver</name>
