@@ -181,19 +181,14 @@ public class QueryContext {
             return parent.join(label, field, labelf, joinType, location);
 
         try {
+            foreign = fi.getForeignTable();
+        } catch (Exception e) {
+        }
+        try {
             sub = fi.getSubtable();
         } catch (Exception e) {
         }
 
-        try {
-            if (fi.getType().equals("ptr")) {
-                foreign = fi.getForeignTable();
-            } else if (fi.getType().equals("ptrOne")) {
-                foreign = sub;
-            }
-        } catch (Exception e) {
-        }
-        
         String label2 = label;
         if (labelf != null)
             label2 = labelf;
@@ -208,8 +203,9 @@ public class QueryContext {
             joinType= HqlSqlTokenTypes.INNER;
 
             if(walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull()){
+                DataDefinition joinTable= fi.getType().equals("ptrOne")?sub:foreign;
                 joinType= HqlSqlTokenTypes.LEFT_OUTER;
-                String ret= addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
+                String ret= addJoin(label, field, label2, joinTable.getIndexPointerFieldName(), joinTable, joinType, location);
                 leftJoinedImplicit.add(ret);
                 return ret;
             } 
