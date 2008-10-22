@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>query fragment methods</title>
+  <link rel="stylesheet" type="text/css" media="all" href="../main.css">
+  <script type="text/javascript" src="../main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("../");
+</script>
+<h1>Query Fragment Methods (QFM)<br>
+</h1>
+The number of database hits is a major factor in the performance of any
+db application. Makumba (mostly the mak:list engine) is optimized to
+generate the minimum possible number of queries.<br>
+<br>
+In general, the number of queries should be independent of the data
+size. This principle is sometimes broken when one needs to do a
+supplementary query to find out more about a certain query result. <br>
+<br>
+The idea of Query Fragment Methods is to actually not do queries, but
+to append the existing query qith more query fragments to provide the
+needed supplementary data which would have otherwise be obtained by
+separate methods and queries.<br>
+<br>
+The QFMs could be defined in MDDs as methods in an object-oriented way
+(TODO: write these examples in&nbsp; a BEST -neutral manner) <br>
+<pre style="margin-left: 40px;">in best.johnny.Application<br>&nbsp;&nbsp;&nbsp; acceptedFinal()<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - finalPosition &lt;= activ.finalPlaces</pre>
+<p>then in JSP we can do:</p>
+<pre style="margin-left: 40px;">&lt;mak:list from="best.johnny.Application applic" &gt;<br>&nbsp;&nbsp;&nbsp; &lt;mak:if expr="applic.acceptedFinal()" &gt; ACCEPTED&lt;/mak:if&gt;<br>&lt;/mak:list&gt;</pre>
+<br>
+While the above is a simple expression that is simply pasted in the
+query, a more complex example, with an argument, and more varied query
+fragments can be thought of (<span style="font-style: italic;">never
+mind the syntax, finding a suitable one is part of the brief</span>)<br>
+<br>
+in best.johnny.Student <br>
+<pre style="margin-left: 40px;">acceptedFinal()<br>- args: best.johnny.Season season<br>- from: best.johnny.Application app<br>- where: app.stud=this AND app.activ.season=$season AND pp.acceptedFinal()<br>- result: count(app)&gt;0</pre>
+then in JSP<br>
+<pre style="margin-left: 40px;">&lt;mak:list from="best.johnny.Student s" &gt;<br>&nbsp;&nbsp;&nbsp; &lt;mak:value epxr="stud.acceptedFinal($season)"&gt;<br>&nbsp;&nbsp;&nbsp; &lt;mak:value expr="s.name" /&gt;<br>&lt;/mak:list&gt;</pre>
+Brief<br>
+<ul>
+  <li>write the above examples in BEST-independent manner (consider
+e.g. auction items and bids)<br>
+  </li>
+  <li>consider how QFMs would improve/simplify an existing application</li>
+  <li>above there are only Read methods. Can Create, Update and Delete
+(CRUD) methods be written equally well? This might not reduce the
+number of DB hits
+but it would provide uniformity</li>
+  <li>consider the mathematics of query combination</li>
+  <li>consider what would happen at type (MDD) inheritance. Can QFMs be
+ovverriden?</li>
+  <li>when you are satisfied, find an humanly-intuitive
+machine-parseable syntax for QFMs<br>
+  </li>
+</ul>
+<br>
+</body>
+</html>
