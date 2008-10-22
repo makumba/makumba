@@ -464,7 +464,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                 if (resources != null) {
                     for (Object object : resources) {
-                        String rsc = (request).getContextPath() + "/" + Configuration.getMakumbaResourcesLocation()
+                        String rsc = request.getContextPath() + Configuration.getMakumbaResourcesLocation() + "/"
                                 + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
                         sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
                     }
