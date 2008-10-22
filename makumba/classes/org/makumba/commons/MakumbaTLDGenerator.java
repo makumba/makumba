@@ -93,7 +93,7 @@ public class MakumbaTLDGenerator {
         // this would be easily done by defining an array of tags that should be in each of them, iterate over all the tags in the doc
         // and take only the right ones
         // and then write this with the right URL
-        
+
     }
 
 }
