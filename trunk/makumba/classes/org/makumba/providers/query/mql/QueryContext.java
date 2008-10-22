@@ -181,14 +181,19 @@ public class QueryContext {
             return parent.join(label, field, labelf, joinType, location);
 
         try {
-            foreign = fi.getForeignTable();
-        } catch (Exception e) {
-        }
-        try {
             sub = fi.getSubtable();
         } catch (Exception e) {
         }
 
+        try {
+            if (fi.getType().equals("ptr")) {
+                foreign = fi.getForeignTable();
+            } else if (fi.getType().equals("ptrOne")) {
+                foreign = sub;
+            }
+        } catch (Exception e) {
+        }
+        
         String label2 = label;
         if (labelf != null)
             label2 = labelf;
