@@ -355,7 +355,7 @@
 	<mkdir dir="work/makumba.distrib" />
 	<delete dir="work/makumba.distrib/makumba/" />
 	<svn>
-		<copy message="Creating new tag ${tag}" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/" destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
+		<copy overwrite="true" message="Creating new tag ${tag}" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/" destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
 		<export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
 	</svn>
 	<mkdir dir="${jar.place}/lib" />
