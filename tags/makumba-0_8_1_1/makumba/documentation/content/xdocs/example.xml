@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE
+    file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file
+    to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+    governing permissions and limitations under the License.
+  -->
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-makumba.dtd">
+<document>
+  <header>
+    <title>This is in the title tag</title>
+  </header>
+  <body>
+    <p>
+      Some generic text in a generic paragraph within the body tag.
+      Some generic text in a generic paragraph within the body tag.
+      Some generic text in a generic paragraph within the body tag, and of course we need to 
+      <a href="#HQL">link</a> from time to time to other places.
+    </p>
+    <section id="MQL">
+      <title>The title of a section</title>
+      
+      <fixme author="Jasper">I want to say that this doesn't need to be fixed, it's ok!</fixme>
+      <p>
+        Inside a section, we can type a lot of bullshit about the <em class="future">future</em> or about <em class="old">
+        things</em> that are just <em>emphasized</em></p>
+        <ul>
+          <li>You can make a list of items</li>
+          <li>or 2 items</li>
+          <li>
+            and you can even put
+            <a href="#">links</a>
+            here!
+          </li>
+          <li>
+            Or talk about the <em class="future">future</em> as well
+          </li>
+        </ul>
+    </section>
+    <section id="OQL">
+      <title>Section number 2! Full of notes</title>
+      <p>
+      What I didn't mention yet is how you can insert <code>code snippets</code> into text.
+      </p>
+      <note class="future" label="This is a future note">
+		Notes are ways to frame your information. This is one about future feats.
+      	<ul>
+      		<li>you can</li>
+      		<li class="future">also</li>
+      		<li>make lists here</li>
+    	</ul>  
+      </note>
+      
+      <note class="old" label="This is a old note">
+		Also old notes exist with all nice features stated above.  
+      </note>      
+      <note label="This is a regular note">
+        Regulare notes are plain boring. 
+        Regulare notes are plain boring. 
+        Regulare notes are plain boring. 
+        Regulare notes are plain boring. 
+        Regulare notes are plain boring. 
+        Regulare notes are plain boring. 
+      </note>
+
+      <source>
+&lt;mak:rickroll&gt;
+	A tag that needs to be implemented
+&lt;/mak:rickroll&gt;
+&lt;mak:why&gt;
+	Because we don't have easter eggs!!!
+&lt;/mak:why&gt;
+      </source>
+    </section>
+  </body>
+</document>
