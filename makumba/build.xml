@@ -196,7 +196,7 @@
 		<mkdir dir="${jar.place}/lib" />
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, org/**/*.class, *MakumbaDefaults*.properties,org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt"/>
+			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, org/**/*.class, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt"/>
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt"/>
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
@@ -527,7 +527,7 @@
 		<replacevalue>
 			<![CDATA[///////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2007  http://www.makumba.org
+//  Copyright (C) 2000-2008  http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
