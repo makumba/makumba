@@ -16,6 +16,11 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.1; 23 Oct 2008
+cristi/rudi: fixed a bug with LEFT JOIN and ptrOne
+rudi: several fixes on changed paths for developer tools
+manu: link to start file relation crawling from source code viewers
+
 0.8.1.0; 5 Oct 2008
 cristi: support for automatic left join for SELECT or WHERE expressions that contain nullable pointers.
 cristi: we don't transform JSP orderby and groupby expressions in select expressions any longer, because the ComposedQuery code for that is very limited and does not allow for complex expressions, subqueries, etc. pages seem to work without it anyway
