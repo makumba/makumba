@@ -350,35 +350,48 @@
 
 </target>
 
-
 <target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
-	<mkdir dir="work/makumba.distrib" />
-	<delete dir="work/makumba.distrib/makumba/" />
-	<svn>
-		<copy overwrite="true" message="Creating new tag ${tag}" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/" destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
-		<export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
-	</svn>
-	<mkdir dir="${jar.place}/lib" />
-
-	<!-- make the source tarball: -->
-	<zip zipfile="lib/${tag}-src.zip">
-		<fileset dir="work/makumba.distrib/">
-			<include name="makumba/**" />
-		</fileset>
-	</zip>
-
-	<!-- make the jar: -->
-	<java classname="org.apache.tools.ant.Main" fork="true" dir="work/makumba.distrib/makumba/" taskname="buildingJar">
-		<classpath>
-			<pathelement path="${project.class.path}" />
-			<pathelement path="${java.class.path}" />
-		</classpath>
-		<sysproperty key="jar.place" path="${jar.place}" />
-		<arg value="jar" />
-	</java>
-	<delete dir="work/makumba.distrib" />
-	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
+  <antcall target="makeTag" />
+  <antcall target="checkoutTag" />
 </target>
+
+
+<target name="makeTag" if="tag" description="makes a new tag from HEAD">
+  <svn>
+    <copy overwrite="true" message="Creating new tag ${tag}" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/" destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
+  </svn>
+</target>
+
+<target name="checkoutJar" if="tag" description="Checks out a tag and makes the JAR and the source zip">
+  <mkdir dir="work/makumba.distrib" />
+  <delete dir="work/makumba.distrib/makumba/" />
+
+  <svn>
+    <export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}" destPath="work/makumba.distrib/" />
+  </svn>
+
+  <mkdir dir="${jar.place}/lib" />
+
+  <!-- make the source tarball: -->
+  <zip zipfile="lib/${tag}-src.zip">
+    <fileset dir="work/makumba.distrib/">
+      <include name="makumba/**" />
+    </fileset>
+  </zip>
+
+  <!-- make the jar: -->
+  <java classname="org.apache.tools.ant.Main" fork="true" dir="work/makumba.distrib/makumba/" taskname="buildingJar">
+    <classpath>
+      <pathelement path="${project.class.path}" />
+      <pathelement path="${java.class.path}" />
+    </classpath>
+    <sysproperty key="jar.place" path="${jar.place}" />
+    <arg value="jar" />
+  </java>
+  <delete dir="work/makumba.distrib" />
+  <copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
+</target>
+
 
 <target name="uploadJar" depends="compile, generateTLDs" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version">
 	<mkdir dir="work/makumba.distrib" />
