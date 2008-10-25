@@ -8,7 +8,7 @@ package org.makumba.commons;
  * @version $Id: GraphTS.java,v 1.1 23.10.2007 16:34:34 Manuel Exp $
  */
 public class GraphTS {
-    private final int MAX_VERTS = 20;
+    private final int MAX_VERTS = 40;
 
     private Vertex vertexList[]; // list of vertices
 
