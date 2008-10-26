@@ -386,6 +386,18 @@
     <sysproperty key="jar.place" path="${jar.place}" />
     <arg value="jar" />
   </java>
+  
+  <!-- make the demo archive: -->
+  
+  <!-- first copy the new makumba.jar (just to be sure): -->
+  <copy file="${jar.place}/lib/makumba.jar" tofile="work/makumba.distrib/mak-demo/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />  
+  
+  <zip zipfile="lib/${tag}-demo.zip">
+    <fileset dir="work/makumba.distrib/">
+      <include name="mak-demo/**" />
+    </fileset>
+  </zip>
+  
   <delete dir="work/makumba.distrib" />
   <copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
 </target>
@@ -400,7 +412,7 @@
 	<antcall target="uploadMadeJar" />
 </target>
 
-<target name="uploadMadeJar" description="uplads a jar and a src tarball of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version">
+<target name="uploadMadeJar" description="uplads a jar, a src tarball and the demo application of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version">
 
   <antcall target="ftpMadeJar"/>
   <antcall target="scpMadeJar"/>
@@ -416,6 +428,7 @@
     <fileset dir="lib/">
       <include name="${tag}.jar" />
       <include name="${tag}-src.zip" />
+      <include name="${tag}-demo.zip" />
     </fileset>
   </ftp>
 </target>
@@ -425,6 +438,7 @@
       <fileset dir="lib/">
           <include name="${tag}.jar" />
           <include name="${tag}-src.zip" />
+          <include name="${tag}-demo.zip" />
       </fileset>
   </scp>
 </target>
