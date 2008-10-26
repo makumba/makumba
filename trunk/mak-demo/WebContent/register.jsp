@@ -21,6 +21,10 @@
    <td class="v_head"><label for="email"><span class="accessKey">E</span>-mail</label></td>
    <td><mak:input field="email" styleId="email" accessKey="e" /></td>
    </tr>
+   <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
+   <td class="v_head"><label for="isAdmin"><span class="accessKey">A</span>dmin rights</label></td>
+   <td><mak:input field="isAdmin" styleId="isAdmin" accessKey="a" /></td>
+   </tr>
   <%-- Makumba Generator - END OF NORMAL FIELDS --%>
    <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
    <td colspan="2">  <input type="submit" value="Add" accessKey="A">  <input type="reset" accessKey="R">  <input type="reset" value="Cancel" accessKey="C" onClick="javascript:back();">  </td>

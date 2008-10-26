@@ -26,11 +26,9 @@
 <div id='right_menu'>
 	<h3>Menu</h3>
 	<ul>
-		<li><a href='#'>Homepage</a></li>
+		<li><a href='${pageContext.request.contextPath}/welcome.jsp'>Homepage</a></li>
 		<li><a href='#'>Previous posts</a></li>
-		<li><a href='#'>Oujee</a></li>
 		<li><a href='#'>Sitemap</a></li>
-		<li><a href='#'>Oujee</a></li>
 	</ul>
 	<h3>Site admin</h3>
 	<% if(request.getRemoteUser() == null) { %>
