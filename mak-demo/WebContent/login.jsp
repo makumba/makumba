@@ -10,7 +10,7 @@
 	    onblur="if(this.value=='') this.value='username';" onfocus="if(this.value=='username') this.value='';" />
 	<input type='password' id='pass' class='text' name='j_password' value='password'
 	    onblur="if(this.value=='') this.value='password';" onfocus="if(this.value=='password') this.value='';" />
-	<input type='submit' class='submit' value='LOGIN SISSE' />
+	<input type='submit' class='submit' value='Login' />
 </form>
 
 <jsp:include page="/layout/footer.jsp" flush="false"/>

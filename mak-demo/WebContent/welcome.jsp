@@ -3,7 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <jsp:include page="/layout/header.jsp?pageTitle=Welcome+page" flush="false"/>
 
-<mak:rickroll/>
+<p>Welcome to the Makumba demo blog!</p>
+<p>You can <a href="register.jsp">register a new user</a> with admin rights in order to post new blog entries.</p>
+<br>
 
 <mak:list from="blog.Post p" orderBy="p.TS_create desc" offset="$offset" limit="$limit" defaultLimit="10">
 	<div class='blogpost'>
