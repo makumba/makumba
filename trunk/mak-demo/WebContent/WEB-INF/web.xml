@@ -9,23 +9,23 @@
    <filter>
       <filter-name>Security Filter</filter-name>
       <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
+      <!-- Configuration file location (this is the default value) -->
       <init-param>
          <param-name>config</param-name>
          <param-value>/WEB-INF/securityfilter-config.xml</param-value>
-         <description>Configuration file location (this is the default value)</description>
       </init-param>
+      <!-- Validate config file if set to true -->
       <init-param>
          <param-name>validate</param-name>
          <param-value>true</param-value>
-         <description>Validate config file if set to true</description>
       </init-param>
+      <!-- 
+      As an example a login form can define "logMeIn" as it action in place of the standard
+      "j_security_check" which is a special flag user by app servers for container managed security.
+      -->
       <init-param>
          <param-name>loginSubmitPattern</param-name>
          <param-value>/logMeIn</param-value>
-         <description>
-            As an example a login form can define "logMeIn" as it action in place of the standard
-            "j_security_check" which is a special flag user by app servers for container managed security.
-         </description>
       </init-param>
    </filter>
  <!-- map all requests to the SecurityFilter, control what it does with configuration settings -->
