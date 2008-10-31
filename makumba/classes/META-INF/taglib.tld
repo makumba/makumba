@@ -2751,9 +2751,9 @@
       <name>onMouseOut</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
+      
+      
     </attribute>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
 
     <attribute>
       <name>onMouseOver</name>
