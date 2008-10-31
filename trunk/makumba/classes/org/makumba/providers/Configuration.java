@@ -47,6 +47,8 @@ public class Configuration implements Serializable {
 
     public static final String MAKUMBA_CONF = "Makumba.conf";
 
+    private static final String MAKUMBA_CONF_DEFAULT = MAKUMBA_CONF + ".default";
+
     public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
 
     private static String defaultClientSideValidation = "live";
@@ -56,8 +58,6 @@ public class Configuration implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
-
-    private String defaultTransactionProvider = "org.makumba.db.makumba.MakumbaTransactionProvider";
 
     // calendar editor
     private static final String KEY_CALENDAR_EDITOR = "calendarEditor";
@@ -93,7 +93,7 @@ public class Configuration implements Serializable {
 
     // makumba servlets
     public static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
-    
+
     public static final String KEY_MAKUMBA_UNIQUENESS_VALIDATOR = "makumbaUniquenessValidator";
 
     public static final String KEY_MAKUMBA_RESOURCES = "makumbaResources";
@@ -104,7 +104,7 @@ public class Configuration implements Serializable {
             { KEY_MDD_VIEWER, "Mdd viewer" }, { KEY_JAVA_VIEWER, "Business logics viewer" },
             { KEY_DATA_LISTER, "Data browser" }, { KEY_DATA_QUERY_TOOL, "Data query" },
             { KEY_OBJECT_ID_CONVERTER, "Pointer value converter" }, { KEY_REFERENCE_CHECKER, "Reference checker" },
-            { KEY_RELATION_CRAWLER, "Relation crawler" }});
+            { KEY_RELATION_CRAWLER, "Relation crawler" } });
 
     public static Map<String, String> getAllGenericDeveloperToolsMap() {
         return allGenericDeveloperToolsMap;
@@ -116,16 +116,14 @@ public class Configuration implements Serializable {
     static {
         try {
             // the internal default configuration
-            URL path = org.makumba.commons.ClassResource.get("Makumba.conf.default");
-            Logger.getLogger("org.makumba.config").info(
-                "Loading internal default configuration from " + path.getPath());
+            URL path = org.makumba.commons.ClassResource.get(MAKUMBA_CONF_DEFAULT);
+            Logger.getLogger("org.makumba.config").info("Loading internal default configuration from " + path);
             defaultConfig = new MakumbaINIFileReader(path);
-            
+
             // application-specific configuration
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
-                Logger.getLogger("org.makumba.config").info(
-                    "Loading application configuration from " + url.getPath());
+                Logger.getLogger("org.makumba.config").info("Loading application configuration from " + url);
                 applicationConfig = new MakumbaINIFileReader(url);
             } else { // if we did not find any configuration, we use the default one
                 Logger.getLogger("org.makumba.config").severe(
@@ -144,26 +142,14 @@ public class Configuration implements Serializable {
         }
     }
 
-    public Configuration() {
-        defaultTransactionProvider = applicationConfig.getStringProperty("controllerConfig",
-            KEY_DEFAULT_TRANSACTION_PROVIDER, defaultConfig);
-    }
-
-    private String getDefaultDataDefinitionProviderClass() {
-        return defaultDataDefinitionProvider;
-    }
-
-    private String dataDefinitionProvider = null;
-
     /**
      * Gives the data definition provider implementation to use
      * 
      * @return a String containing the class name of the data definition provider implementation
      */
-    public String getDataDefinitionProviderClass() {
-
+    public static String getDataDefinitionProviderClass() {
         // FIXME this should lookup a configuration file and return whatever is specified there
-        return (dataDefinitionProvider == null) ? getDefaultDataDefinitionProviderClass() : dataDefinitionProvider;
+        return defaultDataDefinitionProvider;
     }
 
     /**
@@ -171,16 +157,8 @@ public class Configuration implements Serializable {
      * 
      * @return a String containing the class name of the transaction provider implementation
      */
-    public String getDefaultTransactionProviderClass() {
-        return defaultTransactionProvider;
-    }
-
-    public void setDataDefinitionProvider(String ddp) {
-        this.dataDefinitionProvider = ddp;
-    }
-
-    public void setDefaultTransactionProvider(String defaultTransactionProvider) {
-        this.defaultTransactionProvider = defaultTransactionProvider;
+    public static String getDefaultTransactionProviderClass() {
+        return applicationConfig.getStringProperty("controllerConfig", KEY_DEFAULT_TRANSACTION_PROVIDER, defaultConfig);
     }
 
     public static String getClientSideValidationDefault() {
@@ -252,11 +230,11 @@ public class Configuration implements Serializable {
     public static String getMakumbaValueEditorLocation() {
         return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_VALUE_EDITOR);
     }
-    
+
     public static String getMakumbaRelationCrawlerLocation() {
         return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_RELATION_CRAWLER);
     }
-    
+
     public static String getMakumbaUniqueLocation() {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);

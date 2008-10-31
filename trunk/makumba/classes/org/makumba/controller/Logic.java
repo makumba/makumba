@@ -63,9 +63,6 @@ import org.makumba.providers.TransactionProviderInterface;
 public class Logic {
     static HashMap<String, Object> nameToObject = new HashMap<String, Object>();
 
-    /** for the default transaction provider * */
-    static Configuration configuration = new Configuration();
-
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     static public String getSearchMessage(String cls) {
@@ -704,7 +701,7 @@ public class Logic {
             }
 
             if (transactionProviderClass == null) {
-                transactionProviderClass = configuration.getDefaultTransactionProviderClass();
+                transactionProviderClass = Configuration.getDefaultTransactionProviderClass();
             }
 
             return (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
