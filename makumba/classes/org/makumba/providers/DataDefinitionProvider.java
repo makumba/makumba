@@ -26,17 +26,10 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
         return SingletonHolder.singleton;
     }
 
-    /**
-     * Default constructor, using the default Configuration.
-     */
-    private DataDefinitionProvider() {
-        this(new Configuration());
-    }
-
-    public DataDefinitionProvider(Configuration c) {
+    public DataDefinitionProvider() {
         try {
             this.dataDefinitionProviderImplementation = (DataDefinitionProviderInterface) Class.forName(
-                c.getDataDefinitionProviderClass()).newInstance();
+                Configuration.getDataDefinitionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
