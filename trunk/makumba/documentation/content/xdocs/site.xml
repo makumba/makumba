@@ -45,15 +45,12 @@ See http://forrest.apache.org/docs/linking.html for more info
   <installation label="Installation" href="/installation/index.html" description="Installing and configuring Makumba" tab="installation"/>
   
   <documentation label="Documentation" href="/doc/index.html" description="Makuma reference documentation" tab="documentation">
-    <overview label="Overview" href="/doc/overview.html" description="Overview of Makumba">
-      <architecture label="Makumba architecture" description="Makumba architecture"/>
-    </overview>
     <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
-    <valdef label="Validation definitions" href="/doc/valdef.html" description="Makumba Validation Definitions"/>
+    <valdef label="Validation rules" href="/doc/valrules.html" description="Makumba Validation Rules"/>
     <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
     <queryfrag label="Query fragmnets" href="/doc/queryfrag.html" description="Query fragments"/>
     <taglib label="JSP tag library" href="/doc/taglib/" description="Makumba tag library">
-      <list label="mak:list" href="/doc/taglib/list.html" description="mak:list tag" />
+      <list label="mak:list" href="/doc/taglib/maklist.html" description="mak:list tag" />
     </taglib>
     <bl label="Business Logics" href="/doc/BL/bl.html" description="Makumba Business Logics">
  		<login label="Attributes" href="/doc/BL/bl.html" description="Attributes"/>
@@ -104,6 +101,9 @@ See http://forrest.apache.org/docs/linking.html for more info
       <bug1052 href="1052"/>
       <bug1052 href="1052"/>
     </bug>
+    
+    <javaregexp href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html" />
+    <javaregexptutorial href="http://java.sun.com/docs/books/tutorial/essential/regex/"/>
     
   </external-refs>
 </site>
