@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:list tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">id</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Tag's identifier</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">countVar</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">The java.lang.Integer variable that will contain the number of the current iteration.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">maxCountVar</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">The java.lang.Integer variable that will contain the total number of iterations.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">separator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Character string as separator between two list elements. It is not included before the first or after the last</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">from</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">variableFrom</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">supplementary, variable OQL FROM section.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">where</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">orderBy</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">OQL ORDER BY  section</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">groupBy</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">OQL GROUP BY  section</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">db</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">offset</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">the offset of the result to show (0 for starting from the first result)</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">limit</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">the maximum numbers of results to show (-1 for all results)</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">defaultLimit</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">the default value for limit, if the $attribute in limit="$attribute" is not present.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">authorize</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">editable</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">logicClass</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">editPage</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
+    
+        <code/>
+  
+      </p>
+    </section>  </body></document>
