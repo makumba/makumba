@@ -14,6 +14,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.commons.TLD2Forest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/Users/manu/workspace/makumba/classes/META-INF/taglib.tld /Users/manu/workspace/makumba/build"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="${project_loc}/classes/META-INF/taglib-documented.xml ${project_loc}/documentation/tag-examples ${project_loc}/documentation/content/xdocs/doc/taglib 2"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba"/>
 </launchConfiguration>
