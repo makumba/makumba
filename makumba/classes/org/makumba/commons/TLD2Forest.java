@@ -1,8 +1,6 @@
 package org.makumba.commons;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
@@ -18,14 +16,17 @@ import org.dom4j.io.XMLWriter;
 import org.dom4j.tree.DefaultElement;
 
 /**
- * This class takes a TLD XML file and transforms it in a bunch of XML files understandable by Apache Forest.<br>
- * Created a separate XML with described tags
- * TODO make this an actual Forest plugin<br>
+ * This class takes a TLD XML file and transforms it in a bunch of XML files understandable by Apache Forest, in two steps.<br>
+ * <ul>
+ * <li>Step 1 takes care of generating the tag documentation files and separate example XML files in which examples can be provided</li>
+ * <li>Step 2 merges the generated tag files and the corresponding example files</li>
+ * </ul>
+ * This mechanism allows for continuous documentation based on the TLD file
+ * 
  * TODO finish the XML generation according to the template file<br>
  * 
  * tag.XML - [path to the output directory of XMLs]\<b>tags</b>\tag.xml <br>
  * tagExample.XML - [path to the output directory of XMLs]\<b>examples</b>\tagExample.xml <br>
- * tagWithExample.XML - [path to the output directory of XMLs]\tagWithExample.xml <br>
  * 
  * @author Manuel Gay
  * @author Anet Aselmaa (12 Oct 2008)
@@ -33,7 +34,7 @@ import org.dom4j.tree.DefaultElement;
  */
 public class TLD2Forest {
     final static String EXAMPLES_FOLDER = "examples";
-    final static String TAGS_FOLDER = "tags";
+    final static String TAGS_FOLDER = "taglib";
     final static int CREATE = 1;//action is step 1-creating all the needed files (separate tag.xml & tagExample.xml)
     final static int UPDATE = 2;//action is step 2 - merging all tag.xml and tagExample.xml files
     final static String EXAMPLE_SECTION_ID = "example";
@@ -41,13 +42,14 @@ public class TLD2Forest {
     public static void main(String[] args) {
 
         if (args.length < 2) {
-            System.err.println("Arguments needed: [path to the TLD file] [path to the output directory of XMLs]  (absolute paths");
+            System.err.println("Arguments needed: [path to the TLD file] [path to the output directory of example XMLs] [path to the output directory of taglib XMLs for Forrest]  (absolute paths)");
         }
         String tldFilePath = args[0]; //currently used 'makumba\classes\META-INF\taglib-documented.xml' 
-        String outputDirectory = args[1];
+        String exampleDirectory = args[1];
+        String taglibDirectory = args[2];
         int action = CREATE;//default
-        if(args.length==3){
-            String s = args[2];
+        if(args.length==4){
+            String s = args[3];
             try {
                 int parsedAction = Integer.parseInt(s);
                 if(!s.equals("create") && !s.equals("update") && 
@@ -72,13 +74,13 @@ public class TLD2Forest {
         switch (action) {
             case CREATE://it is step 1, creating separate 2 files
                 System.out.println("doing STEP 1");
-                generateAllTagFiles(tldFilePath, outputDirectory);
-                generateAllTagExampleFiles(tldFilePath, outputDirectory);
+                generateAllTagFiles(tldFilePath, taglibDirectory);
+                generateAllTagExampleFiles(tldFilePath, exampleDirectory);
                 break;
             case UPDATE:
                 System.out.println("doing STEP 2");
 //                generateAllTagWithExampleFiles(tldFilePath, outputDirectory);
-                generateAllTagsWithExampleFile2(tldFilePath, outputDirectory);
+                generateAllTagsWithExampleFile2(tldFilePath, taglibDirectory, exampleDirectory);
                 break;
             default:
                 break;
@@ -88,9 +90,9 @@ public class TLD2Forest {
     /**
      * 
      * @param tldFileDirectory
-     * @param outputDirectory
+     * @param taglibDirectory
      */
-    public static void generateAllTagFiles(String tldFileDirectory, String outputDirectory){
+    public static void generateAllTagFiles(String tldFileDirectory, String taglibDirectory){
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
@@ -104,16 +106,16 @@ public class TLD2Forest {
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
             if (e.getName().equals("tag")) {
-                generateTagFile(outputDirectory, e);
+                generateTagFile(taglibDirectory, e);
             }
         }
     }
     /**
      * 
      * @param tldFileDirectory
-     * @param outputDirectory
+     * @param exampleDirectory
      */
-    public static void generateAllTagExampleFiles(String tldFileDirectory, String outputDirectory){
+    public static void generateAllTagExampleFiles(String tldFileDirectory, String exampleDirectory){
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
@@ -127,7 +129,7 @@ public class TLD2Forest {
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
             if (e.getName().equals("tag")) {
-                generateTagExampleFile(outputDirectory, e.elementText("name"));
+                generateTagExampleFile(exampleDirectory, e.elementText("name"));
             }
         }
     }
@@ -135,13 +137,13 @@ public class TLD2Forest {
     
     /**
      * 
-     * @param outputDirectory
+     * @param taglibDirectory
      * @param tagName
      * @return
      */
-    public static String generateTagFile(String outputDirectory, Element tag){
+    public static String generateTagFile(String taglibDirectory, Element tag){
         String tagName = tag.elementText("name");
-        String tagFilePath = outputDirectory + File.separator + TAGS_FOLDER + File.separator + "mak" + tagName + ".xml";
+        String tagFilePath = taglibDirectory + File.separator + "mak" + tagName + ".xml";
         System.out.println("TLD2Forest.generateTagFile(): file name -"+tagFilePath);
         // read the TLD file entered as first argument
     
@@ -224,14 +226,6 @@ public class TLD2Forest {
         // now we write our new guy to the disk
         System.out.println("Writing XML for tag " + tagName + " at path " + tagFilePath);
         try {
-            String tagsDir = outputDirectory+ File.separator+TAGS_FOLDER;
-            if(!(new File(tagsDir)).exists()){
-                boolean success = (new File(tagsDir)).mkdir();
-                if (success) {
-                    System.out.println("Directory: " + tagsDir + " created");
-                } 
-            }
-
             XMLWriter output = new XMLWriter(new FileWriter(new File(tagFilePath)), new OutputFormat("  ", true));
             output.write(tagXML);
             output.close();
@@ -245,15 +239,15 @@ public class TLD2Forest {
      * Method for checking if example file exists if not an example.xml with empty structure 
      * is generated. If there already exists corresponding example file then just the full path 
      * file name is returned.
-     * @param outputDirectory - name of the output directory where to put the generated example file
+     * @param exampleDirectory - name of the output directory where to put the generated example file
      * @param tagName - tag for which the example file is generated
      * @return the name of the example file
      */
-    public static String generateTagExampleFile(String outputDirectory, String tagName){
-        String exampleFilePath = outputDirectory+ File.separator+EXAMPLES_FOLDER+File.separator + "mak" + tagName +"Example"+ ".xml";
-        //TODO check if file already exists
+    public static String generateTagExampleFile(String exampleDirectory, String tagName){
+        String exampleFilePath = exampleDirectory+ File.separator + "mak" + tagName +"Example"+ ".xml";
+        
         File f = new File(exampleFilePath);
-        if(!f.exists()){
+        if(!f.exists()) {
             // empty generated tagExample.xml file
             Document exampleXML = DocumentHelper.createDocument();
             Element exampleSection = exampleXML.addElement("section");
@@ -266,11 +260,10 @@ public class TLD2Forest {
             Element exampleCode = exampleCodeParagraph.addElement("code");
             exampleCode.setText("");
             try {
-                String exampleDir = outputDirectory+ File.separator+EXAMPLES_FOLDER;
-                if(!(new File(exampleDir)).exists()){
-                    boolean success = (new File(exampleDir)).mkdir();
+                if(!(new File(exampleDirectory)).exists()){
+                    boolean success = (new File(exampleDirectory)).mkdir();
                     if (success) {
-                        System.out.println("Directory: " + exampleDir + " created");
+                        System.out.println("Directory: " + exampleDirectory + " created");
                     } 
                 }
                 XMLWriter output = new XMLWriter(new FileWriter(new File(exampleFilePath)), new OutputFormat("  ", true));
@@ -288,7 +281,7 @@ public class TLD2Forest {
      * Step 2 method that merges separate tag.xml and tagExample.xml file
      * @return
      */
-    public static String generateAllTagsWithExampleFile2(String tldFilePath, String outputDirectory){
+    public static String generateAllTagsWithExampleFile2(String tldFilePath, String taglibDirectory, String exampleDirectory){
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
@@ -302,7 +295,7 @@ public class TLD2Forest {
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
             if (e.getName().equals("tag")) {
-                generateTagWithExampleFile(outputDirectory, e);
+                generateTagWithExampleFile(taglibDirectory, exampleDirectory, e);
             }
         }
         return null;
@@ -312,20 +305,15 @@ public class TLD2Forest {
      * Step 2 method that merges separate tag.xml and tagExample.xml file
      * @return
      */
-    public static void generateTagWithExampleFile(String outputDirectory, Element tag){
+    public static void generateTagWithExampleFile(String tagsDir, String exampleDir, Element tag){
         String tagName = tag.elementText("name");
         SAXReader saxReader = new SAXReader();
 
-        String tagsDir = outputDirectory + File.separator + TAGS_FOLDER;
         String tagFileName = "mak" + tagName + ".xml";
         String tagFilePath = tagsDir + File.separator + tagFileName;
         
-        String exampleDir = outputDirectory + File.separator + EXAMPLES_FOLDER;
         String exampleFileName = "mak" + tagName +"Example"+ ".xml";
         String exampleFilePath = exampleDir + File.separator + exampleFileName;
-        
-        //final file has the same name as a tag.xml without the example part
-        String tagWithExampleFilePath = outputDirectory+File.separator+tagFileName; 
         
         //TODO check if exists tagExample.xml
         File exampleFile = new File(exampleFilePath);
@@ -347,13 +335,13 @@ public class TLD2Forest {
                     for (Iterator iterator = l.iterator(); iterator.hasNext();) {
                         Element el = (Element) iterator.next();
                         if(EXAMPLE_SECTION_ID.equals(el.attributeValue("id"))){ 
-                            System.out.println("writing file "+tagWithExampleFilePath);
+                            System.out.println("writing file "+tagFilePath);
                             tagExampleSection = el;
                             Element parent = tagExampleSection.getParent();
                             parent.remove(tagExampleSection);
                             //adding the needed part from the exampleXML
                             parent.add(exampleSection);
-                            XMLWriter writer = new XMLWriter(new FileWriter(new File(tagWithExampleFilePath)), new OutputFormat("  ", true));
+                            XMLWriter writer = new XMLWriter(new FileWriter(new File(tagFilePath)), new OutputFormat("  ", true));
                             writer.write(tagXML);
                             writer.close();
                         }
