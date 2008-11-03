@@ -42,7 +42,7 @@ public class RelationCrawlerTool extends HttpServlet {
             webappRoot = webappRoot.substring(0, webappRoot.length() - 1);
 
         // initialise crawler
-        RelationCrawler rc = RelationCrawler.getRelationCrawler(webappRoot, TransactionProvider.getInstance().getDefaultDataSourceName(), false, "file://", req.getContextPath().startsWith("/") ? req.getContextPath() : "root", false);
+        RelationCrawler rc = RelationCrawler.getRelationCrawler(webappRoot, RelationCrawler.getDefaultTargetDatabase(), false, "file://", req.getContextPath().startsWith("/") ? req.getContextPath() : "root", false);
         
         // crawl
         Date beginDate = new Date();
