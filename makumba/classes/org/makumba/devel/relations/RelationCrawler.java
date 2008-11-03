@@ -73,6 +73,8 @@ public class RelationCrawler {
 
     private TransactionProvider tp = TransactionProvider.getInstance();
 
+    private static final String DATABASE_NAME_KEY = "org.makumba.devel.relations.databaseName";
+
     private static Map<String, RelationCrawler> relationCrawlers = new HashMap<String, RelationCrawler>();
 
     /**
@@ -81,7 +83,7 @@ public class RelationCrawler {
      * @param webappRoot
      *            the path to the root of the webapp that should be crawled
      * @param targetDatabase
-     *            the makumba name of the database the relations should be written to
+     *            the makumba name of the database the relations should be written to.
      * @param forcetarget
      *            indicates whether the target database should be forced: if set to true, even if relations were
      *            previously written to another database, this will force writing them to the indicated database
@@ -105,6 +107,13 @@ public class RelationCrawler {
             relationCrawlers.put(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot, instance);
         }
         return instance;
+    }
+    
+    /**
+     * Gets the default target database, can be set using the org.makumba.devel.relations.databaseName JVM property
+     */
+    public static String getDefaultTargetDatabase() {
+        return System.getProperty(RelationCrawler.DATABASE_NAME_KEY) == null ? TransactionProvider.getInstance().getDefaultDataSourceName() : System.getProperty(RelationCrawler.DATABASE_NAME_KEY);
     }
 
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix,

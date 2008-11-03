@@ -293,7 +293,7 @@ public abstract class LineViewer implements SourceViewer {
         if (webAppRoot.endsWith("/")) {
             webAppRoot = webAppRoot.substring(0, webAppRoot.length() - 1);
         }
-        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, TransactionProvider.getInstance().getDefaultDataSourceName(), false, "file://", "", false);
+        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, RelationCrawler.getDefaultTargetDatabase(), false, "file://", "", false);
         
         if (realPath!= null && realPath.startsWith(webAppRoot)) {
             String filePath = realPath.substring(webAppRoot.length());
