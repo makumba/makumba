@@ -245,7 +245,7 @@
     <div class="note internals">This is currently known internally as setcharEnum</div>
 
     <h4><a name="file">File</a></h4>
-    <p>A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:
+    <p>A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:</p>
     <ul>
       <li>content (<a href="#binary">binary</a>): the actual binary data of the file.</li>
       <li>name (<a href="#char">char</a>): the file name.</li>
@@ -256,7 +256,7 @@
       <li>imageHeight (<a href="#int">int</a>): (only for images) the image height.</li>
     </ul>
     <pre class="example">image= file    ; Picture attachment</pre>
-    All fields are automatically set by Makumba, all needed to do is to make a &lt;mak:input&gt; on the field name.</p>
+    <p>All fields are automatically set by Makumba, all needed to do is to make a &lt;mak:input&gt; on the field name.</p>
     <p>This type should be used in favour of the <a href="#binary">binary data type</a> when you don't want to store only the raw binary data, but
     also meta-data as in the fields above.</p>
 
@@ -309,7 +309,7 @@
     <p>The validation rule specifies what should be validated, and can be one of the following</p>
     <pre class="example">[range validation | string length | regular expression | comparison]</pre>
     
-    <h4 name="range">Number range rule</h4>
+    <h4><a name="range">Number range rule</a></h4>
     <p>The range definition rule applies for <code>Number</code> types, i.e. <i>int</i> and <i>real</i>. The
     [validation rule] is defined as:</p>
     <pre class="example">[fieldName]%range = [1..10]</pre>
@@ -320,8 +320,8 @@
     <p>To define that we need to be at least 5 year old, but without any upper limit:</p>
     <pre class="example">age%range = [5..?] : Age must be at least 5!</pre>
 
-    <h4 name="stringLength">String length rule</h4>
-    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <char>text</char>.
+    <h4><a name="stringLength">String length rule</a></h4>
+    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <code>text</code>.
     The [validation rule] is defined as:</p>
     <pre class="example">[fieldName]%length = [1..10]</pre>
     <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
@@ -329,9 +329,9 @@
     <p>To define that the CV needs to be at least 100 characters, define:</p>
     <pre class="example">cv%length = [100..?] : CV must be of decent length!</pre>
 
-    <h4 name="regexp">Regular expression rule</h4>
+    <h4><a name="regexp">Regular expression rule</a></h4>
     <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
-    but also for <char>text</char>. The [validation rule] is defined as:</p>
+    but also for <code>text</code>. The [validation rule] is defined as:</p>
     <pre class="example">[fieldName]%matches = <i>regular expression</i></pre>
     <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
       href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html">specification</a> and <a
@@ -339,7 +339,7 @@
     <p>To compare if a field contains a valid e-mail address, define:</p>
     <pre class="example">email%matches = .+@.+\.[a-z]+ : Email address is not valid!</pre>
 
-    <h4 name="comparison">Comparison rule</h4>
+    <h4><a name="comparison">Comparison rule</a></h4>
     <p>This rule allows to compare a field to a constant value or simple function calls.</p>
     <p>The following constants are currently available:</p>
     <table class="tagParamDef">
@@ -420,15 +420,15 @@
     </table>
 
     <p>To compare if someone is at least 15 years old, define the following validation rule:</p>
-    <pre class="example">minimumAge%compare = birthdate >= date($now,$now,$now - 15) : You have to be at least 15 years old!</pre>
+    <pre class="example">minimumAge%compare = birthdate &gt;= date($now,$now,$now - 15) : You have to be at least 15 years old!</pre>
 
     <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
     <pre class="example">nameNotAllLower%compare = lower(name) != name : Your name must not contain only lower-case letters!</pre>
 
     <p>Two fields can be compared in a similar way</p>
-    <pre class="example">graduationCheck%compare = birthdate < graduationDate : You cannot finish school before your birthdate!</pre>
+    <pre class="example">graduationCheck%compare = birthdate &lt; graduationDate : You cannot finish school before your birthdate!</pre>
 
-    <h4 name="multiFielUnique">Multi-field uniqueness definition</h4>
+    <h4><a name="multiFielUnique">Multi-field uniqueness definition</a></h4>
     <p>Similar to the <a href="#FieldAttributes"><i>unique</i> field attribute</a>, you can also define multi-field
     uniqueness contraints. These constraints can even span over several data definitions, if they are related via
     pointers.</p>
@@ -1379,7 +1379,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         </tr>
         <tr>
           <td><tt>annotation</tt></td>
-          <td>Indicates that validation whether errors should be shown in the form, or be displayed in the <code>&lt;mak:response/&gt;.</td>.
+          <td>Indicates that validation whether errors should be shown in the form, or be displayed in the <code>&lt;mak:response/&gt;</code>.</td>
           <td>Taken into account only if <code>reloadFormOnError</code> is not set to <code>false</code>.<br>
           Values are <code>none</code> (displayed in <code>&lt;mak:response/&gt;</code>), <code>before</code> (before the input), <code>after</code> (after the input) or <code>both</code> (displayed both before and after the input).
           Defaults to <code>none</code>.
@@ -1391,7 +1391,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         </tr>
         <tr>
           <td><tt>clientSideValidation</tt></td>
-          <td>Controls whether client side validation shall be used.</td></td>
+          <td>Controls whether client side validation shall be used.</td>
           <td>Rtexpr. Values are <code>false</code> (off), <code>true</code> (on submission) or <code>live</code> (while tpying).</td>
         </tr>
         <!--form specific:-->
@@ -1483,7 +1483,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         </tr>
         <tr>
           <td><code>data</code></td>
-          <td><code><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary<a></code></td>
+          <td><code><a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary</a></code></td>
           <td>The new record to create. It is read from the HTTP query string by interpreting the form.</td>
         </tr>
         <tr>
@@ -2120,8 +2120,8 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     <p>Example:</p>
     <pre class="example">&lt;mak:object from="best.Student s, s.languages l" where="s=$student AND l.lang.name=$langname"&gt;<br>  &lt;mak:delete object="l" action="studentView.jsp"&gt;<br>   Delete &lt;mak:value expr="l.lang.name"/&gt;<br>  &lt;/mak:delete&gt;<br>&lt;/mak:object&gt;<br></pre>
     <br>
-    <p><b>DEPRECATED:</b> The usage of <code>&lt;mak:deleteLink&gt;</code> is deprecated, and should be replaced by the equivalent:
-    <pre class="example">&lt;mak:delete widget="link"&gt;</pre> </p>
+    <p><b>DEPRECATED:</b> The usage of <code>&lt;mak:deleteLink&gt;</code> is deprecated, and should be replaced by the equivalent:</p>
+    <pre class="example">&lt;mak:delete widget="link"&gt;</pre>
     <table class="tagParamDef">
       <tbody>
         <tr>
@@ -2293,7 +2293,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         <tr>
           <td><tt>&lt;searchFormName&gt;QueryString</tt></td>
           <td>The query string containing the values for the form fields filled in in the search.<br />
-          Use this e.g. in as <pre class="example">&lt;a href="searchPage.jsp?${&lt;searchFormName&gt;QueryString}&sortBy=name"&gt;</pre> when you
+          Use this e.g. in as <pre class="example">&lt;a href="searchPage.jsp?${&lt;searchFormName&gt;QueryString}&amp;sortBy=name"&gt;</pre> when you
           want to provide sorting by a specific field.</td>
         </tr>
         <tr>
@@ -2345,7 +2345,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     <!-- ========================================================= --> 
     <!-- ==================== mak:searchField ==================== -->
     <h4><a name="searchField">&lt;mak:searchField/&gt;</a></h4>
-    <p>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the <a href="#input">&lt;mak:input/&gt</a> tag, and provides additionally the following attributes:</p>
+    <p>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the <a href="#input">&lt;mak:input/&gt;</a> tag, and provides additionally the following attributes:</p>
     <table class="tagParamDef">
       <tbody>
         <tr>
