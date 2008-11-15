@@ -120,6 +120,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
                 Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
+            writeDescr(w, "Reference Checker", "Check for broken references and show status of foreign key creation",
+                Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
+                request.getContextPath());
             w.println("</table>");
 
             w.println("<h4>Controller settings</h4>");
