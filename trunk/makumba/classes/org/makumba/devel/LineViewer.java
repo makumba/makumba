@@ -329,16 +329,23 @@ public abstract class LineViewer implements SourceViewer {
                     break;
                 }
                 Vector<RelationOrigin> occurrences = map.get(key);
-                RelationOrigin firstElement = occurrences.firstElement();
                 String path = getPath(key, fileType);
                 String display = getDisplay(key, fileType);
-                if (fileType.equals(TYPE_JSP)) { // only JSPs have line info
-                    writer.println("<a href=\"" + path + "#" + firstElement.getStartLine()
-                            + "\" style=\"font-size:smaller\">" + display + " #" + firstElement.getStartLine() + "</a>");
-                    for (int i = 1; i < occurrences.size(); i++) {
-                        RelationOrigin origin = occurrences.elementAt(i);
-                        writer.println("<a href=\"" + path + "#" + origin.getStartLine()
-                                + "\" style=\"font-size:smaller\">" + "#" + origin.getStartLine() + "</a>");
+                
+                if (occurrences.size() > 0) {
+                    RelationOrigin firstElement = occurrences.firstElement();
+                    if (fileType.equals(TYPE_JSP)) { // only JSPs have line info
+                        writer.println("<a href=\"" + path + "#" + firstElement.getStartLine()
+                                + "\" style=\"font-size:smaller\">" + display + " #" + firstElement.getStartLine()
+                                + "</a>");
+                        for (int i = 1; i < occurrences.size(); i++) {
+                            RelationOrigin origin = occurrences.elementAt(i);
+                            writer.println("<a href=\"" + path + "#" + origin.getStartLine()
+                                    + "\" style=\"font-size:smaller\">" + "#" + origin.getStartLine() + "</a>");
+                        }
+                    } else {
+                        writer.println("<a href=\"" + path + "\" style=\"font-size:smaller\">" + display + "</a> ("
+                                + occurrences.size() + "x)");
                     }
                 } else {
                     writer.println("<a href=\"" + path + "\" style=\"font-size:smaller\">" + display + "</a> ("
