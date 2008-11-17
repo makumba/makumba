@@ -16,6 +16,14 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.3; 17 Nov 2008
+rudi: making referenceChecker available again, was forgotten in new config
+
+0.8.1.2; 12 Nov 2008
+rudi: fixed build.xml for configuration
+rudi: correctly generating TLD 
+manu: fix with form-graph, increasing max of 20 forms
+
 0.8.1.1; 23 Oct 2008
 cristi/rudi: fixed a bug with LEFT JOIN and ptrOne
 rudi: several fixes on changed paths for developer tools
