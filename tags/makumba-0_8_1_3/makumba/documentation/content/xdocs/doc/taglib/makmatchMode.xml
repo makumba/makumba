@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:matchMode tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">id</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">type</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">matchModes</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">labelSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">elementSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
+    
+        <code/>
+  
+      </p>
+    </section>  </body></document>
