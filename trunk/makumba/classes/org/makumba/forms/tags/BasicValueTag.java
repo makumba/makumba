@@ -46,6 +46,7 @@ import org.makumba.providers.FormDataProvider;
  * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {
+    private static final long serialVersionUID = 1L;
 
     // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
     protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
@@ -92,23 +93,31 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         return expr == null || expr.trim().length() == 0 || expr.trim().equals("nil");
     }
 
+    boolean isValue() {
+        return isValue(expr);
+    }
+
     /**
-     * Indicates if the expression is a value
+     * Indicates if the given expression is a value
      * 
      * @return <code>true</code> if the expression doesn't start with '$' and is not null, <code>false</code>
      *         otherwise
      */
-    boolean isValue() {
-        return expr != null && !expr.startsWith("$") && !isNull();
+    protected boolean isValue(String exprexpression) {
+        return exprexpression != null && !exprexpression.startsWith("$") && !isNull();
     }
 
     /**
-     * Indicates if the expression is an attribute
+     * Indicates if the given expression is an attribute
      * 
      * @return <code>true</code> if the expression starts with '$', <code>false</code> otherwise
      */
-    boolean isAttribute() {
-        return expr != null && expr.startsWith("$");
+    protected boolean isAttribute() {
+        return isAttribute(expr);
+    }
+
+    boolean isAttribute(String expression) {
+        return expression != null && expression.startsWith("$");
     }
 
     /**
