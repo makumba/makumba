@@ -5745,3 +5745,4 @@ SELECT question in   SET($1) AS col1 FROM general.event.Event event, event.appli
 SELECT question in SeT($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
 SELECT question in	 SeT($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
 SELECT question in SeT		($1) AS col1 FROM general.event.Event event, event.applicationQuestions q, q.question question
+SELECT t as col1 FROM general.Team t where t.archiveStatus='Public' AND t.type=$groupType AND NOT (t IN SET ($_sessVec_MemberOf_GeneralTeam))
