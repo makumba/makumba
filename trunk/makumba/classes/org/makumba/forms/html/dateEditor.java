@@ -50,9 +50,9 @@ public class dateEditor extends FieldEditor {
         return SingletonHolder.singleton;
     }
 
-    static String[] _params = { "format", "calendarEditor", "calendarEditorLink" };
+    static String[] _params = { "default", "format", "calendarEditor", "calendarEditorLink" };
 
-    static String[][] _paramValues = { null, new String[] { "true", "false" }, null };
+    static String[][] _paramValues = { null, null, new String[] { "true", "false" }, null };
 
     @Override
     public String[] getAcceptedParams() {
@@ -204,8 +204,8 @@ public class dateEditor extends FieldEditor {
 
     /**
      * This method is used to get the date field in case of a form reload due to validation errors, and is used from
-     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.commons.formatters.jsptaglib.PageCache)}. It is basically
-     * i simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
+     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.commons.formatters.jsptaglib.PageCache)}. It is basically a
+     * simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
      */
     public static Object readFrom(String name, HttpParameters pr) {
         Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
