@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -297,8 +298,27 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
         }
 
-        if (val != null)
+        if (val != null) {
             val = type.checkValue(val);
+        }
+        
+        // if the value is null ==> check for a default value
+        // FIXME: this is a basic implementation, it can only discover attributes, does not value computation yet
+        // FIXME: also some of the code below is just repeating the one from above, could be optimised
+        String defaultExpr = (String) params.get("default");
+        if (val == null && defaultExpr != null && defaultExpr.toString().trim().length() > 0) {
+            if (isAttribute(defaultExpr)) {
+                val = PageAttributes.getAttributes(pageContext).getAttribute(defaultExpr.substring(1));
+            }
+            if (isValue(defaultExpr)) {
+                // FIXME: actually implement this!
+                throw new NotImplementedException(
+                        "Attribute 'default' for date-types yet only accepts attributes, expressions are still to be implemented!");
+            }
+            if (val != null) {
+                val = type.checkValue(val);
+            }
+        }
 
         return computedValue(val, type);
     }
