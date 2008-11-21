@@ -1,0 +1,16 @@
+title=not null char[150]        ; title
+
+width  = int                    ; Width [pixels]
+height = int                    ; Height [pixels] 
+length = not null int           ; Filesize [bytes]
+type   = char[50]               ; MIME type (eg "image/pjpeg" or "image/gif")
+
+category = int{"avatar" = 10}   ; For future extensions...
+
+# the image bytes (graphic file), pushed to a separate table for performance
+content=fixed not null ptr      ;
+content->bytes=not null binary  ; the actual image bytes.
+
+#keep track of a person who owns/uploaded the image
+owner=not null ptr user.User    ; Image owner
+

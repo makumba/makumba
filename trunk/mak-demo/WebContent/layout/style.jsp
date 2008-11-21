@@ -16,6 +16,38 @@ table
 	font-size: 12px;
 }
 
+td
+{
+  text-align:left;
+}
+
+table.forum
+{
+  width:100%;
+}
+
+td.forumdetails
+{
+  text-align:right;
+  width:200px;
+  font-size:9px;
+  font-style:italic;
+  color: #666;
+}
+td.forumbottom
+{
+  text-align:right;
+}
+
+
+hr 
+{
+  color: #055a05;
+  border-top: solid 1px #055a05;
+  border-bottom: none;
+  height: 0px;
+}
+
 a
 {
 	color: #055a05;
@@ -143,6 +175,13 @@ a
 #close a:hover
 {
 	color: #aaa;
+}
+
+.description
+{
+  font-size:11px;
+  font-style:italic;
+  color: #666;
 }
 
 .makumbaPagination
