@@ -229,6 +229,7 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.IS_NULL:
             case HqlSqlTokenTypes.IS_NOT_NULL:
             case HqlSqlTokenTypes.IN:
+            case HqlSqlTokenTypes.NOT_IN:
                 return "boolean";
             case HqlSqlTokenTypes.QUOTED_STRING:
                 return "char[255]";
