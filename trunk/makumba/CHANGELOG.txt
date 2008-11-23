@@ -16,6 +16,10 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.4; 23 Nov 2008
+rudi: first fix for bug 501, "defaultValue needed for mak:input"
+cristi: MQL support for "NOT IN"
+
 0.8.1.3; 17 Nov 2008
 rudi: making referenceChecker available again, was forgotten in new config
 rudi: line-viewer more robust on file-relations display
