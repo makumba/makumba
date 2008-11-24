@@ -1,6 +1,6 @@
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
-!title=indiv.name
+!title= fullName()
 
 indiv= unique fixed not null ptr test.Individual
 
@@ -109,3 +109,5 @@ nameMin2CharsLong() { character_length(indiv.name) > 2 } Your name is not long e
 nameMin4CharsLong() { character_length(indiv.name) > 4 } Your name is not long enough!
 nameMin3CharsLong() { indiv.nameMin3CharsLong() } Your name is not long enough!
 someTest(){ actor(test.Person) }
+
+fullName() { indiv.fullName() }
