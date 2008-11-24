@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Transaction;
 import org.makumba.Pointer;
@@ -68,8 +69,11 @@ public class ptrEditor extends choiceEditor {
                 + choiceType + " choice "
                 +"ORDER BY title"
                 );
-        if(rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(titleField).getType().equals("ptr"))
-            titleExpr+=".id";
+        FieldDefinition titleFieldDef = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(
+            titleField);
+        if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for title fields
+            titleExpr += ".id";
+        }
         m.put("hql",
             "SELECT choice.id as choice, "
                 + titleExpr +" as title FROM "
