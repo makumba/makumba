@@ -82,11 +82,15 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
                 throw new ProgrammerError("Field '" + element + "' in field list '" + fields + "' is not known.");
             }
             // compare it to the already checked one if the types are equivalent
+            // FIXME: this should be more relaxed, ideally we allow searching on all types
             if (fieldDef != null) {
                 if (fieldDef.getIntegerType() != fd.getIntegerType()) {
-                    throw new ProgrammerError("All fields in the field list must be of the same type! Field '"
-                            + element + "' with type '" + fd.getType() + "' differs from the previous field '"
-                            + fieldDef + "' of type '" + fieldDef.getType() + "'!");
+                    // as a quick-fix, we allow using char & text equally
+                    if (!(fieldDef.isStringType() && fd.isStringType())) {
+                        throw new ProgrammerError("All fields in the field list must be of the same type! Field '"
+                                + element + "' with type '" + fd.getType() + "' differs from the previous field '"
+                                + fieldDef + "' of type '" + fieldDef.getType() + "'!");
+                    }
                 }
             } else {
                 fieldDef = fd;
