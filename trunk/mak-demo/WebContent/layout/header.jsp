@@ -8,7 +8,7 @@
   <mak:object from="user.User u" where="u.username = $username">
     <mak:value expr="u" printVar="loggedInUser"/>
   </mak:object>
-  <c:set var="loggedInUser" value="${loggedInUser}" scope="request" />
+  <c:set var="loggedInUser" value="${loggedInUser}" scope="session" />
 </c:if>
 
 <c:choose>

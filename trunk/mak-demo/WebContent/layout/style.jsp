@@ -16,9 +16,15 @@ table
 	font-size: 12px;
 }
 
+th
+{
+  background: #CCFF66;
+}
+
 td
 {
   text-align:left;
+  vertical-align:top;
 }
 
 table.forum

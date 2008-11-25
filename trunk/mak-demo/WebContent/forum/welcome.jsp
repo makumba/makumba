@@ -14,7 +14,9 @@
       </td>
       <td class="forumdetails">
           threads: <mak:value expr="f.threadCount"/><br/>
-          posts: <mak:value expr="f.postCount"/>
+          posts: <mak:value expr="f.postCount"/><br/>
+          last post by <mak:value expr="f.lastPost.author.firstName"/> <mak:value expr="f.lastPost.author.lastName"/>
+          on <mak:value expr="f.lastPost.TS_create"/>
       </td>
     </tr>
   </mak:list>
