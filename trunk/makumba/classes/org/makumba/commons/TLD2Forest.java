@@ -219,9 +219,8 @@ public class TLD2Forest {
         exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
         exampleSection.addElement("title");
         
-        tagXML.addDocType("document", "-//APACHE//DTD Documentation V2.0//EN",
-            "http://forrest.apache.org/dtd/document-v20.dtd");
-    
+//        tagXML.addDocType("document", "-//APACHE//DTD Documentation V2.0//EN",
+//            "document-v20-mak.dtd");
         
         // now we write our new guy to the disk
         System.out.println("Writing XML for tag " + tagName + " at path " + tagFilePath);
@@ -315,10 +314,9 @@ public class TLD2Forest {
         String exampleFileName = "mak" + tagName +"Example"+ ".xml";
         String exampleFilePath = exampleDir + File.separator + exampleFileName;
         
-        //TODO check if exists tagExample.xml
         File exampleFile = new File(exampleFilePath);
         if(exampleFile.exists()){
-            //TODO find the correct place in tag.xml where to add the tagExample.xml code
+            // find the correct place in tag.xml where to add the tagExample.xml code
             /*
              * reading the tag.XML file
              */
@@ -327,6 +325,11 @@ public class TLD2Forest {
                 DefaultElement exampleSection = (DefaultElement) exampleXML.getRootElement().selectObject( "//section" );
                 
                 Document tagXML = saxReader.read(new File(tagFilePath));
+                
+                // add the docType
+                tagXML.addDocType("document", "-//APACHE//DTD Documentation V2.0//EN",
+                "document-v20-mak.dtd");
+                
 //            Element tagExampleSection = tagXML.elementByID(EXAMPLE_SECTION_ID);
                 Element tagRoot = tagXML.getRootElement();
                 Element tagExampleSection = null;
