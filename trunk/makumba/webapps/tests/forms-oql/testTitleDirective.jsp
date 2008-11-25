@@ -1,7 +1,7 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 <html>
-<head><title>Field types</title></head>
+<head><title>Test title directive</title></head>
 <body>
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
