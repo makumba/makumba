@@ -59,6 +59,35 @@ a
 	color: #055a05;
 }
 
+div.forumQuoter
+{
+  background: #dcf168;
+  margin-right:3px;
+  width:7px;
+  float:left;
+}
+div.pagination
+{
+  width:100%;
+  text-align:center;
+  padding:4px;
+  margin: 4px 0px;
+}
+div.pagination span
+{
+   border: 1px solid #055a05;
+   padding:0px 4px;
+}
+div.pagination span.page:hover
+{
+    background: red;
+}
+
+div.pagination span.activePage
+{
+   background: black;
+   color:white;
+}
 #ubercontainer
 {
 	background: url('${path}/images/gradient_top.png') repeat-x 0px -3px;
@@ -181,6 +210,16 @@ a
 #close a:hover
 {
 	color: #aaa;
+}
+
+div.mak_response
+{
+  border: 1px dashed #055a05;
+  background: #e4ffb1;
+  width:100%;
+  text-align:center;
+  padding:5px;
+  color: white;
 }
 
 .description

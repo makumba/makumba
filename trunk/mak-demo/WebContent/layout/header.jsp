@@ -60,3 +60,7 @@
 </div>
 
 <div id='content'>
+
+<% if (request.getAttribute("makumba.response") != null && !request.getAttribute("makumba.response").equals("")) { %>
+<div class="mak_response"><mak:response/></div>
+<% } %>
