@@ -5,13 +5,37 @@
 
 <h1>New User</h1>
 <mak:response />
-
+<script>
+var unElUntouched = true;
+function updateUsername(force) {
+	var unEl = document.getElementById("username");
+  if(unElUntouched || force){
+	  var sugUn = document.getElementById("firstName").value+document.getElementById("lastName").value;
+    sugUn = sugUn.replace(/ /g,'');
+    sugUn = sugUn.toLowerCase();
+    unEl.value = sugUn;
+  }
+}
+function stopUpdateUsername() {
+	unElUntouched = false;
+}
+</script>
 <mak:newForm type="user.User" action="welcome.jsp" name="user" clientSideValidation="true" method="post" >
   <table>
   <%-- Makumba Generator - START OF NORMAL FIELDS --%>
    <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
+   <td class="v_head"><label for="firstName"><span class="accessKey">F</span>irst name</label></td>
+   <td><mak:input field="firstName" accessKey="f" styleId="firstName" onKeyUp="updateUsername(false);"/></td>
+   </tr>
+   <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
+   <td class="v_head"><label for="lastName"><span class="accessKey">L</span>ast name</label></td>
+   <td><mak:input field="lastName" accessKey="l" styleId="lastName" onKeyUp="updateUsername(false);"/>
+    <input type=button value="suggest username" onclick="updateUsername(true);"/>
+   </td>
+   </tr>
+   <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
    <td class="v_head"><label for="username"><span class="accessKey">U</span>sername</label></td>
-   <td><mak:input field="username" accessKey="u" /></td>
+   <td><mak:input field="username" accessKey="u" styleId="username" onKeyUp="stopUpdateUsername();"/></td>
    </tr>
    <tr class="${even?'even':'odd'}"> <c:set var="even" value="${!even}" />
    <td class="v_head"><label for="password"><span class="accessKey">P</span>assword</label></td>

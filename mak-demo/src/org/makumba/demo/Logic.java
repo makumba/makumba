@@ -10,7 +10,7 @@ import org.makumba.Pointer;
 
 /**
  * Makumba Java Business Logic
- * @author Marius Andra
+ * @author Marius Andra, Jasper van Bourgognie
  *
  */
 public class Logic {
@@ -22,18 +22,24 @@ public class Logic {
         d.put("activated", 1);
 
     }
-  public boolean increaseField(Pointer pointer, String fieldname, Database db) {
-      //Get field contents from db
+  public void addToField(Pointer pointer, String fieldname, Database db, Integer amount) throws LogicException {
       Dictionary record = new Hashtable();
       record = db.read(pointer,fieldname);
       if (record != null) {
           
        Integer a = Integer.parseInt(record.get(fieldname).toString());
-       record.put(fieldname, a + 1);
+       record.put(fieldname, a + amount);
        db.update(pointer, record);
-       return true;
       } else {
-          return false;
+          throw new LogicException("Couldn't find the record/fieldname with pointer "+ pointer + pointer.toExternalForm() +" and field "+fieldname+" where to decrease the value from");
       }
+  }
+  public void increaseField(Pointer pointer, String fieldname, Database db) throws LogicException{
+      //Get field contents from db
+      addToField(pointer, fieldname, db, 1);
+  }
+  public void decreaseField(Pointer pointer, String fieldname, Database db) throws LogicException{
+      //Get field contents from db
+      addToField(pointer, fieldname, db, -1);
   }
 }

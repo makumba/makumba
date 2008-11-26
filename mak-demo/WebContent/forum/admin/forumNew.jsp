@@ -19,7 +19,7 @@
 	  <tr>
 	    <th>Description</th>
 	    <td>
-		   <mak:input name="description" style="width:300px;heigth;50px;"/>
+		   <mak:input name="description" style="width:300px;height:50px;"/>
 	    </td>
 	  </tr>
     <tr>

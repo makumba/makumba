@@ -39,31 +39,30 @@
           <% 
           ArrayList currentAdmins = new ArrayList();
           %>
-          <mak:list from="f.admins adm">
+          <mak:list from="f.admins adm"  orderBy="adm.user.firstName">
             <li>
-              <mak:value expr="adm.user" var="adminPtr"/>
+              <mak:value expr="adm.user" var="adminPtr" />
               <% currentAdmins.add(adminPtr); %>
               <mak:value expr="adm.user.firstName"/> <mak:value expr="adm.user.lastName"/>
               <mak:delete object="adm"><mak:action>./forumEdit.jsp?fPtr=${param.fPtr}</mak:action>delete</mak:delete>
             </li>
           </mak:list>
           </ul>
-          ${currentAdm}
           <mak:addForm field="admins" object="f" method="post">
             <mak:action>./forumEdit.jsp?fPtr=${param.fPtr}</mak:action>
             <mak:input name="user">
               <mak:option> -- Select a user to add as admin --</mak:option>
-              <% 
+              <% //JASPER: Slightly redundant code, but coulnd't figure a way to put the $currentAdmin in a variable where...
               if (!currentAdmins.isEmpty()) {
                   request.setAttribute("currentAdmins", currentAdmins);
               %>
-                <mak:list  from="user.User u"  where="u NOT IN SET ($currentAdmins)">
+                <mak:list  from="user.User u"  where="u NOT IN SET ($currentAdmins)" orderBy="u.firstName">
                   <mak:option value="u"><mak:value expr="u.firstName"/> <mak:value expr="u.lastName"/></mak:option>
                 </mak:list>
               <%
               } else {
               %>
-                <mak:list  from="user.User u" >
+                <mak:list  from="user.User u"  orderBy="u.firstName">
                   <mak:option value="u"><mak:value expr="u.firstName"/> <mak:value expr="u.lastName"/></mak:option>
                 </mak:list>
               <%

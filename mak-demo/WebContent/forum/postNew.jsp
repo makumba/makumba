@@ -8,31 +8,11 @@
     // for quoting purposes and let the BL find out what the topic associated was.
 %>
 
+<script type="text/javascript" src="${pageContext.request.contextPath}/layout/forumScripts.js"></script>
+
 <c:choose>
 <c:when test="${!empty param.fPtr && !empty loggedInUser}">
 <c:set var="fPtr" value="${param.fPtr}"/>
-
-<script>
-function insertQuote() {
-
-	 var quoter = "&gt; ";
-   var linelength = 70;
-   
-	 var parPost = document.getElementById('parentPostContents').innerHTML;
-   var paragraphs = parPost.split("\n");
-   for (var i = 0; i<paragraphs.length; i++) {
-     var j = paragraphs[i].indexOf(" ", linelength);
-     while (j<paragraphs[i].length && j > 0) {
-       j = paragraphs[i].indexOf(" ", j);
-       paragraphs[i] = paragraphs[i].substring(0,j) + "\n" + paragraphs[i].substring(j+1); 
-       j = j + linelength;
-     }
-   }
-   parPost = paragraphs.join("\n");
-   parPost = quoter + parPost.replace(/\n/g,"\n" + quoter);
-   document.getElementById('contents_area').innerHTML = parPost + document.getElementById('contents_area').innerHTML; 
-}
-</script>
 
 <c:choose>
   <c:when test="${empty param.parPtr}">
@@ -68,7 +48,7 @@ function insertQuote() {
       <td colspan=2>
          <div id="parentPostContents" style="display:none;"><c:out value="${parentPostContents}"/></div>
          <div id="parentPostContentsHTML">
-            <strong>${parentPosterFN} ${parentPosterLN} wrote:</strong>
+            <strong>${parentPosterFN} ${parentPosterLN} wrote:</strong><br/>
             ${parentPostContentsHTML}
         </div>
       </td>
@@ -108,4 +88,3 @@ You need to be logged in before you can make a post.
 </c:choose>
 
 <jsp:include page="/layout/footer.jsp" flush="false"/>
-

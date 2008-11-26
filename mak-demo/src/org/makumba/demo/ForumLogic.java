@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.makumba.Attributes;
 import org.makumba.Database;
 import org.makumba.LogicException;
+import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 
 /**
@@ -75,14 +76,83 @@ public class ForumLogic extends Logic {
             db.update("forum.Forum f", "f.lastPost=$1", "f=$2", new Object[] {post, a.getAttribute("forum")});
             increaseField(topic, "postCount", db);
             increaseField(forum, "postCount", db);
-            
         }
         else {
             throw new LogicException("Please log in before making a post.");
         }
     }
+    public void on_deleteForumForum (Pointer forum, Attributes a, Database db) throws LogicException {
+        //TODO: add some check if the person is really super admin or so
+        //Delete all posts and topics from this forum
+        Vector posts = db.executeQuery("SELECT p as post FROM forum.Post p WHERE p.forum=$1", forum);
+        Vector topics = db.executeQuery("SELECT t as topic FROM forum.Topic t WHERE t.forum=$1", forum);
+        for (Enumeration e=posts.elements();e.hasMoreElements();) {
+            Dictionary f = (Dictionary) e.nextElement();
+            db.delete((Pointer)f.get("post"));
+        }
+        for (Enumeration e=topics.elements();e.hasMoreElements();) {
+            Dictionary f = (Dictionary) e.nextElement();
+            db.delete((Pointer)f.get("topic"));
+        }
+        System.out.println("deleted " + topics.size() + " topics and " + posts.size() + " topics");
+    }
     public void on_addForumForumAdmins(Pointer forum, Dictionary d, Attributes a, Database db) throws LogicException {
-        System.out.println("kak");
+        Vector admins = db.executeQuery("SELECT adm.user as adm FROM forum.Forum f, f.admins adm WHERE f=$1 ", forum); 
+        for (Enumeration e=admins.elements();e.hasMoreElements();) {
+            Dictionary f = (Dictionary) e.nextElement();
+            if (((Pointer)a.getAttribute("user")).equals((Pointer)f.get("adm"))) {
+                throw new LogicException("Trying to add the same user twice as admin. No can do!");
+            } 
+        }
+    }
+    public void deleteTopic(Dictionary d, Attributes a, Database db) throws LogicException {
+        Vector admins = db.executeQuery("SELECT adm.user as adm FROM forum.Forum f, f.admins adm WHERE f=$1 AND adm.user=$2 ", new Object[] {a.getAttribute("forum"),a.getAttribute("loggedInUser") });
+        if(admins.size()==1) {
+            Pointer forum = (Pointer) a.getAttribute("forum");
+            Vector posts = db.executeQuery("SELECT p as post FROM forum.Post p WHERE p.topic=$1", a.getAttribute("topic"));
+            addToField(forum, "postCount", db, posts.size()*-1);
+            addToField(forum, "threadCount", db, -1);
+            for (Enumeration e=posts.elements();e.hasMoreElements();) {
+                Dictionary f = (Dictionary) e.nextElement();
+                db.delete((Pointer)f.get("post"));
+            }
+            db.delete((Pointer)a.getAttribute("topic"));
+        } else {
+            throw new LogicException("Trying to delete a topic here, but you're not a forum admin!");
+        }
+    }
+    public void on_editForumPost(Pointer post, Dictionary d, Attributes a, Database db) throws LogicException {
+        
+        if (a.hasAttribute("hidden")) {
+            Vector admins = db.executeQuery("SELECT adm.user as adm FROM forum.Forum f, f.admins adm, forum.Post p WHERE p.forum=f AND p=$1 AND adm.user=$2 ", new Object[] {post,a.getAttribute("loggedInUser") });
+            if(admins.size()<1) {
+                throw new LogicException ("You're not an admin of this forum. you shouldn't be messing around with the forum too!");
+            }
+            else if(admins.size()>1) {
+                throw new LogicException ("There's an inconsistency in the administrators of the forum you're trying to edit");
+            } else {
+                d.put("hidden", a.getAttribute("hidden"));
+            }
+        } else {
+           throw new LogicException ("How on earth did this method get called? This won't do anything!");
+        }
+    }
+    
+    public void on_editForumTopic(Pointer topic, Dictionary d, Attributes a, Database db) throws LogicException {
+        
+        if (a.hasAttribute("sticky")) {
+            Vector admins = db.executeQuery("SELECT adm.user as adm FROM forum.Forum f, f.admins adm, forum.Topic t WHERE t.forum=f AND t=$1 AND adm.user=$2 ", new Object[] {topic ,a.getAttribute("loggedInUser") });
+            if(admins.size()<1) {
+                throw new LogicException ("You're not an admin of this forum. you shouldn't be messing around with the forum too!");
+            }
+            else if(admins.size()>1) {
+                throw new LogicException ("There's an inconsistency in the administrators of the forum you're trying to edit");
+            } else {
+                d.put("sticky", a.getAttribute("sticky"));
+            }
+        } else {
+           throw new LogicException ("How on earth did this method get called? This won't do anything!");
+        }
     }
 
 }
