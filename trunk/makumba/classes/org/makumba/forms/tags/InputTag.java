@@ -312,8 +312,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
             if (isValue(defaultExpr)) {
                 // FIXME: actually implement this!
-                throw new NotImplementedException(
-                        "Attribute 'default' for date-types yet only accepts attributes, expressions are still to be implemented!");
+                // for now, we just let this be handled by the various editors, which know how to deal with text and numbers
             }
             if (val != null) {
                 val = type.checkValue(val);
