@@ -16,6 +16,10 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.5; 27 Nov 2008
+rudi: fix for allowing functions in title directive
+rudi: fix with default="..", allowing constant values
+
 0.8.1.4; 23 Nov 2008
 rudi: first fix for bug 501, "defaultValue needed for mak:input"
 cristi: MQL support for "NOT IN"
