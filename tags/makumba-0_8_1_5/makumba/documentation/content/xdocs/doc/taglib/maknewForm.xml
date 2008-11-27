@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:newForm tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">type</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Makumba type for record creation, or OQL label for subrecord creation</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">action</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">the response page of the form</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">method</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">the HTTP method (get or post)</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">name</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">the name of the created object in the response page</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">message</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">the message that is displayed in the response page upon success</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">db</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleId</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleClass</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">style</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">annotation</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Indicates that validation whether errors should be shown in the form, or be displayed in the &lt;mak:response/&gt;.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">annotationSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Fixed. Prints the given separator between the annotation and the input field.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">reloadFormOnError</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">clientSideValidation</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Controls whether client side validation shall be used.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">target</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onReset</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onSubmit</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">title</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onDblClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyPress</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseMove</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOut</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOver</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic HTML tag attributes.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">multipleSubmitErrorMsg</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
+    
+        <code/>
+  
+      </p>
+    </section>  </body></document>
