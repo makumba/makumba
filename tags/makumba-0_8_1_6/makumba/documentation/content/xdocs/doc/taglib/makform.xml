@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:form tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">handler</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">the Java method that handles the response</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">action</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">method</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">name</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">message</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleId</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleClass</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">style</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">annotation</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">annotationSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">reloadFormOnError</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">clientSideValidation</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">target</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onReset</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onSubmit</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">title</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onDblClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyPress</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseMove</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOut</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOver</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
+    
+        <code/>
+  
+      </p>
+    </section>  </body></document>
