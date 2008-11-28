@@ -117,8 +117,14 @@ public class DevelUtils {
         w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
         for (String key : allGenericDeveloperToolsMap.keySet()) {
             if (!key.equals(toolKey)) {
-                w.print("<a href=\"" + contextPath + Configuration.getConfigProperty(key) + "\">"
-                        + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
+                if (Configuration.getConfigProperty(key).endsWith(Configuration.PROPERTY_NOT_SET)) {
+                    w.print("<span style=\"color: grey\">" + allGenericDeveloperToolsMap.get(key)
+                            + ": disabled </span><br/>");
+                } else {
+                    w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
+                            + Configuration.getConfigProperty(key) + "\">" + allGenericDeveloperToolsMap.get(key)
+                            + "</a><br/>");
+                }
             }
         }
         w.println("</div>");

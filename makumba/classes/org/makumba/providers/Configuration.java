@@ -39,6 +39,8 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public class Configuration implements Serializable {
 
+    public static final String PROPERTY_NOT_SET = "PROPERTY_NOT_SET";
+
     public static final String KEY_CLIENT_SIDE_VALIDATION = "clientSideValidation";
 
     public static final String KEY_RELOAD_FORM_ON_ERROR = "reloadFormOnError";
@@ -60,9 +62,9 @@ public class Configuration implements Serializable {
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
 
     // calendar editor
-    private static final String KEY_CALENDAR_EDITOR = "calendarEditor";
+    public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 
-    private static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
+    public static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
 
     // developer tools
     public static final String KEY_MAKUMBA_TOOLS = "path";
@@ -87,6 +89,7 @@ public class Configuration implements Serializable {
 
     public static final String KEY_RELATION_CRAWLER = "relationCrawler";
 
+    // source code repository links
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
 
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
@@ -263,4 +266,5 @@ public class Configuration implements Serializable {
     public static String getApplicationConfigurationSource() {
         return applicationConfig != null ? applicationConfig.getSource() : null;
     }
+
 }
