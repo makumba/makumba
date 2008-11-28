@@ -54,7 +54,7 @@ public class MakumbaINIFileReader extends IniEditor {
     }
 
     public String getProperty(String section, String property) {
-        return get(section, property) != null ? get(section, property) : "__NOT__SET__";
+        return get(section, property) != null ? get(section, property) : Configuration.PROPERTY_NOT_SET;
     }
 
     public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {
@@ -85,7 +85,7 @@ public class MakumbaINIFileReader extends IniEditor {
     // }
     //
     // public String getProperty(String section, String property) {
-    // return getStringProperty(section, property) != null ? getStringProperty(section, property) : "__NOT__SET__";
+    // return getStringProperty(section, property) != null ? getStringProperty(section, property) : "PROPERTY_NOT_SET";
     // }
     //
     // public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {

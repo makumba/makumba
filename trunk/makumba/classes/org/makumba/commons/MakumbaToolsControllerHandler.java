@@ -31,6 +31,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.db.makumba.UniquenessServlet;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.relations.RelationCrawlerTool;
@@ -82,15 +84,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
             w.println("<h3>Welcome to the Makumba Configuration page!</h3>");
             w.println("<p>This page gives you a short overview on the configuration of this Makumba installation and basic information on the tools available.</p>");
-            w.println("<h4>Makumbat Tools</h4>");
-            w.println("<table border=\"1\" _width=\"100%\">");
-            w.println("  <tr>");
-            w.println("    <th>Name</th>");
-            w.println("    <th>Description</th>");
-            w.println("    <th>Config file key</th>");
-            w.println("    <th>Location</th>");
-            w.println("  </tr>");
-            // w.println("  <tr> <td colspan=\"5\"> <h5>Makumba Tools</h5> </td> </tr>");
+
+            writeSectionHeader(w, "Location", "Makumba Tools");
             writeDescr(w, "Download", "Download of file-type data", Configuration.KEY_MAKUMBA_DOWNLOAD,
                 Configuration.getMakumbaDownloadLocation(), request.getContextPath());
             writeDescr(w, "Resources",
@@ -101,7 +96,6 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 Configuration.getMakumbaUniqueLocation(), request.getContextPath());
             writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
                 Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
-            // w.println("  <tr> <td colspan=\"5\"> <h3>Makumba Developer Tools</h3> </td> </tr>");
             writeDescr(w, "DataDefinition viewer", "View data definitions", Configuration.KEY_MDD_VIEWER,
                 Configuration.getMddViewerLocation(), request.getContextPath());
             writeDescr(w, "Java Viewer", "View Java Business Logics", Configuration.KEY_JAVA_VIEWER,
@@ -125,29 +119,48 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             w.println("</table>");
 
-            w.println("<h4>Controller settings</h4>");
-            w.println("<table border=\"1\" _width=\"100%\">");
-            w.println("  <tr>");
-            w.println("    <th>Name</th>");
-            w.println("    <th>Description</th>");
-            w.println("    <th>Config file key</th>");
-            w.println("    <th>Value</th>");
-            w.println("  </tr>");
+            writeSectionHeader(w, "Value", "Controller settings");
             writeDescr(w, "Transaction Provider", "", Configuration.KEY_DEFAULT_TRANSACTION_PROVIDER, "");
-            writeDescr(w, "Form reaload", "Wether forms shall be reloaded on validation errors",
+            writeDescr(w, "Form reaload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",
-                "Wether client-side validation is enabled, and if it is live or on form submission",
+                "Whether client-side validation is enabled, and if it is live or on form submission",
                 Configuration.KEY_CLIENT_SIDE_VALIDATION, Configuration.getClientSideValidationDefault());
             w.println("</table>");
 
-            w.println("<h4>Input style settings</h4>");
+            writeSectionHeader(w, "Value", "Input style settings");
+            writeDescr(w, "Calendar editor",
+                "Whether the calendar-editor will be displayed by default for mak:input on date types",
+                Configuration.KEY_CALENDAR_EDITOR, Configuration.getCalendarEditorDefault());
+            writeDescr(w, "Calendar editor link", "The default link created for the calendar editor",
+                Configuration.KEY_CALENDAR_EDITOR_LINK,
+                StringEscapeUtils.escapeHtml(Configuration.getDefaultCalendarEditorLink(request.getContextPath())));
+            w.println("</table>");
+
+            writeSectionHeader(w, "Value", "Other settings");
+            writeDescr(w, "Repository URL",
+                "The URL prefix to compose links from the source code viewers to the source code repository",
+                Configuration.KEY_REPOSITORY_URL, Configuration.getRepositoryURL());
+            writeDescr(w, "Repository Link Text", "The text displayed on the repository URL link",
+                Configuration.KEY_REPOSITORY_LINK_TEXT, Configuration.getRepositoryLinkText());
+            w.println("</table>");
 
             DevelUtils.writePageEnd(w);
             return false;
         } else {
             return true;
         }
+    }
+
+    private void writeSectionHeader(PrintWriter w, String columnName, String sectionName) {
+        w.println("<h4>" + sectionName + "</h4>");
+        w.println("<table border=\"1\" _width=\"100%\">");
+        w.println("  <tr>");
+        w.println("    <th>Name</th>");
+        w.println("    <th>Description</th>");
+        w.println("    <th>Config file key</th>");
+        w.println("    <th>" + columnName + "</th>");
+        w.println("  </tr>");
     }
 
     private void writeDescr(PrintWriter w, final String name, final String desc, final String key, Object value) {
@@ -159,8 +172,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
     private void writeDescr(PrintWriter w, final String name, final String desc, final String key, String loc,
             String contextPath) {
         w.println("  <tr>");
-        w.println("    <td>" + name + "</td> <td>" + desc + "</td> <td>" + key + "</td> <td> <a href=\"" + contextPath
-                + loc + "\">" + contextPath + loc + "</a> </td>");
+        String link = loc.endsWith(Configuration.PROPERTY_NOT_SET) ? "-- disabled --" : "<a href=\"" + contextPath
+                + loc + "\">" + contextPath + loc + "</a>";
+        w.println("    <td>" + name + "</td> <td>" + desc + "</td> <td>" + key + "</td> <td> " + link + " </td>");
         w.println("  </tr>");
     }
 
