@@ -361,10 +361,11 @@ public abstract class LineViewer implements SourceViewer {
             return contextPath + "/" + fileName + "x";
         } else if (fileType.equals(TYPE_MDD)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getMddViewerLocation() + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
+            return contextPath + Configuration.getMddViewerLocation() + "/"
+                    + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
         } else if (fileType.equals(TYPE_JAVA)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getJavaViewerLocation() + fileName;
+            return contextPath + Configuration.getJavaViewerLocation() + "/" + fileName;
         }
         return fileName;
     }
@@ -551,11 +552,11 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + qualifiedClassName + "#"
+            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + "/" + qualifiedClassName + "#"
                     + lineNumber + "\">" + className + "</a>";
         } else {
-            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + qualifiedClassName + "\">"
-                    + className + "</a>";
+            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + "/" + qualifiedClassName
+                    + "\">" + className + "</a>";
         }
     }
 
@@ -748,7 +749,7 @@ public abstract class LineViewer implements SourceViewer {
                     s += "#" + methodName + "()";
                 }
             } else {
-                s += contextPath + Configuration.getJavaViewerLocation() + c.getName().replace('.', '/');
+                s += contextPath + Configuration.getJavaViewerLocation() + "/" + c.getName().replace('.', '/');
             }
             return s + "\" title=\"" + (methodName != null ? "Method in " : "") + c.getName() + "\">" + displayName
                     + "</a>";
