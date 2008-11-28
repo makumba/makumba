@@ -102,6 +102,21 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
         assertTrue(compareTest(output));
     }
+    
+    public void testMakListCountClosedList() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListCountClosedList.jsp");
+    }
+
+    public void endMakListCountClosedList(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
 
     public void testMakListMaxResults() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListMaxResults.jsp");
