@@ -119,7 +119,28 @@ public class MakumbaTestSetup extends TestSetup {
         p.put("usagestart", birthdate);
         p.put("email", "email1");
         address = db.insert(person, "address", p);
-
+        
+        
+        // let's fill in the languages - we add them twice to have a meaningful test for distinct
+        p.clear();
+        Vector<Pointer> v = new Vector<Pointer>();
+        for(Pointer l : languages) {
+            v.add(l);
+        }
+        for(Pointer l : languages) {
+            v.add(l);
+        }
+        p.put("speaks", v);
+        db.update(brother, p);
+        
+        // let's add some toys
+        p.clear();
+        p.put("name", "car");
+        db.insert(brother, "toys", p);
+        p.clear();
+        p.put("name", "doll");
+        db.insert(brother, "toys", p);
+        
     }
 
     protected void deletePersonsAndIndividuals(Transaction db) {
@@ -128,6 +149,18 @@ public class MakumbaTestSetup extends TestSetup {
             String query = "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name="+(transactionProviderType.equals("oql")?"$1":"?");
             Vector<Dictionary<String, Object>> v = db.executeQuery(query, namesPersonIndivName[i]);
             if (v.size() > 0) {
+                
+                // delete the languages
+                Vector<Pointer> speaks = new Vector<Pointer>();
+                Dictionary<String, Object> speaksDic = new Hashtable<String, Object>();
+                speaksDic.put("speaks", speaks);
+                db.update((Pointer) v.firstElement().get("p"), speaksDic);
+                
+                // delete the toys
+                Dictionary<String, Object> emptyToys = new Hashtable<String, Object>();
+                emptyToys.put("toys", Pointer.NullSet);
+                db.update((Pointer) v.firstElement().get("p"), emptyToys);
+                
                 db.delete((Pointer) v.firstElement().get("p"));
                 db.delete((Pointer) v.firstElement().get("i"));
             }
