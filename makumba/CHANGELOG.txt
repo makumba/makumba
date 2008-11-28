@@ -16,6 +16,11 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.7; 28 Nov 2008
+rudi: fix for calendar editor for inputs on pointedType.fieldName
+rudi: various fixes on tests, new test for calendar editor fix
+manu: new test for mak:lastCount() of an empty mak:list nested inside another list 
+
 0.8.1.6; 27 Nov 2008
 rudi: various fixes on developer tools
 
