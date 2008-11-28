@@ -16,6 +16,9 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.6; 27 Nov 2008
+rudi: various fixes on developer tools
+
 0.8.1.5; 27 Nov 2008
 rudi: fix for allowing functions in title directive
 rudi: fix with default="..", allowing constant values
