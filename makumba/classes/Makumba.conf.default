@@ -47,7 +47,7 @@ referenceChecker=/referenceChecker
 codeGenerator=/codeGenerator
 dataObjectViewer=/dataObjectViewer
 dataLister=/dataLister
-#objectIdConverter=/dataValueConverter
+objectIdConverter=/dataValueConverter
 relationCrawler=/relationCrawler
 
 [makumbaToolConfig]
