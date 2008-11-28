@@ -27,8 +27,8 @@ default=
 
 [controllerConfig]
 defaultTransactionProvider=org.makumba.db.makumba.MakumbaTransactionProvider
-reloadFormOnError=true
-clientSideValidation=live
+reloadFormOnError=false
+clientSideValidation=false
 
 [makumbaToolPaths]
 path=/mak-tools
@@ -47,7 +47,7 @@ referenceChecker=/referenceChecker
 codeGenerator=/codeGenerator
 dataObjectViewer=/dataObjectViewer
 dataLister=/dataLister
-objectIdConverter=/dataValueConverter
+#objectIdConverter=/dataValueConverter
 relationCrawler=/relationCrawler
 
 [makumbaToolConfig]
@@ -55,5 +55,5 @@ repositoryURL=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/we
 repositoryLinkText=SVN
 
 [inputStyleConfig]
-calendarEditor=true
+calendarEditor=false
 calendarEditorLink=<img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">
