@@ -12,7 +12,8 @@
   <mak:editForm object="p" action="testCalendarEditor.jsp">
     name: <mak:input name="indiv.name" />
     surname: <mak:input name="indiv.surname" maxlength="5" />
-    birthdate: <mak:input name="birthdate" format="yyyy-MM-dd" calendarEditor="true" /><br>
+    birthdate: <mak:input name="birthdate" format="yyyy-MM-dd" calendarEditor="true" />
+    someDate: <mak:input name="indiv.someDate" format="yyyy-MM-dd" calendarEditor="true" /><br>
   </mak:editForm>
 </mak:list>
 <mak:form action="">

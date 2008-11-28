@@ -20,7 +20,11 @@ public class MakumbaTestSetup extends TestSetup {
 
     public static final String namePersonIndivName_Bart = "bart";
 
+    public static final String namePersonIndivSurname_Bart = "van Vandervanden";
+
     public static final String namePersonIndivName_John = "john";
+
+    public static final String namePersonIndivSurname_John = "von Neumann";
 
     private static Pointer address;
 
@@ -84,10 +88,12 @@ public class MakumbaTestSetup extends TestSetup {
         Hashtable<String, Object> p = new Hashtable<String, Object>();
 
         p.put("indiv.name", namePersonIndivName_Bart);
+        p.put("indiv.surname", namePersonIndivSurname_Bart);
         Pointer brother = db.insert("test.Person", p);
 
         p.clear();
         p.put("indiv.name", namePersonIndivName_John);
+        p.put("indiv.surname", namePersonIndivSurname_John);
 
         Calendar c = Calendar.getInstance();
         c.clear();
