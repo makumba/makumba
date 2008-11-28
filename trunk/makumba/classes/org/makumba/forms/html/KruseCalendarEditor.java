@@ -12,9 +12,10 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
 
     public StringBuffer formatEditorCode(String inputName, Object formIdentifier, String calendarLinkFormatting) {
         StringBuffer sb = new StringBuffer();
-        String calendarName = inputName + formIdentifier + "_Calendar";
-        String anchorname = inputName + formIdentifier + "_Anchor";
-        String divname = inputName + formIdentifier + "_makCalendarDiv";
+        String inputNameVar = inputName.replace('.', '_'); // escape potential ptrField.someField inputs
+        String calendarName = inputNameVar + formIdentifier + "_Calendar";
+        String anchorname = inputNameVar + formIdentifier + "_Anchor";
+        String divname = inputNameVar + formIdentifier + "_makCalendarDiv";
 
         String dayInput = "document.getElementById('" + inputName + "_0" + formIdentifier + "')";
         String monthInput = "document.getElementById('" + inputName + "_1" + formIdentifier + "')";
@@ -38,8 +39,8 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
         sb.append("\n<script language=\"javascript\" type=\"text/javascript\">\n");
         sb.append("var " + calendarName + " = new CalendarPopup(\"" + divname + "\");\n");
         sb.append(calendarName + ".showYearNavigation();\n");
-        sb.append(calendarName + ".setReturnFunction(\"setMultipleValues" + inputName + formIdentifier + "\");\n");
-        sb.append("function setMultipleValues" + inputName + formIdentifier + "(y, m, d) { setMultipleValues('"
+        sb.append(calendarName + ".setReturnFunction(\"setMultipleValues" + inputNameVar + formIdentifier + "\");\n");
+        sb.append("function setMultipleValues" + inputNameVar + formIdentifier + "(y, m, d) { setMultipleValues('"
                 + inputName + "', '" + formIdentifier + "', y, m, d); };\n");
         sb.append("</script>\n");
 
