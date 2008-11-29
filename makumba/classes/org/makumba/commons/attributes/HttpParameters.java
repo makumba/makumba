@@ -23,6 +23,7 @@
 
 package org.makumba.commons.attributes;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -80,6 +81,18 @@ public class HttpParameters {
         // request.setAttribute(s, value);
 
         return value;
+    }
+
+    public ArrayList<String> getParametersStartingWith(String s) {
+        ArrayList<String> result = new ArrayList<String>();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String param = (String) parameterNames.nextElement();
+            if (param.startsWith(s)) {
+                result.add(param);
+            }
+        }
+        return result;
     }
 
     public String toString() {

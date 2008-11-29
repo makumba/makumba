@@ -1,5 +1,8 @@
 package org.makumba.forms.tags;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -30,8 +33,7 @@ import org.makumba.providers.datadefinition.makumba.FieldInfo;
  * <ul>
  * <li>{@link CriterionTag}, needed for each search criterion to appear in the form</>
  * <li> {@link SearchFieldTag}, nested in a {@link CriterionTag}, generates an input</li>
- * <li> {@link MatchModeTag} will generate an input that allows to select the match mode, e.g. exact or range searching.
- * </li>
+ * <li> {@link MatchModeTag} will generate an input that allows to select the match mode, e.g. exact or range searching.</li>
  * </ul>
  * 
  * @author Rudolf Mayer
@@ -199,10 +201,22 @@ public class SearchTag extends FormTagBase {
 
                 Object value = attributes.getAttribute(inputName);
 
-                if (notEmpty(value)) {
-                    appendParams(queryString, inputName, value);
+                if (notEmpty(value) || value == Pointer.NullDate) {
+                    // special treatment for date fields needed, as it is split in _0, _1, ...
+                    if (value instanceof Date || value == Pointer.NullDate) {
+                        // FIXME: not sure if that approach is good, maybe better to use date editor?
+                        // FIXME: better treatment for null dates, should not be needed to be passed on
+                        ArrayList<String> params = parameters.getParametersStartingWith(inputName + "_");
+                        Collections.sort(params);
+                        for (String param : params) {
+                            appendParams(queryString, param, parameters.getParameter(param));
+                        }
+                    } else {
+                        // FIXME: don't pass on matchMode if it is the default value
+                        appendParams(queryString, inputName, value);
+                    }
                 }
-                
+
                 // special treatment for range end fields
                 if (inputName.endsWith(RANGE_END)) {
                     if (notEmpty(attributes.getAttribute(getRangeBeginName(inputName)))) {
@@ -239,7 +253,7 @@ public class SearchTag extends FormTagBase {
                             whereThisField = whereThisField + " OR ";
                         }
                         String finalFieldName = fieldName;
-                        
+
                         FieldDefinition thisFd = dd.getFieldOrPointedFieldDefinition(finalFieldName);
                         if (thisFd.getDataDefinition() != dd) { // we are searching on a sub-field
                             int lastIndexOf = finalFieldName.lastIndexOf(thisFd.getName());
