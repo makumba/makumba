@@ -14,8 +14,15 @@
 <mak:list from="p.speaks language"/>
 lastCountLanguageExternalSet:${mak:lastCount()}<br>
 
+languagesExternalSet:<mak:list from="p.speaks language" id="1"><mak:value expr="language"/></mak:list>
+lastCountLanguageExternalSetWithValue:${mak:lastCount()}<br>
+
 <mak:list from="p.toys t"/>
-lastCountLanguageSetComplex:${mak:lastCount()}<br>
+lastCountToysSetComplex:${mak:lastCount()}<br>
+
+toysSetComplex:<mak:list from="p.toys t" id="2"><mak:value expr="t"/></mak:list>
+lastCountToysSetComplexWithValue:${mak:lastCount()}<br>
+
 
 </mak:object>
 </body>
