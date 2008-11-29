@@ -152,7 +152,6 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     public void setHasMatchMode(boolean hasMatchMode) {
         this.hasMatchModeTag = hasMatchMode;
-        System.out.println("setting hasMatchmode = true in " + getInputName());
     }
 
     @Override
