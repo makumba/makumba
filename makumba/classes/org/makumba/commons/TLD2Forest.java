@@ -155,6 +155,29 @@ public class TLD2Forest {
         Element titleElement = headerElement.addElement("title");
         titleElement.setText("mak:" + tagName + " tag documentation");
         Element bodyElement = docElement.addElement("body");
+
+        // tag description
+        Element infoSection = bodyElement.addElement("section");
+        infoSection.addAttribute("id", "description");
+        Element infoSectionTitle = infoSection.addElement("title");
+        infoSectionTitle.setText("Description");
+        Element description = infoSection.addElement("p");
+        String desc = new String();
+        for(Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
+            Element tagElement = tagElementIter.next();
+            if(tagElement.getName().equals("web-description")) {
+                desc = tagElement.getText();
+                break;
+            }
+        }
+        if(desc.trim().length() != 0) {
+            description.setText(desc);
+        } else {
+            description.setText("FIXME: no web-description for this tag in taglib-documented.xml!");
+        }
+        
+        
+        // attributes
         Element sectionElement = bodyElement.addElement("section");
         sectionElement.addAttribute("id", "attributes");
         Element titleElement2 = sectionElement.addElement("title");
@@ -176,7 +199,6 @@ public class TLD2Forest {
         /* the iterator of elements of a tag*/
         for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
-    //                        System.out.println("tagelement: "+tagElement.getName());
             /* looking for attributes*/
             if(tagElement.getName().equals("attribute")){
                 int cellAddedCount = 0;
