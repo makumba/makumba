@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
@@ -46,35 +45,40 @@ public class ParameterAssigner {
 
     ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA) {
         this.tree = qA;
-        if (qA.parameterNumber() > 0)
-            paramHandler = (TableManager) db.makePseudoTable((DataDefinition) qA.getParameterTypes());
+        if (qA.parameterNumber() > 0) {
+            paramHandler = (TableManager) db.makePseudoTable(qA.getParameterTypes());
+        }
     }
 
     static final Object[] empty = new Object[0];
 
     public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
-        if (tree.parameterNumber() == 0)
+        if (tree.parameterNumber() == 0) {
             return null;
+        }
         try {
-            Hashtable correct = new Hashtable();
-            Hashtable errors = new Hashtable();
+            Hashtable<String, Integer> correct = new Hashtable<String, Integer>();
+            Hashtable<String, InvalidValueException> errors = new Hashtable<String, InvalidValueException>();
             for (int i = 0; i < tree.parameterNumber(); i++) {
-                FieldDefinition fd = (paramHandler.getDataDefinition().getFieldDefinition("param" + i));
-                if(fd==null)
-                    throw new IllegalStateException("No type assigned for "+"param"+i);
+                FieldDefinition fd = paramHandler.getDataDefinition().getFieldDefinition("param" + i);
+                if (fd == null) {
+                    throw new IllegalStateException("No type assigned for " + "param" + i);
+                }
 
                 Integer para = new Integer(tree.parameterAt(i));
                 String spara = "$" + para;
                 Object value = args[para.intValue() - 1];
-                if(value==Pointer.Null)
-                    value=fd.getNull();
+                if (value == Pointer.Null) {
+                    value = fd.getNull();
+                }
                 try {
                     value = fd.checkValue(value);
                 } catch (InvalidValueException e) {
                     // we have a wrong value, we pass something instead and we remember that there is a problem.
                     // if there is no correct value for this argument, we'll throw an exception later
-                    if (correct.get(spara) == null)
+                    if (correct.get(spara) == null) {
                         errors.put(spara, e);
+                    }
                     // if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString ||
                     // value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
                     paramHandler.setNullArgument("param" + i, ps, i + 1);
@@ -91,7 +95,7 @@ public class ParameterAssigner {
             }
             if (errors.size() > 0) {
                 String s = "";
-                for (Enumeration e = errors.keys(); e.hasMoreElements();) {
+                for (Enumeration<String> e = errors.keys(); e.hasMoreElements();) {
                     Object o = e.nextElement();
                     s += "\nargument: " + o + "; exception:\n" + errors.get(o);
                 }
