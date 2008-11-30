@@ -30,10 +30,10 @@
    Tabs can be embedded to a depth of two. The second level of tabs will only 
     be displayed when their parent tab is selected.    
   -->
-  <tab id="home" label="Home" dir="" indexfile="index.html"/>
+  <tab id="home" label="Home" href="/index.html"/>
   <tab id="quickstart" label="Quick start" href="quickstart.html" />
   <tab id="installation" label="Installation" dir="installation" />
-  <tab id="documentation" label="Documentation" dir="doc"/>
-  <tab id="develdoc" label="Developer documentation" dir="develdoc"/>
+  <tab id="documentation" label="Documentation" dir="/doc"/>
+  <!-- tab id="develdoc" label="Developer documentation" dir="develdoc"/ -->
   
 </tabs>
