@@ -54,6 +54,14 @@ public class MakumbaTestSetup extends TestSetup {
 
     private String transactionProviderType;
 
+    static {
+        Calendar c;
+        c = Calendar.getInstance();
+        c.clear();
+        c.set(1977, 2, 5);
+        birthdate = c.getTime();
+    }
+
     public MakumbaTestSetup(Test test, String transactionProviderType) {
         super(test);
         this.transactionProviderType = transactionProviderType;
@@ -95,10 +103,6 @@ public class MakumbaTestSetup extends TestSetup {
         p.put("indiv.name", namePersonIndivName_John);
         p.put("indiv.surname", namePersonIndivSurname_John);
 
-        Calendar c = Calendar.getInstance();
-        c.clear();
-        c.set(1977, 2, 5);
-        birthdate = c.getTime();
         p.put("birthdate", birthdate);
 
         p.put("uniqDate", birthdate);
