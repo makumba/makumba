@@ -16,7 +16,7 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
-0.8.1.8; 28 Nov 2008
+0.8.1.8; 30 Nov 2008
 rudi: fix for search forms & passing on dates in QueryString
 
 0.8.1.7; 28 Nov 2008
