@@ -16,6 +16,9 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.8; 28 Nov 2008
+rudi: fix for search forms & passing on dates in QueryString
+
 0.8.1.7; 28 Nov 2008
 rudi: fix for calendar editor for inputs on pointedType.fieldName
 rudi: various fixes on tests, new test for calendar editor fix
