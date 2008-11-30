@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:pagination tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleClass</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">yes</td>
+          <td colspan="1" rowspan="1">Generic html tag attribute, see newForm</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">action</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">yes</td>
+          <td colspan="1" rowspan="1">The target page to go to when clicking on a pagination link.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">paginationLinkTitle</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">yes</td>
+          <td colspan="1" rowspan="1">Whether or not to display title="..." elements on the pagination links.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">itemName</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">yes</td>
+          <td colspan="1" rowspan="1">The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
+    
+        <code/>
+  
+      </p>
+    </section>  </body></document>
