@@ -242,6 +242,21 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
+    public void testMQLFunctions() throws ServletException, IOException {
+        // FIXME: this test will fail
+        // a line-by-line comparison can not work for the dynamic values TS_create & TS_ modify
+        pageContext.include("list-oql/testMQLFunctions.jsp");
+    }
+
+    public void endMQLFunctions(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+    
     public void testMakPagination() throws ServletException, IOException {
         pageContext.include("list-oql/testMakPaginationTag.jsp");
     }
