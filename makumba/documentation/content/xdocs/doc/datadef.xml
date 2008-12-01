@@ -387,7 +387,7 @@
 	    </table>
 	    
 	    <p>Valid comparison operators are the ones defined in Java:</p>
-	    <table class="tagParamDef">
+	    <table>
 	      <tr>
 	        <th>Operator</th>
 	        <th>Meaning</th>

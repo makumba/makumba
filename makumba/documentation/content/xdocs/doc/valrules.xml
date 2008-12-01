@@ -68,7 +68,7 @@
     <section id="comparison"><title>Comparison rule</title>
     <p>This rule allows to compare a field to a constant value or simple function calls.</p>
     <p>The following constants are currently available:</p>
-    <table class="tagParamDef">
+    <table>
       <tr>
         <th>Constants</th>
         <th>Description</th>
@@ -86,7 +86,7 @@
     </table>
     
     <p>The following functions are currently available:</p>
-    <table class="tagParamDef">
+    <table>
       <tr>
         <th>Function</th>
         <th>Description</th>
@@ -114,7 +114,7 @@
     </table>
     
     <p>Valid comparison operators are the ones defined in Java:</p>
-    <table class="tagParamDef">
+    <table>
       <tr>
         <th>Operator</th>
         <th>Meaning</th>
