@@ -460,18 +460,261 @@
     <td valign="top">
     <div class="navbarPage">
     <ul class="navbarPage">
+      <li class="section">
+        <a href="#MQL">Makumba MQL</a>
+        <ul class="navbarPage">
+          <li class="sectionLevel2"><a href="#mqlFunctions">functions</a></li>
+        </ul>
+      </li>
       <li class="section"><a href="#OQL">OQL</a></li>
-      <li><a href="#HQL">Hibernate HQL</a></li>
+      <li class="section"><a href="#HQL">Hibernate HQL</a></li>
     </ul>
     </div>
     </td>
     <td>
 
+    <h3 id="MQL">MQL</h3>
+    <p>As of Makumba version 0.8.1., the default query language is 'MQL', Makumba Query Language. MQL builds upon <a href="#HQL">Hibernate's
+    HQL</a>.</p>
+
+    <h4 id="mqlFunctions">MQL Functions</h4>
+    <p>MQL provides support for functions that will translate into SQL functions. Currently, the following functions are supported:</p>
+    <h5>String functions</h5>
+    <table class="tagParamDef">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>argument(s)</th>
+          <th>result type</th>
+          <th>description</th>
+        </tr>
+      </thead>  
+      <tbody>
+        <tr>
+          <td>lower</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Converts the string argument to lower case</td>
+        </tr>
+        <tr>
+          <td>upper</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Converts the string argument to upper case</td>
+        </tr>
+        <tr>
+          <td>trim</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Remove leading trailing spaces.</td>
+        </tr>
+        <tr>
+          <td>ltrim</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Remove leading spaces.</td>
+        </tr>
+        <tr>
+          <td>rtrim</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Remove trailing spaces.</td>
+        </tr>
+        <tr>
+          <td>concat</td>
+          <td>(str1, str2, ...)</td>
+          <td>string</td>
+          <td>Concatenates two or more strings</td>
+        </tr>
+        <tr>
+          <td>concat_ws</td>
+          <td>(separator, str1, str2, ...)</td>
+          <td>string</td>
+          <td>Concatenates two or more string with the given separator</td>
+        </tr>
+        <tr>
+          <td>substring</td>
+          <td>(str, position [, length])</td>
+          <td>string</td>
+          <td>Takes a substring of the given string</td>
+        </tr>
+        <tr>
+          <td>format</td>
+          <td>string</td>
+          <td>string</td>
+          <td>Left-trim on the string argument</td>
+        </tr>
+        <tr>
+          <td>reverse</td>
+          <td>(str)</td>
+          <td>string</td>
+          <td>Returns the string <code>str</code> with the order of the characters reversed. </td>
+        </tr>
+        <tr>
+          <td>ascii</td>
+          <td>(str)</td>
+          <td>int</td>
+          <td>Return numeric value of left-most character.</td>
+        </tr>
+        <tr>
+          <td>character_length</td>
+          <td>(str)</td>
+          <td>int</td>
+          <td>Return number of characters in the string argument.</td>
+        </tr>
+        <tr>
+          <td>regexp</td>
+          <td><code>expr</code> regexp <code>patt</code></td>
+          <td>int (0, 1)</td>
+          <td>
+            Performs a pattern match of a string expression <code>expr</code> against a pattern <code>patt</code>. For example:
+            <pre class="example">SELECT 'makumba!' REGEXP '[a-z]*'; 
+ -> 1</pre>
+          </td>
+        </tr>        
+      </tbody>
+    </table>
+    
+    <h5>Date functions</h5>
+    <table class="tagParamDef">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>argument(s)</th>
+          <th>result type</th>
+          <th>description</th>
+        </tr>
+      </thead>  
+      <tbody>
+        <tr>
+          <td>dayOfMonth</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the day of the month (0-31).</td>
+        </tr>
+        <tr>
+          <td>dayOfWeek (alternatively: weekday)</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the weekday index of the argument.</td>
+        </tr>
+        <tr>
+          <td>week</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the week number.</td>
+        </tr>
+        <tr>
+          <td>dayOfYear</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the day of the year (1-366).</td>
+        </tr>
+        <tr>
+          <td>year</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the year from the date argument.</td>
+        </tr>
+        <tr>
+          <td>month</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the month from the date argument.</td>
+        </tr>
+        <tr>
+          <td>hour</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the hour from the date argument.</td>
+        </tr>
+        <tr>
+          <td>minute</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the minute from the date argument.</td>
+        </tr>
+        <tr>
+          <td>second</td>
+          <td>(date)</td>
+          <td>int</td>
+          <td>Return the second from the date argument.</td>
+        </tr>
+        <tr>
+          <td>extract</td>
+          <td>(<code>unit</code> FROM <code>date</code>)</td>
+          <td>int</td>
+          <td>
+            Extracts parts from the date. For example:
+            <pre class="example">SELECT EXTRACT(YEAR_MONTH FROM '2009-07-02 01:02:03');
+ -> 200907</pre>
+            See the <a href="http://dev.mysql.com/doc/refman/5.0/en/date-and-time-functions.html#function_date-add">MySQL Documentation</a> for available units.
+          </td>
+        </tr>
+        <tr>
+          <td>monthName</td>
+          <td>(date)</td>
+          <td>string</td>
+          <td>Return the name of the month.</td>
+        </tr>
+        <tr>
+          <td>dayName</td>
+          <td>(date)</td>
+          <td>string</td>
+          <td>Return the name of the day.</td>
+        </tr>
+        <tr>
+          <td>date_add</td>
+          <td>(date, INTERVAL <code>expr</code> <code>unit</code>)</td>
+          <td>date</td>
+          <td>
+            Adds <code>expr</code> times the <code>unit</code> to the date. For example:
+              <pre class="example">SELECT '2008-12-31 23:59:59' + INTERVAL 1 SECOND;
+ -> '2009-01-01 00:00:00'</pre>
+              See the <a href="http://dev.mysql.com/doc/refman/5.0/en/date-and-time-functions.html#function_date-add">MySQL Documentation</a> for available units.
+            </td>
+        </tr>
+        <tr>
+          <td>date_sub</td>
+          <td>(date)</td>
+          <td>date</td>
+          <td>Substracts <code>expr</code> times the <code>unit</code> to the date. See <code>date_add</code>.</td>
+        </tr>
+        <tr>
+          <td>last_day</td>
+          <td>(date)</td>
+          <td>string</td>
+          <td>Return the name of the day.</td>
+        </tr>
+        <tr>
+          <td>current_date</td>
+          <td></td>
+          <td>date</td>
+          <td>Return the current date.</td>
+        </tr>
+        <tr>
+          <td>current_time</td>
+          <td></td>
+          <td>date</td>
+          <td>Return the current time.</td>
+        </tr>
+        <tr>
+          <td>current_timestamp (alternatively: now)</td>
+          <td></td>
+          <td>date</td>
+          <td>Return the current date and time.</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <br/>
+    <div class="note">Support for new functions is normally easy to add, so if you miss specific functions, please just mail the makumba developers!</div>
+
     <h3 id="OQL">OQL</h3>
-    <p>The database can be interrogated using the following language ( [] means optional, {} means any number of
-    repetitions). OQL is similar to SQL, a specification can be found at <a href="http://www.odmg.org">http://www.odmg.org</a>
-    (or check this <a href="oql-manual.pdf">PDF</a>). Makumba recognizes a subset of OQL at
-    the moment, which it translates to the <a href="SQL-drivers.html">host SQL</a> when necessary.</p>
+    <p>Before Makumba version 0.8.1, the default query language was OQL. OQL is similar to SQL, a specification can be found at <a
+      href="http://www.odmg.org">http://www.odmg.org</a> (or check this <a href="oql-manual.pdf">PDF</a>). Makumba recognized a subset of OQL, which
+    it translated to the <a href="SQL-drivers.html">host SQL</a> when necessary. The following language was accepted ([] means optional, {} means any
+    number of repetitions):</p>
     <pre class="example"><b>SELECT</b> expression [[<b>AS</b>] label] {, expression [[<b>AS</b>] label] }<br><b>FROM</b> {type [<b>AS</b>] label | label.field{.field} [<b>AS</b>] label }<br>[   <b>WHERE</b> expression<br>    [    <b>GROUP BY</b> expression {,expression}<br>        [  <b>HAVING</b> expression {,expression}  ]<br>    ]<br>]<br>[<b>ORDER BY</b> expression {,expression} [(<b>ASC</b>|<b>DESC</b>)] ]<br></pre>
     <p>Notations like <code>label.field{.field}</code> only allow "<code>field</code>" to be of pointer type in <b><i>expression</i></b>
     and set type in <b>FROM</b>. In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid.</p>
@@ -497,10 +740,10 @@
     char[20]</div>
 
     <h3 id="HQL">Hibernate Query Language - HQL</h3>
-    <div class="note futfeat">
-    <p>In the future, makumba will integrate <a href="http://www.hibernate.org">Hibernate</a>.<br />
-    Doing so, you will be able to take full advantage of hibernate's query language <a
-      href="http://www.hibernate.org/89.html">HQL</a>.</p>
+    <p>Makumba also integrates <a href="http://www.hibernate.org">Hibernate</a>, thus allowing to take full advantage of hibernate's query
+    language HQL. For documentation, please see the <a href="http://www.hibernate.org/89.html">Hibernate Query Language BNF</a>.</p>
+    <p>To enable Hibernate in JSP pages, you have to import a different TLD than normally:</p>
+    <pre class="example">&lt;%@ taglib uri="http://www.makumba.org/view-hql" prefix="mak" %&gt;<br></pre>
     </div>
     </td>
   </tr>
@@ -819,12 +1062,14 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
     <pre class="example">&lt;mak:list from="best.Student s, s.person p" where="p.gender=\"male\""<br>          orderBy="p.name"&gt;<br><br>    &lt;c:if test="${mak:count()==1}"&gt;<br>       &lt;p&gt; There are ${mak:maxCount()} male students:<br>    &lt;/c:if&gt;<br><br>    &lt;br&gt; &lt;%= counter %&gt;.<br>    &lt;mak:value expr="p.name"/&gt;<br>    &lt;mak:value expr="p.surname"/&gt; &lt;br&gt;<br>    &lt;mak:list from="p.addresses a"&gt;<br>       &lt;mak:value expr="a.streetno"/&gt; &lt;mak:value expr="a.city"/&gt;<br>    &lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br><br>&lt;c:if test="${mak:lastCount()==0}"&gt; There are no male students. &lt;/c:if&gt;<br></pre>
     <p></p>
     <table class="tagParamDef">
-      <tbody>
+      <thead>
         <tr>
           <th>tag parameter</th>
           <th>description</th>
           <th>comments</th>
         </tr>
+      </thead>  
+      <tbody>
         <tr>
           <td><tt>db</tt></td>
           <td>The makumba database to connect to. The format is <code><i>Host_SQLEngineType_DatabaseName</i></code>
