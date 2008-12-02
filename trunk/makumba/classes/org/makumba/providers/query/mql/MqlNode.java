@@ -350,7 +350,7 @@ public class MqlNode extends CommonAST {
     /** date-to-String functions. */
     public static String[] dateToStringFunctions = { "monthName", "dayName" };
 
-    public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp" };
+    public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp", "now" };
 
     public static String[] parametricDateFunctions = { "date_add", "date_sub", "last_day" };
 
