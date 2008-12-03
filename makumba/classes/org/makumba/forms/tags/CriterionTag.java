@@ -1,6 +1,7 @@
 package org.makumba.forms.tags;
 
 import java.io.IOException;
+import java.util.Hashtable;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -144,6 +145,13 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         if (fieldDef == null) {
             parseFieldList(pageCache);
             if (matchMode != null) {
+                // check for valid match-mode
+                Hashtable<String, String> matchModes = MatchModeTag.getValidMatchmodes(false, getFieldDefinition(pageCache));
+                if (!matchModes.containsKey(matchMode)) {
+                    throw new ProgrammerError("Unknown match mode '" + matchMode + "'. Valid options are: "
+                            + org.makumba.commons.StringUtils.toString(matchModes.keySet()));
+                }
+
                 getForm().responder.setDefaultMatchMode(getInputName(), matchMode);
             }
         }
