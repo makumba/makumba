@@ -33,13 +33,13 @@ public class MatchModeTag extends GenericMakumbaTag {
     private String[][] matchModes = null;
 
     /** {@value #knownRangeMatchModes} */
-    private static final Hashtable<String, String> knownRangeMatchModes = new Hashtable<String, String>(4);
+    public static final Hashtable<String, String> knownRangeMatchModes = new Hashtable<String, String>(4);
     static {
         knownRangeMatchModes.put(SearchTag.MATCH_BETWEEN, SearchTag.MATCH_BETWEEN);
         knownRangeMatchModes.put(SearchTag.MATCH_BETWEEN_INCLUSIVE, "between (inclusive)");
     }
 
-    private static final Hashtable<String, String> knownStringMatchModes = new Hashtable<String, String>(4);
+    public static final Hashtable<String, String> knownStringMatchModes = new Hashtable<String, String>(4);
     static {
         knownStringMatchModes.put(SearchTag.MATCH_CONTAINS, SearchTag.MATCH_CONTAINS);
         knownStringMatchModes.put(SearchTag.MATCH_EQUALS, SearchTag.MATCH_EQUALS);
@@ -47,25 +47,21 @@ public class MatchModeTag extends GenericMakumbaTag {
         knownStringMatchModes.put(SearchTag.MATCH_ENDS, "ends with");
     }
 
-    private static final Hashtable<String, String> knownDateMatchModes = new Hashtable<String, String>(4);
+    public static final Hashtable<String, String> knownDateMatchModes = new Hashtable<String, String>(4);
     static {
         knownDateMatchModes.put(SearchTag.MATCH_EQUALS, SearchTag.MATCH_EQUALS);
         knownDateMatchModes.put(SearchTag.MATCH_BEFORE, "before");
         knownDateMatchModes.put(SearchTag.MATCH_AFTER, "after");
     }
 
-    private static final Hashtable<String, String> knownNumberMatchModes = new Hashtable<String, String>(4);
+    public static final Hashtable<String, String> knownNumberMatchModes = new Hashtable<String, String>(4);
     static {
         knownNumberMatchModes.put(SearchTag.MATCH_EQUALS, SearchTag.MATCH_EQUALS);
         knownNumberMatchModes.put(SearchTag.MATCH_LESS, "less than");
         knownNumberMatchModes.put(SearchTag.MATCH_GREATER, "greater than");
     }
 
-    private static final Hashtable<String, String> allMatchModes = new Hashtable<String, String>(4);
-
-    private String elementSeparator;
-
-    private String labelSeparator;
+    public static final Hashtable<String, String> allMatchModes = new Hashtable<String, String>(4);
 
     static {
         allMatchModes.putAll(knownRangeMatchModes);
@@ -73,6 +69,23 @@ public class MatchModeTag extends GenericMakumbaTag {
         allMatchModes.putAll(knownDateMatchModes);
         allMatchModes.putAll(knownNumberMatchModes);
     }
+
+    public static Hashtable<String, String> getValidMatchmodes(boolean isRange, FieldDefinition fd) {
+        if (isRange) {
+            return knownRangeMatchModes;
+        } else if (fd.isStringType()) {
+            return knownStringMatchModes;
+        } else if (fd.isNumberType()) {
+            return knownNumberMatchModes;
+        } else if (fd.isDateType()) {
+            return knownDateMatchModes;
+        }
+        return null;
+    }
+
+    private String elementSeparator;
+
+    private String labelSeparator;
 
     public void setMatchModes(String s) {
         if (getCriterionTag().getMatchMode() != null) {
@@ -129,16 +142,7 @@ public class MatchModeTag extends GenericMakumbaTag {
         // analyse the match modes.
         // can do it only here and not in setMatchModes as we need to know the type of the input.
         if (fd != null && matchModes != null) {
-            Hashtable<String, String> curentModes = null;
-            if (getCriterionTag().isRange()) {
-                curentModes = knownRangeMatchModes;
-            } else if (fd.isStringType()) {
-                curentModes = knownStringMatchModes;
-            } else if (fd.isNumberType()) {
-                curentModes = knownNumberMatchModes;
-            } else if (fd.isDateType()) {
-                curentModes = knownDateMatchModes;
-            }
+            Hashtable<String, String> curentModes = getValidMatchmodes(getCriterionTag().isRange(), fd);
             for (int i = 0; i < matchModes[0].length; i++) {
                 String mode = matchModes[0][i];
                 if (!curentModes.containsKey(mode)) {
