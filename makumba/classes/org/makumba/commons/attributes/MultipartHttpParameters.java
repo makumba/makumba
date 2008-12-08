@@ -41,6 +41,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.makumba.LogicException;
 import org.makumba.Text;
 import org.makumba.commons.RuntimeWrappedException;
 
@@ -134,6 +135,15 @@ public class MultipartHttpParameters extends HttpParameters {
                     try {
                         // using image readers is faster than reading the image itself
                         Iterator<ImageReader> iterator = ImageIO.getImageReadersByMIMEType(mimeType);
+                        if (iterator == null) {
+                            throw new RuntimeWrappedException(new LogicException(
+                                    "Could not read image information, unknown content-type '" + mimeType
+                                            + "' provided."));
+                        }
+                        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").severe(
+                            "Could not read image information, unknown content-type '" + mimeType
+                                    + "' provided.\nAttribute name: '" + name + "'\n" + "Page: "
+                                    + request.getRequestURI());                        
                         ImageReader reader = iterator.next();
                         ImageInputStream iis = ImageIO.createImageInputStream(item.getInputStream());
                         reader.setInput(iis, false);
