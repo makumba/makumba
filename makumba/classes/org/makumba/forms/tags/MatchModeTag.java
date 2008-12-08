@@ -59,6 +59,8 @@ public class MatchModeTag extends GenericMakumbaTag {
         knownNumberMatchModes.put(SearchTag.MATCH_EQUALS, SearchTag.MATCH_EQUALS);
         knownNumberMatchModes.put(SearchTag.MATCH_LESS, "less than");
         knownNumberMatchModes.put(SearchTag.MATCH_GREATER, "greater than");
+        knownNumberMatchModes.put(SearchTag.MATCH_EQUAL_GREATER, "equal or greater than");
+        knownNumberMatchModes.put(SearchTag.MATCH_EQUAL_LESS, "equal or less than");
     }
 
     public static final Hashtable<String, String> allMatchModes = new Hashtable<String, String>(4);

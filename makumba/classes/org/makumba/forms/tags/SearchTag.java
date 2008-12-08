@@ -70,17 +70,21 @@ public class SearchTag extends FormTagBase {
 
     public static final String MATCH_LESS = "lessThan";
 
+    public static final String MATCH_EQUAL_GREATER = "equalGreaterThan";
+
+    public static final String MATCH_EQUAL_LESS = "equalLessThan";
+
     private static final String[] MATCH_AFTER_GREATER = { MATCH_AFTER, MATCH_GREATER };
 
     private static final String[] MATCH_BEFORE_LESS = { MATCH_BEFORE, MATCH_LESS };
 
-    private static final String[] MATCH_BETWEEN_ALL = { MATCH_BETWEEN, MATCH_BETWEEN_INCLUSIVE };
+    private static final String[] MATCH_BETWEEN_ALL = { MATCH_BETWEEN_INCLUSIVE, MATCH_BETWEEN };
 
     // hold comparison operators for between matches
     private static final Hashtable<String, String[]> MATCH_BETWEEN_OPERATORS = new Hashtable<String, String[]>();
     static {
-        MATCH_BETWEEN_OPERATORS.put(MATCH_BETWEEN, new String[] { ">", "<" });
         MATCH_BETWEEN_OPERATORS.put(MATCH_BETWEEN_INCLUSIVE, new String[] { ">=", "<=" });
+        MATCH_BETWEEN_OPERATORS.put(MATCH_BETWEEN, new String[] { ">", "<" });
     }
 
     private static final String RANGE_END = "RangeEnd";
@@ -393,6 +397,8 @@ public class SearchTag extends FormTagBase {
                             value = value + "%";
                         } else if (matchMode.equals(SearchTag.MATCH_ENDS)) {
                             value = "%" + value;
+                        } else {
+                            // FIXME: throw an exception otherwise
                         }
                         req.setAttribute(keyLike, value);
                         where += " LIKE $" + keyLike + "";
@@ -403,6 +409,12 @@ public class SearchTag extends FormTagBase {
                             // after or > match
                         } else if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_AFTER_GREATER)) {
                             where += ">$" + attributeName;
+                        } else if (matchMode.equals(SearchTag.MATCH_EQUAL_GREATER)) {
+                            where += ">=$" + attributeName;
+                        } else if (matchMode.equals(SearchTag.MATCH_EQUAL_LESS)) {
+                            where += "<=$" + attributeName;
+                        } else {
+                            // FIXME: throw an exception otherwise
                         }
                     }
                 }
