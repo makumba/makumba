@@ -35,7 +35,7 @@ import org.makumba.providers.QueryAnalysis;
 
 /**
  * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
- * order in the two is different, because OQL paramters are numbered. Also, strict type checking is performed for the
+ * order in the two is different, because OQL parameters are numbered. Also, strict type checking is performed for the
  * parameters
  */
 public class ParameterAssigner {
