@@ -2576,6 +2576,17 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td>Toggles range searching on the field(s)</td>
           <td>Fixed. Values are <code>true</code> or <code>false</code>; defaults to <code>false</code>.</td>
         </tr>
+        <tr>
+          <td><tt>matchMode</tt></td>
+          <td>Defines how the search terms shall be matched. Allowed values depend on the data types: 
+            <ul>
+              <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+              <li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+              <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+              <li>for date comparisons: 'equals', 'before', 'after'</li>
+            </ul></td>
+          <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</td>
+        </tr>
       </tbody>
     </table>
     <p>Example:</p>
@@ -2640,12 +2651,12 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
               <li>"radio" (radio buttons).</li>
             </ul>
           </td>
-          <td>Fixed</td>
+          <td>Fixed. Defaults to 'select'.</td>
         </tr>
         <tr>
           <td><tt>matchModes</tt></td>
           <td>
-            Defines how the search terms shall be matched. Can be a comma-separated list of operations; allowed values depend on the data types: 
+            Defines how the search terms shall be matched. Comma-separated list of operations; allowed values depend on the data types: 
             <ul>
               <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
               <li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
@@ -2653,7 +2664,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
               <li>for date comparisons: 'equals', 'before', 'after'</li>
             </ul>
           </td>
-          <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'between' for range comparisons.</td>
+          <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</td>
         </tr>
       </tbody>
     </table>

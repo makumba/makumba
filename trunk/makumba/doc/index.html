@@ -106,7 +106,7 @@ All this routine work is done for you, but you can freely build upon it.<br>
 &lt;mak:list from="general.Person p, p.addresses a" where="a.city = 'Vienna'"&gt;
   &lt;b&gt;&lt;mak:value expr="p.name"/&gt;&lt;/b&gt; was born on &lt;mak:value expr="p.dob"/&gt;&lt;br&gt;
   Phone numbers:
-  &lt;mak:list from="p.addresses a, a.phone_number n" separator=", "&gt;
+  &lt;mak:list from="a.phone_number n" separator=", "&gt;
     &lt;mak:value expr="n"/&gt;
   &lt;/mak:list&gt;
 &lt;/mak:list&gt;
