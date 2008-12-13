@@ -244,6 +244,10 @@ public class mddViewer extends LineViewer {
 
     public String parseValidationLine(String s) {
         validationRuleCounter += 1;
+        if (dd == null) {
+            // if the mdd wasn't parsed (due to an error), we cannot get details on the validation definition
+            return "<span name=\"validationRule\" class=\"mddValidationLine\">" + s + "</span>";
+        }
         StringBuffer result = new StringBuffer();
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
