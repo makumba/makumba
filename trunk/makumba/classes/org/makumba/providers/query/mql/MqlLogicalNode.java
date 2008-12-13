@@ -9,6 +9,7 @@ import antlr.SemanticException;
  * @version $Id: MqlComparisonNode.java,v 1.1 Aug 5, 2008 5:31:13 PM cristi Exp $
  */
 public class MqlLogicalNode extends MqlBinaryOperator {
+    private static final long serialVersionUID = 1L;
 
     public MqlLogicalNode() {
     }
