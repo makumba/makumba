@@ -38,7 +38,7 @@ public class ResponseControllerHandler extends ControllerHandler {
 
             // Check if we shall reload the form page
             Responder firstResponder = factory.getFirstResponder(req);
-            java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
+            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
                 "Caught a CompositeValidationException, reloading form page: " + firstResponder.getReloadFormOnError());
 
             if (firstResponder.getReloadFormOnError()) {
