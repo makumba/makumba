@@ -67,12 +67,13 @@ public class RelationCrawlerTool extends HttpServlet {
         Logger.getLogger("org.makumba.devel.relations").info("\n\nCrawling finished, took: "
             + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
-        RelationCrawler.writeJSPAnalysisError(webappRoot + File.separator + "analysis-errors.txt", rc.getJSPAnalysisErrors(), rc.getJSPCrawlCount());
+        //RelationCrawler.writeJSPAnalysisError(webappRoot + File.separator + "analysis-errors.txt", rc.getJSPAnalysisErrors(), rc.getJSPCrawlCount());
+
+        rc.writeRelationsToDb();
 
         Logger.getLogger("org.makumba.devel.relations").info("\n\nWriting to database finished, total time: "
             + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
         
-        rc.writeRelationsToDb();
 
         // go back to the page that called us
         resp.sendRedirect(req.getHeader("referer"));
