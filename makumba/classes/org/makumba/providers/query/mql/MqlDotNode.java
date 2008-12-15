@@ -28,8 +28,9 @@ public class MqlDotNode extends MqlNode {
             label = walker.currentContext.join(son.label, son.field, null, -1, this);
         } else if (getFirstChild() instanceof MqlIdentNode) {
             label = ((MqlIdentNode) getFirstChild()).label;
-        } else
+        } else {
             throw new SemanticException("(expression).field not supported", "", getLine(), getColumn());
+        }
 
         walker.currentContext.selectField(label, field, this);
     }
@@ -37,8 +38,9 @@ public class MqlDotNode extends MqlNode {
     void processInFrom() throws SemanticException {
         // we simply compose the path
         // we work with normal text, not TextList as this is a type name, will be name-resolved later
-        if (getFirstChild() instanceof MqlDotNode)
+        if (getFirstChild() instanceof MqlDotNode) {
             ((MqlDotNode) getFirstChild()).processInFrom();
+        }
         setText(getFirstChild().getText() + "." + getFirstChild().getNextSibling().getText());
     }
 
