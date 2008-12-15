@@ -18,7 +18,6 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.oql.QueryAST;
 
-import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.collections.AST;
 
@@ -89,7 +88,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         text = mg.text;
         
         long diff = new java.util.Date().getTime() - d.getTime();
-        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("MQL to SQL: " + diff + " ms: " + query);
+        java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL to SQL: " + diff + " ms: " + query);
 
     }
 
