@@ -1,5 +1,7 @@
 package org.makumba.providers.query.mql;
 
+import java.util.logging.Level;
+
 import org.makumba.commons.NameResolver;
 
 import antlr.RecognitionException;
@@ -19,6 +21,11 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
 
     @Override
     protected void out(String s) {
+        // if we get an unexpected value, do some logging
+        if (s == null) {
+            java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").log(Level.SEVERE,
+                "Got 'null' to append to TextList.", new Throwable());
+        }
         text.append(s);
     }
 
