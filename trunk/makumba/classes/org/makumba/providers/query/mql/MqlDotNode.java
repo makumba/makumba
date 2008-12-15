@@ -1,8 +1,5 @@
 package org.makumba.providers.query.mql;
 
-import org.makumba.DataDefinition;
-import org.makumba.commons.NameResolver.TextList;
-
 import antlr.SemanticException;
 
 /**
@@ -12,6 +9,8 @@ import antlr.SemanticException;
  * @version $Id: MqlDotNode.java,v 1.1 Aug 5, 2008 5:34:23 PM cristi Exp $
  */
 public class MqlDotNode extends MqlNode {
+    private static final long serialVersionUID = 1L;
+
     public MqlDotNode() {
     }
 
