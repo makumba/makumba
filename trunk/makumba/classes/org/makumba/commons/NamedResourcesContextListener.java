@@ -34,14 +34,14 @@ import javax.servlet.ServletContextEvent;
 public class NamedResourcesContextListener implements javax.servlet.ServletContextListener {
     public NamedResourcesContextListener() {
         // this also ensures that the loadTime of MakumbaSystem is set
-        java.util.logging.Logger.getLogger("org.makumba." + "system").info("loading makumba context listener");
+        java.util.logging.Logger.getLogger("org.makumba.system").info("loading makumba context listener");
     }
 
     public void contextInitialized(ServletContextEvent sce) {
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
-        java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+        java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
         NamedResources.cleanup();
         JDBCUnload();
     }
