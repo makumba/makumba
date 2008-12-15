@@ -301,13 +301,18 @@
     <p>Validation rules are defined inside a data definition, and allow Makumba to automatically validated form data
     input.</p>
     <p>The general syntax of a validation rule definition is as follows:
-    <pre class="example">[validation rule name] : [validation rule] : [error message]</pre>
-    <h3>Validation rule name</h3>
-    <p>The validation rule name is an identifier which should be unique. The exact usage is not yet specified, but
-    it could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
+    <pre class="example">[fieldName or ruleName]%[ruleType] = [validation rule] : [error message]</pre>
+    
+    <h3>FieldName / ruleName and ruleType</h3>
+    <p>For validation rules that operate on one specific field only, you have to use the name of the field; this applies to
+    number range, string length and regular-expression rules. For other rules, instead of a field name, you specify the validation
+    rule name, which serves an identifier which should be unique. The exact usage of the identifier is not yet specified, but it
+    could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
+    <p>The <code>ruleType</code> can be one of the following: [range | length | matches | compare | unique]</p>
+    
     <h3>Validation rule</h3>
     <p>The validation rule specifies what should be validated, and can be one of the following</p>
-    <pre class="example">[range validation | string length | regular expression | comparison]</pre>
+    <pre class="example">[range validation | string length | regular expression | comparison | multi-field uniqueness]</pre>
     
     <h4><a name="range">Number range rule</a></h4>
     <p>The range definition rule applies for <code>Number</code> types, i.e. <i>int</i> and <i>real</i>. The
@@ -2178,6 +2183,13 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no
           makumba type associated with an attribute)</td>
           <td>Fixed. Can be <code>char, char[xx], int, date, text, ptr Type, set Type</code></td>
+        </tr>
+        <tr>
+          <td><tt>nullOption</tt></td>
+          <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
+          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+          select a value, rather leaving the default (first) value selected.</td>
+          <td>Fixed. Only for <code>ptr and intEnum types</code></td>
         </tr>
         <tr>
           <td><tt>format</tt></td>
