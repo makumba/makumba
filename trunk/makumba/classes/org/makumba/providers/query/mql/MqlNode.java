@@ -74,23 +74,27 @@ public class MqlNode extends CommonAST {
     }
 
     private void addCheckedIds(MqlNode child) {
-        if (child != null && child.checkAsIds != null)
+        if (child != null && child.checkAsIds != null) {
             if (getType() == HqlSqlTokenTypes.WHERE) {
                 // there are AS labels used in the WHERE section, we cannot allow that
                 walker.error = new SemanticException("cannot use AS identifiers in WHERE: " + child.checkAsIds, "",
                         getLine(), getColumn());
-            } else if (checkAsIds != null)
+            } else if (checkAsIds != null) {
                 checkAsIds.addAll(child.checkAsIds);
-            else
+            } else {
                 checkAsIds = child.checkAsIds;
+            }
+        }
     }
 
     protected void oneMoreChild(MqlNode child) {
-        if (walker.error != null)
+        if (walker.error != null) {
             return;
+        }
         FieldDefinition tp = findMakType(child);
-        if (tp != null)
+        if (tp != null) {
             makType = tp;
+        }
         if (getType() == HqlSqlTokenTypes.NOT && child.isParam()) {
             child.setMakType(makeBooleanFieldDefinition());
         }
@@ -104,27 +108,30 @@ public class MqlNode extends CommonAST {
             // for processing the left operand, we assume either that the list (right operand)
             // has one member or that all members are of the same type
             boolean leftParam = checkParam(inListMember, (MqlNode) getFirstChild());
-            if (!leftParam)
+            if (!leftParam) {
                 try {
                     checkAndRewriteOperand(inListMember, (MqlNode) getFirstChild());
                 } catch (SemanticException e) {
                     walker.error = e;
                     return;
                 }
+            }
             // processing of the right operand, we look for parameters or strings to rewrite
             do {
-                if (checkParam((MqlNode) getFirstChild(), inListMember))
+                if (checkParam((MqlNode) getFirstChild(), inListMember)) {
                     if (leftParam) {
                         walker.error = new SemanticException("cannot have paramters on both sides of IN", "",
                                 getLine(), getColumn());
                         return;
-                    } else
+                    } else {
                         try {
                             checkAndRewriteOperand((MqlNode) getFirstChild(), inListMember);
                         } catch (SemanticException e) {
                             walker.error = e;
                             return;
                         }
+                    }
+                }
                 inListMember = (MqlNode) inListMember.getNextSibling();
             } while (inListMember != null);
         }
@@ -141,8 +148,9 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.SOME:
                 return child.getMakType();
             case HqlSqlTokenTypes.SELECT:
-                if (child.getType() == HqlSqlTokenTypes.SELECT_CLAUSE)
+                if (child.getType() == HqlSqlTokenTypes.SELECT_CLAUSE) {
                     return child.getMakType();
+                }
                 return null;
             case HqlSqlTokenTypes.SELECT_CLAUSE:
                 if (makType != null) {
@@ -157,15 +165,17 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.AGGREGATE:
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:
-                if (child.isParam())
+                if (child.isParam()) {
                     child.setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "int"));
+                }
                 return child.getMakType();
             case HqlSqlTokenTypes.CASE:
                 // TODO: maybe WHEN, THEN or ELSE are parameters
                 // set the WHEN parameter type to boolean, and THEN has the type of ELSE
                 // if both THEN and ELSE are parameters, we're in trouble
-                if (child.getType() == HqlSqlTokenTypes.ELSE)
+                if (child.getType() == HqlSqlTokenTypes.ELSE) {
                     return ((MqlNode) getFirstChild().getFirstChild().getNextSibling()).getMakType();
+                }
         }
         return null;
     };
@@ -173,12 +183,15 @@ public class MqlNode extends CommonAST {
     private FieldDefinition getFunctionType(MqlNode child) {
         String type = null;
         String name = child.getText();
-        if (dateFunctions.contains(name))
+        if (dateFunctions.contains(name)) {
             type = "date";
-        if (intFunctions.contains(name))
+        }
+        if (intFunctions.contains(name)) {
             type = "int";
-        if (stringFunctions.contains(name))
+        }
+        if (stringFunctions.contains(name)) {
             type = "char[255]";
+        }
         if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
             return walker.currentContext.ddp.makeFieldDefinition("x", type);
@@ -197,17 +210,21 @@ public class MqlNode extends CommonAST {
         return makType;
     }
 
+    @Override
     public void setText(String text) {
         super.setText(text);
-        if (originalText == null && text.length() > 0)
+        if (originalText == null && text.length() > 0) {
             originalText = text;
+        }
     }
 
+    @Override
     public void setType(int type) {
         super.setType(type);
         String def = knownType();
-        if (def != null)
+        if (def != null) {
             setMakType(walker.currentContext.ddp.makeFieldDefinition("x", def));
+        }
     }
 
     String knownType() {
@@ -238,8 +255,9 @@ public class MqlNode extends CommonAST {
     }
 
     protected void checkForOperandType(MqlNode ast) {
-        if (!ast.isParam() && ast.getMakType() == null)
+        if (!ast.isParam() && ast.getMakType() == null) {
             throw new IllegalStateException("No makumba type computed for " + MqlQueryAnalysis.showAst(ast));
+        }
     }
 
     boolean isParam() {
@@ -253,16 +271,18 @@ public class MqlNode extends CommonAST {
         if (!(left.isParam() && left.getMakType() == null) // 
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
-                && !(right.getMakType().isDateType() && left.getMakType().isDateType()))
+                && !(right.getMakType().isDateType() && left.getMakType().isDateType())) {
             throw new SemanticException("incompatible operands " + left.getText() + "("
                     + toStringType(left.getMakType()) + ") and " + right.getText() + " ("
                     + toStringType(right.getMakType()) + ")", "", getLine(), getColumn());
+        }
     }
 
     private static String toStringType(FieldDefinition makType) {
         String s = makType.toString();
-        if (!s.equals("ptr"))
+        if (!s.equals("ptr")) {
             return s;
+        }
         return s + " " + makType.getPointedType().getName();
     }
 
@@ -271,17 +291,20 @@ public class MqlNode extends CommonAST {
     }
 
     public void writeTo(TextList t) {
-        if (textList == null)
+        if (textList == null) {
             t.append(getText());
-        else
+        } else {
             t.append(textList);
+        }
     }
 
+    @Override
     public String toString() {
-        if (textList != null)
+        if (textList != null) {
             return textList.toString();
-        else
+        } else {
             return super.getText();
+        }
     }
 
     public void setTextList(TextList tl) {
@@ -295,7 +318,7 @@ public class MqlNode extends CommonAST {
             String arg1 = s.substring(1, s.length() - 1);
             Object o = null;
             try {
-                o = ((FieldDefinition) left.getMakType()).checkValue(arg1);
+                o = (left.getMakType()).checkValue(arg1);
             } catch (org.makumba.InvalidValueException e) {
                 // walker.printer.showAst(right, walker.pw);
                 throw new SemanticException(e.getMessage(), "", getLine(), getColumn());
@@ -305,8 +328,9 @@ public class MqlNode extends CommonAST {
             }
             if (o instanceof Number) {
                 right.setText(o.toString());
-            } else
+            } else {
                 right.setText("\'" + o + "\'");
+            }
             return true;
 
         } else {
@@ -316,7 +340,7 @@ public class MqlNode extends CommonAST {
     }
 
     protected boolean checkParam(MqlNode left, MqlNode right) {
-        if (right.isParam())
+        if (right.isParam()) {
             if (left.isParam()) {
                 walker.error = new SemanticException("can't have two parameters in a non-logical binary operator", "",
                         getLine(), getColumn());
@@ -325,6 +349,7 @@ public class MqlNode extends CommonAST {
                 walker.setParameterType(right, left);
                 return true;
             }
+        }
         return false;
     }
 
