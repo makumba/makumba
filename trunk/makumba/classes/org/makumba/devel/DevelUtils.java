@@ -117,7 +117,7 @@ public class DevelUtils {
         w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
         for (String key : allGenericDeveloperToolsMap.keySet()) {
             if (!key.equals(toolKey)) {
-                if (Configuration.getConfigProperty(key).endsWith(Configuration.PROPERTY_NOT_SET)) {
+                if (Configuration.getConfigProperty(key).equals(Configuration.PROPERTY_NOT_SET)) {
                     w.print("<span style=\"color: grey\">" + allGenericDeveloperToolsMap.get(key)
                             + ": disabled </span><br/>");
                 } else {

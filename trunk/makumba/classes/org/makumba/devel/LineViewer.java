@@ -51,7 +51,6 @@ import org.makumba.devel.relations.FileRelations;
 import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.TransactionProvider;
 
 /**
  * a viewer that shows everything per line
@@ -244,7 +243,7 @@ public abstract class LineViewer implements SourceViewer {
 
             if (printLineNumbers) {
                 String urlParams = "";
-                Enumeration e = request.getParameterNames();
+                Enumeration<?> e = request.getParameterNames();
                 while (e.hasMoreElements()) {
                     String key = (String) e.nextElement();
                     Object value = request.getParameter(key);
@@ -293,9 +292,10 @@ public abstract class LineViewer implements SourceViewer {
         if (webAppRoot.endsWith("/")) {
             webAppRoot = webAppRoot.substring(0, webAppRoot.length() - 1);
         }
-        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot, RelationCrawler.getDefaultTargetDatabase(), false, "file://", "", false);
-        
-        if (realPath!= null && realPath.startsWith(webAppRoot)) {
+        RelationCrawler relationCrawler = RelationCrawler.getRelationCrawler(webAppRoot,
+            RelationCrawler.getDefaultTargetDatabase(), false, "file://", "", false);
+
+        if (realPath != null && realPath.startsWith(webAppRoot)) {
             String filePath = realPath.substring(webAppRoot.length());
             FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
 
@@ -303,9 +303,17 @@ public abstract class LineViewer implements SourceViewer {
             printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
             printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
             if (fileDependents.isEmpty()) {
-                if(!relationCrawler.wasCrawled()) {
+                if (!relationCrawler.wasCrawled()) {
                     // TODO make nicer, i.e. display something else while it crawls using some JS
-                    writer.println("No relations have been computed for this webapp.<br><a href=\""+ request.getContextPath() + Configuration.getMakumbaRelationCrawlerLocation() + "\">Crawl now</a> (this will take some time)");
+                    // TODO: simply deactivating calling the crawler again would be a first step..
+                    writer.println("No relations have been computed for this webapp.");
+                    if (Configuration.getMakumbaRelationCrawlerLocation().equals(Configuration.PROPERTY_NOT_SET)) {
+                        writer.print("<br/><span style=\"color: grey; font-size: smaller\">Manually triggering crawling is disabled</span>");
+                    } else {
+                        writer.println("<br><a href=\"" + request.getContextPath()
+                                + Configuration.getMakumbaRelationCrawlerLocation()
+                                + "\">Crawl now</a> (this will take some time)");
+                    }
                 } else {
                     writer.println("No relations found for this file!");
                 }
@@ -331,7 +339,7 @@ public abstract class LineViewer implements SourceViewer {
                 Vector<RelationOrigin> occurrences = map.get(key);
                 String path = getPath(key, fileType);
                 String display = getDisplay(key, fileType);
-                
+
                 if (occurrences.size() > 0) {
                     RelationOrigin firstElement = occurrences.firstElement();
                     if (fileType.equals(TYPE_JSP)) { // only JSPs have line info
@@ -413,7 +421,7 @@ public abstract class LineViewer implements SourceViewer {
                 path = "WEB-INF/classes/" + path.replace('.', '/') + ".java";
             } else if (this instanceof mddViewer) {
                 String additionalPath = "WEB-INF/classes/";
-                if (realPath!= null && realPath.contains("classes/dataDefinitions")) {
+                if (realPath != null && realPath.contains("classes/dataDefinitions")) {
                     additionalPath += "dataDefinitions/";
                 }
                 path = additionalPath + path.replace('.', '/') + ".mdd";
