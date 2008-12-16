@@ -757,7 +757,7 @@ public class table extends TestCase {
                     + org.makumba.commons.NamedResources.getCacheInfo()
 
             );
-            java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+            java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
             NamedResources.cleanup();
         }
     }

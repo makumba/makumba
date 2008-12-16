@@ -107,7 +107,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         }
         
         long diff = new java.util.Date().getTime() - d.getTime();
-        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("HQL to SQL: " + diff + " ms: " + query);
+        java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("HQL to SQL: " + diff + " ms: " + query);
 
     }
 
