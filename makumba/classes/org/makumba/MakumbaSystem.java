@@ -334,7 +334,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getLogger(String suffix) {
-        return java.util.logging.Logger.getLogger("org.makumba." + "apps." + suffix);
+        return java.util.logging.Logger.getLogger("org.makumba.apps." + suffix);
     }
 
     /**

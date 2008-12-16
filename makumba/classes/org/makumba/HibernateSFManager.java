@@ -95,7 +95,7 @@ public class HibernateSFManager {
     private static SessionFactory makeSF(String cfgFilePath) {
         cfgFilePath += ".cfg.xml";
 
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Makumba Hibernate SessionFactory manager, Hibernate "+MakumbaSystem.getHibernateVersionNumber()+ ", configuration in "+cfgFilePath);
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Makumba Hibernate SessionFactory manager, Hibernate "+MakumbaSystem.getHibernateVersionNumber()+ ", configuration in "+cfgFilePath);
 
         Configuration cfg = new Configuration().configure(cfgFilePath);
         
@@ -116,14 +116,14 @@ public class HibernateSFManager {
         
         if ((mddList = cfg.getProperty("makumba.mdd.list")) != null) {
             dds = new Vector<String>();
-            java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Working with the MDDs " + mddList);
+            java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Working with the MDDs " + mddList);
             for (StringTokenizer st = new StringTokenizer(mddList, ","); st.hasMoreTokens();) {
                 dds.addElement(st.nextToken().trim());
             }
 
         } else if ((mddList = cfg.getProperty("makumba.mdd.additionalList")) != null) {
             dds = getDefaultMDDs(cfg);
-            java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
+            java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
                 "Working with additional MDDs " + mddList);
             for (StringTokenizer st = new StringTokenizer(mddList, ","); st.hasMoreTokens();) {
                 dds.addElement(st.nextToken().trim());
@@ -141,7 +141,7 @@ public class HibernateSFManager {
         dds.add("org.makumba.devel.relations.RelationOrigin");
         dds.add("org.makumba.devel.relations.WebappDatabase");
         
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generating classes under " + seedDir);
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Generating classes under " + seedDir);
 
         // FIXME this is an ugly workaround for the current state of the code. there should be only ONE config file, not
         // two
@@ -164,7 +164,7 @@ public class HibernateSFManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Generating mappings under " + seedDir + File.separator + prefix);
 
         try {
@@ -176,23 +176,23 @@ public class HibernateSFManager {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("building session factory");
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("building session factory");
         SessionFactory sessionFactory = cfg.buildSessionFactory();
 
         if ("true".equals(cfg.getProperty("makumba.schemaUpdate"))) {
             // if(!schemaUpd)
             // throw new ProgrammerError("Hibernate schema update must be authorized, remove it from cfg.xml!");
-            java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Peforming schema update");
+            java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Peforming schema update");
             SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
             schemaUpdate.execute(true, true);
-            java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Schema update finished");
+            java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Schema update finished");
         } else
-            java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("skipping schema update");
+            java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("skipping schema update");
 
         configuredConfiguration = cfg;
         
         generatedClasses = dds;
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info("Generated the classes " + dds);
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Generated the classes " + dds);
         
         return sessionFactory;
     }
@@ -202,7 +202,7 @@ public class HibernateSFManager {
         String mddRoot;
         if ((mddRoot = cfg.getProperty("makumba.mdd.root")) == null)
             mddRoot = "dataDefinitions";
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Working with the MDDs under " + mddRoot);
         dds = org.makumba.MakumbaSystem.mddsInDirectory(mddRoot);
         return dds;
@@ -216,7 +216,7 @@ public class HibernateSFManager {
         } else {
             configFile = defaultDataSourceName;
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "hibernate.sf").info(
+        java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Initializing configuration from " + configFile);
         return getSF(configFile);
     }
