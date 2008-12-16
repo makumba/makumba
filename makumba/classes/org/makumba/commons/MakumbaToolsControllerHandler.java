@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.makumba.db.makumba.UniquenessServlet;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.relations.RelationCrawlerTool;
