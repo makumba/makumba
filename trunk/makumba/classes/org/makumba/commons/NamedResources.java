@@ -84,6 +84,16 @@ public class NamedResources implements java.io.Serializable {
         allCaches = null;
     }
 
+    public static void cleanCaches() {
+        cleanStaticCache("Authorization constraints");
+        cleanStaticCache("JSP page analyses");
+        cleanStaticCache("MQL parsed queries (soft cache)");
+        cleanStaticCache("Hibernate HQL parsed queries (soft cache)");
+        cleanStaticCache("Data definitions parsed");
+        cleanStaticCache("Inlined queries by MqlQueryAnalysisProvider (soft cache)");
+        cleanStaticCache("Makumba resources (soft cache)");
+    }
+
     /**
      * Creates a static cache
      * 
@@ -132,6 +142,15 @@ public class NamedResources implements java.io.Serializable {
      */
     public static void cleanStaticCache(int n) {
         staticCaches.get(n).values = new HashMap();
+    }
+
+    public static void cleanStaticCache(String name) {
+        for (NamedResources r : staticCaches) {
+            if (r.getName().equals(name)) {
+                r.values.clear();
+                java.util.logging.Logger.getLogger("org.makumba.system").info("Cleaned '" + name + "' cache.");
+            }
+        }
     }
 
     /**

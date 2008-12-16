@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -153,6 +154,18 @@ public class DevelUtils {
             return true;
         }
         return false;
+    }
+
+    public static void printResponseMessage(ServletResponse res, String title, String message) throws IOException {
+        PrintWriter w = res.getWriter();
+        res.setContentType("text/html");
+        writePageBegin(w);
+        writeTitleAndHeaderEnd(w, title);
+        printPageHeader(w, title);
+        w.println("</table>");
+        w.println(message);
+        writePageEnd(w);
+        w.close();
     }
 
 }
