@@ -116,6 +116,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Reference Checker", "Check for broken references and show status of foreign key creation",
                 Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
                 request.getContextPath());
+            writeDescr(w, "Relation Crawler", "Runs a detection of file relations", Configuration.KEY_RELATION_CRAWLER,
+                Configuration.getMakumbaRelationCrawlerLocation(), request.getContextPath());
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");
@@ -171,10 +173,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
     private void writeDescr(PrintWriter w, final String name, final String desc, final String key, String loc,
             String contextPath) {
         w.println("  <tr>");
-        String link = loc.endsWith(Configuration.PROPERTY_NOT_SET) ? "-- disabled --" : "<a href=\"" + contextPath
-                + loc + "\">" + contextPath + loc + "</a>";
+        String link = loc.equals(Configuration.PROPERTY_NOT_SET) ? "-- disabled --" : "<a href=\"" + contextPath + loc
+                + "\">" + contextPath + loc + "</a>";
         w.println("    <td>" + name + "</td> <td>" + desc + "</td> <td>" + key + "</td> <td> " + link + " </td>");
         w.println("  </tr>");
     }
-
 }

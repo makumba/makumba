@@ -63,7 +63,7 @@ public class MakumbaINIFileReader extends IniEditor {
     }
 
     public Map<String, String> getProperties(String section) {
-        List optionNames = optionNames(section);
+        List<?> optionNames = optionNames(section);
         HashMap<String, String> ret = new HashMap<String, String>();
         for (Object object : optionNames) {
             ret.put((String) object, getProperty(section, (String) object));

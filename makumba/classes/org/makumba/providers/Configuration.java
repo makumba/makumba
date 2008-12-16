@@ -28,7 +28,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.makumba.commons.CollectionUtils;
 
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
@@ -103,7 +104,7 @@ public class Configuration implements Serializable {
 
     public static final String KEY_MAKUMBA_DOWNLOAD = "makumbaDownload";
 
-    private static final Map<String, String> allGenericDeveloperToolsMap = ArrayUtils.toMap(new String[][] {
+    private static final Map<String, String> allGenericDeveloperToolsMap = CollectionUtils.toMap(new String[][] {
             { KEY_MDD_VIEWER, "Mdd viewer" }, { KEY_JAVA_VIEWER, "Business logics viewer" },
             { KEY_DATA_LISTER, "Data browser" }, { KEY_DATA_QUERY_TOOL, "Data query" },
             { KEY_OBJECT_ID_CONVERTER, "Pointer value converter" }, { KEY_REFERENCE_CHECKER, "Reference checker" },
@@ -195,47 +196,47 @@ public class Configuration implements Serializable {
     }
 
     public static String getMddViewerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MDD_VIEWER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MDD_VIEWER));
     }
 
     public static String getJavaViewerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_JAVA_VIEWER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_JAVA_VIEWER));
     }
 
     public static String getLogicDiscoveryViewerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_LOGIC_DISCOVERY);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_LOGIC_DISCOVERY));
     }
 
     public static String getDataViewerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_OBJECT_VIEWER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_OBJECT_VIEWER));
     }
 
     public static String getDataListerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_LISTER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_LISTER));
     }
 
     public static String getDataQueryLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_QUERY_TOOL);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_DATA_QUERY_TOOL));
     }
 
     public static String getObjectIdConverterLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_OBJECT_ID_CONVERTER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_OBJECT_ID_CONVERTER));
     }
 
     public static String getReferenceCheckerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_REFERENCE_CHECKER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_REFERENCE_CHECKER));
     }
 
     public static String getCodeGeneratorLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_CODE_GENERATOR);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_CODE_GENERATOR));
     }
 
     public static String getMakumbaValueEditorLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_VALUE_EDITOR);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_VALUE_EDITOR));
     }
 
     public static String getMakumbaRelationCrawlerLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_RELATION_CRAWLER);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_RELATION_CRAWLER));
     }
 
     public static String getMakumbaUniqueLocation() {
@@ -244,11 +245,11 @@ public class Configuration implements Serializable {
     }
 
     public static String getMakumbaResourcesLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_RESOURCES);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_RESOURCES));
     }
 
     public static String getMakumbaDownloadLocation() {
-        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_DOWNLOAD);
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_DOWNLOAD));
     }
 
     public static String getConfigProperty(String key) {
@@ -265,6 +266,11 @@ public class Configuration implements Serializable {
 
     public static String getApplicationConfigurationSource() {
         return applicationConfig != null ? applicationConfig.getSource() : null;
+    }
+
+    private static String getCompletePath(String path) {
+        return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
+                : getMakumbaToolsLocation() + path;
     }
 
 }
