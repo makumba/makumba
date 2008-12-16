@@ -92,23 +92,23 @@ public class ResponderCacheManager {
             } catch (UnsupportedClassVersionError e) {
                 // if we try to read a responder that was written with a different version of the responder class
                 // we delete it, and throw an exception
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 new File(fileName).delete();
                 throw new org.makumba.MakumbaError(
                         "Responder cannot be re-used due to Makumba version change! Please reload this page.");
             } catch (InvalidClassException e) {
                 // same as above
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
                 new File(fileName).delete();
                 throw new org.makumba.MakumbaError(
                         "Responder cannot be re-used due to Makumba version change! Please reload this page.");
             } catch (IOException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: could not read from file " + fileName, e);
             } catch (ClassNotFoundException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to check for responder on the HDD: class not found: " + fileName, e);
             } finally {
                 if (objectIn != null) {

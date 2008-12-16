@@ -496,7 +496,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null) {
-                java.util.logging.Logger.getLogger("org.makumba." + "taglib.performance").fine(
+                java.util.logging.Logger.getLogger("org.makumba.taglib.performance").fine(
                     "form time: " + ((new java.util.Date().getTime() - starttime)));
             }
 

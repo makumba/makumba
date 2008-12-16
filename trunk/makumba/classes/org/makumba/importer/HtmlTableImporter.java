@@ -74,13 +74,13 @@ public class HtmlTableImporter {
         endOfCell();
         if (data != null && !data.isEmpty())
             if (data.size() != fieldOrder.length)
-                java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
+                java.util.logging.Logger.getLogger("org.makumba.import").severe(
                     type + ": invalid HTML table row length: " + data.size() + "\r\nin: " + data);
             else
                 try {
                     db.insert(type, importVector());
                 } catch (InvalidValueException e) {
-                    java.util.logging.Logger.getLogger("org.makumba." + "import").warning("record not inserted --> " + e.getMessage());
+                    java.util.logging.Logger.getLogger("org.makumba.import").warning("record not inserted --> " + e.getMessage());
                 }
     }
 
@@ -111,11 +111,11 @@ public class HtmlTableImporter {
                 text = s;
             if (e.getTagType().toLowerCase().equals("/table")) {
                 endOfRow();
-                java.util.logging.Logger.getLogger("org.makumba." + "import").severe("end of table encountered");
+                java.util.logging.Logger.getLogger("org.makumba.import").severe("end of table encountered");
                 return;
             }
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "import").severe("end of table missing");
+        java.util.logging.Logger.getLogger("org.makumba.import").severe("end of table missing");
     }
 
     Dictionary importVector() {
@@ -129,7 +129,7 @@ public class HtmlTableImporter {
                     d.put(fieldOrder[i], o);
                 v1.addElement(o);
             }
-        java.util.logging.Logger.getLogger("org.makumba." + "import").finest(v1.toString());
+        java.util.logging.Logger.getLogger("org.makumba.import").finest(v1.toString());
 
         return d;
     }

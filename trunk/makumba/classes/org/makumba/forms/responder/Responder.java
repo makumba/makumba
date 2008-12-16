@@ -403,7 +403,7 @@ public abstract class Responder implements java.io.Serializable {
             objectOut.writeObject(this); // we write the responder to disk
             objectOut.close();
         } catch (IOException e) {
-            java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+            java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                 "Error while writing responder to HDD, deleting file " + fileName, e);
             file.delete();
         }

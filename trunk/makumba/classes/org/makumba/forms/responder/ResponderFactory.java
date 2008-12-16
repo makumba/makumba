@@ -394,7 +394,7 @@ public class ResponderFactory {
                 // we do nothing, cause we will treat that from the ControllerFilter.doFilter
                 return e;
             } catch (LogicException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "logic.error").log(Level.INFO, "error", e);
+                java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "error", e);
                 message = Responder.errorMessage(e);
                 req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
