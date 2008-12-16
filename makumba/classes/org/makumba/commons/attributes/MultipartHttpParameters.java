@@ -86,7 +86,7 @@ public class MultipartHttpParameters extends HttpParameters {
     public MultipartHttpParameters(HttpServletRequest req) {
         super(req);
 
-        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
+        java.util.logging.Logger.getLogger("org.makumba.fileUpload").fine(
             "\n\n---- code with apache.commons.fileupload  ------\n");
 
         // Create a new file upload handler
@@ -140,7 +140,7 @@ public class MultipartHttpParameters extends HttpParameters {
                                     "Could not read image information, unknown content-type '" + mimeType
                                             + "' provided."));
                         }
-                        java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").severe(
+                        java.util.logging.Logger.getLogger("org.makumba.fileUpload").severe(
                             "Could not read image information, unknown content-type '" + mimeType
                                     + "' provided.\nAttribute name: '" + name + "'\n" + "Page: "
                                     + request.getRequestURI());                        
@@ -171,7 +171,7 @@ public class MultipartHttpParameters extends HttpParameters {
                 parameters.put(name + "_contentLength", contentSize);
                 parameters.put(name, contentToSave);
 
-                java.util.logging.Logger.getLogger("org.makumba." + "fileUpload").fine(
+                java.util.logging.Logger.getLogger("org.makumba.fileUpload").fine(
                     "Parameters set: contentType=" + mimeType + ", fileName=" + fileName + ", contentSize="
                             + contentSize);
 

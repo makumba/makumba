@@ -184,7 +184,7 @@ public class Database extends org.makumba.db.makumba.Database {
 				driver = sqlDrivers.getProperty(url.substring(5, url.indexOf(
 						':', 6)));
 
-			java.util.logging.Logger.getLogger("org.makumba." + "db.init").info(
+			java.util.logging.Logger.getLogger("org.makumba.db.init").info(
 					"Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
 			Class.forName(driver);
 			initConnections();
@@ -209,7 +209,7 @@ public class Database extends org.makumba.db.makumba.Database {
 				p.put("jdbc_driver.version", dbc.getMetaData()
 						.getDriverVersion().trim());
 
-				java.util.logging.Logger.getLogger("org.makumba." + "db.init").info(
+				java.util.logging.Logger.getLogger("org.makumba.db.init").info(
 						"\tconnected to " + p.get("sql_engine.name")
 								+ " version: " + p.get("sql_engine.version")
 								+ "\n\tusing " + p.get("jdbc_driver.name")
@@ -217,7 +217,7 @@ public class Database extends org.makumba.db.makumba.Database {
 								+ ("\n\tusing "+(isAutoIncrement()?"auto increment (no DBSV)":"DBSV " + p.get("dbsv"))));
 				if (!dbc.getMetaData().supportsTransactionIsolationLevel(
 						DESIRED_TRANSACTION_LEVEL)) {
-					java.util.logging.Logger.getLogger("org.makumba." + "db.init").warning(
+					java.util.logging.Logger.getLogger("org.makumba.db.init").warning(
 							"transaction isolation level "
 									+ DESIRED_TRANSACTION_LEVEL
 									+ " not supported, using "
@@ -263,7 +263,7 @@ public class Database extends org.makumba.db.makumba.Database {
 			ex = e;
 		}
 		if (failed) {
-			java.util.logging.Logger.getLogger("org.makumba." + "db.init").severe(
+			java.util.logging.Logger.getLogger("org.makumba.db.init").severe(
 					"failed to read catalog " + ex);
 		} else {
 			catalog = c;
@@ -363,7 +363,7 @@ public class Database extends org.makumba.db.makumba.Database {
 				+ state);
 		if (state != null && e.getSQLState().equals(state))
 			return;
-		java.util.logging.Logger.getLogger("org.makumba." + "db.init.tablechecking").log(
+		java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").log(
 				java.util.logging.Level.SEVERE, "" + e.getSQLState(), e);
 		throw new org.makumba.DBError(e, command);
 	}
@@ -374,7 +374,7 @@ public class Database extends org.makumba.db.makumba.Database {
 	 */
 	protected int exec(PreparedStatement ps) {
 		try {
-			java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").fine(
+			java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(
 					ps.toString());
 			ps.execute();
 			int n = ps.getUpdateCount();
@@ -409,7 +409,7 @@ public class Database extends org.makumba.db.makumba.Database {
         logException(e, dbc, Level.WARNING);
     }
 	static void logException(SQLException e, DBConnection dbc, Level lev) {
-        if(!java.util.logging.Logger.getLogger("org.makumba." + "db.exception").isLoggable(lev))
+        if(!java.util.logging.Logger.getLogger("org.makumba.db.exception").isLoggable(lev))
             return;
 		String log = "";
 		if (dbc != null)
@@ -419,7 +419,7 @@ public class Database extends org.makumba.db.makumba.Database {
 					+ " error code :" + se1.getErrorCode() + "\n";
 		}
 
-		java.util.logging.Logger.getLogger("org.makumba." + "db.exception").log(lev, "" + log);
+		java.util.logging.Logger.getLogger("org.makumba.db.exception").log(lev, "" + log);
 	}
 
 	/** write a date into an OQL query */

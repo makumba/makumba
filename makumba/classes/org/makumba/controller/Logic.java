@@ -76,13 +76,13 @@ public class Logic {
                 nameToObject.put(className, controller);
                 return controller;
             } catch (ClassNotFoundException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             } catch (InstantiationException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             } catch (IllegalAccessException e) {
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").log(Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
                     "Error while trying to load controller class " + className, e);
             }
         }
@@ -210,7 +210,7 @@ public class Logic {
                 msg += "\nFound class " + lastFound.getClass().getName();
             }
 
-            java.util.logging.Logger.getLogger("org.makumba." + "controller").info(msg);
+            java.util.logging.Logger.getLogger("org.makumba.controller").info(msg);
             ((Hashtable) supplementary).put(p, msg);
             Object foundClass = nameToObject.get(lastFound.getClass().getName());
             if (foundClass != null) {
@@ -440,7 +440,7 @@ public class Logic {
                 throw new UnauthenticatedException("Please provide username and password");
             }
         }
-        java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(match + " \n" + a);
+        java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(match + " \n" + a);
 
         StringBuffer funcCall = new StringBuffer();
         funcCall.append("SELECT ").append(qap.getPrimaryKeyNotation("x")).append(" AS col1 FROM ").append(type).append(
@@ -657,7 +657,7 @@ public class Logic {
                 throw new LogicInvocationError(g);
             }
         } else {
-            java.util.logging.Logger.getLogger("org.makumba." + "controller").warning(
+            java.util.logging.Logger.getLogger("org.makumba.controller").warning(
                 "requiredAttributes() is deprecated. Use checkAttributes(Attributes a, Database db) instead");
             Object attrs = null;
             try {
