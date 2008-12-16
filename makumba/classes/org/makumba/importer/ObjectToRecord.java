@@ -109,7 +109,7 @@ public class ObjectToRecord {
                     if (noImport.get(s) == null)
                         fields.put(s, f);
                 } else if (accountedImport.get(s) == null)
-                    java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
+                    java.util.logging.Logger.getLogger("org.makumba.import").severe(
                         "No Java correspondent for " + type + "." + s + " in " + c.getName());
             }
             Field flds[] = c.getFields();
@@ -120,7 +120,7 @@ public class ObjectToRecord {
                     String s = flds[i].getName();
 
                     if (this.type.getFieldDefinition(s) == null && noImport.get(s) == null)
-                        java.util.logging.Logger.getLogger("org.makumba." + "import").severe(
+                        java.util.logging.Logger.getLogger("org.makumba.import").severe(
                             "No Makumba correspondent for " + c.getName() + "." + s + " in " + type);
                 }
             }
@@ -167,7 +167,7 @@ public class ObjectToRecord {
         } catch (InvocationTargetException ite) {
             ite.getTargetException().printStackTrace();
         } catch (org.makumba.InvalidValueException ive) {
-            java.util.logging.Logger.getLogger("org.makumba." + "import").warning(ive.getMessage());
+            java.util.logging.Logger.getLogger("org.makumba.import").warning(ive.getMessage());
             return null;
         } catch (Throwable t) {
             t.printStackTrace();
@@ -185,7 +185,7 @@ public class ObjectToRecord {
             i = new Integer(Integer.parseInt(s.trim()));
         } catch (NumberFormatException nfe) {
             if (s.trim().length() > 0)
-                Logger.getLogger("org.makumba." + "import").warning(s);
+                Logger.getLogger("org.makumba.import").warning(s);
             return;
         }
         hmdd.put(mdd, i);
