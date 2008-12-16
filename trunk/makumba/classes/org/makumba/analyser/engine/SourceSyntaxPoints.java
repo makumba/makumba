@@ -300,7 +300,7 @@ public class SourceSyntaxPoints {
             for (int i = m.start(); i < m.end(); i++)
                 uncommentedContent.append(' ');
             endOfLast = m.end();
-            java.util.logging.Logger.getLogger("org.makumba." + "syntaxpoint.comment").fine(
+            java.util.logging.Logger.getLogger("org.makumba.syntaxpoint.comment").fine(
                     "UNCOMMENT " + patternName + " : " + m.group());
             addSyntaxPoints(m.start() + offset, m.end() + offset, patternName, null);
         }

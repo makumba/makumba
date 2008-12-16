@@ -34,7 +34,6 @@ import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.oql.QueryAST;
 
 public class SQLUpdate implements Update {
     
@@ -180,7 +179,7 @@ public class SQLUpdate implements Update {
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
-            java.util.logging.Logger.getLogger("org.makumba." + "db.update.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine("" + ps);
             java.util.Date d = new java.util.Date();
             int rez;
             try {
@@ -197,7 +196,7 @@ public class SQLUpdate implements Update {
                 throw new DBError(se, debugString);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba." + "db.update.performance").fine(
+            java.util.logging.Logger.getLogger("org.makumba.db.update.performance").fine(
                 "" + diff + " ms " + debugString);
             return rez;
         } catch (SQLException e) {

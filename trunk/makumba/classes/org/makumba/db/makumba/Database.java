@@ -128,7 +128,7 @@ public abstract class Database {
     }
 
     public void close() {
-        java.util.logging.Logger.getLogger("org.makumba." + "db.init").info(
+        java.util.logging.Logger.getLogger("org.makumba.db.init").info(
             "closing  " + getConfiguration() + "\n\tat "
                     + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
@@ -340,7 +340,7 @@ public abstract class Database {
 
     public void deleteFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv) {
         DataDefinition dd = ddp.getDataDefinition(table);
-        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.delete").info(
+        java.util.logging.Logger.getLogger("org.makumba.db.admin.delete").info(
             "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
@@ -413,7 +413,7 @@ public abstract class Database {
 
             for (int i = 0; i < _tables.length; i++) {
                 String nm = (String) ((Dictionary) v.elementAt(i)).get("name");
-                java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm);
+                java.util.logging.Logger.getLogger("org.makumba.db.admin.copy").info(nm);
                 _tables[i] = nm;
             }
             copyFrom(c, _tables, sourceDB, ignoreDbsv);

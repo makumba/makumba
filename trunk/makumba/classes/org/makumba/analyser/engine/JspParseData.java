@@ -237,7 +237,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         holder = analyzer.endPage(holder);
 
-        java.util.logging.Logger.getLogger("org.makumba." + "jspparser.time").info(
+        java.util.logging.Logger.getLogger("org.makumba.jspparser.time").info(
                 "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
     }
 
@@ -285,7 +285,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 syntaxPoints.addSyntaxPoints(origin + n + 1, origin + s.length(), "JSPTagAttributeValue", null);
             }
             // debug
-            Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags.attribute");
+            Logger log = java.util.logging.Logger.getLogger("org.makumba.jspparser.tags.attribute");
             log.finest("< Attribute : " + attr);
             log.finest("> AttrParse : " + attName + " = " + attValue);
         }
@@ -412,7 +412,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         TagData td= new TagData(tagName, start, end, !tagEnd?parseAttributes(tag, m.start()):null);
 
-        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
+        Logger log = java.util.logging.Logger.getLogger("org.makumba.jspparser.tags");
 
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE)) {
@@ -463,7 +463,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             }
         }
 
-        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
+        Logger log = java.util.logging.Logger.getLogger("org.makumba.jspparser.tags");
 
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE)) {
@@ -492,7 +492,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         TagData td = new TagData("include", start, end, parseAttributes(directive, -1) );
 
-        Logger log = java.util.logging.Logger.getLogger("org.makumba." + "jspparser.tags");
+        Logger log = java.util.logging.Logger.getLogger("org.makumba.jspparser.tags");
 
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE)) {

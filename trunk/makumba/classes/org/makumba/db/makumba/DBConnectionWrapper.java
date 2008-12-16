@@ -28,7 +28,6 @@ import java.io.StringWriter;
 import java.util.Date;
 
 import org.makumba.Attributes;
-import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
@@ -136,7 +135,7 @@ public class DBConnectionWrapper extends DBConnection {
 
     protected synchronized void finalize() {
         if (wrapped != ClosedDBConnection.getInstance()){
-            java.util.logging.Logger.getLogger("org.makumba." + "db").severe(
+            java.util.logging.Logger.getLogger("org.makumba.db").severe(
                 "Makumba connection " + getName() + " not closed\n" + getCreationStack());
             close();
         }

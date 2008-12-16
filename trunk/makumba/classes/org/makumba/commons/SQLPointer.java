@@ -56,7 +56,7 @@ public class SQLPointer extends Pointer {
     public SQLPointer(String type, int dbsv, int uid) {
         this(type);
         if (uid > (1 << MASK_ORDER)) {
-            java.util.logging.Logger.getLogger("org.makumba." + "debug.db").finest("p");
+            java.util.logging.Logger.getLogger("org.makumba.debug.db").finest("p");
             n = uid;
         } else
             n = compute(dbsv, uid);

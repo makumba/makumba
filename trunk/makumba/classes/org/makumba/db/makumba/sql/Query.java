@@ -41,7 +41,6 @@ import org.makumba.db.makumba.OQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.query.oql.QueryAST;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
@@ -124,7 +123,7 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
 
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine("" + ps);
             java.util.Date d = new java.util.Date();
             ResultSet rs = null;
             try {
@@ -134,7 +133,7 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new DBError(se, com);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.performance").fine("" + diff + " ms " + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine("" + diff + " ms " + ps);
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
