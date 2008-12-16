@@ -48,12 +48,13 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
 
     private void JDBCUnload() {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
-        ArrayList<Driver> driversToUnload=new ArrayList<Driver>();
+        ArrayList<Driver> driversToUnload = new ArrayList<Driver>();
         while (drivers.hasMoreElements()) {
-                Driver driver = drivers.nextElement();
-                if (driver.getClass().getClassLoader() != null && driver.getClass().getClassLoader().equals(getClass().getClassLoader())) {
-                        driversToUnload.add(driver);
-                }
+            Driver driver = drivers.nextElement();
+            if (driver.getClass().getClassLoader() != null
+                    && driver.getClass().getClassLoader().equals(getClass().getClassLoader())) {
+                driversToUnload.add(driver);
+            }
         }
         for (Driver driver : driversToUnload) {
             try {
@@ -63,6 +64,6 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
                 e.printStackTrace();
             }
         }
-        
+
     }
 }
