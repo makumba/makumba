@@ -169,11 +169,11 @@ public abstract class Table // extends RecordHandler
 
         Vector<Dictionary<String, Object>> v = sourceDB.executeQuery(selectAllWithDbsv, selectLimits);
         if (v.size() == 0) {
-            java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(nm + ": no records to copy");
+            java.util.logging.Logger.getLogger("org.makumba.db.admin.copy").info(nm + ": no records to copy");
             return;
         }
 
-        java.util.logging.Logger.getLogger("org.makumba." + "db.admin.copy").info(
+        java.util.logging.Logger.getLogger("org.makumba.db.admin.copy").info(
             nm + ": starting copying " + v.size() + " records");
 
         System.out.print("|");

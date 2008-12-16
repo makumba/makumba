@@ -108,7 +108,7 @@ public class ErrorControllerHandler extends ControllerHandler {
                 // most likely due to not being able to redirect the page to the error page due to already flushed
                 // buffers
                 // ==> we display a warning, and display the error message as it would have been on the page
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").severe(
+                java.util.logging.Logger.getLogger("org.makumba.controller").severe(
                     "Page execution breaks on page '"
                             + req.getServletPath()
                             + "' but the error page can't be displayed due to too small buffer size.\n"

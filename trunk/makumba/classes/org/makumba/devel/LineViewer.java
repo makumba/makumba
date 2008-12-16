@@ -204,7 +204,7 @@ public abstract class LineViewer implements SourceViewer {
         printPageEnd(writer);
         reader.close();
         double timeTaken = System.currentTimeMillis() - begin;
-        java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
+        java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").fine(
             "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 

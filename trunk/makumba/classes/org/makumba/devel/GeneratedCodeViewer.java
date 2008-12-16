@@ -236,7 +236,7 @@ public class GeneratedCodeViewer extends jspViewer {
                             + packageName.replace('.', File.separatorChar) + File.separator;
                     String logicPath = classesDirectory.getPath() + logicDir;
                     if (new File(logicPath).mkdirs()) {
-                        java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator").info(
+                        java.util.logging.Logger.getLogger("org.makumba.devel.codeGenerator").info(
                             "Created logic directory " + logicPath);
                     }
                     boolean hasSuperLogic = new File(logicPath + "Logic.java").exists();
