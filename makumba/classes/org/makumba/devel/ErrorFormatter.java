@@ -256,10 +256,10 @@ public class ErrorFormatter {
                 tr.close();
         }
         }catch (Throwable t1) {
-            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").log(
+            java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
                 java.util.logging.Level.SEVERE,
                 "Could not log exception to the db, exception to log was", t);
-            java.util.logging.Logger.getLogger("org.makumba." + "errorFormatter").log(
+            java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
                 java.util.logging.Level.SEVERE,
                 "Could not log exception to the db, database logging exception was", t1);
         }
@@ -415,7 +415,7 @@ public class ErrorFormatter {
                 if (i != -1) {
                     s = s.substring(0, i);
                 } else {
-                    java.util.logging.Logger.getLogger("org.makumba." + "devel").severe(
+                    java.util.logging.Logger.getLogger("org.makumba.devel").severe(
                         "servlet or filter call not found in stacktrace");
                 }
             }

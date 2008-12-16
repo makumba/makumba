@@ -144,7 +144,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                     w.println("<a href=\"" + addr + "\">" + list[i] + "</a>");
                 }
             } else {
-                java.util.logging.Logger.getLogger("org.makumba." + "devel").warning(
+                java.util.logging.Logger.getLogger("org.makumba.devel").warning(
                     "Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
             }
             w.println("</pre>");

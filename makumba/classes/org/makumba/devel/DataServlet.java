@@ -42,7 +42,7 @@ public abstract class DataServlet extends HttpServlet {
 
     protected String virtualPath;
 
-    static final Logger logger = java.util.logging.Logger.getLogger("org.makumba." + "devel.codeGenerator");
+    static final Logger logger = java.util.logging.Logger.getLogger("org.makumba.devel.codeGenerator");
     
     protected String toolLocation = null;
 

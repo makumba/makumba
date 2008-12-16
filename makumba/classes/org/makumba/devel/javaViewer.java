@@ -115,7 +115,7 @@ public class javaViewer extends LineViewer {
                 DEFAULT_JAVASTRINGLITERAL_STYLE));
         } catch (Throwable t) { // the properties file was not found / readable / etc
             // --> use default values
-            java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").fine(
+            java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").fine(
                 "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
                         + "' not found! Using default values.");
             javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVADOC_STYLE);
@@ -348,7 +348,7 @@ public class javaViewer extends LineViewer {
 
         printPageEnd(writer);
         double timeTaken = System.currentTimeMillis() - begin;
-        java.util.logging.Logger.getLogger("org.makumba." + "org.makumba.devel.sourceViewer").info(
+        java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").info(
             "Java sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
     }
 
