@@ -228,7 +228,7 @@ public class FunctionInliner {
             break;
         }
         if (!expr.equals(initialQuery))
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(initialQuery + " \n-> " + expr);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(initialQuery + " \n-> " + expr);
 
         return expr;
 
