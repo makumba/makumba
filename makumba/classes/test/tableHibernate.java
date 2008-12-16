@@ -632,7 +632,7 @@ public class tableHibernate extends TestCase {
 			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
 	
 	);
-			 java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+			 java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
             NamedResources.cleanup();
 		}
 	}

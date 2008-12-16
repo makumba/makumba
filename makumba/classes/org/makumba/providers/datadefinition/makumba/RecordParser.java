@@ -601,7 +601,7 @@ public class RecordParser {
             }
             m.appendTail(sb);
             if (found) {
-                java.util.logging.Logger.getLogger("org.makumba." + "db.query.inline").fine(
+                java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
                     queryFragment + " -> " + sb.toString());
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
                         f.getParameters(), f.getErrorMessage());
@@ -1314,7 +1314,7 @@ public class RecordParser {
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
                     targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
-                    java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
+                    java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
                         "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     continue;
                 } else {
@@ -1324,7 +1324,7 @@ public class RecordParser {
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
                 targetDD.addValidationRule(rule);
-                java.util.logging.Logger.getLogger("org.makumba." + "datadefinition.makumba").finer(
+                java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
                     "added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
                 mpe.add(e);

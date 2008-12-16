@@ -298,7 +298,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         if (path.indexOf("./") == -1) {
             ((RecordInfo) ri).name = path;
         } else {
-            java.util.logging.Logger.getLogger("org.makumba." + "debug.abstr").severe("shit happens: " + path);
+            java.util.logging.Logger.getLogger("org.makumba.debug.abstr").severe("shit happens: " + path);
         }
         return ri;
     }

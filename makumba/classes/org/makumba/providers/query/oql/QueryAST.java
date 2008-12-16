@@ -741,11 +741,11 @@ public class QueryAST extends OQLAST implements QueryAnalysis {
              * if(t!=null) { ASTFrame frame = new ASTFrame("AST JTree Example", t); frame.setVisible(true); }
              */
         } catch (antlr.TokenStreamException f) {
-            java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").warning(f + ": " + oqlQuery);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning(f + ": " + oqlQuery);
             throw new org.makumba.MakumbaError(f, oqlQuery);
         }
         long diff = new java.util.Date().getTime() - d.getTime();
-        java.util.logging.Logger.getLogger("org.makumba." + "db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
+        java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("OQL to SQL: " + diff + " ms: " + oqlQuery);
         return t;
     }
 
