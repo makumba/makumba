@@ -1,6 +1,5 @@
 package org.makumba.devel.relations;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +15,6 @@ import org.makumba.commons.FileUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.RelationCrawler.MakumbaRelatedFileFilter;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 /**
@@ -32,7 +30,8 @@ import org.makumba.providers.datadefinition.makumba.RecordInfo;
  * @version $Id: RelationCrawlerTool.java,v 1.1 Oct 19, 2008 5:18:46 PM manu Exp $
  */
 public class RelationCrawlerTool extends HttpServlet {
-    
+    private static final long serialVersionUID = 1L;
+
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         
