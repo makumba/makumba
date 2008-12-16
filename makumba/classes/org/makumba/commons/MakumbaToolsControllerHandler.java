@@ -67,6 +67,13 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         } else if (path.startsWith(Configuration.getMakumbaRelationCrawlerLocation())) {
             new RelationCrawlerTool().doPost(request, response);
             return false;
+        } else if (path.startsWith(Configuration.getMakumbaCacheCleanerLocation())) {
+            // reload the cache
+            java.util.logging.Logger.getLogger("org.makumba.system").info(
+                "Cleaning makumba caches, triggered from Makumba Tools");
+            NamedResources.cleanCaches();
+            DevelUtils.printResponseMessage(res, "Makumba Cache Cleaner", "<br/><br/>Cleaned Makumba caches.");
+            return false;
         } else if (path.startsWith(Configuration.getMakumbaToolsLocation())) {
             // redirect if we have a unknown path
             if (!path.equals(Configuration.getMakumbaToolsLocation() + "/")) {
@@ -118,11 +125,16 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Relation Crawler", "Runs a detection of file relations", Configuration.KEY_RELATION_CRAWLER,
                 Configuration.getMakumbaRelationCrawlerLocation(), request.getContextPath());
+            writeDescr(w, "Makumba Cache Cleaner",
+                "Cleans all internal Makumba caches, like queries, data-definitions.<br/>"
+                        + "Useful during development, to avoid having to restart the servlet container.",
+                Configuration.KEY_MAKUMBA_CACHE_CLEANER, Configuration.getMakumbaCacheCleanerLocation(),
+                request.getContextPath());
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");
             writeDescr(w, "Transaction Provider", "", Configuration.KEY_DEFAULT_TRANSACTION_PROVIDER, "");
-            writeDescr(w, "Form reaload", "Whether forms shall be reloaded on validation errors",
+            writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",
                 "Whether client-side validation is enabled, and if it is live or on form submission",
@@ -147,6 +159,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
 
             DevelUtils.writePageEnd(w);
+            w.close();
             return false;
         } else {
             return true;

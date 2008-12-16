@@ -104,6 +104,8 @@ public class Configuration implements Serializable {
 
     public static final String KEY_MAKUMBA_DOWNLOAD = "makumbaDownload";
 
+    public static final String KEY_MAKUMBA_CACHE_CLEANER = "makumbaCacheCleaner";
+
     private static final Map<String, String> allGenericDeveloperToolsMap = CollectionUtils.toMap(new String[][] {
             { KEY_MDD_VIEWER, "Mdd viewer" }, { KEY_JAVA_VIEWER, "Business logics viewer" },
             { KEY_DATA_LISTER, "Data browser" }, { KEY_DATA_QUERY_TOOL, "Data query" },
@@ -250,6 +252,10 @@ public class Configuration implements Serializable {
 
     public static String getMakumbaDownloadLocation() {
         return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_DOWNLOAD));
+    }
+
+    public static String getMakumbaCacheCleanerLocation() {
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_CACHE_CLEANER));
     }
 
     public static String getConfigProperty(String key) {

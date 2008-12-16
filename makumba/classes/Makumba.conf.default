@@ -49,6 +49,7 @@ dataObjectViewer=/dataObjectViewer
 dataLister=/dataLister
 objectIdConverter=/dataValueConverter
 relationCrawler=/relationCrawler
+makumbaCacheCleaner=/makumbaCacheCleaner
 
 [makumbaToolConfig]
 repositoryURL=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/tests/
