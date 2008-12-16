@@ -73,7 +73,7 @@ public class copy
 		      System.arraycopy(argv, firstArg+2, types, 0, types.length);
 		    }
 		  copy._copy(argv[firstArg], argv[firstArg+1], types, ignoreDbsv);
-		  java.util.logging.Logger.getLogger("org.makumba." + "system").info("destroying makumba caches");
+		  java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
         NamedResources.cleanup();
 		}catch(Throwable tr){ tr.printStackTrace(); exit=1;usage(); }
       }

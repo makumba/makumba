@@ -211,7 +211,7 @@ public class Text {
             int i = 0;
             while ((n = is.read()) != -1)
                 if (n != (m = is1.read())) {
-                    java.util.logging.Logger.getLogger("org.makumba." + "debug.abstr").severe(m + " " + n + " " + i);
+                    java.util.logging.Logger.getLogger("org.makumba.debug.abstr").severe(m + " " + n + " " + i);
                     return false;
                 } else
                     i++;
