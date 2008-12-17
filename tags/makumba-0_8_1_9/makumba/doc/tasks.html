@@ -1,0 +1,158 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.75 [en] (Windows NT 5.0; U) [Netscape]">
+</head>
+<body>
+
+<h1>
+Makumba tasks</h1>
+$Revision$
+<p>Tasks are now in simple text files
+<ul>
+<li>
+<a href="makumba.general.todo.txt">general tasks</a></li>
+
+<li>
+<a href="makumba.abstr.todo.txt">abstract level tasks</a></li>
+
+<li>
+<a href="makumba.db.todo.txt">database layer tasks</a></li>
+
+<li>
+<a href="makumba.view.todo.txt">view tasks</a></li>
+
+<li>
+<a href="makumba.controller.todo.txt">controller tasks</a></li>
+
+<li>
+<a href="makumba.oql.todo.txt">OQL tasks</a></li>
+
+<li>
+<a href="makumba.devel.todo.txt">developer support tasks</a></li>
+
+<li>
+<a href="makumba.importer.todo.txt">importer tasks</a></li>
+
+<li>
+<a href="makumba-sketch.txt">sketches</a></li>
+</ul>
+
+<h3>
+Older tasks</h3>
+&nbsp;
+<p>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p>The easier tasks should be preferably upper.
+<br>Task type: <font color="#FF0000">Urgrent</font>,&nbsp; <font color="#3366FF">In
+progress</font>,&nbsp; <font color="#009900">Done</font>.
+<table BORDER CELLSPACING=0 >
+<tr>
+<th>Task name</th>
+
+<th>Explanation</th>
+</tr>
+
+<tr>
+<td><font color="#000000">Add importer and devel APIs to the documentation</font></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#000000">Notes clone</font></td>
+
+<td>list records, click on record, edit record, delete record, etc... No
+security yet, should come later from actors</td>
+</tr>
+
+<tr>
+<td>Rapid application development features</td>
+
+<td>Allow the developer to get fast to a finite application by generating
+add, edit, delete links and JSP file names for sub-objects of an object</td>
+</tr>
+
+<tr>
+<td>Full Text Search</td>
+
+<td>One of the most frequently requested features for Karamba is full text
+search. It should look in a Makumba database for a certain word in all
+the text fields</td>
+</tr>
+
+<tr>
+<td>XML-XSL</td>
+
+<td>Currently makumba represents its data in Java Dictionaires and displays
+it thru a JSP taglib. The modern way is to represent data in XML and show
+it via XSL. Useful sometimes, especially when exchanging data with other
+organisations</td>
+</tr>
+
+<tr>
+<td>implement drivers for new DB</td>
+
+<td>Oracle, Informix
+<br>There shouldn't be many differences between the current "generic SQL"
+and any of the "big players". A look at the org.makumba.db.sql.mysql or
+org.makumba.db.sql.pgsql drivers should give an idea of how this is to
+be done. There is also <a href="SQL-drivers.html#Other">some doc about
+this</a> in the SQL engine pages. The major problem is to find a "free"
+copy of the respective SQL and to make the JDBC connection to it.</td>
+</tr>
+
+<tr>
+<td>improve SQL driver efficiency</td>
+
+<td>Some ideas:
+<li>
+use SQL SEQUENCE for primary key (ptrIndex) when supported. I think Postgress
+has this</li>
+
+<br>make use of TIMESTAMP to automatically store creation date (TS_create)
+and modification date (TS_modify). MySQL is one of the suitable engines
+for this</td>
+</tr>
+
+<tr>
+<td>replication, selective replication</td>
+
+<td>Makumba was thought from the beginning to have replication capabilities.
+Karamba data will need to live on unconnected desktops, laptops, etc. LBGs
+will want to have a local copy for fast access. Ensuring replication between
+copies will thus be needed soon. LBGs will only need the data that they
+can access (e.g. their SC applicants and not others) so replication needs
+to be selective.&nbsp;
+<br>Replication is similar to copy in terms of structure and API.
+<br>Low-level SQL replication (if the engine supports it) might be an idea.</td>
+</tr>
+
+<tr>
+<td>Data import from HTML tables</td>
+
+<td>We should be able to import objects from HTML tables that contain a
+number of records.
+<br>Make a order-dependent parser, use TD markers</td>
+</tr>
+
+<tr>
+<td>new syntax/parser</td>
+
+<td>We have talked about a new syntax but the current parser is still using
+the old one. Use <a href="http://www.antlr.org">ANTLR </a>? we already
+use it for the OQL translation, so we take more advantage of antlr.jar
+:)
+<br>Existing data definition files will have to be translated to the new
+syntax. There is already a org.makumba.abstr.translator package</td>
+</tr>
+</table>
+
+<p>
+<hr WIDTH="100%">
+<br><font size=-1>$Id: tasks.html,v 1.5 2001/01/30 16:20:35 stefan Exp
+$</font>
+</body>
+</html>
