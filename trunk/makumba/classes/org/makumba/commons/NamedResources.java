@@ -148,7 +148,7 @@ public class NamedResources implements java.io.Serializable {
         for (NamedResources r : staticCaches) {
             if (r.getName().equals(name)) {
                 r.values.clear();
-                java.util.logging.Logger.getLogger("org.makumba.system").info("Cleaned '" + name + "' cache.");
+                java.util.logging.Logger.getLogger("org.makumba.system").fine("Cleaned '" + name + "' cache.");
             }
         }
     }
