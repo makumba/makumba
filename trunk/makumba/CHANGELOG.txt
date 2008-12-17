@@ -16,6 +16,14 @@ NOT TO BE RELEASED YET (need more testing)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.1.9; 17 Dec 2008
+rudi: allowing MQL functions to operate on $params
+rudi: fixes for search forms: matchMode=".." values checked in criterion tag; >= and <= matchModes added for number types
+rudi: tool to clean the makumba caches; not displaying file-realtion crawling link when tool disabled
+rudi: removed a number of useless string concatenations
+rudi: added >= and <= match modes, between-inclusive default for ranges rather than between
+rudi: better handling of errors with content-type recognition
+
 0.8.1.8; 30 Nov 2008
 rudi: fix for search forms & passing on dates in QueryString
 
