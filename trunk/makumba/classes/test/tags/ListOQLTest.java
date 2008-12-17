@@ -243,8 +243,6 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
     
     public void testMQLFunctions() throws ServletException, IOException {
-        // FIXME: this test will fail
-        // a line-by-line comparison can not work for the dynamic values TS_create & TS_ modify
         pageContext.include("list-oql/testMQLFunctions.jsp");
     }
 
