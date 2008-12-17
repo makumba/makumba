@@ -183,13 +183,13 @@ public class MqlNode extends CommonAST {
     private FieldDefinition getFunctionType(MqlNode child) {
         String type = null;
         String name = child.getText();
-        if (dateFunctions.contains(name)) {
+        if (toDateFunctions.contains(name)) {
             type = "date";
         }
-        if (intFunctions.contains(name)) {
+        if (toIntFunctions.contains(name)) {
             type = "int";
         }
-        if (stringFunctions.contains(name)) {
+        if (toStringFunctions.contains(name)) {
             type = "char[255]";
         }
         if (type != null) {
@@ -379,22 +379,38 @@ public class MqlNode extends CommonAST {
 
     public static String[] parametricDateFunctions = { "date_add", "date_sub", "last_day" };
 
-    public static HashSet<String> stringFunctions = new HashSet<String>();
+    public static HashSet<String> toStringFunctions = new HashSet<String>();
 
-    public static HashSet<String> intFunctions = new HashSet<String>();
+    public static HashSet<String> toIntFunctions = new HashSet<String>();
 
-    public static HashSet<String> dateFunctions = new HashSet<String>();
+    public static HashSet<String> toDateFunctions = new HashSet<String>();
+
+    public static HashSet<String> fromStringFunctions = new HashSet<String>();
+
+    public static HashSet<String> fromIntFunctions = new HashSet<String>();
+
+    public static HashSet<String> fromDateFunctions = new HashSet<String>();
 
     static {
-        CollectionUtils.addAll(stringFunctions, parametricStringFunctions);
-        CollectionUtils.addAll(stringFunctions, intToStringFunctions);
-        CollectionUtils.addAll(stringFunctions, dateToStringFunctions);
+        // used for determining return type
+        CollectionUtils.addAll(toStringFunctions, parametricStringFunctions);
+        CollectionUtils.addAll(toStringFunctions, intToStringFunctions);
+        CollectionUtils.addAll(toStringFunctions, dateToStringFunctions);
 
-        CollectionUtils.addAll(intFunctions, stringToIntFunctions);
-        CollectionUtils.addAll(intFunctions, dateToIntFunctions);
+        CollectionUtils.addAll(toIntFunctions, stringToIntFunctions);
+        CollectionUtils.addAll(toIntFunctions, dateToIntFunctions);
 
-        CollectionUtils.addAll(dateFunctions, nonParametricDateFunctions);
-        CollectionUtils.addAll(dateFunctions, parametricDateFunctions);
+        CollectionUtils.addAll(toDateFunctions, nonParametricDateFunctions);
+        CollectionUtils.addAll(toDateFunctions, parametricDateFunctions);
+
+        // used for determining param type
+        CollectionUtils.addAll(fromStringFunctions, parametricStringFunctions);
+        CollectionUtils.addAll(fromStringFunctions, stringToIntFunctions);
+
+        CollectionUtils.addAll(fromIntFunctions, intToStringFunctions);
+
+        CollectionUtils.addAll(fromDateFunctions, dateToIntFunctions);
+        CollectionUtils.addAll(fromDateFunctions, dateToStringFunctions);
     }
 
 }
