@@ -66,6 +66,33 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             error = new RecognitionException(s);
     }
 
+    @Override
+    protected void processFunction(AST functionCall, boolean inSelect) throws SemanticException {
+        // determine parameter types here
+        AST functionNode = functionCall.getFirstChild();
+        AST exprList = functionNode.getNextSibling();
+        MqlNode paramNode = (MqlNode) exprList.getFirstChild();
+        if (paramNode.isParam()) {
+            String type = null;
+            String name = functionNode.getText();
+            if (MqlNode.fromDateFunctions.contains(name)) {
+                type = "date";
+            }
+            if (MqlNode.fromIntFunctions.contains(name)) {
+                type = "int";
+            }
+            if (MqlNode.fromStringFunctions.contains(name)) {
+                type = "char[255]";
+            }
+            String paramName = "param" + paramInfo.getFieldNames().size();
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
+            paramNode.setMakType(fd);
+            paramInfo.addField(fd);
+            // FIXME: we should now also check potential other parameter nodes!
+        }
+        super.processFunction(functionCall, inSelect);
+    }
+
     public void reportWarning(String s) {
         System.out.println(s);
     }
