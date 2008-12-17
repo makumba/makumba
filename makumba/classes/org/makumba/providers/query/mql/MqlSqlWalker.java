@@ -50,8 +50,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     public MqlSqlWalker(String query, DataDefinition paramInfo, boolean optimizeJoins, boolean autoLeftJoin) {
         this.query = query;
-        this.optimizeJoins= optimizeJoins;
-        this.autoLeftJoin= autoLeftJoin;
+        this.optimizeJoins = optimizeJoins;
+        this.autoLeftJoin = autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfo = paramInfo;
     }
@@ -96,7 +96,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
         // now we can compute our joins
         currentContext.close();
-        
+
         // if the currentContext has a filter, we make sure we have a WHERE and we add it there
         if (!currentContext.filters.isEmpty())
             addFilters(query);
@@ -160,7 +160,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     protected void createFromJoinElement(AST path, AST alias, int joinType, AST fetch, AST propertyFetch, AST with)
             throws SemanticException {
-        if(error!=null)
+        if (error != null)
             return;
         if (!(path instanceof MqlDotNode))
             throw new SemanticException("can only support dot froms " + path, "", path.getLine(), path.getColumn());
@@ -232,7 +232,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
             FieldDefinition makType = ((MqlNode) a).getMakType();
             if (makType == null) {
-                throw new IllegalStateException("no type set for projection " + name+" "+MqlQueryAnalysis.showAst(a));
+                throw new IllegalStateException("no type set for projection " + name + " "
+                        + MqlQueryAnalysis.showAst(a));
             } else
                 proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
@@ -240,8 +241,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     public boolean isAnalysisQuery() {
-        if(select==null || select.getFirstChild()==null)
+        if (select == null || select.getFirstChild() == null)
             return false;
-        return select.getFirstChild().getNextSibling()==null && select.getFirstChild().getType()==HqlSqlTokenTypes.NUM_INT;
+        return select.getFirstChild().getNextSibling() == null
+                && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
     }
 }
