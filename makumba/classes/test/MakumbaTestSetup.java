@@ -1,9 +1,9 @@
 package test;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -33,7 +33,11 @@ public class MakumbaTestSetup extends TestSetup {
     private static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
 
-    public static Date birthdate;
+    public static Date birthdateJohn;
+
+    public static Date birthdateBart;
+
+    public static Date testDate;
 
     public static final Integer uniqInt = new Integer(255);
 
@@ -55,11 +59,9 @@ public class MakumbaTestSetup extends TestSetup {
     private String transactionProviderType;
 
     static {
-        Calendar c;
-        c = Calendar.getInstance();
-        c.clear();
-        c.set(1977, 2, 5);
-        birthdate = c.getTime();
+        birthdateJohn = new GregorianCalendar(1977, 2, 5, 0, 0, 0).getTime();
+        birthdateBart = new GregorianCalendar(1982, 5, 7, 0, 0, 0).getTime();
+        testDate = new GregorianCalendar(2008, 2, 9, 0, 0, 0).getTime();
     }
 
     public MakumbaTestSetup(Test test, String transactionProviderType) {
@@ -97,15 +99,16 @@ public class MakumbaTestSetup extends TestSetup {
 
         p.put("indiv.name", namePersonIndivName_Bart);
         p.put("indiv.surname", namePersonIndivSurname_Bart);
+        p.put("birthdate", birthdateBart);
         Pointer brother = db.insert("test.Person", p);
 
         p.clear();
         p.put("indiv.name", namePersonIndivName_John);
         p.put("indiv.surname", namePersonIndivSurname_John);
 
-        p.put("birthdate", birthdate);
+        p.put("birthdate", birthdateJohn);
 
-        p.put("uniqDate", birthdate);
+        p.put("uniqDate", birthdateJohn);
         p.put("gender", new Integer(1));
         p.put("uniqChar", uniqChar);
 
@@ -126,23 +129,22 @@ public class MakumbaTestSetup extends TestSetup {
 
         p.clear();
         p.put("description", "");
-        p.put("usagestart", birthdate);
+        p.put("usagestart", birthdateJohn);
         p.put("email", "email1");
         address = db.insert(person, "address", p);
-        
-        
+
         // let's fill in the languages - we add them twice to have a meaningful test for distinct
         p.clear();
         Vector<Pointer> v = new Vector<Pointer>();
-        for(Pointer l : languages) {
+        for (Pointer l : languages) {
             v.add(l);
         }
-        for(Pointer l : languages) {
+        for (Pointer l : languages) {
             v.add(l);
         }
         p.put("speaks", v);
         db.update(brother, p);
-        
+
         // let's add some toys
         p.clear();
         p.put("name", "car");
@@ -150,27 +152,28 @@ public class MakumbaTestSetup extends TestSetup {
         p.clear();
         p.put("name", "doll");
         db.insert(brother, "toys", p);
-        
+
     }
 
     protected void deletePersonsAndIndividuals(Transaction db) {
         db.delete(address);
         for (int i = 0; i < namesPersonIndivName.length; i++) {
-            String query = "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name="+(transactionProviderType.equals("oql")?"$1":"?");
+            String query = "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name="
+                    + (transactionProviderType.equals("oql") ? "$1" : "?");
             Vector<Dictionary<String, Object>> v = db.executeQuery(query, namesPersonIndivName[i]);
             if (v.size() > 0) {
-                
+
                 // delete the languages
                 Vector<Pointer> speaks = new Vector<Pointer>();
                 Dictionary<String, Object> speaksDic = new Hashtable<String, Object>();
                 speaksDic.put("speaks", speaks);
                 db.update((Pointer) v.firstElement().get("p"), speaksDic);
-                
+
                 // delete the toys
                 Dictionary<String, Object> emptyToys = new Hashtable<String, Object>();
                 emptyToys.put("toys", Pointer.NullSet);
                 db.update((Pointer) v.firstElement().get("p"), emptyToys);
-                
+
                 db.delete((Pointer) v.firstElement().get("p"));
                 db.delete((Pointer) v.firstElement().get("i"));
             }
