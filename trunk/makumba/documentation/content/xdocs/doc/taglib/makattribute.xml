@@ -1,46 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:attribute tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
-      <title>Attributes</title>
-      <table>
-        <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">name</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">var</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">exceptionVar</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">db</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">The database in which the business logic (if any) will compute the attribute. The default database is normally used.</td>
-        </tr>
-      </table>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>Displays the value of an attribute, or sets it to a Java variable.</p>
+    
     </section>
+    
+    <section id="attributes">
+      
+      <title>Attributes</title>
+      
+      <table>
+        
+        <tr>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>name</td>
+          
+          <td>true</td>
+          
+          <td>false</td>
+          
+          <td>the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>var</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>exceptionVar</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>db</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>The database in which the business logic (if any) will compute the attribute. The default database is normally used.</td>
+        
+        </tr>
+      
+      </table>
+    
+    </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -52,4 +101,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>

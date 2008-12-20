@@ -1,52 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:matchMode tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
-      <title>Attributes</title>
-      <table>
-        <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">id</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">type</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">matchModes</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">labelSeparator</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">elementSeparator</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-      </table>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>FIXME: no web-description for this tag in taglib-documented.xml!</p>
+    
     </section>
+    
+    <section id="attributes">
+      
+      <title>Attributes</title>
+      
+      <table>
+        
+        <tr>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>id</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>type</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>matchModes</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>labelSeparator</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>elementSeparator</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+      
+      </table>
+    
+    </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -58,4 +113,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>

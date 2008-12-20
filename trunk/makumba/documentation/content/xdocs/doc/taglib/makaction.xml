@@ -1,22 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:action tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
-      <title>Attributes</title>
-      <table>
-        <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
-        </tr>
-      </table>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</p>
+    
     </section>
+    
+    <section id="attributes">
+      
+      <title>Attributes</title>
+      
+      <table>
+        
+        <tr>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
+        </tr>
+      
+      </table>
+    
+    </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -28,4 +53,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>

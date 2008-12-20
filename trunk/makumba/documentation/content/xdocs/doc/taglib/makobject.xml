@@ -1,106 +1,215 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:object tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
-      <title>Attributes</title>
-      <table>
-        <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">id</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">countVar</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">maxCountVar</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">from</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">variableFrom</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">separator</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">where</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">orderBy</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">groupBy</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">db</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">authorize</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">editable</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">logicClass</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">editPage</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-      </table>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</p>
+    
     </section>
+    
+    <section id="attributes">
+      
+      <title>Attributes</title>
+      
+      <table>
+        
+        <tr>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>id</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>countVar</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>maxCountVar</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>from</td>
+          
+          <td>true</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>variableFrom</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>separator</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>where</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>orderBy</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>groupBy</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>db</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>authorize</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>editable</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>logicClass</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>editPage</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+      
+      </table>
+    
+    </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -112,4 +221,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>

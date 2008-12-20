@@ -1,10 +1,10 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
 <document>
 	<header>
-		<title>Information about the Business Logic in Makumba</title>
+		<title>Makumba Business Logics</title>
 	</header>
 	<body>
 	<section id="attributes">

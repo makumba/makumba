@@ -1,34 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:option tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag. 
+Text inside mak:option will become an option title. The value attribute will become the option. Text inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.
+
+If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
+
+If an option value appears many times it will only be shown the first time it occurs.
+</p>    
+    </section>    
+    <section id="attributes">      
       <title>Attributes</title>
+      
       <table>
+        
         <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
         </tr>
+        
         <tr>
-          <td colspan="1" rowspan="1">value</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Value of the option, can be an OQL expression or a $attribute</td>
+          
+          <td>value</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Value of the option, can be an OQL expression or a $attribute</td>
+        
         </tr>
+        
         <tr>
-          <td colspan="1" rowspan="1">selected</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">Whether this option is selected or not</td>
+          
+          <td>selected</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Whether this option is selected or not</td>
+        
         </tr>
+      
       </table>
+    
     </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -40,4 +80,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>
