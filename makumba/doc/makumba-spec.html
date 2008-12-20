@@ -544,10 +544,10 @@
           <td>Takes a substring of the given string</td>
         </tr>
         <tr>
-          <td>format</td>
+          <td>replace</td>
+          <td>(str, fromStr, toStr)</td>
           <td>string</td>
-          <td>string</td>
-          <td>Left-trim on the string argument</td>
+          <td>Replace occurrences of a specified string</td>
         </tr>
         <tr>
           <td>reverse</td>
@@ -568,6 +568,13 @@
           <td>Return number of characters in the string argument.</td>
         </tr>
         <tr>
+          <td>format</td>
+          <td>(int)</td>
+          <td>string</td>
+          <td>Return a number formatted to specified number of decimal places</td>
+        </tr>
+<!--  not yet implemented        
+        <tr>
           <td>regexp</td>
           <td><code>expr</code> regexp <code>patt</code></td>
           <td>int (0, 1)</td>
@@ -575,6 +582,7 @@
             Performs a pattern match of a string expression <code>expr</code> against a pattern <code>patt</code>. For example:
             <pre class="example">SELECT 'makumba!' REGEXP '[a-z]*'; 
  -> 1</pre>
+  -->
           </td>
         </tr>        
       </tbody>
@@ -681,7 +689,7 @@
         </tr>
         <tr>
           <td>date_sub</td>
-          <td>(date)</td>
+          <td>(date, INTERVAL <code>expr</code> <code>unit</code>)</td>
           <td>date</td>
           <td>Substracts <code>expr</code> times the <code>unit</code> to the date. See <code>date_add</code>.</td>
         </tr>
