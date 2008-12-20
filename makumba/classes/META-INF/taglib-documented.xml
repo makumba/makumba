@@ -2018,6 +2018,14 @@ for file, a file upload box will automatically created, and handling of file nam
 See the detailed example for more information. </description>
       <comments>Fixed. Only for date.</comments>
     </attribute>
+    
+    <attribute>
+      <name>autoComplete</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Enables auto-completion</description>
+      <comments>Fixed. Works only for char[] and ptr.</comments>
+    </attribute>
 
     <attribute>
       <name>size</name>

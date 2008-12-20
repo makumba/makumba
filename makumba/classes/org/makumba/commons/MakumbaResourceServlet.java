@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -188,8 +190,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 } else {
                     if (cachedResource.toString().contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
                         // exchange placeholders with dynamic values
-                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH,
-                            req.getContextPath()));
+                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath()));
                     } else {
                         outputStream.print(cachedResource.toString());
                     }
@@ -199,25 +200,48 @@ public class MakumbaResourceServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-
-    public static void writeStyles(StringBuffer sb, String contextPath, String styleSheet) {
-        sb.append("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath
-                + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet + "\"/>");
-    }
-
-    public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
-        for (Object object : resources) {
-            if (((String) object).endsWith(".css")) {
-                MakumbaResourceServlet.writeStyles(sb, contextPath, (String) object);
-            } else if (((String) object).endsWith(".js")) {
-                writeScripts(sb, contextPath, (String) object);
+    
+    private void printLineBreaks(String s, OutputStream o) throws IOException {
+        byte[] bytes = s.getBytes();
+        for (int i = 0; i < bytes.length; i++) {
+            if(bytes[i] != '\n') {
+                o.write(bytes[i]);
+            } else {
+                o.write('\n');
+                o.write(bytes[i]);
             }
         }
     }
 
-    public static void writeScripts(StringBuffer sb, String contextPath, String script) {
-        sb.append("<script type=\"text/javascript\" src=\"" + contextPath + Configuration.getMakumbaResourcesLocation()
-                + "/" + RESOURCE_PATH_JAVASCRIPT + script + "\">" + "</script>\n");
+    public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
+        for (Object object : resources) {
+            String rsc = contextPath + Configuration.getMakumbaResourcesLocation() + "/";
+            String o = (String) object;
+            if(o.endsWith(".js")) {
+                writeScriptsInHeader(sb, contextPath, o);
+            } else if(o.endsWith(".css")) {
+                writeStylesInHeader(sb, contextPath, o);
+            } else {
+                // we assume it's an image
+                rsc += RESOURCE_PATH_IMAGES + object;
+                sb.append("<img src=\"" + rsc + "\">" + "\n");
+            }
+    
+        }
+    }
+
+    public static void writeStylesInHeader(StringBuffer sb, String contextPath, String styleSheet) {
+        String filerefName = "fileref" + styleSheet.replace(".", "").replace("-", "_");
+        sb.append("<script type=\"text/javascript\">\n");
+        sb.append("var "+filerefName+" = document.createElement('link');\n");
+        sb.append(filerefName+".setAttribute(\"media\",\"all\");\n");
+        sb.append(filerefName+".setAttribute(\"type\",\"text/css\");\n");
+        sb.append(filerefName+".setAttribute(\"href\", '"+contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet + "');\n");
+        sb.append(filerefName+".setAttribute(\"rel\",\"StyleSheet\");\n");
+        sb.append("if (typeof "+ filerefName +" != \"undefined\")\n");
+        sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
+        sb.append("</script>\n");
+        
     }
 
     public static String getContentType(URL url) {
@@ -225,6 +249,9 @@ public class MakumbaResourceServlet extends HttpServlet {
             if (url.getFile().endsWith("." + imageContentTypes[i])) {
                 return "image / " + imageContentTypes[i];
             }
+        }
+        if(url.getFile().endsWith(".css")) {
+            return "text/css";
         }
         return "text/html";
     }
@@ -242,6 +269,20 @@ public class MakumbaResourceServlet extends HttpServlet {
         // TODO: this should be capable of detecting other types. A solution would be to check for "not text type"
         return isImageType(url);
     }
+    
+    public static void writeScriptsInHeader(StringBuffer sb, String contextPath, String script) {
+        // we write the scripts in the header using JS and DOM rewriting
+        String filerefName = "fileref" + script.replace(".", "").replace("-", "_");
+        sb.append("<script type=\"text/javascript\">\n");
+        sb.append("var "+filerefName+" = document.createElement('script');\n");
+        sb.append(filerefName+".setAttribute(\"type\",\"text/javascript\");\n");
+        sb.append(filerefName+".setAttribute(\"src\", '"+contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT + script + "');\n");
+        sb.append("if (typeof "+ filerefName +" != \"undefined\")\n");
+        sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
+        sb.append("</script>\n");
+        
+    }
+    
 
     public static int makumbaResources = NamedResources.makeStaticCache("Makumba resources",
         new NamedResourceFactory() {

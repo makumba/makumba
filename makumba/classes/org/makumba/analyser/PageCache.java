@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.collections.set.ListOrderedSet;
+import org.hibernate.type.OrderedSetType;
+
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
  * methods to add/retrieve caches throughout the analysis process.
@@ -18,7 +21,7 @@ public class PageCache {
 
     private HashMap<String, HashMap<Object, Object>> caches = new HashMap<String, HashMap<Object, Object>>();
 
-    private HashMap<String, HashSet<Object>> setCaches = new HashMap<String, HashSet<Object>>();
+    private HashMap<String, ListOrderedSet> setCaches = new HashMap<String, ListOrderedSet>();
 
     /**
      * Caches an object in a specific cache
@@ -71,9 +74,9 @@ public class PageCache {
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
      */
     public void cacheSetValues(String cacheName, Object[] value) {
-        HashSet<Object> hashSet = setCaches.get(cacheName);
+        ListOrderedSet hashSet = setCaches.get(cacheName);
         if (hashSet == null) {
-            hashSet = new HashSet<Object>();
+            hashSet = new ListOrderedSet();
             setCaches.put(cacheName, hashSet);
         }
 
@@ -81,7 +84,7 @@ public class PageCache {
     }
 
     /** Retrieves a set from a specific set cache. */
-    public HashSet<Object> retrieveSetValues(String cacheName) {
+    public ListOrderedSet retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
     }
 
@@ -99,7 +102,7 @@ public class PageCache {
         result += "== Set caches\n";
         for (String key : setCaches.keySet()) {
             result += "  == Key " + key + "\n";
-            HashSet<Object> cache = setCaches.get(key);
+            ListOrderedSet cache = setCaches.get(key);
             for (Object entry : cache) {
                 result += "    - " + entry + "\n";
             }

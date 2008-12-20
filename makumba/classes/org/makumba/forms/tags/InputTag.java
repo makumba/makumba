@@ -56,6 +56,7 @@ import org.makumba.providers.Configuration;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
+ * @author Manuel Gay
  * @version $Id$
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
@@ -63,12 +64,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     private static final long serialVersionUID = 1L;
 
     protected String name = null;
-
+    
     protected String display = null;
 
     protected String nameVar = null;
 
     protected String calendarEditorLink = null;
+    
+    private String autoComplete = null;
 
     protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
 
@@ -82,6 +85,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     // unused for now, set when we know at analysis that this input has
     // a body and will generate a choser (because it has <mak:option > inside)
     boolean isChoser;
+
 
     public String toString() {
         return "INPUT name=" + name + " value=" + valueExprOriginal + " dataType=" + dataType + "\n";
@@ -224,6 +228,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 throw new ProgrammerError(
                         "For using 'seteditor' input types, you have to give the encosing form a name, using name=\"  \"!");
             }
+        }
+        if (this.autoComplete != null && this.autoComplete.equals("true")) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css",  "prototype.js", "scriptaculous.js", "makumba-autocomplete.js"});
         }
 
         super.doEndAnalyze(pageCache);
@@ -378,6 +385,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 params.put("calendarEditorLink", calendarEditorLink);
             }
         }
+        
+        if(autoComplete != null) {
+            params.put("autoComplete", autoComplete); 
+        }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
             getForm().getFormIdentifier());
@@ -436,6 +447,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setCalendarEditorLink(String calendarEditorLink) {
         this.calendarEditorLink = calendarEditorLink;
     }
+    
+    public void setAutoComplete(String autoComplete) {
+        this.autoComplete = autoComplete;
+    }
 
     public void setCalendarEditor(String calendarEditor) {
         this.calendarEditor = Boolean.parseBoolean(calendarEditor);
@@ -450,7 +465,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         super.doAnalyzedCleanup();
         bodyContent = null;
         choiceSet = null;
-        name = nameVar = nullOption = display = calendarEditorLink = null;
+        name = nameVar = nullOption = display = calendarEditorLink = autoComplete = null;
         calendarEditor = Configuration.getCalendarEditorDefault();
     }
 
