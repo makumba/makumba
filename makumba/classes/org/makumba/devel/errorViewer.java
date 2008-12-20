@@ -50,10 +50,11 @@ public class errorViewer extends LineViewer {
 
     private static final String patternLineNumber3 = "\\((\\d+),\\d+\\).*"; // (96,2)
 
-    private static final String[] patternLineNumberStrings = { patternLineNumber1, patternLineNumber2, patternLineNumber3 };
+    private static final String[] patternLineNumberStrings = { patternLineNumber1, patternLineNumber2,
+            patternLineNumber3 };
 
-    Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]), Pattern.compile(patternLineNumberStrings[1]),
-            Pattern.compile(patternLineNumberStrings[2]) };
+    Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]),
+            Pattern.compile(patternLineNumberStrings[1]), Pattern.compile(patternLineNumberStrings[2]) };
 
     private String hiddenBody;
 
@@ -89,7 +90,8 @@ public class errorViewer extends LineViewer {
                 Integer lineNumber = null;
 
                 // FIXME should not depend directly on RecordParser
-                if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
+                if (searchMDD
+                        && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
                         || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
@@ -114,7 +116,20 @@ public class errorViewer extends LineViewer {
             }
             source.delete(0, indexOf + token.length());
         }
-        return result.append(source).toString();
+        return markupLinks(result.append(source).toString());
+    }
+
+    private String markupLinks(String string) {
+        final String prefix = "http://";
+        int index = string.indexOf(prefix);
+        while (index != -1) {
+            int endIndex = string.indexOf(" ", index);
+            final String substring = string.substring(index, endIndex);
+            final String replacement = "<a href=\"" + substring + "\">" + substring + "</a>";
+            string = string.replaceFirst(substring, replacement);
+            index = string.indexOf(prefix, index + replacement.length());
+        }
+        return string;
     }
 
     private Integer findLineNumber(String s) {
