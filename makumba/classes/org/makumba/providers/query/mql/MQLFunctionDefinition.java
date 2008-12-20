@@ -55,8 +55,12 @@ public class MQLFunctionDefinition {
         return null;
     }
 
+    public static MQLFunctionDefinition intToDateFunction(String name) {
+        return new MQLFunctionDefinition(name, "date", "int");
+    }
+
     public static MQLFunctionDefinition intToStringFunction(String name) {
-        return new MQLFunctionDefinition(name, "int", "char[255]");
+        return new MQLFunctionDefinition(name, "char[255]", "int");
     }
 
     private static MQLFunctionArgument[] makeStandardArguments(String[] args) {
