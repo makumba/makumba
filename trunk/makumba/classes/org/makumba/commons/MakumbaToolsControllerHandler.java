@@ -39,6 +39,8 @@ import org.makumba.forms.responder.ValueEditor;
 import org.makumba.list.MakumbaDownloadServlet;
 import org.makumba.providers.Configuration;
 
+import bmsi.util.DiffPrint.ContextPrint;
+
 /**
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
  * 
@@ -54,6 +56,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         String path = request.getRequestURI().replace(request.getContextPath(), "");
         if (path.startsWith(Configuration.getMakumbaUniqueLocation())) {
             new UniquenessServlet().doGet(request, response);
+            return false;
+        } else if (path.startsWith(Configuration.getMakumbaAutoCompleteLocation())) {
+            new AutoCompleteServlet().doGet(request, response);
             return false;
         } else if (path.startsWith(Configuration.getMakumbaResourcesLocation())) {
             new MakumbaResourceServlet().doGet(request, response);
@@ -100,6 +105,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Uniqueness", "AJAX uniqueness check", Configuration.KEY_MAKUMBA_UNIQUENESS_VALIDATOR,
                 Configuration.getMakumbaUniqueLocation(), request.getContextPath());
+            writeDescr(w, "Autocomplete", "AJAX autcomplete", Configuration.KEY_MAKUMBA_AUTOCOMPLETE,
+                Configuration.getMakumbaAutoCompleteLocation(), request.getContextPath());
             writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
                 Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
             writeDescr(w, "DataDefinition viewer", "View data definitions", Configuration.KEY_MDD_VIEWER,

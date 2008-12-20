@@ -205,5 +205,25 @@ public class StringUtils {
         }
         return s;
     }
+    
+    /**
+     * Fetches a param out of a typical param string found in HTML tags
+     * @param paramName the name of the param
+     * @param queryString the string to search within
+     * @return the value of the param if found, null otherwise
+     */
+    public static String getParam(String paramName, String queryString) {
+        int n = queryString.indexOf(paramName + "=");
+        String param = null;
+        if (n > -1) {
+            param = queryString.substring(n + paramName.length() + 2);
+            if (param.indexOf("&") > -1) {
+                param = param.substring(0, param.indexOf("&"));
+            }
+            param=param.substring(0, param.length()-2);
+        }
+        return param;
+    }
+
 
 }

@@ -35,6 +35,7 @@ path=/mak-tools
 
 makumbaValueEditor=/makumbaValueEditor
 makumbaUniquenessValidator=/makumbaUnique
+makumbaAutoComplete=/makumbaAutoComplete
 makumbaResources=/makumbaResources
 makumbaDownload=/makumbaDownload
 

@@ -34,6 +34,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
+import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
@@ -461,13 +462,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             // if we are at the first form
             if (findParentForm() == null && pageContext.getAttribute("firstFormPassed") == null) {
                 // included needed resources
-                HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
+                ListOrderedSet resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                 if (resources != null) {
-                    for (Object object : resources) {
-                        String rsc = request.getContextPath() + Configuration.getMakumbaResourcesLocation() + "/"
-                                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
-                        sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
-                    }
+                    MakumbaResourceServlet.writeResources(sb, request.getContextPath(), resources);
                     pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
                 }
             }

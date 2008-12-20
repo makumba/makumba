@@ -26,9 +26,11 @@ package org.makumba.forms.html;
 import java.util.Dictionary;
 
 import org.makumba.HtmlUtils;
+import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.providers.Configuration;
 
 public class charEditor extends FieldEditor {
 	
@@ -46,10 +48,10 @@ public class charEditor extends FieldEditor {
 
 //	public static final charEditor singleton = new charEditor();
 
-	static String[] _params = { "default", "empty", "type", "size", "maxlength" };
+	static String[] _params = { "default", "empty", "type", "size", "maxlength", "autoComplete" };
 
 	static String[][] _paramValues = { null, null, { "text", "password" },
-			null, null };
+			null, null, new String[] { "true", "false" } };
 
 	@Override
     public String[] getAcceptedParams() {
@@ -87,12 +89,31 @@ public class charEditor extends FieldEditor {
 	/** Formats the input-field in case of not-null object */
 	@Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-		String test = getParams(rf, fieldIndex, formatParams);
-		return "<input name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\""
+		boolean autoComplete = formatParams.get("autoComplete") != null && formatParams.get("autoComplete").equals("true");
+	    String test = getParams(rf, fieldIndex, formatParams);
+		String res = "", id="";
+		
+		res += "<input name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\""
 				+ getInputType(rf, fieldIndex, formatParams) + "\" value=\""
 				+ formatValue(rf, fieldIndex, o, formatParams) + "\" "
 				+ test + getExtraFormatting(rf, fieldIndex, formatParams)
 				+ ">";
+		
+		// the second part of the auto-complete, i.e. the dropdown that appears
+		if(autoComplete) {
+		    // getting the id won't work for dates and the other type commented in the hack in FieldFormatter
+            id = StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
+            
+		    res += "<div id=\"autocomplete_choices_"+id+"\" class=\"autocomplete\"></div>";
+		    
+		    // TODO adjust the URL: figure a way to give the URL to the right servlet, using Configuration (probably tweak it) and then pass also the right params somehow
+//            res += "<script type=\"text/javascript\">new Ajax.Autocompleter('"+id+"', 'autocomplete_choices_"+id+"', '"+"/tests"+Configuration.getMakumbaAutoCompleteLocation()+"?type="+rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()+"&field="+rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()+"', {"
+//                + "minChars: 2, paramName: 'value'});</script>";
+		    res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\""+id+"\", \""+Configuration.getMakumbaAutoCompleteLocation()+"\", \""+ rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()+"\", \""+rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()+"\");</script>";
+        
+		}
+		
+		return res;
 	}
 
 	/** Formats the value to appear in an input statement. */

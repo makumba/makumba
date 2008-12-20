@@ -100,6 +100,8 @@ public class Configuration implements Serializable {
 
     public static final String KEY_MAKUMBA_UNIQUENESS_VALIDATOR = "makumbaUniquenessValidator";
 
+    public static final String KEY_MAKUMBA_AUTOCOMPLETE = "makumbaAutoComplete";
+
     public static final String KEY_MAKUMBA_RESOURCES = "makumbaResources";
 
     public static final String KEY_MAKUMBA_DOWNLOAD = "makumbaDownload";
@@ -244,6 +246,11 @@ public class Configuration implements Serializable {
     public static String getMakumbaUniqueLocation() {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);
+    }
+    
+    public static String getMakumbaAutoCompleteLocation() {
+        return getMakumbaToolsLocation()
+                + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_AUTOCOMPLETE);
     }
 
     public static String getMakumbaResourcesLocation() {
