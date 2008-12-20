@@ -1,8 +1,11 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -19,6 +22,8 @@ import antlr.collections.AST;
  * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
  */
 public class MqlSqlWalker extends MqlSqlBaseWalker {
+    private static final String LINK_FUNCTION_DEF = "http://www.makumba.org/makumba-spec.html#tab_ql";
+
     // TODO:
     // finish subqueries
     // simplify FROM section for sets
@@ -69,26 +74,45 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     @Override
     protected void processFunction(AST functionCall, boolean inSelect) throws SemanticException {
         // determine parameter types here
-        AST functionNode = functionCall.getFirstChild();
-        AST exprList = functionNode.getNextSibling();
+        final AST functionNode = functionCall.getFirstChild();
+        final AST exprList = functionNode.getNextSibling();
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
-        if (paramNode.isParam()) {
+        int index = 0;
+        final String name = functionNode.getText();
+        final MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(MqlNode.mqlFunctions, name);
+        if (functionDef == null) {
+            throw new ProgrammerError("MQL Function '" + functionDef + "' is not known! Please refer to "
+                    + LINK_FUNCTION_DEF + " for a list of known functions.");
+        }
+        final MQLFunctionArgument[] args = functionDef.getArguments();
+        if (paramNode == null && !ArrayUtils.isEmpty(args)) {
+            throw new ProgrammerError("The function '" + functionDef + "' requires arguments! Please refer to "
+                    + LINK_FUNCTION_DEF + " for a list of known functions and arguments.");
+        }
+        while (paramNode != null) {
             String type = null;
-            String name = functionNode.getText();
-            if (MqlNode.fromDateFunctions.contains(name)) {
-                type = "date";
+            if (args != null) {
+                if (args.length > index) { // not yet at the last defined argument
+                    type = args[index].getType();
+                } else if (args[args.length - 1].isMultiple()) {// if the last argument is a multiple argument, usethat
+                    type = args[args.length - 1].getType();
+                } else { // otherwise we have an error..
+                    throw new ProgrammerError("The number of arguments for function '" + functionDef
+                            + "' is wrong! Please refer to " + LINK_FUNCTION_DEF
+                            + " for a list of known functions and arguments.");
+                }
+            } else {
+                throw new ProgrammerError("MQL Function '" + functionDef + "' requires no arguments.");
             }
-            if (MqlNode.fromIntFunctions.contains(name)) {
-                type = "int";
+            if (paramNode.isParam()) {
+                String paramName = "param" + paramInfo.getFieldNames().size();
+                FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
+                paramNode.setMakType(fd);
+                paramInfo.addField(fd);
+                // FIXME: we should now also check potential other parameter nodes!
             }
-            if (MqlNode.fromStringFunctions.contains(name)) {
-                type = "char[255]";
-            }
-            String paramName = "param" + paramInfo.getFieldNames().size();
-            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
-            paramNode.setMakType(fd);
-            paramInfo.addField(fd);
-            // FIXME: we should now also check potential other parameter nodes!
+            paramNode = (MqlNode) paramNode.getNextSibling();
+            index++;
         }
         super.processFunction(functionCall, inSelect);
     }

@@ -1,9 +1,30 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id: FieldCursor.java 1707 2007-09-28 15:35:48Z manuel_gay $
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.providers.query.mql;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
@@ -183,14 +204,9 @@ public class MqlNode extends CommonAST {
     private FieldDefinition getFunctionType(MqlNode child) {
         String type = null;
         String name = child.getText();
-        if (toDateFunctions.contains(name)) {
-            type = "date";
-        }
-        if (toIntFunctions.contains(name)) {
-            type = "int";
-        }
-        if (toStringFunctions.contains(name)) {
-            type = "char[255]";
+        MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(mqlFunctions, name);
+        if (functionDef != null) {
+            type = functionDef.getReturnType();
         }
         if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
@@ -357,60 +373,70 @@ public class MqlNode extends CommonAST {
         return walker.currentContext.ddp.makeFieldDefinition("x", "boolean");
     }
 
-    // ------ function part, ported from OQL, might move somewhere else------
-    /** Simple string-to-string functions with one argument. */
-    public static String[] parametricStringFunctions = { "lower", "upper", "trim", "rtrim", "ltrim", "concat",
-            "concat_ws", "substring", "format", "reverse", "replace" };
-
-    /** int-to-string functions. */
-    public static String[] intToStringFunctions = { "char" };
-
-    /** string-to-int functions. */
-    public static String[] stringToIntFunctions = { "ascii", "character_length", "regexp" };
-
-    /** date-to-int functions. */
-    public static String[] dateToIntFunctions = { "dayOfMonth", "dayOfWeek", "week", "weekday", "dayOfYear", "year",
-            "month", "hour", "minute", "second", "extract" };
-
-    /** date-to-String functions. */
-    public static String[] dateToStringFunctions = { "monthName", "dayName" };
-
-    public static String[] nonParametricDateFunctions = { "current_date", "current_time", "current_timestamp", "now" };
-
-    public static String[] parametricDateFunctions = { "date_add", "date_sub", "last_day" };
-
-    public static HashSet<String> toStringFunctions = new HashSet<String>();
-
-    public static HashSet<String> toIntFunctions = new HashSet<String>();
-
-    public static HashSet<String> toDateFunctions = new HashSet<String>();
-
-    public static HashSet<String> fromStringFunctions = new HashSet<String>();
-
-    public static HashSet<String> fromIntFunctions = new HashSet<String>();
-
-    public static HashSet<String> fromDateFunctions = new HashSet<String>();
+    public static ArrayList<MQLFunctionDefinition> mqlFunctions = new ArrayList<MQLFunctionDefinition>();
 
     static {
-        // used for determining return type
-        CollectionUtils.addAll(toStringFunctions, parametricStringFunctions);
-        CollectionUtils.addAll(toStringFunctions, intToStringFunctions);
-        CollectionUtils.addAll(toStringFunctions, dateToStringFunctions);
+        //
+        // String FUNCTIONS
+        //
+        // simple string-to-string functions
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("lower"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("upper"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("trim"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("rtrim"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("ltrim"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("reverse"));
 
-        CollectionUtils.addAll(toIntFunctions, stringToIntFunctions);
-        CollectionUtils.addAll(toIntFunctions, dateToIntFunctions);
+        // to-string functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat", MQLFunctionArgument.multipleArgument("char[255]")));
+        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat_ws", new MQLFunctionArgument("char[255]"),
+            MQLFunctionArgument.multipleArgument("char[255]")));
+        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("substring", new MQLFunctionArgument("char[255]"),
+            new MQLFunctionArgument("int"), MQLFunctionArgument.optionalArgument("int")));
+        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("replace", "char[255]", "char[255]"));
 
-        CollectionUtils.addAll(toDateFunctions, nonParametricDateFunctions);
-        CollectionUtils.addAll(toDateFunctions, parametricDateFunctions);
+        // simple string-to-int functions
+        mqlFunctions.add(MQLFunctionDefinition.stringToIntFunction("ascii"));
+        mqlFunctions.add(MQLFunctionDefinition.stringToIntFunction("character_length"));
 
-        // used for determining param type
-        CollectionUtils.addAll(fromStringFunctions, parametricStringFunctions);
-        CollectionUtils.addAll(fromStringFunctions, stringToIntFunctions);
+        // simple int-to-string functions
+        mqlFunctions.add(MQLFunctionDefinition.intToStringFunction("format"));
+        mqlFunctions.add(MQLFunctionDefinition.intToStringFunction("char"));
 
-        CollectionUtils.addAll(fromIntFunctions, intToStringFunctions);
+        //
+        // DATE FUNCTIONS
+        //
+        // simple date-to-int functions
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfMonth"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfWeek"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("week"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("weekday"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfYear"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("year"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("month"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("hour"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("minute"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("second"));
 
-        CollectionUtils.addAll(fromDateFunctions, dateToIntFunctions);
-        CollectionUtils.addAll(fromDateFunctions, dateToStringFunctions);
+        // to-int functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.toIntFunction("extract", "char[255]", "date"));
+
+        // simple date-to-string functions
+        mqlFunctions.add(MQLFunctionDefinition.dateToStringFunction("monthName"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToStringFunction("dayName"));
+
+        // simple date-to-date functions
+        mqlFunctions.add(MQLFunctionDefinition.dateToDateFunction("last_day"));
+
+        // to-date functions with no arguments
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_date"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_time"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_timestamp"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("now"));
+
+        // to-date functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_add", "char[255]", "date"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_sub", "char[255]", "date"));
     }
 
 }
