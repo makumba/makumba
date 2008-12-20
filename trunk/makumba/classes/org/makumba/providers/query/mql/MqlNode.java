@@ -376,6 +376,10 @@ public class MqlNode extends CommonAST {
     public static ArrayList<MQLFunctionDefinition> mqlFunctions = new ArrayList<MQLFunctionDefinition>();
 
     static {
+        initMQLFunctions();
+    }
+
+    static void initMQLFunctions() {
         //
         // String FUNCTIONS
         //
@@ -388,7 +392,8 @@ public class MqlNode extends CommonAST {
         mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("reverse"));
 
         // to-string functions with more arguments
-        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat", MQLFunctionArgument.multipleArgument("char[255]")));
+        mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat",
+            MQLFunctionArgument.multipleArgument("char[255]")));
         mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat_ws", new MQLFunctionArgument("char[255]"),
             MQLFunctionArgument.multipleArgument("char[255]")));
         mqlFunctions.add(MQLFunctionDefinition.toStringFunction("substring", new MQLFunctionArgument("char[255]"),
@@ -417,6 +422,12 @@ public class MqlNode extends CommonAST {
         mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("hour"));
         mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("minute"));
         mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("second"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("microsecond"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("quarter"));
+        mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("to_days"));
+
+        // date-to-int functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date", "date"));
 
         // to-int functions with more arguments
         mqlFunctions.add(MQLFunctionDefinition.toIntFunction("extract", "char[255]", "date"));
@@ -437,6 +448,11 @@ public class MqlNode extends CommonAST {
         // to-date functions with more arguments
         mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_add", "char[255]", "date"));
         mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_sub", "char[255]", "date"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("makedate", "date", "date"));
+        mqlFunctions.add(MQLFunctionDefinition.toDateFunction("maketime", "date", "date", "date"));
+
+        // int-to-date functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.intToDateFunction("from_days"));
     }
 
 }

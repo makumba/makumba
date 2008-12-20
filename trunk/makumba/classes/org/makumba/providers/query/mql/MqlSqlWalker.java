@@ -81,8 +81,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         final String name = functionNode.getText();
         final MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(MqlNode.mqlFunctions, name);
         if (functionDef == null) {
-            throw new ProgrammerError("MQL Function '" + functionDef + "' is not known! Please refer to "
-                    + LINK_FUNCTION_DEF + " for a list of known functions.");
+            throw new ProgrammerError("MQL Function '" + name + "' is not known! Please refer to " + LINK_FUNCTION_DEF
+                    + " for a list of known functions.");
         }
         final MQLFunctionArgument[] args = functionDef.getArguments();
         if (paramNode == null && !ArrayUtils.isEmpty(args)) {
@@ -109,7 +109,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
                 paramNode.setMakType(fd);
                 paramInfo.addField(fd);
-                // FIXME: we should now also check potential other parameter nodes!
+                // FIXME: a param might also be a nested function
             }
             paramNode = (MqlNode) paramNode.getNextSibling();
             index++;
