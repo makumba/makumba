@@ -35,7 +35,7 @@ import java.util.List;
 public class MQLFunctionDefinition {
 
     public static MQLFunctionDefinition dateToDateFunction(String name) {
-        return new MQLFunctionDefinition("date", "int", "date");
+        return new MQLFunctionDefinition(name, "date", "date");
     }
 
     public static MQLFunctionDefinition dateToIntFunction(String name) {
@@ -68,7 +68,7 @@ public class MQLFunctionDefinition {
     }
 
     public static MQLFunctionDefinition stringToIntFunction(String name) {
-        return new MQLFunctionDefinition(name, "char[255]", "int");
+        return new MQLFunctionDefinition(name, "int", "char[255]");
     }
 
     public static MQLFunctionDefinition stringToStringFunction(String name) {
