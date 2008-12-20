@@ -393,12 +393,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         form.setParameter("firstSex_0", String.valueOf(first.getDate()));
         form.setParameter("firstSex_1", String.valueOf(first.getMonth()));
         form.setParameter("firstSex_2", String.valueOf(first.getYear() + 1900));
-        form.setParameter("birthdate_0", String.valueOf(MakumbaTestSetup.birthdate.getDate()));
-        form.setParameter("birthdate_1", String.valueOf(MakumbaTestSetup.birthdate.getMonth()));
-        form.setParameter("birthdate_2", String.valueOf(MakumbaTestSetup.birthdate.getYear() + 1800));
-        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestSetup.birthdate.getDate()));
-        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestSetup.birthdate.getMonth()));
-        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestSetup.birthdate.getYear() + 1900));
+        form.setParameter("birthdate_0", String.valueOf(MakumbaTestSetup.birthdateJohn.getDate()));
+        form.setParameter("birthdate_1", String.valueOf(MakumbaTestSetup.birthdateJohn.getMonth()));
+        form.setParameter("birthdate_2", String.valueOf(MakumbaTestSetup.birthdateJohn.getYear() + 1800));
+        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestSetup.birthdateJohn.getDate()));
+        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestSetup.birthdateJohn.getMonth()));
+        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestSetup.birthdateJohn.getYear() + 1900));
         form.setParameter("hobbies", " ");
         form.setParameter("uniqInt", MakumbaTestSetup.uniqInt.toString());
         form.setParameter("uniqChar", MakumbaTestSetup.uniqChar);
