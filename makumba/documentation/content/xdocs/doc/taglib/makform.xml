@@ -1,178 +1,359 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:form tag documentation</title>
+  
   </header>
+  
   <body>
-    <section id="attributes">
-      <title>Attributes</title>
-      <table>
-        <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">handler</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">the Java method that handles the response</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">action</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">method</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">name</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">message</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">styleId</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">styleClass</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">style</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">annotation</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">annotationSeparator</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">reloadFormOnError</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">clientSideValidation</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Document me please</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">target</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onReset</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onSubmit</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Form-specific html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">title</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onClick</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onDblClick</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onKeyDown</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onKeyUp</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onKeyPress</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onMouseDown</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onMouseUp</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onMouseMove</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onMouseOut</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-        <tr>
-          <td colspan="1" rowspan="1">onMouseOver</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">Generic html tag attributes, see newForm</td>
-        </tr>
-      </table>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</p>
+    
     </section>
+    
+    <section id="attributes">
+      
+      <title>Attributes</title>
+      
+      <table>
+        
+        <tr>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>handler</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>the Java method that handles the response</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>action</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>method</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>name</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>message</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>styleId</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>styleClass</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>style</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>annotation</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>annotationSeparator</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>reloadFormOnError</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>clientSideValidation</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>target</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Form-specific html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onReset</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Form-specific html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onSubmit</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Form-specific html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>title</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onClick</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onDblClick</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onKeyDown</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onKeyUp</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onKeyPress</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onMouseDown</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onMouseUp</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onMouseMove</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onMouseOut</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>onMouseOver</td>
+          
+          <td>false</td>
+          
+          <td>true</td>
+          
+          <td>Generic html tag attributes, see newForm</td>
+        
+        </tr>
+      
+      </table>
+    
+    </section>
+    
+  
     <section id="example">
   
       <title>Example</title>
@@ -184,4 +365,5 @@
         <code/>
   
       </p>
-    </section>  </body></document>
+    </section>  </body>
+</document>

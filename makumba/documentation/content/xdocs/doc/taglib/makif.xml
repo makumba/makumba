@@ -1,28 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
-<document xmlns:xi="http://www.w3.org/2001/XInclude">
+<document>
+  
   <header>
+    
     <title>mak:if tag documentation</title>
+  
   </header>
+  
   <body>
+    
+    <section id="description">
+      
+      <title>Description</title>
+      
+      <p>Displays the body of the tag only if the OQL expression evaluates to true.</p>
+    
+    </section>
+    
     <section id="attributes">
+      
       <title>Attributes</title>
+      
       <table>
+        
         <tr>
-          <th colspan="1" rowspan="1">Name</th>
-          <th colspan="1" rowspan="1">Required</th>
-          <th colspan="1" rowspan="1">rt expression value</th>
-          <th colspan="1" rowspan="1">Description</th>
+          
+          <th>Name</th>
+          
+          <th>Required</th>
+          
+          <th>rt expression value</th>
+          
+          <th>Description</th>
+        
         </tr>
+        
         <tr>
-          <td colspan="1" rowspan="1">test</td>
-          <td colspan="1" rowspan="1">true</td>
-          <td colspan="1" rowspan="1">false</td>
-          <td colspan="1" rowspan="1">OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+          
+          <td>test</td>
+          
+          <td>true</td>
+          
+          <td>false</td>
+          
+          <td>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
-</td>        </tr>      </table>    </section>    <section id="example">
+</td>        
+        </tr>      
+      </table>    
+    </section>      
+    <section id="example">
   
       <title>Example</title>
   
