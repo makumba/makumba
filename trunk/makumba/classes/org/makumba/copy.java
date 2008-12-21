@@ -62,7 +62,7 @@ public class copy
 		  String [] types;
 		  if(nargs==2)
 		    {
-		      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+		      Vector<String> v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
 		      types= new String[v.size()];
 		      for(int i=0; i<v.size(); i++)
 				  types[i]= (String)v.elementAt(i);
