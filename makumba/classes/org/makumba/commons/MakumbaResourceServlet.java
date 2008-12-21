@@ -221,10 +221,6 @@ public class MakumbaResourceServlet extends HttpServlet {
                 writeScriptsInHeader(sb, contextPath, o);
             } else if(o.endsWith(".css")) {
                 writeStylesInHeader(sb, contextPath, o);
-            } else {
-                // we assume it's an image
-                rsc += RESOURCE_PATH_IMAGES + object;
-                sb.append("<img src=\"" + rsc + "\">" + "\n");
             }
     
         }
