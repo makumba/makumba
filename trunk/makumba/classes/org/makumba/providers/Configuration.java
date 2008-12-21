@@ -137,8 +137,6 @@ public class Configuration implements Serializable {
                 Logger.getLogger("org.makumba.config").severe(
                     "No application configuration found -> using internal default configuration!");
                 applicationConfig = defaultConfig;
-                System.out.println(applicationConfig.sectionNames());
-                System.out.println(applicationConfig.optionNames("controllerConfig"));
             }
 
             defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
