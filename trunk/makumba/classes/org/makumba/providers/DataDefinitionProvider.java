@@ -21,7 +21,7 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
     private static final class SingletonHolder {
         private static final DataDefinitionProvider singleton = new DataDefinitionProvider();
     }
-    
+
     public static DataDefinitionProvider getInstance() {
         return SingletonHolder.singleton;
     }
@@ -49,6 +49,14 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
 
     public Vector<String> getDataDefinitionsInLocation(String location) {
         return dataDefinitionProviderImplementation.getDataDefinitionsInLocation(location);
+    }
+
+    public Vector<String> getDataDefinitionsInDefaultLocations() {
+        return dataDefinitionProviderImplementation.getDataDefinitionsInDefaultLocations();
+    }
+
+    public Vector<String> getDataDefinitionsInDefaultLocations(String... ignoreList) {
+        return dataDefinitionProviderImplementation.getDataDefinitionsInDefaultLocations(ignoreList);
     }
 
     public DataDefinition getVirtualDataDefinition(String name) {
