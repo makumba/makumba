@@ -367,6 +367,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakSearchFormDefaultMatchMode() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakSearchFormDefaultMatchMode.jsp");
+    }
+
+    public void endMakSearchFormDefaultMatchMode(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
     public void beginFormAnnotation(Request request) throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
