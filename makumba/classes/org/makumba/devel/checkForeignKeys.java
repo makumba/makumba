@@ -36,6 +36,7 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Opens given database tables; if allowed to, this would also trigger alter commands.
@@ -64,17 +65,7 @@ public class checkForeignKeys {
             }
             SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
 
-            Vector<String> mddsInDirectory = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
-//            Vector<String> mddsInDirectory = org.makumba.MakumbaSystem.mddsInDirectory("");
-            
-            Vector<String> clean = (Vector<String>) mddsInDirectory.clone();
-            for (int i = 0; i < mddsInDirectory.size(); i++) {
-                String element = (String) mddsInDirectory.get(i);
-                if (element.contains("broken") || element.contains("dataDefinitions")) {
-                    clean.remove(element);
-                }
-            }
-            mddsInDirectory = clean;
+            Vector<String> mddsInDirectory = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations("test.brokenMdds");
 
             String[] tables = mddsInDirectory.toArray(new String[mddsInDirectory.size()]);
             for (int i = 0; i < tables.length; i++) {
