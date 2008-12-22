@@ -2589,7 +2589,9 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
         <tr>
           <td><tt>fields</tt></td>
           <td>The MDD fields to apply this criterion upon</td>
-          <td>Fixed, mandatory; for multiple fields, provide a comma-separated list.</td>
+          <td>Fixed, mandatory; for multiple fields, provide a comma-separated list.<br />
+          Note that you can search also on the <a href="#DefaultFields">default fields</a> TS_create and TS_modify; further, you can search on fields
+          in referred fields, i.e. <code>ptr</code> and <code>set</code> types.</td>
         </tr>
         <tr>
           <td><tt>isRange</tt></td>
