@@ -2524,7 +2524,7 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     </attribute>
 
     <attribute>
-      <name>defaultMatchMode</name>
+      <name>default</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>The default match-mode to be selected when the form is first loaded.</description>

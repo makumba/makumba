@@ -225,7 +225,7 @@ public class MatchModeTag extends GenericMakumbaTag {
         return false;
     }
 
-    public void setDefaultMatchMode(String s) {
+    public void setDefault(String s) {
         this.defaultMode = s;
     }
 
