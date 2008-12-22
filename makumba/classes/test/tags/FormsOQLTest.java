@@ -308,7 +308,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
-        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
         // we could also do the comparison here, though, and leave the endMakSearchForm method empty
         submissionResponse = form.submit();
     }
@@ -348,7 +348,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
-        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
         // we could also do the comparison here, though, and leave the endMakSearchForm method empty
         submissionResponse = form.submit();
     }
@@ -358,6 +358,44 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm2(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void beginMakSearchForm3(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm3.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakSearchForm3() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakSearchForm3(WebResponse response) throws Exception {
         try {
             output = submissionResponse.getText();
             fetchValidTestResult(output, record);
@@ -420,7 +458,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
-        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
         // we could also do the comparison here, though, and leave the endMakSearchForm method empty
         submissionResponse = form.submit();
     }
@@ -557,7 +595,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
-        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
         // we could also do the comparison here, though, and leave the endMakSearchForm method empty
         submissionResponse = form.submit();
     }
@@ -599,7 +637,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
-        // cause he WebResponse passed in endMakSearchForm is not from this submission
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
         // we could also do the comparison here, though, and leave the endMakSearchForm method empty
         submissionResponse = form.submit();
     }
