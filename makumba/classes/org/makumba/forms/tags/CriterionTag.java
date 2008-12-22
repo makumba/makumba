@@ -195,7 +195,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     @Override
     public void setTagKey(PageCache pageCache) {
-        tagKey = new MultipleKey(new Object[] { getForm().tagKey, id, fields });
+        tagKey = new MultipleKey(new Object[] { getForm().tagKey, id, fields, matchMode });
     }
 
     @Override
