@@ -2482,6 +2482,14 @@
     </attribute>
 
     <attribute>
+      <name>defaultMatchMode</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      
+      
+    </attribute>
+
+    <attribute>
       <name>labelSeparator</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>

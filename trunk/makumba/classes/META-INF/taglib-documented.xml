@@ -2524,6 +2524,14 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     </attribute>
 
     <attribute>
+      <name>defaultMatchMode</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The default match-mode to be selected when the form is first loaded.</description>
+      <comments>see 'matchModes' for allowed values</comments>
+    </attribute>
+
+    <attribute>
       <name>labelSeparator</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
