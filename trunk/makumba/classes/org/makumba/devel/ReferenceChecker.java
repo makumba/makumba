@@ -155,15 +155,7 @@ public class ReferenceChecker extends HttpServlet {
         DevelUtils.writeTitleAndHeaderEnd(w, title);
         DevelUtils.printPageHeader(w, title);
         writeHeader(w, contextPath);
-        Vector<String> mdds = MakumbaSystem.mddsInDirectory("dataDefinitions");
-        Vector<String> clean = (Vector<String>) mdds.clone();
-        for (int i = 0; i < mdds.size(); i++) {
-            String element = (String) mdds.get(i);
-            if (element.contains("broken") || element.contains("dataDefinitions")) {
-                clean.remove(element);
-            }
-        }
-        mdds = clean;
+        Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
         Collections.sort(mdds);
         w.println("<div style=\"float:right; border: 1px solid #000; margin: 0px 0px 20px 20px; padding: 5px; background: #ddd;\">");
         for (Enumeration<String> mddse = mdds.elements(); mddse.hasMoreElements();) {

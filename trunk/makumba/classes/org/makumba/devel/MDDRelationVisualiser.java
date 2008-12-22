@@ -39,7 +39,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
-import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
+import org.makumba.providers.DataDefinitionProvider;
 
 import prefuse.Constants;
 import prefuse.Display;
@@ -79,13 +79,7 @@ public class MDDRelationVisualiser {
     static final String treeEdges = "graph.edges";
 
     public static void main(String[] args) throws IOException {
-        Vector<String> mdds;
-        try {
-            mdds = new MakumbaDataDefinitionFactory().getDataDefinitionsInLocation("dataDefinitions/");
-        } catch (Exception e) {
-            // if there is no "dataDefinitions" directory, use the root dir to find MDDs
-            mdds = new MakumbaDataDefinitionFactory().getDataDefinitionsInLocation("");
-        }
+        Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
         File tmp = new File("/tmp/graph.ml"); // File.createTempFile("graph_", ".ml");
 
         Namespace ns = Namespace.getNamespace("http://graphml.graphdrawing.org/xmlns");

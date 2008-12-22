@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Opens given database tables; if allowed to, this would also trigger alter commands.
@@ -48,7 +49,7 @@ public class open {
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
             String[] tables;
             if (argv.length < 2) {
-                Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+                Vector<String> v = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
                 tables = new String[v.size()];
                 for (int i = 0; i < v.size(); i++)
                     tables[i] = (String) v.elementAt(i);
