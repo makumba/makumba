@@ -56,6 +56,10 @@ public class errorViewer extends LineViewer {
     Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]),
             Pattern.compile(patternLineNumberStrings[1]), Pattern.compile(patternLineNumberStrings[2]) };
 
+    private static final String regex = "\\bhttp://[^\\s]+";
+
+    private static final Pattern pattern = Pattern.compile(regex);
+
     private String hiddenBody;
 
     public errorViewer(HttpServletRequest request, ServletContext servletContext, String title, String body,
@@ -69,6 +73,7 @@ public class errorViewer extends LineViewer {
         reader = new StringReader(body);
     }
 
+    @Override
     public String parseLine(String s) {
         Class<?> javaClass;
         String jspPage;
@@ -119,22 +124,22 @@ public class errorViewer extends LineViewer {
         return markupLinks(result.append(source).toString());
     }
 
-    private String markupLinks(String string) {
-        final String prefix = "http://";
-        int index = string.indexOf(prefix);
-        while (index != -1) {
-            int endIndex = string.indexOf(" ", index);
-            final String substring = string.substring(index, endIndex);
-            final String replacement = "<a href=\"" + substring + "\">" + substring + "</a>";
-            string = string.replaceFirst(substring, replacement);
-            index = string.indexOf(prefix, index + replacement.length());
+    private static String markupLinks(String string) {
+        Matcher matcher = pattern.matcher(string);
+        StringBuilder sb = new StringBuilder();
+        int currentIndex = 0;
+        while (matcher.find()) {
+            sb.append(string.substring(currentIndex, matcher.start()));
+            sb.append("<a href=\"").append(matcher.group()).append("\">").append(matcher.group()).append("</a>");
+            currentIndex = matcher.end();
         }
-        return string;
+        sb.append(string.substring(currentIndex));
+        return sb.toString();
     }
 
     private Integer findLineNumber(String s) {
-        for (int i = 0; i < patternLineNumbers.length; i++) {
-            Matcher m = patternLineNumbers[i].matcher(s);
+        for (Pattern patternLineNumber : patternLineNumbers) {
+            Matcher m = patternLineNumber.matcher(s);
             if (m.matches()) {
                 return Integer.parseInt(m.group(1));
             }
@@ -146,16 +151,31 @@ public class errorViewer extends LineViewer {
      * @param token
      * @return
      */
+    @Override
     public Class<?> findClassSimple(String token) {
         int index = token.lastIndexOf('.');
         String className = token.substring(0, index);
         return super.findClassSimple(className);
     }
 
+    @Override
     public void footer(PrintWriter pw) throws IOException {
-        if (hiddenBody != null)
+        if (hiddenBody != null) {
             pw.println("<!--\n" + hiddenBody + "\n-->");
+        }
         super.footer(pw);
+    }
+
+    public static void main(String[] args) {
+        String[] strings = { "http://parade.best.eu.org/rudi-k/website/company/private/cvSearch.jsp",
+                "http://www.google.com is super, http://www.google.com too, but best is http://www.google.com!",
+                " http://en.wikipedia.org/wiki/PC_Tools_(Central_Point_Software) ",
+                "Visit my website at http://www.example.com, it's awesome! ", "Please go to http://stackoverflow.com" };
+        for (String string : strings) {
+            System.out.println(string);
+            System.out.println(markupLinks(string));
+            System.out.println();
+        }
     }
 
 }
