@@ -57,7 +57,7 @@ public class FieldViewer extends FieldFormatter {
 	 * @param formatParams
 	 *            formatting parameters
 	 */
-	public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s, Dictionary formatParams) {
+	public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s, Dictionary<String, Object> formatParams) {
 		String prefix = "";
 		String postfix = "";
 		String sOut = s;
@@ -85,17 +85,8 @@ public class FieldViewer extends FieldFormatter {
 		}
 
 		if (addTitle.equals("true")
-				|| (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) { //add
-																					   // title,
-																					   // to
-																					   // be
-																					   // normally
-																					   // shown
-																					   // as
-																					   // tooltip
-																					   // on
-																					   // mouse
-																					   // hover
+				|| (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) { 
+		    // add title, to be normally shown as tooltip on mouse hover
 			prefix = "<span title=\"" + s.replace('\"', '\'') + "\">";
 			postfix = postfix + "</span>";
 		}

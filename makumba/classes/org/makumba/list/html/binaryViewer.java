@@ -59,7 +59,7 @@ public class binaryViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         Pointer pointer = ((Pointer) o);
         return "/makumbaDownload?type=" + pointer.getType() + "&value=" + pointer.toExternalForm();
     }

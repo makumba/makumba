@@ -62,7 +62,7 @@ public class booleanViewer extends FieldViewer {
 		return SingletonHolder.singleton;
 	}
 	
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return ((Boolean)o) ? "Yes" : "No";
     }
     

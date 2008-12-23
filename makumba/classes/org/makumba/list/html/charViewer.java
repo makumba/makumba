@@ -59,7 +59,7 @@ public class charViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         String txt = o.toString();
         String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");
