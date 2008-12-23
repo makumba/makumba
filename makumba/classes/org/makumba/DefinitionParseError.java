@@ -1,6 +1,5 @@
 package org.makumba;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -24,18 +23,19 @@ public abstract class DefinitionParseError extends MakumbaError {
     }
 
     protected static String showTypeName(String typeName) {
-        if (typeName.startsWith("temp"))
+        if (typeName.startsWith("temp")) {
             return "";
+        }
         return typeName + ":";
     }
 
     protected int column;
 
-    protected Vector components;
+    protected Vector<DefinitionParseError> components;
 
     protected String line;
 
-    protected Hashtable lines;
+    protected Hashtable<String, DefinitionParseError> lines;
 
     protected String typeName;
 
@@ -65,19 +65,20 @@ public abstract class DefinitionParseError extends MakumbaError {
     /** add another error to the main error */
     public void add(DefinitionParseError e) {
         if (components == null) {
-            components = new Vector();
+            components = new Vector<DefinitionParseError>();
         }
 
         components.addElement(e);
         if (e.line != null) {
             if (lines == null) {
-                lines = new Hashtable();
+                lines = new Hashtable<String, DefinitionParseError>();
             }
             lines.put(e.line, e);
         }
     }
 
     /** If the error is single, call the default action, else compose all components' messages */
+    @Override
     public String getMessage() {
         if (isSingle()) {
             return super.getMessage();
@@ -85,9 +86,8 @@ public abstract class DefinitionParseError extends MakumbaError {
 
         StringBuffer sb = new StringBuffer();
 
-        for (Enumeration e = components.elements(); e.hasMoreElements();) {
-            DefinitionParseError error = (DefinitionParseError) e.nextElement();
-            sb.append('\n').append(error.getMessage()).append('\n');
+        for (DefinitionParseError definitionParseError : components) {
+            sb.append('\n').append(definitionParseError.getMessage()).append('\n');
         }
         return sb.toString();
     }

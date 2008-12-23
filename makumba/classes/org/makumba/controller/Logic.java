@@ -270,7 +270,6 @@ public class Logic {
                         rule = Configuration.getAuthorizationDefinitions().get(k);
                     }
                 }
-                String originalRule = rule;
 
                 if (rule.equals("none")) {
                     return rule;

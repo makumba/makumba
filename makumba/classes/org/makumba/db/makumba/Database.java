@@ -98,6 +98,7 @@ public abstract class Database {
     }
 
     protected ResourcePool connections = new ResourcePool() {
+        @Override
         public Object create() {
             nconn++;
             config.put("jdbc_connections", "" + nconn);
@@ -105,10 +106,12 @@ public abstract class Database {
         }
 
         // preventing stale connections
+        @Override
         public void renew(Object o) {
             ((DBConnection) o).commit();
         }
 
+        @Override
         public void close(Object o) {
             ((DBConnection) o).close();
         }
@@ -169,8 +172,6 @@ public abstract class Database {
 
     String configName;
 
-    Hashtable queryCache = new Hashtable();
-
     String fullName;
 
     protected NameResolver nr;
@@ -202,19 +203,22 @@ public abstract class Database {
         this.nr = new NameResolver(config);
         this.configName = config.getProperty("db.name");
         String s = config.getProperty("initConnections");
-        if (s != null)
+        if (s != null) {
             initConnections = Integer.parseInt(s.trim());
+        }
 
         config.put("jdbc_connections", "0");
         try {
-            if (config.get("dbsv") != null && config.get("autoIncrement") != null)
+            if (config.get("dbsv") != null && config.get("autoIncrement") != null) {
                 throw new org.makumba.ConfigFileError("only one of dbsv and autoIncrement can be specified");
-            if (config.get("dbsv") != null)
+            }
+            if (config.get("dbsv") != null) {
                 dbsv = new Integer((String) config.get("dbsv")).intValue();
-            else if (config.get("autoIncrement") != null)
+            } else if (config.get("autoIncrement") != null) {
                 autoIncrement = true;
-            else
+            } else {
                 throw new org.makumba.ConfigFileError("either dbsv or autoIncrement must be specified");
+            }
 
             tableclass = getTableClassConfigured();
 
@@ -237,12 +241,14 @@ public abstract class Database {
              */
             private static final long serialVersionUID = 1L;
 
+            @Override
             public Object makeResource(Object o) {
                 Object[] multi = (Object[]) o;
 
                 return prepareQueryImpl((String) multi[0], (String) multi[1]);
             }
 
+            @Override
             protected Object getHashObject(Object name) {
                 Object[] multi = (Object[]) name;
                 return "" + multi[0] + "####" + multi[1];
@@ -255,12 +261,14 @@ public abstract class Database {
              */
             private static final long serialVersionUID = 1L;
 
+            @Override
             public Object makeResource(Object o) {
                 Object[] multi = (Object[]) o;
 
                 return prepareUpdateImpl((String) multi[0], (String) multi[1], (String) multi[2]);
             }
 
+            @Override
             protected Object getHashObject(Object name) {
                 Object[] multi = (Object[]) name;
                 return "" + multi[0] + "####" + multi[1] + "######" + multi[2];
@@ -291,23 +299,26 @@ public abstract class Database {
         // OLDSUPPORT >>
         if (name.indexOf('/') != -1) {
             name = name.replace('/', '.');
-            if (name.charAt(0) == '.')
+            if (name.charAt(0) == '.') {
                 name = name.substring(1);
+            }
         }
         // <<
 
         int n = name.indexOf("->");
-        if (n == -1)
+        if (n == -1) {
             return getTable(ddp.getDataDefinition(name));
         // the abstract level doesn't return recordInfo for subtables (->) since it is supposed they are managed via
         // their parent tables. the current DB api doesn't provide that.
+        }
 
         Table t = getTable(name.substring(0, n));
         while (true) {
             name = name.substring(n + 2);
             n = name.indexOf("->");
-            if (n == -1)
+            if (n == -1) {
                 break;
+            }
             t = t.getRelatedTable(name.substring(0, n));
         }
         t = t.getRelatedTable(name);
@@ -324,8 +335,9 @@ public abstract class Database {
         String ret = null;
         for (Enumeration e = cnf.keys(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
-            if (pattern.startsWith(key) && (ret == null || ret.length() < key.length()))
+            if (pattern.startsWith(key) && (ret == null || ret.length() < key.length())) {
                 ret = key;
+            }
         }
         return ret;
     }
@@ -343,10 +355,11 @@ public abstract class Database {
         java.util.logging.Logger.getLogger("org.makumba.db.admin.delete").info(
             "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
-            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+        for (String string : dd.getFieldNames()) {
+            FieldDefinition fi = dd.getFieldDefinition(string);
+            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 deleteFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
+            }
         }
     }
 
@@ -367,8 +380,9 @@ public abstract class Database {
     }
 
     public void deleteFrom(DBConnection c, String[] tables, DBConnection sourceDB, boolean ignoreDbsv) {
-        for (int i = 0; i < tables.length; i++)
-            deleteFrom(c, tables[i], sourceDB, ignoreDbsv);
+        for (String table : tables) {
+            deleteFrom(c, table, sourceDB, ignoreDbsv);
+        }
     }
 
     public void copyFrom(String sourceDB, String table, boolean ignoreDbsv) {
@@ -389,18 +403,20 @@ public abstract class Database {
 
     public void copyFrom(DBConnection c, String[] tables, DBConnection sourceDB, boolean ignoreDbsv) {
         deleteFrom(c, tables, sourceDB, ignoreDbsv);
-        for (int i = 0; i < tables.length; i++)
-            copyFrom(c, tables[i], sourceDB, ignoreDbsv);
+        for (String table : tables) {
+            copyFrom(c, table, sourceDB, ignoreDbsv);
+        }
     }
 
     public void copyFrom(DBConnection c, String table, DBConnection sourceDB, boolean ignoreDbsv) {
         DataDefinition dd = ddp.getDataDefinition(table);
         getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB, ignoreDbsv);
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
-            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+        for (String string : dd.getFieldNames()) {
+            FieldDefinition fi = dd.getFieldDefinition(string);
+            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 copyFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
+            }
         }
     }
 
@@ -408,11 +424,11 @@ public abstract class Database {
         DBConnection c = getDBConnection();
         DBConnection sourceDB = MakumbaTransactionProvider.findDatabase(source).getDBConnection();
         try {
-            Vector v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
+            Vector<Dictionary<String, Object>> v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
             String[] _tables = new String[v.size()];
 
             for (int i = 0; i < _tables.length; i++) {
-                String nm = (String) ((Dictionary) v.elementAt(i)).get("name");
+                String nm = (String) v.elementAt(i).get("name");
                 java.util.logging.Logger.getLogger("org.makumba.db.admin.copy").info(nm);
                 _tables[i] = nm;
             }
@@ -424,8 +440,8 @@ public abstract class Database {
     }
 
     public void openTables(String[] _tables) {
-        for (int i = 0; i < _tables.length; i++) {
-            openTable(_tables[i]);
+        for (String _table : _tables) {
+            openTable(_table);
         }
     }
 
@@ -433,10 +449,11 @@ public abstract class Database {
         getTable(table);
         DataDefinition dd = ddp.getDataDefinition(table);
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
-            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+        for (String string : dd.getFieldNames()) {
+            FieldDefinition fi = dd.getFieldDefinition(string);
+            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 openTable(fi.getSubtable().getName());
+            }
         }
     }
 
@@ -444,13 +461,15 @@ public abstract class Database {
         getTable(table);
         DataDefinition dd = ddp.getDataDefinition(table);
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            FieldDefinition fi = dd.getFieldDefinition((String) e.nextElement());
-            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne"))
+        for (String string : dd.getFieldNames()) {
+            FieldDefinition fi = dd.getFieldDefinition(string);
+            if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 openTable(fi.getSubtable().getName());
+            }
         }
     }
 
+    @Override
     protected void finalize() throws Throwable {
         close();
     }
@@ -458,13 +477,14 @@ public abstract class Database {
     NamedResources tables;
 
     synchronized void addTable(String s) {
-        if (s.equals("org.makumba.db.makumba.Catalog"))
+        if (s.equals("org.makumba.db.makumba.Catalog")) {
             return;
+        }
         DBConnection c = getDBConnection();
         try {
-            Enumeration e = c.executeQuery("SELECT c FROM org.makumba.db.makumba.Catalog c WHERE c.name=$1", s).elements();
+            Enumeration<Dictionary<String, Object>> e = c.executeQuery("SELECT c FROM org.makumba.db.makumba.Catalog c WHERE c.name=$1", s).elements();
             if (!e.hasMoreElements()) {
-                Dictionary h = new Hashtable(3);
+                Dictionary<String, Object> h = new Hashtable<String, Object>(3);
                 h.put("name", s);
                 getTable("org.makumba.db.makumba.Catalog").insertRecord(c, h);
             }
@@ -494,14 +514,17 @@ public abstract class Database {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Object getHashObject(Object name) {
             return ((DataDefinition) name).getName();
         }
 
+        @Override
         public Object makeResource(Object name, Object hashName) throws Throwable {
             return tableclass.newInstance();
         }
 
+        @Override
         public void configureResource(Object name, Object hashName, Object resource) {
             configureTable((Table) resource, (DataDefinition) name);
             addTable(((Table) resource).getDataDefinition().getName());
