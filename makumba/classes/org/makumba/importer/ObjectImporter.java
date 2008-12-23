@@ -111,7 +111,7 @@ public class ObjectImporter {
             String fieldName = (String) e.nextElement();
             configureField(fieldName, markers);
         }
-        Vector notMarked = new Vector();
+        Vector<String> notMarked = new Vector<String>();
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (!isMarked(fieldName) && !isIgnored(fieldName))
@@ -167,15 +167,15 @@ public class ObjectImporter {
      * import data from a text. indexes contains the pointers to other records imported from the same text, at the same
      * time
      */
-    public Dictionary importFrom(String s, Transaction db, Pointer[] indexes) {
+    public Dictionary<String, Object> importFrom(String s, Transaction db, Pointer[] indexes) {
 
-        Hashtable ht = new Hashtable();
+        Hashtable<String, Object> ht = new Hashtable<String, Object>();
 
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             this.importFieldTo(fieldName, ht, s, db, indexes);
         }
-        return (Dictionary) ht;
+        return ht;
     }
 
     /** imports all files from a directory */
@@ -219,14 +219,14 @@ public class ObjectImporter {
             return null;
         String arg = s;
         if (select != null) {
-            Vector v = db.executeQuery(select, arg);
+            Vector<Dictionary<String, Object>> v = db.executeQuery(select, arg);
             if (v.size() > 1) {
                 warningField(fieldName, "too many join results for \"" + s + "\": " + v);
                 return null;
             }
 
             if (v.size() == 1)
-                return (Pointer) ((Dictionary) v.elementAt(0)).get("col1");
+                return (Pointer) (v.elementAt(0)).get("col1");
 
             warningField(fieldName, "no join results for \"" + s + "\"");
             return null;
@@ -236,7 +236,7 @@ public class ObjectImporter {
         query = "SELECT p, p." + joinField + " FROM " + dd.getFieldDefinition(fieldName).getForeignTable().getName()
                 + " p WHERE p." + joinField + "=$1";
 
-        Vector v = db.executeQuery(query, arg);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(query, arg);
 
         if (v.size() > 1) {
             warningField(fieldName, "too many join results for \"" + s + "\": " + v);
@@ -503,7 +503,7 @@ public class ObjectImporter {
     }
 
     // moved from FieldImporter
-    public void importFieldTo(String fieldName, Dictionary d, String s, Transaction db, Pointer[] indexes) {
+    public void importFieldTo(String fieldName, Dictionary<String, Object> d, String s, Transaction db, Pointer[] indexes) {
         try {
             if (isIgnored(fieldName) || !isFieldMarked(fieldName))
                 return;

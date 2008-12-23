@@ -171,7 +171,7 @@ public abstract class choiceEditor extends FieldEditor {
             hcw.setLabels(labels);
 
             try { // set deprecated values if data type supports it
-                Vector dv = rf.dd.getFieldDefinition(fieldIndex).getDeprecatedValues();
+                Vector<String> dv = rf.dd.getFieldDefinition(fieldIndex).getDeprecatedValues();
                 // System.out.println("setting deprecated:"+dv);
                 if (dv != null && !dv.isEmpty()) {
                     String[] dvs = new String[dv.size()];
@@ -241,10 +241,10 @@ public abstract class choiceEditor extends FieldEditor {
      * Return value if not null, or finds the default option and returns it as a Vector.
      */
     public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        if (o == null || (o instanceof Vector && ((Vector) o).size() == 0)) {
+        if (o == null || (o instanceof Vector && ((Vector<?>) o).size() == 0)) {
             String nullReplacer = (String) formatParams.get("default");
             if (nullReplacer != null) {
-                Vector v = new Vector();
+                Vector<String> v = new Vector<String>();
                 v.add(nullReplacer);
                 return v;
             }

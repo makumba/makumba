@@ -594,14 +594,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
      */
-    public Enumeration<String> getValues() {
+    public Enumeration getValues() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector<String>) this.extra1).elements();
+                return ((Vector) this.extra1).elements();
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector<String>) getEnum().extra1).elements();
+                return ((Vector) getEnum().extra1).elements();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -610,14 +610,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
      */
-    public Enumeration getNames() {
+    public Enumeration<String> getNames() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector) this.extra2).elements();
+                return ((Vector<String>) this.extra2).elements();
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector) getEnum().extra2).elements();
+                return ((Vector<String>) getEnum().extra2).elements();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }

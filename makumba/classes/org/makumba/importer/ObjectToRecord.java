@@ -46,7 +46,7 @@ public class ObjectToRecord {
 
     DataDefinition type;
 
-    Hashtable fields = new Hashtable();
+    Hashtable<String, Field> fields = new Hashtable<String, Field>();
 
     public ObjectToRecord(Class<?> c, String type) {
         try {
@@ -70,14 +70,16 @@ public class ObjectToRecord {
             }
 
             String[] noImp = {};
-            if (no != null)
+            if (no != null) {
                 noImp = (String[]) no.get(null);
+            }
 
             Object dummy = "dummy";
-            Hashtable noImport = new Hashtable();
+            Hashtable<String, Object> noImport = new Hashtable<String, Object>();
 
-            for (int i = 0; i < noImp.length; i++)
-                noImport.put(noImp[i], dummy);
+            for (String element : noImp) {
+                noImport.put(element, dummy);
+            }
 
             Field acc = null;
             try {
@@ -86,42 +88,48 @@ public class ObjectToRecord {
             }
 
             String[] accountedImp = {};
-            if (acc != null)
+            if (acc != null) {
                 accountedImp = (String[]) acc.get(null);
+            }
 
-            Hashtable accountedImport = new Hashtable();
+            Hashtable<String, Object> accountedImport = new Hashtable<String, Object>();
 
-            for (int i = 0; i < accountedImp.length; i++)
-                accountedImport.put(accountedImp[i], dummy);
+            for (String element : accountedImp) {
+                accountedImport.put(element, dummy);
+            }
 
             Enumeration<String> e = this.type.getFieldNames().elements();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++) {
                 // skipping default fields
                 e.nextElement();
+            }
             for (; e.hasMoreElements();) {
-                String s = (String) e.nextElement();
+                String s = e.nextElement();
                 Field f = null;
                 try {
                     f = c.getField(s);
                 } catch (java.lang.NoSuchFieldException nsfe1) {
                 }
                 if (f != null) {
-                    if (noImport.get(s) == null)
+                    if (noImport.get(s) == null) {
                         fields.put(s, f);
-                } else if (accountedImport.get(s) == null)
+                    }
+                } else if (accountedImport.get(s) == null) {
                     java.util.logging.Logger.getLogger("org.makumba.import").severe(
                         "No Java correspondent for " + type + "." + s + " in " + c.getName());
+                }
             }
             Field flds[] = c.getFields();
-            for (int i = 0; i < flds.length; i++) {
+            for (Field fld : flds) {
                 try {
-                    flds[i].get(null);
+                    fld.get(null);
                 } catch (NullPointerException npe) {
-                    String s = flds[i].getName();
+                    String s = fld.getName();
 
-                    if (this.type.getFieldDefinition(s) == null && noImport.get(s) == null)
+                    if (this.type.getFieldDefinition(s) == null && noImport.get(s) == null) {
                         java.util.logging.Logger.getLogger("org.makumba.import").severe(
                             "No Makumba correspondent for " + c.getName() + "." + s + " in " + type);
+                    }
                 }
             }
 
@@ -133,20 +141,21 @@ public class ObjectToRecord {
 
     boolean cleaned = false;
 
-    public Hashtable importObject(Object o, org.makumba.db.makumba.Database db) {
+    public Hashtable<String, Object> importObject(Object o, org.makumba.db.makumba.Database db) {
         try {
-            Hashtable h = new Hashtable();
+            Hashtable<String, Object> h = new Hashtable<String, Object>();
             Object args[] = { h, db };
 
             h.put(type.getIndexPointerFieldName(), db.getPointer(type.getName(), o.hashCode()));
 
-            for (Enumeration e = fields.keys(); e.hasMoreElements();) {
-                String s = (String) e.nextElement();
-                Object value = ((Field) fields.get(s)).get(o);
+            for (Enumeration<String> e = fields.keys(); e.hasMoreElements();) {
+                String s = e.nextElement();
+                Object value = (fields.get(s)).get(o);
 
                 if (value != null) {
-                    if (!value.getClass().getName().startsWith("java"))
+                    if (!value.getClass().getName().startsWith("java")) {
                         value = db.getPointer(type.getFieldDefinition(s).getForeignTable().getName(), value.hashCode());
+                    }
                     h.put(s, value);
                 }
             }
@@ -176,26 +185,29 @@ public class ObjectToRecord {
     }
 
     /** import an integer from a hashtable */
-    public static void importInteger(String java, String mdd, Hashtable hjava, Hashtable hmdd) {
-        String s = (String) hjava.remove(java);
-        if (s == null)
+    public static void importInteger(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, Integer> hmdd) {
+        String s = hjava.remove(java);
+        if (s == null) {
             return;
+        }
         Integer i = null;
         try {
             i = new Integer(Integer.parseInt(s.trim()));
         } catch (NumberFormatException nfe) {
-            if (s.trim().length() > 0)
+            if (s.trim().length() > 0) {
                 Logger.getLogger("org.makumba.import").warning(s);
+            }
             return;
         }
         hmdd.put(mdd, i);
     }
 
     /** import an string from a hashtable */
-    public static void importString(String java, String mdd, Hashtable hjava, Hashtable hmdd) {
-        String s = (String) hjava.remove(java);
-        if (s == null)
+    public static void importString(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, String> hmdd) {
+        String s = hjava.remove(java);
+        if (s == null) {
             return;
+        }
         hmdd.put(mdd, s.trim());
     }
 
@@ -204,13 +216,15 @@ public class ObjectToRecord {
     static Integer one = new Integer(1);
 
     /** import a boolean choice from a hashtable */
-    public static void importBoolean(String java, String mdd, Hashtable hjava, Hashtable hmdd, String on) {
-        String s = (String) hjava.remove(java);
+    public static void importBoolean(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, Integer> hmdd, String on) {
+        String s = hjava.remove(java);
         hmdd.put(mdd, zero);
-        if (s == null)
+        if (s == null) {
             return;
-        if (s.trim().equals(on))
+        }
+        if (s.trim().equals(on)) {
             hmdd.put(mdd, one);
+        }
     }
 
 }
