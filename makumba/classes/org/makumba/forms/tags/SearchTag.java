@@ -281,7 +281,7 @@ public class SearchTag extends FormTagBase {
                     if (whereThisField.trim().length() > 0) {
                         where += " (" + whereThisField + ") ";
                         if (fd.isSetType()) { // enhance the variableFrom part if we select sets
-                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName);
+                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName.replace(".", "_"));
                         }
                     }
                 }
