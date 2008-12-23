@@ -39,6 +39,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -297,26 +299,31 @@ public abstract class LineViewer implements SourceViewer {
 
         if (realPath != null && realPath.startsWith(webAppRoot)) {
             String filePath = realPath.substring(webAppRoot.length());
-            FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
+            try {
+                FileRelations fileDependents = relationCrawler.getFileDependents(filePath);
 
-            printRelations(writer, fileDependents.getMddRelations(), TYPE_MDD, maxDisplay);
-            printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
-            printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
-            if (fileDependents.isEmpty()) {
-                if (!relationCrawler.wasCrawled()) {
-                    // TODO make nicer, i.e. display something else while it crawls using some JS
-                    // TODO: simply deactivating calling the crawler again would be a first step..
-                    writer.println("No relations have been computed for this webapp.");
-                    if (Configuration.getMakumbaRelationCrawlerLocation().equals(Configuration.PROPERTY_NOT_SET)) {
-                        writer.print("<br/><span style=\"color: grey; font-size: smaller\">Manually triggering crawling is disabled</span>");
+                printRelations(writer, fileDependents.getMddRelations(), TYPE_MDD, maxDisplay);
+                printRelations(writer, fileDependents.getJspRelations(), TYPE_JSP, maxDisplay);
+                printRelations(writer, fileDependents.getJavaRelations(), TYPE_JAVA, maxDisplay);
+                if (fileDependents.isEmpty()) {
+                    if (!relationCrawler.wasCrawled()) {
+                        // TODO make nicer, i.e. display something else while it crawls using some JS
+                        // TODO: simply deactivating calling the crawler again would be a first step..
+                        writer.println("No relations have been computed for this webapp.");
+                        if (Configuration.getMakumbaRelationCrawlerLocation().equals(Configuration.PROPERTY_NOT_SET)) {
+                            writer.print("<br/><span style=\"color: grey; font-size: smaller\">Manually triggering crawling is disabled</span>");
+                        } else {
+                            writer.println("<br><a href=\"" + request.getContextPath()
+                                    + Configuration.getMakumbaRelationCrawlerLocation()
+                                    + "\">Crawl now</a> (this will take some time)");
+                        }
                     } else {
-                        writer.println("<br><a href=\"" + request.getContextPath()
-                                + Configuration.getMakumbaRelationCrawlerLocation()
-                                + "\">Crawl now</a> (this will take some time)");
+                        writer.println("No relations found for this file!");
                     }
-                } else {
-                    writer.println("No relations found for this file!");
                 }
+            } catch (Exception e) {
+                writer.println("Could not crawl relations, error: " + e.getMessage());
+                Logger.getLogger("").log(Level.SEVERE, e.getMessage(), e);
             }
         } else {
             writer.println("Could not crawl relations, file not in webapp root!");
