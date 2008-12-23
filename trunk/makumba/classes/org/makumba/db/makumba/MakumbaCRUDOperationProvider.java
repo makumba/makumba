@@ -17,45 +17,48 @@ import org.makumba.providers.CRUDOperationProvider;
 public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
-    public Pointer insert(Transaction t, String type, Dictionary data) {
-        Table table = (((DBConnection)t).db.getTable(ddp.getDataDefinition(type).getName()));
-        return table.insertRecord((DBConnection)t, data);
+    public Pointer insert(Transaction t, String type, Dictionary<String, Object> data) {
+        Table table = (((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName()));
+        return table.insertRecord((DBConnection) t, data);
     }
 
     @Override
-    public void checkInsert(Transaction t, String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
-        Table table = (((DBConnection)t).db.getTable(ddp.getDataDefinition(type).getName()));
+    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
+            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
+        Table table = (((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName()));
         table.checkInsert(fieldsToCheck, fieldsToIgnore, allFields);
     }
 
     @Override
-    public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
-        
+    public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary<String, Object> fieldsToCheck,
+            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
+
         DataDefinition dd = checkUpdate(type, fieldsToCheck, fieldsToIgnore);
-        
+
         // we check the multi-field key uniqueness that span over more than one table
-        Table table = (((DBConnection)t).db.getTable(dd.getName()));
+        Table table = (((DBConnection) t).db.getTable(dd.getName()));
         table.checkUpdate(pointer, allFields);
     }
-    
+
     @Override
-    public int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary dic) {
+    public int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary<String, Object> dic) {
         Object[] params = new Object[dic.size() + 1];
         params[0] = p;
         int n = 1;
         String set = "";
         String comma = "";
-        for (Enumeration upd = dic.keys(); upd.hasMoreElements();) {
+        for (Enumeration<String> upd = dic.keys(); upd.hasMoreElements();) {
             set += comma;
-            String s = (String) upd.nextElement();
+            String s = upd.nextElement();
             params[n++] = dic.get(s);
             set += "this." + s + "=$" + n;
             comma = ",";
         }
-        if (set.trim().length() > 0)
+        if (set.trim().length() > 0) {
             return t.update(typeDef.getName() + " this", set, "this."
                     + ddp.getDataDefinition(p.getType()).getIndexPointerFieldName() + "=$1", params);
-        
+        }
+
         return 0;
     }
 
