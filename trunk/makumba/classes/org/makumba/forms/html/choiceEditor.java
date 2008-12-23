@@ -57,7 +57,7 @@ public abstract class choiceEditor extends FieldEditor {
     }
 
     /** Get the available options. */
-    public abstract Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams);
+    public abstract Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams);
 
     /** Gets the number of available options. */
     public abstract int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts);
@@ -90,7 +90,7 @@ public abstract class choiceEditor extends FieldEditor {
 
     // height? orderBy? where?
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         String type = (String) formatParams.get("type");
         boolean hidden = "hidden".equals(type);
         boolean isRadio = "radio".equals(type);
@@ -240,7 +240,7 @@ public abstract class choiceEditor extends FieldEditor {
     /**
      * Return value if not null, or finds the default option and returns it as a Vector.
      */
-    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         if (o == null || (o instanceof Vector && ((Vector) o).size() == 0)) {
             String nullReplacer = (String) formatParams.get("default");
             if (nullReplacer != null) {

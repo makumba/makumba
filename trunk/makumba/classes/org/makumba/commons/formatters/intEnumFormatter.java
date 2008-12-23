@@ -42,7 +42,7 @@ public class intEnumFormatter extends FieldFormatter {
     }
 
     @Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return rf.dd.getFieldDefinition(fieldIndex).getNameFor(((Integer) o).intValue());
     }
 }

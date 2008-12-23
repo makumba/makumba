@@ -75,7 +75,7 @@ public class dateEditor extends FieldEditor {
 
     static final String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
 
-    String getNullName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    String getNullName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
     }
 
@@ -87,12 +87,12 @@ public class dateEditor extends FieldEditor {
         return getInputName(rf, fieldIndex, suffix) + "_" + i;
     }
 
-    String getComponentName(RecordFormatter rf, int fieldIndex, int i, Dictionary formatParams) {
+    String getComponentName(RecordFormatter rf, int fieldIndex, int i, Dictionary<String, Object> formatParams) {
         return getComponentName(rf, fieldIndex, i, getSuffix(rf, fieldIndex, formatParams));
     }
 
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         String format = (String) formatParams.get("format");
         if (format == null) {
             format = "dd MMMMM yyyy";
@@ -130,7 +130,7 @@ public class dateEditor extends FieldEditor {
     }
 
     void formatComponent(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String fmt, int component,
-            boolean hidden, Dictionary formatParams) {
+            boolean hidden, Dictionary<String, Object> formatParams) {
         SimpleDateFormat df = new SimpleDateFormat(fmt, org.makumba.MakumbaSystem.getLocale());
         df.setCalendar(dateFormatter.calendar);
 
@@ -226,7 +226,7 @@ public class dateEditor extends FieldEditor {
     }
 
     int formatFrom(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String format, int n, boolean hidden,
-            Dictionary formatParams) {
+            Dictionary<String, Object> formatParams) {
         int m = n;
         char c = format.charAt(n);
         while (++n < format.length() && format.charAt(n) == c) {

@@ -41,7 +41,7 @@ public class ptrFormatter extends FieldFormatter {
 	}
 
 	@Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		return ((Pointer) o).toExternalForm();
 	}
 }

@@ -68,15 +68,15 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 
     static final String formName = "org.makumba.formName";
 
-	public static String getSuffix(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public static String getSuffix(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		return (String) formatParams.get(suffixName);
 	}
 
-	public static void setSuffix(Dictionary formatParams, String suffix) {
+	public static void setSuffix(Dictionary<String, Object> formatParams, String suffix) {
 		formatParams.put(suffixName, suffix);
 	}
 
-    public static void setFormName(Dictionary formatParams, String formName) {
+    public static void setFormName(Dictionary<String, Object> formatParams, String formName) {
         if (formName != null) {
             formatParams.put(FieldEditor.formName, formName);
         }
@@ -94,7 +94,7 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	}
 
 	@Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		String s = (String) formatParams.get("type");
 		if (s != null && s.equals("hidden")) {
             return formatHidden(rf, fieldIndex, o, formatParams);
@@ -102,26 +102,26 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 		return formatShow(rf, fieldIndex, o, formatParams);
 	}
 
-	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		// this will call formatNull and formatNotNull which should be redefined
 		// or, the entire formatShow should be redefined
 		return super.format(rf, fieldIndex, o, formatParams);
 	}
 
-	public String formatHidden(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	public String formatHidden(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		return "<input type=\"hidden\" name=\"" + getInputName(rf, fieldIndex, formatParams)
 				+ "\" value=\"" + formatHiddenValue(rf, fieldIndex, o, formatParams) + "\" "
 				+ getExtraFormatting(rf, fieldIndex, formatParams) + ">";
 	}
 
 	/** Formats the value to appear in hidden input statement. */
-	public String formatHiddenValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	public String formatHiddenValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		// default : same treatment as formatting for normal input.
 		return formatValue(rf, fieldIndex, o, formatParams);
 	}
 
 	/** Formats the value to appear in an input statement. */
-	public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+	public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		// return super.format(o, formatParams);
 		throw new ProgrammerError(
 				"If this method is needed, overload it in the inheriting class");
@@ -130,7 +130,7 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 	public void onStartup(RecordFormatter rf, int fieldIndex) {
 	}
 
-	public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
 	}
 
@@ -140,11 +140,11 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 
 	public static final String extraFormattingParam = "makumba.extraFormatting";
 
-	public static String getExtraFormatting(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public static String getExtraFormatting(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		return (String) formatParams.get(extraFormattingParam);
 	}
 
-	public static void setExtraFormatting(Dictionary formatParams,
+	public static void setExtraFormatting(Dictionary<String, Object> formatParams,
 			String extraFormatting) {
 		formatParams.put(extraFormattingParam, extraFormatting);
 	}

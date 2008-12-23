@@ -25,6 +25,7 @@ package org.makumba.commons.formatters;
 
 import java.io.Serializable;
 import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -55,7 +56,7 @@ public class RecordFormatter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public RecordFormatter(DataDefinition dd, java.util.Hashtable names, boolean isSearchForm, Object formIdentifier) {
+    public RecordFormatter(DataDefinition dd, Hashtable<String, String> names, boolean isSearchForm, Object formIdentifier) {
         this.dd = dd;
         this.isSearchForm = isSearchForm;
         this.formIdentifier = formIdentifier;

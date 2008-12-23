@@ -65,7 +65,7 @@ public class booleanEditor extends choiceEditor {
 
     /** Formats the value to appear in an input statement. */
     @Override
-    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 
         String s = (o == null) ? null : (((Boolean)o) ? "Yes" : "No");
         return resetValueFormat(rf, fieldIndex, s, formatParams);
@@ -109,7 +109,7 @@ public class booleanEditor extends choiceEditor {
     }
 
     @Override
-    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         ChoiceSet c = new ChoiceSet();
         c.add("true", "Yes", true, false);
         c.add("false", "No", false, false);

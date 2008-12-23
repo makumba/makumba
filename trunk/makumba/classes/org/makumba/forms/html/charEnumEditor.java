@@ -23,6 +23,8 @@
 
 package org.makumba.forms.html;
 
+import java.util.Dictionary;
+
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
@@ -40,7 +42,7 @@ public class charEnumEditor extends choiceEditor {
     }
 
     @Override
-    public Object getOptions(RecordFormatter rf, int fieldIndex, java.util.Dictionary fP) {
+    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return null;
     }
 
