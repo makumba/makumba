@@ -209,7 +209,7 @@ public class TableManager extends Table {
 
     protected void initFields(SQLDBConnection dbc, Properties config) throws SQLException {
         try {
-            System.out.println("\t** init fields " + getDBName());
+            // System.out.println("\t** init fields " + getDBName());
             ResultSet rs = dbc.getMetaData().getIndexInfo(null, null, getDBName(), false, false);
             while (rs.next()) {
                 String iname = rs.getString("INDEX_NAME");
