@@ -60,7 +60,7 @@ public class textViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         if(o instanceof Text)
             o=((Text)o).getString();
         String txt = o.toString();
