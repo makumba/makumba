@@ -61,7 +61,7 @@ public class FieldFormatter {
     /** Don't use this, use getInstance() */
     protected FieldFormatter() {
         for (int i = 0; i < getAcceptedParams().length; i++) {
-            Hashtable h = new Hashtable(13);
+            Hashtable<String, Object> h = new Hashtable<String, Object>(13);
             if (getAcceptedValue()[i] != null) {
                 for (int j = 0; j < getAcceptedValue()[i].length; j++) {
                     h.put(getAcceptedValue()[i][j], dummy);
@@ -84,10 +84,10 @@ public class FieldFormatter {
         rf.expr[fieldIndex] = s;
     }
 
-    Hashtable validParams = new Hashtable(13);
+    Hashtable<String, Hashtable<String, Object>> validParams = new Hashtable<String, Hashtable<String, Object>>(13);
 
-    public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
-        for (Enumeration e = formatParams.keys(); e.hasMoreElements();) {
+    public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        for (Enumeration<String> e = formatParams.keys(); e.hasMoreElements();) {
             String s = (String) e.nextElement();
             if (s.startsWith("org.makumba")) {
                 continue;
@@ -119,7 +119,7 @@ public class FieldFormatter {
      * @param fieldIndex
      *            TODO
      */
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         String formatted;
         if (o == null || o.equals(rf.dd.getFieldDefinition(fieldIndex).getNull())) {
             formatted = formatNull(rf, fieldIndex, formatParams);
@@ -140,18 +140,18 @@ public class FieldFormatter {
      * @param fieldIndex
      *            TODO
      */
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return getDefaultValueFormat(rf, fieldIndex, formatParams);
     }
 
     /**
      * Formats the not-null-object to pure text. To be over-ridden by subclasses.
      */
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return o.toString();
     }
 
-    public int getIntParam(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
+    public int getIntParam(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, String name) {
         String s = (String) formatParams.get(name);
         if (s == null) {
             return -1;
@@ -163,7 +163,7 @@ public class FieldFormatter {
         }
     }
 
-    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
+    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, String name) {
         int n = getIntParam(rf, fieldIndex, formatParams, name);
         if (n == -1) {
             return "";
@@ -177,7 +177,7 @@ public class FieldFormatter {
     /**
      * Gets the formatted default value, used if real value is null. Returns blank if not set.
      */
-    public String getDefaultValueFormat(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public String getDefaultValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         String s = (String) formatParams.get("default");
         return (s == null) ? "" : s;
     }
@@ -185,7 +185,7 @@ public class FieldFormatter {
     /**
      * Gets the formatted empty value, used if real value is empty. Returns blank if not set.
      */
-    public String getEmptyValueFormat(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public String getEmptyValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         String s = (String) formatParams.get("empty");
         return (s == null) ? "" : s;
     }
@@ -193,7 +193,7 @@ public class FieldFormatter {
     /**
      * Chooses between the real (formatted) value and possible replacements (default, empty).
      */
-    public String resetValueFormat(RecordFormatter rf, int fieldIndex, String s, Dictionary formatParams) {
+    public String resetValueFormat(RecordFormatter rf, int fieldIndex, String s, Dictionary<String, Object> formatParams) {
         if (s == null) {
             s = getDefaultValueFormat(rf, fieldIndex, formatParams);
         }

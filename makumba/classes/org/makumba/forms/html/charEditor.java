@@ -66,7 +66,7 @@ public class charEditor extends FieldEditor {
     public int getWidth(RecordFormatter rf, int fieldIndex)
     { return  rf.dd.getFieldDefinition(fieldIndex).getWidth(); }
     
-	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		String ret = getIntParamString(rf, fieldIndex, formatParams, "size");
 		int n = getIntParam(rf, fieldIndex, formatParams, "maxlength");
 		if (n > getWidth(rf, fieldIndex)) {
@@ -82,13 +82,13 @@ public class charEditor extends FieldEditor {
 
 	/** Formats the input-field in case of null object */
 	@Override
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		return formatNotNull(rf, fieldIndex, null, formatParams);
 	}
 
 	/** Formats the input-field in case of not-null object */
 	@Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		boolean autoComplete = formatParams.get("autoComplete") != null && formatParams.get("autoComplete").equals("true");
 	    String test = getParams(rf, fieldIndex, formatParams);
 		String res = "", id="";
@@ -118,7 +118,7 @@ public class charEditor extends FieldEditor {
 
 	/** Formats the value to appear in an input statement. */
 	@Override
-    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
 		return resetValueFormat(rf, fieldIndex, s, formatParams);
 	}
@@ -131,7 +131,7 @@ public class charEditor extends FieldEditor {
 
 	// public String getLiteral(Object o, Dictionary formatParams)
 	// { }
-	public String getInputType(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+	public String getInputType(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 		String s = (String) formatParams.get("type");
 		if (s == null) {
             s = "text";

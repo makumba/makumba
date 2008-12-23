@@ -55,21 +55,21 @@ public class binaryEditor extends FieldEditor {
     }
 
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return formatNotNull(rf, fieldIndex, o, formatParams);
     }
 
     @Override
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return formatNotNull(rf, fieldIndex, null, formatParams);
     }
 
     @Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return fileInput(rf, fieldIndex, formatParams);
     }
 
-    public static String fileInput(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public static String fileInput(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return "<INPUT name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\"file\" "
                 + getExtraFormatting(rf, fieldIndex, formatParams) + " >";
     }

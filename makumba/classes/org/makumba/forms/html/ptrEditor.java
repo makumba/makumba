@@ -30,14 +30,11 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.FieldDefinition;
-import org.makumba.LogicException;
-import org.makumba.Transaction;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
 
 public class ptrEditor extends choiceEditor {
 
@@ -83,7 +80,7 @@ public class ptrEditor extends choiceEditor {
  
     }
 
-    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 
         ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
         if (c != null)

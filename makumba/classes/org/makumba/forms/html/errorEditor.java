@@ -41,7 +41,7 @@ public class errorEditor extends FieldEditor {
 	}
 
 	@Override
-    public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParam) {
+    public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParam) {
 		throw new org.makumba.commons.formatters.InvalidValueException(rf.expr[fieldIndex],
 				"cannot edit fields of type " + rf.dd.getFieldDefinition(fieldIndex).getType());
 	}
