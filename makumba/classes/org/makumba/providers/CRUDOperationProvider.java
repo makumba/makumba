@@ -33,7 +33,7 @@ public abstract class CRUDOperationProvider {
      *            the data to be inserted
      * @return a Pointer corresponding to the place where the record has been inserted
      */
-    public abstract Pointer insert(Transaction t, String type, Dictionary data);
+    public abstract Pointer insert(Transaction t, String type, Dictionary<String, Object> data);
 
     /**
      * Reads a record
@@ -46,7 +46,7 @@ public abstract class CRUDOperationProvider {
      *            the fields to read
      * @return a Dictionary holding the values of the fields
      */
-    public Dictionary read(Transaction t, Pointer ptr, Object fields) {
+    public Dictionary<String, Object> read(Transaction t, Pointer ptr, Object fields) {
         return t.read(ptr, fields);
     }
 
@@ -60,7 +60,7 @@ public abstract class CRUDOperationProvider {
      * @param data
      *            a Dictionary holding the the fields to be updated
      */
-    public void update(Transaction t, Pointer ptr, Dictionary data) {
+    public void update(Transaction t, Pointer ptr, Dictionary<String, Object> data) {
         t.update(ptr, data);
     }
 
@@ -90,15 +90,17 @@ public abstract class CRUDOperationProvider {
      */
     public void updateSet(Transaction t, Pointer base, FieldDefinition fi, Object val) {
 
-        if (!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum"))
+        if (!fi.getType().equals("set") && !fi.getType().equals("setintEnum") && !fi.getType().equals("setcharEnum")) {
             throw new InvalidFieldTypeException(fi, "set");
+        }
 
         // we empty the existing set
         deleteSet(t, base, fi);
 
         // if the new value is empty, we simply return
-        if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0)
+        if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0) {
             return;
+        }
 
         updateSet1(t, base, fi, val);
     }
@@ -127,9 +129,9 @@ public abstract class CRUDOperationProvider {
      *            the FieldDefinition of the field containing the set
      */
     public void deleteSet(Transaction t, Pointer base, FieldDefinition fi) {
-        TransactionImplementation t1 = ((TransactionImplementation)t);
-        t.update(t1.transformTypeName(fi.getSubtable().getName()) + " this", null, "this." + fi.getSubtable().getSetOwnerFieldName() + t1.getPrimaryKeyName() + "="+t1.getParameterName(),
-            base);
+        TransactionImplementation t1 = ((TransactionImplementation) t);
+        t.update(t1.transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
+                + fi.getSubtable().getSetOwnerFieldName() + t1.getPrimaryKeyName() + "=" + t1.getParameterName(), base);
     }
 
     /**
@@ -146,8 +148,8 @@ public abstract class CRUDOperationProvider {
      * @param allFields
      *            the entire data to be inserted
      */
-    public abstract void checkInsert(Transaction t, String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore,
-            Dictionary allFields);
+    public abstract void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
+            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields);
 
     /**
      * Checks if a set of values can be updated in the database
@@ -165,23 +167,25 @@ public abstract class CRUDOperationProvider {
      * @param allFields
      *            the entire data to be inserted
      */
-    public abstract void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary fieldsToCheck,
-            Dictionary fieldsToIgnore, Dictionary allFields);
+    public abstract void checkUpdate(Transaction t, String type, Pointer pointer,
+            Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
+            Dictionary<String, Object> allFields);
 
-    protected DataDefinition checkUpdate(String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore) {
+    protected DataDefinition checkUpdate(String type, Dictionary<String, Object> fieldsToCheck,
+            Dictionary<String, Object> fieldsToIgnore) {
         DataDefinition dd = ddp.getDataDefinition(type);
-        
+
         // we check if we can perform the update
         dd.checkFieldNames(fieldsToCheck);
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
+        for (String string : dd.getFieldNames()) {
+            String name = string;
             if (fieldsToIgnore.get(name) == null) {
                 dd.checkUpdate(name, fieldsToCheck);
             }
         }
         return dd;
     }
-    
-    public abstract int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary dic);
+
+    public abstract int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary<String, Object> dic);
 
 }
