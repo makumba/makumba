@@ -670,10 +670,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // moved from intEnumHandler
     public String get_intEnum_NameFor(int n) {
         Vector<String> names = (Vector<String>) this.extra2;
-        Vector<String> values = (Vector<String>) this.extra1;
+        Vector<?> values = (Vector<?>) this.extra1;
         for (int i = 0; i < values.size(); i++) {
-            if (values.elementAt(i).equals(new Integer(n))) {
-                return (String) names.elementAt(i);
+            if (values.elementAt(i).equals(n)) {
+                return names.elementAt(i);
             }
         }
         throw new org.makumba.InvalidValueException(this, "Can't find a name for " + n + " in " + values
