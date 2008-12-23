@@ -83,7 +83,7 @@ public abstract class DBConnection extends TransactionImplementation {
 
     Map<String, Pointer> locks = new HashMap<String, Pointer>(13);
 
-    Hashtable<String, String> lockRecord = new Hashtable<String, String>(5);
+    Hashtable<String, Object> lockRecord = new Hashtable<String, Object>(5);
 
     public void lock(String symbol) {
         lockRecord.clear();
@@ -140,14 +140,14 @@ public abstract class DBConnection extends TransactionImplementation {
 
     /** insert a record */
     @Override
-    public Pointer insert(String type, Dictionary data) {
+    public Pointer insert(String type, Dictionary<String, Object> data) {
         Table t = db.getTable(type);
         t.computeInsertHook();
 
         if (t.insertHook != null) {
-            Hashtable<Object, Object> h = new Hashtable<Object, Object>();
-            for (Enumeration e = data.keys(); e.hasMoreElements();) {
-                Object k = e.nextElement();
+            Hashtable<String, Object> h = new Hashtable<String, Object>();
+            for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
+                String k = e.nextElement();
                 h.put(k, data.get(k));
             }
             data = h;

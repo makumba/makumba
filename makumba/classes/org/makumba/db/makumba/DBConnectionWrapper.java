@@ -26,10 +26,10 @@ package org.makumba.db.makumba;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Dictionary;
 
 import org.makumba.Attributes;
 import org.makumba.Pointer;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
 
 /**
@@ -41,8 +41,6 @@ import org.makumba.providers.TransactionProviderInterface;
  */
 public class DBConnectionWrapper extends DBConnection {
     DBConnection wrapped;
-
-    private TransactionProvider tp;
 
     // uncomment this if you want to know where the unclosed connections are created
     // maybe this can become a devel feature?
@@ -73,23 +71,23 @@ public class DBConnectionWrapper extends DBConnection {
         return getWrapped().getHostDatabase();
     }
 
-    public java.util.Dictionary read(Pointer ptr, Object fields) {
+    public java.util.Dictionary<String, Object> read(Pointer ptr, Object fields) {
         return getWrapped().read(ptr, fields);
     }
 
-    public java.util.Vector executeQuery(String OQL, Object parameterValues, int offset, int limit) {
+    public java.util.Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset, int limit) {
         return getWrapped().executeQuery(OQL, parameterValues, offset, limit);
     }
 
-    public Pointer insert(String type, java.util.Dictionary data) {
+    public Pointer insert(String type, java.util.Dictionary<String, Object> data) {
         return getWrapped().insert(type, data);
     }
 
-    public Pointer insert(Pointer host, String subsetField, java.util.Dictionary data) {
+    public Pointer insert(Pointer host, String subsetField, java.util.Dictionary<String, Object> data) {
         return getWrapped().insert(host, subsetField, data);
     }
 
-    public int update(Pointer ptr, java.util.Dictionary fieldsToChange) {
+    public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         return getWrapped().update(ptr, fieldsToChange);
     }
 
