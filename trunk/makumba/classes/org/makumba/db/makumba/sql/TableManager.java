@@ -125,6 +125,7 @@ public class TableManager extends Table {
     protected void open(Properties config, NameResolver nr) {
         setTableAndFieldNames(nr);
         if (!getDataDefinition().isTemporary()) {
+            //System.out.println("\n\n** Opening table " + getDBName());
             DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
             SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
             try {
@@ -208,6 +209,7 @@ public class TableManager extends Table {
 
     protected void initFields(SQLDBConnection dbc, Properties config) throws SQLException {
         try {
+            System.out.println("\t** init fields " + getDBName());
             ResultSet rs = dbc.getMetaData().getIndexInfo(null, null, getDBName(), false, false);
             while (rs.next()) {
                 String iname = rs.getString("INDEX_NAME");
@@ -594,7 +596,7 @@ public class TableManager extends Table {
 
     /* TODO: move to initFields */
     /** list the given fields in a command field1, field2 ... */
-    protected void fieldList(StringBuffer command, Enumeration e) {
+    protected void fieldList(StringBuffer command, Enumeration<String> e) {
         String comma = "";
 
         while (e.hasMoreElements()) {
@@ -626,7 +628,7 @@ public class TableManager extends Table {
     }
 
     @Override
-    public Pointer insertRecordImpl(DBConnection dbc, Dictionary d) {
+    public Pointer insertRecordImpl(DBConnection dbc, Dictionary<String, Object> d) {
         boolean wasIndex = d.get(indexField) != null;
         boolean wasCreate = d.get("TS_create") != null;
         boolean wasModify = d.get("TS_create") != null;
@@ -705,7 +707,7 @@ public class TableManager extends Table {
         }
     }
 
-    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary d) {
+    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary<String, Object> d) {
         CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
@@ -764,7 +766,7 @@ public class TableManager extends Table {
         }
     }
 
-    public void updateRecord(DBConnection dbc, Pointer uid, Dictionary d) {
+    public void updateRecord(DBConnection dbc, Pointer uid, Dictionary<String, Object> d) {
         if (dbc instanceof DBConnectionWrapper)
             dbc = ((DBConnectionWrapper) dbc).getWrapped();
         d.remove(indexField);
@@ -776,7 +778,7 @@ public class TableManager extends Table {
         StringBuffer command = new StringBuffer("UPDATE ").append(tbname).append(" SET ");
 
         String s = "";
-        for (Enumeration e = d.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
             if (s.length() > 0)
                 command.append(",");
             String fieldName = (String) e.nextElement();
@@ -795,7 +797,7 @@ public class TableManager extends Table {
             PreparedStatement st = ((SQLDBConnection) dbc).getPreparedStatement(command.toString());
 
             int n = 1;
-            for (Enumeration e = d.keys(); e.hasMoreElements(); n++) {
+            for (Enumeration<String> e = d.keys(); e.hasMoreElements(); n++) {
                 String ss = (String) e.nextElement();
                 setUpdateArgument(ss/* (String) e.nextElement() */, st, n, d);
             }
@@ -812,7 +814,7 @@ public class TableManager extends Table {
         }
     }
 
-    protected void fillResult(ResultSet rs, Dictionary p) throws java.sql.SQLException {
+    protected void fillResult(ResultSet rs, Dictionary<String, Object> p) throws java.sql.SQLException {
         int n = dd.getFieldNames().size();
         for (int i = 0; i < n;) {
             if (dd.getFieldDefinition(i).getType().startsWith("set"))
@@ -1027,7 +1029,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared UPDATE SQL statement
      */
-    public void setUpdateArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
+    public void setUpdateArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
             case FieldDefinition._ptrIndex:
@@ -1352,7 +1354,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared INSERT SQL statement
      */
-    public void setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
+    public void setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
             case FieldDefinition._dateModify:
@@ -1377,7 +1379,7 @@ public class TableManager extends Table {
     }
 
     // original setInsertArgument from FieldManager
-    public void base_setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
+    public void base_setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d) throws SQLException {
         Object o = d.get(fieldName);
         if (o == null || o.equals(getFieldDefinition(fieldName).getNull()))
             setNullArgument(fieldName, ps, n);
@@ -1386,7 +1388,7 @@ public class TableManager extends Table {
     }
 
     // moved from timeStampManager
-    public void set_timeStamp_InsertArgument(String fieldName, PreparedStatement ps, int n, java.util.Dictionary d)
+    public void set_timeStamp_InsertArgument(String fieldName, PreparedStatement ps, int n, java.util.Dictionary<String, Object> d)
             throws SQLException {
         Object o = d.get(fieldName);
         if (o instanceof java.util.Date && !(o instanceof Timestamp))
@@ -1398,7 +1400,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared SQL statement for copying
      */
-    public void setCopyArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
+    public void setCopyArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d) throws SQLException {
         try {
             Object o = d.get(fieldName);
             if (o == null || o.equals(getFieldDefinition(fieldName).getNull()))
@@ -1415,7 +1417,7 @@ public class TableManager extends Table {
      * ask this field to write its contribution in a SQL UPDATE statement should return "" if this field doesn't want to
      * take part in the update
      */
-    public String inCondition(String fieldName, Dictionary d, String cond) {
+    public String inCondition(String fieldName, Dictionary<String, Object> d, String cond) {
         return getDBName() + cond + writeConstant(fieldName, d.get(fieldName));
     }
 
@@ -1516,6 +1518,7 @@ public class TableManager extends Table {
                 if (!getSQLDatabase().isAutoIncrement()) {
                     dbsv = getSQLDatabase().getDbsv();
                     Statement st = dbc.createStatement();
+                    //System.out.println("\t\t** Checking keys " + getDBName() + " " + fieldName);
                     resetPrimaryKey();
                     ResultSet rs = st.executeQuery("SELECT MAX(" + getFieldDBName(fieldName) + "), COUNT("
                             + getFieldDBName(fieldName) + ") FROM " + tbname + " WHERE " + getFieldDBName(fieldName)
@@ -1524,6 +1527,7 @@ public class TableManager extends Table {
                     rs.next();
                     if (rs.getLong(2) > 0)
                         primaryKeyCurrentIndex = rs.getLong(1);
+                    //System.out.println("\t\t\tprimaryKeyCurrentIndex: " + primaryKeyCurrentIndex);
                     rs.close();
                     st.close();
                 }
@@ -1756,7 +1760,7 @@ public class TableManager extends Table {
     /**
      * set the java value in a data chunk. If the value in the recordset is SQL null, a NullPointerException is thrown
      */
-    public void setValue(String fieldName, Dictionary d, ResultSet rs, int i) throws SQLException {
+    public void setValue(String fieldName, Dictionary<String, Object> d, ResultSet rs, int i) throws SQLException {
         Object o = getValue("", rs, i);
         if (o != null)
             d.put(fieldName, o);
@@ -1784,7 +1788,7 @@ public class TableManager extends Table {
     /**
      * return whether there was a duplicate for this field when inserting the given data
      */
-    public boolean checkDuplicate(String fieldName, SQLDBConnection dbc, Dictionary data) {
+    public boolean checkDuplicate(String fieldName, SQLDBConnection dbc, Dictionary<String, Object> data) {
         if (!getFieldDefinition(fieldName).isUnique())
             return false;
         Object val = data.get(fieldName);
@@ -2020,7 +2024,7 @@ public class TableManager extends Table {
     }
 
     // moved from dateCreateJavaManager and dateModifyJavaManager
-    void nxt(String fieldName, Dictionary d) {
+    void nxt(String fieldName, Dictionary<String, Object> d) {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
                 d.put(fieldName, d.get(dd.getLastModificationDateFieldName()));
@@ -2032,7 +2036,7 @@ public class TableManager extends Table {
     }
 
     // moved from ptrIndexJavaManager
-    public SQLPointer nxt_ptrIndex(String fieldName, Dictionary d) {
+    public SQLPointer nxt_ptrIndex(String fieldName, Dictionary<String, Object> d) {
         SQLPointer i = new SQLPointer(dd.getName(), nextId_ptrIndex());
         d.put(fieldName, i);
         return i;
@@ -2055,7 +2059,7 @@ public class TableManager extends Table {
      *            the entire data to be inserted
      */
     @Override
-    public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
+    public void checkInsert(Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
         dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
             String name = (String) string;
@@ -2095,7 +2099,7 @@ public class TableManager extends Table {
      *            the entire data to be inserted
      */
     @Override
-    public void checkUpdate(Pointer pointer, Dictionary allFields) {
+    public void checkUpdate(Pointer pointer, Dictionary<String, Object> allFields) {
 
         // check multi-field key uniqueness that span over more than one table
         checkMultiFieldMultiTableUniqueness(pointer, allFields);
@@ -2128,7 +2132,7 @@ public class TableManager extends Table {
      * the database, and we just need to find them if something fails
      * {@link #findDuplicates(SQLDBConnection, Dictionary)}.
      */
-    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData)
+    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary<String, Object> fullData)
             throws CompositeValidationException {
 
         DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();

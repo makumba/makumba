@@ -88,7 +88,7 @@ public class FieldFormatter {
 
     public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         for (Enumeration<String> e = formatParams.keys(); e.hasMoreElements();) {
-            String s = (String) e.nextElement();
+            String s = e.nextElement();
             if (s.startsWith("org.makumba")) {
                 continue;
             }
@@ -97,7 +97,7 @@ public class FieldFormatter {
     }
 
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
-        Hashtable h = (Hashtable) validParams.get(name);
+        Hashtable<String, Object> h = validParams.get(name);
         if (h == null) {
             throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
                     + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));

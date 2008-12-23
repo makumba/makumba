@@ -23,8 +23,6 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * PRIVATE CONSTANTS
      ******************************************************************************************************************/
 
-    private static String NEWL = "\n";
-
     private static String[] EMPTY_ARRAY = {};
 
     /*******************************************************************************************************************
@@ -33,9 +31,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     private String _name = null; // input field's name ("NAME=" + name)
 
-    private Iterator _values = null; // iterator over the values (Strings)
+    private Iterator<String> _values = null; // iterator over the values (Strings)
 
-    private Iterator _labels = null; // iterator over the labels (Strings)
+    private Iterator<String> _labels = null; // iterator over the labels (Strings)
 
     private String[] _selectedValues = EMPTY_ARRAY; // list of selected values (String)
 
@@ -86,7 +84,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setValues(List values) {
+    public void setValues(List<String> values) {
         _values = values.iterator();
     }
 
@@ -96,12 +94,12 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setValues(Iterator values) {
+    public void setValues(Iterator<String> values) {
         _values = values;
     }
 
     /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setLabels(List labels) {
+    public void setLabels(List<String> labels) {
         _labels = labels.iterator();
     }
 
@@ -111,7 +109,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setLabels(Iterator labels) {
+    public void setLabels(Iterator<String> labels) {
         _labels = labels;
     }
 
@@ -258,8 +256,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
     public String getSelectOne() {
         boolean yn_convert2Html = (_convert2Html == TXT2HTML);
         String selectedValue = (_selectedValues.length != 0) ? _selectedValues[0] : null;
-        Iterator itv = _values;
-        Iterator itl = _labels;
+        Iterator<String> itv = _values;
+        Iterator<String> itl = _labels;
 
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n");
@@ -293,8 +291,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
      */
     public String getSelectMultiple() {
         boolean yn_convert2Html = (_convert2Html == TXT2HTML);
-        Iterator itv = _values;
-        Iterator itl = _labels;
+        Iterator<String> itv = _values;
+        Iterator<String> itl = _labels;
 
         StringBuffer selectStatement = new StringBuffer(512);
         String selectString = "<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n";

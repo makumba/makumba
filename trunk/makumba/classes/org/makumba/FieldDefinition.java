@@ -187,7 +187,7 @@ public interface FieldDefinition {
      * @exception ClassCastException
      *                for other types
      */
-    public java.util.Enumeration<String> getValues();
+    public java.util.Enumeration getValues();
 
     /**
      * Get the names of an enumerated field. Works only for intEnum, charEnum types
