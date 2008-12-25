@@ -25,7 +25,8 @@ public class ResponseControllerHandler extends ControllerHandler {
     private ResponderFactory factory = ResponderFactory.getInstance();
 
     @Override
-    public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf, ServletObjects httpServletObjects) throws Exception {
+    public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf,
+            ServletObjects httpServletObjects) throws Exception {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
 
@@ -48,16 +49,17 @@ public class ResponseControllerHandler extends ControllerHandler {
                 httpServletObjects.setRequest(getFormReloadRequest(req));
                 httpServletObjects.setResponse(getFormReloadResponse(resp, root));
 
-                java.util.logging.Logger.getLogger("org.makumba." + "controller").fine(
+                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
                     "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
 
                 if (firstResponder.getShowFormAnnotated()) {
-                    java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
+                    java.util.logging.Logger.getLogger("org.makumba.controller").finer(
                         "Processing CompositeValidationException for annotation:\n" + v.toString());
                     // if the form shall be annotated, we need to filter which exceptions can be assigned to
                     // fields, and which not
-                    ArrayList<InvalidValueException> unassignedExceptions = factory.getUnassignedExceptions(v, (HttpServletRequest) req);
-                    java.util.logging.Logger.getLogger("org.makumba." + "controller").finer(
+                    ArrayList<InvalidValueException> unassignedExceptions = factory.getUnassignedExceptions(v,
+                        (HttpServletRequest) req);
+                    java.util.logging.Logger.getLogger("org.makumba.controller").finer(
                         "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
 
                     // the messages left unassigned will be shown as the form response
