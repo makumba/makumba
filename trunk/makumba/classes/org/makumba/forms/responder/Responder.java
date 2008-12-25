@@ -57,9 +57,6 @@ public abstract class Responder implements java.io.Serializable {
      */
     public final static String responderName = "__makumba__responder__";
 
-    /** the URI of the page, "__makumba__originatingPage__" */
-    public final static String originatingPageName = "__makumba__originatingPage__";
-
     /**
      * prevents multiple submition of the same form (bug #190), computes as respoder+sessionID,
      * "__makumba__formSession__"
@@ -108,6 +105,8 @@ public abstract class Responder implements java.io.Serializable {
      * on the action.
      */
     protected boolean reloadFormOnError;
+
+    protected String originatingPageName;
 
     /**
      * Stores whether the form shall be annotated with the validation errors, or not. Used by {@link ControllerFilter}
@@ -231,6 +230,14 @@ public abstract class Responder implements java.io.Serializable {
         return reloadFormOnError;
     }
 
+    public void setOriginatingPageName(String originatingPageName) {
+        this.originatingPageName = originatingPageName;
+    }
+
+    public String getOriginatingPageName() {
+        return originatingPageName;
+    }
+
     public void setShowFormAnnotated(boolean showFormAnnotated) {
         this.showFormAnnotated = showFormAnnotated;
     }
@@ -292,7 +299,7 @@ public abstract class Responder implements java.io.Serializable {
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + showFormAnnotated + clientSideValidation + defaultMatchModes;
+                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes;
     }
 
     /** get the integer key of this form, and register it if not already registered */

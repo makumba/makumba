@@ -26,7 +26,6 @@ package org.makumba.forms.tags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -397,6 +396,12 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responder.setFormName(formName);
 
         responder.setReloadFormOnError(reloadFormOnError);
+        String url = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
+        String queryString = ((HttpServletRequest) pageContext.getRequest()).getQueryString();
+        if (queryString != null) {
+            url += "?" + queryString;
+        }
+        responder.setOriginatingPageName(url);
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
 

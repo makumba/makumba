@@ -46,8 +46,8 @@ public class ResponseControllerHandler extends ControllerHandler {
 
                 final String root = conf.getInitParameter(req.getServerName());
 
-                httpServletObjects.setRequest(getFormReloadRequest(req));
-                httpServletObjects.setResponse(getFormReloadResponse(resp, root));
+                httpServletObjects.setRequest(getFormReloadRequest(req, firstResponder));
+                httpServletObjects.setResponse(getFormReloadResponse(resp, root, firstResponder));
 
                 java.util.logging.Logger.getLogger("org.makumba.controller").fine(
                     "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
@@ -90,9 +90,11 @@ public class ResponseControllerHandler extends ControllerHandler {
      *            the original response
      * @param root
      *            the server hostname
+     * @param responder
+     *            the form responder
      * @return a wrapped ServletResponse redirecting to the original page
      */
-    private ServletResponse getFormReloadResponse(ServletResponse resp, final String root) {
+    private ServletResponse getFormReloadResponse(ServletResponse resp, final String root, Responder responder) {
         resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
             @Override
             public void sendRedirect(String s) throws java.io.IOException {
@@ -111,16 +113,18 @@ public class ResponseControllerHandler extends ControllerHandler {
      * 
      * @param req
      *            the original request
+     * @param responder
+     *            the form responder
      * @return a wrapped ServletRequest containing information about the originally submitted page
      */
-    private ServletRequest getFormReloadRequest(ServletRequest req) {
+    private ServletRequest getFormReloadRequest(ServletRequest req, final Responder responder) {
         // 
         req = new HttpServletRequestWrapper((HttpServletRequest) req) {
 
             @Override
             public String getServletPath() {
                 HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
-                String originatingPage = httpServletRequest.getParameter(Responder.originatingPageName);
+                String originatingPage = responder.getOriginatingPageName();
                 String contextPath = httpServletRequest.getContextPath();
                 if (originatingPage.startsWith(contextPath)) {
                     originatingPage = originatingPage.substring(contextPath.length());
@@ -137,7 +141,8 @@ public class ResponseControllerHandler extends ControllerHandler {
              */
             @Override
             public String getRequestURI() {
-                return getRequest().getParameter(Responder.originatingPageName);
+                String originatingPage = responder.getOriginatingPageName();
+                return originatingPage;
             }
         };
         return req;
