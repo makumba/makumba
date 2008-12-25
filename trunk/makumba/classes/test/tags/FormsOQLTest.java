@@ -661,6 +661,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/login/loginTest.jsp");
 
         // we get the first form in the jsp
+        if (resp.getForms().length == 0) {
+            fail("Loging test fails: login page not created correctly, no form present. Page:\n" + resp.getText());
+        }
         WebForm form = resp.getForms()[0];
         // we try to login
         form.setParameter("username", "manu");
