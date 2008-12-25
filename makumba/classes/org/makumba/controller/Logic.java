@@ -370,10 +370,14 @@ public class Logic {
         }
         // this will throw nosuchmethodexception if the findXXX method is missing so this method will kinda finish here
         Method m = null;
-        m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
-        if (m == null) {
-            
-            m = (controller.getClass().getMethod("find" + firstUpper(attname), argDbOld));
+        try {
+            m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
+        } catch (Exception e) {
+            if (m == null) {
+                m = (controller.getClass().getMethod("find" + firstUpper(attname), argDbOld));
+                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
+                    "The use of Database is deprecated. Use Transaction instead.");
+            }
         }
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
