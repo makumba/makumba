@@ -5,7 +5,6 @@ import org.makumba.Attributes;
 import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.UnauthenticatedException;
-import org.makumba.UnauthorizedException;
 
 public class LoginTestLogic {
     
@@ -20,7 +19,7 @@ public class LoginTestLogic {
             a.getAttribute("password");
             
         } catch(AttributeNotFoundException anfe) {
-            throw new UnauthorizedException();
+            throw new UnauthenticatedException();
         }
         
         return new Boolean(true);
