@@ -370,6 +370,7 @@ public class Logic {
         }
         // this will throw nosuchmethodexception if the findXXX method is missing so this method will kinda finish here
         Method m = null;
+        // JASPER: I don't understand why this way of looking up a method is different frmo the others
         try {
             m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
         } catch (Exception e) {
@@ -379,6 +380,8 @@ public class Logic {
                     "The use of Database is deprecated. Use Transaction instead.");
             }
         }
+        //This doesn't seem to work. 
+        //m = getMethod("find" + firstUpper(attname), argDb, argDbOld, controller);
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
         try {
@@ -576,7 +579,22 @@ public class Logic {
             return null;
         }
     }
-
+    public static Method getMethod(String name, Class<?>[] args, Class<?>[] argsOld, Object controller) {
+        /*
+         * This version of getMethod was introduced to look up methods for which an argument type changed/deprecated
+         * (More specifically: org.makumba.Database got replaced by org.makumba.Transaction), but to allow
+         * backward compatibility at the same time.
+         */
+        Method m = getMethod(name, args, controller);
+        if (m==null) {
+            m = getMethod(name, argsOld, controller);
+            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
+            "In " + controller.getClass().getName() + "." + name + ": The use of Database is deprecated. Use Transaction instead.");
+        }
+        return m;
+    }
+    
+    
     public static void doInit(String path, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
         Object o = getAuthorizationConstraint(path);
@@ -647,10 +665,9 @@ public class Logic {
         }
 
         Transaction db = dbcp.getConnectionTo(dbName);
-        Method init = getMethod("checkAttributes", argDb, controller);
-        Method oldInit = getMethod("checkAttributes", argDbOld, controller);
-        Method veryOldInit = getMethod("requiredAttributes", noClassArgs, controller);
-        if (init == null && oldInit == null && veryOldInit == null) {
+        Method init = getMethod("checkAttributes", argDb,argDbOld, controller);
+        Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
+        if (init == null && oldInit == null) {
             return;
         }
         if (init != null) {
@@ -667,28 +684,12 @@ public class Logic {
                 }
                 throw new LogicInvocationError(g);
             }
-        } else if (oldInit != null) {
-            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-            Object[] args = { a, db };
-            try {
-                oldInit.invoke(controller, args);
-            } catch (IllegalAccessException g) {
-                throw new LogicInvocationError(g);
-            } catch (InvocationTargetException f) {
-                db.rollback();
-                Throwable g = f.getTargetException();
-                if (g instanceof LogicException) {
-                    throw (LogicException) g;
-                }
-                throw new LogicInvocationError(g);
-            }
         } else {
             java.util.logging.Logger.getLogger("org.makumba.controller").warning(
                 "requiredAttributes() is deprecated. Use checkAttributes(Attributes a, Database db) instead");
             Object attrs = null;
             try {
-                attrs = veryOldInit.invoke(controller, noObjectArgs);
+                attrs = oldInit.invoke(controller, noObjectArgs);
             } catch (IllegalAccessException g) {
                 throw new LogicInvocationError(g);
             } catch (InvocationTargetException f) {
@@ -750,10 +751,9 @@ public class Logic {
 
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { data, a, db };
-        Method op, opOld = null;
-        op = getMethod(opName, opArgs, controller);
-        opOld = getMethod(opName, opArgsOld, controller);
-        if (opOld == null && op == null) {
+        Method op = null;
+        op = getMethod(opName, opArgs, opArgsOld, controller);
+        if (op == null) {
             return null;
             /*
             throw new ProgrammerError("Class " + controller.getClass().getName() + " (" + getControllerFile(controller)
@@ -762,41 +762,21 @@ public class Logic {
                     + "The method is declared as a makumba form handler, so it has to be defined");
             */
         }
-        if (op!=null) {
-            try {
-                return op.invoke(controller, editArg);
-            } catch (IllegalAccessException g) {
-                throw new LogicInvocationError(g);
-            } catch (InvocationTargetException f) {
-                db.rollback();
-                Throwable g = f.getTargetException();
-                if (g instanceof LogicException) {
-                    throw (LogicException) g;
-                }
-                if (g instanceof CompositeValidationException) {
-                    throw (CompositeValidationException) g;
-                }
-                throw new LogicInvocationError(g);
-            }            
-        } else {
-            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-            "The use of Database is deprecated. Use Transaction instead.");
-            try {
-                return opOld.invoke(controller, editArg);
-            } catch (IllegalAccessException g) {
-                throw new LogicInvocationError(g);
-            } catch (InvocationTargetException f) {
-                db.rollback();
-                Throwable g = f.getTargetException();
-                if (g instanceof LogicException) {
-                    throw (LogicException) g;
-                }
-                if (g instanceof CompositeValidationException) {
-                    throw (CompositeValidationException) g;
-                }
-                throw new LogicInvocationError(g);
-            }
 
+        try {
+            return op.invoke(controller, editArg);
+        } catch (IllegalAccessException g) {
+            throw new LogicInvocationError(g);
+        } catch (InvocationTargetException f) {
+            db.rollback();
+            Throwable g = f.getTargetException();
+            if (g instanceof LogicException) {
+                throw (LogicException) g;
+            }
+            if (g instanceof CompositeValidationException) {
+                throw (CompositeValidationException) g;
+            }
+            throw new LogicInvocationError(g);
         }
     }
 
@@ -805,15 +785,13 @@ public class Logic {
             throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { p, data, a, db };
-        Method edit = null, editOld = null;
-        Method afterEdit = null, afterEditOld = null;
+        Method edit = null;
+        Method afterEdit = null;
         
         
         if (!(controller instanceof LogicNotFoundException)) {
-            edit = getMethod(handlerName, editArgs, controller);
-            afterEdit = getMethod(afterHandlerName, editArgs, controller);
-            editOld = getMethod(handlerName, editArgsOld, controller);
-            afterEditOld = getMethod(afterHandlerName, editArgsOld, controller);
+            edit = getMethod(handlerName, editArgs, editArgsOld, controller);
+            afterEdit = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
             /*if (edit == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
@@ -827,18 +805,10 @@ public class Logic {
         try {
             if (edit != null) {
                 edit.invoke(controller, editArg);
-            } else if (editOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                editOld.invoke(controller, editArg);
             }
             db.update(p, data);
             if (afterEdit != null) {
                 afterEdit.invoke(controller, editArg);
-            } else if (afterEditOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                afterEditOld.invoke(controller, editArg);
             }
             return p;
         } catch (IllegalAccessException g) {
@@ -860,16 +830,14 @@ public class Logic {
             DbConnectionProvider dbcp) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] deleteArg = { p, a, db };
-        Method delete = null,deleteOld = null;
-        Method afterDelete = null,afterDeleteOld = null;
+        Method delete = null;
+        Method afterDelete = null;
         String upper = upperCase(typename);
 
         
         if (!(controller instanceof LogicNotFoundException)) {
-            delete = getMethod("on_delete" + upper, deleteArgs, controller);
-            afterDelete = getMethod("after_delete" + upper, deleteArgs, controller);
-            deleteOld = getMethod("on_delete" + upper, deleteArgsOld, controller);
-            afterDeleteOld = getMethod("after_delete" + upper, deleteArgsOld, controller);
+            delete = getMethod("on_delete" + upper, deleteArgs, deleteArgsOld, controller);
+            afterDelete = getMethod("after_delete" + upper, deleteArgs, deleteArgsOld, controller);
             /*if (delete == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
@@ -885,18 +853,10 @@ public class Logic {
         try {
             if (delete != null) {
                 delete.invoke(controller, deleteArg);
-            } else if (deleteOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                deleteOld.invoke(controller, deleteArg);
             }
             db.delete(p);
             if (afterDelete != null) {
                 afterDelete.invoke(controller, deleteArg);
-            } else if (afterDeleteOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                afterDeleteOld.invoke(controller, deleteArg);
             }
             return null;
         } catch (IllegalAccessException g) {
@@ -916,18 +876,16 @@ public class Logic {
             throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] addArg = { p, data, a, db };
-        Method on = null, onOld = null;
-        Method after = null, afterOld = null;
+        Method on = null;
+        Method after = null;
         int n = typename.lastIndexOf("->");
         String field = typename.substring(n + 2);
         typename = typename.substring(0, n);
 
         
         if (!(controller instanceof LogicNotFoundException)) {
-            on = getMethod(handlerName, editArgs, controller);
-            after = getMethod(afterHandlerName, editArgs, controller);
-            onOld = getMethod(handlerName, editArgsOld, controller);
-            afterOld = getMethod(afterHandlerName, editArgsOld, controller);
+            on = getMethod(handlerName, editArgs, editArgsOld, controller);
+            after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
 
             /*if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
@@ -943,18 +901,10 @@ public class Logic {
         try {
             if (on != null) {
                 on.invoke(controller, addArg);
-             } else if (onOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                onOld.invoke(controller, addArg);
-            }
+             }
             addArg[0] = db.insert(p, field, data);
             if (after != null) {
                 after.invoke(controller, addArg);
-            } else if (afterOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                afterOld.invoke(controller, addArg);
             }
             return (Pointer) addArg[0];
         } catch (IllegalAccessException g) {
@@ -978,14 +928,12 @@ public class Logic {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] onArgs = { data, a, db };
         Object[] afterArgs = { null, data, a, db };
-        Method on = null, onOld = null;
-        Method after = null, afterOld = null;
+        Method on = null;
+        Method after = null;
         
         if (!(controller instanceof LogicNotFoundException)) {
-            on = getMethod(handlerName, newArgs, controller);
-            after = getMethod(afterHandlerName, editArgs, controller);
-            onOld = getMethod(handlerName, newArgsOld, controller);
-            afterOld = getMethod(afterHandlerName, editArgsOld, controller);
+            on = getMethod(handlerName, newArgs, newArgsOld, controller);
+            after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
             /*if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
@@ -1000,18 +948,10 @@ public class Logic {
         try {
             if (on != null) {
                 on.invoke(controller, onArgs);
-            } else if (onOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                onOld.invoke(controller, onArgs);
             }
             afterArgs[0] = db.insert(typename, data);
             if (after != null) {
                 after.invoke(controller, afterArgs);
-            } else if (onOld != null) {
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "The use of Database is deprecated. Use Transaction instead.");
-                afterOld.invoke(controller, afterArgs);
             }
             return (Pointer) afterArgs[0];
         } catch (IllegalAccessException g) {
