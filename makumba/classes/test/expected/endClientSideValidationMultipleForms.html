@@ -46,8 +46,8 @@ var weight_form2Validation = new LiveValidation('weight_form2', { validMessage: 
 weight_form2Validation.add( Validate.Numericality , {  failureMessage: "invalid real" } );
 weight_form2Validation.add( MakumbaValidate.NumberComparison , { element1: "weight_form2", element2: "age_form2", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_weight_form2Validation_indiv__name_form2Validation_indiv__surname_form2Validation() {
-  valid = LiveValidation.massValidate( [weight_form2Validation, indiv__name_form2Validation, indiv__surname_form2Validation] );
+function validateForm_indiv__name_form2Validation_indiv__surname_form2Validation_weight_form2Validation() {
+  valid = LiveValidation.massValidate( [indiv__name_form2Validation, indiv__surname_form2Validation, weight_form2Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
@@ -74,8 +74,8 @@ var weight_form3Validation = new LiveValidation('weight_form3', { validMessage: 
 weight_form3Validation.add( Validate.Numericality , {  failureMessage: "invalid real" } );
 weight_form3Validation.add( MakumbaValidate.NumberComparison , { element1: "weight_form3", element2: "age_form3", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_weight_form3Validation_indiv__surname_form3Validation_indiv__name_form3Validation() {
-  valid = LiveValidation.massValidate( [weight_form3Validation, indiv__surname_form3Validation, indiv__name_form3Validation] );
+function validateForm_indiv__surname_form3Validation_indiv__name_form3Validation_weight_form3Validation() {
+  valid = LiveValidation.massValidate( [indiv__surname_form3Validation, indiv__name_form3Validation, weight_form3Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
@@ -102,8 +102,8 @@ var weight_form4Validation = new LiveValidation('weight_form4', { validMessage: 
 weight_form4Validation.add( Validate.Numericality , {  failureMessage: "invalid real" } );
 weight_form4Validation.add( MakumbaValidate.NumberComparison , { element1: "weight_form4", element2: "age_form4", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
 
-function validateForm_weight_form4Validation_indiv__surname_form4Validation_indiv__name_form4Validation() {
-  valid = LiveValidation.massValidate( [weight_form4Validation, indiv__surname_form4Validation, indiv__name_form4Validation] );
+function validateForm_indiv__surname_form4Validation_indiv__name_form4Validation_weight_form4Validation() {
+  valid = LiveValidation.massValidate( [indiv__surname_form4Validation, indiv__name_form4Validation, weight_form4Validation] );
   if (!valid) { alert('Please correct all form errors first!'); }
   return valid;
 }
