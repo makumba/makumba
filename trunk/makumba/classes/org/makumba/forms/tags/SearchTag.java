@@ -95,6 +95,8 @@ public class SearchTag extends FormTagBase {
 
     DataDefinition in = null;
 
+    private ArrayList<String> inputNames = new ArrayList<String>();
+
     private void fillFormAction() {
         if (formAction == null) { // if no action is given, we take the current page as action
             String requestURI = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
@@ -431,6 +433,15 @@ public class SearchTag extends FormTagBase {
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         in = null;
+        inputNames = null;
+    }
+
+    public boolean containsInput(String inputName) {
+        if (inputNames.contains(inputName)) {
+            return true;
+        }
+        this.inputNames.add(inputName);
+        return false;
     }
 
 }
