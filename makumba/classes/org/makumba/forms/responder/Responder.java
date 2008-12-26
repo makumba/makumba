@@ -352,7 +352,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** formats an error message */
     public static String errorMessageFormatter(String message) {
-        return "<span class=\"makumbaResponder\" class=\"makumbaError\"" + 
+        return "<span class=\"makumbaResponder makumbaError\"" + 
         (useDefaultResponseStyles?" style=\"color:red\"":"") + ">" + message + "</span>";
     }
 
