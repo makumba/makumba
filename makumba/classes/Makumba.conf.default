@@ -29,6 +29,7 @@ default=
 defaultTransactionProvider=org.makumba.db.makumba.MakumbaTransactionProvider
 reloadFormOnError=false
 clientSideValidation=false
+useDefaultResponseStyles=true
 
 [makumbaToolPaths]
 path=/mak-tools
@@ -59,6 +60,3 @@ repositoryLinkText=SVN
 [inputStyleConfig]
 calendarEditor=false
 calendarEditorLink=<img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">
-
-[responderConfig]
-useDefaultResponseStyles=true

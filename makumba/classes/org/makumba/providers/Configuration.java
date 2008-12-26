@@ -178,7 +178,7 @@ public class Configuration implements Serializable {
     }
 
     public static boolean getUseDefaultResponseStyles() {
-        return applicationConfig.getBooleanProperty("responderConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);        
+        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);        
     }
 
     
