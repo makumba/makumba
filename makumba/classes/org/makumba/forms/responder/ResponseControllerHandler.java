@@ -75,9 +75,8 @@ public class ResponseControllerHandler extends ControllerHandler {
             } else { // we do not change the target page
                 message = v.toString();
             }
-
-            message = Responder.errorMessage(message);
             req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
+            req.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, Responder.errorMessageFormatter(message));
 
         }
         return true;

@@ -44,7 +44,7 @@ public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
         try {
 
             Object response = pageContext.getRequest().getAttribute(
-                org.makumba.forms.responder.ResponderFactory.RESPONSE_STRING_NAME);
+                org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
 
             // response is null only during login, maybe a more strict check should be made
             if (response != null)
