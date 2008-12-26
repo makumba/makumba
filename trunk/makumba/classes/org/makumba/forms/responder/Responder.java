@@ -349,7 +349,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** formats an error message */
     public static String errorMessage(String message) {
-        return "<span class=\"makumbaResponder\" style=\"color: red\">" + message + "</span>";
+        return "<span class=\"makumbaResponder\" class=\"makumbaError\">" + message + "</span>";
     }
 
     /** reads the HTTP base pointer */
