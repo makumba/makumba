@@ -1029,9 +1029,40 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
 
 <p>Absence of the &lt;mak:response/> tag on a page that is the response to a form, will result in an run-time error.
 
---></p>
-    <p>The unformatted message is available as request-scope attribute <code>makumba.response</code>. The jsp page
-    can get hold of the message using e.g.</p>
+--></p>The message is wrapped into a HTML SPAN tag which is member of 2 classes:
+      <ul>
+        <li>makumbaResponder for all responses</li>
+        <li>makumbaError for erroneous responses</li>
+        <li>makumbaSuccess for successful responses</li>
+      </ul>
+    This allows you to add css-styles accordingly. To do this, you must <strong>set the option useDefaultResponseStyles to false</strong> in
+    Makumba.conf! Otherwise the span will have the color set in the style attribute of the span (see examples).   
+    <p>
+    <p><em>Examples:</em>
+      <table>
+        <tr>
+          <th>Situation</th><th>mak:response output</th>
+        </tr>
+        <tr>
+          <td>Successful response,<br/>default configuration</td>
+          <td><pre class="example">&lt;span class="makumbaResponder" class="makumbaSuccess" style="color:green"&gt;Message&lt;/span&gt;</pre></td>
+        </tr>
+        <tr>
+          <td>Logic exception thrown,<br/>default configuration</td>
+          <td><pre class="example">&lt;span class="makumbaResponder" class="makumbaError" style="color:red"&gt;ErrorMessage&lt;/span&gt;</pre></td>
+        </tr>
+        <tr>
+          <td>Successful response,<br/>useDefaultResponseStyles=false</td>
+          <td><pre class="example">&lt;span class="makumbaResponder" class="makumbaSuccess"&gt;Message&lt;/span&gt;</pre></td>
+        </tr>
+        <tr>
+          <td>Logic exception thrown,<br/>useDefaultResponseStyles=false</td>
+          <td><pre class="example">&lt;span class="makumbaResponder" class="makumbaError"&gt;ErrorMessage&lt;/span&gt;</pre></td>
+        </tr>      </table>
+    </p>
+    </p>
+    <p>The unformatted message is available as request-scope attribute <code>makumba.response</code>, the formatted message as
+     <code>makumba.responseFormatted</code>. The jsp page can get hold of the message using e.g.</p>
     <pre class="example">&lt;% String s = (String) request.getAttribute("makumba.response") %&gt;<br></pre>
     <p>Similarly, request-scope attribute <code>makumba.successfulResponse</code> is set <i>only</i> in case of
     successful action execution.</p>
@@ -1602,7 +1633,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <td><tt><span class="futfeat">(handler)</span></tt></td>
           <td><span class="futfeat">the Java class.method that handles the response</span></td>
           <td>defaults to on_new+NameOfMakumbaType. Arguments: <br>
-          (<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</td>
+          (<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
@@ -1751,7 +1782,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         </tr>
         <tr>
           <td><code>db</code></td>
-          <td><a href="api/org/makumba/Database.html"><code>org.makumba.Database</code></a></td>
+          <td><a href="api/org/makumba/Transaction.html"><code>org.makumba.Transaction</code></a></td>
           <td>The database where the record will be inserted</td>
         </tr>
         <tr>
@@ -1793,7 +1824,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
           <td>defaults to <code>on_add+MakumbaType+fieldname</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a> baseObject,
-          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
+          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> newData,&nbsp; <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code></td>
         </tr>
         <!-- 
 
@@ -1892,7 +1923,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
     </table>
     <p>This will call the handler methods: (the argument names are adapted to the example. Note the changed pointer
     argument in the methods.)</p>
-    <pre class="example">on_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br>after_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> address, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre>
+    <pre class="example">on_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Transaction.html">Transaction</a> db)<br>after_addBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> address, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> languageData, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Transaction.html">Transaction</a> db)<br></pre>
     <h4><a name="makedit">&lt;mak:editForm&nbsp; ...&gt;.... &lt;/mak:editForm&gt;</a></h4>
     <p>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <code>&lt;mak:object&gt;</code>
     or <code>&lt;mak:list&gt;</code>. Also linked objects can be edited through the same form.</p>
@@ -1916,7 +1947,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
           <td>defaults to <code>on_edit+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a> object,
-          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> changedFields, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code></td>
+          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> changedFields, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code></td>
         </tr>
         <tr>
           <td><tt>action</tt></td>
@@ -1999,7 +2030,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
       </tbody>
     </table>
     <p>The response will call the handler method: (the argument names are adapted to the example)</p>
-    <pre class="example">on_editBestStudent(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> fieldsToChange, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre>
+    <pre class="example">on_editBestStudent(<a href="api/org/makumba/Pointer.html">Pointer</a> student, <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> fieldsToChange, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Transaction.html">Transaction</a> db)<br></pre>
     <!-- ========================================================= --> 
     <!-- ====================== mak:form ========================= -->
     <h4><a name="makform">&lt;mak:form&nbsp; ...&gt;....&lt;/mak:form&gt;</a></h4>
@@ -2019,7 +2050,7 @@ authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an admi
         <tr>
           <td><tt>handler</tt></td>
           <td>the Java method that handles the response</td>
-          <td>Arguments: <code>(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> formFields, <a href="api/org/makumba/Attributes.html">Attributes</a> restOfArguments, <a href="api/org/makumba/Database.html">Database</a> db)</code> <br>
+          <td>Arguments: <code>(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> formFields, <a href="api/org/makumba/Attributes.html">Attributes</a> restOfArguments, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code> <br>
           Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
         </tr>
         <tr>
@@ -2413,9 +2444,9 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
           <td class="futfeat"><tt>(handler)</tt></td>
           <td class="futfeat">the Java class.method that handles the response</td>
           <td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a>
-          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code>. After deletion, makumba will look for
+          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code>. After deletion, makumba will look for
  		<code>after_delete+MakumbaTypeOfEditedObject</code>. Arguments: <code>(<a href="api/org/makumba/Pointer.html">Pointer</a>
-          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code> and execute it.
+          object, <a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code> and execute it.
           </td>
         </tr>
         <tr>
@@ -2479,7 +2510,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
       </tbody>
     </table>
     <p>The response will call the handler method: (the argument names are adapted to the example)</p>
-    <pre class="example">on_deleteBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> lang, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Database.html">Database</a> db)<br></pre></td>
+    <pre class="example">on_deleteBestStudentLang(<a href="api/org/makumba/Pointer.html">Pointer</a> lang, <a href="api/org/makumba/Attributes.html">Attributes</a> pageParams, <a href="api/org/makumba/Transaction.html">Transaction</a> db)<br></pre></td>
   </tr>
 </table>
 </div>
@@ -2835,7 +2866,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     <ol>
       <li><b>find attributes</b> unknown by pages. e.g. <pre class="example">&lt;mak:object from="best.Student stud" where="stud=$student"&gt; ...&lt;/mak:object&gt;<br></pre>
       <p>If the <code>$student</code> attribute is not known in the page (from a http argument) or in the session,
-      the <code>find{AttributeName}(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> existingAttributes, <a href="api/org/makumba/Database.html">Database</a> d, String expression)</code> method is
+      the <code>find{AttributeName}(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">Dictionary</a> existingAttributes, <a href="api/org/makumba/Transaction.html">Transaction</a> d, String expression)</code> method is
       called for the Handler object. In this case findStudent(). The handler has to compute the attribute, based on
       existing attributes, making DB accesses.</p>
       <div class="note">The find{AttributeName} method's name is constructed literally from the name of the
@@ -2861,7 +2892,7 @@ Therefore, this is also used for case <code>expr=NULL<code> and <code>default</c
     </ol>
     <h4>Handler Initialization</h4>
     <p>Whenever a handler is used in a new context (i.e. with a different set of attributes, e.g. a new page
-    access), a method called <code>checkAttributes(<a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Database.html">Database</a> db)</code> is looked for and executed, if it
+    access), a method called <code>checkAttributes(<a href="api/org/makumba/Attributes.html">Attributes</a> a, <a href="api/org/makumba/Transaction.html">Transaction</a> db)</code> is looked for and executed, if it
     is defined.</p>
     <p><b><code>checkAttributes</code></b> can perform sanity checks for attributes used in the respective logic (in
     case of mismatches, <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>

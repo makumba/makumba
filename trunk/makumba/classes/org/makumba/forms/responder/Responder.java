@@ -43,6 +43,7 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
+import org.makumba.providers.Configuration;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
@@ -62,7 +63,7 @@ public abstract class Responder implements java.io.Serializable {
      * "__makumba__formSession__"
      */
     public final static String formSessionName = "__makumba__formSession__";
-
+    
     public static final String FORM_RESULTS = "org.makumba.formResults";
 
     /** the default label used to store the add and new result, "___mak___edited___" */
@@ -78,6 +79,8 @@ public abstract class Responder implements java.io.Serializable {
     public final static String basePointerName = "__makumba__base__";
 
     protected transient ResponderFactory factory;
+
+    protected static boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
 
     /** the responder key, as computed from the other fields */
     protected int identity;
@@ -344,12 +347,13 @@ public abstract class Responder implements java.io.Serializable {
 
     /** formats an error message */
     public static String errorMessage(Throwable t) {
-        return errorMessage(t.getMessage());
+        return t.getMessage();
     }
 
     /** formats an error message */
-    public static String errorMessage(String message) {
-        return "<span class=\"makumbaResponder\" class=\"makumbaError\">" + message + "</span>";
+    public static String errorMessageFormatter(String message) {
+        return "<span class=\"makumbaResponder\" class=\"makumbaError\"" + 
+        (useDefaultResponseStyles?" style=\"color:red\"":"") + ">" + message + "</span>";
     }
 
     /** reads the HTTP base pointer */

@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
+import org.makumba.providers.Configuration;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -36,6 +37,8 @@ import test.newtags.FormsOQLTest;
  */
 public class ResponderFactory {
 
+    protected boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
+    
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 
     private static class SingletonHolder {
@@ -312,6 +315,7 @@ public class ResponderFactory {
     }
 
     static public final String RESPONSE_STRING_NAME = "makumba.response";
+    static public final String RESPONSE_FORMATTED_STRING_NAME = "makumba.responseFormatted";
 
     public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
 
@@ -346,6 +350,7 @@ public class ResponderFactory {
         }
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
+        String formattedMessage = "";
 
         // printOrderedResponders(req);
 
@@ -378,7 +383,9 @@ public class ResponderFactory {
                     }
                 }
                 // display the response message and set attributes
-                message = "<span class=\"makumbaResponder\" class=\"makumbaSuccess\">" + responder.message + "</span>";
+                message = responder.message;
+                formattedMessage = "<span class=\"makumbaResponder\" class=\"makumbaSuccess\"" + 
+                    (useDefaultResponseStyles?" style=\"color:green\"":"") + ">" + message + "</span>";
                 if (result != null) {
                     req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);
@@ -396,6 +403,7 @@ public class ResponderFactory {
             } catch (LogicException e) {
                 java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "error", e);
                 message = Responder.errorMessage(e);
+                formattedMessage = Responder.errorMessageFormatter(message);
                 req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
             } catch (Throwable t) {
@@ -405,6 +413,7 @@ public class ResponderFactory {
             // messages of inner forms are ignored
             if (suffix.equals("")) {
                 req.setAttribute(RESPONSE_STRING_NAME, message);
+                req.setAttribute(RESPONSE_FORMATTED_STRING_NAME, formattedMessage);
             }
         }
         return null;

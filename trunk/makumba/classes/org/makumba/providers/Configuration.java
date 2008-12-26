@@ -94,6 +94,8 @@ public class Configuration implements Serializable {
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
 
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
+    
+    public static final String KEY_USE_DEFAULT_RESPONSE_STYLES = "useDefaultResponseStyles";
 
     // makumba servlets
     public static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
@@ -175,6 +177,11 @@ public class Configuration implements Serializable {
         return defaultReloadFormOnError;
     }
 
+    public static boolean getUseDefaultResponseStyles() {
+        return applicationConfig.getBooleanProperty("responderConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);        
+    }
+
+    
     public static boolean getCalendarEditorDefault() {
         return applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR, defaultConfig);
     }
