@@ -378,7 +378,7 @@ public class ResponderFactory {
                     }
                 }
                 // display the response message and set attributes
-                message = "<font color=green>" + responder.message + "</font>";
+                message = "<span class=\"makumbaResponder\" class=\"makumbaSuccess\">" + responder.message + "</span>";
                 if (result != null) {
                     req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);
