@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -64,13 +63,13 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     private static final long serialVersionUID = 1L;
 
     protected String name = null;
-    
+
     protected String display = null;
 
     protected String nameVar = null;
 
     protected String calendarEditorLink = null;
-    
+
     private String autoComplete = null;
 
     protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
@@ -85,7 +84,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     // unused for now, set when we know at analysis that this input has
     // a body and will generate a choser (because it has <mak:option > inside)
     boolean isChoser;
-
 
     public String toString() {
         return "INPUT name=" + name + " value=" + valueExprOriginal + " dataType=" + dataType + "\n";
@@ -230,7 +228,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
         }
         if (this.autoComplete != null && this.autoComplete.equals("true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css",  "prototype.js", "scriptaculous.js", "makumba-autocomplete.js"});
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css", "prototype.js",
+                    "scriptaculous.js", "makumba-autocomplete.js" });
         }
 
         super.doEndAnalyze(pageCache);
@@ -308,7 +307,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (val != null) {
             val = type.checkValue(val);
         }
-        
+
         // if the value is null ==> check for a default value
         // FIXME: this is a basic implementation, it can only discover attributes, does not value computation yet
         // FIXME: also some of the code below is just repeating the one from above, could be optimised
@@ -319,7 +318,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
             if (isValue(defaultExpr)) {
                 // FIXME: actually implement this!
-                // for now, we just let this be handled by the various editors, which know how to deal with text and numbers
+                // for now, we just let this be handled by the various editors, which know how to deal with text and
+                // numbers
             }
             if (val != null) {
                 val = type.checkValue(val);
@@ -385,9 +385,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 params.put("calendarEditorLink", calendarEditorLink);
             }
         }
-        
-        if(autoComplete != null) {
-            params.put("autoComplete", autoComplete); 
+
+        if (autoComplete != null) {
+            params.put("autoComplete", autoComplete);
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
@@ -447,7 +447,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setCalendarEditorLink(String calendarEditorLink) {
         this.calendarEditorLink = calendarEditorLink;
     }
-    
+
     public void setAutoComplete(String autoComplete) {
         this.autoComplete = autoComplete;
     }
