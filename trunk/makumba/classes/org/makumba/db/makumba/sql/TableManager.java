@@ -2160,7 +2160,11 @@ public class TableManager extends Table {
             notUnique.throwCheck();
 
         } catch (Exception e) {
-            throw new RuntimeWrappedException(e);
+            if (e instanceof CompositeValidationException) {
+                throw (CompositeValidationException) e;
+            } else {
+                throw new RuntimeWrappedException(e);
+            }
         } finally {
             dbcw.close();
         }
