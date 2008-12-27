@@ -44,7 +44,7 @@ public class HQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    public Vector executeRaw(String query, Map args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
         return transaction.executeQuery(query, args, offset, limit);
     }
 
