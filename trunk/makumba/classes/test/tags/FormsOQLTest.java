@@ -518,16 +518,16 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         Iterator<String> orderedResponderCodes = responderFactory.getOrderedResponderCodes(list.iterator());
 
         // debug info
-        System.out.println("Responder codes read from form inputs: " + Arrays.toString(responderCodesString));
+        // System.out.println("Responder codes read from form inputs: " + Arrays.toString(responderCodesString));
 
         ArrayList<String> responderCodesAsList = new ArrayList<String>();
         CollectionUtils.addAll(responderCodesAsList, responderCodes);
-        System.out.println("Responder codes as passed through responderFactory.getResponderCodes(..): "
-                + ArrayUtils.toString(responderCodesAsList));
+        // System.out.println("Responder codes as passed through responderFactory.getResponderCodes(..): "
+        // + ArrayUtils.toString(responderCodesAsList));
 
         ArrayList<String> orderedResponderCodesAsList = new ArrayList<String>();
         CollectionUtils.addAll(orderedResponderCodesAsList, orderedResponderCodes);
-        System.out.println("Ordered responder codes:" + ArrayUtils.toString(orderedResponderCodesAsList));
+        // System.out.println("Ordered responder codes:" + ArrayUtils.toString(orderedResponderCodesAsList));
 
         // TODO
         // - define an Iterator / something else with the expected responder codes
