@@ -91,11 +91,6 @@ public class charEnumEditor extends choiceEditor {
     }
 
     @Override
-    public String getMultiple(RecordFormatter rf, int fieldIndex) {
-        return "";
-    }
-
-    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return false;
     }
