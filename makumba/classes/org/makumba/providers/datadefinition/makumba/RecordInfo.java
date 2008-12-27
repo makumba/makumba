@@ -68,7 +68,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     Vector<String> fieldOrder = new Vector<String>();
 
     HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
-    
+
     String title;
 
     String indexName;
@@ -212,7 +212,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /**
      * returns the record info with the given absolute name
-     *
+     * 
      * @throws org.makumba.DataDefinitionNotFoundError
      *             if the name is not a valid record info name
      * @throws org.makumba.DataDefinitionParseError
@@ -287,7 +287,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             if (e.getCause() instanceof DataDefinitionParseError) {
                 throw (DataDefinitionParseError) e.getCause();
             }
-            if(e.getCause() instanceof DataDefinitionNotFoundError) {
+            if (e.getCause() instanceof DataDefinitionNotFoundError) {
                 throw (DataDefinitionNotFoundError) e.getCause();
             }
             if (e.getCause() instanceof MakumbaError) {
@@ -308,15 +308,26 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return new Vector<String>(fieldOrder);
     }
 
-    public Vector<FieldDefinition> getReferenceFields() {
-        Vector<FieldDefinition> v = new Vector<FieldDefinition>();
+    public ArrayList<FieldDefinition> getReferenceFields() {
+        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
         for (FieldDefinition fieldDefinition : fields.values()) {
             FieldDefinition fd = fieldDefinition;
             if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
-                v.add(fd);
+                l.add(fd);
             }
         }
-        return v;
+        return l;
+    }
+
+    public ArrayList<FieldDefinition> getUniqueFields() {
+        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
+        for (FieldDefinition fieldDefinition : fields.values()) {
+            FieldDefinition fd = fieldDefinition;
+            if (fd.isUnique() && !fd.isIndexPointerField()) {
+                l.add(fd);
+            }
+        }
+        return l;
     }
 
     /** returns the field info associated with a name */
@@ -363,7 +374,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     public Collection<QueryFragmentFunction> getFunctions() {
         return functionNames.values();
     }
-    
+
     public Collection<QueryFragmentFunction> getActorFunctions() {
         ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
         for (QueryFragmentFunction function : functionNames.values()) {
@@ -373,7 +384,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         }
         return actorFunctions;
     }
-    
+
     public Collection<QueryFragmentFunction> getSessionFunctions() {
         ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
         for (QueryFragmentFunction function : functionNames.values()) {
@@ -454,16 +465,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     // moved from RecordHandler
-    public void checkFieldNames(Dictionary d) {
-        for (Enumeration e = d.keys(); e.hasMoreElements();) {
-            Object o = e.nextElement();
-            if (!(o instanceof String)) {
-                throw new org.makumba.NoSuchFieldException(this,
-                        "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
-                                + "> is of type " + o.getClass() + getName());
-            }
-            if (this.getFieldDefinition((String) o) == null) {
-                throw new org.makumba.NoSuchFieldException(this, (String) o);
+    public void checkFieldNames(Dictionary<String, Object> d) {
+        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
+            String s = e.nextElement();
+            if (this.getFieldDefinition(s) == null) {
+                throw new org.makumba.NoSuchFieldException(this, s);
             }
         }
     }
@@ -528,7 +534,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return multiFieldUniqueList.get(fieldNames) != null;
     }
 
-    public void checkUpdate(String fieldName, Dictionary d) {
+    public void checkUpdate(String fieldName, Dictionary<String, Object> d) {
         Object o = d.get(fieldName);
         if (o != null) {
             switch (getFieldDefinition(fieldName).getIntegerType()) {
@@ -547,7 +553,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         }
     }
 
-    private void base_checkUpdate(String fieldName, Dictionary d) {
+    private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
         getFieldDefinition(fieldName).checkUpdate(d);
     }
 

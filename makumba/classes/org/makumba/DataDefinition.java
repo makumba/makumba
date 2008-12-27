@@ -26,6 +26,7 @@
 package org.makumba;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
@@ -89,10 +90,10 @@ public interface DataDefinition {
     public void addField(FieldDefinition fd);
 
     /** Checks whether all fieldnames exist in the database */
-    public void checkFieldNames(Dictionary d);
+    public void checkFieldNames(Dictionary<String, Object>  d);
 
     /** Checks whether a record can be updated * */
-    public void checkUpdate(String fieldName, Dictionary d);
+    public void checkUpdate(String fieldName, Dictionary<String, Object>  d);
 
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
@@ -110,7 +111,10 @@ public interface DataDefinition {
     public boolean hasMultiUniqueKey(String[] fieldNames);
 
     /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
-    public Vector<FieldDefinition> getReferenceFields();
+    public ArrayList<FieldDefinition> getReferenceFields();
+
+    /** Gets all the fields that have the unique modifier. */
+    public ArrayList<FieldDefinition> getUniqueFields();
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name);
@@ -173,7 +177,7 @@ public interface DataDefinition {
         public String getErrorMessage() {
             return errorMessage;
         }
-        
+
         public boolean isActorFunction() {
             return getName().startsWith("actor");
         }
