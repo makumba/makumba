@@ -39,10 +39,10 @@ import org.makumba.forms.tags.SearchFieldTag;
 public abstract class choiceEditor extends FieldEditor {
 
     static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
-            "forceInputStyle" };
+            "forceInputStyle", "autoComplete" };
 
     static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
-            null, SearchFieldTag.allowedSelectTypes };
+            null, SearchFieldTag.allowedSelectTypes, new String[] { "true", "false" } };
 
     protected String nullOption = null;
 
@@ -75,9 +75,7 @@ public abstract class choiceEditor extends FieldEditor {
     public abstract String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val);
 
     /** Returns blank string, or " multiple " if multiple selections possible. */
-    // FIXME, would be better with "boolean isMultiple()"
-    public abstract String getMultiple(RecordFormatter rf, int fieldIndex);
-
+    
     public abstract boolean isMultiple(RecordFormatter rf, int fieldIndex);
 
     /** Gets the default size of the select HTML box. */

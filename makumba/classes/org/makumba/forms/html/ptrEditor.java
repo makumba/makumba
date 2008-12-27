@@ -30,9 +30,12 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.FieldDefinition;
+import org.makumba.HtmlUtils;
 import org.makumba.Pointer;
+import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 
@@ -160,15 +163,67 @@ public class ptrEditor extends choiceEditor {
         return o;
     }
 
-    public String getMultiple(RecordFormatter rf, int fieldIndex) {
-        return "";
-    }
-
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return false;
     }
 
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
+    }
+    
+    @Override
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        boolean autoComplete = formatParams.get("autoComplete") != null && formatParams.get("autoComplete").equals("true");
+        
+        // we have to check whether we are not a setEditor
+        if(autoComplete && this instanceof ptrEditor) {
+            return formatAutoComplete(rf, fieldIndex, o, formatParams);
+        } else {
+            return super.format(rf, fieldIndex, o, formatParams);
+        }
+    }
+
+    private String formatAutoComplete(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        
+        String res = "", id="", inputName = "";
+        
+        inputName = getInputName(rf, fieldIndex, formatParams);
+        
+        // TODO: add a hidden input with the right name and id
+        // extend the JS method for autocomplete to write the selected value in the hidden input
+
+        id = StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
+
+        // we need to have a different id for the visible input field
+        // dirty hack, because we get the id hardcoded in the extra formatting params
+        String extraFormattingVisible = getExtraFormatting(rf, fieldIndex, formatParams);
+        int cutIndex = extraFormattingVisible.indexOf("id=") + 4 + id.length();
+        extraFormattingVisible = extraFormattingVisible.substring(0, cutIndex) + "_visible" + extraFormattingVisible.substring(cutIndex);
+        
+        res += "<input name=\"" + inputName + "_visible\" type=\"text\" value=\""
+                + formatValue(rf, fieldIndex, o, formatParams) + "\" "
+                + extraFormattingVisible
+                + "autocomplete=\"off\""
+                + ">";
+
+        res += "<input name=\"" + inputName + "\" type=\"hidden\" value=\""
+        + formatValue(rf, fieldIndex, o, formatParams) + "\" "
+        + getExtraFormatting(rf, fieldIndex, formatParams)
+        + ">";
+                
+        // the second part of the auto-complete, i.e. the dropdown that appears
+        
+        res += "<div id=\"autocomplete_choices_"+id+"\" class=\"autocomplete\"></div>";
+        
+        res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\""+id+"\", \""+Configuration.getMakumbaAutoCompleteLocation()+"\", \""+ rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()+"\", \""+rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()+"\", \"ptr\", \""+(String)formatParams.get("org.makumba.forms.queryLanguage")+"\");</script>";
+    
+        return res;
+    }
+    
+    /** Formats the value to appear in an input statement. */
+    @Override
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
+        return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 }

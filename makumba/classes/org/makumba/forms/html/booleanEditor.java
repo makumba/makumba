@@ -126,9 +126,4 @@ public class booleanEditor extends choiceEditor {
         return false;
     }
 
-    @Override
-    public String getMultiple(RecordFormatter rf, int fieldIndex) {
-        return "";
-    }
-
 }

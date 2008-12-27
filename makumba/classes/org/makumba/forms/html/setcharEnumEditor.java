@@ -40,11 +40,6 @@ public class setcharEnumEditor extends charEnumEditor {
 	}
 
 	@Override
-    public String getMultiple(RecordFormatter rf, int fieldIndex) {
-		return " multiple";
-	}
-
-	@Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
 		return true;
 	}

@@ -23,6 +23,7 @@
 
 package org.makumba.forms.html;
 
+import java.util.Dictionary;
 import java.util.Vector;
 
 import org.makumba.commons.formatters.FieldFormatter;
@@ -59,11 +60,6 @@ public class setEditor extends ptrEditor {
     }
 
     @Override
-    public String getMultiple(RecordFormatter rf, int fieldIndex) {
-        return " multiple";
-    }
-
-    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return true;
     }
@@ -91,4 +87,5 @@ public class setEditor extends ptrEditor {
         }
         return o;
     }
+    
 }
