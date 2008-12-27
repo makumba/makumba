@@ -39,8 +39,6 @@ import org.makumba.forms.responder.ValueEditor;
 import org.makumba.list.MakumbaDownloadServlet;
 import org.makumba.providers.Configuration;
 
-import bmsi.util.DiffPrint.ContextPrint;
-
 /**
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
  * 
@@ -127,7 +125,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
                 Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
-            writeDescr(w, "Reference Checker", "Check for broken references and show status of foreign key creation",
+            writeDescr(w, "Reference Checker",
+                "Checks creation the status of foreign and unique keys and displays broken references",
                 Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
                 request.getContextPath());
             writeDescr(w, "Relation Crawler", "Runs a detection of file relations", Configuration.KEY_RELATION_CRAWLER,
