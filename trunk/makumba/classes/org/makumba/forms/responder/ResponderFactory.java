@@ -50,7 +50,7 @@ public class ResponderFactory {
     }
 
     /**
-     * Initalises the factory
+     * Initialises the factory
      */
     private void init() {
         cacheManager.setFactory(this);
@@ -384,8 +384,7 @@ public class ResponderFactory {
                 }
                 // display the response message and set attributes
                 message = responder.message;
-                formattedMessage = "<span class=\"makumbaResponder makumbaSuccess\"" + 
-                    (useDefaultResponseStyles?" style=\"color:green\"":"") + ">" + message + "</span>";
+                formattedMessage = Responder.successFulMessageFormatter(message);
                 if (result != null) {
                     req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);

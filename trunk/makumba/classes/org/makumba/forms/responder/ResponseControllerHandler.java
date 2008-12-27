@@ -1,5 +1,7 @@
 package org.makumba.forms.responder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.FilterConfig;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.http.HttpSession;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
@@ -29,6 +32,7 @@ public class ResponseControllerHandler extends ControllerHandler {
             ServletObjects httpServletObjects) throws Exception {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
+        FormResponder firstResponder = (FormResponder) factory.getFirstResponder(req);
 
         if (e instanceof CompositeValidationException) {
             CompositeValidationException v = (CompositeValidationException) e;
@@ -38,7 +42,6 @@ public class ResponseControllerHandler extends ControllerHandler {
             String message;
 
             // Check if we shall reload the form page
-            Responder firstResponder = factory.getFirstResponder(req);
             java.util.logging.Logger.getLogger("org.makumba.controller").fine(
                 "Caught a CompositeValidationException, reloading form page: " + firstResponder.getReloadFormOnError());
 
@@ -79,7 +82,37 @@ public class ResponseControllerHandler extends ControllerHandler {
             req.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, Responder.errorMessageFormatter(message));
 
         }
+        // if there was no error, and we have set to reload the form, we go to the original action page
+        else if (e == null && firstResponder != null && firstResponder.getReloadFormOnError()) {
+            // store the response in the session, to be able to retrieve it later in ResponseTag
+            final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
+            HttpSession session = httpServletRequest.getSession();
+
+            String action = getAbsolutePath(httpServletRequest.getRequestURI(), firstResponder.getAction());
+
+            final String suffix = "_" + action;
+            session.setAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix, firstResponder.message);
+            session.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix,
+                Responder.successFulMessageFormatter(firstResponder.message));
+
+            // redirecting
+            java.util.logging.Logger.getLogger("org.makumba.controller").info(
+                "Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '" + firstResponder.getAction()
+                        + "'.");
+            ((HttpServletResponse) resp).sendRedirect(firstResponder.getAction());
+        }
         return true;
+    }
+
+    private static String getAbsolutePath(String requestURI, String action) throws IOException {
+        if (!action.startsWith("/")) {
+            // if we have a relative URL, compute the absolute URL of the action page, as we'll get that in ResponseTag
+            if (requestURI.lastIndexOf("/") != -1) {
+                requestURI = requestURI.substring(0, requestURI.lastIndexOf("/") + 1);
+            }
+            action = requestURI + action;
+        }
+        return new File("/", action).getCanonicalPath();
     }
 
     /**
@@ -145,5 +178,13 @@ public class ResponseControllerHandler extends ControllerHandler {
             }
         };
         return req;
+    }
+
+    public static void main(String[] args) throws IOException {
+        System.out.println(getAbsolutePath("/test/forms-oql/abc.", "../action.jsp"));
+        System.out.println(getAbsolutePath("/test/forms-oql/", "../action.jsp"));
+        System.out.println(getAbsolutePath("/test/forms-oql/", "../forms-oql/action.jsp"));
+        System.out.println(getAbsolutePath("/", "../forms-oql/action.jsp"));
+        System.out.println(getAbsolutePath("", "../action.jsp"));
     }
 }
