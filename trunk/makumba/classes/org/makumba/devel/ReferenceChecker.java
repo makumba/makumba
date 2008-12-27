@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -22,12 +21,12 @@ import org.makumba.MakumbaSystem;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
-import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Developer support servlet that checks for the existence of broken references (foreign keys) on the database.
@@ -39,32 +38,29 @@ public class ReferenceChecker extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private String dbName = MakumbaSystem.getDefaultDatabaseName();
-
-    SQLDBConnection sqlConnection;
-
-    Database sqlDb = MakumbaTransactionProvider.getDatabase(dbName);
+    private String dbName = TransactionProvider.getInstance().getDefaultDataSourceName();
 
     public ReferenceChecker() {
-        DBConnection connection = sqlDb.getDBConnection();
-        if (connection instanceof DBConnectionWrapper) {
-            connection = ((DBConnectionWrapper) connection).getWrapped();
-        }
-        sqlConnection = ((SQLDBConnection) connection);
     }
 
-    private int count(DataDefinition mdd) {
+    private int count(SQLDBConnection sqlConnection, DataDefinition mdd) {
         TableManager table = getSqlTable(mdd);
         String query = "SELECT COUNT(*) FROM " + table.getDBName();
-        return executeIntQuery(query);
+        return executeIntQuery(sqlConnection, query);
     }
 
-    private int countMissing(DataDefinition ddParent, DataDefinition ddChild, FieldDefinition fdChild) {
+    private int countMissing(SQLDBConnection sqlConnection, DataDefinition ddParent, DataDefinition ddChild,
+            FieldDefinition fdChild) {
         String query = getQueryString(ddParent, ddChild, fdChild, true);
-        return executeIntQuery(query);
+        return executeIntQuery(sqlConnection, query);
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        DBConnection connection = MakumbaTransactionProvider.getDatabase(dbName).getDBConnection();
+        if (connection instanceof DBConnectionWrapper) {
+            connection = ((DBConnectionWrapper) connection).getWrapped();
+        }
+        SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
         String contextPath = req.getContextPath();
         resp.setContentType("text/html");
         PrintWriter w = resp.getWriter();
@@ -74,14 +70,14 @@ public class ReferenceChecker extends HttpServlet {
         String param = req.getParameter("mdd");
         if (param != null) { // check a specific MDD
             String field = req.getParameter("field");
-            printBrokenRefsInTable(contextPath, w, param, field);
+            printBrokenRefsInTable(sqlConnection, contextPath, w, param, field);
         } else {
-            printAllBrokenRefs(contextPath, w);
+            printAllBrokenRefs(sqlConnection, contextPath, w);
         }
         DevelUtils.writePageEnd(w);
     }
 
-    private int executeIntQuery(String query) {
+    private int executeIntQuery(SQLDBConnection sqlConnection, String query) {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
         try {
             ResultSet result = ps.executeQuery();
@@ -103,7 +99,7 @@ public class ReferenceChecker extends HttpServlet {
         return -1;
     }
 
-    private ResultSet executeQuery(String query) {
+    private ResultSet executeQuery(SQLDBConnection sqlConnection, String query) {
         PreparedStatement ps = sqlConnection.getPreparedStatement(query);
         // FIXME: this PreparedStatement is never closed, and it probably cannot be closed before closing the result set
         // which we return....
@@ -150,16 +146,18 @@ public class ReferenceChecker extends HttpServlet {
         return s;
     }
 
-    private void printAllBrokenRefs(String contextPath, PrintWriter w) throws IOException {
-        String title = "Broken references in " + MakumbaSystem.getDefaultDatabaseName();
+    private void printAllBrokenRefs(SQLDBConnection sqlConnection, String contextPath, PrintWriter w)
+            throws IOException {
+        String title = "Foreign and unique keys in " + dbName;
         DevelUtils.writeTitleAndHeaderEnd(w, title);
         DevelUtils.printPageHeader(w, title);
         writeHeader(w, contextPath);
-        Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
+        Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations(
+            "test.brokenMdds.", "org.makumba.");
         Collections.sort(mdds);
         w.println("<div style=\"float:right; border: 1px solid #000; margin: 0px 0px 20px 20px; padding: 5px; background: #ddd;\">");
-        for (Enumeration<String> mddse = mdds.elements(); mddse.hasMoreElements();) {
-            String mddName = (String) mddse.nextElement();
+        for (String string : mdds) {
+            String mddName = (String) string;
             w.println("<a href=\"#" + mddName + "\">" + mddName + "</a><br/>");
         }
         w.println("</div>");
@@ -176,54 +174,60 @@ public class ReferenceChecker extends HttpServlet {
 
             try {
                 DataDefinition dd = MakumbaSystem.getDataDefinition(mddName);
-                w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath + Configuration.getMddViewerLocation() + "/" + mddName
-                        + "\">" + mddName + "</a> (" + count(dd) + ")</h3>");
-                for (Enumeration<FieldDefinition> fnse = dd.getReferenceFields().elements(); fnse.hasMoreElements();) {
-                    FieldDefinition f = (FieldDefinition) fnse.nextElement();
-                    String ft = f.getType();
-                    w.println(f.getName() + " = " + ft);
+                w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath
+                        + Configuration.getMddViewerLocation() + "/" + mddName + "\">" + mddName + "</a> ("
+                        + count(sqlConnection, dd) + ")</h3>");
+                w.println("<ul>");
+                for (FieldDefinition f : dd.getReferenceFields()) {
+                    w.println("<li>");
+                    w.println(f.getName() + " = " + f.getType());
                     if (f.isPointer()) {
                         DataDefinition pointerDd = f.getPointedType();
                         String pointerDdName = pointerDd.getName();
-                        w.println("&rarr; " + pointerDdName + "(" + count(pointerDd) + ")");
+                        w.println("&rarr; " + pointerDdName + "(" + count(sqlConnection, pointerDd) + ")");
                         String query = getQueryString(pointerDd, dd, f, true);
                         printHiddenQuery(w, getDivID(mddName, f), query);
-                        w.println(printDetails(executeIntQuery(query), dd, f));
+                        w.println(printDetails(executeIntQuery(sqlConnection, query), dd, f));
                         printForeignKey(w, dd, f);
                     }
                     if (f.isExternalSet()) {
                         DataDefinition pointerDd = f.getPointedType();
                         String pointerDdName = pointerDd.getName();
                         DataDefinition setDd = f.getSubtable();
-                        w.println(" &larr;[" + setDd + " (" + count(setDd) + ")]&rarr " + pointerDdName + " ("
-                                + count(pointerDd) + ")");
+                        w.println(" &larr;[" + setDd + " (" + count(sqlConnection, setDd) + ")]&rarr " + pointerDdName
+                                + " (" + count(sqlConnection, pointerDd) + ")");
                         FieldDefinition backPtr = setDd.getFieldDefinition(dd.getIndexPointerFieldName());
                         String query = getQueryString(dd, setDd, backPtr, true);
                         printHiddenQuery(w, getDivID(mddName, backPtr), query);
-                        w.println(printDetails(countMissing(dd, setDd, backPtr), dd, f));
+                        w.println(printDetails(countMissing(sqlConnection, dd, setDd, backPtr), dd, f));
                         printForeignKey(w, setDd, backPtr);
                         FieldDefinition backPtr2 = setDd.getFieldDefinition(pointerDd.getIndexPointerFieldName());
                         query = getQueryString(pointerDd, setDd, backPtr2, true);
                         printHiddenQuery(w, getDivID(mddName, backPtr2), query);
-                        w.println(printDetails(countMissing(pointerDd, setDd, backPtr2), pointerDd, f));
+                        w.println(printDetails(countMissing(sqlConnection, pointerDd, setDd, backPtr2), pointerDd, f));
                         printForeignKey(w, setDd, backPtr2);
                     }
                     if (f.isComplexSet()) {
                         DataDefinition setDd = f.getSubtable();
-                        w.println(" &larr;[" + setDd + " (" + count(setDd) + ")]");
+                        w.println(" &larr;[" + setDd + " (" + count(sqlConnection, setDd) + ")]");
                         FieldDefinition backPtr = setDd.getFieldDefinition(dd.getIndexPointerFieldName());
                         String query = getQueryString(dd, setDd, backPtr, true);
                         printHiddenQuery(w, getDivID(mddName, backPtr), query);
-                        w.println(printDetails(countMissing(dd, setDd, backPtr), dd, f));
+                        w.println(printDetails(countMissing(sqlConnection, dd, setDd, backPtr), dd, f));
                         printForeignKey(w, setDd, backPtr);
                         stack.add(setDd.getName());
                     }
-                    if (fnse.hasMoreElements()) {
-                        w.println("<br>");
-                    }
-
+                    w.println("</li>");
                 }
-
+                w.println("</ul>");
+                w.println("<ul>");
+                for (FieldDefinition f : dd.getUniqueFields()) {
+                    w.println("<li>");
+                    w.println(new StringBuilder(f.getName()).append(": ").append(
+                        printUniqueKey(getSqlTable(dd).isIndexOk(f.getName()))));
+                    w.println("</li>");
+                }
+                w.println("</ul>");
             } catch (Exception ex) {
                 w.println(" <font color=\"red\">" + ex + "</font></b>  ");
             }
@@ -236,7 +240,7 @@ public class ReferenceChecker extends HttpServlet {
 
     private void printHiddenQuery(PrintWriter w, String idName, String query) {
         w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", " + idName
-                + "Ref)\">[+]</a>");
+                + "Ref)\" title=\"Show SQL statement\">[+]</a>");
         w.println("<div id=\"" + idName + "\" style=\"display:none;\">" + query + "</div> ");
     }
 
@@ -248,12 +252,20 @@ public class ReferenceChecker extends HttpServlet {
         }
     }
 
-    private TableManager getSqlTable(DataDefinition dd) {
-        return (TableManager) sqlDb.getTable(dd);
+    private String printUniqueKey(boolean b) {
+        if (b) {
+            return "<span style=\"font-weight: bold; color:green\">[Valid unique key]</span>";
+        } else {
+            return "<span style=\"font-weight: bold; color:red\">[NO unique key!]</span>";
+        }
     }
 
-    private void printBrokenRefsInTable(String contextPath, PrintWriter w, String param, String field)
-            throws IOException {
+    private TableManager getSqlTable(DataDefinition dd) {
+        return (TableManager) MakumbaTransactionProvider.getDatabase(dbName).getTable(dd);
+    }
+
+    private void printBrokenRefsInTable(SQLDBConnection sqlConnection, String contextPath, PrintWriter w, String param,
+            String field) throws IOException {
         DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(param);
         FieldDefinition fd = dd.getFieldDefinition(field);
         String query = getQueryString(fd.getPointedType(), dd, fd, false);
@@ -267,7 +279,7 @@ public class ReferenceChecker extends HttpServlet {
 
         w.println("Query: " + query);
 
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(sqlConnection, query);
 
         w.println("<br><br>");
         w.println("<table>");
@@ -308,7 +320,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("<td align=\"right\">");
         DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_REFERENCE_CHECKER, contextPath);
         w.println("</td>");
-        
+
         w.println("</tr>");
         w.println("</table>");
     }
