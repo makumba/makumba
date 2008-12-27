@@ -25,9 +25,12 @@ package org.makumba.forms.tags;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.forms.responder.ResponderFactory;
 
 /**
  * mak:response tag, displaying the response of a form submission.
@@ -42,11 +45,28 @@ public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
 
     public int doStartTag() throws JspException {
         try {
+            final HttpServletRequest httpServletRequest = (HttpServletRequest) pageContext.getRequest();
+            final HttpSession session = httpServletRequest.getSession();
+            final String suffix = "_" + httpServletRequest.getRequestURI();
 
-            Object response = pageContext.getRequest().getAttribute(
-                org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
+            // check if we came from a form-redirection
+            final Object respFromSession = session.getAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix);
+            Object response = httpServletRequest.getAttribute(org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
 
-            // response is null only during login, maybe a more strict check should be made
+            if (response == null && respFromSession != null) {
+                // set the attributes from the session to the request
+                httpServletRequest.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, respFromSession);
+                httpServletRequest.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME,
+                    session.getAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix));
+
+                // get the response value
+                response = httpServletRequest.getAttribute(org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
+
+                // clear the session values from this form
+                session.removeAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix);
+                session.removeAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix);
+            }
+
             if (response != null)
                 pageContext.getOut().print(response);
         } catch (IOException e) {

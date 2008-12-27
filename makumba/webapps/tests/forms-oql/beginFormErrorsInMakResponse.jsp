@@ -9,6 +9,7 @@
 <body>
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<mak:response />
 
 <mak:newForm type="test.Person" action="testFormErrorsInMakResponse.jsp" name="person" clientSideValidation="false" reloadFormOnError="false" method="post">  
   name <mak:input name="indiv.name" /><br>  

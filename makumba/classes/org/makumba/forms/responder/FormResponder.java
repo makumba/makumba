@@ -193,14 +193,26 @@ public class FormResponder extends Responder {
             // no preamble for non-root forms (forms included in other forms)
             return;
         }
-        String sep = action.indexOf('?') >= 0 ? "&" : "?";
+        String targetPage;
+        if (reloadFormOnError) {
+            System.out.println("operation: " + operation + ", reloadForm: " + reloadFormOnError);
+            // if we shall reload the form page on errors, we submit the form back to the originating page, to be able
+            // to display validation errors on the original page
+            // in case there are no errors in the form submission, ResponseControllerHandler will take care of directing
+            // the client to the original page
+            targetPage = originatingPageName;
+        } else {
+            targetPage = action;
+        }
+
+        String sep = targetPage.indexOf('?') >= 0 ? "&" : "?";
         // handle anchors in actions (bla.jsp?person=hg34bw#employment)
-        String actionBase = action;
+        String actionBase = targetPage;
         String actionAnchor = "";
-        int actionHashPos = action.indexOf('#');
+        int actionHashPos = targetPage.indexOf('#');
         if (actionHashPos > -1) {
-            actionBase = action.substring(0, actionHashPos);
-            actionAnchor = action.substring(actionHashPos);
+            actionBase = targetPage.substring(0, actionHashPos);
+            actionAnchor = targetPage.substring(actionHashPos);
         }
 
         if (operation.equals("deleteLink")) {
@@ -228,7 +240,7 @@ public class FormResponder extends Responder {
         } else {
             // a root form, translates into an HTML form
             sb.append("<form action=");
-            sb.append("\"" + action + "\"");
+            sb.append("\"" + targetPage + "\"");
             sb.append(" method=");
             sb.append("\"" + method + "\"");
             if (multipart) {
