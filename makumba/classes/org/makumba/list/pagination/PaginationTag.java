@@ -31,7 +31,7 @@ import org.makumba.list.tags.QueryTag;
  * </ul>
  * 
  * @author Rudolf Mayer
- * @version $Id: PaginationTag.java,v 1.1 23.12.2007 21:41:04 Rudif Exp $
+ * @version $Id: PaginationTag.java,v 1.1 23.12.2007 21:41:04 Rudi Exp $
  */
 public class PaginationTag extends GenericMakumbaTag {
 
@@ -73,6 +73,8 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private String totalCount;
 
+    private String action;
+
     public PaginationTag() {
         // TODO: implement reading navigation images from a config (file)
     }
@@ -83,9 +85,13 @@ public class PaginationTag extends GenericMakumbaTag {
 
     @Override
     public void doStartAnalyze(PageCache pageCache) {
+        Logger.getLogger("org.makumba.list.pagination").fine(
+            "Start analysing pagination tag, attributes: offset: " + offset + ", limit: " + limit + ", totalCount: "
+                    + totalCount + ", action: " + action);
         // make sure we are inside a list
-        boolean allNotEmpty = org.makumba.commons.StringUtils.allNotEmpty(new String[] { limit, offset, totalCount });
-        boolean anyNotEmpty = org.makumba.commons.StringUtils.anyNotEmpty(new String[] { limit, offset, totalCount });
+        final String[] values = new String[] { limit, offset, totalCount };
+        boolean allNotEmpty = org.makumba.commons.StringUtils.allNotEmpty(values);
+        boolean anyNotEmpty = org.makumba.commons.StringUtils.anyNotEmpty(values);
         if (anyNotEmpty && allNotEmpty) {
             throw new ProgrammerError("You must provide values for either " + ALL_ATTRIBUTES + ", or for none.");
         }
@@ -122,15 +128,23 @@ public class PaginationTag extends GenericMakumbaTag {
             boolean hasPreviousPage = currentIndex > 0 ? true : false;
             boolean hasNextPage = currentIndex < pages - 1 ? true : false;
             StringBuffer sb = new StringBuffer();
-            String baseUrl = getBaseURL();
+            String baseUrl = action != null ? action : getBaseURL();
+
+            // handle anchors in actions (bla.jsp?person=hg34bw#employment)
+            String actionAnchor = "";
+            final int actionHashPos = baseUrl.indexOf('#');
+            if (actionHashPos > -1) {
+                actionAnchor = baseUrl.substring(actionHashPos);
+                baseUrl = baseUrl.substring(0, actionHashPos);
+            }
 
             try {
                 JspWriter out = pageContext.getOut();
                 sb.append("<div class=\"" + styleClass + "\">\n");
                 sb.append("  <div style=\"float: left; width: 50px\" >\n    ");
                 if (hasPreviousPage) {
-                    sb.append(getAnchor(baseUrl, 0, limit, FIRST)).append("\n    ");
-                    sb.append(getAnchor(baseUrl, (currentIndex - 1) * limit, limit, PREVIOUS));
+                    sb.append(getAnchor(baseUrl, actionAnchor, 0, limit, FIRST)).append("\n    ");
+                    sb.append(getAnchor(baseUrl, actionAnchor, (currentIndex - 1) * limit, limit, PREVIOUS));
                 } else {
                     sb.append(getLink(FIRST, navigationNALinkStyle)).append("\n    ");
                     sb.append(getLink(PREVIOUS, navigationNALinkStyle));
@@ -139,8 +153,9 @@ public class PaginationTag extends GenericMakumbaTag {
 
                 sb.append("  <div style=\"float: right; width: 50px\" align=\"right\">\n    ");
                 if (hasNextPage) {
-                    sb.append(getAnchor(baseUrl, (currentIndex + 1) * limit, limit, NEXT)).append("\n    ");
-                    sb.append(getAnchor(baseUrl, (pages - 1) * limit, limit, LAST));
+                    sb.append(getAnchor(baseUrl, actionAnchor, (currentIndex + 1) * limit, limit, NEXT)).append(
+                        "\n    ");
+                    sb.append(getAnchor(baseUrl, actionAnchor, (pages - 1) * limit, limit, LAST));
                 } else {
                     sb.append(getLink(NEXT, navigationNALinkStyle)).append("\n    ");
                     sb.append(getLink(LAST, navigationNALinkStyle));
@@ -162,6 +177,10 @@ public class PaginationTag extends GenericMakumbaTag {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            Logger.getLogger("org.makumba.list.pagination").fine(
+                "Pagination resulted in only one page, attributes are: offset: " + offset + ", limit: " + limit
+                        + ", maxResults: " + maxResults + ", pages: " + pages);
         }
         return SKIP_BODY;
     }
@@ -205,9 +224,13 @@ public class PaginationTag extends GenericMakumbaTag {
         navigationStylesInitialised = true;
     }
 
-    private String getAnchor(String baseUrl, int start, int range, String page) {
-        StringBuffer link = new StringBuffer("<a href=\"").append(baseUrl).append(OFFSET).append("=").append(start).append(
-            "&").append(LIMIT).append("=").append(range).append("\"");
+    private String getAnchor(String baseUrl, String actionAnchor, int start, int range, String page) {
+        if (baseUrl.endsWith("?") || baseUrl.endsWith("&")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+        String sep = baseUrl.indexOf('?') >= 0 ? "&" : "?";
+        StringBuffer link = new StringBuffer("<a href=\"").append(baseUrl).append(sep).append(OFFSET).append("=").append(
+            start).append("&").append(LIMIT).append("=").append(range).append(actionAnchor).append("\"");
         if (StringUtils.equals(paginationLinkTitle, "true")) {
             link.append(" title=\"");
             if (page.equals(PREVIOUS)) {
@@ -237,10 +260,12 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private String getBaseURL() {
         HttpServletRequest r = ((HttpServletRequest) pageContext.getRequest());
-        String queryString = getQueryString(r.getParameterMap());
-        StringBuffer url = new StringBuffer(r.getRequestURL().toString().substring(
+        StringBuilder queryString = getQueryString(r.getParameterMap());
+        StringBuilder url = new StringBuilder(r.getRequestURL().toString().substring(
             r.getRequestURL().toString().indexOf(r.getContextPath())));
-        url.append("?").append(queryString);
+        if (queryString.length() > 0) {
+            url.append("?").append(queryString);
+        }
         return url.toString();
     }
 
@@ -248,11 +273,11 @@ public class PaginationTag extends GenericMakumbaTag {
         return (QueryTag) findAncestorWithClass(this, QueryTag.class);
     }
 
-    public String getQueryString(Map<?, ?> map) {
+    public StringBuilder getQueryString(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Object obj : map.keySet()) {
             if (!org.makumba.commons.StringUtils.equalsAny(obj, new String[] { LIMIT, OFFSET })) {
                 String[] strings = (String[]) map.get(obj);
@@ -263,7 +288,7 @@ public class PaginationTag extends GenericMakumbaTag {
                 }
             }
         }
-        return sb.toString();
+        return sb;
     }
 
     private AnalysableTag getReferredListTag(PageCache pageCache) {
@@ -309,6 +334,10 @@ public class PaginationTag extends GenericMakumbaTag {
     public void setTotalCount(String totalCount) throws JspException {
         onlyInt("totalCount", totalCount);
         this.totalCount = totalCount;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
 }
