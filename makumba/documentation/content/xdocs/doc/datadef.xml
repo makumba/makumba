@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
 <document>
 <header>
@@ -72,7 +72,7 @@
       	</ul>
       	<br/>
       	This combination ensures that no two objects of one type have the same primary key field. See <a
-        	href="SQL-drivers.html#ConfigProperties">how to configure</a> this.<br/>
+        	href="sql-drivers.html#ConfigProperties">how to configure</a> this.<br/>
       	The name of the primary key field is the same with the last part of the type name. If another field by that name
       	is defined by the makumba user, this field will be renamed in the database.</li>
       	<li>Object creation time

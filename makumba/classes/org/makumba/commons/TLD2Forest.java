@@ -349,7 +349,7 @@ public class TLD2Forest {
                 Document tagXML = saxReader.read(new File(tagFilePath));
                 
                 // add the docType
-                tagXML.addDocType("document", "-//APACHE//DTD Documentation V2.0//EN",
+                tagXML.addDocType("document", "-//MAKUMBA//DTD Documentation V2.0//EN",
                 "document-v20-mak.dtd");
                 
 //            Element tagExampleSection = tagXML.elementByID(EXAMPLE_SECTION_ID);

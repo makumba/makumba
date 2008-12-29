@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE tabs PUBLIC "-//APACHE//DTD Cocoon Documentation Tab V1.1//EN" "http://forrest.apache.org/dtd/tab-cocoon-v11.dtd">
+<!DOCTYPE tabs PUBLIC "-//MAKUMBA//DTD Cocoon Documentation Tab V1.1//EN" "http://forrest.apache.org/dtd/tab-cocoon-v11.dtd">
 <tabs software="Makumba"
   title="Makumba"
   copyright="Makumba Community"
@@ -32,7 +32,7 @@
   -->
   <tab id="home" label="Home" href="/index.html"/>
   <tab id="quickstart" label="Quick start" href="quickstart.html" />
-  <tab id="installation" label="Installation" dir="installation" />
+  <tab id="configuration" label="Configuration" dir="configuration" />
   <tab id="documentation" label="Documentation" dir="/doc"/>
   <!-- tab id="develdoc" label="Developer documentation" dir="develdoc"/ -->
   

@@ -256,7 +256,7 @@ NOTES:
   %xmlspace.att; 
 >
 <!-- Note Paragraph (normally shown encapsulated) -->
-<!ELEMENT note (%text;|%markup;|%special-inline;|xi:include %local.inline;|%lists;)*>
+<!ELEMENT note (%content.mix;|%lists;)*>
 <!ATTLIST note
   label CDATA #IMPLIED
   %common.att; 
