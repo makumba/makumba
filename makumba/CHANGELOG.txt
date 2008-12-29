@@ -11,12 +11,12 @@ rudi: search forms - allowing fields to be over more than one field, default="..
 rudi: optimised some string concatenations, fixing some generics warnings
 rudi: lineViewer more robust to exceptions of relations tool
 rudi: more sophisticated MQL function analysis
-jasper: allowing Transaction instead 
+jasper: allowing Transaction instead of Database in Logic
 
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
-manu: auto-complete for mak:input
+manu: auto-complete for mak:input (char and ptr)
 
 ------------------------------------------
 - add your changes -
