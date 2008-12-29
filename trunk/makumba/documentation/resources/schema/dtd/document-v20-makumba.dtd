@@ -104,7 +104,7 @@ EXTENSIBILITY:
 <!-- =============================================================== -->
 
 <!ENTITY % document PUBLIC
-    "-//MAKUMBA//ENTITIES Documentation V2.0//EN"
+    "-//MAKUMBA/ENTITIES Documentation V2.0//EN"
     "document-v20-makumba.mod">
 %document;
 

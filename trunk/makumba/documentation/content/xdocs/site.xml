@@ -42,9 +42,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <example label="Example" href="/example.html" tab="home"/>
   </home>
   
-  <quickstart label="Quick start" href="/quickstart.html" description="Getting started with Makumba" tab="quickstart" />
-  
-  <installation label="Installation" href="/installation/index.html" description="Installing and configuring Makumba" tab="installation"/>
+  <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration"/>
   
   <documentation label="Documentation" dir="/doc" description="Makuma reference documentation" tab="documentation">
     <overview label="Overview" href="/doc/index.html" description="Documentation overview" /> 
@@ -108,7 +106,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <xml.apache.org href="http://xml.apache.org/"/>
     
     <hibernate href="http://www.hibernate.org">
-      <hql href="/hib_docs/reference/en/html/queryhql.html" />
+      <hql href="hib_docs/reference/en/html/queryhql.html" />
     </hibernate>
     <mysql href="http://www.mysql.org">
       <mysql-subqueries href="http://dev.mysql.com/doc/refman/5.0/en/subqueries.html" />
@@ -118,15 +116,21 @@ See http://forrest.apache.org/docs/linking.html for more info
     <bug href="http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=">
       <bug1052 href="1052"/>
       <bug1053 href="1053"/>
-      <bug1064 href="1064"/>
+      <bug1060 href="1060"/>
+      <bug1061 href="1061"/>
       <bug1063 href="1063"/>
+      <bug1064 href="1064"/>
       <bug1056 href="1056"/>
-      <bug1052 href="1052"/>
-      <bug1052 href="1052"/>
+      <bug1059 href="1059"/>
     </bug>
     
     <javaregexp href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html" />
     <javaregexptutorial href="http://java.sun.com/docs/books/tutorial/essential/regex/"/>
+    
+    <getConnectionTo href="" />
+    <getDefaultDatabaseName href="" />
+    
+    <develdoc href="" />
     
   </external-refs>
 </site>
