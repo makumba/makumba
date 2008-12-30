@@ -716,5 +716,12 @@ package org.makumba]]>
 
   </target>
   
+  <target name="forrest-build-webapp" description="Generates webapp">
+    <exec executable="forrest">
+      <arg value="run-webapp" />
+    </exec>
+  </target>
+  
+  
 	
 </project>
