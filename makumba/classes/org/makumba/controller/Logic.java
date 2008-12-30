@@ -251,7 +251,8 @@ public class Logic {
 
             @Override
             protected Object makeResource(Object p) {
-                if (Configuration.getAuthorizationDefinitions() == null) {
+                final Map<String, String> authorizationDefinitions = Configuration.getAuthorizationDefinitions();
+                if (authorizationDefinitions == null) {
                     return "none";
                 }
                 String path = (String) p;
@@ -264,10 +265,10 @@ public class Logic {
                 String rule = "none";
                 String params = "";
 
-                for (String k : Configuration.getAuthorizationDefinitions().keySet()) {
+                for (String k : authorizationDefinitions.keySet()) {
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
-                        rule = Configuration.getAuthorizationDefinitions().get(k);
+                        rule = authorizationDefinitions.get(k);
                     }
                 }
 
