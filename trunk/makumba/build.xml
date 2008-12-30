@@ -722,6 +722,11 @@ package org.makumba]]>
     </exec>
   </target>
   
+  <target name="forrest-validate-xdocs" description="Generates webapp">
+    <exec executable="forrest">
+      <arg value="validate-xdocs" />
+    </exec>
+  </target>
   
-	
+  
 </project>
