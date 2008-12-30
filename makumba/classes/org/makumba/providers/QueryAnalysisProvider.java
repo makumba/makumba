@@ -184,9 +184,10 @@ public abstract class QueryAnalysisProvider {
     public abstract String getParameterSyntax();
 
     public static void main(String[] args) {
-        for (String string : oqlanalyzer.TEST_MDD_FUNCTIONS) {
-            System.out.println(string + "\n\t=>\n" + QueryProvider.getQueryAnalzyer("oql").inlineFunctions(string)
-                    + "\n");
+        for (int i = 0; i < oqlanalyzer.TEST_MDD_FUNCTIONS.length; i++) {
+            String string = oqlanalyzer.TEST_MDD_FUNCTIONS[i];
+            System.out.println(string + "\n=>\n" + QueryProvider.getQueryAnalzyer("oql").inlineFunctions(string)
+                    + "\nshould be:\n" + oqlanalyzer.TEST_MDD_FUNCTION_RESULTS[i] + "\n\n");
         }
     }
 

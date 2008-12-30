@@ -10,6 +10,9 @@ birthdate%compare = birthdate >= date($now, $now, $now - 105, 0, 0, 0) : Maximum
 
 firstSex = date
 
+myapp_username=char[80] ; username for this user
+password=char[80] ; password for this user
+
 beginDate = date;
 beginDate%compare = beginDate >= $now : Begin date can't be in the past!
 beginDate%compare = beginDate >= date($now,$now,$now - 5) : Begin date can't be longer than 5 years ago!
@@ -111,3 +114,6 @@ nameMin3CharsLong() { indiv.nameMin3CharsLong() } Your name is not long enough!
 someTest(){ actor(test.Person) }
 
 fullName() { indiv.fullName() }
+
+actor(char[] username, char[] password) { myapp_username=username AND password=password }
+actor2(char[] username, char[] password) { indiv.someusername=username AND password=password }
