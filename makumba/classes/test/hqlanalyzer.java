@@ -252,7 +252,7 @@ public class hqlanalyzer extends TestCase {
 
     public void testAnalysisSubQueries() {
 
-        String q1 = "SELECT p.brother as brother, p.address.streetno as streetno FROM test.Person p WHERE p.uniqInt IN (SELECT p.id as pid FROM test.Person p WHERE p.age = 17)";
+        String q1 = "SELECT p.brother as brother, p.address.streetno as streetno FROM test.Person p WHERE p.uniqInt IN (SELECT p2.id as pid FROM test.Person p2 WHERE p2.age = 17)";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
 
         // System.out.println(oA.toString());
