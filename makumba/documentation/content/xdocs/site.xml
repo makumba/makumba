@@ -44,7 +44,17 @@ See http://forrest.apache.org/docs/linking.html for more info
   
   <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration"/>
   
-  <documentation label="Documentation" dir="/doc" description="Makuma reference documentation" tab="documentation">
+  <usage label="Using Makumba" href="/usage/index.html" description="How to use Makumba" tab="usage">
+    <basics label="Makumba basics" href="/usage/basics.html" description="What you should know to get started" />
+    <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
+    <advanced label="Advanced features" href="/usage/advanced.html" />
+    <search label="Search forms" href="/usage/search.html" />
+    <queryfunct label="Query functions" href="/usage/queryfunct.html" description="Makumba Query Functions" />
+    <auth label="Authentication and authorisation" href="/usage/auth.html" />
+    <structure label="Layout and navigation" href="/usage/structure.html" description="How to structure your site" />
+  </usage>
+  
+  <documentation label="Reference Documentation" dir="/doc" description="Makuma reference documentation" tab="documentation">
     <overview label="Overview" href="/doc/index.html" description="Documentation overview" /> 
     <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
     <valdef label="Validation rules" href="/doc/valrules.html" description="Makumba Validation Rules"/>
