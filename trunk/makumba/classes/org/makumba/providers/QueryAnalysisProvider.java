@@ -10,21 +10,21 @@ import org.makumba.providers.query.FunctionInliner;
 public abstract class QueryAnalysisProvider {
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
-    public QueryAnalysis getQueryAnalysis(String query){
+    public QueryAnalysis getQueryAnalysis(String query) {
         return getRawQueryAnalysis(inlineFunctions(query));
     }
 
-    public String inlineFunctions(String query){
-        try{
+    public String inlineFunctions(String query) {
+        try {
             return (String) inlinedQueries.getResource(query);
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             initializeCache(query, e);
             return (String) inlinedQueries.getResource(query);
         }
     }
-    
+
     NamedResources inlinedQueries;
-    
+
     /** Returns whether the GROUP BY or ORDER BY sections can include labels */
     public abstract boolean selectGroupOrOrderAsLabels();
 
@@ -32,7 +32,7 @@ public abstract class QueryAnalysisProvider {
      * Returns a possible alternative field to the one indicated.
      */
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
-    
+
     /**
      * Returns the notation of the primary key in the query language
      * 
@@ -134,27 +134,28 @@ public abstract class QueryAnalysisProvider {
             dot = dot1;
         }
     }
-    
+
     boolean initializedCache;
+
     private synchronized void initializeCache(String query, NullPointerException e) {
-        if(inlinedQueries==null){
-            inlinedQueries= NamedResources.getStaticCache(NamedResources.makeStaticCache("Inlined queries by "+getClass().getName().substring(getClass().getName().lastIndexOf(".")+1),
+        if (inlinedQueries == null) {
+            inlinedQueries = NamedResources.getStaticCache(NamedResources.makeStaticCache("Inlined queries by "
+                    + getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
                 new NamedResourceFactory() {
                     private static final long serialVersionUID = 1L;
-                
+
                     protected Object makeResource(Object nm, Object hashName) throws Exception {
-                        return FunctionInliner.inline((String)nm, QueryAnalysisProvider.this);
+                        return FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
                     }
                 }, true));
-            initializedCache=true;
-        }else{
-            if(!initializedCache)
+            initializedCache = true;
+        } else {
+            if (!initializedCache)
                 throw e;
         }
     }
 
-	/** return the first character(s) in a parameter designator */
+    /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
-
 
 }
