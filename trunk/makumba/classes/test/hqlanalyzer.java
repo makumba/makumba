@@ -1,16 +1,37 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2008  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package test;
-
-
-import org.makumba.ProgrammerError;
-import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+
+import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 
 public class hqlanalyzer extends TestCase {
 
@@ -32,7 +53,7 @@ public class hqlanalyzer extends TestCase {
     }
 
     private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("hql");
-    
+
     public void testAnalysisComplexSet() {
 
         String q1 = "SELECT p.id AS pointer, i.surname as surname, p.address.description as addressdescription FROM test.Person p JOIN p.indiv as i";
@@ -110,7 +131,7 @@ public class hqlanalyzer extends TestCase {
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
-    
+
     public void testAnalysisSetIntEnum() {
 
         String q = "SELECT q.enum as intset FROM test.Person p JOIN p.intSet q";
@@ -121,7 +142,7 @@ public class hqlanalyzer extends TestCase {
         assertEquals("enum", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
-    
+
     public void testAnalysisInSet() {
 
         String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE p.age IN (0, 1, 3, 2, 5)";
@@ -130,13 +151,13 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
     }
-    
+
     public void testAnalysisAllSet() {
 
         String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE 3 = all elements(p.intSet)";
@@ -145,13 +166,13 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
     }
-    
+
     public void testAnalysisInSetOnSetEnum() {
 
         String q = "SELECT p.brother as brother, p.age as age FROM test.Person p WHERE p.age IN p.intSet";
@@ -160,15 +181,13 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
     }
-    
-    
-    
+
     public void testAnalysisArithmeticOperationOk() {
 
         String q1 = "SELECT p.brother as brother, p.age+17 as agePlus17 FROM test.Person p";
@@ -177,24 +196,21 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA1.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA1.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA1.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA1.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getDescription());
-        
-        
-        
+
         String q2 = "SELECT p.brother as brother, p.age+1.2 as agePlus1dot2 FROM test.Person p";
         QueryAnalysis oA2 = qP.getQueryAnalysis(q2);
 
         assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("real", oA2.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getDescription());
-        
 
         String q3 = "SELECT p.brother as brother, true+false as boolean FROM test.Person p";
         QueryAnalysis oA3 = qP.getQueryAnalysis(q3);
@@ -202,114 +218,109 @@ public class hqlanalyzer extends TestCase {
         assertEquals("brother", oA3.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA3.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA3.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("boolean", oA3.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("setcharEnum", oA3.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("boolean", oA3.getProjectionType().getFieldDefinition(1).getDescription());
-        
+
         String q4 = "SELECT p.brother as brother, p.hobbies+p.comment as text FROM test.Person p";
         QueryAnalysis oA4 = qP.getQueryAnalysis(q4);
 
         assertEquals("brother", oA4.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA4.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA4.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getDescription());
     }
-    
-    
+
     public void testAnalysisArithmeticOperationParameter() {
 
         String q1 = "SELECT p.brother as brother, p.age+:name as param FROM test.Person p";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
+
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("parameter", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
-        
+
     }
-    
+
     public void testAnalysisSubQueries() {
 
         String q1 = "SELECT p.brother as brother, p.address.streetno as streetno FROM test.Person p WHERE p.uniqInt IN (SELECT p.id as pid FROM test.Person p WHERE p.age = 17)";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
-        //System.out.println(oA.toString());
-        
+
+        // System.out.println(oA.toString());
+
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getDescription());
-        
-        
-        
+
     }
-    
+
     public void testAnalysisFunctionCalls() {
 
         String q1 = "SELECT p.brother as brother, upper(p.address.country) as streetno FROM test.Person p";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
+
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("streetno", oA.getProjectionType().getFieldDefinition(1).getDescription());
-        
-        
+
         String q2 = "SELECT p.brother as brother, now() as currenttime FROM test.Person p";
         QueryAnalysis oA2 = qP.getQueryAnalysis(q2);
-        
-        //System.out.println(oA2.toString());
-        
+
+        // System.out.println(oA2.toString());
+
         assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA2.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
         assertEquals("currenttime", oA2.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("date", oA2.getProjectionType().getFieldDefinition(1).getType());
         assertEquals("currenttime", oA2.getProjectionType().getFieldDefinition(1).getDescription());
 
-        
     }
-    
+
     public void testAnalysisSelectWholeObject() {
 
         String q1 = "SELECT p as superPointer FROM test.Person p)";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
-        //System.out.println(oA.toString());
-        
+
+        // System.out.println(oA.toString());
+
         assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("p", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+
     }
-    
+
     public void testAnalysisSelectWholeObjectIndirect() {
         String q1 = "SELECT p.brother as superPointer FROM test.Person p)";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
+
         assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
     }
-    
+
     public void testAnalysisWholeObjectWithOtherSelections() {
-        String q1 ="SELECT p.brother AS col1,p AS col2, p.hobbies AS col3, p.birthdate AS col4 FROM test.Person p";
+        String q1 = "SELECT p.brother AS col1,p AS col2, p.hobbies AS col3, p.birthdate AS col4 FROM test.Person p";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
+
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         assertEquals("brother", oA.getProjectionType().getFieldDefinition(0).getDescription());
@@ -324,31 +335,31 @@ public class hqlanalyzer extends TestCase {
         assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(3).getDescription());
 
     }
-    
+
     public void testAnalysisNoSuchField() {
 
         String q1 = "SELECT p as superPointer FROM test.Person p JOIN p.t q)";
-        try{
-            QueryAnalysis oA = qP.getQueryAnalysis(q1);
-            //fail("ProgrammerError expected" );
-        }catch(RuntimeWrappedException rwe){
+        try {
+            // QueryAnalysis oA =
+            qP.getQueryAnalysis(q1);
+            // fail("ProgrammerError expected" );
+        } catch (RuntimeWrappedException rwe) {
             assertEquals(rwe.getCause().getMessage(), "No such field \"t\" in Makumba type \"test.Person\"");
         }
     }
-    
+
     public void test() {
 
         String q1 = "SELECT p.TS_create AS col1 FROM test.Person p, p.indiv i WHERE i.name='john'";
-        QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
-        //System.out.println(oA.toString());
-        
-        //assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
-        //assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-        //assertEquals("p", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // QueryAnalysis oA =
+        qP.getQueryAnalysis(q1);
+
+        // System.out.println(oA.toString());
+
+        // assertEquals("superPointer", oA.getProjectionType().getFieldDefinition(0).getName());
+        // assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
+        // assertEquals("p", oA.getProjectionType().getFieldDefinition(0).getDescription());
+
     }
-    
-    
 
 }
