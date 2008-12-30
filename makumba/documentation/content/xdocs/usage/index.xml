@@ -7,6 +7,7 @@
   </header>
   <body>
     <section id="intro">
+      <title>How to use Makumba</title>
       <p>
         This part of the site is aimed at explaining how to use Makumba. In contrary to the
         <a href="../doc/index.html">Reference Documentation</a>
