@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+  <header>
+    <title>How to use Makumba</title>
+  </header>
+  <body>
+    <section id="intro">
+      <title>Introduction</title>
+      <p>
+        This part of the site is aimed at explaining how to use Makumba. In contrary to the
+        <a href="../doc/index.html">Reference Documentation</a>
+        that is more technical, this part of the site will show you how to use Makumba in order to build powerful
+        webapps with a minimum of effort through a number of examples, and link to the reference documentation when
+        needed, so that you can discover Makumba in a more "hands-on" fashion.
+      </p>
+      <p>In order to get started, read further on the following topics:</p>
+      <ul>
+        <li><a href="../philosophy.html">Makumba Philosophy</a></li>
+        <li><a href="basics.html">Getting started: Makumba basics</a></li>
+        <li><a href="multiple.html">Multiple forms and lists</a></li>
+        <li><a href="advanced.html">Advanced features</a></li>
+        <li><a href="search.html">Search forms</a></li>
+        <li><a href="queryfunct.html">Query functions</a></li>
+        <li><a href="auth.html">Authentication and authorisation</a></li>
+        <li><a href="structure.html">Layout and navigation</a></li>
+      </ul>
+    </section>
+    
+  </body>
+</document>
