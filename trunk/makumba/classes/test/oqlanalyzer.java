@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2008  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package test;
 
 import org.makumba.providers.QueryAnalysis;
@@ -29,6 +52,10 @@ public class oqlanalyzer extends TestCase {
     }
 
     private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
+
+    public static final String[] TEST_MDD_FUNCTION_RESULTS = new String[] { "SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)" };
+
+    public static final String[] TEST_MDD_FUNCTIONS = new String[] { "SELECT x AS col1 FROM test.Person x WHERE (karamba_username=$username AND $password=$password)" };
 
     public void testDateParameterType() {
         String q1 = "SELECT p as id FROM test.Person p WHERE $1<p.TS_create";
@@ -194,6 +221,14 @@ public class oqlanalyzer extends TestCase {
         assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
         // assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
+
+    }
+
+    public void testFunctionInlining() {
+        for (int i = 0; i < TEST_MDD_FUNCTIONS.length; i++) {
+            assertEquals(TEST_MDD_FUNCTIONS[i], QueryProvider.getQueryAnalzyer("oql").inlineFunctions(
+                TEST_MDD_FUNCTIONS[i]));
+        }
 
     }
 

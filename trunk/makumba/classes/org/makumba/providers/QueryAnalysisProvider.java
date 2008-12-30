@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2008  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id: hqlanalyzer.java 3494 2008-12-30 22:25:42Z rosso_nero $
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.providers;
 
 import org.makumba.DataDefinition;
@@ -6,6 +29,8 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.query.FunctionInliner;
+
+import test.oqlanalyzer;
 
 public abstract class QueryAnalysisProvider {
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
@@ -157,5 +182,12 @@ public abstract class QueryAnalysisProvider {
 
     /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
+
+    public static void main(String[] args) {
+        for (String string : oqlanalyzer.TEST_MDD_FUNCTIONS) {
+            System.out.println(string + "\n\t=>\n" + QueryProvider.getQueryAnalzyer("oql").inlineFunctions(string)
+                    + "\n");
+        }
+    }
 
 }
