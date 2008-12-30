@@ -53,9 +53,13 @@ public class oqlanalyzer extends TestCase {
 
     private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
-    public static final String[] TEST_MDD_FUNCTION_RESULTS = new String[] { "SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)" };
+    public static final String[] TEST_MDD_FUNCTIONS = new String[] {
+            "SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)",
+            "SELECT x AS col1 FROM test.Person x WHERE x.actor2($username, $password)" };
 
-    public static final String[] TEST_MDD_FUNCTIONS = new String[] { "SELECT x AS col1 FROM test.Person x WHERE (karamba_username=$username AND $password=$password)" };
+    public static final String[] TEST_MDD_FUNCTION_RESULTS = new String[] {
+            "SELECT x AS col1 FROM test.Person x WHERE (x.myapp_username=$username AND x.password=$password)",
+            "SELECT x AS col1 FROM test.Person x WHERE (x.indiv.someusername=$username AND x.password=$password)" };
 
     public void testDateParameterType() {
         String q1 = "SELECT p as id FROM test.Person p WHERE $1<p.TS_create";
