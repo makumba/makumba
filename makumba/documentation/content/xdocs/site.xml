@@ -45,6 +45,7 @@ See http://forrest.apache.org/docs/linking.html for more info
   <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration"/>
   
   <usage label="Using Makumba" href="/usage/index.html" description="How to use Makumba" tab="usage">
+    <philosophy label="Makumba philosophy" href="/philosophy.html" />
     <basics label="Makumba basics" href="/usage/basics.html" description="What you should know to get started" />
     <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
     <advanced label="Advanced features" href="/usage/advanced.html" />
