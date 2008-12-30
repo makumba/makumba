@@ -1,5 +1,7 @@
 package org.makumba.commons;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 
@@ -223,6 +225,21 @@ public class StringUtils {
             param=param.substring(0, param.length()-2);
         }
         return param;
+    }
+
+    public static String getAbsolutePath(String requestURI, String page) {
+        try {
+            if (!page.startsWith("/")) {
+                // if we have a relative URL, compute the absolute URL of the action page, as we'll get that in ResponseTag
+                if (requestURI.lastIndexOf("/") != -1) {
+                    requestURI = requestURI.substring(0, requestURI.lastIndexOf("/") + 1);
+                }
+                page = requestURI + page;
+            }
+            return new File("/", page).getCanonicalPath();
+        } catch (IOException e) {
+            return page;
+        }
     }
 
 
