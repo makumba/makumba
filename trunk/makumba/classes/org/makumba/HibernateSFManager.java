@@ -156,7 +156,8 @@ public class HibernateSFManager {
         nr = new NameResolver(p);
 
         try {
-            MddToClass jot = new MddToClass(dds, seedDir, nr);
+            // MddToClass jot =
+            new MddToClass(dds, seedDir, nr);
         } catch (CannotCompileException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
@@ -168,8 +169,8 @@ public class HibernateSFManager {
             "Generating mappings under " + seedDir + File.separator + prefix);
 
         try {
-            MddToMapping xot = new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed),
-                    prefix, nr);
+            // MddToMapping xot =
+            new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed), prefix, nr);
 
         } catch (TransformerConfigurationException e) {
             e.printStackTrace();
