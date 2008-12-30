@@ -27,7 +27,7 @@ public class oqlanalyzer extends TestCase {
             t.printStackTrace();
         }
     }
-    
+
     private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     public void testDateParameterType() {
@@ -36,12 +36,12 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("dateCreate", oA.getParameterTypes().getFieldDefinition(0).getType());
-//        assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());   
+        // assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
     }
-    
+
     public void testAnalysisComplexSet() {
 
         String q1 = "SELECT p AS pointer, i.surname as surname, a.description as addressdescription FROM test.Person p, p.indiv i, p.address a";
@@ -49,15 +49,15 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
         assertEquals("surname", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(1).getType());
-//        assertEquals("surname", oA.getProjectionType().getFieldDefinition(1).getDescription());
+        // assertEquals("surname", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
         assertEquals("addressdescription", oA.getProjectionType().getFieldDefinition(2).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(2).getType());
-//        assertEquals("description", oA.getProjectionType().getFieldDefinition(2).getDescription());
+        // assertEquals("description", oA.getProjectionType().getFieldDefinition(2).getDescription());
 
     }
 
@@ -68,23 +68,23 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("pointer", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
         assertEquals("key", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(1).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(1).getDescription());
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
         assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getName());
         assertEquals("date", oA.getProjectionType().getFieldDefinition(2).getType());
-//        assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getDescription());
+        // assertEquals("birthdate", oA.getProjectionType().getFieldDefinition(2).getDescription());
 
         assertEquals("col4", oA.getProjectionType().getFieldDefinition(3).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(3).getType());
-//        assertEquals("uniqInt", oA.getProjectionType().getFieldDefinition(3).getDescription());
+        // assertEquals("uniqInt", oA.getProjectionType().getFieldDefinition(3).getDescription());
 
         assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getName());
         assertEquals("text", oA.getProjectionType().getFieldDefinition(4).getType());
-//      assertEquals("hobbies", oA.getProjectionType().getFieldDefinition(4).getDescription());
+        // assertEquals("hobbies", oA.getProjectionType().getFieldDefinition(4).getDescription());
     }
 
     public void testAnalysisExtenalSetSimple() {
@@ -94,7 +94,7 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("n", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("char", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("name", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("name", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
 
@@ -105,7 +105,7 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
 
@@ -116,10 +116,10 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("col1", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-  //      assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
-    
+
     public void testAnalysisSetIntEnum() {
 
         String q = "SELECT q.enum as intset FROM test.Person p, p.intSet q";
@@ -127,10 +127,10 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("intset", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("intEnum", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("enum", oA.getProjectionType().getFieldDefinition(0).getDescription());
+        // assertEquals("enum", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
     }
-    
+
     public void testAnalysisInSet() {
 
         String q = "SELECT p as id, p.age as age FROM test.Person p WHERE p.age IN SET($1)";
@@ -138,16 +138,14 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-  //      assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
- //       assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getDescription());
+        // assertEquals("age", oA.getProjectionType().getFieldDefinition(1).getDescription());
 
     }
-        
-    
-    
+
     public void testAnalysisArithmeticOperationOk() {
 
         String q1 = "SELECT p as id, p.age+17 as agePlus17 FROM test.Person p";
@@ -155,52 +153,48 @@ public class oqlanalyzer extends TestCase {
 
         assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA1.getProjectionType().getFieldDefinition(0).getType());
-   //     assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA1.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA1.getProjectionType().getFieldDefinition(1).getType());
-  //      assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getDescription());
-        
-        
-        
+        // assertEquals("agePlus17", oA1.getProjectionType().getFieldDefinition(1).getDescription());
+
         String q2 = "SELECT p as id, p.age+1.2 as agePlus1dot2 FROM test.Person p";
         QueryAnalysis oA2 = qP.getQueryAnalysis(q2);
 
         assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA2.getProjectionType().getFieldDefinition(0).getType());
- //       assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA2.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA2.getProjectionType().getFieldDefinition(1).getType());
- //       assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getDescription());      
-       
+        // assertEquals("agePlus1dot2", oA2.getProjectionType().getFieldDefinition(1).getDescription());
+
         String q4 = "SELECT p as id, p.hobbies+p.comment as text FROM test.Person p";
         QueryAnalysis oA4 = qP.getQueryAnalysis(q4);
 
         assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA4.getProjectionType().getFieldDefinition(0).getType());
- //       assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA4.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getType());
- //       assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getDescription());
+        // assertEquals("text", oA4.getProjectionType().getFieldDefinition(1).getDescription());
     }
-    
-    
+
     public void testAnalysisArithmeticOperationParameter() {
 
         String q1 = "SELECT p as id, p.age+$1 as param FROM test.Person p";
         QueryAnalysis oA = qP.getQueryAnalysis(q1);
-        
+
         assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getName());
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
-//        assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
-        
+        // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
+
         assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getName());
         assertEquals("int", oA.getProjectionType().getFieldDefinition(1).getType());
-//        assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
-        
+        // assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
+
     }
 
-    
 }
