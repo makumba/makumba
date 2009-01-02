@@ -1,6 +1,5 @@
 package org.makumba.db.hibernate;
 
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;

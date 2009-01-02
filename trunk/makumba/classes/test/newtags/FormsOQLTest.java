@@ -52,7 +52,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         WebConversation wc = new WebConversation();
         WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
         try {
-            WebResponse resp = wc.getResponse(req);
+            wc.getResponse(req);
         } catch (MalformedURLException e) {
         } catch (IOException e) {
             setup.tearDown();
