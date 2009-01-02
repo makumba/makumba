@@ -32,6 +32,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,7 +64,7 @@ public abstract class Responder implements java.io.Serializable {
      * "__makumba__formSession__"
      */
     public final static String formSessionName = "__makumba__formSession__";
-    
+
     public static final String FORM_RESULTS = "org.makumba.formResults";
 
     /** the default label used to store the add and new result, "___mak___edited___" */
@@ -151,7 +152,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** order of the forms in the page * */
     protected ArrayList<String> formOrder;
-    
+
     protected HashMap<String, String> defaultMatchModes = new HashMap<String, String>();
 
     public String getDefaultMatchMode(String inputName) {
@@ -420,8 +421,9 @@ public abstract class Responder implements java.io.Serializable {
             objectOut.writeObject(this); // we write the responder to disk
             objectOut.close();
         } catch (IOException e) {
-            java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
-                "Error while writing responder to HDD, deleting file " + fileName, e);
+            Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
+                "Error while writing responder to HDD: '" + e.getMessage() + "', deleting file " + fileName, e);
+            e.printStackTrace();
             file.delete();
         }
     }

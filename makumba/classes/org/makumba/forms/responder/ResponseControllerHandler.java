@@ -1,8 +1,8 @@
 package org.makumba.forms.responder;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
@@ -27,6 +27,8 @@ public class ResponseControllerHandler extends ControllerHandler {
 
     private ResponderFactory factory = ResponderFactory.getInstance();
 
+    final Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
+
     @Override
     public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf,
             ServletObjects httpServletObjects) throws Exception {
@@ -42,8 +44,8 @@ public class ResponseControllerHandler extends ControllerHandler {
             String message;
 
             // Check if we shall reload the form page
-            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "Caught a CompositeValidationException, reloading form page: " + responder.getReloadFormOnError());
+            logger.fine("Caught a CompositeValidationException, reloading form page: "
+                    + responder.getReloadFormOnError());
 
             if (responder.getReloadFormOnError()) {
 
@@ -52,18 +54,15 @@ public class ResponseControllerHandler extends ControllerHandler {
                 httpServletObjects.setRequest(getFormReloadRequest(req, responder));
                 httpServletObjects.setResponse(getFormReloadResponse(resp, root, responder));
 
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                    "CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
+                logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
                 if (responder.getShowFormAnnotated()) {
-                    java.util.logging.Logger.getLogger("org.makumba.controller").finer(
-                        "Processing CompositeValidationException for annotation:\n" + v.toString());
+                    logger.finer("Processing CompositeValidationException for annotation:\n" + v.toString());
                     // if the form shall be annotated, we need to filter which exceptions can be assigned to
                     // fields, and which not
                     ArrayList<InvalidValueException> unassignedExceptions = factory.getUnassignedExceptions(v,
                         (HttpServletRequest) req);
-                    java.util.logging.Logger.getLogger("org.makumba.controller").finer(
-                        "Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
+                    logger.finer("Exceptions not assigned:\n" + StringUtils.toString(unassignedExceptions));
 
                     // the messages left unassigned will be shown as the form response
                     message = "";
@@ -81,38 +80,36 @@ public class ResponseControllerHandler extends ControllerHandler {
             req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
             req.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, Responder.errorMessageFormatter(message));
 
-        }
-        // if there was no error, and we have set to reload the form, we go to the original action page
-        else if (e == null && responder != null && responder.getReloadFormOnError()) {
-            // store the response in the session, to be able to retrieve it later in ResponseTag
+        } else if (e == null && responder != null) { // if there was no error, and we have a form responder
+            // check if we have set to reload the form, we go to the original action page
             final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
-            HttpSession session = httpServletRequest.getSession();
+            final String absoluteAction = StringUtils.getAbsolutePath(httpServletRequest.getRequestURI(),
+                responder.getAction());
+            final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
+                absoluteAction, responder.getOriginatingPageName());
+            logger.info("Form submission ok, operation: " + responder.operation + ", reloadForm: "
+                    + responder.getReloadFormOnError() + ", will reload: " + shallReload);
+            logger.info("Originating page: '" + responder.getOriginatingPageName() + "', action page: '"
+                    + responder.getAction() + "' (absolute: " + absoluteAction + "), equal: "
+                    + responder.getOriginatingPageName().equals(absoluteAction));
 
-            String action = getAbsolutePath(httpServletRequest.getRequestURI(), responder.getAction());
+            if (shallReload) {
+                // store the response attributes in the session, to be able to retrieve it later in RequestAttributes
+                HttpSession session = httpServletRequest.getSession();
 
-            final String suffix = "_" + action;
-            session.setAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix, responder.message);
-            session.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix,
-                Responder.successFulMessageFormatter(responder.message));
+                final String suffix = "_" + absoluteAction;
+                for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
+                    session.setAttribute(attr + suffix, req.getAttribute(attr));
+                    logger.info("Setting '" + attr + suffix + "' value: '" + req.getAttribute(attr) + "'.");
+                }
 
-            // redirecting
-            java.util.logging.Logger.getLogger("org.makumba.controller").info(
-                "Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '" + responder.getAction()
-                        + "'.");
-            ((HttpServletResponse) resp).sendRedirect(responder.getAction());
+                // redirecting
+                logger.info("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
+                        + responder.getAction() + "'.");
+                ((HttpServletResponse) resp).sendRedirect(responder.getAction());
+            }
         }
         return true;
-    }
-
-    private static String getAbsolutePath(String requestURI, String action) throws IOException {
-        if (!action.startsWith("/")) {
-            // if we have a relative URL, compute the absolute URL of the action page, as we'll get that in ResponseTag
-            if (requestURI.lastIndexOf("/") != -1) {
-                requestURI = requestURI.substring(0, requestURI.lastIndexOf("/") + 1);
-            }
-            action = requestURI + action;
-        }
-        return new File("/", action).getCanonicalPath();
     }
 
     /**
@@ -180,11 +177,17 @@ public class ResponseControllerHandler extends ControllerHandler {
         return req;
     }
 
+    public static boolean shallReload(boolean reloadFormOnError, String action, String absoluteAction,
+            String originatingPageName) {
+        return reloadFormOnError && org.apache.commons.lang.StringUtils.isNotBlank(action)
+                && !originatingPageName.startsWith(absoluteAction);
+    }
+
     public static void main(String[] args) throws IOException {
-        System.out.println(getAbsolutePath("/test/forms-oql/abc.", "../action.jsp"));
-        System.out.println(getAbsolutePath("/test/forms-oql/", "../action.jsp"));
-        System.out.println(getAbsolutePath("/test/forms-oql/", "../forms-oql/action.jsp"));
-        System.out.println(getAbsolutePath("/", "../forms-oql/action.jsp"));
-        System.out.println(getAbsolutePath("", "../action.jsp"));
+        System.out.println(StringUtils.getAbsolutePath("/test/forms-oql/abc.", "../action.jsp"));
+        System.out.println(StringUtils.getAbsolutePath("/test/forms-oql/", "../action.jsp"));
+        System.out.println(StringUtils.getAbsolutePath("/test/forms-oql/", "../forms-oql/action.jsp"));
+        System.out.println(StringUtils.getAbsolutePath("/", "../forms-oql/action.jsp"));
+        System.out.println(StringUtils.getAbsolutePath("", "../action.jsp"));
     }
 }
