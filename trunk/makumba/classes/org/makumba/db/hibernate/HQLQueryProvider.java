@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id: GrammarTest.java 2046 2007-11-13 16:45:44Z manuel_gay $
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.db.hibernate;
 
 import java.io.Serializable;
@@ -25,21 +48,21 @@ public class HQLQueryProvider extends QueryProvider {
 
     static final String HQLQUERY_ANALYSIS_PROVIDER = "org.makumba.providers.query.hql.HQLQueryAnalysisProvider";
 
-
     private org.makumba.Transaction transaction;
-    
-    
+
     private TransactionProvider tp;
+
     @Override
     protected String getQueryAnalysisProviderClass() {
         return HQLQUERY_ANALYSIS_PROVIDER;
     }
+
     @Override
     protected void init(String db, Attributes a) {
         super.init(db, a);
         tp = new TransactionProvider(new HibernateTransactionProvider());
         transaction = tp.getConnectionTo(db);
-        ((TransactionImplementation)transaction).setContext(a);
+        ((TransactionImplementation) transaction).setContext(a);
     }
 
     @Override
@@ -51,8 +74,8 @@ public class HQLQueryProvider extends QueryProvider {
     public void close() {
         transaction.close();
     }
-    
-    public static String printQueryResults(Vector v) {
+
+    public static String printQueryResults(Vector<Dictionary<String, Object>> v) {
         String result = "";
         for (int i = 0; i < v.size(); i++) {
             result += "Row " + i + ":" + v.elementAt(i) + "\n";
@@ -60,7 +83,6 @@ public class HQLQueryProvider extends QueryProvider {
         return result;
     }
 
-    
     /**
      * Method for testing the query runner outside a JSP
      */
@@ -69,13 +91,10 @@ public class HQLQueryProvider extends QueryProvider {
 
         HQLQueryProvider qr = new HQLQueryProvider();
         qr.init("test/localhost_mysql_makumba", null);
-        
+
         org.makumba.Transaction t = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
-        
+
         populateDatabase(t);
-        
-        
-        
 
         Vector<Integer> v = new Vector<Integer>();
         v.add(new Integer(1));
@@ -103,63 +122,66 @@ public class HQLQueryProvider extends QueryProvider {
         String query11 = "SELECT p.indiv.person.indiv.name FROM test.Person p WHERE p.gender = 1";
         String query12 = "SELECT myIndiv.person.indiv.name FROM test.Person p join p.indiv as myIndiv";
 
-        String[] queries = new String[] { query8, query7 };
-        /*for (int i = 0; i < queries.length; i++) {
+        String[] queries = new String[] { query1, query2, query3, query4, query5, query6, query7, query8, query9,
+                query10, query11, query12 };
+        for (int i = 0; i < queries.length; i++) {
             System.out.println("Query " + queries[i] + " ==> \n"
                     + printQueryResults(qr.execute(queries[i], params, 0, 50)) + "\n\n");
-        }*/
-        System.out.println("Query  ==> \n"
-            + printQueryResults(qr.execute(query12, params, 0, 50)) + "\n\n");
+        }
     }
-    
+
     static Pointer person;
+
     static Pointer brother;
+
     static Pointer address;
-    static Dictionary pc;
-    static Vector v;
+
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
+
     static ArrayList<Pointer> languages = new ArrayList<Pointer>();
-    static String[][] languageData = { { "English", "en" }, { "French", "fr" },
-            { "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
-    
+
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
+            { "Italian", "it" }, { "Spanish", "sp" } };
+
     private static boolean populated = false;
-    
+
     private static void populateDatabase(org.makumba.Transaction db) {
-        if(populated) return;
+        if (populated)
+            return;
         populated = true;
-        
+
         languages.clear();
         Dictionary<String, Object> language = new Hashtable<String, Object>();
         for (int i = 0; i < languageData.length; i++) {
             language.put("name", languageData[i][0]);
             language.put("isoCode", languageData[i][1]);
             languages.add(db.insert("test.Language", language));
-        }  
-        
+        }
+
         Hashtable<String, Object> p = new Hashtable<String, Object>();
-        
+
         p.put("indiv.name", "bart");
-        brother=db.insert("test.Person", p);
+        brother = db.insert("test.Person", p);
 
         p.clear();
         p.put("indiv.name", "john");
-        
+
         Calendar c = Calendar.getInstance();
         c.clear();
         c.set(1977, 2, 5);
         Date birthdate = c.getTime();
         p.put("birthdate", birthdate);
-                
+
         p.put("uniqDate", birthdate);
         p.put("gender", new Integer(1));
         p.put("uniqChar", new String("testing \" character field"));
-        
+
         p.put("weight", new Double(85.7d));
-        
+
         p.put("comment", new Text("This is a text field. It's a comment about this person."));
 
-        p.put("uniqInt", new Integer(255));             
-        
+        p.put("uniqInt", new Integer(255));
+
         Vector<Integer> intSet = new Vector<Integer>();
         intSet.addElement(new Integer(1));
         intSet.addElement(new Integer(0));
@@ -168,14 +190,13 @@ public class HQLQueryProvider extends QueryProvider {
         p.put("brother", brother);
         p.put("uniqPtr", languages.get(0));
         person = db.insert("test.Person", p);
-        
+
         p.clear();
         p.put("description", "");
         p.put("usagestart", birthdate);
         p.put("email", "email1");
-        System.out.println(address=db.insert(person, "address", p));
-        
-                  
+        System.out.println(address = db.insert(person, "address", p));
+
     }
-    
+
 }
