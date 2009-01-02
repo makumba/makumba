@@ -37,7 +37,6 @@ import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
-import org.makumba.providers.QueryAnalysis;
 
 /**
  * Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running

@@ -42,8 +42,8 @@ public class TransactionProvider implements TransactionProviderInterface {
     public TransactionProvider(Configuration config) {
         try {
             Logger.getLogger("org.makumba.providers").info(
-                "Instantiating TransactionProvider '" + config.getDefaultTransactionProviderClass() + "'");
-            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(config.getDefaultTransactionProviderClass()).newInstance();
+                "Instantiating TransactionProvider '" + Configuration.getDefaultTransactionProviderClass() + "'");
+            this.transactionProviderImplementation = (TransactionProviderInterface) Class.forName(Configuration.getDefaultTransactionProviderClass()).newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
