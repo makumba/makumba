@@ -28,8 +28,6 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
-import antlr.RecognitionException;
-
 public class JSPRelationMiner extends RelationMiner {
 
     public JSPRelationMiner(RelationCrawler rc) {

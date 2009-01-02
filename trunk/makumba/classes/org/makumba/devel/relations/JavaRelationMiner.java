@@ -3,7 +3,6 @@ package org.makumba.devel.relations;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +13,6 @@ import org.makumba.DataDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.JavaSourceAnalyzer;
-import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.RecognitionException;

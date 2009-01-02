@@ -23,7 +23,6 @@
 
 package org.makumba.forms.html;
 
-import java.util.Dictionary;
 import java.util.Vector;
 
 import org.makumba.commons.formatters.FieldFormatter;

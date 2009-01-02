@@ -2,12 +2,10 @@ package org.makumba.analyser;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.collections.set.ListOrderedSet;
-import org.hibernate.type.OrderedSetType;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
