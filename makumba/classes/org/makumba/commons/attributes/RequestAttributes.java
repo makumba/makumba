@@ -363,7 +363,7 @@ public class RequestAttributes implements Attributes {
      * Computes a Map that holds all Attributes (meaning, session attributes, request attributes and parameters) FIXME
      * should also take into account all the rest (BL, login, ...)
      */
-    public Map toMap() {
+    public Map<String, Object> toMap() {
         HttpSession ss = request.getSession(true);
         Enumeration<String> enumSession = ss.getAttributeNames();
         Enumeration<String> enumRequest = request.getAttributeNames();

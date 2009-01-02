@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
-import org.makumba.commons.formatters.FieldFormatter;
-
-
 import com.ecyrd.jspwiki.FileUtil;
 import com.ecyrd.jspwiki.TestEngine;
 import com.ecyrd.jspwiki.TranslatorReader;

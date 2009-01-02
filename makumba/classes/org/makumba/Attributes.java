@@ -23,11 +23,6 @@
 
 package org.makumba;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.makumba.commons.RuntimeWrappedException;
-
 /**
  * The attributes provided by a makumba environment (for example a http session). Attributes can be referred and
  * assigned to in business logic code.

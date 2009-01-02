@@ -1,7 +1,6 @@
 package org.makumba.analyser.interfaces;
 
 import org.makumba.analyser.TagData;
-import org.makumba.analyser.engine.JspParseData;
 
 /** The interface of a JSP analyzer. */
 public interface JspAnalyzer {

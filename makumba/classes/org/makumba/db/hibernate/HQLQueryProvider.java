@@ -10,7 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.Attributes;

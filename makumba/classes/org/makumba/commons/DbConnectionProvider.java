@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.makumba.Attributes;
 import org.makumba.Transaction;
-import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.TransactionProviderInterface;
