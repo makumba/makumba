@@ -44,7 +44,7 @@ public class ptrEditor extends choiceEditor {
     private static final class SingletonHolder {
         static final FieldEditor singleton = new ptrEditor();
     }
-          
+
     /** Don't use this, use getInstance() */
     protected ptrEditor() {
     }
@@ -55,32 +55,25 @@ public class ptrEditor extends choiceEditor {
 
     public void onStartup(RecordFormatter rf, int fieldIndex) {
         ((RecordEditor) rf).db[fieldIndex] = ((RecordEditor) rf).database;
-        Map<String, String> m= new HashMap<String, String>();
-        
+        Map<String, String> m = new HashMap<String, String>();
+
         ((RecordEditor) rf).query[fieldIndex] = m;
         String titleField = rf.dd.getFieldDefinition(fieldIndex).getTitleField();
-        String titleExpr = "choice."+titleField;
-        
+        String titleExpr = "choice." + titleField;
+
         String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
 
-        m.put("oql",
-            "SELECT choice as choice, "
-                + titleExpr + " as title FROM "
-                + choiceType + " choice "
-                +"ORDER BY title"
-                );
+        m.put("oql", "SELECT choice as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
+                + "ORDER BY title");
         FieldDefinition titleFieldDef = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(
             titleField);
-        if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for title fields
+        if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for title
+                                                                              // fields
             titleExpr += ".id";
         }
-        m.put("hql",
-            "SELECT choice.id as choice, "
-                + titleExpr +" as title FROM "
-                + choiceType + " choice "
-                +"ORDER BY " +titleExpr
-                );
- 
+        m.put("hql", "SELECT choice.id as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
+                + "ORDER BY " + titleExpr);
+
     }
 
     public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
@@ -90,15 +83,14 @@ public class ptrEditor extends choiceEditor {
             return c;
 
         Vector v = null;
-        String queryLang = (String)formatParams.get("org.makumba.forms.queryLanguage");
-        QueryProvider qp= QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
-        
-        //Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
+        String queryLang = (String) formatParams.get("org.makumba.forms.queryLanguage");
+        QueryProvider qp = QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
+
+        // Transaction dbc = TransactionProvider.getInstance().getConnectionTo(((RecordEditor) rf).db[fieldIndex]);
         try {
-           // v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
-            v=qp.execute(((RecordEditor) rf).query[fieldIndex].get(queryLang), null, 0, -1);
-        } 
-        finally {
+            // v = dbc.executeQuery(((RecordEditor) rf).query[fieldIndex], null);
+            v = qp.execute(((RecordEditor) rf).query[fieldIndex].get(queryLang), null, 0, -1);
+        } finally {
             qp.close();
         }
         c = new ChoiceSet();
@@ -170,13 +162,14 @@ public class ptrEditor extends choiceEditor {
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
     }
-    
+
     @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-        boolean autoComplete = formatParams.get("autoComplete") != null && formatParams.get("autoComplete").equals("true");
-        
+        boolean autoComplete = formatParams.get("autoComplete") != null
+                && formatParams.get("autoComplete").equals("true");
+
         // we have to check whether we are not a setEditor
-        if(autoComplete && this instanceof ptrEditor) {
+        if (autoComplete && this instanceof ptrEditor) {
             return formatAutoComplete(rf, fieldIndex, o, formatParams);
         } else {
             return super.format(rf, fieldIndex, o, formatParams);
@@ -184,11 +177,11 @@ public class ptrEditor extends choiceEditor {
     }
 
     private String formatAutoComplete(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
-        
-        String res = "", id="", inputName = "";
-        
+
+        String res = "", id = "", inputName = "";
+
         inputName = getInputName(rf, fieldIndex, formatParams);
-        
+
         // TODO: add a hidden input with the right name and id
         // extend the JS method for autocomplete to write the selected value in the hidden input
 
@@ -198,28 +191,30 @@ public class ptrEditor extends choiceEditor {
         // dirty hack, because we get the id hardcoded in the extra formatting params
         String extraFormattingVisible = getExtraFormatting(rf, fieldIndex, formatParams);
         int cutIndex = extraFormattingVisible.indexOf("id=") + 4 + id.length();
-        extraFormattingVisible = extraFormattingVisible.substring(0, cutIndex) + "_visible" + extraFormattingVisible.substring(cutIndex);
-        
+        extraFormattingVisible = extraFormattingVisible.substring(0, cutIndex) + "_visible"
+                + extraFormattingVisible.substring(cutIndex);
+
         res += "<input name=\"" + inputName + "_visible\" type=\"text\" value=\""
-                + formatValue(rf, fieldIndex, o, formatParams) + "\" "
-                + extraFormattingVisible
-                + "autocomplete=\"off\""
-                + ">";
+                + formatValue(rf, fieldIndex, o, formatParams) + "\" " + extraFormattingVisible
+                + "autocomplete=\"off\"" + ">";
 
         res += "<input name=\"" + inputName + "\" type=\"hidden\" value=\""
-        + formatValue(rf, fieldIndex, o, formatParams) + "\" "
-        + getExtraFormatting(rf, fieldIndex, formatParams)
-        + ">";
-                
+                + formatValue(rf, fieldIndex, o, formatParams) + "\" "
+                + getExtraFormatting(rf, fieldIndex, formatParams) + ">";
+
         // the second part of the auto-complete, i.e. the dropdown that appears
-        
-        res += "<div id=\"autocomplete_choices_"+id+"\" class=\"autocomplete\"></div>";
-        
-        res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\""+id+"\", \""+Configuration.getMakumbaAutoCompleteLocation()+"\", \""+ rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()+"\", \""+rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()+"\", \"ptr\", \""+(String)formatParams.get("org.makumba.forms.queryLanguage")+"\");</script>";
-    
+
+        res += "<div id=\"autocomplete_choices_" + id + "\" class=\"autocomplete\"></div>";
+
+        res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\"" + id + "\", \""
+                + Configuration.getMakumbaAutoCompleteLocation() + "\", \""
+                + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()
+                + "\", \"" + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()
+                + "\", \"ptr\", \"" + (String) formatParams.get("org.makumba.forms.queryLanguage") + "\");</script>";
+
         return res;
     }
-    
+
     /** Formats the value to appear in an input statement. */
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
