@@ -63,7 +63,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary<String, Object> fieldsToCheck,
             Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
 
-        DataDefinition dd = checkUpdate(type, fieldsToCheck, fieldsToIgnore);
+        // DataDefinition dd =
+        checkUpdate(type, fieldsToCheck, fieldsToIgnore);
 
         // TODO we still need to check for multi-field key uniqueness that span over more than one table
 
