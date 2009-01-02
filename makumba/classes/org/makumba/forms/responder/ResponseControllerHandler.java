@@ -32,7 +32,7 @@ public class ResponseControllerHandler extends ControllerHandler {
             ServletObjects httpServletObjects) throws Exception {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
-        FormResponder firstResponder = (FormResponder) factory.getFirstResponder(req);
+        FormResponder responder = (FormResponder) factory.getFirstResponder(req);
 
         if (e instanceof CompositeValidationException) {
             CompositeValidationException v = (CompositeValidationException) e;
@@ -43,19 +43,19 @@ public class ResponseControllerHandler extends ControllerHandler {
 
             // Check if we shall reload the form page
             java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                "Caught a CompositeValidationException, reloading form page: " + firstResponder.getReloadFormOnError());
+                "Caught a CompositeValidationException, reloading form page: " + responder.getReloadFormOnError());
 
-            if (firstResponder.getReloadFormOnError()) {
+            if (responder.getReloadFormOnError()) {
 
                 final String root = conf.getInitParameter(req.getServerName());
 
-                httpServletObjects.setRequest(getFormReloadRequest(req, firstResponder));
-                httpServletObjects.setResponse(getFormReloadResponse(resp, root, firstResponder));
+                httpServletObjects.setRequest(getFormReloadRequest(req, responder));
+                httpServletObjects.setResponse(getFormReloadResponse(resp, root, responder));
 
                 java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                    "CompositeValidationException: annotating form: " + firstResponder.getShowFormAnnotated());
+                    "CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
-                if (firstResponder.getShowFormAnnotated()) {
+                if (responder.getShowFormAnnotated()) {
                     java.util.logging.Logger.getLogger("org.makumba.controller").finer(
                         "Processing CompositeValidationException for annotation:\n" + v.toString());
                     // if the form shall be annotated, we need to filter which exceptions can be assigned to
@@ -83,23 +83,23 @@ public class ResponseControllerHandler extends ControllerHandler {
 
         }
         // if there was no error, and we have set to reload the form, we go to the original action page
-        else if (e == null && firstResponder != null && firstResponder.getReloadFormOnError()) {
+        else if (e == null && responder != null && responder.getReloadFormOnError()) {
             // store the response in the session, to be able to retrieve it later in ResponseTag
             final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
             HttpSession session = httpServletRequest.getSession();
 
-            String action = getAbsolutePath(httpServletRequest.getRequestURI(), firstResponder.getAction());
+            String action = getAbsolutePath(httpServletRequest.getRequestURI(), responder.getAction());
 
             final String suffix = "_" + action;
-            session.setAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix, firstResponder.message);
+            session.setAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix, responder.message);
             session.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix,
-                Responder.successFulMessageFormatter(firstResponder.message));
+                Responder.successFulMessageFormatter(responder.message));
 
             // redirecting
             java.util.logging.Logger.getLogger("org.makumba.controller").info(
-                "Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '" + firstResponder.getAction()
+                "Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '" + responder.getAction()
                         + "'.");
-            ((HttpServletResponse) resp).sendRedirect(firstResponder.getAction());
+            ((HttpServletResponse) resp).sendRedirect(responder.getAction());
         }
         return true;
     }
