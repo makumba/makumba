@@ -41,7 +41,7 @@ public class timestampFormatter extends dateFormatter {
 	}
 
 	@Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		DateFormat formatter = timestamp;
 		String s = (String) formatParams.get("format");
 		if (s != null) {
