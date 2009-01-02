@@ -13,6 +13,7 @@ import antlr.SemanticException;
 import antlr.collections.AST;
 
 public class ObjectTypeAST extends ExprTypeAST {
+    private static final long serialVersionUID = 1L;
 
     private String objectType;
     

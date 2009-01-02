@@ -51,6 +51,7 @@ import org.makumba.providers.TransactionProvider;
  * @version $Id: MakumbaTag.java 1546 2007-09-14 20:34:45Z manuel_gay $
  */
 public abstract class GenericListTag extends GenericMakumbaTag {
+    private static final long serialVersionUID = 1L;
 
     protected FormDataProvider fdp = ListFormDataProvider.getInstance();
 

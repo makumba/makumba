@@ -9,6 +9,8 @@ package org.makumba.providers.query.hql;
 import antlr.CommonAST;
 
 public class ExprTypeAST extends CommonAST {
+    private static final long serialVersionUID = 1L;
+
     int dataType;
     private String identifier;
     private String description;
