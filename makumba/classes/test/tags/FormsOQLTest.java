@@ -40,7 +40,6 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.makumba.forms.responder.ResponderFactory;
 import org.xml.sax.SAXException;
 
