@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -188,14 +189,23 @@ public class FormResponder extends Responder {
         this.extraFormatting = extraFormatting;
     }
 
-    public void writeFormPreamble(StringBuffer sb, String basePointer) {
+    public void writeFormPreamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
         if (!storedSuffix.equals("")) {
             // no preamble for non-root forms (forms included in other forms)
             return;
         }
         String targetPage;
-        if (reloadFormOnError) {
-            System.out.println("operation: " + operation + ", reloadForm: " + reloadFormOnError);
+        final String absoluteAction = org.makumba.commons.StringUtils.getAbsolutePath(request.getRequestURI(), action);
+        final boolean shallReload = ResponseControllerHandler.shallReload(reloadFormOnError, action, absoluteAction,
+            originatingPageName);
+
+        Logger.getLogger("org.makumba.controller").info(
+            "Operation: " + operation + ", reloadForm: " + reloadFormOnError + ", will reload: " + shallReload);
+        Logger.getLogger("org.makumba.controller").info(
+            "Originating page: '" + originatingPageName + "', action page: '" + action + "' (absolute: "
+                    + absoluteAction + "), equal: " + originatingPageName.equals(absoluteAction));
+
+        if (shallReload) {
             // if we shall reload the form page on errors, we submit the form back to the originating page, to be able
             // to display validation errors on the original page
             // in case there are no errors in the form submission, ResponseControllerHandler will take care of directing

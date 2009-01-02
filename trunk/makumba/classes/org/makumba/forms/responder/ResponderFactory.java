@@ -315,8 +315,14 @@ public class ResponderFactory {
     }
 
     static public final String RESPONSE_STRING_NAME = "makumba.response";
+
     static public final String RESPONSE_FORMATTED_STRING_NAME = "makumba.responseFormatted";
 
+    public static final String MAKUMBA_SUCCESSFUL_RESPONSE = "makumba.successfulResponse";
+
+    public static final String[] RESPONSE_ATTRIBUTE_NAMES = new String[] { ResponderFactory.RESPONSE_STRING_NAME,
+            ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, ResponderFactory.MAKUMBA_SUCCESSFUL_RESPONSE };
+    
     public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
 
     /**
@@ -389,7 +395,7 @@ public class ResponderFactory {
                     req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);
                 }
-                req.setAttribute("makumba.successfulResponse", "yes");
+                req.setAttribute(MAKUMBA_SUCCESSFUL_RESPONSE, "yes");
 
             } catch (AttributeNotFoundException anfe) {
                 // attribute not found is a programmer error and is reported

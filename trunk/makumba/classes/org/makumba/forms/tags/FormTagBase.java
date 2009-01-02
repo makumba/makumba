@@ -97,7 +97,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String annotationSeparator;
 
-    boolean reloadFormOnError = Configuration.getReloadFormOnErrorDefault();
+    Boolean reloadFormOnError = null;
 
     private String clientSideValidation = Configuration.getClientSideValidationDefault();
 
@@ -286,6 +286,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (findParentForm() == null) { // only for the root form
             pageCache.cache(MakumbaJspAnalyzer.NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
         }
+        
+        if (reloadFormOnError == null) {
+            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
+        }
 
         if (org.apache.commons.lang.StringUtils.isNotBlank(formName)) {
             getNestedFormNames(pageCache).put(formName, getTagKey());
@@ -395,6 +399,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
         responder.setFormName(formName);
 
+        if (reloadFormOnError == null) {
+            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
+        }
+        
         responder.setReloadFormOnError(reloadFormOnError);
         String url = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
         String queryString = ((HttpServletRequest) pageContext.getRequest()).getQueryString();
@@ -474,7 +482,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 }
             }
 
-            responder.writeFormPreamble(sb, basePointer);
+            responder.writeFormPreamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
             bodyContent.getEnclosingWriter().print(sb.toString());
 
             // for a deleteForm, we want to trim the text on the button unless specified otherwise
