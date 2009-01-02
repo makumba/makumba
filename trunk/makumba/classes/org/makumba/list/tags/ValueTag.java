@@ -24,7 +24,6 @@
 package org.makumba.list.tags;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;

@@ -23,7 +23,6 @@
 
 package org.makumba.providers;
 
-import java.util.Dictionary;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
