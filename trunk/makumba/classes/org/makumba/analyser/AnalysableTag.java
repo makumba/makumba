@@ -28,6 +28,8 @@ import org.makumba.commons.RuntimeWrappedException;
  */
 
 public abstract class AnalysableTag extends TagSupport {
+    private static final long serialVersionUID = 1L;
+
     /** Commonly used Attribute values. */
     public static final String[] ATTRIBUTE_VALUES_TRUE_FALSE = { "true", "false" };
     
