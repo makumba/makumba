@@ -69,11 +69,11 @@ public class RecordFormatter implements Serializable {
         }
     }
 
-    protected String applyParameters(FieldFormatter ff, Dictionary formatParams, String s) {
+    protected String applyParameters(FieldFormatter ff, Dictionary<String, Object> formatParams, String s) {
         return s;
     }
 
-    public String format(int i, Object value, Dictionary formatParams) {
+    public String format(int i, Object value, Dictionary<String, Object> formatParams) {
         formatterArray[i].checkParams(this, i, formatParams);
         return applyParameters(formatterArray[i], formatParams, formatterArray[i].format(this, i, value, formatParams));
     }

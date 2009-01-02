@@ -56,7 +56,7 @@ public class HtmlTableImporter {
 
     String text;
 
-    Vector data;
+    Vector<String> data;
 
     String fieldOrder[];
 
@@ -65,23 +65,26 @@ public class HtmlTableImporter {
     Transaction db;
 
     void endOfCell() {
-        if (inCell)
+        if (inCell) {
             data.addElement(text);
+        }
         text = null;
     }
 
     void endOfRow() {
         endOfCell();
-        if (data != null && !data.isEmpty())
-            if (data.size() != fieldOrder.length)
+        if (data != null && !data.isEmpty()) {
+            if (data.size() != fieldOrder.length) {
                 java.util.logging.Logger.getLogger("org.makumba.import").severe(
                     type + ": invalid HTML table row length: " + data.size() + "\r\nin: " + data);
-            else
+            } else {
                 try {
                     db.insert(type, importVector());
                 } catch (InvalidValueException e) {
                     java.util.logging.Logger.getLogger("org.makumba.import").warning("record not inserted --> " + e.getMessage());
                 }
+            }
+        }
     }
 
     public HtmlTableImporter(Transaction db, DataDefinition type, Reader r, String tableStartTag, String[] fieldOrder)
@@ -93,8 +96,9 @@ public class HtmlTableImporter {
         String[] tables = { type.getName() };
         HtmlTableImporter._delete(db.getName(), db.getName(), tables);
         HtmlTagEnumerator e = new HtmlTagEnumerator(r);
-        while (e.next() && !e.getTag().equals(tableStartTag))
+        while (e.next() && !e.getTag().equals(tableStartTag)) {
             ;
+        }
 
         String s;
 
@@ -103,12 +107,13 @@ public class HtmlTableImporter {
                 endOfRow();
                 inRow = true;
                 inCell = false;
-                data = new Vector();
+                data = new Vector<String>();
             } else if (inRow && e.getTagType().toLowerCase().equals("td")) {
                 endOfCell();
                 inCell = true;
-            } else if (inCell && (s = e.getNonHtml()) != null && s.length() > 0)
+            } else if (inCell && (s = e.getNonHtml()) != null && s.length() > 0) {
                 text = s;
+            }
             if (e.getTagType().toLowerCase().equals("/table")) {
                 endOfRow();
                 java.util.logging.Logger.getLogger("org.makumba.import").severe("end of table encountered");
@@ -118,17 +123,19 @@ public class HtmlTableImporter {
         java.util.logging.Logger.getLogger("org.makumba.import").severe("end of table missing");
     }
 
-    Dictionary importVector() {
-        Dictionary d = new Hashtable();
-        Vector v1 = new Vector();
+    Dictionary<String, Object> importVector() {
+        Dictionary<String, Object> d = new Hashtable<String, Object>();
+        Vector<Object> v1 = new Vector<Object>();
 
-        for (int i = 0; i < fieldOrder.length; i++)
+        for (int i = 0; i < fieldOrder.length; i++) {
             if (data.elementAt(i) != null) {
                 Object o = imp.getValue(fieldOrder[i], (String) data.elementAt(i), db, null);
-                if (o != null)
+                if (o != null) {
                     d.put(fieldOrder[i], o);
+                }
                 v1.addElement(o);
             }
+        }
         java.util.logging.Logger.getLogger("org.makumba.import").finest(v1.toString());
 
         return d;
