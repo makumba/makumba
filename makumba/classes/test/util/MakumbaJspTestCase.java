@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
