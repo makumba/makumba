@@ -42,7 +42,7 @@ public class Grouper extends Hashtable {
 
     private static final long serialVersionUID = 1L;
 
-    Vector keyNameSets;
+    Vector<Vector<Integer>> keyNameSets;
 
     /**
      * Groups the given data according to the given key sets.
@@ -52,7 +52,7 @@ public class Grouper extends Hashtable {
      * @param e
      *            the Enumeration of dictionaries containing the data
      */
-    public Grouper(Vector keyNameSets, Enumeration e) {
+    public Grouper(Vector<Vector<Integer>> keyNameSets, Enumeration e) {
         this.keyNameSets = keyNameSets;
         long l = new Date().getTime();
 
@@ -91,7 +91,7 @@ public class Grouper extends Hashtable {
 
         max = keyNameSets.size() - 1;
         stack = new Hashtable[max + 1];
-        keyStack = new Object[max];
+        keyStack = new MultipleKey[max];
         stack[0] = this;
 
         long diff = (new Date().getTime() - l);
@@ -104,7 +104,7 @@ public class Grouper extends Hashtable {
 
     Hashtable[] stack;
 
-    Object[] keyStack;
+    MultipleKey[] keyStack;
 
     /**
      * Gets the Vector associated with the given keysets. The returned data is deleted from the Grouper.
