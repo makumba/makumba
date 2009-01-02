@@ -82,7 +82,7 @@ public class ptrEditor extends choiceEditor {
         if (c != null)
             return c;
 
-        Vector v = null;
+        Vector<Dictionary<String, Object>> v = null;
         String queryLang = (String) formatParams.get("org.makumba.forms.queryLanguage");
         QueryProvider qp = QueryProvider.makeQueryRunner(((RecordEditor) rf).db[fieldIndex], queryLang);
 
@@ -97,23 +97,19 @@ public class ptrEditor extends choiceEditor {
         if (nullOption != null) {
             c.add("", nullOption, false, false);
         }
-        for (Iterator i = v.iterator(); i.hasNext();) {
-            Dictionary d = (Dictionary) i.next();
+        for (Iterator<Dictionary<String, Object>> i = v.iterator(); i.hasNext();) {
+            Dictionary<String, Object> d = i.next();
             Object ttl = d.get("title");
             if (ttl == null) {
                 Pointer ptr = (Pointer) d.get("choice");
                 // FIXME ? maybe just displayed the field as untitled?
                 // ttl = "untitled [" + ptr.toExternalForm() + "]";
-                throw new org.makumba.ProgrammerError(
-                        "Object "
-                                + ptr
-                                + " (external ID: "
-                                + ptr.toExternalForm()
-                                + ") has a null value for the title-field ("
-                                + ptr.getType()
-                                + "."
-                                + DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType()).getTitleFieldName()
-                                + "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
+                final StringBuilder msg = new StringBuilder(150);
+                msg.append("Object ").append(ptr).append(" (external ID: ").append(ptr.toExternalForm()).append(
+                    ") has a null value for the title-field (").append(ptr.getType()).append(".").append(
+                    DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType()).getTitleFieldName()).append(
+                    "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
+                throw new org.makumba.ProgrammerError(msg.toString());
             }
             c.add(d.get("choice"), ttl.toString(), false, false);
         }
@@ -164,7 +160,7 @@ public class ptrEditor extends choiceEditor {
     }
 
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         boolean autoComplete = formatParams.get("autoComplete") != null
                 && formatParams.get("autoComplete").equals("true");
 
@@ -176,7 +172,8 @@ public class ptrEditor extends choiceEditor {
         }
     }
 
-    private String formatAutoComplete(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+    private String formatAutoComplete(RecordFormatter rf, int fieldIndex, Object o,
+            Dictionary<String, Object> formatParams) {
 
         String res = "", id = "", inputName = "";
 
