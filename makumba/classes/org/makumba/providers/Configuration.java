@@ -24,11 +24,19 @@
 package org.makumba.providers;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.ConfigurationError;
+import org.makumba.commons.ClassResource;
 import org.makumba.commons.CollectionUtils;
 
 /**
@@ -46,7 +54,7 @@ public class Configuration implements Serializable {
 
     public static final String KEY_RELOAD_FORM_ON_ERROR = "reloadFormOnError";
 
-    public static final String KEY_DEFAULT_TRANSACTION_PROVIDER = "defaultTransactionProvider";
+    public static final String KEY_DEFAULT_DATABASE_LAYER = "defaultDatabaseLayer";
 
     public static final String MAKUMBA_CONF = "Makumba.conf";
 
@@ -94,7 +102,7 @@ public class Configuration implements Serializable {
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
 
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
-    
+
     public static final String KEY_USE_DEFAULT_RESPONSE_STYLES = "useDefaultResponseStyles";
 
     // makumba servlets
@@ -120,9 +128,18 @@ public class Configuration implements Serializable {
         return allGenericDeveloperToolsMap;
     }
 
+    public static void setContextPath(String path) {
+        contextPath = path;
+    }
+
+    private static String contextPath = null;
+
+    private static Map<String, ConfiguredDataSource> configuredDataSources = new HashMap<String, ConfiguredDataSource>();
+
     private static MakumbaINIFileReader defaultConfig;
 
     private static MakumbaINIFileReader applicationConfig;
+
     static {
         try {
             // the internal default configuration
@@ -145,9 +162,98 @@ public class Configuration implements Serializable {
                 KEY_CLIENT_SIDE_VALIDATION, defaultConfig);
             defaultReloadFormOnError = applicationConfig.getBooleanProperty("controllerConfig",
                 KEY_RELOAD_FORM_ON_ERROR, defaultConfig);
+
+            buildConfiguredDataSources();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /** builds the data sources for the configuration. **/
+    private static void buildConfiguredDataSources() {
+        for (Iterator<String> iterator = applicationConfig.sectionNames().iterator(); iterator.hasNext();) {
+            String section = iterator.next();
+
+            // expect something like
+            // dataSource:<name> host:<host> path:<path> web-app:<web-app>
+
+            if (section.startsWith("dataSource:")) {
+                ConfiguredDataSource c = buildConfiguredDataSource(section);
+                configuredDataSources.put(c.toString(), c);
+            }
+
+        }
+    }
+
+    /** builds a {@link ConfiguredDataSource} based on a dataSource section **/
+    private static ConfiguredDataSource buildConfiguredDataSource(String section) throws ConfigurationError {
+        String name = null, host = null, path = null, webapp = null;
+        StringTokenizer st = new StringTokenizer(section, " ");
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            int n = token.indexOf(":");
+            if (n > -1) {
+                String tokenName = token.substring(0, n);
+                String tokenValue = token.substring(n + 1);
+
+                if (org.makumba.commons.StringUtils.equalsAny(tokenName, "dataSource", "host", "path", "web-app")) {
+
+                    if (StringUtils.isBlank(tokenValue)) {
+                        throw new ConfigurationError("Property " + tokenName + " has no value");
+                    }
+
+                    if (tokenName.equals("dataSource")) {
+                        name = tokenValue;
+                    } else if (tokenName.equals("host")) {
+                        host = tokenValue;
+                    } else if (tokenName.equals("path")) {
+                        path = tokenValue;
+                    } else if (tokenName.equals("web-app")) {
+                        webapp = tokenValue;
+                    }
+                } else {
+                    throw new ConfigurationError("Invalid property '" + token + "' in dataSource section [" + section
+                            + "]. Correct syntax is [dataSource:<name> host:<host> path:<path> web-app:<context>}]");
+                }
+
+            } else {
+                throw new ConfigurationError("Invalid property '" + token + "' in dataSource section [" + section
+                        + "]. Correct syntax is [dataSource:<name> host:<host> path:<path> web-app:<context>}]");
+            }
+
+        }
+
+        // figure type of data source. if none provided, we use the default database layer type
+        String type = applicationConfig.getProperty(section, "databaseLayer");
+        if (type.equals(PROPERTY_NOT_SET)) {
+            type = applicationConfig.getStringProperty("dataSourceConfig", "defaultDatabaseLayer", defaultConfig);
+            Logger.getLogger("org.makumba.config").warning(
+                "Using default databaseLayer " + type + " for dataSource " + name
+                        + ". To get rid of this message, set a databaseLayer property for this dataSource.");
+        }
+
+        // populate with properties
+
+        String[] globalDatabaseConfigurationProperties = { "foreignKeys", "defaultDataSource" };
+
+        Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
+
+        Map<String, String> dataSourceConfiguration = new Hashtable<String, String>();
+        for (String globalProperty : globalDatabaseConfigurationProperties) {
+            if (globalProperties.get(globalProperty) != null) {
+                dataSourceConfiguration.put(globalProperty, globalProperties.get(globalProperty));
+            }
+        }
+        try {
+            dataSourceConfiguration.putAll(applicationConfig.getProperties(section));
+        } catch (ConfigurationError ce) {
+            throw new ConfigurationError("DataSource [" + section + "] is not configured in Makumba.conf");
+        }
+
+        ConfiguredDataSource c = new ConfiguredDataSource(host, name, path, DataSourceType.valueOf(type), webapp);
+        c.setProperties(dataSourceConfiguration);
+        return c;
     }
 
     /**
@@ -161,12 +267,28 @@ public class Configuration implements Serializable {
     }
 
     /**
-     * Gives the transaction provider implementation to use
+     * Gives the default transaction provider implementation to use
      * 
      * @return a String containing the class name of the transaction provider implementation
      */
     public static String getDefaultTransactionProviderClass() {
-        return applicationConfig.getStringProperty("controllerConfig", KEY_DEFAULT_TRANSACTION_PROVIDER, defaultConfig);
+
+        if (getDefaultDatabaseLayer().equals(DataSourceType.makumba.name())) {
+            return "org.makumba.db.makumba.MakumbaTransactionProvider";
+        } else if (getDefaultDatabaseLayer().equals(DataSourceType.hibernate.name())) {
+            return "org.makumba.db.hibernate.HibernateTransactionProvider";
+        } else {
+            throw new ConfigurationError("databaseLayer must be either 'makumba' or 'hibernate'");
+        }
+    }
+
+    /**
+     * Gives the default database layer to use
+     * 
+     * @return "makumba" or "hibernate"
+     */
+    public static String getDefaultDatabaseLayer() {
+        return applicationConfig.getStringProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER, defaultConfig);
     }
 
     public static String getClientSideValidationDefault() {
@@ -178,10 +300,9 @@ public class Configuration implements Serializable {
     }
 
     public static boolean getUseDefaultResponseStyles() {
-        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);        
+        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);
     }
 
-    
     public static boolean getCalendarEditorDefault() {
         return applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR, defaultConfig);
     }
@@ -252,10 +373,9 @@ public class Configuration implements Serializable {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);
     }
-    
+
     public static String getMakumbaAutoCompleteLocation() {
-        return getMakumbaToolsLocation()
-                + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_AUTOCOMPLETE);
+        return getMakumbaToolsLocation() + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_AUTOCOMPLETE);
     }
 
     public static String getMakumbaResourcesLocation() {
@@ -289,6 +409,163 @@ public class Configuration implements Serializable {
     private static String getCompletePath(String path) {
         return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
                 : getMakumbaToolsLocation() + path;
+    }
+
+    /**
+     * Returns the configuration for a specific dataSource. If more than one dataSource with the same name are found,
+     * performs lookup.
+     */
+    public static Map<String, String> getDataSourceConfiguration(String dataSourceName) {
+
+        ConfiguredDataSource conf = lookupDataSource(dataSourceName);
+
+        return conf.getProperties();
+    }
+
+    private static ConfiguredDataSource defaultDataSource = null;
+
+    /**
+     * Gives the name of the default data source, according to following determination method:
+     * <ol>
+     * <li>If only one dataSource is configured, this one is used</li>
+     * <li>If several dataSources of the same name are configured and contain lookup parameters (host, working
+     * directory, ...), the one that matches the machine on which it runs is used</li>
+     * <li>The defaultDataSource named in the dataSourceConfig section is used</li>
+     * </ol>
+     * 
+     * @return the name of the dataSource to use by default
+     */
+    public static String getDefaultDataSourceName() {
+        return getDefaultDataSource().getName();
+
+    }
+
+    /** the configuration properties of the default data source **/
+    public static Map<String, String> getDefaultDataSourceConfiguration() {
+        return getDefaultDataSource().getProperties();
+    }
+
+    /** the configuration of the default data source **/
+    private static ConfiguredDataSource getDefaultDataSource() {
+
+        if (defaultDataSource == null) {
+            Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
+            String defaulDataSourceName = globalProperties.get("defaultDataSource");
+
+            // first we check if there is maybe only one dataSource, in that case we take it as default
+            int count = 0;
+            String lastSection = "";
+            boolean doLookup = true;
+            for (Object sectionObject : applicationConfig.sectionNames()) {
+                String section = (String) sectionObject;
+                if (section.startsWith("dataSource:")) {
+                    count++;
+                    doLookup = lastSection.indexOf(" ") > -1 && section.indexOf(" ") > -1 && lastSection.substring(0, lastSection.indexOf(" ")).equals(
+                        section.substring(0, section.indexOf(" ")));
+                    lastSection = section;
+                }
+            }
+            if (count == 1) {
+                defaultDataSource = buildConfiguredDataSource(lastSection);
+                return defaultDataSource;
+            } else if (count == 0) {
+                throw new ConfigurationError("You must configure at least one dataSource for Makumba to work properly");
+            }
+
+            // now we treat the case when there are two or more dataSources that have the same name, but different host
+            // etc properties
+            // i.e. run a lookup and decide accordingly
+            // but do this only if there are only dataSources that have the same name
+            if (doLookup && (lastSection.indexOf("host:") > -1 || lastSection.indexOf("path:") > -1 || lastSection.indexOf("web-app:") > -1)) {
+                // we have dataSources with the same name, try to figure default through lookup
+                // first we fetch the same name
+                String dataSourceName = lastSection.substring("dataSource:".length(), lastSection.indexOf(" "));
+                defaultDataSource = lookupDataSource(dataSourceName);
+                return defaultDataSource;
+            }
+
+            // now we can't really tell which one to use by ourselves so we see if there is a default one
+            if (defaulDataSourceName == null) {
+                throw new ConfigurationError(
+                        "Since there is more than one configured dataSource, Makumba needs to know which one to use. Please specify a defaultDataSource in section dataSourceConfig.");
+            }
+
+            // we fetch the default one
+            for (String c : configuredDataSources.keySet()) {
+                if (c.startsWith("dataSource:" + defaulDataSourceName)) {
+                    defaultDataSource = configuredDataSources.get(c);
+                    return defaultDataSource;
+                }
+            }
+
+            // nothing found?
+            throw new ConfigurationError("Default dataSource " + defaulDataSourceName + " not found in Makumba.conf");
+
+        }
+
+        return defaultDataSource;
+
+    }
+
+    private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
+
+    /**
+     * Looks up the right {@link ConfiguredDataSource} based on host and path. FIXME the host name may looks weirdish
+     */
+    private static ConfiguredDataSource lookupDataSource(String dataSource) {
+
+        ConfiguredDataSource result = resolvedConfiguredDataSources.get(dataSource);
+        if (result == null) {
+
+            try {
+
+                String host = InetAddress.getLocalHost().toString();
+                String path = System.getProperty("user.dir");
+                java.net.URL u = ClassResource.get("/");
+                String alternatePath = u != null ? u.toString() : null;
+
+                String thisConfiguration1 = "dataSource:" + dataSource + " host:" + host + " path:" + path
+                        + " web-app:" + contextPath;
+                String thisConfiguration2 = "dataSource:" + dataSource + " host:" + host + " path:" + alternatePath
+                        + " web-app:" + contextPath;
+
+                // we go over all the data sources and compare them to those we have
+                String maxKey = "";
+
+                for (String k : configuredDataSources.keySet()) {
+                    if (thisConfiguration1.startsWith(k) && k.length() > maxKey.length()
+                            && thisConfiguration1.startsWith("dataSource:" + dataSource + " ")) {
+                        maxKey = k;
+                        result = configuredDataSources.get(k);
+                    }
+                }
+
+                for (String k : configuredDataSources.keySet()) {
+                    if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
+                            && thisConfiguration2.startsWith("dataSource:" + dataSource + " ")) {
+                        maxKey = k;
+                        result = configuredDataSources.get(k);
+                    }
+                }
+
+                // nothing like our data source was found
+                if (result == null) {
+                    throw new ConfigurationError("No DataSource " + dataSource + " configured in Makumba.conf");
+                }
+
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            Logger.getLogger("org.makumba.config").info(
+                "Resolved dataSource " + dataSource + " to " + result.toString());
+            resolvedConfiguredDataSources.put(result.getName(), result);
+        }
+        return result;
+
+    }
+
+    enum DataSourceType {
+        makumba, hibernate;
     }
 
 }

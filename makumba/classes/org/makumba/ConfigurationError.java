@@ -24,14 +24,14 @@
 package org.makumba;
 
 /** Error thrown if a configuration file is not found or cannot be accessed */
-public class ConfigFileError extends MakumbaError {
+public class ConfigurationError extends MakumbaError {
     private static final long serialVersionUID = 1L;
 
-    public ConfigFileError(Throwable reason, String filename) {
-        super(reason, "Configuration file not found: " + filename);
+    public ConfigurationError(Throwable reason, String error) {
+        super(reason, "Configuration error: " + error);
     }
 
-    public ConfigFileError(String filename) {
-        super("Configuration file not found: " + filename);
+    public ConfigurationError(String error) {
+        super("Configuration error: " + error);
     }
 }

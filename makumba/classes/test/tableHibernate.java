@@ -68,8 +68,8 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void setUp() {
-        tp = new TransactionProvider(new HibernateTransactionProvider());
-		db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
+        tp = HibernateTransactionProvider.getInstance();
+		db = tp.getConnectionTo("testDatabaseHibernate");
 	}
 
 	public void tearDown() {
@@ -617,7 +617,7 @@ public class tableHibernate extends TestCase {
 		 * if yes, we do cleanup
 		 */
 		if(toString().equals("testCopy(test.table)")){
-			String nm = tp.getDataSourceName("test/testDatabase.properties");
+			String nm = "testDatabaseHibernate";
 	
 			System.out.println("\nworked with: "
 			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")

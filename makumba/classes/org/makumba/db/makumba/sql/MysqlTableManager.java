@@ -45,7 +45,7 @@ protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStr
     if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB") &&
 			def.lastIndexOf(')') > def.lastIndexOf(" ENGINE=InnoDB")){
       String s="ALTER TABLE "+getDBName()+" TYPE=InnoDB";
-      java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(getSQLDatabase().getConfiguration()+": "+s);
+      java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(getSQLDatabase().getName()+": "+s);
       st.executeUpdate(s);
     }
     rs.close();

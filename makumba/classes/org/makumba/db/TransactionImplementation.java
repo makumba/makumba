@@ -45,7 +45,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
@@ -56,11 +56,11 @@ public abstract class TransactionImplementation implements Transaction {
 
     protected QueryProvider qp;
 
-    protected TransactionProviderInterface tp;
+    protected TransactionProvider tp;
 
     private Attributes contextAttributes;
 
-    public TransactionImplementation(TransactionProviderInterface tp) {
+    public TransactionImplementation(TransactionProvider tp) {
         this.tp = tp;
         this.ddp = DataDefinitionProvider.getInstance();
     }
@@ -137,7 +137,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues);
 
-    public TransactionProviderInterface getTransactionProvider() {
+    public TransactionProvider getTransactionProvider() {
         return this.tp;
     }
 

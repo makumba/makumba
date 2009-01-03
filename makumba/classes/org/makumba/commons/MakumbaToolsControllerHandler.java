@@ -139,7 +139,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");
-            writeDescr(w, "Transaction Provider", "", Configuration.KEY_DEFAULT_TRANSACTION_PROVIDER, "");
+            writeDescr(w, "Database layer", "", Configuration.KEY_DEFAULT_DATABASE_LAYER, "The default database layer to use for Transactions (Makumba or Hibernate)");
             writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",

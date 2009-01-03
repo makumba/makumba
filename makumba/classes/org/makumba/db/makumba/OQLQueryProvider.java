@@ -38,7 +38,7 @@ public class OQLQueryProvider extends QueryProvider {
     @Override
     protected void init(String dataSource, Attributes a) {
         super.init(dataSource, a);
-        tr = new TransactionProvider(new MakumbaTransactionProvider()).getConnectionTo(dataSource);
+        tr = MakumbaTransactionProvider.getInstance().getConnectionTo(dataSource);
         ((TransactionImplementation)tr).setContext(a);
 
     } 

@@ -40,7 +40,7 @@ public class ParserTest {
         try {
             p.load(org.makumba.commons.ClassResource.get(databaseProperties).openStream());
         } catch (Exception e) {
-            throw new org.makumba.ConfigFileError(databaseProperties);
+            throw new org.makumba.ConfigurationError(databaseProperties);
         }
 
         nr = new NameResolver();

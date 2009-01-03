@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.ServletObjects;
+import org.makumba.providers.Configuration;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling. This filter
@@ -62,6 +63,7 @@ public class ControllerFilter implements Filter {
     private ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
 
     public void init(FilterConfig c) {
+        Configuration.setContextPath(c.getServletContext().getServletContextName());
         conf = c;
         String handlerParam = c.getInitParameter("handlerClasses");
         if (handlerParam == null) {

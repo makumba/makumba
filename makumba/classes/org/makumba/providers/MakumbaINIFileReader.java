@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.makumba.ConfigurationError;
 import org.makumba.commons.FileUtils;
 
 import ch.ubique.inieditor.IniEditor;
@@ -63,7 +64,13 @@ public class MakumbaINIFileReader extends IniEditor {
     }
 
     public Map<String, String> getProperties(String section) {
-        List<?> optionNames = optionNames(section);
+        List<?> optionNames = null;
+        try {
+            optionNames = optionNames(section);
+        } catch(NoSuchSectionException nsse) {
+            throw new ConfigurationError("Section " + section + " does not exist in Makumba.conf");
+        }
+         
         HashMap<String, String> ret = new HashMap<String, String>();
         for (Object object : optionNames) {
             ret.put((String) object, getProperty(section, (String) object));

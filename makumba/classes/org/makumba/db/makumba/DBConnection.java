@@ -42,7 +42,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * This is the Makumba-specific implementation of a {@link Transaction}
@@ -57,17 +57,17 @@ public abstract class DBConnection extends TransactionImplementation {
     
     protected org.makumba.db.makumba.Database db;
     
-    protected DBConnection(TransactionProviderInterface tp) {
+    protected DBConnection(TransactionProvider tp) {
         super(tp);
     }//for the wrapper
     
-    public DBConnection(Database database, TransactionProviderInterface tp) {
+    public DBConnection(Database database, TransactionProvider tp) {
         this(tp);
         this.db = database;
         this.ddp = DataDefinitionProvider.getInstance();
     }
 
-    public DBConnection(Database database, String dataSource, TransactionProviderInterface tp) {
+    public DBConnection(Database database, String dataSource, TransactionProvider tp) {
         this(database, tp);
         this.dataSource = dataSource;
     }
