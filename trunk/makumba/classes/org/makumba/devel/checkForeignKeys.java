@@ -36,6 +36,7 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -43,7 +44,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * <p>
  * Usage: <code>java org.makumba.devel.open [source [type1 [type2 ...] ] ]</code>
  * </p>
- * If no source is specified the default database specified in <i>MakumbaDatabase.properties</i> is used. If not types
+ * If no source is specified the default data source is used. If not types
  * are specified, all MDDs found in the webapp are processed.
  * 
  * @author Cristian Bogdan
@@ -55,7 +56,7 @@ public class checkForeignKeys {
         Database d = null;
         try {
             if (argv.length == 0) {
-                d = MakumbaTransactionProvider.findDatabase("MakumbaDatabase.properties");
+                d = MakumbaTransactionProvider.getDatabase(Configuration.getDefaultDataSourceName());
             } else {
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
             }

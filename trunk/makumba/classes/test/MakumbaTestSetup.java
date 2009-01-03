@@ -87,10 +87,10 @@ public class MakumbaTestSetup extends TestSetup {
 
         if (transactionProviderType.equals("oql")) {
             tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+            db = tp.getConnectionTo("testDatabase");
         } else if (transactionProviderType.equals("hql")) {
-            tp = new TransactionProvider(new HibernateTransactionProvider());
-            db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
+            tp = HibernateTransactionProvider.getInstance();
+            db = tp.getConnectionTo("testDatabaseHibernate");
         }
 
         insertLanguages(db);
@@ -213,10 +213,10 @@ public class MakumbaTestSetup extends TestSetup {
 
         if (transactionProviderType.equals("oql")) {
             tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
+            db = tp.getConnectionTo("testDatabase");
         } else if (transactionProviderType.equals("hql")) {
-            tp = new TransactionProvider(new HibernateTransactionProvider());
-            db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
+            tp = HibernateTransactionProvider.getInstance();
+            db = tp.getConnectionTo("testDatabaseHibernate");
         }
 
         deletePersonsAndIndividuals(db);

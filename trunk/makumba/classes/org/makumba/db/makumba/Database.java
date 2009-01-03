@@ -70,7 +70,7 @@ import org.makumba.providers.TransactionProvider;
 public abstract class Database {
 
     public String getName() {
-        return configName;
+        return dataSourceName;
     }
 
     private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
@@ -88,10 +88,6 @@ public abstract class Database {
     protected static boolean requestUTF8 = false;
 
     protected static boolean requestForeignKeys = false;
-
-    static protected boolean supportsUTF8() {
-        return requestUTF8;
-    }
 
     static protected boolean supportsForeignKeys() {
         return requestForeignKeys;
@@ -132,7 +128,7 @@ public abstract class Database {
 
     public void close() {
         java.util.logging.Logger.getLogger("org.makumba.db.init").info(
-            "closing  " + getConfiguration() + "\n\tat "
+            "closing  " + getName() + "\n\tat "
                     + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
         queries.close();
@@ -170,9 +166,8 @@ public abstract class Database {
 
     Class<?> tableclass;
 
-    String configName;
-
-    String fullName;
+    /** the name of the configured dataSource **/
+    String dataSourceName;
 
     protected NameResolver nr;
 
@@ -187,10 +182,6 @@ public abstract class Database {
 
     public abstract Pointer getPointer(String type, int uid);
 
-    public String getConfiguration() {
-        return fullName;
-    }
-
     public String getConfiguration(String v) {
         if (v.equals("resource_pool_size")) {
             return String.valueOf(connections.getSize());
@@ -201,7 +192,7 @@ public abstract class Database {
     protected Database(Properties config) {
         this.config = config;
         this.nr = new NameResolver(config);
-        this.configName = config.getProperty("db.name");
+        this.dataSourceName = config.getProperty("db.name");
         String s = config.getProperty("initConnections");
         if (s != null) {
             initConnections = Integer.parseInt(s.trim());
@@ -210,14 +201,14 @@ public abstract class Database {
         config.put("jdbc_connections", "0");
         try {
             if (config.get("dbsv") != null && config.get("autoIncrement") != null) {
-                throw new org.makumba.ConfigFileError("only one of dbsv and autoIncrement can be specified");
+                throw new org.makumba.ConfigurationError("Either dbsv or autoIncrement can be specified");
             }
             if (config.get("dbsv") != null) {
                 dbsv = new Integer((String) config.get("dbsv")).intValue();
             } else if (config.get("autoIncrement") != null) {
                 autoIncrement = true;
             } else {
-                throw new org.makumba.ConfigFileError("either dbsv or autoIncrement must be specified");
+                throw new org.makumba.ConfigurationError("dbsv or autoIncrement must be specified");
             }
 
             tableclass = getTableClassConfigured();
@@ -422,7 +413,7 @@ public abstract class Database {
 
     public void copyFrom(String source, boolean ignoreDbsv) {
         DBConnection c = getDBConnection();
-        DBConnection sourceDB = MakumbaTransactionProvider.findDatabase(source).getDBConnection();
+        DBConnection sourceDB = MakumbaTransactionProvider.getDatabase(source).getDBConnection();
         try {
             Vector<Dictionary<String, Object>> v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
             String[] _tables = new String[v.size()];

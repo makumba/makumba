@@ -8,6 +8,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.FilterChain;
 
+import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -32,15 +33,14 @@ public class CharsetFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        TransactionProvider tp = TransactionProvider.getInstance();
 
-        if (tp.supportsUTF8()) {
+        if (Configuration.getDefaultDataSourceConfiguration().get("encoding").equals("utf8")) {
             request.setCharacterEncoding("UTF-8");
             response.setContentType("text/html;charset=UTF-8");
         }
 
         chain.doFilter(request, response);
-        if (tp.supportsUTF8()) {
+        if (Configuration.getDefaultDataSourceConfiguration().get("encoding").equals("utf8")) {
             response.setContentType("text/html; charset=UTF-8");
             request.setCharacterEncoding("UTF8");
         }

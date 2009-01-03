@@ -26,7 +26,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.makumba.ConfigFileError;
+import org.makumba.ConfigurationError;
 import org.makumba.Transaction;
 import org.makumba.MakumbaSystem;
 import org.makumba.providers.TransactionProvider;
@@ -64,7 +64,7 @@ public class config extends TestCase
         try {
 		String defaultDB=tp.getDefaultDataSourceName();
                 fail("Should raise ConfigFileError, but found: "+defaultDB);
-        } catch (ConfigFileError e) { }
+        } catch (ConfigurationError e) { }
   }
 
   /**
@@ -73,10 +73,8 @@ public class config extends TestCase
    */
   public void DISABLED_testDBDiscovery()
   {
-    String preferredDB=tp.getDataSourceName("test/testDatabase.properties");
-//	TODO change Database to Transaction
-    Transaction db=tp.getConnectionTo(preferredDB);
-    assertEquals(preferredDB, db.getName());
+    Transaction db=tp.getConnectionTo("testDatabase");
+    assertEquals("testDatabase", db.getName());
     db.close();
   }
 

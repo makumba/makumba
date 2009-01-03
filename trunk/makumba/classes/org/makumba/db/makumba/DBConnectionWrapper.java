@@ -30,7 +30,7 @@ import java.util.Dictionary;
 
 import org.makumba.Attributes;
 import org.makumba.Pointer;
-import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * A wrapper for db connections, used to provide a temporary that holds a reference to a permanent DBConnection
@@ -51,11 +51,11 @@ public class DBConnectionWrapper extends DBConnection {
         return wrapped;
     }
 
-    DBConnectionWrapper(TransactionProviderInterface tp) {
+    DBConnectionWrapper(TransactionProvider tp) {
         super(tp);
     }
 
-    DBConnectionWrapper(DBConnection wrapped, String dataSource, TransactionProviderInterface tp) {
+    DBConnectionWrapper(DBConnection wrapped, String dataSource, TransactionProvider tp) {
         this(tp);
         t = new Throwable();
         created= new Date();
@@ -163,7 +163,7 @@ class ClosedDBConnection extends DBConnectionWrapper {
         static final DBConnection singleton = new ClosedDBConnection(null);
     }
 
-    private ClosedDBConnection(TransactionProviderInterface tp) {
+    private ClosedDBConnection(TransactionProvider tp) {
         super(tp);
     }
 

@@ -47,7 +47,7 @@ public class ErrorFormatter {
             { org.makumba.DataDefinitionNotFoundError.class, "data definition not found" },
             { org.makumba.DataDefinitionParseError.class, "data definition parse" },
             { org.makumba.ValidationDefinitionParseError.class, "validation definition parse" },
-            { org.makumba.DBError.class, "database" }, { org.makumba.ConfigFileError.class, "configuration" },
+            { org.makumba.DBError.class, "database" }, { org.makumba.ConfigurationError.class, "configuration" },
             { org.makumba.ProgrammerError.class, "programmer" },
             { org.makumba.list.tags.MakumbaJspException.class, "page" },
             { org.makumba.AttributeNotFoundException.class, "attribute not set" },

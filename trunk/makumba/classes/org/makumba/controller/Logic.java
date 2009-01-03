@@ -57,7 +57,7 @@ import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.TransactionProvider;
 
 /** business logic administration */
 public class Logic {
@@ -718,7 +718,7 @@ public class Logic {
         }
     }
 
-    public static TransactionProviderInterface getTransactionProvider(Object controller) throws LogicInvocationError {
+    public static TransactionProvider getTransactionProvider(Object controller) throws LogicInvocationError {
         Method connectionProvider = null;
         if (controller != null) {
             connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
@@ -732,8 +732,10 @@ public class Logic {
             if (transactionProviderClass == null) {
                 transactionProviderClass = Configuration.getDefaultTransactionProviderClass();
             }
+            
+            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", null);
+            return (TransactionProvider) getInstance.invoke(null, null);
 
-            return (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
         } catch (Throwable e) {
             LogicException le = new LogicException("Could not instantiate transaction provider "
                     + transactionProviderClass != null ? transactionProviderClass : "");

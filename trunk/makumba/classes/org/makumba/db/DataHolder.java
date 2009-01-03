@@ -11,7 +11,7 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.TransactionProviderInterface;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Class which enables it to perform "super-CRUD" operations, i.e. composite inserts and updates on subrecords The data
@@ -27,7 +27,7 @@ public class DataHolder {
     private Transaction t;
 
     /** the TransactionProvider of the transaction of this DataHolder * */
-    private TransactionProviderInterface tp;
+    private TransactionProvider tp;
 
     /** dictionary holding the data used for the operation, and on which operations are performed * */
     Dictionary<String, Object> dictionnary = new Hashtable<String, Object>();

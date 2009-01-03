@@ -71,20 +71,6 @@ public class MakumbaSystem {
     }
 
     /**
-     * The name of the default database according to the database lookup file indicated
-     * 
-     * @param dbLookupFile
-     *            the name of the database lookup file, including ".properties", or any other extension. The file should
-     *            be in CLASSPATH.
-     * @since makumba-0.5.4
-     * @deprecated use {@link TransactionProvider#getDataSourceName(String)} instead
-     */
-    @Deprecated
-    public static String getDefaultDatabaseName(String dbLookupFile) {
-        return tp.getDataSourceName(dbLookupFile);
-    }
-
-    /**
      * Get a connection to the database described in the .properties file with the given name.
      * 
      * @param name
@@ -112,18 +98,6 @@ public class MakumbaSystem {
      */
     public static Transaction findDatabase() {
         return getConnectionTo(tp.getDefaultDataSourceName());
-    }
-
-    /**
-     * Find the Database according to the given lookup file from the CLASSPATH. The file name will include the
-     * .properties extension
-     * 
-     * @since makumba-0.5
-     * @deprecated This method name is misleading since it returns a connection, not a database. Use
-     *             getConnectionTo(getDefaultDatabaseName(dbLookupFile)) instead
-     */
-    public static Transaction findDatabase(String dbLookupFile) {
-        return getConnectionTo(getDefaultDatabaseName(dbLookupFile));
     }
 
     /**

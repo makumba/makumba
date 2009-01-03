@@ -6,20 +6,33 @@ import org.makumba.Transaction;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.TransactionProviderInterface;
 
 /**
- * This class is a Hibernate-specific implementation of a {@link TransactionProviderInterface}.
+ * This class is a Hibernate-specific implementation of a {@link TransactionProvider}.
  * 
- * FIXME reimplement the hierarchy of this provider, i.e. fix the Configuration problem.
  * FIXME see what to do with the old _copy, ... etc. methods
  * 
  * @author Manuel Gay
  * @version $Id: HibernateTransactionProvider.java,v 1.1 06.11.2007 11:01:32 Manuel Exp $
  */
-public class HibernateTransactionProvider implements TransactionProviderInterface {
+public class HibernateTransactionProvider extends TransactionProvider {
+   
+    private static class SingletonHolder {
+        private final static HibernateTransactionProvider singleton = new HibernateTransactionProvider();  
+    }
     
-    private static HibernateCRUDOperationProvider singleton;
+    private static class CRUDOperationProviderSingletonHolder {
+        private static CRUDOperationProvider singleton = new HibernateCRUDOperationProvider();
+
+    }
+    
+    public static HibernateTransactionProvider getInstance() {
+        return SingletonHolder.singleton;
+    }
+    
+    private HibernateTransactionProvider() {
+        
+    }
     
     public void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
         throw new MakumbaError("Not implemented");
@@ -31,34 +44,19 @@ public class HibernateTransactionProvider implements TransactionProviderInterfac
     }
 
     public CRUDOperationProvider getCRUD() {
-        if(singleton == null) {
-            singleton = new HibernateCRUDOperationProvider();
-        }
-        return singleton;
+        return CRUDOperationProviderSingletonHolder.singleton;
     }
 
     public Transaction getConnectionTo(String name) {
         return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
     }
 
-    public String getDataSourceName(String lookupFile) {
-        return TransactionProvider.findDatabaseName(lookupFile);
-    }
-
     public String getDatabaseProperty(String name, String propName) {
         throw new MakumbaError("Not implemented");
-    }
-
-    public String getDefaultDataSourceName() {
-        return TransactionProvider.findDatabaseName("MakumbaDatabase.properties");
     }
     
     public Object getHibernateSessionFactory(String name) {
         return HibernateSFManager.getSF(name);
-    }
-
-    public boolean supportsUTF8() {
-        throw new MakumbaError("Not implemented");
     }
 
     public String getQueryLanguage() {

@@ -170,7 +170,7 @@ public class TableManager extends Table {
         alter = (s != null && config.getProperty(s).trim().equals("true"));
 
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
-            getDatabase().getConfiguration() + ": checking " + getDataDefinition().getName() + " as " + tbname);
+            getDatabase().getName() + ": checking " + getDataDefinition().getName() + " as " + tbname);
 
         try {
             CheckingStrategy cs = null;
@@ -507,7 +507,7 @@ public class TableManager extends Table {
         autoIncrementAlter = false;
         String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
-            getSQLDatabase().getConfiguration() + ": " + s);
+            getSQLDatabase().getName() + ": " + s);
         st.executeUpdate(s);
         handlerExist.put(fieldName, "");
         dbc.commit();
