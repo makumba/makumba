@@ -14,28 +14,16 @@
 % todo importance of mentoring for sust
 
 % todo RUDI own data commentary for later integration
-% todo RUDI tables
 % todo RUDI initiation stories 
+
+% DONE
+% todo RUDI tables
+%	=> just misses 2003, I'll see if i can get an estimate from Gwen tomorrow
 % todo RUDI table/figure with quantitative questionnaire responses, per member, per skill
+%	=> the one per member is not really readable... we could reduce it to show only people that stayed minimum 3 years, that's around 19 members. an image can be found in the repository, learning-members-2.png
 
 
-
-% THIS IS SIGPROC-SP.TEX - VERSION 3.0
-% WORKS WITH V3.1SP OF ACM_PROC_ARTICLE-SP.CLS
-% JUNE 2007
-%
-% It is an example file showing how to use the 'acm_proc_article-sp.cls' V3.1SP
-% LaTeX2e document class file for Conference Proceedings submissions.
-% ----------------------------------------------------------------------------------------------------------------
-% This .tex file (and associated .cls V3.1SP) *DOES NOT* produce:
-%       1) The Permission Statement
-%       2) The Conference (location) Info information
-%       3) The Copyright Line with ACM data
-%       4) Page numbering
-% ---------------------------------------------------------------------------------------------------------------
-% It is an example which *does* use the .bib file (from which the .bbl file
-% is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
+% REMEMBER: After having produced the .bbl file,
 % and prior to final submission,
 % you need to 'insert'  your .bbl file into your source .tex file so as to provide
 % ONE 'self-contained' source file.
@@ -99,7 +87,7 @@ Prior to Makumba introduction, the student organization had disparate IT systems
 
 In this paper we aim to characterize {\it sustainability of practice and community} based on this positive experience. We also aim to discuss the role of technology in achieving such sustainability, and to draw design implications that would help to devise technologies that encourage sustainability. 
 
-While we recognize the importance of {\it environmental sustainability} in IT and interaction design \cite{blevis07}, we focus on a topic that is only abstractly related, yet we believe important in community and technology research. It is e.g. common knowledge that most virtual communities are "either young or dead" \cite{pargman05}, and various cookbooks for making the community thrive were produced \cite{goodwin94}. Even for non-virtual communities such as our student organization and its Tech Committee, it is sometimes difficult to sustain a specialized activity within the community, and this issue was raised under the name of sustainability in the field of Participatory Design (PD), e.g. as a basic principle of a PD method \cite{kensing98} or as a call for "self-sustaining [PD] processes within work settings" \cite{clement93}.  While managerial aspects such as leadership and incentives for work are certainly important in sustaining an activity, we also advocate a focus on the methods and tools used in such specialized activities, as them being easy to learn or entertaining to use should lead to better sustainability of the respective practice. As immediately apparent liabilities to practice sustainability one can exemplify lack of material rewards, or frequent changes in community membership, both of which affect voluntary student organizations. A related useful notion is {\it self-sustainabilty}, whereby a specialized activity such as PD \cite{clement93} or programming is started by professional intervention in the setting, yet it is able to continue using only community resources (human and otherwise), after the specialized professionals leave the setting. In our case both types of activity were initiated in the student organization  by the first author as a Human-Compute Interaction researcher and computer engineer, who left the setting in 2003. The programming activity and its sustainability are addressed in this paper.
+While we recognize the importance of {\it environmental sustainability} in IT and interaction design \cite{blevis07}, we focus on a topic that is only abstractly related, yet we believe important in community and technology research. It is e.g. common knowledge that most virtual communities are "either young or dead" \cite{pargman05}, and various cookbooks for making the community thrive were produced \cite{goodwin94}. Even for non-virtual communities such as our student organization and its Tech Committee, it is sometimes difficult to sustain a specialized activity within the community, and this issue was raised under the name of sustainability in the field of Participatory Design (PD), e.g. as a basic principle of a PD method \cite{kensing98} or as a call for "self-sustaining [PD] processes within work settings" \cite{clement93}.  While managerial aspects such as leadership and incentives for work are certainly important in sustaining an activity, we also advocate a focus on the methods and tools used in such specialized activities, as them being easy to learn or entertaining to use should lead to better sustainability of the respective practice. As immediately apparent liabilities to practice sustainability one can exemplify lack of material rewards, or frequent changes in community membership, both of which affect voluntary student organizations. A related useful notion is {\it self-sustainability}, whereby a specialized activity such as PD \cite{clement93} or programming is started by professional intervention in the setting, yet it is able to continue using only community resources (human and otherwise), after the specialized professionals leave the setting. In our case both types of activity were initiated in the student organization  by the first author as a Human-Compute Interaction researcher and computer engineer, who left the setting in 2003. The programming activity and its sustainability are addressed in this paper.
 
 In what follows, we will frame the Tech Committee as a Community of Practice \cite{lave_wenger91, wenger98} and as an Amateur Community \cite{bogdan03, bogdan_bowers07}. We will then introduce the topic of practice sustainability, highly related to learning and essential for community sustainability. We present the student organization's Intranet and the Makumba technology that powers it, then we describe in detail the sustainable evolution of the Intranet and the Tech Committee, as it comes out from examining the source code repositories and Tech Committee membership lists. We then present the results of several surveys 
 %TODO: maybe just one survey?
@@ -108,9 +96,9 @@ that we used to elicit data on Makumba learning aspects in general and sustainab
 %TODO maybe mention the dialog between authors if we manage to have it
 
 \section{Setting}\label{sec:setting}
-The student organization running the Intranet of our interest was grounded in 1988 and is currently present in 79 mainly technical universities across 30 European countries (grew from 60 in 2003), and currently has about 2500 members. Their aim is to organize {\it complementary education} in the form of courses and competitions for students of the member universities (i.e. not just for its members), to assist them with {\it career support}, and to foster the educational envolvement of students through organising symposia and workshops on different aspects of engineering education in Europe.
+The student organization running the Intranet of our interest was grounded in 1988 and is currently present in 79 mainly technical universities across 30 European countries (grew from 60 in 2003), and currently has about 2500 members. Their aim is to organize {\it complementary education} in the form of courses and competitions for students of the member universities (i.e. not just for its members), to assist them with {\it career support}, and to foster the educational involvement of students through organizing symposia and workshops on different aspects of engineering education in Europe.
 % TODO please add aims/details
-The organization maintains contact with and raises funds from the European Union bodies and from a number of company partners. Internally, the organization has two statutory meetings per year and several less formal, smaller meetings in between. While most members only worked on international topics during such meetings, and for the rest they worked in their local organization chapters, since 1997 the organization was able to sustain "committees" on several topics: marketing, fund-raising, trainings and internal education, information technologies -- the Tech Committee, and complementary education program management. The committees met in the international meetings but kept on working on their topic also in between meetings, employing e-mail and instant messaging systems, as well as dedicated tools as part of the Intranet.
+The organization maintains contact with and raises funds from the European Union bodies and from a number of company partners. Internally, the organization has two statutory meetings per year and several less formal, smaller meetings in between. While most members only worked on international topics during such meetings, and for the rest they worked in their local organization chapters, since 1997 the organization was able to sustain "committees" on several topics: marketing, fund-raising, training and internal education, information technologies -- the Tech Committee, and complementary education program management. The committees met in the international meetings but kept on working on their topic also in between meetings, employing e-mail and instant messaging systems, as well as dedicated tools as part of the Intranet.
 
 The Intranet is supporting the activities of the student organization. It was assembled as an integrated system in 2002 from several systems. The {\it first} such system was an event application system for complementary education courses. The system registered student applications to the course events, and let the organization manage their acceptance (to one event out of maximum three applied for) and participation. The system had been re-built yearly since around 1993 to different levels of completeness, including several years when it failed to work and the members had to resort to manual management. The application system was based on e-mail for communication initially, and a Web-based system was devised in 1995, built using the C programming language. The system finally 'stabilized' as a Java software which was re-used for several annual editions of the complementary education program starting in 1997. This system was helping the management of the most important student organization activity and was heavily dependent on the first author until its Makumba re-implementation completed in 2002.
 
@@ -118,23 +106,23 @@ The {\it second} system was an internal document archive and member profile mana
 
 {\it Third} a "virtual jobfair" was built as part of the 'career support' organization mission,  allowing companies to post job adverts, and students to post their profiles. This system was among the first coordinated implementation efforts of the Tech Committee, as different from the previous individual implementation endeavors. Several technologies were tried out, starting in 1997 with Lotus Notes, continuing with Java Servlet technology before the system was finally launched in 2000, using an incipient Makumba version.
 % TODO, I think it was 2000, not sure how important this is, it was mostly unused for many years
-% rudi: i think it was later, i'll try to dig it out
+% rudi: i think it was later, I'll try to dig it out
 
-Besides heavily extending and integrating the above subsystems, several Intranet features were added since its inception: a Wiki, email archives for the organization's over 500 mailing lists, a training database, a survey-engine, a career-newletter, and a unique sign-in system that allowed students to share their accounts between the ``private area'', the course application system and the "virtual jobfair". Further, a number of support tools were implemented, like project and task management for both international committees and local chapters, company relations management for both the fund-raising committee and the local chapters, and several specific tools for the committees, often in the form of statistical analysis of number and increase of student accounts, subscription to the newsletters, etc. Another major new tool is an online voting system, intended to make the statuatory meetings less crowded.
+Besides heavily extending and integrating the above subsystems, several Intranet features were added since its inception: a Wiki, email archives for the organization's over 500 mailing lists, a training database, a survey-engine, a career-newletter, and a unique sign-in system that allowed students to share their accounts between the ``private area'', the course application system and the "virtual jobfair". Further, a number of support tools were implemented, like project and task management for both international committees and local chapters, company relations management for both the fund-raising committee and the local chapters, and several specific tools for the committees, often in the form of statistical analysis of number and increase of student accounts, subscription to the newsletters, etc. Another major new tool is an online voting system, intended to make the statutory meetings less crowded.
 %TODO more here, it feels like little was done since 2002 :)
-% rudi: still not enough? :-) i can still offer: teacher access to johnny & possibility to share materials there,;IRC chat in PA; major improvements in document archives, events management; university project (university profiles & offers on the public site); PROP aka pr-ordering pages aka a web-shop for posters & materials; an FTP storage for LBGs, integrated in PA as applet & jsp pages viewing the data, based on PA accounts; several tools for LBGs to fetch data for their local webpages;
+% rudi: still not enough? :-) i can still offer: teacher access to Johnny & possibility to share materials there,;IRC chat in PA; major improvements in document archives, events management; university project (university profiles & offers on the public site); PROP aka pr-ordering pages aka a web-shop for posters & materials; an FTP storage for LBGs, integrated in PA as applet & jsp pages viewing the data, based on PA accounts; several tools for LBGs to fetch data for their local webpages;
 
 The Tech Committee is in charge of developing and maintaining the Intranet, as well as supporting it with activities such as helpdesk. The committee also coordinates activities of interaction design for further new areas of the Intranet. Administration of the Intranet, as well as of communication systems such as e-mail are also Tech Committee tasks. There are two formal membership levels ("trainee" and "active member") and there is a formal coordinator, elected each year, who is also a member of the student organization overall coordination bodies. In its early (less sustainable) days, the Tech Committee consisted of 1-5 members who were mainly responsible for the individual systems and had difficulties backing each other up when they did not have time for voluntary commitment. Membership levels increased after 2002, and new members are usually attracted in international meetings with a three-hour Makumba training, including exercises in making dynamic pages that browse Intranet data in various ways, improving existing Intranet pages, followed by assignment of more complex Intranet-related tasks.
 % TODO more about the training, or after it: are they given Intranet tasks? Do they do Intranet-based exercises to change some interface or browse some Intranet data?
 % rudi: in the training, they normally don't do intranet related tasks, they do completely new pages. they start from a given MDD, and then do the full range: list, object, newForm, and then for the more advanced ones also editForm, deleteLink, mak:count() & co.
-% TODO rudi: not clear hear, do you just want to describe the recruiting, or also the first path in ITC
+% TODO rudi: not clear here, do you just want to describe the recruiting, or also the first path in ITC
 
 \section{Methods}\label{sec:method}
 We regard sustainability as a long-term matter that cannot be investigated with a short focused study. Throughout our contact with and involvement in the Tech Committee we were concerned with sustainability and at times we considered theoretical frameworks and recipes for how to achieve it, thus sustainability was an ever-present research issue for us, but also a practical issue in the community life. Both authors were active in the Tech Committee at different times (1997-2003 and 2004-2008 respectively), and {\it participant observation} was a conscious investigation approach for the first author, who also designed the Makumba technology together with Tech Committee members in a conscious act of {\it cooperative design} \cite{greenbaum_kyng91}. This paper is the occasion for a {\it reflection exercise} \cite{schon83}, on the part of the second author. Sustainability being a long-term issue, we expect other writings about it to be reflective accounts. 
 
 We are highly aware that our first-hand involvement with the Tech Committee is a potential hinder for us producing an 'objective' account of its sustainability and on other matters of interest, and this is probably not uncommon in community-related research endeavors. We therefore complemented our personal experiences with both non-elicited and elicited data, as described below. Furthermore, our involvement having taken place {\it at different times} has resulted in a fruitful confrontation process that allowed us to depart from our personal opinions and arrive at more reliable and valid results.
 %TODO more about dialog between authors
-%TODO: rudi: here i'd add that we have seen a bit how it goes in other organisations, namely AEGEE, IAESTE, CFES, and to some extent bonding, though they have different settings with loads of meetings
+%TODO: rudi: here I'd add that we have seen a bit how it goes in other organizations, namely AEGEE, IAESTE, CFES, and to some extent bonding, though they have different settings with loads of meetings
 
 For assessing quantitatively and qualitatively the sustainability of the Tech Committee and its practice, we regard as non-elicited data the {\it code repository} that the community has maintained, which allowed us to assess and reflect upon the progress of the Tech Committee work. The repository uses the Concurrent Versioning Systems (CVS) technology, which allows us to see the incremental changes and additions that were made to the code, their time, and their authors. We are thus able to reconstitute the Intranet code as it was at any moment in time since 2003. A number of code analysis tools are also available for investigating CVS repositories, and we found them useful for our inquiry.
 
@@ -181,7 +169,7 @@ Now we have the concepts that are needed to better systematize sustainability in
 Healthiness of  contingency space is actually sustainability. 
 It means addressability of contingency at various levels of skill.
 It also means inexhaustibility.
-Sustainaility can be both helped and hindered by challenge diversification.
+Sustainability can be both helped and hindered by challenge diversification.
 
 Hypothesis: Need to have enough people at each difficulty level.
 
@@ -195,10 +183,10 @@ Populating a challenge (167).
 The name... using a cultural term. Initiation rite. 
 Introduction of Makumba, the importer done by the professional (first author) as it has no future/sustaining value anyway.
 
-\section{Sustainability of the Tech Committee}
+\section{Sustainability of the Tech Committee}\label{sec:techCommittee}
 \begin{itemize}
 \item Tech Committee as an amateur community of practice
-\item table with karamba size, as it grew over years
+\item table with Karamba size, as it grew over years
 \item table with number of members per year, at various makumba levels
 \item some illustrative member trajectories (e.g. Gwen from little programming knowledge to Accenture, see chap 4 of thesis)
 \item questionnaire commentary
@@ -212,22 +200,23 @@ Introduction of Makumba, the importer done by the professional (first author) as
 	\begin{tabular}{c|r|r|r|r|r}
 		\hline
 		\hline
-		Year	& \# files	& LOC	& MDDs	& JSP	& BL	\\
+		Year	& MDDs	& JSP	& BL	& \# files	& LOC	\\
 		\hline
 		\hline
-		2003	& 801		& 78479 	& 42	& 676	& 80	\\
+		2003 	& 42	& 676	& 80	& 801		& 78479	\\
 		\hline
-		2004	& 1132		& 104805 	& 52	& 961	& 116	\\
+		2004 	& 52	& 961	& 116	& 1132		& 104805	\\
 		\hline
-		2005	& 1415		& 127873 	& 64	& 1208	& 140	\\
+		2005 	& 64	& 1208	& 140	& 1415		& 127873	\\
 		\hline
-		2006	& 1630		& 152008 	& 76	& 1354	& 190	\\
+		2006 	& 76	& 1354	& 190	& 1628		& 151801	\\
 		\hline
-		2007	& 2072		& 180496 	& 99	& 1719	& 229	\\
+		2007 	& 99	& 1719	& 229	& 2062		& 175315	\\
 		\hline
-		2008	& 2627		& 236893 	& 111	& 2135	& 287	\\
+		2008 	& 111	& 2135	& 287	& 2559		& 219456	\\
 		\hline
-		2009	& 2383		& 221753 	& 114	& 1860	& 289	\\
+		2009 	& 114	& 1860	& 289	& 2304		& 196867	\\
+		\hline
 		
 % old data, # files & LOC from CVS-stat
 % 		Year		& \# files 		& LOC		& MDDs	& JSPs	& BL \\
@@ -251,41 +240,166 @@ Introduction of Makumba, the importer done by the professional (first author) as
 	\end{tabular}
 \end{table} 
 
+Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since it's launch seven years ago, detailed for the different technological levels MDD, JSP taglib and Business Logic. Additionally, the total number of code-related files is shown, along with the total lines of code (LOC). Besides those, several other files can be found in The Intranet application, such as javaScript libraries and self-developed scripts, a modified source-code branch of a Java/JSP Wiki-provider, and several layout files such as images and style-sheets; while those files surely add to the complexity of the application as a whole, managing them requires a different knowledge level than programming of database-driven web-applications -- they are thus omitted in our analysis.
+
+Figure~\ref{fig:intranet-size} shows the evolution of the size graphically. It is worth noting that there was a rather high amount of MDD files defined in the beginning of The Intranet, representing data used in the first three sub-systems. Even though more data definitions have been added over time, a certain saturation level has been reached in the last years, with only minor additions. TODO: cristi says this is in-line with some data model stability, cite something?
+In contrary, the amount of Business Logics files has continuously increased, with a leveling in the last year. This is because of the same reasons that lead to the decrease in JSP files in the last year -- in early 2008, the new version of the external parts of The Intranet (i.e. everything except the ``Private Area''), which features a totally new layout, and is integrated as one application. Development has however taken place mainly during 2007, keeping other development activities low, and for a certain time both the old and new version in the source code repository, until it was cleaned of the old JSP and Business Logics files in mid 2008.
+
 \begin{figure}\label{fig:intranet-size}
   \includegraphics[width=0.98\columnwidth]{figures/SizeChart}
   \caption{Size of the Intranet}
-\caption{}
 \end{figure} 
 
-% TODO: exclude http://private.best.eu.org/itc/cvs-complete/2006-09.html#223, parts of http://private.best.eu.org/itc/cvs-complete/2006-09.html#224
+Table~\ref{tab:intranet-size} illustrates the number of active members in the Tech Committee since 2004, differentiated on the different levels of Makumba, and on their activity in ``core'' and ``peripheral'' members. This data was on the one hand extracted from the questionnaire filled in by many of the members, and then refined and amended by some of the committee coordinators. Additionally, the number of members participating in the annual summer meetings, which are approximately one week meetings for all kinds of members, where besides designing features and planning the upcoming year also training and developing sessions take place, is depicted. It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the number of members active on data definitions is not in-, but rather decreasing; this might be explained with the above described arrival at data maturity level, and thus less work and challenges to take for the Tech Committee members.
 
 \begin{table}\label{tab:itd-members}
 	\centering
 	\caption{Members in the Tech Committee}
-	\begin{tabular}{c|r|r|r|r|r|r}
+	\begin{tabular}{c|r|r|r|r|r|r|r|}
 		\hline
 		\hline
-		Year 		& \multicolumn{2}{c}{MDDs} 	& \multicolumn{2}{c}{JSPs}	& \multicolumn{2}{c}{BL} 	\\
-					& Core		&	Periph.		& Core		&	Periph.		& Core		&	Periph.		\\
+		Year 		& \multicolumn{2}{c|}{MDDs} & \multicolumn{2}{c|}{JSPs}	& \multicolumn{2}{c|}{BL}	& Summer	\\
+					& Core & Per.				& Core & Per.				& Core & Per				& meeting	\\
 		\hline
 		\hline
-		2003		& 						&  \\
+		2003 &   &   &   &   &   &   & 8 \\
 		\hline
-		2004		& 						&  \\
+		2004 & 4 & 3 & 3 & 7 & 3 & 3 & 17 \\
 		\hline
-		2005		& 						&  \\
+		2005 & 6 & 5 & 11 & 8 & 3 & 7 & 24 \\
 		\hline
-		2006		& 						&  \\
+		2006 & 8 & 7 & 12 & 9 & 3 & 9 & 16 \\
 		\hline
-		2007		& 						&  \\
+		2007 & 7 & 7 & 9 & 14 & 5 & 10 & 24 \\
 		\hline
-		2008		& 						&  \\
-		\hline
-		2009		& 						&  \\
+		2008 & 5 & 6 & 7 & 13 & 7 & 6 & 14 \\
 		\hline
 		\hline
+% Summer meetings
+% 2003: http://private.best.eu.org/events/event.jsp?event=21-C-CJ-COM
+% 2004: http://private.best.eu.org/events/event.jsp?event=22-C-RI-COM
+% 2005: http://private.best.eu.org/events/event.jsp?event=23-C-LD-COM
+% 2006: http://private.best.eu.org/events/event.jsp?event=24-C-SF-COM
+% 2007: http://private.best.eu.org/events/event.jsp?event=25-C-TM-COM
+% 2008: http://private.best.eu.org/events/event.jsp?event=26-C-BE-COM
 	\end{tabular}
 \end{table} 
+
+\subsection{Survey}\label{sec:techCommittee-survey}
+A survey was conducted among current and former members of the Tech Committee in the end of 2008, and filled in by 30 members. The background of the respondents is very diverse, ranging from their activity starting around 2001, to fresh members that just joined in the second half of 2008. Also the educational background is diverse -- seven members study computer science or engineering, while six study informatics; the other respondents study various different curricula, ranging from mechanical engineering over physics to biomedical engineering. Also, the membership duration in the committee varies, from half a dozen members that were active for around four years, to members that were (or currently are) active for one to two years. Most members had no knowledge of Makumba before joining, though some members, especially those active in other committees of the student organization (working closely with the Tech Committee) before joining, might have gotten some trainings (shortly) before.
+
+The questionaire consisted of a total of 53 different questions, some were open questions, and others multiple-choice questions. The main focus was on gathering an understanding of the learning aspect of Makumba in the context of the Tech Committee, thus the participants were asked to answer several questions on their skill level on database design, SQL, general programming, Java, and three aspects of Makumba: JSP pages to view data, JSP pages to create, edit, and delete data, and business logics. The questions were for several different points in time, namely when joining the committee, and after the first, second, third and fourth year of membership, and allowed answers from ``no skills'' over ``little knowledge'', ``some experience'' and ``experienced'' to ``master''. To balance, and to facilitate, the different personal self-assessments, the participants were further asked to estimate their contribution to the committee in that year, and to list their projects and technologies the worked with in that year.
+
+Figure~\ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time. It can be observed that apparently, learning to view and display data is easier than handling forms to create, edit, and delete data, while Business Logics are the most difficult concept, especially in the first two years of membership. Most members that stay in the committee for a longer period, however, master all levels of Makumba almost equally well.
+
+\begin{figure}\label{fig:learning-technologies}
+  \includegraphics[width=0.98\columnwidth]{figures/learning-technologies}
+  \caption{Learning curve for different aspects of Makumba}
+\end{figure} 
+
+Figure~\ref{fig:learning-technologies} shows skill trajectories for individual members, where the total skills on all Makumba technologies are simply summed up. From this graph, it can be observed that most members have a very steep skill rise in the first, and to some extent also in the second year. TODO: this is important due to high fluctuation... ?
+
+\begin{figure}\label{fig:learning-members}
+  \includegraphics[width=0.98\columnwidth]{figures/learning-members}
+  \caption{Skill development of the survey respondents over the years}
+\end{figure} 
+
+Finally, two open questions concluded the questionaire. The first one aimed at getting impressions on how the members experience learning technologies in the Tech Committee. Many people cited ``learning by doing'' and by using already existing pages as a base to be adapted to their needs as major factors; moreover, many developers stated how helpful the Tech Committee is with providing assistance with code examples, via the mailing list or chat channels. TODO: mention here that this alleviates lack of groups/forums/.. on the web?
+
+
+
+% http://private.best.eu.org/survey/viewStatistics.jsp?survey=cwu9pab&graphs=true&comments=true
+\begin{quotation}
+ 	% manu
+ 	"Learning by doing", "try and error" - the environment makes those two things possible, especially thanks to the ParaDe sandbox and the "linear" nature of Makumba/HTML. [..]\\
+ 	I would say that the code is very close to the result ("what you code is what you get"), or at least, very logically connected. 
+\end{quotation}
+
+\begin{quotation}
+	The current systems provide a lot of examples - this has 2 sides: helps when you learn from the good examples, and makes it worse when you use the bad code. 
+\end{quotation}
+
+\begin{quotation}
+	For me the greatest thing has been the first touch with coding using makumba: anybody is able to get a working page after 10 minutes of theory and 5 minutes of practice. That's provide motivation to do more difficult features.
+\end{quotation}
+
+\begin{quotation}
+	I didn't attend any organised Makumba training, but learned the basics during events, in the first year. It was quite easy, although I didn't even know HTML or SQL when joining ITC. 
+	(On the first 1-2 projects, I was directly helped by ITC experienced members). Afterwards, I started following also the emails and learned a lot from other people's problems/experiences.	
+\end{quotation}
+
+\begin{quotation}
+	I usually learn by reading code and trying to reform it in a way that suits what i want to do. ITD is good at this part, since all our code is available and it's easy to find a place that something similar was done before. 
+\end{quotation}
+
+\begin{quotation}
+	Learning is easy thanks to a lot of examples: for most of the tasks I could find another place where a similar feature had been implemented. Having a good knowledge about BEST IT systems helps more than having strong programming skills. Other ITD members also very often help and give advice when a problem or mistake occurs. 
+\end{quotation}
+
+\begin{quotation}
+	Learning technologies in ITD is really easy cause we have a lot of documentation and a lot of people around in the ML eager to help. When I had a doubt, sending a mail to the list was enough to have 20 answers to the question explaining what to do, why and how :) 
+\end{quotation}
+
+\begin{quotation}
+	Technology-wise, I love mak as how it's designed (the whole way the view/controller separation is less sharp than in other frameworks, how this is made very accessible and maintainable using the mak: tags, and how in the end this makes a large intranet maintainable by a community of people of variable skill), 
+\end{quotation}
+
+\begin{quotation}
+	The ITD community is helpful, it is very easy to learn new technologies. I think makumba gives a very good starting point for learning web programming (separation of concerns, data model design). Everything that I learned in ITD has proved to be true also in the professional web development world. 
+\end{quotation}
+
+\begin{quotation}
+	You get to learn new things both seeing what other do and by doing yourself. It is very easy to start doing things and see results very fast which is really motivating. 
+\end{quotation}
+
+
+
+\begin{quotation}
+	All the other frameworks and technologies I know (Struts, PHP + templating engine, Zope) require a higher degree of computer technologies knowledge to achieve similar results. This might be changing with new frameworks like RoR in which the model definition is done in a similar way as in Makumba, but still I think RoR's learning curve is steeper than Makumba's 
+\end{quotation}
+
+\begin{quotation}
+	I can only compare with PHP: PHP to start with was easy, but to make sound applications, you needed to do much more coding 
+\end{quotation}
+
+\begin{quotation}
+	I did some basic JSP page with a blog in a school course I had, where we used HTML and JSP and mySQL for the database. This required many lines of code for doing the database connection and stuff. This was much easier in makumba, as you don't have to be get into all of this connection part and the database management in the same way. So having a solution like Makumba is much better for ITD where there is a bigger flow of students.
+	(Of course it requires someone that also can take care of what's happening inside makumba, and this requires more knowledge and skills to do. So for a good suitability in ITD it's also important that there are people around that knows makumba from the inside.)
+\end{quotation}
+
+\begin{quotation}
+	Makumba seems to work relatively fast "out-of-the-box" - Its very fast in Makumba to copy-paste and adapt "similar pages" to what you need. basically, you need to exchange the names of the MDDs used.. 
+\end{quotation}
+
+\begin{quotation}
+	I have not used any other frameworks apart from writing my first PHP page this month (I wish I could have rewritten the whole app in makumba :)). Makumba still appears to me as having a very strong positioning, allowing to reach very quickly decent results with its basic features (allowing new joiners not to get tired of the learning effort and to contribute quickly) while also providing more powerful stuff for advanced users (allowing them to still find new challenges). 
+\end{quotation}
+
+\begin{quotation}
+	Mak is significantly more suitable for ITD than anything else I've seen, despite the horrible inflexibility of the J2EE platform. Most other frameworks/setups insist on a very clear separation between the model and the view, and in most situations, this makes sense. However, by moving certain typically controller-world operations, such as database queries, to the view **in a simple and accessible way**, pages become much more maintainable without very strong documentation discipline, because they somewhat self-document.
+\end{quotation}
+
+\begin{quotation}
+	Makumba being specifically designed for web applications, it is both extremely simple to learn for the basics - easier than PHP, especially for non-programmers - mainly through the easy interactions with databases ; yet can be as powerful as any other language, altough that involves dealing with Java, which is immediately more complicated - but not more complicated than any complex operation with any language.
+	The main disadvantage is that everyone must learn it, since it is quite different from other web technologies. But the main advantage is that everyone \textit{can} learn, without too much of a technological background. I think that for ITC, or for any organization who wants to involve non-IT people in the development of their applications, the use of Makumba can make things much easier (provided that we keep having nerd masters to maintain and update it :p) 
+\end{quotation}
+
+\begin{quotation}
+	Makumba is definitely the only technology suitable for BEST. I've been working a lot with trainees, teaching them the technology and about our systems, so after observing them it is quite clear that simplicity is the crucial aspect. Makumba is very easy to use and, with a bit of programming knowledge, BL is also quite accessible. One big advantage is the syntax, which makes it straight forward to understand other people's work. With Makumba, it doesn't happen so often that 2 people write totally different pieces of code for the same feature, and this is very useful for BEST (where people change very often). I would even say that, to some extent, Makumba is keeping me (and other people) in BEST. I would have never stayed so long in ITC, if it wasn't so easy and fun to learn Makumba. As well, the new features developed during the past year are so amazing, that it seems people are becoming active again just because they want to try them out! 
+\end{quotation}
+
+\begin{quotation}
+	Makumba is really easy to use compared to other technologies. The learning time is short and the possibilities given by the framework are great. It's really fast to program with it and really user friendly. 
+\end{quotation}
+
+\begin{quotation}
+	Makumba is great because it makes possible for non-IT people to write a webpage easily, with a little more knowledge than HTML
+\end{quotation}
+
+\begin{quotation}
+	atm. I can't think of frameworks that do mix view and model, i.e. view and data query. they all go through a DAO layer, which would break the "what you code is what you get"). other frameworks also do have a lot of configuration overhead and rely on Java, which make it difficult for beginners to grasp. e.g. Struts needs to have several files changed in order to get a form to work, which is not so straightforward and slows down the "try and error" process. atm. I can't think of frameworks that do mix view and model, i.e. view and data query. they all go through a DAO layer, which would break the "what you code is what you get"). other frameworks also do have a lot of configuration overhead and rely on Java, which make it difficult for beginners to grasp. e.g. Struts needs to have several files changed in order to get a form to work, which is not so straightforward and slows down the "try and error" process. 
+\end{quotation}
+
 
 \section{Discussion}\label{sec:disco}
 dialogue cristi-rudi... plus importance of leadership in sustainability... plus importance of the initial importer...
