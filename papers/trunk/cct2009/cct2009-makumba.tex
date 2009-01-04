@@ -40,6 +40,7 @@
 
 \usepackage{url}
 \usepackage{subfigure}
+\usepackage{listings}
 
 \begin{document}
 
@@ -193,6 +194,22 @@ Inside the Tech Committee and the student organization, Makumba also plays an im
 Several mysteries entwine around those parties, which thus help to increase the curiosity of other members of the organization about Makumba and the Tech Committee, and can thus help in advertising tool for potential new members. TODO sounds a bit strangely formulated.
 
 The Tech Committee also keeps a strong knowledge about it's own history and achievements, which are normally told to new members on the big annual summer meeting. Members feel proud to be part of a group that achieved pioneer things, like the first online application system in 1997 (TODO: ?), at a time when many companies had not even a static website, or inventing a technology similar to nowadays JSP, and most of all of Makumba, which was devised at a time when web-development frameworks were virtually non-existent.
+
+\lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data in Makumba, label=list:makumba, frame=shadowbox}
+\begin{lstlisting}
+<mak:list from="Student s">
+  Name: <mak:value expr="s.name"/> 
+        <mak:value expr="s.surname"/><br/>
+  Completed studies:
+  <mak:list from="s.education e"
+  	    where="e.graduationDate < now()">
+    <mak:value expr="e.name"/>
+    (<mak:value expr="e.university.name"/>),
+  </mak:list>
+  <br/>
+</mak:list>
+\end{lstlisting}
+
 
 \section{Sustainability of the Tech Committee}\label{sec:techCommittee}
 \begin{table}
