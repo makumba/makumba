@@ -169,7 +169,7 @@ Peers are normally expected to benefit from contingencies being negotiated, or m
 \subsection{Amateur software development}\label{sec:amateur_devel}
 It is useful to characterize amateur software development such as hackers \cite{levy94} or open source \cite{kollock99} as amateur communities 
 because Tech Committee is a less professional (pre-professional) correspondent of such communities. 
-In such communities, code challenges as hardly exhaustible, as programming a machine leads to a rich set of contingencies, bringing along lots of 'trial and error'. 
+In such communities, code challenges are hardly exhaustible, as programming a machine leads to a rich set of contingencies, bringing along lots of 'trial and error'. 
 It is also easy to open new contingency spaces partly due to the immateriality of the working artifact, new projects, or project modules can always be started, or the existing ones can be re-organized ("refactored" in the professional jargon). For a newcomer, the complex architecture of large software projects adds to the challenge, and their skills of mastering the programming language will not be enough, they will also have to learn the way the project was organized.
 Code is shared typically via plain text messages, and carefully examined before being committed to the code repository, which suggests another amateur community feature, related to the notion of audience, the \textit{peer review} of challenge addressing. 
 Plain text is regarded as a very suitable medium for such distributed development and review efforts \cite{yamauchi00}. 
@@ -350,27 +350,31 @@ Finally, two open questions concluded the questionaire. The first one aimed at g
 
 % http://private.best.eu.org/survey/viewStatistics.jsp?survey=cwu9pab&graphs=true&comments=true
 \begin{quotation}
- 	% manu
+ 	% rudi: both things fit what was said in the discussion
  	"Learning by doing", "try and error" - the environment makes those two things possible, especially thanks to the ParaDe sandbox and the "linear" nature of Makumba/HTML. [..]\\
  	I would say that the code is very close to the result ("what you code is what you get"), or at least, very logically connected. 
 \end{quotation}
 
-\begin{quotation}
-	The current systems provide a lot of examples - this has 2 sides: helps when you learn from the good examples, and makes it worse when you use the bad code. 
-\end{quotation}
+% \begin{quotation}
+% 	% rudi: true for every kind of technology, thus not relevant for makumba
+% 	The current systems provide a lot of examples - this has 2 sides: helps when you learn from the good examples, and makes it worse when you use the bad code. 
+% \end{quotation}
 
 \begin{quotation}
+	% rudi: shows easiness of learning makumba
 	For me the greatest thing has been the first touch with coding using makumba: anybody is able to get a working page after 10 minutes of theory and 5 minutes of practice. That's provide motivation to do more difficult features.
 \end{quotation}
 
 \begin{quotation}
+	% rudi: community learning
 	I didn't attend any organised Makumba training, but learned the basics during events, in the first year. It was quite easy, although I didn't even know HTML or SQL when joining ITC. 
 	(On the first 1-2 projects, I was directly helped by ITC experienced members). Afterwards, I started following also the emails and learned a lot from other people's problems/experiences.	
 \end{quotation}
 
-\begin{quotation}
-	I usually learn by reading code and trying to reform it in a way that suits what i want to do. ITD is good at this part, since all our code is available and it's easy to find a place that something similar was done before. 
-\end{quotation}
+% \begin{quotation}
+%	% rudi: mentions only ITD
+% 	I usually learn by reading code and trying to reform it in a way that suits what i want to do. ITD is good at this part, since all our code is available and it's easy to find a place that something similar was done before. 
+% \end{quotation}
 
 \begin{quotation}
 	Learning is easy thanks to a lot of examples: for most of the tasks I could find another place where a similar feature had been implemented. Having a good knowledge about BEST IT systems helps more than having strong programming skills. Other ITD members also very often help and give advice when a problem or mistake occurs. 
@@ -381,10 +385,12 @@ Finally, two open questions concluded the questionaire. The first one aimed at g
 \end{quotation}
 
 \begin{quotation}
-	Technology-wise, I love mak as how it's designed (the whole way the view/controller separation is less sharp than in other frameworks, how this is made very accessible and maintainable using the mak: tags, and how in the end this makes a large intranet maintainable by a community of people of variable skill), 
+    % rudi: must keep
+	Technology-wise, I love Makumba as how it's designed -- the whole way the view/controller separation is less sharp than in other frameworks, how this is made very accessible and maintainable using the Makumba tag library, and how in the end this makes a large intranet maintainable by a community of people of variable skills. 
 \end{quotation}
 
 \begin{quotation}
+	% supports well that makumba teaches the separation of view & controller
 	The ITD community is helpful, it is very easy to learn new technologies. I think makumba gives a very good starting point for learning web programming (separation of concerns, data model design). Everything that I learned in ITD has proved to be true also in the professional web development world. 
 \end{quotation}
 
@@ -396,48 +402,56 @@ Finally, two open questions concluded the questionaire. The first one aimed at g
 The last question asked the respondents for a comparisons of Makumba with other technologies and frameworks aimed for web development.
 
 \begin{quotation}
-	All the other frameworks and technologies I know (Struts, PHP + templating engine, Zope) require a higher degree of computer technologies knowledge to achieve similar results. This might be changing with new frameworks like RoR in which the model definition is done in a similar way as in Makumba, but still I think RoR's learning curve is steeper than Makumba's 
+	% rudi: supports well that makumba is suited for non-IT people
+	All the other frameworks and technologies I know (Struts, PHP + templating engine, Zope) require a higher degree of computer technologies knowledge to achieve similar results. This might be changing with new frameworks like Ruby on Rails in which the model definition is done in a similar way as in Makumba, but still I think Ruby on Rails' learning curve is steeper than Makumba's 
 \end{quotation}
 
 \begin{quotation}
 	I can only compare with PHP: PHP to start with was easy, but to make sound applications, you needed to do much more coding 
 \end{quotation}
 
+% \begin{quotation}
+% 	% rudi: a bit too confused
+% 	I did some basic JSP page with a blog in a school course I had, where we used HTML and JSP and mySQL for the database. This required many lines of code for doing the database connection and stuff. This was much easier in Makumba, as you don't have to be get into all of this connection part and the database management in the same way. So having a solution like Makumba is much better for ITD where there is a bigger flow of students.
+	%(Of course it requires someone that also can take care of what's happening inside makumba, and this requires more knowledge and skills to do. So for a good suitability in ITD it's also important that there are people around that knows makumba from the inside.)
+% \end{quotation}
+
+% \begin{quotation}
+% 	Makumba seems to work relatively fast "out-of-the-box" - Its very fast in Makumba to copy-paste and adapt "similar pages" to what you need. basically, you need to exchange the names of the MDDs used.. 
+% \end{quotation}
+
 \begin{quotation}
-	I did some basic JSP page with a blog in a school course I had, where we used HTML and JSP and mySQL for the database. This required many lines of code for doing the database connection and stuff. This was much easier in makumba, as you don't have to be get into all of this connection part and the database management in the same way. So having a solution like Makumba is much better for ITD where there is a bigger flow of students.
-	(Of course it requires someone that also can take care of what's happening inside makumba, and this requires more knowledge and skills to do. So for a good suitability in ITD it's also important that there are people around that knows makumba from the inside.)
+	%I have not used any other frameworks apart from writing my first PHP page this month (I wish I could have rewritten the whole app in makumba :)).
+	% rudi: must keep to support cristi's hypothesis
+	Makumba still appears to me as having a very strong positioning, allowing to reach very quickly decent results with its basic features (allowing new joiners not to get tired of the learning effort and to contribute quickly) while also providing more powerful stuff for advanced users (allowing them to still find new challenges). 
 \end{quotation}
 
 \begin{quotation}
-	Makumba seems to work relatively fast "out-of-the-box" - Its very fast in Makumba to copy-paste and adapt "similar pages" to what you need. basically, you need to exchange the names of the MDDs used.. 
+	% rudi: must keep, supports perfectly the discussion
+	Mak is significantly more suitable for ITD than anything else I've seen, despite the horrible inflexibility of the J2EE platform. Most other frameworks/setups insist on a very clear separation between the model and the view, and in most situations, this makes sense. However, by moving certain typically controller-world operations, such as database queries, to the view \textbf{in a simple and accessible way}, pages become much more maintainable without very strong documentation discipline, because they somewhat self-document.
 \end{quotation}
 
 \begin{quotation}
-	I have not used any other frameworks apart from writing my first PHP page this month (I wish I could have rewritten the whole app in makumba :)). Makumba still appears to me as having a very strong positioning, allowing to reach very quickly decent results with its basic features (allowing new joiners not to get tired of the learning effort and to contribute quickly) while also providing more powerful stuff for advanced users (allowing them to still find new challenges). 
+	Makumba being specifically designed for web applications, it is both extremely simple to learn for the basics - easier than PHP, especially for non-programmers - mainly through the easy interactions with databases; yet can be as powerful as any other language. %, altough that involves dealing with Java, which is immediately more complicated - but not more complicated than any complex operation with any language.
+	The main disadvantage is that everyone must learn it, since it is quite different from other web technologies. But the main advantage is that everyone \textit{can} learn, without too much of a technological background. I think that for ITC, or for any organization who wants to involve non-IT people in the development of their applications, the use of Makumba can make things much easier.
+	% (provided that we keep having nerd masters to maintain and update it :p) 
 \end{quotation}
 
 \begin{quotation}
-	Mak is significantly more suitable for ITD than anything else I've seen, despite the horrible inflexibility of the J2EE platform. Most other frameworks/setups insist on a very clear separation between the model and the view, and in most situations, this makes sense. However, by moving certain typically controller-world operations, such as database queries, to the view **in a simple and accessible way**, pages become much more maintainable without very strong documentation discipline, because they somewhat self-document.
-\end{quotation}
-
-\begin{quotation}
-	Makumba being specifically designed for web applications, it is both extremely simple to learn for the basics - easier than PHP, especially for non-programmers - mainly through the easy interactions with databases ; yet can be as powerful as any other language, altough that involves dealing with Java, which is immediately more complicated - but not more complicated than any complex operation with any language.
-	The main disadvantage is that everyone must learn it, since it is quite different from other web technologies. But the main advantage is that everyone \textit{can} learn, without too much of a technological background. I think that for ITC, or for any organization who wants to involve non-IT people in the development of their applications, the use of Makumba can make things much easier (provided that we keep having nerd masters to maintain and update it :p) 
-\end{quotation}
-
-\begin{quotation}
+	% rudi: first sentence is a bit strong, but then it is quite suited, but too long
 	Makumba is definitely the only technology suitable for BEST. I've been working a lot with trainees, teaching them the technology and about our systems, so after observing them it is quite clear that simplicity is the crucial aspect. Makumba is very easy to use and, with a bit of programming knowledge, BL is also quite accessible. One big advantage is the syntax, which makes it straight forward to understand other people's work. With Makumba, it doesn't happen so often that 2 people write totally different pieces of code for the same feature, and this is very useful for BEST (where people change very often). I would even say that, to some extent, Makumba is keeping me (and other people) in BEST. I would have never stayed so long in ITC, if it wasn't so easy and fun to learn Makumba. As well, the new features developed during the past year are so amazing, that it seems people are becoming active again just because they want to try them out! 
 \end{quotation}
 
-\begin{quotation}
-	Makumba is really easy to use compared to other technologies. The learning time is short and the possibilities given by the framework are great. It's really fast to program with it and really user friendly. 
-\end{quotation}
+% \begin{quotation}
+% 	Makumba is really easy to use compared to other technologies. The learning time is short and the possibilities given by the framework are great. It's really fast to program with it and really user friendly. 
+% \end{quotation}
 
 \begin{quotation}
 	Makumba is great because it makes possible for non-IT people to write a webpage easily, with a little more knowledge than HTML
 \end{quotation}
 
 \begin{quotation}
+	% rudi: backs some of the conclusions, like the interdependence of files due to braking MVC
 	atm. I can't think of frameworks that do mix view and model, i.e. view and data query. they all go through a DAO layer, which would break the "what you code is what you get"). other frameworks also do have a lot of configuration overhead and rely on Java, which make it difficult for beginners to grasp. e.g. Struts needs to have several files changed in order to get a form to work, which is not so straightforward and slows down the "try and error" process. 
 \end{quotation}
 
