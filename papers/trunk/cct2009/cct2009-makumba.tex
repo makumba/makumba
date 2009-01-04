@@ -216,8 +216,6 @@ The Tech Committee also keeps a strong knowledge about it's own history and achi
 	\centering
 	% TODO: explain LOC, etc? explain that all data is measured at the beginning of the year?
 	% TODO: explain the drop from 2008 to 2009 needed? (due to removal of old BCC & public website pages in 2008, new ones have been added since late 2007, thus there were some ``duplicates'')
-	\label{tab:intranet-size}
-	\caption{Size of the Intranet}
 	\begin{tabular}{c|r|r|r|r|r|r}
 		\hline
 		\hline
@@ -259,6 +257,8 @@ The Tech Committee also keeps a strong knowledge about it's own history and achi
 		\hline
 		\hline
 	\end{tabular}
+	\caption{Size of the Intranet}
+	\label{tab:intranet-size}
 \end{table} 
 
 Let us first illustrate the Tech Committee activity in what we perceive as its sustainable period. Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since its launch seven years ago, detailed for the different technological levels MDD, JSP and BL. Additionally, the total number of code files is shown, along with the total lines of code (LOC).  Figure 1 shows the evolution of the code figures graphically. It is worth noting that there was a rather high amount of data definition (MDD) files defined in the beginning of The Intranet, representing data used in the first three sub-systems. Even though more data definitions have been added over time, a certain saturation level has been reached in the last years, with only minor additions. It is not unexpected that the data definitions of an organization (its "domain model") changes more seldom after 
@@ -269,12 +269,10 @@ In contrary, the amount of Business Logics files has continuously increased, wit
   \caption{Size of the Intranet}
 \end{figure} 
 
-Table~\ref{tab:intranet-size} illustrates the number of active members in the Tech Committee since 2004, differentiated on the different levels of Makumba, and on their activity in ``core'' and ``peripheral'' members. This data was on the one hand extracted from the questionnaire filled in by many of the members, and then refined and amended by some of the committee coordinators. Additionally, the number of members participating in the annual summer meetings, which are approximately one week meetings for all kinds of members, where besides designing features and planning the upcoming year also training and developing sessions take place, is depicted. It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the number of members active on data definitions is not in-, but rather decreasing; this might be explained with the above described arrival at data maturity level, and thus less work and challenges to take for the Tech Committee members.
+Table~\ref{tab:itd-members} illustrates the number of active members in the Tech Committee since 2004, differentiated on the different levels of Makumba, and on their activity in ``core'' and ``peripheral'' members. This data was on the one hand extracted from the questionnaire filled in by many of the members, and then refined and amended by some of the committee coordinators. Additionally, the number of members participating in the annual summer meetings, which are approximately one week meetings for all kinds of members, where besides designing features and planning the upcoming year also training and developing sessions take place, is depicted. It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the number of members active on data definitions is not in-, but rather decreasing; this might be explained with the above described arrival at data maturity level, and thus less work and challenges to take for the Tech Committee members.
 
 \begin{table}
 	\centering
-	\caption{Members in the Tech Committee}
-	\label{tab:itd-members}
 	\begin{tabular}{c|r|r|r|r|r|r|r|r|}
 		\hline
 		\hline
@@ -303,6 +301,8 @@ Table~\ref{tab:intranet-size} illustrates the number of active members in the Te
 % 2007: http://private.best.eu.org/events/event.jsp?event=25-C-TM-COM
 % 2008: http://private.best.eu.org/events/event.jsp?event=26-C-BE-COM
 	\end{tabular}
+	\caption{Members in the Tech Committee}
+	\label{tab:itd-members}
 \end{table} 
 
 \subsection{Survey}\label{sec:techCommittee-survey}
@@ -312,9 +312,10 @@ The questionaire consisted of a total of 53 different questions, some were open 
 
 Figure~\ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time. It can be observed that apparently, learning to view and display data is easier than handling forms to create, edit, and delete data, while Business Logics are the most difficult concept, especially in the first two years of membership. Most members that stay in the committee for a longer period, however, master all levels of Makumba almost equally well.
 
-\begin{figure}\label{fig:learning-technologies}
+\begin{figure}
   \includegraphics[width=0.98\columnwidth]{figures/learning-technologies}
   \caption{Learning curve for different aspects of Makumba}
+  \label{fig:learning-technologies}
 \end{figure} 
 
 Figure~\ref{fig:learning-members} shows skill trajectories for individual members, where the total skills on all Makumba technologies are simply summed up. From this graph, it can be observed that most members have a very steep skill rise in the first, and to some extent also in the second year. TODO: this is important due to high fluctuation... ?
