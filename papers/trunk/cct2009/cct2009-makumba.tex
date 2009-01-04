@@ -36,6 +36,7 @@
 \documentclass{acm_proc_article-sp}
 
 \usepackage{url}
+\usepackage{subfigure}
 
 \begin{document}
 
@@ -272,7 +273,7 @@ Table~\ref{tab:intranet-size} illustrates the number of active members in the Te
 					& Per & Core				& Per & Core				& Per & Core				& Per & Core	\\
 		\hline
 		\hline
-		2003 & ? & ? & ? & ? & ? & ? & ? & 8 \\
+		2003 & ? & ? & ? & ? & ? & ? & 4 & 5 \\
 		\hline
 		2004 & 3 & 4 & 7 & 3 & 3 & 3 & 6 & 5 \\
 		\hline
@@ -313,6 +314,29 @@ Figure~\ref{fig:learning-technologies} shows skill trajectories for individual m
   \includegraphics[width=0.98\columnwidth]{figures/learning-members}
   \caption{Skill development of the survey respondents over the years}
 \end{figure} 
+
+\begin{figure}
+  \label{fig:learning-details}
+  \subfigure[Member 1]{
+    \includegraphics[width=0.22\textwidth]{figures/Joao}
+    \label{fig:learning-joao}
+  }
+  \subfigure[Member 2]{
+    \includegraphics[width=0.22\textwidth]{figures/Priit}
+    \label{fig:learning-priit}
+  }
+  \subfigure[Member 3]{
+    \includegraphics[width=0.22\textwidth]{figures/Karina}
+    \label{fig:learning-karina}
+  }
+  \subfigure[Member 4]{
+    \includegraphics[width=0.22\textwidth]{figures/Stefan}
+    \label{fig:learning-stefan}
+  }
+\end{figure} 
+
+
+
 
 Finally, two open questions concluded the questionaire. The first one aimed at getting impressions on how the members experience learning technologies in the Tech Committee. Many people cited ``learning by doing'' and by using already existing pages as a base to be adapted to their needs as major factors; moreover, many developers stated how helpful the Tech Committee is with providing assistance with code examples, via the mailing list or chat channels. TODO: mention here that this alleviates lack of groups/forums/.. on the web?
 
