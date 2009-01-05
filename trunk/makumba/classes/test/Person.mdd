@@ -79,12 +79,16 @@ address=set			 ;Addresses
   address->usagestart=date		;Use from
   address->usageend=date		;Use till
   address->sth=ptr
+  address->homepage=char[50]
+  
   address->sth->aaa=char[20]
   address->sth->aaa%length = [3..?] : aaa must be at least 3 letters long!
   address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
+
   address->languages = set test.Language ; languages spoken in that address
   address->someFunction() { 1 + 2 } Some nested message 
   address->description%length = [3..?] : Description must be at least 3 letters long!
+  address->homepage%matches = http://.+ : the homepage must start with http://
   address->notAllLowerDescription%compare = lower(description) != description : Description cannot all be lower case!
 
 toys=set
@@ -112,6 +116,8 @@ nameMin2CharsLong() { character_length(indiv.name) > 2 } Your name is not long e
 nameMin4CharsLong() { character_length(indiv.name) > 4 } Your name is not long enough!
 nameMin3CharsLong() { indiv.nameMin3CharsLong() } Your name is not long enough!
 someTest(){ actor(test.Person) }
+allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } Your name and surname is not long enough!
+oneNameMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } Your name and surname is not long enough!
 
 fullName() { indiv.fullName() }
 

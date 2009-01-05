@@ -54,10 +54,12 @@ public class oqlanalyzer extends TestCase {
     private QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     public static final String[] TEST_MDD_FUNCTIONS = new String[] {
+            "SELECT x.name2FieldsMin2CharsLong() FROM test.Person x",
             "SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)",
             "SELECT x AS col1 FROM test.Person x WHERE x.actor2($username, $password)" };
 
     public static final String[] TEST_MDD_FUNCTION_RESULTS = new String[] {
+            "SELECT (character_length(x.indiv.name) > 2 AND character_length(x.indiv.surname) > 2) FROM test.Person x",
             "SELECT x AS col1 FROM test.Person x WHERE (x.myapp_username=$username AND x.password=$password)",
             "SELECT x AS col1 FROM test.Person x WHERE (x.indiv.someusername=$username AND x.password=$password)" };
 

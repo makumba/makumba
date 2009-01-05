@@ -77,11 +77,13 @@ public class RecordParser {
 
     public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
 
+    public static final String validationRuleErrorMessageSeparatorChar = " : ";
+    
     // regular expressions for validation definitions //
     public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
             + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)" + RegExpUtils.LineWhitespaces
-            + ":" + RegExpUtils.LineWhitespaces + ".+";
+            + validationRuleErrorMessageSeparatorChar + RegExpUtils.LineWhitespaces + ".+";
 
     public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
 
@@ -1233,15 +1235,14 @@ public class RecordParser {
                 if (!singleValidationMatcher.matches()) {
                     throw new ValidationDefinitionParseError(targetDD.getName(), "Illegal rule definition!", line);
                 }
-                String[] definitionParts = line.split(":");
-                if (definitionParts.length < 2) {
+                if (line.indexOf(validationRuleErrorMessageSeparatorChar) == -1) {
                     throw new ValidationDefinitionParseError(targetDD.getName(),
                             "Rule does not consist of the two parts <rule>:<message>!", line);
                 }
                 String fieldName = singleValidationMatcher.group(1).trim();
                 String operation = singleValidationMatcher.group(2).trim();
                 String ruleDef = singleValidationMatcher.group(3).trim();
-                String errorMessage = definitionParts[1].trim();
+                String errorMessage = line.substring(line.lastIndexOf(validationRuleErrorMessageSeparatorChar) + validationRuleErrorMessageSeparatorChar.length()).trim();
                 String ruleName = line;
                 ValidationRule rule = null;
                 Matcher matcher;
