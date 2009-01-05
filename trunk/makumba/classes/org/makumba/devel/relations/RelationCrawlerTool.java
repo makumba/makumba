@@ -62,13 +62,14 @@ public class RelationCrawlerTool extends HttpServlet {
         // we set it back to null after the crawling and clean the cache
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
+
+        rc.writeRelationsToDb();
         
         Logger.getLogger("org.makumba.devel.relations").info("\n\nCrawling finished, took: "
             + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
         //RelationCrawler.writeJSPAnalysisError(webappRoot + File.separator + "analysis-errors.txt", rc.getJSPAnalysisErrors(), rc.getJSPCrawlCount());
 
-        rc.writeRelationsToDb();
 
         Logger.getLogger("org.makumba.devel.relations").info("\n\nWriting to database finished, total time: "
             + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));

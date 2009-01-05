@@ -48,6 +48,8 @@ public class RelationCrawler {
     private String webappRoot;
 
     private String targetDatabase;
+    
+    private Pointer targetDatabasePointer;
 
     private boolean forceDatabase;
 
@@ -110,7 +112,7 @@ public class RelationCrawler {
     }
     
     /**
-     * Gets the default target database, can be set using the org.makumba.devel.relations.databaseName JVM property
+     * Gets the default target database, can be set using the org.makumba.devel.relations.databaseName JVM property.
      */
     public static String getDefaultTargetDatabase() {
         return System.getProperty(RelationCrawler.DATABASE_NAME_KEY) == null ? TransactionProvider.getInstance().getDefaultDataSourceName() : System.getProperty(RelationCrawler.DATABASE_NAME_KEY);
@@ -136,7 +138,9 @@ public class RelationCrawler {
         return this.detectedRelations;
     }
 
-    public String getRelationDatabase() {
+    public String getTargetDatabaseName() {
+        // we call determineRelations to make sure we use the right db
+        determineRelationsDatabase(tp, forceDatabase, false);
         return targetDatabase;
     }
 
@@ -474,13 +478,15 @@ public class RelationCrawler {
      */
     private Pointer determineRelationsDatabase(TransactionProvider tp, boolean forceDestination, boolean createDefaultRecord) {
 
-        Pointer webappPointer = null;
+        if(targetDatabasePointer != null) {
+            return targetDatabasePointer;
+        }
 
         // first we are going to check in which db the relations are, if there are any
         Transaction tr = null;
         try {
             tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
-            Vector<Dictionary<String, Object>> databaseLocation = getWebappDatabasePointer(tp, tr);
+            Vector<Dictionary<String, Object>> databaseLocation = queryTargetDatabasePointer(tp, tr);
             if (databaseLocation.size() > 1) {
                 // that's too much
                 throw new RuntimeException("Too many possible locations for the relations database of webapp "
@@ -491,19 +497,19 @@ public class RelationCrawler {
                     // we set the location to the one provided at execution
                     Dictionary<String, Object> data = new Hashtable<String, Object>();
                     data.put("relationDatabase", targetDatabase);
-                    Pointer oldPointer = webappPointer = (Pointer) databaseLocation.get(0).get("webappPointer");
+                    Pointer oldPointer = targetDatabasePointer = (Pointer) databaseLocation.get(0).get("webappPointer");
                     tr.update(oldPointer, data);
                 } else {
                     // we re-use the previous location
                     targetDatabase = (String) databaseLocation.get(0).get("relationDatabase");
-                    webappPointer = (Pointer) databaseLocation.get(0).get("webappPointer");
+                    targetDatabasePointer = (Pointer) databaseLocation.get(0).get("webappPointer");
                 }
             } else if (databaseLocation.size() == 0 && createDefaultRecord) {
                 // we set the location to the one provided at execution
                 Dictionary<String, Object> data = new Hashtable<String, Object>();
                 data.put("webappRoot", webappRoot);
                 data.put("relationDatabase", targetDatabase);
-                webappPointer = tr.insert("org.makumba.devel.relations.WebappDatabase", data);
+                targetDatabasePointer = tr.insert("org.makumba.devel.relations.WebappDatabase", data);
             } else {
                 return null;
             }
@@ -511,11 +517,11 @@ public class RelationCrawler {
             tr.close();
         }
 
-        return webappPointer;
+        return targetDatabasePointer;
 
     }
 
-    private Vector<Dictionary<String, Object>> getWebappDatabasePointer(TransactionProvider tp, Transaction tr) {
+    private Vector<Dictionary<String, Object>> queryTargetDatabasePointer(TransactionProvider tp, Transaction tr) {
         String oqlQuery = "SELECT wdb AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = $1";
         String hqlQuery = "SELECT wdb.id AS webappPointer, wdb.relationDatabase AS relationDatabase from org.makumba.devel.relations.WebappDatabase wdb WHERE wdb.webappRoot = ?";
         Vector<Dictionary<String, Object>> databaseLocation = tr.executeQuery(
@@ -523,36 +529,6 @@ public class RelationCrawler {
         return databaseLocation;
     }
 
-    private String relationDatabaseName = null;
-
-    private String getRelationsDatabaseName(TransactionProvider tp) {
-        if (relationDatabaseName != null) {
-            return relationDatabaseName;
-        }
-
-        Transaction tr = null;
-        try {
-            tr = tp.getConnectionTo(tp.getDefaultDataSourceName());
-            Vector<Dictionary<String, Object>> databaseLocation = getWebappDatabasePointer(tp, tr);
-            if (databaseLocation.size() > 1) {
-                // that's too much
-                throw new RuntimeException("Too many possible locations for the relations database of webapp "
-                        + webappRoot);
-            } else if (databaseLocation.size() == 1) {
-                relationDatabaseName = (String) databaseLocation.firstElement().get("relationDatabase");
-                return (String) databaseLocation.firstElement().get("relationDatabase");
-            } else if (databaseLocation.size() == 0) {
-                return tp.getDefaultDataSourceName();
-            }
-        } finally {
-            if (tr != null) { // we need to be careful to check that tr != null, it might not have been initialised
-                tr.close();
-            }
-        }
-
-        return null;
-
-    }
 
     /**
      * Deletes the dependency relations of this file
@@ -564,7 +540,7 @@ public class RelationCrawler {
         String relationQueryOQL = "SELECT r AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = $1";
         String relationQueryHQL = "SELECT r.id AS rel FROM org.makumba.devel.relations.Relation r WHERE r.fromFile = ?";
 
-        Transaction t = tp.getConnectionTo(getRelationDatabase());
+        Transaction t = tp.getConnectionTo(getTargetDatabaseName());
 
         Vector<Dictionary<String, Object>> res = t.executeQuery(tp.getQueryLanguage().equals("oql") ? relationQueryOQL
                 : relationQueryHQL, new Object[] { relativePath });
@@ -630,10 +606,10 @@ public class RelationCrawler {
 
         Transaction t = null;
         try {
-            String relationDatabase = getRelationsDatabaseName(tp);
-            if (tp == null) {
-                // TODO replace this with mechanism to launch crawling
-                throw new MakumbaError("No relations table in database. Should crawl first.");
+            String relationDatabase = getTargetDatabaseName();
+            if (relationDatabase == null) {
+                // return empty file relations
+                return new FileRelations(relativePath);
             }
             t = tp.getConnectionTo(relationDatabase);
             Vector<Dictionary<String, Object>> dependencies = t.executeQuery(relationQuery,
