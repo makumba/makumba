@@ -52,7 +52,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private static final long serialVersionUID = 1L;
 
     protected static String webappRoot;
-
+    
     public static void setWebappRoot(String s) {
         webappRoot = s;
     }
@@ -146,7 +146,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     protected void addField1(FieldDefinition fi) {
-        fieldOrder.addElement(fi.getName());
+        if(fi.getType() != null && fi.getType().equals("ptrIndex")) {
+            fieldOrder.add(0, fi.getName());
+        } else {
+            fieldOrder.addElement(fi.getName());
+        }
         fields.put(fi.getName(), fi);
         ((FieldInfo) fi).dd = this;
     }
@@ -556,5 +560,5 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
         getFieldDefinition(fieldName).checkUpdate(d);
     }
-
+    
 }
