@@ -450,18 +450,21 @@ public class Configuration implements Serializable {
 
         if (defaultDataSource == null) {
             Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
-            String defaulDataSourceName = globalProperties.get("defaultDataSource");
+            String defaultDataSourceName = globalProperties.get("defaultDataSource");
 
             // first we check if there is maybe only one dataSource, in that case we take it as default
             int count = 0;
             String lastSection = "";
-            boolean doLookup = true;
+            boolean doLookup = false;
             for (Object sectionObject : applicationConfig.sectionNames()) {
                 String section = (String) sectionObject;
                 if (section.startsWith("dataSource:")) {
                     count++;
-                    doLookup = lastSection.indexOf(" ") > -1 && section.indexOf(" ") > -1 && lastSection.substring(0, lastSection.indexOf(" ")).equals(
-                        section.substring(0, section.indexOf(" ")));
+                    // FIXME this can't work, it needs to compare all the sections...
+                    if(!doLookup) {
+                        doLookup = lastSection.indexOf(" ") > -1 && section.indexOf(" ") > -1 && lastSection.substring(0, lastSection.indexOf(" ")).equals(
+                            section.substring(0, section.indexOf(" ")));
+                    }
                     lastSection = section;
                 }
             }
@@ -485,21 +488,21 @@ public class Configuration implements Serializable {
             }
 
             // now we can't really tell which one to use by ourselves so we see if there is a default one
-            if (defaulDataSourceName == null) {
+            if (defaultDataSourceName == null) {
                 throw new ConfigurationError(
                         "Since there is more than one configured dataSource, Makumba needs to know which one to use. Please specify a defaultDataSource in section dataSourceConfig.");
             }
 
             // we fetch the default one
             for (String c : configuredDataSources.keySet()) {
-                if (c.startsWith("dataSource:" + defaulDataSourceName)) {
+                if (c.equals("dataSource:" + defaultDataSourceName) || c.startsWith("dataSource:" + defaultDataSourceName + " ")) {
                     defaultDataSource = configuredDataSources.get(c);
                     return defaultDataSource;
                 }
             }
 
             // nothing found?
-            throw new ConfigurationError("Default dataSource " + defaulDataSourceName + " not found in Makumba.conf");
+            throw new ConfigurationError("Default dataSource " + defaultDataSourceName + " not found in Makumba.conf");
 
         }
 
