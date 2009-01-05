@@ -39,8 +39,16 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
     public static final String ERROR_NO_REAL = "invalid real";
 	
 	/* see http://c2.com/cgi/wiki?JavaSingleton */
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new FieldEditor();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldEditor singleton = new FieldEditor();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}	
 
 	/** Don't use this, use getInstance() */

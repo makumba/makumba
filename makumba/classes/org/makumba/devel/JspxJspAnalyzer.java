@@ -34,8 +34,16 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  */
 public class JspxJspAnalyzer implements JspAnalyzer {
 
-	private static final class SingletonHolder {
-		static final JspAnalyzer singleton = new JspxJspAnalyzer();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static JspAnalyzer singleton = new JspxJspAnalyzer();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	private JspxJspAnalyzer() {}

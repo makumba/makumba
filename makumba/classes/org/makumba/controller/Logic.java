@@ -730,7 +730,7 @@ public class Logic {
             }
 
             if (transactionProviderClass == null) {
-                transactionProviderClass = Configuration.getDefaultTransactionProviderClass();
+                return TransactionProvider.getInstance();
             }
             
             Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", null);

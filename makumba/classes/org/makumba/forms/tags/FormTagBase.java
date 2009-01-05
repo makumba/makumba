@@ -319,7 +319,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     FormTagBase findRootForm() {
         FormTagBase parent = findParentForm();
         if (parent == null) {
-            return this;
+                return this;
         }
         return parent.findRootForm();
     }

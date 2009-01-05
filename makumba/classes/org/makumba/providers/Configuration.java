@@ -224,13 +224,10 @@ public class Configuration implements Serializable {
 
         }
 
-        // figure type of data source. if none provided, we use the default database layer type
+        // figure type of data source. if none is provided, we shout
         String type = applicationConfig.getProperty(section, "databaseLayer");
         if (type.equals(PROPERTY_NOT_SET)) {
-            type = applicationConfig.getStringProperty("dataSourceConfig", "defaultDatabaseLayer", defaultConfig);
-            Logger.getLogger("org.makumba.config").warning(
-                "Using default databaseLayer " + type + " for dataSource " + name
-                        + ". To get rid of this message, set a databaseLayer property for this dataSource.");
+            throw new ConfigurationError("Data source section ["+section + "] misses the required property 'databaseLayer'.");
         }
 
         // populate with properties
@@ -264,22 +261,6 @@ public class Configuration implements Serializable {
     public static String getDataDefinitionProviderClass() {
         // FIXME this should lookup a configuration file and return whatever is specified there
         return defaultDataDefinitionProvider;
-    }
-
-    /**
-     * Gives the default transaction provider implementation to use
-     * 
-     * @return a String containing the class name of the transaction provider implementation
-     */
-    public static String getDefaultTransactionProviderClass() {
-
-        if (getDefaultDatabaseLayer().equals(DataSourceType.makumba.name())) {
-            return "org.makumba.db.makumba.MakumbaTransactionProvider";
-        } else if (getDefaultDatabaseLayer().equals(DataSourceType.hibernate.name())) {
-            return "org.makumba.db.hibernate.HibernateTransactionProvider";
-        } else {
-            throw new ConfigurationError("databaseLayer must be either 'makumba' or 'hibernate'");
-        }
     }
 
     /**
@@ -421,6 +402,13 @@ public class Configuration implements Serializable {
 
         return conf.getProperties();
     }
+    
+    /**
+     * Gives the type of the data source (makumba or hibernate)
+     */
+    public static DataSourceType getDataSourceType(String dataSourceName) {
+        return lookupDataSource(dataSourceName).getType();
+    }
 
     private static ConfiguredDataSource defaultDataSource = null;
 
@@ -513,7 +501,9 @@ public class Configuration implements Serializable {
     private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
 
     /**
-     * Looks up the right {@link ConfiguredDataSource} based on host and path. FIXME the host name may looks weirdish
+     * Looks up the right {@link ConfiguredDataSource} based on host and path.<br>
+     * 
+     * FIXME the host name may looks weirdish
      */
     private static ConfiguredDataSource lookupDataSource(String dataSource) {
 

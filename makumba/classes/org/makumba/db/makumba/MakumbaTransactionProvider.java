@@ -9,6 +9,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
@@ -21,11 +22,19 @@ import org.makumba.providers.TransactionProvider;
  */
 public class MakumbaTransactionProvider extends TransactionProvider {
 
-    private static class SingletonHolder {
-        private final static MakumbaTransactionProvider singleton = new MakumbaTransactionProvider();
+    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        private static TransactionProvider singleton = new MakumbaTransactionProvider();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
-    public static MakumbaTransactionProvider getInstance() {
+    public static TransactionProvider getInstance() {
         return SingletonHolder.singleton;
     }
 
@@ -45,8 +54,16 @@ public class MakumbaTransactionProvider extends TransactionProvider {
 
     }
 
-    private static class CRUDOperationProviderSingletonHolder {
+    private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
         private static CRUDOperationProvider singleton = new MakumbaCRUDOperationProvider();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public CRUDOperationProviderSingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     static Class<?>[] theProp = { java.util.Properties.class };
@@ -210,7 +227,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     });
 
     public Transaction getConnectionTo(String name) {
-        return (DBConnectionWrapper) getDatabase(name).getDBConnection(name);
+        return super.getConnectionTo(name, this);
     }
 
     public String getDatabaseProperty(String name, String propName) {
@@ -232,6 +249,17 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     public CRUDOperationProvider getCRUD() {
         return CRUDOperationProviderSingletonHolder.singleton;
 
+    }
+
+    @Override
+    protected Transaction getTransaction(String name) {
+        return (DBConnectionWrapper) getDatabase(name).getDBConnection(name);
+    }
+
+    @Override
+    protected void setTransactionProvider(TransactionProvider tp) {
+        SingletonHolder.singleton = tp;
+        
     }
 
 }

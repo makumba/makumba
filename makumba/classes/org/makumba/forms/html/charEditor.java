@@ -35,8 +35,16 @@ import org.makumba.providers.Configuration;
 
 public class charEditor extends FieldEditor {
 	
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new charEditor();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldEditor singleton = new charEditor();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	/** Don't use this, use getInstance() */

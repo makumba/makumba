@@ -159,8 +159,16 @@ public class DBConnectionWrapper extends DBConnection {
 }
 
 class ClosedDBConnection extends DBConnectionWrapper {
-    private static final class SingletonHolder {
-        static final DBConnection singleton = new ClosedDBConnection(null);
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static DBConnection singleton = new ClosedDBConnection(null);
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     private ClosedDBConnection(TransactionProvider tp) {

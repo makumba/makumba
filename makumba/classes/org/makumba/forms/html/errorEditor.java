@@ -30,8 +30,16 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public class errorEditor extends FieldEditor {
 	
-	private static final class SingletonHolder {
-		static final FieldEditor singleton = new errorEditor();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldEditor singleton = new errorEditor();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	private errorEditor() {}

@@ -48,8 +48,16 @@ public class charViewer extends FieldViewer {
         return paramValues;
     }
 
-    private static final class SingletonHolder {
-        static final FieldFormatter singleton = new charViewer();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new charViewer();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     private charViewer() {

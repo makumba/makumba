@@ -29,8 +29,16 @@ import java.util.Dictionary;
 
 public class timestampFormatter extends dateFormatter {
 
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new timestampFormatter();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldFormatter singleton = new timestampFormatter();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	private timestampFormatter() {

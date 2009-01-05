@@ -3,6 +3,7 @@ package org.makumba.db.hibernate;
 import org.makumba.HibernateSFManager;
 import org.makumba.MakumbaError;
 import org.makumba.Transaction;
+import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -17,16 +18,32 @@ import org.makumba.providers.TransactionProvider;
  */
 public class HibernateTransactionProvider extends TransactionProvider {
    
-    private static class SingletonHolder {
-        private final static HibernateTransactionProvider singleton = new HibernateTransactionProvider();  
+    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        private static TransactionProvider singleton = new HibernateTransactionProvider();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
     
-    private static class CRUDOperationProviderSingletonHolder {
+    private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
         private static CRUDOperationProvider singleton = new HibernateCRUDOperationProvider();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public CRUDOperationProviderSingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 
     }
     
-    public static HibernateTransactionProvider getInstance() {
+    public static TransactionProvider getInstance() {
         return SingletonHolder.singleton;
     }
     
@@ -48,6 +65,11 @@ public class HibernateTransactionProvider extends TransactionProvider {
     }
 
     public Transaction getConnectionTo(String name) {
+        return super.getConnectionTo(name, this);
+    }
+    
+    @Override
+    protected Transaction getTransaction(String name) {
         return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
     }
 
@@ -62,4 +84,10 @@ public class HibernateTransactionProvider extends TransactionProvider {
     public String getQueryLanguage() {
         return "hql";
     }
+
+    @Override
+    protected void setTransactionProvider(TransactionProvider tp) {
+        SingletonHolder.singleton = tp;
+    }
+
 }

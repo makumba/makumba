@@ -44,8 +44,16 @@ public class dateFormatter extends FieldFormatter {
 		return _paramValues;
 	}
 	
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new dateFormatter();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldFormatter singleton = new dateFormatter();
+
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	/** Don't use this, use getInstance() */
