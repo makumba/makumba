@@ -41,8 +41,16 @@ public class ResponderFactory {
     
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 
-    private static class SingletonHolder {
-        private static final ResponderFactory singleton = new ResponderFactory();
+    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        private static ResponderFactory singleton = new ResponderFactory();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
     
     public static ResponderFactory getInstance() {

@@ -409,7 +409,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 }
 
                 Method m = c.getMethod("set" + fieldNameInClass, parameterTypes);
-                m.invoke(baseObject, new Object[] { new ArrayList() });
+                m.invoke(baseObject, new Object[] { new ArrayList<Object>() });
 
                 ht.s.saveOrUpdate(baseObject);
                 ht.s.flush();

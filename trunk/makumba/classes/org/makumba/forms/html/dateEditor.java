@@ -39,8 +39,16 @@ import org.makumba.commons.formatters.dateFormatter;
 
 public class dateEditor extends FieldEditor {
 
-    private static final class SingletonHolder {
-        static final FieldEditor singleton = new dateEditor();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new dateEditor();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     private dateEditor() {

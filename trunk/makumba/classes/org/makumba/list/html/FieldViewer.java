@@ -32,8 +32,16 @@ import org.makumba.commons.formatters.RecordFormatter;
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter {
 
-	private static final class SingletonHolder {
-		static final FieldFormatter singleton = new FieldViewer();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static FieldFormatter singleton = new FieldViewer();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	/** Don't use this, use getInstance() */

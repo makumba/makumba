@@ -38,8 +38,16 @@ import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValida
 
 public class intEditor extends charEditor {
 
-    private static final class SingletonHolder {
-        static final FieldEditor singleton = new intEditor();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new intEditor();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     /** Don't use this, use getInstance() */

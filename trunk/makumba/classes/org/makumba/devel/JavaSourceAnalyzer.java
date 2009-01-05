@@ -31,8 +31,16 @@ import org.makumba.analyser.interfaces.JavaAnalyzer;
  */
 public class JavaSourceAnalyzer implements JavaAnalyzer {
 	
-	private static final class SingletonHolder {
-		static final JavaAnalyzer singleton = new JavaSourceAnalyzer();
+	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+		static JavaAnalyzer singleton = new JavaSourceAnalyzer();
+		
+		public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
 	}
 
 	private JavaSourceAnalyzer() {}

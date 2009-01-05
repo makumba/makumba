@@ -18,8 +18,16 @@ public class DataDefinitionProvider implements DataDefinitionProviderInterface {
 
     private DataDefinitionProviderInterface dataDefinitionProviderImplementation;
 
-    private static final class SingletonHolder {
-        private static final DataDefinitionProvider singleton = new DataDefinitionProvider();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        private static DataDefinitionProvider singleton = new DataDefinitionProvider();
+        
+        public void release() {
+            singleton = null;
+        }
+
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
     }
 
     public static DataDefinitionProvider getInstance() {

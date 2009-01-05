@@ -178,6 +178,7 @@ public class HibernateSFManager {
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Generating mappings under " + seedDir + File.separator + prefix);
 
+        
         try {
             // MddToMapping xot =
             new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed), prefix, nr);
@@ -187,6 +188,7 @@ public class HibernateSFManager {
         } catch (SAXException e) {
             e.printStackTrace();
         }
+        
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("building session factory");
         SessionFactory sessionFactory = cfg.buildSessionFactory();
 
