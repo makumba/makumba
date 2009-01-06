@@ -50,15 +50,6 @@ public class HibernateTransactionProvider extends TransactionProvider {
     private HibernateTransactionProvider() {
         
     }
-    
-    public void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
-        throw new MakumbaError("Not implemented");
-    }
-
-    public void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        throw new MakumbaError("Not implemented");
-
-    }
 
     public CRUDOperationProvider getCRUD() {
         return CRUDOperationProviderSingletonHolder.singleton;
@@ -71,10 +62,6 @@ public class HibernateTransactionProvider extends TransactionProvider {
     @Override
     protected Transaction getTransaction(String name) {
         return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
-    }
-
-    public String getDatabaseProperty(String name, String propName) {
-        throw new MakumbaError("Not implemented");
     }
     
     public Object getHibernateSessionFactory(String name) {

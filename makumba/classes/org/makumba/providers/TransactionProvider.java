@@ -90,19 +90,13 @@ public abstract class TransactionProvider implements SingletonHolder {
         return null;
     }
 
-    protected abstract Transaction getTransaction(String name);
-
-    protected abstract void setTransactionProvider(TransactionProvider tp);
-
     public String getDefaultDataSourceName() {
         return Configuration.getDefaultDataSourceName();
     }
 
-    public abstract String getDatabaseProperty(String name, String propName);
+    protected abstract Transaction getTransaction(String name);
 
-    public abstract void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv);
-
-    public abstract void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv);
+    protected abstract void setTransactionProvider(TransactionProvider tp);
 
     public abstract CRUDOperationProvider getCRUD();
 

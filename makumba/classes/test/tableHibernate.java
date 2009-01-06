@@ -42,6 +42,7 @@ import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -620,15 +621,15 @@ public class tableHibernate extends TestCase {
 			String nm = "testDatabaseHibernate";
 	
 			System.out.println("\nworked with: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
+			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name")
 			+ " version: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version")
+			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version")
 			+ "\njdbc driver: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name")
+			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name")
 			+ " version: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
+			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version")
 			+ "\njdbc connections allocated: "
-			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
+			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections")
 			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
 	
 	);

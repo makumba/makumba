@@ -41,6 +41,7 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -751,11 +752,11 @@ public class table extends TestCase {
         if (toString().equals("testCopy(test.table)")) {
             String nm = "testDatabase";
 
-            System.out.println("\nworked with: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
-                    + " version: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
-                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
-                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
-                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
+            System.out.println("\nworked with: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name")
+                    + " version: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
                     + org.makumba.commons.NamedResources.getCacheInfo()
 
             );
