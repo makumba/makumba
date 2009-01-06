@@ -432,6 +432,22 @@ public class Configuration implements Serializable {
         if (defaultDataSource == null) {
             Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
             String defaultDataSourceName = globalProperties.get("defaultDataSource");
+            
+            if(defaultDataSourceName != null) {
+                
+                // we fetch the default one
+                for (String c : configuredDataSources.keySet()) {
+                    if (c.equals("dataSource:" + defaultDataSourceName) || c.startsWith("dataSource:" + defaultDataSourceName + " ")) {
+                        defaultDataSource = configuredDataSources.get(c);
+                        return defaultDataSource;
+                    }
+                }
+
+                // nothing found?
+                throw new ConfigurationError("Default dataSource " + defaultDataSourceName + " not found in Makumba.conf");
+
+                
+            }
 
             // first we check if there is maybe only one dataSource, in that case we take it as default
             int count = 0;
@@ -476,17 +492,6 @@ public class Configuration implements Serializable {
                 throw new ConfigurationError(
                         "Since there is more than one configured dataSource, Makumba needs to know which one to use. Please specify a defaultDataSource in section dataSourceConfig.");
             }
-
-            // we fetch the default one
-            for (String c : configuredDataSources.keySet()) {
-                if (c.equals("dataSource:" + defaultDataSourceName) || c.startsWith("dataSource:" + defaultDataSourceName + " ")) {
-                    defaultDataSource = configuredDataSources.get(c);
-                    return defaultDataSource;
-                }
-            }
-
-            // nothing found?
-            throw new ConfigurationError("Default dataSource " + defaultDataSourceName + " not found in Makumba.conf");
 
         }
 
@@ -559,7 +564,7 @@ public class Configuration implements Serializable {
 
     }
 
-    enum DataSourceType {
+    public enum DataSourceType {
         makumba, hibernate;
     }
 

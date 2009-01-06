@@ -170,7 +170,7 @@ public class MakumbaTestSetup extends TestSetup {
     protected void deletePersonsAndIndividuals(Transaction db) {
         db.delete(address);
         for (int i = 0; i < namesPersonIndivName.length; i++) {
-            String query = "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name="
+            String query = "SELECT " +  (transactionProviderType.equals("oql") ? "p" : "p.id") + " AS p, p.indiv" + (transactionProviderType.equals("oql") ? "" : ".id") + " as i FROM test.Person p WHERE p.indiv.name="
                     + (transactionProviderType.equals("oql") ? "$1" : "?");
             Vector<Dictionary<String, Object>> v = db.executeQuery(query, namesPersonIndivName[i]);
             if (v.size() > 0) {

@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.makumba.Transaction;
 import org.makumba.commons.SingletonHolder;
-import org.makumba.db.hibernate.HibernateTransactionProvider;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.Configuration.DataSourceType;
 
 /**
@@ -70,33 +68,57 @@ public abstract class TransactionProvider implements SingletonHolder {
     }
 
     /**
-     * gets a connection from the TransactionProvider needed by the dataSource. if the concrete TransactionProvider the
-     * method was called from is not of the right type, link it dynamically to the right one
+     * gets a connection from the TransactionProvider needed by the dataSource.
      */
     protected Transaction getConnectionTo(String name, TransactionProvider instance) {
-        switch (Configuration.getDataSourceType(name)) {
+        DataSourceType type = Configuration.getDataSourceType(name);
+        instance.setLastConnectionType(type);
+        switch (type) {
             case makumba:
-                if (instance instanceof HibernateTransactionProvider) {
-                    instance.setTransactionProvider(providerInstances.get(DataSourceType.makumba.toString()));
-                }
                 return providerInstances.get(DataSourceType.makumba.toString()).getTransaction(name);
             case hibernate:
-                if (instance instanceof MakumbaTransactionProvider) {
-                    instance.setTransactionProvider(providerInstances.get(DataSourceType.hibernate.toString()));
-                }
                 return providerInstances.get(DataSourceType.hibernate.toString()).getTransaction(name);
 
         }
         return null;
     }
+    
+    /** returns the query language according to the last connection **/
+    protected String getQueryLanguage(TransactionProvider instance) {
+        switch(instance.getLastConnectionType()) {
+            case makumba:
+                return providerInstances.get(DataSourceType.makumba.toString()).getQueryLanguageInternal();
+            case hibernate:
+                return providerInstances.get(DataSourceType.hibernate.toString()).getQueryLanguageInternal();
+        }
+        return null;
+    }
+
+    /** returns the right CRUD provider according to the last connection **/
+    protected CRUDOperationProvider getCRUD(TransactionProvider instance) {
+        switch(instance.getLastConnectionType()) {
+            case makumba:
+                return providerInstances.get(DataSourceType.makumba.toString()).getCRUDInternal();
+            case hibernate:
+                return providerInstances.get(DataSourceType.hibernate.toString()).getCRUDInternal();
+        }
+        return null;
+    }
+
 
     public String getDefaultDataSourceName() {
         return Configuration.getDefaultDataSourceName();
     }
 
     protected abstract Transaction getTransaction(String name);
-
-    protected abstract void setTransactionProvider(TransactionProvider tp);
+    
+    protected abstract CRUDOperationProvider getCRUDInternal();
+    
+    protected abstract String getQueryLanguageInternal();
+    
+    protected abstract DataSourceType getLastConnectionType();
+    
+    protected abstract void setLastConnectionType(DataSourceType type);
 
     public abstract CRUDOperationProvider getCRUD();
 
