@@ -116,8 +116,8 @@ nameMin2CharsLong() { character_length(indiv.name) > 2 } Your name is not long e
 nameMin4CharsLong() { character_length(indiv.name) > 4 } Your name is not long enough!
 nameMin3CharsLong() { indiv.nameMin3CharsLong() } Your name is not long enough!
 someTest(){ actor(test.Person) }
-allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } Your name and surname is not long enough!
-oneNameMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } Your name and surname is not long enough!
+allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } Your name or surname is not long enough!
+oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } Your name and surname is not long enough!
 
 fullName() { indiv.fullName() }
 
