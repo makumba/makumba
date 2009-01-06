@@ -128,10 +128,6 @@ public class Configuration implements Serializable {
         return allGenericDeveloperToolsMap;
     }
 
-    public static void setContextPath(String path) {
-        contextPath = path;
-    }
-
     private static String contextPath = null;
 
     private static Map<String, ConfiguredDataSource> configuredDataSources = new HashMap<String, ConfiguredDataSource>();
@@ -152,10 +148,10 @@ public class Configuration implements Serializable {
             if (url != null) {
                 Logger.getLogger("org.makumba.config").info("Loading application configuration from " + url);
                 applicationConfig = new MakumbaINIFileReader(url);
-            } else { // if we did not find any configuration, we use the default one
+            } else { // if we did not find any configuration, we shout. we need an application configuration for the dataSource config.
                 Logger.getLogger("org.makumba.config").severe(
-                    "No application configuration found -> using internal default configuration!");
-                applicationConfig = defaultConfig;
+                    "No application configuration found!");
+                throw new ConfigurationError("Could not find application configuration file Makumba.conf in WEB-INF/classes!");
             }
 
             defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",

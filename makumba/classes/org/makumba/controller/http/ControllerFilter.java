@@ -63,7 +63,6 @@ public class ControllerFilter implements Filter {
     private ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
 
     public void init(FilterConfig c) {
-        Configuration.setContextPath(c.getServletContext().getServletContextName());
         conf = c;
         String handlerParam = c.getInitParameter("handlerClasses");
         if (handlerParam == null) {
