@@ -32,6 +32,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
@@ -128,8 +129,6 @@ public class Configuration implements Serializable {
         return allGenericDeveloperToolsMap;
     }
 
-    private static String contextPath = null;
-
     private static Map<String, ConfiguredDataSource> configuredDataSources = new HashMap<String, ConfiguredDataSource>();
 
     private static MakumbaINIFileReader defaultConfig;
@@ -184,7 +183,7 @@ public class Configuration implements Serializable {
 
     /** builds a {@link ConfiguredDataSource} based on a dataSource section **/
     private static ConfiguredDataSource buildConfiguredDataSource(String section) throws ConfigurationError {
-        String name = null, host = null, path = null, webapp = null;
+        String name = null, host = null, path = null;
         StringTokenizer st = new StringTokenizer(section, " ");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -193,7 +192,7 @@ public class Configuration implements Serializable {
                 String tokenName = token.substring(0, n);
                 String tokenValue = token.substring(n + 1);
 
-                if (org.makumba.commons.StringUtils.equalsAny(tokenName, "dataSource", "host", "path", "web-app")) {
+                if (org.makumba.commons.StringUtils.equalsAny(tokenName, "dataSource", "host", "path")) {
 
                     if (StringUtils.isBlank(tokenValue)) {
                         throw new ConfigurationError("Property " + tokenName + " has no value");
@@ -205,17 +204,15 @@ public class Configuration implements Serializable {
                         host = tokenValue;
                     } else if (tokenName.equals("path")) {
                         path = tokenValue;
-                    } else if (tokenName.equals("web-app")) {
-                        webapp = tokenValue;
                     }
                 } else {
                     throw new ConfigurationError("Invalid property '" + token + "' in dataSource section [" + section
-                            + "]. Correct syntax is [dataSource:<name> host:<host> path:<path> web-app:<context>}]");
+                            + "]. Correct syntax is [dataSource:<name> host:<host> path:<path>}]");
                 }
 
             } else {
                 throw new ConfigurationError("Invalid property '" + token + "' in dataSource section [" + section
-                        + "]. Correct syntax is [dataSource:<name> host:<host> path:<path> web-app:<context>}]");
+                        + "]. Correct syntax is [dataSource:<name> host:<host> path:<path>}]");
             }
 
         }
@@ -244,7 +241,7 @@ public class Configuration implements Serializable {
             throw new ConfigurationError("DataSource [" + section + "] is not configured in Makumba.conf");
         }
 
-        ConfiguredDataSource c = new ConfiguredDataSource(host, name, path, DataSourceType.valueOf(type), webapp);
+        ConfiguredDataSource c = new ConfiguredDataSource(host, name, path, DataSourceType.valueOf(type));
         c.setProperties(dataSourceConfiguration);
         return c;
     }
@@ -439,17 +436,19 @@ public class Configuration implements Serializable {
             // first we check if there is maybe only one dataSource, in that case we take it as default
             int count = 0;
             String lastSection = "";
-            boolean doLookup = false;
+            HashMap<String, Boolean> toLookUp = new HashMap<String, Boolean>();
             for (Object sectionObject : applicationConfig.sectionNames()) {
                 String section = (String) sectionObject;
                 if (section.startsWith("dataSource:")) {
                     count++;
-                    // FIXME this can't work, it needs to compare all the sections...
-                    if(!doLookup) {
-                        doLookup = lastSection.indexOf(" ") > -1 && section.indexOf(" ") > -1 && lastSection.substring(0, lastSection.indexOf(" ")).equals(
-                            section.substring(0, section.indexOf(" ")));
-                    }
                     lastSection = section;
+
+                    // we collect the sections we went through. if two sections start the same, we put them in a map to do a lookup
+                    if(section.indexOf(" ") > -1 && toLookUp.get(section.substring(0, section.indexOf(" "))) != null) {
+                        toLookUp.put(section.substring(0, section.indexOf(" ")), true);
+                    } else if(section.indexOf(" ") > -1) {
+                        toLookUp.put(section.substring(0, section.indexOf(" ")), false);
+                    }
                 }
             }
             if (count == 1) {
@@ -459,16 +458,17 @@ public class Configuration implements Serializable {
                 throw new ConfigurationError("You must configure at least one dataSource for Makumba to work properly");
             }
 
-            // now we treat the case when there are two or more dataSources that have the same name, but different host
-            // etc properties
+            // now we treat the case when there are two or more dataSources that have the same name, but different host, path properties
             // i.e. run a lookup and decide accordingly
             // but do this only if there are only dataSources that have the same name
-            if (doLookup && (lastSection.indexOf("host:") > -1 || lastSection.indexOf("path:") > -1 || lastSection.indexOf("web-app:") > -1)) {
-                // we have dataSources with the same name, try to figure default through lookup
-                // first we fetch the same name
-                String dataSourceName = lastSection.substring("dataSource:".length(), lastSection.indexOf(" "));
-                defaultDataSource = lookupDataSource(dataSourceName);
-                return defaultDataSource;
+            
+            for (Entry<String, Boolean> entry : toLookUp.entrySet()) {
+                if(entry.getValue()) {
+                    ConfiguredDataSource c = lookupDataSource(entry.getKey().substring("dataSource:".length()));
+                    if(c != null) {
+                        defaultDataSource = c;
+                    }
+                }
             }
 
             // now we can't really tell which one to use by ourselves so we see if there is a default one
@@ -498,12 +498,17 @@ public class Configuration implements Serializable {
 
     /**
      * Looks up the right {@link ConfiguredDataSource} based on host and path.<br>
+     * Tries to match all configured data sources against the local version of<br>
+     * dataSource:<dataSourceName> host:<hostName> path:<workingDirPath> or of<br>
+     * dataSource:<dataSourceName> host:<hostName> path:<webappPath><br>
+     * If no match is found, tries to retrieve dataSource:<dataSourceName>
      * 
-     * FIXME the host name may looks weirdish
+     * @throws ConfigurationError if no match is found
+     * 
      */
-    private static ConfiguredDataSource lookupDataSource(String dataSource) {
+    private static ConfiguredDataSource lookupDataSource(String dataSourceName) {
 
-        ConfiguredDataSource result = resolvedConfiguredDataSources.get(dataSource);
+        ConfiguredDataSource result = resolvedConfiguredDataSources.get(dataSourceName);
         if (result == null) {
 
             try {
@@ -513,17 +518,15 @@ public class Configuration implements Serializable {
                 java.net.URL u = ClassResource.get("/");
                 String alternatePath = u != null ? u.toString() : null;
 
-                String thisConfiguration1 = "dataSource:" + dataSource + " host:" + host + " path:" + path
-                        + " web-app:" + contextPath;
-                String thisConfiguration2 = "dataSource:" + dataSource + " host:" + host + " path:" + alternatePath
-                        + " web-app:" + contextPath;
-
+                String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
+                String thisConfiguration2 = "dataSource:" + dataSourceName + " host:" + host + " path:" + alternatePath;
+                
                 // we go over all the data sources and compare them to those we have
                 String maxKey = "";
 
                 for (String k : configuredDataSources.keySet()) {
                     if (thisConfiguration1.startsWith(k) && k.length() > maxKey.length()
-                            && thisConfiguration1.startsWith("dataSource:" + dataSource + " ")) {
+                            && k.startsWith("dataSource:" + dataSourceName + " ")) {
                         maxKey = k;
                         result = configuredDataSources.get(k);
                     }
@@ -531,22 +534,25 @@ public class Configuration implements Serializable {
 
                 for (String k : configuredDataSources.keySet()) {
                     if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
-                            && thisConfiguration2.startsWith("dataSource:" + dataSource + " ")) {
+                            && k.startsWith("dataSource:" + dataSourceName + " ")) {
                         maxKey = k;
                         result = configuredDataSources.get(k);
                     }
                 }
 
-                // nothing like our data source was found
+                // there was no dataSource:<name> path: ... found
+                // we fall back to the simple one
+                result = configuredDataSources.get("dataSource:" + dataSourceName);
+                
                 if (result == null) {
-                    throw new ConfigurationError("No DataSource " + dataSource + " configured in Makumba.conf");
+                    throw new ConfigurationError("No DataSource " + dataSourceName + " configured in Makumba.conf");
                 }
 
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
             Logger.getLogger("org.makumba.config").info(
-                "Resolved dataSource " + dataSource + " to " + result.toString());
+                "Resolved dataSource " + dataSourceName + " to " + result.toString());
             resolvedConfiguredDataSources.put(result.getName(), result);
         }
         return result;
