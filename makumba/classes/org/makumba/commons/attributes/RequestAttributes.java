@@ -74,9 +74,14 @@ public class RequestAttributes implements Attributes {
     }
 
     public static RequestAttributes getAttributes(HttpServletRequest req) throws LogicException {
-        if (req.getAttribute(ATTRIBUTES_NAME) == null)
+        if (req.getAttribute(ATTRIBUTES_NAME) == null) {
             req.setAttribute(ATTRIBUTES_NAME, new RequestAttributes(req));
+            setFormRedirectionResponseAttributes(req);
+        }
+        return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
+    }
 
+    static void setFormRedirectionResponseAttributes(HttpServletRequest req) {
         // check if we came from a form-redirection, and move info from the session to the request
         final HttpServletRequest httpServletRequest = req;
         final HttpSession session = httpServletRequest.getSession();
@@ -94,8 +99,6 @@ public class RequestAttributes implements Attributes {
                 session.removeAttribute(attr + suffix);
             }
         }
-
-        return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
     }
 
     RequestAttributes(HttpServletRequest req) throws LogicException {
