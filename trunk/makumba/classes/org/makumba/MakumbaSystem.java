@@ -111,38 +111,7 @@ public class MakumbaSystem {
     public static Transaction getDatabase(String connectionFile) {
         return getConnectionTo(connectionFile);
     }
-
-    /**
-     * Access the properties of a database. Besides the properties defined in the database connection file, the
-     * following are available <table border =1>
-     * <tr>
-     * <td><code>sql_engine.name</code>
-     * <td>name of the SQL engine used
-     * <tr>
-     * <td><code>sql_engine.version</code>
-     * <td>version of the SQL engine used
-     * <tr>
-     * <td><code>sql.jdbc_driver.name</code>
-     * <td>name of the JDBC driver used
-     * <tr>
-     * <td><code>jdbc_driver.name</code>
-     * <td>name of the JDBC driver used
-     * <tr>
-     * <td><code>jdbc_driver.version</code>
-     * <td>version of the JDBC driver used
-     * <tr>
-     * <td><code>jdbc_url</code>
-     * <td>JDBC url connected to
-     * <tr>
-     * <td><code>jdbc_connections</code>
-     * <td>number of jdbc connections open </table>
-     * 
-     * @since makumba-0.5.5.7
-     */
-    public static String getDatabaseProperty(String name, String propName) {
-        return tp.getDatabaseProperty(name, propName);
-    }
-
+    
     /**
      * Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file
      * CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd

@@ -36,6 +36,7 @@ import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
 import org.makumba.commons.HtmlTagEnumerator;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -149,7 +150,7 @@ public class HtmlTableImporter {
      * logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        (TransactionProvider.getInstance())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
+        ((MakumbaTransactionProvider)MakumbaTransactionProvider.getInstance())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
     }
 
     /**

@@ -50,6 +50,7 @@ import org.makumba.MakumbaSystem;
 import org.makumba.Text;
 import org.makumba.commons.Base64;
 import org.makumba.commons.ReadableFormatter;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -270,17 +271,17 @@ public class MakumbaInfoTag extends TagSupport {
             printMakumbaPropertyRow(out, "<a href=\"/makumba-docs/CHANGELOG.txt\">version</a>",
                 MakumbaSystem.getVersion());
             printMakumbaPropertyRow(out, "Default database name", dbname);
-            printMakumbaPropertyRow(out, "DBSV", MakumbaSystem.getDatabaseProperty(dbname, "dbsv"));
-            printMakumbaPropertyRow(out, "Number of connections open", MakumbaSystem.getDatabaseProperty(dbname,
+            printMakumbaPropertyRow(out, "DBSV", MakumbaTransactionProvider.getDatabaseProperty(dbname, "dbsv"));
+            printMakumbaPropertyRow(out, "Number of connections open", MakumbaTransactionProvider.getDatabaseProperty(dbname,
                 "jdbc_connections"));
             printMakumbaPropertyRow(out, "Out of this, unused connections in the pool",
-                MakumbaSystem.getDatabaseProperty(dbname, "resource_pool_size"));
+                MakumbaTransactionProvider.getDatabaseProperty(dbname, "resource_pool_size"));
 
-            printMakumbaPropertyRow(out, "SQL engine and version", MakumbaSystem.getDatabaseProperty(dbname,
+            printMakumbaPropertyRow(out, "SQL engine and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,
                 "sql_engine.name"));
-            printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaSystem.getDatabaseProperty(dbname,
+            printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,
                 "jdbc_driver.name")
-                    + " " + MakumbaSystem.getDatabaseProperty(dbname, "jdbc_driver.version"));
+                    + " " + MakumbaTransactionProvider.getDatabaseProperty(dbname, "jdbc_driver.version"));
 
             out.println("</table>");
 

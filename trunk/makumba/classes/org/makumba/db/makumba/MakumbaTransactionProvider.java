@@ -9,7 +9,6 @@ import org.makumba.Transaction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
@@ -230,7 +229,34 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         return super.getConnectionTo(name, this);
     }
 
-    public String getDatabaseProperty(String name, String propName) {
+    /**
+     * Access the properties of a database. Besides the properties defined in the database connection file, the
+     * following are available <table border =1>
+     * <tr>
+     * <td><code>sql_engine.name</code>
+     * <td>name of the SQL engine used
+     * <tr>
+     * <td><code>sql_engine.version</code>
+     * <td>version of the SQL engine used
+     * <tr>
+     * <td><code>sql.jdbc_driver.name</code>
+     * <td>name of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_driver.name</code>
+     * <td>name of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_driver.version</code>
+     * <td>version of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_url</code>
+     * <td>JDBC url connected to
+     * <tr>
+     * <td><code>jdbc_connections</code>
+     * <td>number of jdbc connections open </table>
+     * 
+     * @since makumba-0.5.5.7
+     */
+    public static String getDatabaseProperty(String name, String propName) {
         return getDatabase(name).getConfiguration(propName);
     }
 
