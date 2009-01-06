@@ -12,6 +12,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.Configuration.DataSourceType;
 
 /**
  * Makumba-specific implementation of the {@link TransactionProvider}.
@@ -269,12 +270,11 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     }
 
     public String getQueryLanguage() {
-        return "oql";
+        return super.getQueryLanguage(this);
     }
 
     public CRUDOperationProvider getCRUD() {
-        return CRUDOperationProviderSingletonHolder.singleton;
-
+        return super.getCRUD(this);
     }
 
     @Override
@@ -283,9 +283,26 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     }
 
     @Override
-    protected void setTransactionProvider(TransactionProvider tp) {
-        SingletonHolder.singleton = tp;
-        
+    protected CRUDOperationProvider getCRUDInternal() {
+        return CRUDOperationProviderSingletonHolder.singleton;
+    }
+
+
+    @Override
+    protected String getQueryLanguageInternal() {
+        return "oql";
+    }
+    
+    private DataSourceType lastConnectionType = DataSourceType.makumba;
+
+    @Override
+    protected DataSourceType getLastConnectionType() {
+        return this.lastConnectionType;
+    }
+
+    @Override
+    protected void setLastConnectionType(DataSourceType type) {
+        this.lastConnectionType = type;
     }
 
 }

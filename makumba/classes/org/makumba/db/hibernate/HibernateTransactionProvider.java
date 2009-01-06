@@ -1,12 +1,11 @@
 package org.makumba.db.hibernate;
 
 import org.makumba.HibernateSFManager;
-import org.makumba.MakumbaError;
 import org.makumba.Transaction;
-import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.Configuration.DataSourceType;
 
 /**
  * This class is a Hibernate-specific implementation of a {@link TransactionProvider}.
@@ -52,29 +51,48 @@ public class HibernateTransactionProvider extends TransactionProvider {
     }
 
     public CRUDOperationProvider getCRUD() {
-        return CRUDOperationProviderSingletonHolder.singleton;
+        return super.getCRUD(this);
     }
 
     public Transaction getConnectionTo(String name) {
         return super.getConnectionTo(name, this);
     }
     
+    public String getQueryLanguage() {
+        return super.getQueryLanguage(this);
+    }
+
+    private DataSourceType lastConnectionType = DataSourceType.hibernate;
+
+    @Override
+    protected DataSourceType getLastConnectionType() {
+        return this.lastConnectionType;
+    }
+
+    @Override
+    protected void setLastConnectionType(DataSourceType type) {
+        this.lastConnectionType = type;
+    }
+
+    @Override
+    protected CRUDOperationProvider getCRUDInternal() {
+        return CRUDOperationProviderSingletonHolder.singleton;
+    }
+
+    @Override
+    protected String getQueryLanguageInternal() {
+        return "hql";
+    }
+    
     @Override
     protected Transaction getTransaction(String name) {
         return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
     }
+
     
     public Object getHibernateSessionFactory(String name) {
         return HibernateSFManager.getSF(name);
     }
 
-    public String getQueryLanguage() {
-        return "hql";
-    }
-
-    @Override
-    protected void setTransactionProvider(TransactionProvider tp) {
-        SingletonHolder.singleton = tp;
-    }
 
 }
