@@ -18,8 +18,6 @@ class ConfiguredDataSource {
 
     private String host;
 
-    private String webapp;
-
     private String path;
     
     private String hostAddress;
@@ -62,14 +60,6 @@ class ConfiguredDataSource {
         this.host = host;
     }
 
-    public String getWebapp() {
-        return webapp;
-    }
-
-    public void setWebapp(String webapp) {
-        this.webapp = webapp;
-    }
-
     public String getPath() {
         return path;
     }
@@ -78,7 +68,7 @@ class ConfiguredDataSource {
         this.path = path;
     }
 
-    public ConfiguredDataSource(String host, String name, String path, DataSourceType type, String webapp) {
+    public ConfiguredDataSource(String host, String name, String path, DataSourceType type) {
         super();
         this.host = host;
         try {
@@ -89,12 +79,10 @@ class ConfiguredDataSource {
         this.name = name;
         this.path = path;
         this.type = type;
-        this.webapp = webapp;
     }
 
     public String toString() {
-        return "dataSource:" + name + (host == null ? "": " host:" + hostAddress) + (path == null ? "" : " path:" + path) + (webapp == null ? "" : " web-app:" + webapp);
-
+        return "dataSource:" + name + (host == null ? "": " host:" + hostAddress) + (path == null ? "" : " path:" + path);
     }
 
 }
