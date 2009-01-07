@@ -135,21 +135,23 @@ public class Configuration implements Serializable {
 
     private static MakumbaINIFileReader applicationConfig;
 
+    static Logger logger = Logger.getLogger("org.makumba.config");
+
     static {
         try {
             // the internal default configuration
             URL path = org.makumba.commons.ClassResource.get(MAKUMBA_CONF_DEFAULT);
-            Logger.getLogger("org.makumba.config").info("Loading internal default configuration from " + path);
+            logger.info("Loading internal default configuration from " + path);
             defaultConfig = new MakumbaINIFileReader(path);
 
             // application-specific configuration
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
-                Logger.getLogger("org.makumba.config").info("Loading application configuration from " + url);
+                logger.info("Loading application configuration from " + url);
                 applicationConfig = new MakumbaINIFileReader(url);
             } else { // if we did not find any configuration, we shout. we need an application configuration for the
                 // dataSource config.
-                Logger.getLogger("org.makumba.config").severe("No application configuration found!");
+                logger.severe("No application configuration found!");
                 throw new ConfigurationError(
                         "Could not find application configuration file Makumba.conf in WEB-INF/classes!");
             }
@@ -370,6 +372,18 @@ public class Configuration implements Serializable {
         return applicationConfig.getProperty("makumbaToolPaths", key);
     }
 
+    public static Map<String, String> getJavaViewerSyntaxStyles() {
+        return applicationConfig.getProperties("javaViewerSyntaxStyles", defaultConfig);
+    }
+
+    public static Map<String, String> getJspViewerSyntaxStyles() {
+        return applicationConfig.getProperties("jspViewerSyntaxStyles", defaultConfig);
+    }
+
+    public static Map<String, String> getJspViewerSyntaxStylesTags() {
+        return applicationConfig.getProperties("jspViewerSyntaxStylesTags", defaultConfig);
+    }
+
     public static Map<String, String> getLogicPackages() {
         return applicationConfig.getProperties("businessLogicPackages");
     }
@@ -561,8 +575,7 @@ public class Configuration implements Serializable {
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-            Logger.getLogger("org.makumba.config").info(
-                "Resolved dataSource " + dataSourceName + " to " + result.toString());
+            logger.info("Resolved dataSource " + dataSourceName + " to " + result.toString());
             resolvedConfiguredDataSources.put(result.getName(), result);
         }
         return result;

@@ -28,6 +28,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import org.makumba.ConfigurationError;
 import org.makumba.commons.FileUtils;
@@ -63,14 +65,15 @@ public class MakumbaINIFileReader extends IniEditor {
             property));
     }
 
+    /** Gets all properties from the specified section. */
     public Map<String, String> getProperties(String section) {
         List<?> optionNames = null;
         try {
             optionNames = optionNames(section);
-        } catch(NoSuchSectionException nsse) {
+        } catch (NoSuchSectionException nsse) {
             throw new ConfigurationError("Section " + section + " does not exist in Makumba.conf");
         }
-         
+
         HashMap<String, String> ret = new HashMap<String, String>();
         for (Object object : optionNames) {
             ret.put((String) object, getProperty(section, (String) object));
@@ -78,26 +81,29 @@ public class MakumbaINIFileReader extends IniEditor {
         return ret;
     }
 
+    /**
+     * Gets all properties from the specified section in defaultConfig, overwriting it with more specific settings found
+     * in this config.
+     */
+    public Map<String, String> getProperties(String section, MakumbaINIFileReader defaultConfig) {
+        Map<String, String> defaults = defaultConfig.getProperties(section);
+        if (hasSection(section)) {
+            Map<String, String> application = getProperties(section);
+            final Set<String> keySet = application.keySet();
+            for (String string : keySet) {
+                if (application.get(string) != null) {
+                    defaults.put(string, application.get(string));
+                }
+            }
+        } else {
+            Configuration.logger.info("No application specific config found for '" + section
+                    + "', using only internal defaults.");
+        }
+        return defaults;
+    }
+
     public String getSource() {
         return url.getPath();
     }
-
-    // public MakumbaINIFileReader(String name) {
-    // super(name);
-    // }
-    //
-    // public String getStringProperty(String section, String property, MakumbaINIFileReader otherConfig) {
-    // return getStringProperty(section, property) != null ? getStringProperty(section, property)
-    // : otherConfig.getStringProperty(section, property);
-    // }
-    //
-    // public String getProperty(String section, String property) {
-    // return getStringProperty(section, property) != null ? getStringProperty(section, property) : "PROPERTY_NOT_SET";
-    // }
-    //
-    // public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {
-    // return Boolean.parseBoolean(getStringProperty(section, property) != null ? getStringProperty(section, property)
-    // : otherConfig.getStringProperty(section, property));
-    // }
 
 }
