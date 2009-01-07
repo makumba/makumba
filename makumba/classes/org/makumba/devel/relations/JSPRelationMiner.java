@@ -34,7 +34,7 @@ public class JSPRelationMiner extends RelationMiner {
         super(rc);
     }
 
-    private Pattern expression = Pattern.compile("[a-zA-Z]" + "\\w" + "*" + "(?:\\.\\w+)?");
+    private Pattern expression = Pattern.compile("[a-zA-Z]\\w*(?:\\.\\w+)?");
 
 
     @Override

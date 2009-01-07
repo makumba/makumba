@@ -288,7 +288,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getLogger() {
-        return java.util.logging.Logger.getLogger("org.makumba." + "apps");
+        return java.util.logging.Logger.getLogger("org.makumba.apps");
     }
 
     /**

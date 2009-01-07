@@ -356,7 +356,7 @@ public abstract class LineViewer implements SourceViewer {
                         for (int i = 1; i < occurrences.size(); i++) {
                             RelationOrigin origin = occurrences.elementAt(i);
                             writer.println("<a href=\"" + path + "#" + origin.getStartLine()
-                                    + "\" style=\"font-size:smaller\">" + "#" + origin.getStartLine() + "</a>");
+                                    + "\" style=\"font-size:smaller\">#" + origin.getStartLine() + "</a>");
                         }
                     } else {
                         writer.println("<a href=\"" + path + "\" style=\"font-size:smaller\">" + display + "</a> ("
