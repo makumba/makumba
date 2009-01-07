@@ -555,7 +555,7 @@ public class CodeGenerator {
 
         // actual mak:list generation
         indent++;
-        appendJSPLine(sb, indent, "<mak:list from=\"" + dd + " " + labelName + "\" orderBy=\"" + "#{sortBy}\">");
+        appendJSPLine(sb, indent, "<mak:list from=\"" + dd + " " + labelName + "\" orderBy=\"#{sortBy}\">");
 
         appendJSPLine(sb, indent, template.beforeField);
         appendJSPLine(sb, indent, template.beforeFieldTag + "${mak:count()}" + template.afterFieldTag);

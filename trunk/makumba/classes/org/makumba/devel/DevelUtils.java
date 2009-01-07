@@ -32,7 +32,7 @@ public class DevelUtils {
 
     public static void writeScripts(PrintWriter w, String contextPath) {
         w.println("<script type=\"text/javascript\" src=\"" + contextPath + Configuration.getMakumbaResourcesLocation()
-                + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\">" + "</script>\n");
+                + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\"></script>\n");
     }
 
     public static void writeStyles(PrintWriter w, String contextPath) {

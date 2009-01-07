@@ -201,7 +201,7 @@ public class ptrEditor extends choiceEditor {
 
         res += "<input name=\"" + inputName + "_visible\" type=\"text\" value=\""
                 + formatValue(rf, fieldIndex, o, formatParams) + "\" " + extraFormattingVisible
-                + "autocomplete=\"off\"" + ">";
+                + "autocomplete=\"off\">";
 
         res += "<input name=\"" + inputName + "\" type=\"hidden\" value=\""
                 + formatValue(rf, fieldIndex, o, formatParams) + "\" "

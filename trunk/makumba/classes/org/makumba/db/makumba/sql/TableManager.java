@@ -135,7 +135,7 @@ public class TableManager extends Table {
                 preparedInsertAutoIncrementString = prepareInsert(true);
                 preparedDeleteString = prepareDelete();
                 preparedDeleteFromIgnoreDbsvString = "DELETE FROM " + getDBName();
-                preparedDeleteFromString = "DELETE FROM " + getDBName() + " WHERE " + indexDBField + " >= ?" + " AND "
+                preparedDeleteFromString = "DELETE FROM " + getDBName() + " WHERE " + indexDBField + " >= ? AND "
                         + indexDBField + " <= ?";
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
@@ -1214,7 +1214,7 @@ public class TableManager extends Table {
     // moved from charManager
     /** write in CREATE, in the form name char[size] */
     public String in_char_Create(String fieldName, Database d) {
-        String s = Database.getEngineProperty(d.getEngine() + "." + "charBinary");
+        String s = Database.getEngineProperty(d.getEngine() + ".charBinary");
         if (s != null && s.equals("true"))
             s = " BINARY";
         else
