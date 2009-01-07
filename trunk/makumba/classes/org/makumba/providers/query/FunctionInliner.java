@@ -21,7 +21,7 @@ import org.makumba.providers.QueryProvider;
  * @version $Id: FunctionInliner.java,v 1.1 Jul 7, 2008 5:11:53 PM cristi Exp $
  */
 public class FunctionInliner {
-    // TODO: store all inolved functions with error messages and their FROMs to be able to trace back the error
+    // TODO: store all involved functions with error messages and their FROMs to be able to trace back the error
     // FIXME: catch StringIndexOutOfBonds e.g. when counting parantheses and throw ProgrammerErrors
 
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();

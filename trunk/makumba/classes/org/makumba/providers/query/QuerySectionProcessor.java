@@ -317,8 +317,10 @@ public class QuerySectionProcessor {
     public void replaceParameter(String name, String parameterInline) {
         int index = 0;
         while ((index = (query.indexOf(name, index))) != -1) {
-            if (query.substring(0, index).trim().endsWith(".")
-                    || query.substring(index + name.length()).trim().startsWith("(")) {
+            // do not replace if
+            if (query.substring(0, index).trim().endsWith(".") // we are on a subfield
+                    || query.substring(index + name.length()).trim().startsWith("(") // it's a function
+                    || Character.isJavaIdentifierStart(query.charAt(index - 1))) { // it's only a part of a field
                 index++;
                 continue;
             }
