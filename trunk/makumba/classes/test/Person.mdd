@@ -121,5 +121,5 @@ oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(in
 
 fullName() { indiv.fullName() }
 
-actor(char[] username, char[] password) { myapp_username=username AND password=password }
-actor2(char[] username, char[] password) { indiv.someusername=username AND password=password }
+actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
+actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
