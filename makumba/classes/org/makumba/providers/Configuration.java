@@ -147,10 +147,11 @@ public class Configuration implements Serializable {
             if (url != null) {
                 Logger.getLogger("org.makumba.config").info("Loading application configuration from " + url);
                 applicationConfig = new MakumbaINIFileReader(url);
-            } else { // if we did not find any configuration, we shout. we need an application configuration for the dataSource config.
-                Logger.getLogger("org.makumba.config").severe(
-                    "No application configuration found!");
-                throw new ConfigurationError("Could not find application configuration file Makumba.conf in WEB-INF/classes!");
+            } else { // if we did not find any configuration, we shout. we need an application configuration for the
+                // dataSource config.
+                Logger.getLogger("org.makumba.config").severe("No application configuration found!");
+                throw new ConfigurationError(
+                        "Could not find application configuration file Makumba.conf in WEB-INF/classes!");
             }
 
             defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
@@ -220,7 +221,8 @@ public class Configuration implements Serializable {
         // figure type of data source. if none is provided, we shout
         String type = applicationConfig.getProperty(section, "databaseLayer");
         if (type.equals(PROPERTY_NOT_SET)) {
-            throw new ConfigurationError("Data source section ["+section + "] misses the required property 'databaseLayer'.");
+            throw new ConfigurationError("Data source section [" + section
+                    + "] misses the required property 'databaseLayer'.");
         }
 
         // populate with properties
@@ -364,7 +366,7 @@ public class Configuration implements Serializable {
         return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_CACHE_CLEANER));
     }
 
-    public static String getConfigProperty(String key) {
+    public static String getMakumbaToolsPathConfigProperty(String key) {
         return applicationConfig.getProperty("makumbaToolPaths", key);
     }
 
@@ -395,7 +397,7 @@ public class Configuration implements Serializable {
 
         return conf.getProperties();
     }
-    
+
     /**
      * Gives the type of the data source (makumba or hibernate)
      */
@@ -432,21 +434,22 @@ public class Configuration implements Serializable {
         if (defaultDataSource == null) {
             Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
             String defaultDataSourceName = globalProperties.get("defaultDataSource");
-            
-            if(defaultDataSourceName != null) {
-                
+
+            if (defaultDataSourceName != null) {
+
                 // we fetch the default one
                 for (String c : configuredDataSources.keySet()) {
-                    if (c.equals("dataSource:" + defaultDataSourceName) || c.startsWith("dataSource:" + defaultDataSourceName + " ")) {
+                    if (c.equals("dataSource:" + defaultDataSourceName)
+                            || c.startsWith("dataSource:" + defaultDataSourceName + " ")) {
                         defaultDataSource = configuredDataSources.get(c);
                         return defaultDataSource;
                     }
                 }
 
                 // nothing found?
-                throw new ConfigurationError("Default dataSource " + defaultDataSourceName + " not found in Makumba.conf");
+                throw new ConfigurationError("Default dataSource " + defaultDataSourceName
+                        + " not found in Makumba.conf");
 
-                
             }
 
             // first we check if there is maybe only one dataSource, in that case we take it as default
@@ -459,10 +462,11 @@ public class Configuration implements Serializable {
                     count++;
                     lastSection = section;
 
-                    // we collect the sections we went through. if two sections start the same, we put them in a map to do a lookup
-                    if(section.indexOf(" ") > -1 && toLookUp.get(section.substring(0, section.indexOf(" "))) != null) {
+                    // we collect the sections we went through. if two sections start the same, we put them in a map to
+                    // do a lookup
+                    if (section.indexOf(" ") > -1 && toLookUp.get(section.substring(0, section.indexOf(" "))) != null) {
                         toLookUp.put(section.substring(0, section.indexOf(" ")), true);
-                    } else if(section.indexOf(" ") > -1) {
+                    } else if (section.indexOf(" ") > -1) {
                         toLookUp.put(section.substring(0, section.indexOf(" ")), false);
                     }
                 }
@@ -474,14 +478,15 @@ public class Configuration implements Serializable {
                 throw new ConfigurationError("You must configure at least one dataSource for Makumba to work properly");
             }
 
-            // now we treat the case when there are two or more dataSources that have the same name, but different host, path properties
+            // now we treat the case when there are two or more dataSources that have the same name, but different host,
+            // path properties
             // i.e. run a lookup and decide accordingly
             // but do this only if there are only dataSources that have the same name
-            
+
             for (Entry<String, Boolean> entry : toLookUp.entrySet()) {
-                if(entry.getValue()) {
+                if (entry.getValue()) {
                     ConfiguredDataSource c = lookupDataSource(entry.getKey().substring("dataSource:".length()));
-                    if(c != null) {
+                    if (c != null) {
                         defaultDataSource = c;
                     }
                 }
@@ -508,8 +513,8 @@ public class Configuration implements Serializable {
      * dataSource:<dataSourceName> host:<hostName> path:<webappPath><br>
      * If no match is found, tries to retrieve dataSource:<dataSourceName>
      * 
-     * @throws ConfigurationError if no match is found
-     * 
+     * @throws ConfigurationError
+     *             if no match is found
      */
     private static ConfiguredDataSource lookupDataSource(String dataSourceName) {
 
@@ -525,7 +530,7 @@ public class Configuration implements Serializable {
 
                 String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
                 String thisConfiguration2 = "dataSource:" + dataSourceName + " host:" + host + " path:" + alternatePath;
-                
+
                 // we go over all the data sources and compare them to those we have
                 String maxKey = "";
 
@@ -548,7 +553,7 @@ public class Configuration implements Serializable {
                 // there was no dataSource:<name> path: ... found
                 // we fall back to the simple one
                 result = configuredDataSources.get("dataSource:" + dataSourceName);
-                
+
                 if (result == null) {
                     throw new ConfigurationError("No DataSource " + dataSourceName + " configured in Makumba.conf");
                 }
