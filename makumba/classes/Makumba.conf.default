@@ -74,3 +74,68 @@ mak=background:#eecccc; color:green; border:red thin; font-weight: bold;
 jsp=background:lightcyan; color:green; border:red thin; font-weight: bold;
 fmt=background::chartreuse; color:green; border:red thin; font-weight: bold;
 c=background:lightblue; color:green; border:red thin; font-weight: bold;
+
+
+[codeGeneratorTemplate:simple]
+beforeFieldTag=&nbsp;
+afterFieldName=
+afterField=<br/>
+beforeField=
+header=<%@ taglib uri\="http\://java.sun.com/jstl/core_rt" prefix\="c" %>\n
+afterFieldTag=
+footer=
+beforeFormEnd=
+beforeFieldName=
+afterFormBegin=
+beforePageHeader=<h1>
+afterPageHeader=</h1>
+beforePageHeaderLevel2=<h2>
+afterPageHeaderLevel2=</h2>
+
+[codeGeneratorTemplate:fieldSet]
+beforeFieldTag=
+afterFieldName=
+afterField=<br/>
+beforeField=
+header=<%@ taglib uri\="http\://java.sun.com/jstl/core_rt" prefix\="c" %>\n
+afterFieldTag=
+footer=
+beforeFormEnd=</fieldset>
+beforeFieldName=
+afterFormBegin=
+beforePageHeader=<fieldset style="text-align:right;">\n  <legend>
+afterPageHeader=</legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">\n  <legend>
+afterPageHeaderLevel2=</legend>
+
+[codeGeneratorTemplate:tabular]
+beforeFieldTag=    <td>
+afterFieldName=    </th>
+afterField=  </tr>
+beforeField=  <tr>
+header=<%@ taglib uri\="http\://java.sun.com/jstl/core_rt" prefix\="c" %>\n
+afterFieldTag=    </td>
+footer=
+beforeFormEnd=</table>
+beforeFieldName=    <th>
+afterFormBegin=<table>
+beforePageHeader=<h1>
+afterPageHeader=</h1>
+beforePageHeaderLevel2=<h2>
+afterPageHeaderLevel2=</h2>
+
+[codeGeneratorTemplate:tabular-fieldset]
+beforeFieldTag=    <td>
+afterFieldName=</th>
+afterField=  </tr>
+beforeField=  <tr>
+header=<%@ taglib uri\="http\://java.sun.com/jstl/core_rt" prefix\="c" %>\n
+afterFieldTag=</td>
+footer=
+beforeFormEnd=</table>\n</fieldset>
+beforeFieldName=    <th>
+afterFormBegin=<table>
+beforePageHeader=<fieldset style="text-align:right;">\n  <legend>
+afterPageHeader=</legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">\n  <legend>
+afterPageHeaderLevel2=</legend>
