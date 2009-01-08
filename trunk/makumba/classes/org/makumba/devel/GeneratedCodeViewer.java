@@ -1,8 +1,6 @@
 package org.makumba.devel;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,8 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,67 +49,33 @@ public class GeneratedCodeViewer extends jspViewer {
     private static Hashtable<String, String> selectableCodeTypes = new Hashtable<String, String>();
 
     private static ArrayList<String> selectableCodeTypesOrdered = new ArrayList<String>();
-    
-    private static String[] selectableQueryLanguages = {"OQL", "HQL"};
 
-    /**
-     * Contains all templates, indices are defined by {@link #TEMPLATES_ALL}, {@link #TEMPLATES_BUILTIN},
-     * {@link #TEMPLATES_USERDEFINED}
-     */
-    private static Hashtable<String, Properties>[] TEMPLATES = new Hashtable[3];
+    private static String[] selectableQueryLanguages = { "OQL", "HQL" };
 
-    private static final int TEMPLATES_ALL = 0;
+    private static Map<String, Map<String, String>> builtIn = Configuration.getInternalCodeGeneratorTemplates();
 
-    private static final int TEMPLATES_BUILTIN = 1;
+    private static Map<String, Map<String, String>> userDefined = Configuration.getApplicationSpecificCodeGeneratorTemplates();
 
-    private static final int TEMPLATES_USERDEFINED = 2;
-    
-    private static final String BUILTIN_TEMPLATES_PATH = "/org/makumba/devel/defaultCodeTemplates/";
-    
+    private static Map<String, Map<String, String>> all = new HashMap<String, Map<String, String>>();
+
     static {
         initTemplates();
     }
 
     /** initialise code templates - read properties from file system */
     private static void initTemplates() {
-        for (int i = 0; i < TEMPLATES.length; i++) {
-            TEMPLATES[i] = new Hashtable<String, Properties>();
-        }
-        
-        // built-in templates
-        Properties builtinProps = new Properties();
-        try {
-            populateBuiltin(builtinProps, "fieldset");
-            populateBuiltin(builtinProps, "simple");
-            populateBuiltin(builtinProps, "tabular");
-            populateBuiltin(builtinProps, "tabular-fieldset");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        
-        // user defined templates
-        URL templatePath = org.makumba.commons.ClassResource.get("codeTemplates");
-
-            if (templatePath != null) {
-                File templatePropDirectory = new File(templatePath.getFile());
-                if (templatePropDirectory.canRead() && templatePropDirectory.isDirectory()) {
-                    File[] files = templatePropDirectory.listFiles(CodeGenerator.getFileFilter());
-                    for (File element : files) {
-                        Properties props = new Properties();
-                        try {
-                            props.load(new FileInputStream(element));
-                            String name = element.getName().substring(0, element.getName().lastIndexOf(".properties"));
-                            TEMPLATES[TEMPLATES_ALL].put(name, props);
-                            TEMPLATES[TEMPLATES_USERDEFINED].put(name, props);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+        builtIn = Configuration.getInternalCodeGeneratorTemplates();
+        userDefined = Configuration.getApplicationSpecificCodeGeneratorTemplates();
+        all = new HashMap<String, Map<String, String>>();
+        for (String key : userDefined.keySet()) {
+            if (builtIn.containsKey(key)) {
+                builtIn.remove(key);
             }
-        defaultTemplate = TEMPLATES[TEMPLATES_BUILTIN].keys().nextElement();
+        }
+        all.putAll(builtIn);
+        all.putAll(userDefined);
+        defaultTemplate = all.keySet().iterator().next();
+
         selectableCodeTypes = new Hashtable<String, String>();
         selectableCodeTypes.put(CodeGenerator.TYPE_NEWFORM, "mak:newForm");
         selectableCodeTypes.put(CodeGenerator.TYPE_EDITFORM, "mak:editForm");
@@ -119,15 +84,9 @@ public class GeneratedCodeViewer extends jspViewer {
         selectableCodeTypes.put(CodeGenerator.TYPE_DELETE, "mak:delete");
         selectableCodeTypes.put(CodeGenerator.TYPE_BUSINESS_LOGICS, "Java Business Logics");
         selectableCodeTypes.put("All", "all");
-        selectableCodeTypesOrdered = new ArrayList<String>(Arrays.asList(new String[] { "All", CodeGenerator.TYPE_NEWFORM,
-                CodeGenerator.TYPE_EDITFORM, CodeGenerator.TYPE_LIST, CodeGenerator.TYPE_OBJECT,
-                CodeGenerator.TYPE_DELETE, CodeGenerator.TYPE_BUSINESS_LOGICS }));
-    }
-    
-    private static void populateBuiltin(Properties builtinProps, String templateName) throws IOException {
-        builtinProps.load(GeneratedCodeViewer.class.getResourceAsStream(BUILTIN_TEMPLATES_PATH + templateName+ ".properties"));
-        TEMPLATES[TEMPLATES_ALL].put(templateName, builtinProps);
-        TEMPLATES[TEMPLATES_BUILTIN].put(templateName, builtinProps);
+        selectableCodeTypesOrdered = new ArrayList<String>(Arrays.asList(new String[] { "All",
+                CodeGenerator.TYPE_NEWFORM, CodeGenerator.TYPE_EDITFORM, CodeGenerator.TYPE_LIST,
+                CodeGenerator.TYPE_OBJECT, CodeGenerator.TYPE_DELETE, CodeGenerator.TYPE_BUSINESS_LOGICS }));
     }
 
     private URL classesDirectory;
@@ -145,14 +104,14 @@ public class GeneratedCodeViewer extends jspViewer {
     private String templateName;
 
     private String typeParam;
-    
+
     private String queryLanguageParam;
 
     public GeneratedCodeViewer(HttpServletRequest req) throws Exception {
         super(req, true);
 
         // initTemplates(); // uncomment this for testing template purposes.
-        
+
         setSearchLevels(false, false, false, true);
 
         contextPath = request.getContextPath();
@@ -160,7 +119,7 @@ public class GeneratedCodeViewer extends jspViewer {
         if (virtualPath == null) {
             virtualPath = "/";
         }
-        //FIXME should not depend directly on RecordParser
+        // FIXME should not depend directly on RecordParser
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
@@ -191,10 +150,10 @@ public class GeneratedCodeViewer extends jspViewer {
                 selectedCodeTypes = new String[] { CodeGenerator.TYPE_NEWFORM };
                 typeParam = CodeGenerator.TYPE_NEWFORM;
             }
-            
+
             // check which query lanaguage is selected
             queryLanguageParam = request.getParameter("queryLanguage");
-            if(queryLanguageParam == null) {
+            if (queryLanguageParam == null) {
                 queryLanguageParam = MakumbaJspAnalyzer.QL_OQL;
             }
 
@@ -204,8 +163,7 @@ public class GeneratedCodeViewer extends jspViewer {
                 templateName = defaultTemplate;
             }
 
-            CodeGeneratorTemplate template = new CodeGeneratorTemplate(
-                    TEMPLATES[TEMPLATES_ALL].get(templateName), queryLanguageParam);
+            CodeGeneratorTemplate template = new CodeGeneratorTemplate(all.get(templateName), queryLanguageParam);
             String action = CodeGenerator.getLabelNameFromDataDefinition(dd) + "View.jsp";
 
             // puts to together all pages generated --> used when we have selected more than one code type
@@ -288,8 +246,8 @@ public class GeneratedCodeViewer extends jspViewer {
                 writerAllPage.close();
 
                 reader = new StringReader(allPages.toString());
-                jspParseData = new JspParseData(rootPath, GENERATED_CODE_DIRECTORY + File.separator
-                        + allPagesName, JspxJspAnalyzer.getInstance());
+                jspParseData = new JspParseData(rootPath, GENERATED_CODE_DIRECTORY + File.separator + allPagesName,
+                        JspxJspAnalyzer.getInstance());
             }
 
             getParseData(jspParseData);
@@ -306,6 +264,7 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** writes the page header, with links to the mdd and to browse. */
     public void intro(PrintWriter w) {
+        initTemplates();
         String browsePath = contextPath + Configuration.getMddViewerLocation()
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
         String mddViewerPath = contextPath + Configuration.getMddViewerLocation() + "/" + virtualPath;
@@ -346,15 +305,15 @@ public class GeneratedCodeViewer extends jspViewer {
                     w.print("checked=\"checked\" ");
                 }
                 w.println(" />" + selectableQueryLanguages[i]);
-                
+
             }
             w.println("<br />");
-            
+
             w.println("<b>Template:</b>");
             w.println("&nbsp;<i>Built-in</i>:");
-            printTemplates(w, TEMPLATES_BUILTIN);
+            printTemplates(w, builtIn);
             w.println("&nbsp;&nbsp;<i>User-defined</i>:");
-            printTemplates(w, TEMPLATES_USERDEFINED);
+            printTemplates(w, userDefined);
 
             w.println("<input type=\"submit\" value=\"Generate!\" />");
             w.println("</form>");
@@ -372,9 +331,9 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** print links to the generated JSP and java files in the page header. */
     private void printGeneratedCodeLinks(PrintWriter w) {
-        
+
         TransactionProvider tp = TransactionProvider.getInstance();
-        
+
         String cgiParams = "";
 
         w.println("<span style=\"font-size: smaller;\">");
@@ -389,16 +348,17 @@ public class GeneratedCodeViewer extends jspViewer {
                 try {
                     String queryOQL = "SELECT " + labelName + " AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;
-                    
+
                     String queryHQL = "SELECT " + labelName + ".id AS " + labelName + " FROM " + dd.getName() + " "
-                    + labelName;
-                    
-                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(MakumbaJspAnalyzer.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
+                            + labelName;
+
+                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(
+                        MakumbaJspAnalyzer.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
                     if (v.size() > 0) {
                         cgiParams = "?" + labelName + "="
                                 + ((Pointer) v.firstElement().get(labelName)).toExternalForm();
                     }
-                }catch (RuntimeWrappedException e) {
+                } catch (RuntimeWrappedException e) {
                     w.println("<br/> <span style=\"color: red\">" + e.getCause() + "</span>");
                 } finally {
                     db.close();
@@ -429,19 +389,18 @@ public class GeneratedCodeViewer extends jspViewer {
             }
         }
         if (new File(classesDirectory.getPath() + logicDir + logicFileName).exists()) {
-            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getJavaViewerLocation() + logicDir + logicFileName
-                    + "\"><i>" + logicFileName + "</i></a>");
+            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getJavaViewerLocation()
+                    + logicDir + logicFileName + "\"><i>" + logicFileName + "</i></a>");
             w.println("</span>");
         }
     }
 
     /** prints the list of templates for the code form generator. */
-    private void printTemplates(PrintWriter w, int index) {
-        ArrayList<String> templates = new ArrayList<String>(TEMPLATES[index].keySet());
+    private void printTemplates(PrintWriter w, Map<String, Map<String, String>> t) {
+        ArrayList<String> templates = new ArrayList<String>(t.keySet());
         Collections.sort(templates);
         if (templates.size() > 0) {
-            for (int i = 0; i < templates.size(); i++) {
-                Object key = templates.get(i);
+            for (String key : templates) {
                 w.print("<input type=\"radio\" name=\"template\" value=\"" + key + "\"");
                 if (key.equals(templateName)) {
                     w.print("checked=\"checked\" ");

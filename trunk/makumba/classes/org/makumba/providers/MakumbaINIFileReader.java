@@ -26,10 +26,10 @@ package org.makumba.providers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.makumba.ConfigurationError;
 import org.makumba.commons.FileUtils;
@@ -100,6 +100,17 @@ public class MakumbaINIFileReader extends IniEditor {
                     + "', using only internal defaults.");
         }
         return defaults;
+    }
+
+    public Map<String, Map<String, String>> getPropertiesStartingWith(String sectionPrefix) {
+        LinkedHashMap<String, Map<String, String>> res = new LinkedHashMap<String, Map<String, String>>();
+        final List<String> sectionNames = sectionNames();
+        for (String section : sectionNames) {
+            if (section.startsWith(sectionPrefix)) {
+                res.put(section.substring(sectionPrefix.length()), getProperties(section));
+            }
+        }
+        return res;
     }
 
     public String getSource() {

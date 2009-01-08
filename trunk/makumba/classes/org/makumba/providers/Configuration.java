@@ -384,6 +384,14 @@ public class Configuration implements Serializable {
         return applicationConfig.getProperties("jspViewerSyntaxStylesTags", defaultConfig);
     }
 
+    public static Map<String, Map<String, String>> getInternalCodeGeneratorTemplates() {
+        return defaultConfig.getPropertiesStartingWith("codeGeneratorTemplate:");
+    }
+
+    public static Map<String, Map<String, String>> getApplicationSpecificCodeGeneratorTemplates() {
+        return applicationConfig.getPropertiesStartingWith("codeGeneratorTemplate:");
+    }
+
     public static Map<String, String> getLogicPackages() {
         return applicationConfig.getProperties("businessLogicPackages");
     }

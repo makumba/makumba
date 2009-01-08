@@ -23,6 +23,7 @@
 
 package org.makumba.devel;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -69,26 +70,38 @@ public class CodeGeneratorTemplate {
     public CodeGeneratorTemplate() {
     }
 
-    public CodeGeneratorTemplate(Properties props, String queryLanguage) {
-        if(queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL)) {
+    public CodeGeneratorTemplate(Map<String, String> props, String queryLanguage) {
+        if (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL)) {
             header = CodeGenerator.OQL_TLD_DEFINITION;
         } else if (queryLanguage.equals(MakumbaJspAnalyzer.QL_HQL)) {
             header = CodeGenerator.HQL_TLD_DEFINITION;
         }
-        header +="\n";
-        header += (String) props.getProperty("header", DEFAULT_STYLE_HEADER);
-        footer = (String) props.getProperty("footer", "");
-        afterFormBegin = (String) props.getProperty("afterFormBegin", "");
-        beforeFormEnd = (String) props.getProperty("beforeFormEnd", "");
-        beforeField = (String) props.getProperty("beforeField", "");
-        afterField = (String) props.getProperty("afterField", "");
-        beforeFieldName = (String) props.getProperty("beforeFieldName", "");
-        afterFieldName = (String) props.getProperty("afterFieldName", "");
-        beforeFieldTag = (String) props.getProperty("beforeFieldTag", "");
-        afterFieldTag = (String) props.getProperty("afterFieldTag", "");
-        beforePageHeader = (String) props.getProperty("beforePageHeader", "");
-        afterPageHeader = (String) props.getProperty("afterPageHeader", "");
-        beforePageHeaderLevel2 = (String) props.getProperty("beforePageHeaderLevel2", beforePageHeader);
-        afterPageHeaderLevel2 = (String) props.getProperty("afterPageHeaderLevel2", afterPageHeader);
+        header += "\n";
+        header += (String) getProperty(props, "header", DEFAULT_STYLE_HEADER);
+        footer = (String) getProperty(props, "footer");
+        afterFormBegin = (String) getProperty(props, "afterFormBegin");
+        beforeFormEnd = (String) getProperty(props, "beforeFormEnd");
+        beforeField = (String) getProperty(props, "beforeField");
+        afterField = (String) getProperty(props, "afterField");
+        beforeFieldName = (String) getProperty(props, "beforeFieldName");
+        afterFieldName = (String) getProperty(props, "afterFieldName");
+        beforeFieldTag = (String) getProperty(props, "beforeFieldTag");
+        afterFieldTag = (String) getProperty(props, "afterFieldTag");
+        beforePageHeader = (String) getProperty(props, "beforePageHeader");
+        afterPageHeader = (String) getProperty(props, "afterPageHeader");
+        beforePageHeaderLevel2 = (String) getProperty(props, "beforePageHeaderLevel2", beforePageHeader);
+        afterPageHeaderLevel2 = (String) getProperty(props, "afterPageHeaderLevel2", afterPageHeader);
+    }
+
+    String getProperty(Map<String, String> map, String key) {
+        return getProperty(map, key, "");
+    }
+
+    String getProperty(Map<String, String> map, String key, String defaultValue) {
+        if (map.containsKey(key)) {
+            return map.get(key);
+        } else {
+            return defaultValue;
+        }
     }
 }
