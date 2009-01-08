@@ -61,7 +61,7 @@ public class MakumbaSystem {
     }
 
     /**
-     * The name of the default database according to the lookup file "MakumbaDatabase.properties"
+     * The name of the default database according to the lookup file "Makumba.conf"
      * 
      * @since makumba-0.5.4
      * @deprecated Use {@link #getDefaultDataSourceName()} instead
@@ -90,7 +90,7 @@ public class MakumbaSystem {
     }
 
     /**
-     * Get a connection to the default database found according to MakumbaDatabase.properties
+     * Get a connection to the default database found according to Makumba.conf
      * 
      * @since makumba-0.5
      * @deprecated This method name is misleading since it returns a connection, not a database. Use

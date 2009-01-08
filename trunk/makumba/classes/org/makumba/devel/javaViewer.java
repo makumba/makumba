@@ -53,9 +53,6 @@ import org.makumba.providers.DataDefinitionProvider;
  * @author Rudolf Mayer
  */
 public class javaViewer extends LineViewer {
-    /** the name of the properties file configuring what to highlight how */
-    public static final String PROPERTIES_FILE_NAME = "javaSyntax.properties";
-
     public static Map<String, String> javaSyntaxProperties = Configuration.getJavaViewerSyntaxStyles();
 
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
