@@ -528,7 +528,7 @@ public class RecordParser {
             sessionVariableName = sessionVariableName.replace("%", "");
         }
         String name = matcher.group(2);
-        if (dd.getFunction(name) != null) {
+        if (funcNames.get(name) != null) {
             mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, line));
         }
         String paramsBlock = matcher.group(3); // params are not split yet, we get them all in one
