@@ -502,7 +502,7 @@ public class Logic {
         param.put("x", p);
         for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
-            fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
+            fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(
                 " x WHERE x=").append(qap.getParameterSyntax()).append("x");
             Object result;
             try {
