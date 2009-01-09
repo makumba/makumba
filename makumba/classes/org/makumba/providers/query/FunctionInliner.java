@@ -58,9 +58,10 @@ public class FunctionInliner {
         String from = qsp.getInitialFrom();
         findFunctionBody(query, m);
         findFunctionObject(m, from, qp);
-        if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size())
+        if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size()) {
             throw new ProgrammerError("parameter number " + parameterExpr + " does not match function "
                     + functionDefinition);
+        }
         QuerySectionProcessor func = new QuerySectionProcessor(functionDefinition.getQueryFragment(), 0);
         int n = 0;
         for (String parameter : parameterExpr) {
@@ -75,23 +76,26 @@ public class FunctionInliner {
     }
 
     private void checkParameter(int n, String inlineParameter, String from, QueryAnalysisProvider qp) {
-        if (inlineParameter.trim().startsWith(qp.getParameterSyntax()))
+        if (inlineParameter.trim().startsWith(qp.getParameterSyntax())) {
             return;
+        }
 
         FieldDefinition fieldDefinition = functionDefinition.getParameters().getFieldDefinition(n);
         FieldDefinition actual = qp.getQueryAnalysis("SELECT " + inlineParameter + " FROM " + from).getProjectionType().getFieldDefinition(
             0);
 
-        if (!fieldDefinition.isAssignableFrom(actual))
+        if (!fieldDefinition.isAssignableFrom(actual)) {
             throw new ProgrammerError("formal paramter " + fieldDefinition.getName() + " of type "
                     + fieldDefinition.getDataType() + " is not matched by the actual value given "
                     + parameterExpr.get(n) + " of type " + actual.getDataType() + " for function " + functionDefinition);
+        }
     }
 
     private void findFunctionObject(Matcher m, String from, QueryAnalysisProvider qp) {
         DataDefinition dd = null;
-        if (from != null && from.length() > 0)
+        if (from != null && from.length() > 0) {
             dd = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
+        }
         if (dd == null) {
             String possibleMdd = m.group(1);
             int n = possibleMdd.lastIndexOf(".");
@@ -99,18 +103,22 @@ public class FunctionInliner {
                 String possibleFunction = possibleMdd.substring(n + 1);
                 possibleMdd = possibleMdd.substring(0, n);
                 dd = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
-                if (dd != null)
+                if (dd != null) {
                     functionDefinition = dd.getFunction(possibleFunction.trim());
-                else
+                } else {
                     throw new org.makumba.DataDefinitionNotFoundError(possibleMdd);
-                if (functionDefinition == null)
+                }
+                if (functionDefinition == null) {
                     throw new org.makumba.NoSuchFieldException(dd, possibleFunction);
+                }
                 functionObject = null;
-                if (functionDefinition.getQueryFragment().indexOf("this") != -1)
+                if (functionDefinition.getQueryFragment().indexOf("this") != -1) {
                     throw new ProgrammerError("Cannot use 'this' in function used statically" + m.group());
+                }
                 return;
-            } else
+            } else {
                 throw new org.makumba.NoSuchLabelException("no such label '" + m.group(2) + "'.");
+            }
 
         }
         String referenceSequence = m.group(1);
@@ -121,16 +129,19 @@ public class FunctionInliner {
             if (dot1 == -1) {
                 String fn = referenceSequence.substring(dot + 1);
                 functionDefinition = dd.getFunction(fn);
-                if (functionDefinition == null)
+                if (functionDefinition == null) {
                     throw new ProgrammerError(fn + " is not a function in " + dd.getName());
+                }
                 functionObject = referenceSequence.substring(0, dot);
                 break;
             }
             FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
-            if (fd == null)
+            if (fd == null) {
                 throw new org.makumba.NoSuchFieldException(dd, referenceSequence.substring(dot + 1, dot1));
-            if (!fd.getType().startsWith("ptr"))
+            }
+            if (!fd.getType().startsWith("ptr")) {
                 throw new InvalidFieldTypeException(fd, "pointer");
+            }
             dd = fd.getPointedType();
             dot = dot1;
         }
@@ -147,8 +158,9 @@ public class FunctionInliner {
                     parameterExpr.add(query.substring(lastParam, index));
                 }
                 parLevel--;
-            } else if (c == '(')
+            } else if (c == '(') {
                 parLevel++;
+            }
             if (parLevel == 1 && c == ',') {
                 parameterExpr.add(query.substring(lastParam, index));
                 lastParam = index + 1;
@@ -191,11 +203,13 @@ public class FunctionInliner {
             if ((m = functionBegin.matcher(expr)).find()) {
                 QuerySectionProcessor qspText = null;
                 QuerySectionProcessor qs = qsp;
-                if (qs == null)
+                if (qs == null) {
                     qs = qspText = new QuerySectionProcessor(expr, m.start());
+                }
                 FunctionInliner fi = new FunctionInliner(expr, m, qp, qs);
-                if (qspText == null)
+                if (qspText == null) {
                     qspText = new QuerySectionProcessor(expr, 0);
+                }
 
                 qspText.replaceExpr(m.start(), fi.functionText.length(), fi.inlinedFunction);
                 expr = qspText.getText();
@@ -208,13 +222,15 @@ public class FunctionInliner {
                 if (m.end() < expr.length() && expr.charAt(m.end()) == '.') {
                     QuerySectionProcessor qspText = null;
                     QuerySectionProcessor qs = qsp;
-                    if (qs == null)
+                    if (qs == null) {
                         qs = qspText = new QuerySectionProcessor(expr, m.start());
+                    }
                     String actorLabel = getActorLabel(actorType);
                     qs.addFromWhere(actorType + " " + actorLabel, actorLabel + "=" + qp.getParameterSyntax()
                             + actorLabel);
-                    if (qspText == null)
+                    if (qspText == null) {
                         qspText = new QuerySectionProcessor(expr, 0);
+                    }
                     qspText.replaceExpr(m.start(), m.group().trim().length(), actorLabel);
                     expr = qspText.getText();
                 } else {
@@ -227,8 +243,9 @@ public class FunctionInliner {
             }
             break;
         }
-        if (!expr.equals(initialQuery))
+        if (!expr.equals(initialQuery)) {
             java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(initialQuery + " \n-> " + expr);
+        }
 
         return expr;
 
@@ -252,8 +269,8 @@ public class FunctionInliner {
         //
         };
 
-        for (int i = 0; i < queries.length; i++) {
-            inline(queries[i], QueryProvider.getQueryAnalzyer("oql"));
+        for (String querie : queries) {
+            inline(querie, QueryProvider.getQueryAnalzyer("oql"));
         }
     }
 
