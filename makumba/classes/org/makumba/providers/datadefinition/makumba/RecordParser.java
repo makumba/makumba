@@ -393,15 +393,9 @@ public class RecordParser {
         }
 
         if (u == null) {
-            u = getResource(s.replace('.', '/') + "." + ext);
+            u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
             if (u == null) {
-                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
-                if (u == null) {
-                    u = getResource("dataDefinitions/" + s.replace('.', '/'));
-                    if (u == null) {
-                        u = getResource(s.replace('.', '/'));
-                    }
-                }
+                u = getResource(s.replace('.', '/') + "." + ext);
             }
         }
         return u;
