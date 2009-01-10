@@ -290,14 +290,14 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <tag-class>org.makumba.list.tags.ResultListTag</tag-class>
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
-    <display-name>display result from a search form</display-name>
-    <description>Document me please</description>
+    <display-name>Display result from a search form</display-name>
+    <description>Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</description>
 
     <attribute>
       <name>resultsFrom</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description>The name of the search form the results are taken from.</description>
       <comments>Document me please</comments>
     </attribute>
 
