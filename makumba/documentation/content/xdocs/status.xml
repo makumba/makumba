@@ -30,12 +30,6 @@
                         
                 </tr>
                 <tr>
-                    <td>Data def specification</td>
-                    <td>reference doc / data definitions</td>
-                    <td>almost done</td>
-                    <td>remove OLDSTYLE stuff, fix formatting</td>
-                </tr>
-                <tr>
                     <td>query languages</td>
                     <td>reference doc/query languages</td>
                     <td>almost done</td>
@@ -221,6 +215,14 @@
                     <td>done</td>
                     <td>make the controller entry </td>
                 </tr>
+                
+                <tr>
+                    <td>Data def specification</td>
+                    <td>reference doc / data definitions</td>
+                    <td>DONE</td>
+                    <td>remove OLDSTYLE stuff, fix formatting</td>
+                </tr>
+                
                 
                 
 
