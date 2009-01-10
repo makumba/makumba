@@ -42,7 +42,11 @@ See http://forrest.apache.org/docs/linking.html for more info
     <example label="Example" href="/example.html" tab="home"/>
   </home>
   
-  <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration"/>
+  <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration">
+    <webapp label="Web-app configuration" href="/configuration/webapp.html" description="Makumba web-app" />
+    <conf label="Makumba configuration" href="/configuration/configuration.html" description="Makumba.conf" />
+    <libs label="Libraries" href="/configuration/libraries.html" description="Required and useful libraries" />
+  </configuration>
   
   <usage label="Using Makumba" href="/usage/index.html" description="How to use Makumba" tab="usage">
     <philosophy label="Makumba philosophy" href="/philosophy.html" />

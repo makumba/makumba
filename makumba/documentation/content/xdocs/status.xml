@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Status of the documentation</title>
+    </header>
+    <body>
+        <section id="status">
+            <title>Status</title>
+
+            <table>
+                <tr>
+                    <th>Old documentation</th>
+                    <th>New documentation</th>
+                    <th>Status</th>
+                    <th>Comments</th>
+                </tr>
+                <tr>
+                    <td>Welcome page (index.html)</td>
+                    <td>Welcome page (index.html)</td>
+                    <td>Not started</td>
+                    <td>Maybe better introduction, link to the mak philosophy</td>
+                </tr>
+                <tr>
+                    <td>Showcases</td>
+                    <td>Schowcases</td>
+                    <td>Not started</td>
+                    <td>Make a showcases.xml, should be the same content-wise</td>
+                </tr>
+                <tr>
+                    <td>documentation.html</td>
+                    <td>doc/index.html, usage/index.html</td>
+                    <td>Done 50% (for usage)</td>
+                    <td>Should give a quick overview of the doc</td>
+                </tr>
+                <tr>
+                    <td>quickstart (makumba-install.html)</td>
+                    <td>quickstart.html</td>
+                    <td>Not started</td>
+                    <td>needs to be mostly rewritten, totally outdated.</td>
+                        
+                </tr>
+                <tr>
+                    <td>Data def specification</td>
+                    <td>reference doc / data definitions</td>
+                    <td>almost done</td>
+                    <td>remove OLDSTYLE stuff, fix formatting</td>
+                </tr>
+                <tr>
+                    <td>query languages</td>
+                    <td>reference doc/query languages</td>
+                    <td>almost done</td>
+                    <td>need to add the MQL functions</td>
+                </tr>
+                <tr>
+                    <td>query functions</td>
+                    <td>reference doc/query functions</td>
+                    <td>almost done</td>
+                    <td>FIX the styles (future)</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: intro : controller</td>
+                    <td>usage / controller</td>
+                    <td>not started</td>
+                    <td>make the controller entry in usage</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: intro: JSP and JSP tag params</td>
+                    <td>reference doc / intro (index.html)</td>
+                    <td>not started</td>
+                    <td>make an entry</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: listing</td>
+                    <td>reference doc / tags</td>
+                    <td>generated, TODO: add the examples (copy-paste)</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: listing : makumba attributes</td>
+                    <td>usage / ?</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: listing : mak:count() etc</td>
+                    <td>reference doc / JSP functions</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: forms : forms intro</td>
+                    <td>usage / makumba forms</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: forms : form tags</td>
+                    <td>reference doc / tags</td>
+                    <td>generated. add examples</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: forms : form tags : intro to mak:input etc</td>
+                    <td>usage / basics</td>
+                    <td>not started</td>
+                    <td>move it there</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: search</td>
+                    <td>reference doc: tags</td>
+                    <td>generated. TODO: add examples</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>Business logics</td>
+                    <td>reference doc: business logics</td>
+                    <td>mostly done. TODO: fix formatting</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>reference doc: Summary</td>
+                    <td>reference doc / Type overview</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                <tr>
+                    <td>Makumba example (makumba-example.html)</td>
+                    <td>Example?</td>
+                    <td>Not started</td>
+                    <td>Do we want to keep a whole example, or have a good quick start, a demo-app and a nice makumba usage part?</td>
+                </tr>
+                <tr>
+                    <td>Config DB</td>
+                    <td>Configuration / Makumba configuration</td>
+                    <td>done</td>
+                    <td>all the DB doc is ported</td>
+                </tr>
+                <tr>
+                    <td>API doc</td>
+                    <td>API</td>
+                    <td>not started</td>
+                    <td>make link / integration</td>
+                </tr>
+                <tr>
+                    <td>FAQ</td>
+                    <td>-</td>
+                    <td/>
+                    <td>Dropped</td>
+                </tr>
+                <tr>
+                    <td>Useful libraries</td>
+                    <td>Configuration / libraries</td>
+                    <td>not done</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>Download</td>
+                    <td>Download</td>
+                    <td>not done</td>
+                    <td>add link</td>
+                </tr>
+                <tr>
+                    <td>Bugzilla</td>
+                    <td>Bugzilla</td>
+                    <td>not done</td>
+                    <td>add link</td>
+                </tr>
+                <tr>
+                    <td>developer doc</td>
+                    <td>developer doc</td>
+                    <td>not started</td>
+                    <td>a shitload of things to clean up and rewrite.</td>
+                </tr>
+                <tr>
+                    <td>Supporters</td>
+                    <td>Supporters</td>
+                    <td>Not done</td>
+                    <td>do it</td>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+
+
+            </table>
+        
+        
+        </section>
+    </body>
+</document>

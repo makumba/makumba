@@ -14,6 +14,7 @@
     <title>This is in the title tag</title>
   </header>
   <body>
+    
     <p>
       Some generic text in a generic paragraph within the body tag.
       Some generic text in a generic paragraph within the body tag.
@@ -74,6 +75,7 @@
 	Because we don't have easter eggs!!!
 &lt;/mak:why&gt;
       </source>
+      
     </section>
   </body>
 </document>
