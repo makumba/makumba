@@ -29,6 +29,9 @@
 %token codeopenitem "\{\{";
 %token codecloseitem "\}\}";
 
+%token lparen "\(";
+%token rparen "\)";
+
 %token noteitem "___";
 
 %token strongitem "__";
@@ -150,6 +153,7 @@ paragraph
   | source %prec softbreak
   | source softbreak
   | table
+  | noteblock
   ;
 
 bulletedlist1 
@@ -261,7 +265,6 @@ textblock
   | emblock            
   | text     
   | codeblock
-  | noteblock
   ;
 
 emblock 
@@ -276,9 +279,14 @@ codeblock
   : codeopenitem text codecloseitem
   ;
 
-noteblock 
-  : noteitem text noteitem
-  | noteitem noteitem
+noteblock
+  : noteitem notetitle textsequence noteitem
+  | noteitem notetitle textsequence abreak noteitem
+  | noteitem notetitle textsequence bulletedlist1 noteitem
+  ;
+  
+notetitle
+  : lparen text rparen
   ;
   
 /*
