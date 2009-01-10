@@ -46,7 +46,7 @@
 
             </section>
 
-        <section>
+        <section id="datasource_configuration">
             <title>Data Sources [dataSource:name]</title>
             <p> A dataSource section provides the necessary information to establish a connection
                 with a database server. It is possible to configure several dataSources and to use
