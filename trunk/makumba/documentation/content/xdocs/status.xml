@@ -23,12 +23,6 @@
                 </tr>
                 
                 <tr>
-                    <td>documentation.html</td>
-                    <td>doc/index.html, usage/index.html</td>
-                    <td>Done 50% (for usage)</td>
-                    <td>Should give a quick overview of the doc</td>
-                </tr>
-                <tr>
                     <td>quickstart (makumba-install.html)</td>
                     <td>quickstart.html</td>
                     <td>Not started</td>
@@ -53,18 +47,7 @@
                     <td>almost done</td>
                     <td>FIX the styles (future)</td>
                 </tr>
-                <tr>
-                    <td>JSP tag lib: intro : controller</td>
-                    <td>usage / controller</td>
-                    <td>not started</td>
-                    <td>make the controller entry in usage</td>
-                </tr>
-                <tr>
-                    <td>JSP tag lib: intro: JSP and JSP tag params</td>
-                    <td>reference doc / intro (index.html)</td>
-                    <td>not started</td>
-                    <td>make an entry</td>
-                </tr>
+                
                 <tr>
                     <td>JSP tag lib: listing</td>
                     <td>reference doc / tags</td>
@@ -169,10 +152,10 @@
                 </tr>
                 
                 <tr>
-                    <td/>
-                    <td/>
-                    <td/>
-                    <td/>
+                    <td>documentation generation</td>
+                    <td>doc generation</td>
+                    <td>not started</td>
+                    <td>ant targets to generate forrest HTML (forrest site) and javadoc</td>
                 </tr>
                 <tr>
                     <td/>
@@ -218,6 +201,28 @@
                     <td>do it</td>
                 </tr>
 
+                <tr>
+                    <td>documentation.html</td>
+                    <td>doc/index.html, usage/index.html</td>
+                    <td>DONE</td>
+                    <td>Should give a quick overview of the doc</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: intro: JSP and JSP tag params</td>
+                    <td>reference doc / intro (index.html)</td>
+                    <td>done</td>
+                    <td>make an entry</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: intro : controller</td>
+                    <td>ref doc / controller</td>
+                    <td>done</td>
+                    <td>make the controller entry </td>
+                </tr>
+                
+                
 
             </table>
         

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Controller</title>
+    </header>
+    <body>
+
+<section>
+    <title>Introduction</title>
+    
+        
+<p>The makumba controller is a component running in the 'servlet container'. When a request for a makumba page
+    enters the servlet container, the controller will intercept the request, and perform its "controller" activities
+    (cfr. the model-view-controller pattern) :</p>
+<ul>
+    <li>checking if the page has the appropriate attributes (see handler initialisation; e.g. force login).</li>
+    <li>checking if the page request is the result of a form submit or a deleteLink. If so, perform the relevant
+        actions in the handler and database.</li>
+    <li>deal with problems (exceptions) during the controller activity:
+        <ul>
+            <li>if <a href="api/org/makumba/LogicException.html"><code>org.makumba.LogicException</code></a> is thrown,
+                the Exception can write a message to the <a href="#response"><code>&lt;mak:response&gt;</code></a> in the
+                requested page.</li>
+            <li><a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>
+                and <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a> will
+                force login</li>
+            <li>if another exception occurs, an errorPage will be shown instead of the requested page.</li>
+        </ul>
+    </li>
+</ul>
+</section>
+
+<fixme author="manu">Move the config part to config</fixme>
+        
+    </body>
+</document>
+

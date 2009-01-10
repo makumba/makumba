@@ -2,19 +2,37 @@
 <!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 <document>
     <header>
-        <title>Welcome to MyProj</title>
+        <title>Makumba web-app configuration</title>
     </header>
     <body>
-        <section id="status">
-            <title>Congratulations</title>
-            <p>
-                You have successfully generated and rendered an
-                <a
-                    href="ext:forrest">Apache Forrest</a> site. This page is
-                from the site template. It is found in
-                <code>src/documentation/content/xdocs/index.xml</code> Please edit it
-                and replace this text with content of your own.
-            </p>
+        <p>This page explains how a web-app should be configured in order to work properly with Makumba.</p>
+        <section>
+            <title>Makumba controller filter mapping</title>
+            <p>In order to work properly, the following filter should be mapped in <code>WEB-INF/web.xml</code>:</p>
+                <source>
+                    <![CDATA[ 
+            <filter>
+                <filter-name>makumba_controller</filter-name>
+                <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
+            </filter>
+            
+            <filter-mapping>
+                <filter-name>makumba_controller</filter-name>
+                <url-pattern>*.jsp</url-pattern>
+            </filter-mapping>
+            <filter-mapping>
+                <filter-name>makumba_controller</filter-name>
+                <url-pattern>*.jspx</url-pattern>
+            </filter-mapping>
+            <filter-mapping>
+                <filter-name>makumba_controller</filter-name>
+                <url-pattern>/mak-tools</url-pattern>
+            </filter-mapping>
+            <filter-mapping>
+                <filter-name>makumba_controller</filter-name>
+                <url-pattern>/mak-tools/*</url-pattern>
+            </filter-mapping> ]]>
+                </source>
         </section>
     </body>
 </document>
