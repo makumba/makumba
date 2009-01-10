@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Makumba JSP tag library</title>
+    </header>
+    <body>
+        <section>
+            <title>Makumba in Java Server Pages</title>
+            <p> Makumba offers a JSP custom tag library, that allows easy interaction (viewing,
+                editing) with the data in your database, right from your HTML (actually, JSP)
+                document. Since Makumba pages, are essentially JSP pages, a basic understanding of
+                JSP will be helpful to make more advanced use of makumba. Same goes for knowing a
+                bit of Java itself. But you can get a long way with just a few notions! Really. </p>
+            <p>Makumba tags are written according to <a href="http://java.sun.com/products/servlet/"
+                    >Servlet 2.3 specification</a> and <a href="http://java.sun.com/products/jsp/"
+                    >JSP 1.1 specification</a>. You will need a so-called "servlet container" that
+                supports them both, such as <a href="http://jakarta.apache.org/tomcat/">Apache
+                    Tomcat</a>. The corresponding <strong>WEB-INF/taglib.tld</strong> is already
+                included in the <a href="download.html">distribution</a>
+                <code>makumba.jar</code>. </p>
+            <p>Before using Makumba tags in your JSP pages you also need to declare the taglib
+                with:</p>
+            <source><![CDATA[ <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %> ]]></source>
+            <p>A few resources on JSPs (don't be afraid to try first, read later) :</p>
+            <ul>
+                <li>
+                    <a href="http://java.sun.com/products/jsp/docs.html">JSP documentation by
+                        Sun</a>
+                </li>
+                <li><a href="http://java.sun.com/webservices/tutorial.html">J2EE web services
+                        documentation by Sun</a>. This is an introduction on the various
+                    technologies that you might use when building webapplications using Java2
+                    (J2EE).</li>
+                <li>
+                    <a
+                        href="http://www.apl.jhu.edu/%7Ehall/java/Servlet-Tutorial/Servlet-Tutorial-JSP.html"
+                        >Gentle introduction to JSPs</a>
+                </li>
+            </ul>
+
+        </section>
+        <section>
+            <title>JSP tag parameters</title>
+
+            <p>JSP-tag parameter values are either <strong>FIXED</strong> or <strong>RTEXPR</strong>
+                (runtime expression). A <strong>FIXED</strong> tag parameter must have a constant,
+                literal value, while an <strong>RTEXPR</strong> can also be of the form
+                    <code>&lt;%= java_expression %&gt;</code>. On the other hand,
+                    <em>some</em> FIXED parameters can contain jsp attributes like $attr in makumba
+                tags.</p>
+            <p>All parameters are <strong>optional</strong> unless specifically mentioned as being
+                    <strong>mandatory</strong>.</p>
+            <p>Specific concern can be the <strong>parameter quoting</strong>. Tag parameters can be
+                written as name="value" or name='value' (note: the stringLiteral on DATE must be
+                quoted with "). The choice of quote can be determined by the need to use either
+                double or single quote as part of the value itself. If the quote is also present
+                within the value, it must be escaped by a backslash.</p>
+            <source><![CDATA[
+        <mak:list from="general.Person p" where="p.gender=\"male\"" >
+        <mak:list from="general.Person p" where='p.gender="male"' >
+        <mak:list from="general.Person p" where="p.gender='male'" >
+        <mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " >
+        <mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' >]]></source>
+            <p>Quotes in <strong>extra HTML formatting</strong> parameters, such as
+                    <code>styleClass</code>, <code>title</code>, <code>styleId</code>,
+                    <code>onClick</code> ... need some special attention with quotes. The parameter
+                values are copied verbatim (with no modifications by makumba) to the resulting HTML,
+                always surrounded with double quotes ("). This means that you have to use other
+                quotes, like single one ('),</p>
+            <p>If you need to pass a literal <strong>backslash</strong> (\) you have to escape it
+                with a preceeding backslash (\\).</p>
+            <source><![CDATA[
+        <mak:input ... onClick="alert(this.value);"/>
+        <mak:input ... onClick="alert('Hello world!');"/> 
+        <mak:input ... onClick="alert('Hello\\nWorld');"/>
+        ]]></source>
+            <p>Unfortunately the idea to use a sequence of escapes, eg writing \\\' in the JSP page
+                to set the tag attribute to \', which could be handy for javascript tag attributes,
+                is confusing the Tomcat servlet container.</p>
+
+        </section>
+    </body>
+</document>
+
+

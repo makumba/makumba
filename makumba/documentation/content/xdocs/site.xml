@@ -38,18 +38,24 @@ See http://forrest.apache.org/docs/linking.html for more info
 -->
 <site label="Makumba" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="Home">
   
-  <home label="Home" href="/index.html" tab="home" description="Welcome to Makumba">
+  <about label="Welcome" dir="/" tab="home" description="Welcome to Makumba">
+    <index label="About Makumba" href="/index.html" description="Welcome to Makumba"/>
     <example label="Example" href="/example.html" tab="home"/>
     <supporters label="Supporters" href="/supporters.html" />
-  </home>
+    <status label="Documentation status" href="/status.html" />
+  </about>
   
-  <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration">
+  <quickstart label="Quick start" href="/quickstart.html" description="Quick start" />
+  
+  <configuration label="Configuration" dir="/configuration" description="Configuring Makumba" tab="configuration">
+    <index label="Overview" href="/configuration/index.html" description="Configuration overview" />
     <webapp label="Web-app configuration" href="/configuration/webapp.html" description="Makumba web-app" />
     <conf label="Makumba configuration" href="/configuration/configuration.html" description="Makumba.conf" />
     <libs label="Libraries" href="/configuration/libraries.html" description="Required and useful libraries" />
   </configuration>
   
-  <usage label="Using Makumba" href="/usage/index.html" description="How to use Makumba" tab="usage">
+  <usage label="Using Makumba" dir="/usage" description="How to use Makumba" tab="usage">
+    <index label="Overview" href="/usage/index.html" description="Reference documentation overview" />
     <philosophy label="Makumba philosophy" href="/philosophy.html" />
     <basics label="Makumba basics" href="/usage/basics.html" description="What you should know to get started" />
     <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
@@ -67,6 +73,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
     <queryfrag label="Query fragmnets" href="/doc/queryfrag.html" description="Query fragments"/>
     <taglib label="JSP tag library" dir="/doc/taglib/" description="Makumba tag library" tab="documentation">
+      <index label="Introduction" href="/doc/taglib/index.html"/>
       <makaction label="mak:action" href="/doc/taglib/makaction.html"/>
       <makaddForm label="mak:addForm" href="/doc/taglib/makaddForm.html"/>
       <makattribute label="mak:attribute" href="/doc/taglib/makattribute.html"/>
@@ -93,6 +100,7 @@ See http://forrest.apache.org/docs/linking.html for more info
       <makvalue label="mak:value" href="/doc/taglib/makvalue.html"/>
       <makversion label="mak:version" href="/doc/taglib/makversion.html"/>
     </taglib>
+    <controller label="Makumba Controller" href="/doc/controller.html" />
     <bl label="Business Logics" dir="/doc/BL" description="Makumba Business Logics" tab="documentation">
  		<introduction label="Introduction" href="/doc/BL/introduction.html" description="Business Logics introduction" />
         <javahandlerclasses label="Java Handler Classes" href="/doc/BL/JavaHandlerClasses.html" description="Java Handler Classes"/>
