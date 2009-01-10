@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project default="docs" basedir="." name="Forrest plugin build file">
+<project basedir="." name="Forrest plugin build file">
   <property name="plugin-name" value="org.apache.forrest.plugin.input.wiki"/>
   <property name="forrest.version" value="0.8"/>
   <property name="type" value="input"/>
@@ -25,7 +25,7 @@
   <property name="websiteURL" value="http://forrest.apache.org/pluginDocs/plugins_0_80/org.apache.forrest.plugin.input.wiki/"/>
   <property name="downloadURL" value="http://forrest.apache.org/plugins/"/>
   <property name="publish" value="true"/>
-  <import file="../build.xml"/>
+  <import file="../../../build.xml"/>
 <!-- Add any additional installation work here in the build target, for example:
   <target name="build"
           description="Extract the tools">

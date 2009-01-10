@@ -236,8 +236,13 @@
 <xsl:text> </xsl:text>
   </xsl:template>
 
-  <xsl:template match="st:noteblock">
-  <xsl:choose>
+  <xsl:template match="st:noteblock" mode="paragraph">
+  <xsl:value-of select="st:notetitle" />
+ 
+  </xsl:template>
+
+<!-- 
+<xsl:choose>
     <xsl:when test="contains(.,'(') and contains(.,')')">
     <note>
       <xsl:attribute name="label">
@@ -250,8 +255,8 @@
     </xsl:otherwise>
   </xsl:choose>
   
- 
-  </xsl:template>
+
+ -->
 
   <xsl:template match="st:bulletedlist1" mode="paragraph">
     <ul>
