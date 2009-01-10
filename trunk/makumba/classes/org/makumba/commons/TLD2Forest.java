@@ -165,7 +165,7 @@ public class TLD2Forest {
         String desc = new String();
         for(Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
-            if(tagElement.getName().equals("web-description")) {
+            if(tagElement.getName().equals("description")) {
                 desc = tagElement.getText();
                 break;
             }
@@ -173,7 +173,7 @@ public class TLD2Forest {
         if(desc.trim().length() != 0) {
             description.setText(desc);
         } else {
-            description.setText("FIXME: no web-description for this tag in taglib-documented.xml!");
+            description.setText("FIXME: no description for this tag in taglib-documented.xml!");
         }
         
         

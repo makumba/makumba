@@ -53,9 +53,8 @@ public class MakumbaTLDGenerator {
                     if (tagContent.getName().equals("attribute")) {
 
                         for (Element attributeContent : (List<Element>) tagContent.elements()) {
-                            // remove all the <description> and <comments> tags inside <attribute> elements
-                            if (attributeContent.getName().equals("description")
-                                    || attributeContent.getName().equals("comments")) {
+                            // remove all the <comments> tags inside <attribute> elements
+                            if (attributeContent.getName().equals("comments")) {
                                 attributeContent.getParent().remove(attributeContent);
                             }
                         }
