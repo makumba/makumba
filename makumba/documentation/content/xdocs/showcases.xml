@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Makumba showcases</title>
+    </header>
+    <body>
+        <p>This page shows just a few examples of web applications that are using the Makumba JSP tag library.</p>
+        <section>
+            <title>BEST public website</title>
+            <p>BEST - Board of European Students of Technology is a European student organisation located in over 70 universities in 30 European countries.</p>
+            <p>The public website found at <a href="http://www.BEST.eu.org">www.BEST.eu.org</a> includes a vast application system serving tens of thousands students is running on Makumba technology.</p>
+            <p><a href="images/bestpub1.png"><img alt="BEST public website" src="images/bestpub1_t.jpg" /></a>
+                <a href="images/bestpub2.png"><img alt="BEST public website" src="images/bestpub2_t.jpg" /></a>
+                <a href="images/bestpub3.png"><img alt="BEST public website" src="images/bestpub3_t.jpg" /></a>
+            </p>
+            
+            <p>
+                And check out <a href="http://www.BEST.eu.org">www.BEST.eu.org</a>
+            </p>
+            
+            <section>
+                <title>Statistics</title>
+                <ul>
+                    <li>More than 350 JSP pages, including 150 dynamic pages using Makumba.</li>
+                    <li>800-1,800 unique visitors per day</li>
+                    <li>More than 60,000 user accounts, including detailed personal profiles and applications to BEST public events</li>
+                </ul>
+            </section>
+            
+        </section>
+        
+        
+        <section>
+            <title>BEST Intranet - Private Area</title>
+            
+            <p>BEST - Board of European Students of Technology is a European student organisation located in over 70 universities in 30 European countries.</p>
+            <p>A vast developed intranet offers a platform for virtual collaboration. Thousands of members have an account there and it offers various features for working online: a wiki, archives, personal profiles, project management, mailing lists, a survey centre and more.</p>
+                <p>
+                <a href="images/best1.png"><img alt="BEST Intranet" src="images/best1_t.jpg" /></a>
+            <a href="images/best2.png"><img alt="BEST Intranet" src="images/best2_t.jpg" /></a>
+            <a href="images/best3.png"><img alt="BEST Intranet" src="images/best3_t.jpg" /></a>
+            <a href="images/best4.png"><img alt="BEST Intranet" src="images/best4_t.jpg" /></a>
+                    </p>
+              
+            <section>
+                <title>Statistics</title>
+                <ul>
+                    <li>Around 2,500 JSP pages, including more than 1,400 dynamic pages using
+                        Makumba.</li>
+                    <li>700-1,100 unique visitors per day</li>
+                    <li>More than 8,600 user accounts with personal profiles, BEST internal event
+                        applications, mailing list subscriptions, ...</li>
+                </ul>
+                <p>
+                    <br/>
+                    <strong>Together with the BEST Public Website:</strong>
+                </p>
+                <ul>
+                    <li>112 Makumba Data Definitions (MDDs)</li>
+                    <li>resulting in 320 Database tables</li>
+                    <li>More than 6 GB of data (users, events, wiki, mailing lists, ...)</li>
+                    <li>More than 11 GB of document archives</li>
+                </ul>
+            </section>
+        </section>
+        
+        
+        <section>
+            <title>Project Online Communicator</title>
+            
+            <p>A website for the coordination of an international building project.</p>
+            <p>            <a href="images/poc.jpg"><img alt="Project Online Communicator" src="images/poc_t.jpg" /></a></p>
+        </section>
+        
+        <section>
+            <title>SvenskWebb</title>
+            <p>SvenskWebb is a meeting place for teachers in Swedish at universities abroad.</p>
+            <p><a href="images/svenskwebb.jpg"><img alt="SvenskWebb" src="images/svenskwebb_t.jpg"/></a></p>
+            
+        </section>
+        
+        <section>
+            <title>Map Collection</title>
+            <p>A collection of famous antique maps.</p>
+            <p> <a href="images/maps.jpg"><img alt="Map collection" src="images/maps_t.jpg"/></a></p>
+        </section>
+            
+        
+    </body>
+</document>
+

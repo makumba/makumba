@@ -40,6 +40,7 @@ See http://forrest.apache.org/docs/linking.html for more info
   
   <home label="Home" href="/index.html" tab="home" description="Welcome to Makumba">
     <example label="Example" href="/example.html" tab="home"/>
+    <supporters label="Supporters" href="/supporters.html" />
   </home>
   
   <configuration label="Configuration" href="/configuration/index.html" description="Configuring Makumba" tab="configuration">
@@ -98,6 +99,9 @@ See http://forrest.apache.org/docs/linking.html for more info
  		<login label="Login" href="/doc/BL/login.html" description="Login"/>
  	</bl>
   </documentation>
+
+   <showcases label="Showcases" href="/showcases.html" description="Showcases" tab="showcases" />
+
   <!-- develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/ -->
   
 <!--
