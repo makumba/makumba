@@ -45,7 +45,7 @@ NOTES:
 <!ENTITY % markup "strong|em|code|sub|sup">
 <!ENTITY % special-inline "br|img|icon|acronym|map">
 <!ENTITY % links "a">
-<!ENTITY % paragraphs "p|source|note|warning|fixme">
+<!ENTITY % paragraphs "p|source|note|warning|fixme|ihtml">
 <!ENTITY % tables "table">
 <!ENTITY % lists "ol|ul|dl">
 <!ENTITY % special-blocks "figure|anchor">
@@ -273,6 +273,14 @@ NOTES:
   author CDATA #REQUIRED
   %common.att; 
 >
+
+<!-- Inlined HTML Paragraph-->
+<!ELEMENT ihtml (%text;)*>
+<!ATTLIST ihtml
+  %common.att; 
+>
+
+
 <!-- ==================================================== -->
 <!-- Tables -->
 <!-- ==================================================== -->
@@ -435,7 +443,7 @@ NOTES:
 <!ATTLIST body
   %common.att; 
 >
-<!ELEMENT section (title, (%sections; | %blocks;)*)>
+<!ELEMENT section (title, (%sections; | %blocks; )*)>
 <!ATTLIST section
   %common.att; 
 >
