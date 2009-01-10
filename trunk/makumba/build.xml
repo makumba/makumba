@@ -10,23 +10,36 @@
        	<property name="build.compiler" value="jikes" />
  -->
 	<!-- jikes options for ant -emacs  -->
+
+    <property environment="env" />
+
 	<property name="build.compiler.emacs" value="true" />
 
 	<property name="temp.dir" value="work/temp" />
+  
+    <property name="forrest.home" value="${env.FORREST_HOME}" />
 
-	<property environment="env" />
+    <property name="forrest.plugins-dir" value="${forrest.home}/plugins" />
+
 
 	<property name="jar.place" value="." />
 
 	<taskdef resource="svntask.properties" classpathref="project.class.path"/>
-	
+  
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+      <classpath>
+        <fileset dir="lib/" includes="ant-contrib-*.jar" />
+      </classpath>
+    </taskdef>
+  
 	<target name="install" depends="version">
 		<mkdir dir="work/temp" />
 		<mkdir dir="tomcat/temp" />
 		<mkdir dir="work/generated-hibernate-classes" />
 		<mkdir dir="work/generated-hibernate-mappings" />
-	</target>
-
+    
+   </target>
+   
 	<target name="detectHqlTokens">
 		<javac srcdir="classes" destdir="classes" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
 			<classpath refid="project.class.path" />
@@ -163,6 +176,10 @@
 			<fileset dir="lib" includes="makumba.jar" />
 			<fileset dir="work" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
+            <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
+            <fileset dir="${forrest.plugins-dir}/plugins/org.apache.forrest.plugin.input.wiki" />
+            
+      
 		</delete>
 	</target>
 
@@ -700,7 +717,7 @@ package org.makumba]]>
 
   </target>
   
-  <target name="mergeTagDocAndExamples">
+  <target name="mergeTagDocAndExamples, copyWikiForrestPlugin">
 
       <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
         <classpath>
