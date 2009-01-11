@@ -3,6 +3,7 @@ package org.makumba.commons;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,12 +44,19 @@ public class TLD2Forest {
 
     final static String EXAMPLE_SECTION_ID = "example";
 
+    public static String errorMsg;
+
+    public static HashMap<String, Element> processedTags = new HashMap<String, Element>();
+
+    public static final String[] attributeTags = { "name", "required", "rtexprvalue", "description" };
+
     public static void main(String[] args) {
 
         if (args.length < 2) {
             System.err.println("Arguments needed: [path to the TLD file] [path to the output directory of example XMLs] [path to the output directory of taglib XMLs for Forrest]  (absolute paths)");
         }
         String tldFilePath = args[0]; // currently used 'makumba\classes\META-INF\taglib-documented.xml'
+        errorMsg = "Error processing '" + tldFilePath + "': ";
         String exampleDirectory = args[1];
         String taglibDirectory = args[2];
         int action = CREATE;// default
@@ -192,14 +200,20 @@ public class TLD2Forest {
         Element descriptionTh = headerRow.addElement("th");
         descriptionTh.setText("Description");
         /* the content */
-        String[] attributeTags = { "name", "required", "rtexprvalue", "description" };
         /* the iterator of elements of a tag */
         for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
             /* looking for attributes */
             if (tagElement.getName().equals("attribute")) {
-                processAttribute(table, attributeTags, tagElement);
-            } // end of tag attributes part
+                if (tagElement.attributeValue("name") != null || tagElement.attributeValue("specifiedIn") != null) {
+                    // have a referring attribute
+                    Element attribute = MakumbaTLDGenerator.getReferencedAttributes(processedTags, errorMsg, tag,
+                        tagName, tagElement);
+                    processAttribute(table, attributeTags, attribute);
+                } else { // normal attribute
+                    processAttribute(table, attributeTags, tagElement);
+                }
+            }
         }
         Element exampleSection = bodyElement.addElement("section");
         exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
@@ -217,6 +231,7 @@ public class TLD2Forest {
         } catch (IOException e1) {
             System.out.println(e1.getMessage());
         }
+        processedTags.put(tagName, tag);
         return tagFilePath;
     }
 

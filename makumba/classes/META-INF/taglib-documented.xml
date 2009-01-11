@@ -171,117 +171,18 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <display-name>manipulate record</display-name>
     <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
 
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>countVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>maxCountVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>from</name>
-      <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>variableFrom</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>where</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>orderBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>groupBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-    
-    <attribute>
-      <name>authorize</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-    
-    <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-    
-    <attribute>
-      <name>logicClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-    
-    <attribute>
-      <name>editPage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>    
+    <attribute name="id" specifiedIn="list"/>
+    <attribute name="countVar" specifiedIn="list"/>
+    <attribute name="maxCountVar" specifiedIn="list"/>
+    <attribute name="from" specifiedIn="list"/>
+    <attribute name="variableFrom" specifiedIn="list"/>
+    <attribute name="where" specifiedIn="list"/>
+    <attribute name="groupBy" specifiedIn="list"/>
+    <attribute name="db" specifiedIn="list"/>
+    <attribute name="authorize" specifiedIn="list"/>
+    <attribute name="editable" specifiedIn="list"/>
+    <attribute name="logicClass" specifiedIn="list"/>
+    <attribute name="editPage" specifiedIn="list"/>
   </tag>
 
 
@@ -301,77 +202,14 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <comments>Document me please</comments>
     </attribute>
 
-    <attribute>
-      <name>from</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>orderBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>groupBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>offset</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>limit</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-    
-    <attribute>
-      <name>defaultLimit</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="id" specifiedIn="list"/>
+    <attribute name="separator" specifiedIn="list"/>
+    <attribute name="orderBy" specifiedIn="list"/>
+    <attribute name="groupBy" specifiedIn="list"/>
+    <attribute name="db" specifiedIn="list"/>
+    <attribute name="offset" specifiedIn="list"/>
+    <attribute name="limit" specifiedIn="list"/>
+    <attribute name="defaultLimit" specifiedIn="list"/>
   </tag>
 
 

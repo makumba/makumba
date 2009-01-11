@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba @version@ http://www.makumba.org</description>
+  <description>Makumba devel-20090111171101 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/presentation</uri>
@@ -166,117 +166,19 @@ If not present, the default database is used. See database configuration and loo
     <display-name>manipulate record</display-name>
     <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
 
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>countVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>maxCountVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>from</name>
-      <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>variableFrom</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>where</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>orderBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>groupBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-    
-    <attribute>
-      <name>authorize</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-    
-    <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-    
-    <attribute>
-      <name>logicClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-    
-    <attribute>
-      <name>editPage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>    
+    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
+    <attribute><name>countVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the number of the current iteration.</description></attribute>
+    <attribute><name>maxCountVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the total number of iterations.</description></attribute>
+    <attribute><name>from</name><required>true</required><rtexprvalue>false</rtexprvalue><description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</description></attribute>
+    <attribute><name>variableFrom</name><required>false</required><rtexprvalue>false</rtexprvalue><description>supplementary, variable OQL FROM section.</description></attribute>
+    <attribute><name>where</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</description></attribute>
+    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY  section</description></attribute>
+    <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</description></attribute>
+    <attribute><name>authorize</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>editable</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>logicClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>editPage</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
   </tag>
 
 
@@ -296,77 +198,15 @@ If not present, the default database is used. See database configuration and loo
       
     </attribute>
 
-    <attribute>
-      <name>from</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>orderBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>groupBy</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>offset</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>limit</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
-    
-    <attribute>
-      <name>defaultLimit</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
+    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
+    <attribute><name>separator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Character string as separator between two list elements. It is not included before the first or after the last</description></attribute>
+    <attribute><name>orderBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL ORDER BY  section</description></attribute>
+    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY  section</description></attribute>
+    <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</description></attribute>
+    <attribute><name>offset</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the offset of the result to show (0 for starting from the first result)</description></attribute>
+    <attribute><name>limit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the maximum numbers of results to show (-1 for all results)</description></attribute>
+    <attribute><name>defaultLimit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description></attribute>
   </tag>
 
 
