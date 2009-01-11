@@ -40,8 +40,8 @@ See http://forrest.apache.org/docs/linking.html for more info
   
   <about label="Welcome" dir="/" tab="home" description="Welcome to Makumba">
     <index label="About Makumba" href="/index.html" description="Welcome to Makumba"/>
-    <example label="Example" href="/example.html" tab="home"/>
     <supporters label="Supporters" href="/supporters.html" />
+    <example label="Documentation example" href="/example.html" tab="home"/>
     <status label="Documentation status" href="/status.html" />
   </about>
   
