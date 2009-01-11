@@ -14,72 +14,294 @@
     <title>Makumba Documentation - Query Languages</title>
   </header>
   <body>
-    <p>
-      Makumba supports mainly two query languages: the native
-      <a href="#MQL">Makumba Query Language (MQL)</a>
-      and the
-      <a href="#HQL">Hibernate Query Language (HQL)</a>.
-    </p>
-    <p>
-      In the earlier versions, Makumba was using the
-      <a href="#OQL">Object Query Language (OQL)</a>
-      designed by the
-      <a href="ext:odmg">Object Data Management Group</a>.
-    </p>
+    <p> Makumba supports mainly two query languages: the native <a href="#MQL">Makumba Query
+        Language (MQL)</a> and the <a href="#HQL">Hibernate Query Language (HQL)</a>. </p>
+    <p> In the earlier versions, Makumba was using the <a href="#OQL">Object Query Language
+        (OQL)</a> designed by the <a href="ext:odmg">Object Data Management Group</a>. </p>
     <section id="MQL">
       <title>MQL</title>
       <fixme author="manu">Put a link to the Pointer once we have the doc</fixme>
-      <p>
-        MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based on HQL in many regards
-        (see the
-        <a href="ext:hql">reference documentation</a>
-        ), except following:
-        </p>
-        <ul>
-          <li>it accepts boolean projections: SELECT a=1 AS col1 ... etc</li>
-          <li>selecting an object will lead in selecting the external form of its Makumba pointer</li>
-          <li>
-            it works with
-            <a href="datadef.html">Makumba Data Definitions</a>
-            instead of Hibernate mappings
-          </li>
-          <li>
-            like HQL, it supports subqueries in the style of e.g. <a href="ext:mysql-subqueries">MySQL</a>
-          </li>
-          <li>since Makumba only has set (equivalent of Hibernate bag), some of the HQL constructs like indices()
-            don't make sense.</li>
-          <li>some of the HQL functions are not yet implemented (e.g. current_date())</li>
-        </ul>
+      <p> MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based
+        on HQL in many regards (see the <a href="ext:hql">reference documentation</a> ), except
+        following: </p>
+      <ul>
+        <li>it accepts boolean projections: SELECT a=1 AS col1 ... etc</li>
+        <li>selecting an object will lead in selecting the external form of its Makumba pointer</li>
+        <li> it works with <a href="datadef.html">Makumba Data Definitions</a> instead of Hibernate
+          mappings </li>
+        <li> like HQL, it supports subqueries in the style of e.g. <a href="ext:mysql-subqueries"
+            >MySQL</a>
+        </li>
+        <li>since Makumba only has set (equivalent of Hibernate bag), some of the HQL constructs
+          like indices() don't make sense.</li>
+        <li>some of the HQL functions are not yet implemented (e.g. current_date())</li>
+      </ul>
+
+      <section>
+        <title>MQL Functions</title>
+
+        <p>MQL provides support for functions that will translate into SQL functions. Currently, the
+          following functions are supported:</p>
+        <section>
+          <title>String functions</title>
+          <table>
+            <tr>
+              <th>name</th>
+              <th>argument(s)</th>
+              <th>result type</th>
+              <th>description</th>
+            </tr>
+            <tr>
+              <td>lower</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Converts the string argument to lower case</td>
+            </tr>
+            <tr>
+              <td>upper</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Converts the string argument to upper case</td>
+            </tr>
+            <tr>
+              <td>trim</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Remove leading trailing spaces.</td>
+            </tr>
+            <tr>
+              <td>ltrim</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Remove leading spaces.</td>
+            </tr>
+            <tr>
+              <td>rtrim</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Remove trailing spaces.</td>
+            </tr>
+            <tr>
+              <td>concat</td>
+              <td>(str1, str2, ...)</td>
+              <td>string</td>
+              <td>Concatenates two or more strings</td>
+            </tr>
+            <tr>
+              <td>concat_ws</td>
+              <td>(separator, str1, str2, ...)</td>
+              <td>string</td>
+              <td>Concatenates two or more string with the given separator</td>
+            </tr>
+            <tr>
+              <td>substring</td>
+              <td>(str, position [, length])</td>
+              <td>string</td>
+              <td>Takes a substring of the given string</td>
+            </tr>
+            <tr>
+              <td>replace</td>
+              <td>(str, fromStr, toStr)</td>
+              <td>string</td>
+              <td>Replace occurrences of a specified string</td>
+            </tr>
+            <tr>
+              <td>reverse</td>
+              <td>(str)</td>
+              <td>string</td>
+              <td>Returns the string <code>str</code> with the order of the characters reversed.
+              </td>
+            </tr>
+            <tr>
+              <td>ascii</td>
+              <td>(str)</td>
+              <td>int</td>
+              <td>Return numeric value of left-most character.</td>
+            </tr>
+            <tr>
+              <td>character_length</td>
+              <td>(str)</td>
+              <td>int</td>
+              <td>Return number of characters in the string argument.</td>
+            </tr>
+            <tr>
+              <td>format</td>
+              <td>(int)</td>
+              <td>string</td>
+              <td>Return a number formatted to specified number of decimal places</td>
+            </tr>
+            <!--  not yet implemented        
+              <tr>
+              <td>regexp</td>
+              <td><code>expr</code> regexp <code>patt</code></td>
+              <td>int (0, 1)</td>
+              <td>
+              Performs a pattern match of a string expression <code>expr</code> against a pattern <code>patt</code>. For example:
+              <pre class="example">SELECT 'makumba!' REGEXP '[a-z]*'; 
+              -> 1</pre>
+              </td>
+              </tr>
+            -->
+          </table>
+        </section>
+
+
+        <section>
+          <title>Date functions</title>
+          <table>
+            <tr>
+              <th>name</th>
+              <th>argument(s)</th>
+              <th>result type</th>
+              <th>description</th>
+            </tr>
+            <tr>
+              <td>dayOfMonth</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the day of the month (0-31).</td>
+            </tr>
+            <tr>
+              <td>dayOfWeek (alternatively: weekday)</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the weekday index of the argument.</td>
+            </tr>
+            <tr>
+              <td>week</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the week number.</td>
+            </tr>
+            <tr>
+              <td>dayOfYear</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the day of the year (1-366).</td>
+            </tr>
+            <tr>
+              <td>year</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the year from the date argument.</td>
+            </tr>
+            <tr>
+              <td>month</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the month from the date argument.</td>
+            </tr>
+            <tr>
+              <td>hour</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the hour from the date argument.</td>
+            </tr>
+            <tr>
+              <td>minute</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the minute from the date argument.</td>
+            </tr>
+            <tr>
+              <td>second</td>
+              <td>(date)</td>
+              <td>int</td>
+              <td>Return the second from the date argument.</td>
+            </tr>
+            <tr>
+              <td>extract</td>
+              <td>(<code>unit</code> FROM <code>date</code>)</td>
+              <td>int</td>
+              <td> Extracts parts from the date. For example: <code>SELECT EXTRACT(YEAR_MONTH FROM
+                  '2009-07-02 01:02:03'); -> 200907</code><br/>See the <a
+                  href="http://dev.mysql.com/doc/refman/5.0/en/date-and-time-functions.html#function_date-add"
+                  >MySQL Documentation</a> for available units. </td>
+            </tr>
+            <tr>
+              <td>monthName</td>
+              <td>(date)</td>
+              <td>string</td>
+              <td>Return the name of the month.</td>
+            </tr>
+            <tr>
+              <td>dayName</td>
+              <td>(date)</td>
+              <td>string</td>
+              <td>Return the name of the day.</td>
+            </tr>
+            <tr>
+              <td>date_add</td>
+              <td>(date, INTERVAL <code>expr</code>
+                <code>unit</code>)</td>
+              <td>date</td>
+              <td> Adds <code>expr</code> times the <code>unit</code> to the date. For example:
+                  <code>SELECT '2008-12-31 23:59:59' + INTERVAL 1 SECOND; -> '2009-01-01
+                  00:00:00'</code><br/>See the <a
+                  href="http://dev.mysql.com/doc/refman/5.0/en/date-and-time-functions.html#function_date-add"
+                  >MySQL Documentation</a> for available units. </td>
+            </tr>
+            <tr>
+              <td>date_sub</td>
+              <td>(date, INTERVAL <code>expr</code>
+                <code>unit</code>)</td>
+              <td>date</td>
+              <td>Substracts <code>expr</code> times the <code>unit</code> to the date. See
+                  <code>date_add</code>.</td>
+            </tr>
+            <tr>
+              <td>last_day</td>
+              <td>(date)</td>
+              <td>string</td>
+              <td>Return the name of the day.</td>
+            </tr>
+            <tr>
+              <td>current_date</td>
+              <td/>
+              <td>date</td>
+              <td>Return the current date.</td>
+            </tr>
+            <tr>
+              <td>current_time</td>
+              <td/>
+              <td>date</td>
+              <td>Return the current time.</td>
+            </tr>
+            <tr>
+              <td>current_timestamp (alternatively: now)</td>
+              <td/>
+              <td>date</td>
+              <td>Return the current date and time.</td>
+            </tr>
+          </table>
+        </section>
+        <note>Support for new functions is normally easy to add, so if you miss specific functions,
+          please just mail the makumba developers!</note>
+
+      </section>
+
     </section>
+
     <section id="HQL">
       <title>HQL</title>
-      <p>Makumba supports HQL as a query language. Please check its <a href="ext:hql">reference documentation</a>.</p>
+      <p>Makumba supports HQL as a query language. Please check its <a href="ext:hql">reference
+          documentation</a>.</p>
       <p>In order to use HQL in Makumba JSPs pages, the following TLD declaration should be used:
-      <code>&lt;%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %&gt;</code>
-      
+          <code>&lt;%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %&gt;</code>
       </p>
     </section>
     <section id="OQL">
       <title>OQL</title>
-      <note>OQL is not any longer used in Makumba, but here is the previous documentation as support for earlier
-        Makumba versions.</note>
-      <p>
-        The database can be interrogated using the following language ( [] means optional, {} means any number of
-        repetitions). OQL is similar to SQL, a specification can be found at
-        <a href="ext:odmg">http://www.odmg.org</a>
-        (or check
-        <a href="oql-manual.pdf">this PDF</a>
-        ). Makumba recognizes a subset of OQL at the moment, which it translates to the host SQL when necessary.
-      </p>
-      <source>
-SELECT expression [[AS] label] {, expression [[AS] label] }
-FROM {type [AS] label | label.field{.field} [AS] label }
-[   WHERE expression
-    [    GROUP BY expression {,expression}
-        [  HAVING expression {,expression}  ]
-    ]
-]
-[ORDER BY expression {,expression} [(ASC|DESC)] ]
+      <note>OQL is not any longer used in Makumba as of 0.8.1, but here is the previous
+        documentation as support for earlier Makumba versions.</note>
+      <p> The database can be interrogated using the following language ( [] means optional, {}
+        means any number of repetitions). OQL is similar to SQL, a specification can be found at <a
+          href="ext:odmg">http://www.odmg.org</a> (or check <a href="oql-manual.pdf">this PDF</a> ).
+        Makumba recognizes a subset of OQL at the moment, which it translates to the host SQL when
+        necessary. </p>
+      <source> SELECT expression [[AS] label] {, expression [[AS] label] } FROM {type [AS] label |
+        label.field{.field} [AS] label } [ WHERE expression [ GROUP BY expression {,expression} [
+        HAVING expression {,expression} ] ] ] [ORDER BY expression {,expression} [(ASC|DESC)] ]
       </source>
     </section>
   </body>

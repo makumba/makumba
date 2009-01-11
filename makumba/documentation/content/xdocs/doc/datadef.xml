@@ -112,7 +112,7 @@
 				<p>This will help the presentation layer to present a suitable input control such as:</p>
 
 				<ihtml>
-    	<![CDATA[ <select> 
+    	<![CDATA[<select> 
       	<option value="0">male</option>
       	<option value="1">female</option>
     	</select> ]]>
@@ -142,7 +142,7 @@
 						(lesser than max) can be indicated).</em> Both must be positive integers.
 					For example:</p>
 				<source>
-					<![CDATA[ #fieldName= char[maxWidth]
+					<![CDATA[#fieldName= char[maxWidth]
 					name= unique char[80]; ]]>
 				</source>
 				<p><code>unique</code> is a <a href="#FieldAttributes"
