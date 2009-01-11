@@ -727,13 +727,18 @@ package org.makumba]]>
     </target>
 
     <target name="generateTLDs" depends="compile">
-
         <java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
             <classpath>
                 <pathelement path="${java.class.path}" />
                 <pathelement location="classes" />
+                <pathelement location="webapps/tests/WEB-INF/classes/" />
                 <fileset dir="${basedir}/lib/">
                     <include name="dom4j-1.6.1.jar" />
+                    <include name="inieditor.jar" />
+                    <include name="commons-lang-2.3.jar" />
+                </fileset>
+                <fileset dir="${basedir}">
+                    <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
                 </fileset>
             </classpath>
             <arg value="${basedir}/classes/META-INF" />
