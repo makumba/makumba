@@ -1,61 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
-    
-    <title>mak:response tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>&lt;mak:response/&gt; prints information about the results of the actions that were performed by the makumba controller (e.g. for a form submit or deleteLink): It either displays the message="..." parameter of the form tag (in green) in case of success, or (in red) the message of a uncaught LogicException resulting from Business Logic. Other exception types will provoke an exception page. 
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:response tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>&lt;mak:response/&gt; prints information about the results of the actions that were performed by the makumba controller (e.g. for a form submit or deleteLink): It either displays the message="..." parameter of the form tag (in green) in case of success, or (in red) the message of a uncaught LogicException resulting from Business Logic. Other exception types will provoke an exception page. 
 
 The unformatted message is available as request-scope attribute makumba.response. The jsp page can get hold of the message using e.g.
 
 &lt;% String s = (String) request.getAttribute("makumba.response") %&gt;Similarly, request-scope attribute makumba.successfulResponse is set only in case of successful action execution.
 
 &lt;% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %&gt;(A body-tag style (&lt;mak:response&gt;...&lt;/mak:response&gt;) will be added later, to display different messages for different circumstances (errors). It will also be possible to get hold of the actual exception object. )
-</p>    
-    </section>    
-    <section id="attributes">      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-      
-      </table>
+</p>        </section>        <section id="attributes">            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+            </table>
+        </section>
     
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>

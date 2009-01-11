@@ -1,106 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
-    
-    <title>mak:pagination tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:pagination tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
     </p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>yes</td>
+                    <td>Generic html tag attribute, see newForm</td>
+                </tr>
+                <tr>
+                    <td>action</td>
+                    <td>false</td>
+                    <td>yes</td>
+                    <td>The target page to go to when clicking on a pagination link.</td>
+                </tr>
+                <tr>
+                    <td>paginationLinkTitle</td>
+                    <td>false</td>
+                    <td>yes</td>
+                    <td>Whether or not to display title="..." elements on the pagination links.</td>
+                </tr>
+                <tr>
+                    <td>itemName</td>
+                    <td>false</td>
+                    <td>yes</td>
+                    <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
+                </tr>
+            </table>
+        </section>
     
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleClass</td>
-          
-          <td>false</td>
-          
-          <td>yes</td>
-          
-          <td>Generic html tag attribute, see newForm</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>action</td>
-          
-          <td>false</td>
-          
-          <td>yes</td>
-          
-          <td>The target page to go to when clicking on a pagination link.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>paginationLinkTitle</td>
-          
-          <td>false</td>
-          
-          <td>yes</td>
-          
-          <td>Whether or not to display title="..." elements on the pagination links.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>itemName</td>
-          
-          <td>false</td>
-          
-          <td>yes</td>
-          
-          <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
-        
-        </tr>
-      
-      </table>
-    
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>

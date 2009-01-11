@@ -1,66 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
-    
-    <title>mak:if tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Displays the body of the tag only if the OQL expression evaluates to true.</p>
-    
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>test</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:if tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Displays the body of the tag only if the OQL expression evaluates to true.</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
-</td>        
-        </tr>      
-      </table>    
-    </section>      
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+</td>                </tr>            </table>        </section>          <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body></document>

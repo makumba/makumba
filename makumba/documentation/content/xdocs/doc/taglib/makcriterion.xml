@@ -1,93 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:criterion tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>fields</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>The MDD fields to apply this criterion upon</td>
+                </tr>
+                <tr>
+                    <td>isRange</td>
+                    <td>false</td>
+                    <td>false</td>
+                    <td>Toggles range searching on the field(s)</td>
+                </tr>
+                <tr>
+                    <td>matchMode</td>
+                    <td>false</td>
+                    <td>false</td>
+                    <td>Document me please</td>
+                </tr>
+            </table>
+        </section>
     
-    <title>mak:criterion tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
-    
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>fields</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>The MDD fields to apply this criterion upon</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>isRange</td>
-          
-          <td>false</td>
-          
-          <td>false</td>
-          
-          <td>Toggles range searching on the field(s)</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>matchMode</td>
-          
-          <td>false</td>
-          
-          <td>false</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-      
-      </table>
-    
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>

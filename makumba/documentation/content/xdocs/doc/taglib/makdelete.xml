@@ -1,321 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:delete tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>object</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>OQL label of the object to delete</td>
+                </tr>
+                <tr>
+                    <td>action</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>see newForm</td>
+                </tr>
+                <tr>
+                    <td>message</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>see newForm</td>
+                </tr>
+                <tr>
+                    <td>widget</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>UI element of the delete</td>
+                </tr>
+                <tr>
+                    <td>method</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Dokument me please</td>
+                </tr>
+                <tr>
+                    <td>preserveWhitespace</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>All white space inside a &lt;mak:delete&gt; will be trimmed, unless specifically preserved.</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>see newForm</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>see newForm</td>
+                </tr>
+                <tr>
+                    <td>styleId</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>style</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onDblClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onKeyDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onKeyUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onKeyPress</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onMouseDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onMouseUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onMouseMove</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onMouseOut</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+                <tr>
+                    <td>onMouseOver</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic html tag attributes, see newForm </td>
+                </tr>
+            </table>
+        </section>
     
-    <title>mak:delete tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;</p>
-    
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>object</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>OQL label of the object to delete</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>action</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>see newForm</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>message</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>see newForm</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>widget</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>UI element of the delete</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>method</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Dokument me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>preserveWhitespace</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>All white space inside a &lt;mak:delete&gt; will be trimmed, unless specifically preserved.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>target</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>see newForm</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>name</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>see newForm</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleId</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleClass</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>style</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>title</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onDblClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyPress</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseMove</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOut</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOver</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic html tag attributes, see newForm </td>
-        
-        </tr>
-      
-      </table>
-    
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>
