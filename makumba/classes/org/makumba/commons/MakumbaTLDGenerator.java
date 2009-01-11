@@ -138,7 +138,7 @@ public class MakumbaTLDGenerator {
     private static Element getAttributeFromTag(Element tag, String attribute) {
         for (Element tagContent : (List<Element>) tag.elements()) {
             if (tagContent.getName().equals("attribute")) {
-                if (tagContent.element("name").getText().equals(attribute)) {
+                if (tagContent.element("name") != null && tagContent.element("name").getText().equals(attribute)) {
                     return (Element) tagContent.clone();
                 }
             }
