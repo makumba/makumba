@@ -71,7 +71,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
     <valdef label="Validation rules" href="/doc/valrules.html" description="Makumba Validation Rules"/>
     <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
-    <queryfrag label="Query fragmnets" href="/doc/queryfrag.html" description="Query fragments"/>
+    <queryfrag label="Query fragments" href="/doc/queryfrag.html" description="Query fragments"/>
     <taglib label="JSP tag library" dir="/doc/taglib/" description="Makumba tag library" tab="documentation">
       <index label="Introduction" href="/doc/taglib/index.html"/>
       <makaction label="mak:action" href="/doc/taglib/makaction.html"/>
