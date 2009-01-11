@@ -444,8 +444,8 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>action</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>the response page of the form</description>
+      <comments><![CDATA[Mandatory if a <mak:action> is absent]]></comments>
     </attribute>
 
 
@@ -453,24 +453,24 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>method</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>the HTTP method (get or post)</description>
+      <comments>Defaults to get</comments>
     </attribute>
 
     <attribute>
       <name>name</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>the name of the created object in the response page</description>
+      <comments><![CDATA[Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<form name="..." ...>)]]></comments>
     </attribute>
 
     <attribute>
       <name>message</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>the message that is displayed in the response page upon success</description>
+      <comments>Fixed. Defaults to "changes done".</comments>
     </attribute>
 
     <attribute>
@@ -490,7 +490,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>results in id="..."</comments>
     </attribute>
 
     <attribute>
@@ -498,7 +498,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>results in class="..."</comments>
     </attribute>
 
     <attribute>
@@ -506,39 +506,40 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>annotation</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description><![CDATA[Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.]]></description>
+      <comments><![CDATA[Taken into account only if reloadFormOnError is not set to false.
+Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. ]]></comments>
     </attribute>
 
     <attribute>
       <name>annotationSeparator</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>Fixed. Prints the given separator between the annotation and the input field.</description>
+      <comments>Also HTML can be used, e.g. printing an error icon.</comments>
     </attribute>
 
     <attribute>
       <name>reloadFormOnError</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
+      <description>Document me please</description>
+      <comments>Document me please</comments>
     </attribute>
 
     <attribute>
       <name>clientSideValidation</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Controls whether client side validation shall be used.</description>
+      <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
     </attribute>
 
     <!--form specific:-->
@@ -546,24 +547,26 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <name>target</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
+      <description>Form-specific html tag attributes</description>
+      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onReset</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
+      <description>Form-specific html tag attributes</description>
+      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
+          (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onSubmit</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
+      <description>Form-specific html tag attributes</description>
+      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
+          (escaping) quotes.]]></comments>
     </attribute>
 
     <!-- generic: -->
@@ -572,7 +575,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -580,7 +583,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -588,7 +591,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -596,7 +599,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -604,7 +607,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -612,7 +615,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -620,7 +623,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -628,7 +631,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -636,7 +639,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -644,7 +647,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -652,7 +655,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attributes.</description>
-      <comments>Generic html tag attributes, see newForm</comments>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
   </tag>
 
