@@ -465,8 +465,8 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>name</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>the name of the created object in the response page</description>
-      <comments><![CDATA[Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<form name="..." ...>)]]></comments>
+      <description>the name of the form</description>
+      <comments></comments>
     </attribute>
 
     <attribute>
@@ -487,30 +487,6 @@ If not present, the default database is used. See database configuration and loo
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
 Can be a Rtexpr <%= ...%>]]></comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in id="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in class="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
@@ -544,6 +520,30 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <rtexprvalue>true</rtexprvalue>
       <description>Controls whether client side validation shall be used.</description>
       <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>results in id="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>results in class="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attributes.</description>
+      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <!--form specific:-->
@@ -680,22 +680,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>the response page of the form</description>
-      <comments><![CDATA[Mandatory if a <mak:action> is absent]]></comments>
-    </attribute>
-
-
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>the HTTP method (get or post)</description>
-      <comments>Defaults to get</comments>
-    </attribute>
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="method" specifiedIn="form"/>
 
     <attribute>
       <name>name</name>
@@ -705,194 +691,34 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments><![CDATA[Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<form name="..." ...>)]]></comments>
     </attribute>
 
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>the message that is displayed in the response page upon success</description>
-      <comments>Fixed. Defaults to "changes done".</comments>
-    </attribute>
+    <attribute name="message" specifiedIn="form"/>
+    <attribute name="db" specifiedIn="form"/>
+    <attribute name="annotation" specifiedIn="form"/>
+    <attribute name="annotationSeparator" specifiedIn="form"/>
+    <attribute name="reloadFormOnError" specifiedIn="form"/>
+    <attribute name="clientSideValidation" specifiedIn="form"/>
 
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in id="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in class="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>annotation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description><![CDATA[Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.]]></description>
-      <comments><![CDATA[Taken into account only if reloadFormOnError is not set to false.
-Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. ]]></comments>
-    </attribute>
-
-    <attribute>
-      <name>annotationSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Fixed. Prints the given separator between the annotation and the input field.</description>
-      <comments>Also HTML can be used, e.g. printing an error icon.</comments>
-    </attribute>
-
-    <attribute>
-      <name>reloadFormOnError</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>clientSideValidation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Controls whether client side validation shall be used.</description>
-      <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
-    </attribute>
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
 
     <!--form specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
-      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.]]></comments>
-    </attribute>
-
-    <attribute>
-      <name>onReset</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
-      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
-          (escaping) quotes.]]></comments>
-    </attribute>
-
-    <attribute>
-      <name>onSubmit</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
-      <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
-          (escaping) quotes.]]></comments>
-    </attribute>
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="onReset" specifiedIn="form"/>
+    <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
 
     <attribute>
       <name>multipleSubmitErrorMsg</name>
@@ -920,216 +746,40 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute>
-      <name>handler</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>the Java class.method that handles the response</description>
-      <comments>defaults to on_edit+MakumbaTypeOfEditedObject. Arguments: (Pointer object, Dictionary changedFields, Attributes a, Database db)</comments>
-    </attribute>
+    <attribute name="handler" specifiedIn="form"/>
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="method" specifiedIn="form"/>
+    <attribute name="name" specifiedIn="form"/>
+    <attribute name="message" specifiedIn="form"/>
+    <attribute name="annotation" specifiedIn="form"/>
+    <attribute name="annotationSeparator" specifiedIn="form"/>
+    <attribute name="reloadFormOnError" specifiedIn="form"/>
+    <attribute name="clientSideValidation" specifiedIn="form"/>
 
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>name</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>annotation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>annotationSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>reloadFormOnError</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>clientSideValidation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
 
     <!--form specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>onReset</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onSubmit</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="onReset" specifiedIn="form"/>
+    <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
+
 
 
   <tag>
@@ -1156,216 +806,40 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="method" specifiedIn="form"/>
+    <attribute name="name" specifiedIn="form"/>
+    <attribute name="message" specifiedIn="form"/>
+    <attribute name="annotation" specifiedIn="form"/>
+    <attribute name="annotationSeparator" specifiedIn="form"/>
+    <attribute name="reloadFormOnError" specifiedIn="form"/>
+    <attribute name="clientSideValidation" specifiedIn="form"/>
+    <attribute name="multipleSubmitErrorMsg" specifiedIn="newForm"/>
 
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>name</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>annotation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>annotationSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>reloadFormOnError</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>clientSideValidation</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Dokument me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
 
     <!--form specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>onReset</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>onSubmit</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes, see newForm</description>
-      <comments>Form-specific html tag attributes, see newForm</comments>
-    </attribute>
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="onReset" specifiedIn="form"/>
+    <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>multipleSubmitMsg</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Dokument me please</description>
-      <comments>Dokument me please</comments>
-    </attribute>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
+
+
 
   <tag>
     <name>delete</name>
@@ -1382,23 +856,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed</comments>
     </attribute>
 
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="message" specifiedIn="form"/>
 
     <attribute>
       <name>widget</name>
@@ -1408,13 +867,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, can be one of button or link; defaults to link.</comments>
     </attribute>
 
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Dokument me please</description>
-      <comments>Dokument me please</comments>
-    </attribute>
+    <attribute name="method" specifiedIn="form"/>
 
     <attribute>
       <name>preserveWhitespace</name>
@@ -1425,135 +878,27 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     </attribute>
 
     <!--link specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>name</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="name" specifiedIn="form"/>
 
     <!-- generic: -->
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
+
+
 
   <tag>
     <name>deleteLink</name>
@@ -1563,31 +908,9 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <description><![CDATA[The usage of <mak:deleteLink> is deprecated, and should be replaced by the equivalent:<mak:delete widget="link">]]></description>
     <see>form, newForm, addForm, editForm, delete</see>
     
-    <attribute>
-      <name>object</name>
-      <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>OQL label of the object to delete</description>
-      <comments>Fixed</comments>
-    </attribute>
-
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-
+    <attribute name="object" specifiedIn="delete"/>
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="message" specifiedIn="form"/>
 
     <attribute>
       <name>widget</name>
@@ -1597,152 +920,31 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, can be one of button or link; defaults to link.</comments>
     </attribute>
 
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Dokument me please</description>
-      <comments>Dokument me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>preserveWhitespace</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description><![CDATA[All white space inside a <mak:delete> will be trimmed, unless specifically preserved.]]></description>
-      <comments>Fixed, can be one of true or false; defaults to false.</comments>
-    </attribute>
+    <attribute name="method" specifiedIn="form"/>
+    <attribute name="preserveWhitespace" specifiedIn="delete"/>
 
     <!--link specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
-
-    <attribute>
-      <name>name</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>see newForm</description>
-      <comments>see newForm</comments>
-    </attribute>
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="name" specifiedIn="form"/>
 
     <!-- generic: -->
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form"/>
 
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
+
 
 
   <tag>
@@ -1937,30 +1139,6 @@ See the detailed example for more information. </description>
     </attribute>
 
     <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
       <name>labelSeparator</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1976,94 +1154,6 @@ The output will be < tick >< labelSeparator >< label >]]></description>
       <description><![CDATA[The string that separates the different options. Default is " " (space). 
 The output will be < [x] label >< elementSeparator >< [x] label >]]></description>
       <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
     </attribute>
 
     <!--input specific-->
@@ -2122,6 +1212,22 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
+
+    <!-- generic -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
 
 
@@ -2145,22 +1251,6 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     </attribute>
 
     <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>method</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
       <name>name</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -2168,160 +1258,32 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <comments>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</comments>
     </attribute>
 
-    <attribute>
-      <name>message</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-
+    <attribute name="action" specifiedIn="form"/>
+    <attribute name="method" specifiedIn="form"/>
+    <attribute name="db" specifiedIn="form"/>
+    
     <!--form specific:-->
-    <attribute>
-      <name>target</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onReset</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onSubmit</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <!-- generic: -->
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
+    <attribute name="target" specifiedIn="form"/>
+    <attribute name="onReset" specifiedIn="form"/>
+    <attribute name="onSubmit" specifiedIn="form"/>
+    
+    <!-- generic -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
+
 
 
   <tag>
@@ -2364,13 +1326,7 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <description>create a match-mode input</description>
     <see>searchForm, resultList, criterion, searchField</see>
 
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="id" specifiedIn="list"/>
 
     <attribute>
       <name>type</name>
@@ -2396,22 +1352,11 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <comments>see 'matchModes' for allowed values</comments>
     </attribute>
 
-    <attribute>
-      <name>labelSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>elementSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="labelSeparator" specifiedIn="input"/>
+    <attribute name="elementSeparator" specifiedIn="input"/>
   </tag>
+
+
 
   <tag>
     <name>searchField</name>
@@ -2422,7 +1367,6 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <description><![CDATA[Enclosed inside a <mak:criterion>, generates an input for that criterion. This tag is based on the <mak:input/> tag, and provides additionally the following attributes:]]></description>
     <see>searchForm, resultList, criterion, matchMode</see>
     
-
     <attribute>
       <name>role</name>
       <required>false</required>
@@ -2431,53 +1375,11 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <comments>Document me please</comments>
     </attribute>
 
-    <attribute>
-      <name>value</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>dataType</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>default</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>format</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="value" specifiedIn="input"/>
+    <attribute name="id" specifiedIn="list"/>
+    <attribute name="dataType" specifiedIn="input"/>
+    <attribute name="default" specifiedIn="input"/>
+    <attribute name="format" specifiedIn="input"/>
 
     <attribute>
       <name>type</name>
@@ -2498,254 +1400,41 @@ ptr: 'multiple' forces a multiple-select rather than a single-select, and check-
 set: 'single' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes. ]]></comments>
     </attribute>
 
-    <attribute>
-      <name>calendarEditor</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>calendarEditorLink</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>rows</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>cols</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>nameVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>nullOption</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>labelSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>elementSeparator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>title</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onDblClick</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onKeyPress</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseDown</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseUp</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseMove</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOut</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onMouseOver</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="calendarEditor" specifiedIn="input"/>
+    <attribute name="calendarEditorLink" specifiedIn="input"/>
+    <attribute name="nameVar" specifiedIn="input"/>
+    <attribute name="nullOption" specifiedIn="input"/>
+    <attribute name="labelSeparator" specifiedIn="input"/>
+    <attribute name="elementSeparator" specifiedIn="input"/>
 
     <!--input specific-->
-    <attribute>
-      <name>accessKey</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>disabled</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onChange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onBlur</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onFocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>onSelect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>tabIndex</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="size" specifiedIn="input"/>
+    <attribute name="maxlength" specifiedIn="input"/>
+    <attribute name="rows" specifiedIn="input"/>
+    <attribute name="cols" specifiedIn="input"/>
+    <attribute name="accessKey" specifiedIn="input"/>
+    <attribute name="disabled" specifiedIn="input"/>
+    <attribute name="onChange" specifiedIn="input"/>
+    <attribute name="onBlur" specifiedIn="input"/>
+    <attribute name="onFocus" specifiedIn="input"/>
+    <attribute name="onSelect" specifiedIn="input"/>
+    <attribute name="tabIndex" specifiedIn="input"/>
+    
+    <!-- generic -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form"/>
+    <attribute name="onDblClick" specifiedIn="form"/>
+    <attribute name="onKeyDown" specifiedIn="form"/>
+    <attribute name="onKeyUp" specifiedIn="form"/>
+    <attribute name="onKeyPress" specifiedIn="form"/>
+    <attribute name="onMouseDown" specifiedIn="form"/>
+    <attribute name="onMouseUp" specifiedIn="form"/>
+    <attribute name="onMouseMove" specifiedIn="form"/>
+    <attribute name="onMouseOut" specifiedIn="form"/>
+    <attribute name="onMouseOver" specifiedIn="form"/>
   </tag>
 
 
@@ -2788,8 +1477,8 @@ If an option value appears many times it will only be shown the first time it oc
       <description>Whether this option is selected or not</description>
       <comments>False by default</comments>
     </attribute>
-
   </tag>
+
 
   <tag>
     <name>rickroll</name>
@@ -2846,6 +1535,7 @@ This can be used for http authentication with no session tracking. )
   </tag>
 
 
+
   <tag>
     <name>logout</name>
     <tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
@@ -2872,6 +1562,8 @@ This can be used for http authentication with no session tracking. )
     </attribute>
   </tag>
 
+
+
   <tag>
     <name>version</name>
     <tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
@@ -2880,6 +1572,8 @@ This can be used for http authentication with no session tracking. )
     <description>Prints the Makumba version</description>
     <see>info</see>
   </tag>
+
+
 
   <tag>
     <name>info</name>
@@ -2898,12 +1592,16 @@ This can be used for http authentication with no session tracking. )
     </attribute>
   </tag>
 
+
+
   <function>
     <name>count</name>
     <description>the count of the enclosing mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int count()</function-signature>
   </function>
+
+
 
   <function>
     <name>maxCount</name>
@@ -2912,12 +1610,16 @@ This can be used for http authentication with no session tracking. )
     <function-signature>int maxCount()</function-signature>
   </function>
 
+
+
   <function>
     <name>lastCount</name>
     <description>the maximum count of the previous mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int lastCount()</function-signature>
   </function>
+
+
 
   <function>
     <name>maxResults</name>
@@ -2927,7 +1629,9 @@ This can be used for http authentication with no session tracking. )
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxResults()</function-signature>
   </function>
-  
+
+
+
   <tag>
     <name>pagination</name>
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
@@ -2937,13 +1641,6 @@ This can be used for http authentication with no session tracking. )
     ]]></description>
     <see>list</see>
     
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>Generic html tag attribute, see newForm</description>
-      <comments>Generic html tag attribute, see newForm</comments>
-    </attribute>
     <attribute>
       <name>action</name>
       <required>false</required>
@@ -2965,6 +1662,9 @@ This can be used for http authentication with no session tracking. )
       <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
       <comments>Rtexpr.</comments>
     </attribute>
+    
+    <!-- generic -->
+    <attribute name="styleClass" specifiedIn="form"/>
   </tag>
 
 </taglib>
