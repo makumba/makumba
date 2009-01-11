@@ -287,8 +287,8 @@ if (VERSION > 3) {
       <xsl:if test="contains($config/toc/@location,'page')">
         <ul class="minitoc">
           <xsl:for-each select="$tocroot/tocitem">
-            <a href="{@href}">
-              <xsl:value-of select="@title"/></a>
+            <li><a href="{@href}">
+              <xsl:value-of select="@title"/></a></li>
               <xsl:if test="@level&lt;//skinconfig/toc/@max-depth+1">
                 <xsl:call-template name="minitoc">
                   <xsl:with-param name="tocroot" select="."/>
