@@ -30,12 +30,6 @@
                         
                 </tr>
                 <tr>
-                    <td>query languages</td>
-                    <td>reference doc/query languages</td>
-                    <td>almost done</td>
-                    <td>need to add the MQL functions</td>
-                </tr>
-                <tr>
                     <td>query functions</td>
                     <td>reference doc/query functions</td>
                     <td>almost done</td>
@@ -221,6 +215,13 @@
                     <td>reference doc / data definitions</td>
                     <td>DONE</td>
                     <td>remove OLDSTYLE stuff, fix formatting</td>
+                </tr>
+                
+                <tr>
+                    <td>query languages</td>
+                    <td>reference doc/query languages</td>
+                    <td>done</td>
+                    <td>need to add the MQL functions</td>
                 </tr>
                 
                 
