@@ -27,13 +27,13 @@
                     <td>action</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>see newForm</td>
+                    <td>the response page of the form</td>
                 </tr>
                 <tr>
                     <td>message</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>see newForm</td>
+                    <td>the message that is displayed in the response page upon success</td>
                 </tr>
                 <tr>
                     <td>widget</td>
@@ -45,7 +45,7 @@
                     <td>method</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Dokument me please</td>
+                    <td>the HTTP method (get or post)</td>
                 </tr>
                 <tr>
                     <td>preserveWhitespace</td>
@@ -57,97 +57,97 @@
                     <td>target</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>see newForm</td>
+                    <td>Form-specific html tag attributes</td>
                 </tr>
                 <tr>
                     <td>name</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>see newForm</td>
+                    <td>the name of the form</td>
                 </tr>
                 <tr>
                     <td>styleId</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>styleClass</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>style</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>title</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onClick</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onDblClick</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onKeyDown</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onKeyUp</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onKeyPress</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onMouseDown</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onMouseUp</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onMouseMove</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOut</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOver</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Generic html tag attributes, see newForm </td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
             </table>
         </section>

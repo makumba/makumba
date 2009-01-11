@@ -39,7 +39,7 @@
                     <td>name</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>the name of the created object in the response page</td>
+                    <td>the name of the form</td>
                 </tr>
                 <tr>
                     <td>message</td>
@@ -53,24 +53,6 @@
                     <td>true</td>
                     <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
 If not present, the default database is used. See database configuration and lookup.</td>
-                </tr>
-                <tr>
-                    <td>styleId</td>
-                    <td>false</td>
-                    <td>true</td>
-                    <td>Generic HTML tag attributes.</td>
-                </tr>
-                <tr>
-                    <td>styleClass</td>
-                    <td>false</td>
-                    <td>true</td>
-                    <td>Generic HTML tag attributes.</td>
-                </tr>
-                <tr>
-                    <td>style</td>
-                    <td>false</td>
-                    <td>true</td>
-                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>annotation</td>
@@ -95,6 +77,24 @@ If not present, the default database is used. See database configuration and loo
                     <td>false</td>
                     <td>true</td>
                     <td>Controls whether client side validation shall be used.</td>
+                </tr>
+                <tr>
+                    <td>styleId</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>style</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
                 <tr>
                     <td>target</td>

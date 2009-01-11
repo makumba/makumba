@@ -21,7 +21,7 @@
                     <td>id</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>Tag's identifier</td>
                 </tr>
                 <tr>
                     <td>type</td>
@@ -45,13 +45,15 @@
                     <td>labelSeparator</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Document me please</td>
+                    <td>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
+The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
                 </tr>
                 <tr>
                     <td>elementSeparator</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Document me please</td>
+                    <td>The string that separates the different options. Default is " " (space). 
+The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
                 </tr>
             </table>
         </section>
