@@ -123,6 +123,20 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</td>
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="maklist.html">mak:list</a>
+                </li>
+                <li>
+                    <a href="mak object.html">mak: object</a>
+                </li>
+                <li>
+                    <a href="mak option.html">mak: option</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>

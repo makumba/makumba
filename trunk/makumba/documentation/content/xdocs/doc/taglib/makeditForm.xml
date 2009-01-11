@@ -182,6 +182,29 @@
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="makinput.html">mak:input</a>
+                </li>
+                <li>
+                    <a href="mak newForm.html">mak: newForm</a>
+                </li>
+                <li>
+                    <a href="mak addForm.html">mak: addForm</a>
+                </li>
+                <li>
+                    <a href="mak editForm.html">mak: editForm</a>
+                </li>
+                <li>
+                    <a href="mak deleteLink.html">mak: deleteLink</a>
+                </li>
+                <li>
+                    <a href="mak delete.html">mak: delete</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>

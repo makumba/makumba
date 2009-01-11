@@ -24,62 +24,74 @@
                     <td>The name of the search form the results are taken from.</td>
                 </tr>
                 <tr>
-                    <td>from</td>
-                    <td>false</td>
-                    <td>false</td>
-                    <td>Document me please</td>
-                </tr>
-                <tr>
                     <td>id</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>Tag's identifier</td>
                 </tr>
                 <tr>
                     <td>separator</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Document me please</td>
+                    <td>Character string as separator between two list elements. It is not included before the first or after the last</td>
                 </tr>
                 <tr>
                     <td>orderBy</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>OQL ORDER BY  section</td>
                 </tr>
                 <tr>
                     <td>groupBy</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>OQL GROUP BY  section</td>
                 </tr>
                 <tr>
                     <td>db</td>
                     <td>false</td>
                     <td>true</td>
-                    <td>Document me please</td>
+                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</td>
                 </tr>
                 <tr>
                     <td>offset</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>the offset of the result to show (0 for starting from the first result)</td>
                 </tr>
                 <tr>
                     <td>limit</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>the maximum numbers of results to show (-1 for all results)</td>
                 </tr>
                 <tr>
                     <td>defaultLimit</td>
                     <td>false</td>
                     <td>false</td>
-                    <td>Document me please</td>
+                    <td>the default value for limit, if the $attribute in limit="$attribute" is not present.</td>
                 </tr>
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="maksearchForm.html">mak:searchForm</a>
+                </li>
+                <li>
+                    <a href="mak criterion.html">mak: criterion</a>
+                </li>
+                <li>
+                    <a href="mak matchMode.html">mak: matchMode</a>
+                </li>
+                <li>
+                    <a href="mak searchField.html">mak: searchField</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>
