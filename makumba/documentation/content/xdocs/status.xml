@@ -32,8 +32,8 @@
                 <tr>
                     <td>query functions</td>
                     <td>reference doc/query functions</td>
-                    <td>almost done</td>
-                    <td>FIX the styles (future)</td>
+                    <td>not started</td>
+                    <td>split in several parts: MDD functions, authentication, authorization</td>
                 </tr>
                 
                 <tr>
