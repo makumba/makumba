@@ -217,6 +217,18 @@ See the detailed example for more information. </td>
         
         <tr>
           
+          <td>autoComplete</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>Enables auto-completion</td>
+        
+        </tr>
+        
+        <tr>
+          
           <td>size</td>
           
           <td>false</td>

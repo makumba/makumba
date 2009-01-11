@@ -15,7 +15,7 @@
       
       <title>Description</title>
       
-      <p>FIXME: no web-description for this tag in taglib-documented.xml!</p>
+      <p>create a match-mode input</p>
     
     </section>
     
@@ -70,6 +70,18 @@
           <td>false</td>
           
           <td>Document me please</td>
+        
+        </tr>
+        
+        <tr>
+          
+          <td>default</td>
+          
+          <td>false</td>
+          
+          <td>false</td>
+          
+          <td>The default match-mode to be selected when the form is first loaded.</td>
         
         </tr>
         
