@@ -1,334 +1,169 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
-    
-    <title>mak:searchForm tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Produces a form to search for records in the database.
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:searchForm tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Produces a form to search for records in the database.
 Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>in</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>The MDD to search in</td>
+                </tr>
+                <tr>
+                    <td>action</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>method</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>true</td>
+                    <td>true</td>
+                    <td>Name of the form</td>
+                </tr>
+                <tr>
+                    <td>message</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>db</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>styleId</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>style</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onReset</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onSubmit</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onDblClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onKeyDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onKeyUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onKeyPress</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onMouseDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onMouseUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onMouseMove</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>onMouseOut</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>onMouseOver</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+            </table>
+        </section>
     
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>in</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>The MDD to search in</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>action</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>method</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>name</td>
-          
-          <td>true</td>
-          
-          <td>true</td>
-          
-          <td>Name of the form</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>message</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>db</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleId</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleClass</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>style</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>target</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onReset</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onSubmit</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>title</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onDblClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyPress</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseMove</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td/>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOut</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOver</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-      
-      </table>
-    
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>

@@ -1,262 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
-    
-    <title>mak:value tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Displays the value of an expression from within the query.</p>
-    
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>expr</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>var</td>
-          
-          <td>false</td>
-          
-          <td>false</td>
-          
-          <td>The value of the expression is set to a new java.lang.Object variable by this name, as well as to a page-scope attribute, also by the same name (accessible as $attributename).</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>printVar</td>
-          
-          <td>false</td>
-          
-          <td>false</td>
-          
-          <td>The formatted output as it would have been printed, is instead stored in a new java.lang.String variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename). </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>urlEncode</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false".</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>html</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any. Default is "false".</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>format</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>lineSeparator</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre&gt;...&lt;/pre&gt;. Default is "&lt;p&gt;".</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>longLineLength</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The length of a long line. If a text contains long lines, it will be printed differently. See lineSeparator. Default is "30"</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>maxLength</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is added to indicate the cut. If not set (default), there is no maximum.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>ellipsis</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The character string to print to indicate that the text extended the maxLength. Default is "...". The final printed string, including the ellipsis, will not exceed maxLength.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>ellipsisLength</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The equivalent character length of ellipsis. By default, this is the number of characters in ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>addTitle</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if the printed output is cut (cfr maxLength). Default is "false". </td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>default</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The character string to print if the expr results in a NULL value. Default is default="" (i.e. zero-length string)
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:value tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Displays the value of an expression from within the query.</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>expr</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</td>
+                </tr>
+                <tr>
+                    <td>var</td>
+                    <td>false</td>
+                    <td>false</td>
+                    <td>The value of the expression is set to a new java.lang.Object variable by this name, as well as to a page-scope attribute, also by the same name (accessible as $attributename).</td>
+                </tr>
+                <tr>
+                    <td>printVar</td>
+                    <td>false</td>
+                    <td>false</td>
+                    <td>The formatted output as it would have been printed, is instead stored in a new java.lang.String variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename). </td>
+                </tr>
+                <tr>
+                    <td>urlEncode</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false".</td>
+                </tr>
+                <tr>
+                    <td>html</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any. Default is "false".</td>
+                </tr>
+                <tr>
+                    <td>format</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat </td>
+                </tr>
+                <tr>
+                    <td>lineSeparator</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Separator for long lines. If a text consists of short lines only, it will be surrounded by &lt;pre&gt;...&lt;/pre&gt;. Default is "&lt;p&gt;".</td>
+                </tr>
+                <tr>
+                    <td>longLineLength</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The length of a long line. If a text contains long lines, it will be printed differently. See lineSeparator. Default is "30"</td>
+                </tr>
+                <tr>
+                    <td>maxLength</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is added to indicate the cut. If not set (default), there is no maximum.</td>
+                </tr>
+                <tr>
+                    <td>ellipsis</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The character string to print to indicate that the text extended the maxLength. Default is "...". The final printed string, including the ellipsis, will not exceed maxLength.</td>
+                </tr>
+                <tr>
+                    <td>ellipsisLength</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The equivalent character length of ellipsis. By default, this is the number of characters in ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.</td>
+                </tr>
+                <tr>
+                    <td>addTitle</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if the printed output is cut (cfr maxLength). Default is "false". </td>
+                </tr>
+                <tr>
+                    <td>default</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The character string to print if the expr results in a NULL value. Default is default="" (i.e. zero-length string)
 Support not available for: date, "choice" = ptr, set, setCharEnum</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>empty</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>The character string to print if the normal printed output would be empty (i.e. zero-length string). Therefore, this is also used for case expr=NULL and default="".</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>editable</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>logicClass</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>editPage</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-      
-      </table>
+                </tr>
+                <tr>
+                    <td>empty</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>The character string to print if the normal printed output would be empty (i.e. zero-length string). Therefore, this is also used for case expr=NULL and default="".</td>
+                </tr>
+                <tr>
+                    <td>editable</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>logicClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>editPage</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+            </table>
+        </section>
     
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>

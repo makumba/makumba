@@ -1,393 +1,198 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
-
-<document>
-  
-  <header>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:newForm tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p>Makes a form for creating a new object of the indicated type.</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>rt expression value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>Makumba type for record creation, or OQL label for subrecord creation</td>
+                </tr>
+                <tr>
+                    <td>action</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>the response page of the form</td>
+                </tr>
+                <tr>
+                    <td>method</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>the HTTP method (get or post)</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>the name of the created object in the response page</td>
+                </tr>
+                <tr>
+                    <td>message</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>the message that is displayed in the response page upon success</td>
+                </tr>
+                <tr>
+                    <td>db</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>styleId</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>style</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>annotation</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Indicates that validation whether errors should be shown in the form, or be displayed in the &lt;mak:response/&gt;.</td>
+                </tr>
+                <tr>
+                    <td>annotationSeparator</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Fixed. Prints the given separator between the annotation and the input field.</td>
+                </tr>
+                <tr>
+                    <td>reloadFormOnError</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+                <tr>
+                    <td>clientSideValidation</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Controls whether client side validation shall be used.</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Form-specific html tag attributes</td>
+                </tr>
+                <tr>
+                    <td>onReset</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Form-specific html tag attributes</td>
+                </tr>
+                <tr>
+                    <td>onSubmit</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Form-specific html tag attributes</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onDblClick</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onKeyDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onKeyUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onKeyPress</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onMouseDown</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onMouseUp</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onMouseMove</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onMouseOut</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>onMouseOver</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
+                </tr>
+                <tr>
+                    <td>multipleSubmitErrorMsg</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Document me please</td>
+                </tr>
+            </table>
+        </section>
     
-    <title>mak:newForm tag documentation</title>
-  
-  </header>
-  
-  <body>
-    
-    <section id="description">
-      
-      <title>Description</title>
-      
-      <p>Makes a form for creating a new object of the indicated type.</p>
-    
-    </section>
-    
-    <section id="attributes">
-      
-      <title>Attributes</title>
-      
-      <table>
-        
-        <tr>
-          
-          <th>Name</th>
-          
-          <th>Required</th>
-          
-          <th>rt expression value</th>
-          
-          <th>Description</th>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>type</td>
-          
-          <td>true</td>
-          
-          <td>false</td>
-          
-          <td>Makumba type for record creation, or OQL label for subrecord creation</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>action</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>the response page of the form</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>method</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>the HTTP method (get or post)</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>name</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>the name of the created object in the response page</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>message</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>the message that is displayed in the response page upon success</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>db</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleId</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>styleClass</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>style</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>annotation</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Indicates that validation whether errors should be shown in the form, or be displayed in the &lt;mak:response/&gt;.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>annotationSeparator</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Fixed. Prints the given separator between the annotation and the input field.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>reloadFormOnError</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>clientSideValidation</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Controls whether client side validation shall be used.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>target</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Form-specific html tag attributes</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onReset</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Form-specific html tag attributes</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onSubmit</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Form-specific html tag attributes</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>title</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onDblClick</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onKeyPress</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseDown</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseUp</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseMove</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOut</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>onMouseOver</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Generic HTML tag attributes.</td>
-        
-        </tr>
-        
-        <tr>
-          
-          <td>multipleSubmitErrorMsg</td>
-          
-          <td>false</td>
-          
-          <td>true</td>
-          
-          <td>Document me please</td>
-        
-        </tr>
-      
-      </table>
-    
-    </section>
-    
-  
-    <section id="example">
-  
-      <title>Example</title>
-  
-      <p/>
-  
-      <p>
-    
-        <code/>
-  
-      </p>
+      <section id="example">
+        <title>Example</title>
+        <p/>
+        <p>
+            <code/>
+        </p>
     </section>  </body>
 </document>
