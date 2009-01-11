@@ -123,6 +123,17 @@ If not present, the default database is used. See database configuration and loo
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="makvalue.html">mak:value</a>
+                </li>
+                <li>
+                    <a href="mak object.html">mak: object</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>

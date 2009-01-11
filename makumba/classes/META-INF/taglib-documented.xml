@@ -9,7 +9,6 @@
 
   <listener>
     <listener-class>org.makumba.commons.NamedResourcesContextListener</listener-class>
-
   </listener>
 
   <tag>
@@ -19,6 +18,7 @@
     <body-content>JSP</body-content>
     <display-name>manipulate lists</display-name>
     <description>Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</description>
+    <see>value, object</see>
 
     <attribute>
       <name>id</name>
@@ -170,7 +170,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <body-content>JSP</body-content>
     <display-name>manipulate record</display-name>
     <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
-
+    <see>list, value</see>
+    
     <attribute name="id" specifiedIn="list"/>
     <attribute name="countVar" specifiedIn="list"/>
     <attribute name="maxCountVar" specifiedIn="list"/>
@@ -193,7 +194,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <body-content>JSP</body-content>
     <display-name>Display result from a search form</display-name>
     <description><![CDATA[Similar to, and based on the <mak:list>, this tag automatically iterates over the results from a specified search form. On top of <mak:list>, the following attributes are available:]]></description>
-
+    <see>searchForm, criterion, matchMode, searchField</see>
+    
     <attribute>
       <name>resultsFrom</name>
       <required>true</required>
@@ -220,7 +222,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
     <description>Displays the value of an expression from within the query.</description>
-
+    <see>list, object, option</see>
+    
     <attribute>
       <name>expr</name>
       <required>true</required>
@@ -430,7 +433,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
     <description>Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</description>
-
+    <see>input, newForm, addForm, editForm, deleteLink, delete</see>
+    
     <attribute>
       <name>handler</name>
       <required>false</required>
@@ -666,6 +670,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
     <description>Makes a form for creating a new object of the indicated type.</description>
+    <see>input, form, addForm, editForm, deleteLink, delete</see>
     
     <attribute>
       <name>type</name>
@@ -905,6 +910,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <body-content>JSP</body-content>
     <display-name>Forms to edit data</display-name>
     <description><![CDATA[Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list>. Also linked objects can be edited through the same form.]]></description>
+    <see>input, newForm, addForm, editForm, deleteLink, delete</see>
     
     <attribute>
       <name>object</name>
@@ -1132,6 +1138,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
     <description><![CDATA[Makes a form for creating a sub-object of the mandatory enclosing <mak:object$rt; (e.g. a language of a student, an address for a person).]]></description>
+    <see>input, form, newForm, editForm, deleteLink, delete</see>
     
     <attribute>
       <name>object</name>
@@ -1554,6 +1561,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <body-content>JSP</body-content>
     <display-name>Links to delete data</display-name>
     <description><![CDATA[The usage of <mak:deleteLink> is deprecated, and should be replaced by the equivalent:<mak:delete widget="link">]]></description>
+    <see>form, newForm, addForm, editForm, delete</see>
     
     <attribute>
       <name>object</name>
@@ -1743,6 +1751,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Input control for a field</display-name>
+    <see>form, newForm, addForm, editForm, deleteLink, delete</see>
     <description><![CDATA[An input field to be created, depending on the makumba type of the field.
 
 Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
@@ -2123,6 +2132,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>JSP</body-content>
     <display-name>Forms to search</display-name>
     <description>Produces a form to search for records in the database.
+    <see>resultList, criterion, matchMode, searchField</see>
+      
 Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</description>
 
     <attribute>
@@ -2319,7 +2330,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <body-content>JSP</body-content>
     <display-name>Search criterion</display-name>
     <description><![CDATA[Adds a search criterion to the form. This does not create any inputs, but should be used in combination with <mak:searchField> ]]></description>
-
+    <see>searchForm, resultList, matchMode, searchField</see>
+    
     <attribute>
       <name>fields</name>
       <required>true</required>
@@ -2350,6 +2362,7 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
     <body-content>empty</body-content>
     <description>create a match-mode input</description>
+    <see>searchForm, resultList, criterion, searchField</see>
 
     <attribute>
       <name>id</name>
@@ -2407,6 +2420,7 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <body-content>JSP</body-content>
     <display-name>Search input control for a field</display-name>
     <description><![CDATA[Enclosed inside a <mak:criterion>, generates an input for that criterion. This tag is based on the <mak:input/> tag, and provides additionally the following attributes:]]></description>
+    <see>searchForm, resultList, criterion, matchMode</see>
     
 
     <attribute>
@@ -2742,6 +2756,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <body-content>JSP</body-content>
     <display-name>set an "action" for a form or deleteLink</display-name>
     <description>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</description>
+    <see>form, newForm, addForm, editForm</see>
   </tag>
 
   <tag>
@@ -2755,7 +2770,8 @@ Text inside mak:option will become an option title. The value attribute will bec
 If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
 
 If an option value appears many times it will only be shown the first time it occurs.
-</description>
+    </description>
+    <see>input, list</see>
 
     <attribute>
       <name>value</name>
@@ -2796,6 +2812,7 @@ The unformatted message is available as request-scope attribute makumba.response
 
 <% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %>(A body-tag style (<mak:response>...</mak:response>) will be added later, to display different messages for different circumstances (errors). It will also be possible to get hold of the actual exception object. )
 ]]></description>
+    <see>action, form, newForm, addForm, editForm, deleteLink, delete</see>
   </tag>
 
 
@@ -2825,6 +2842,7 @@ then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND st
 This can be used for http authentication with no session tracking. )
 (Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
 ]]></description>
+    <see>logout, attribute</see>
   </tag>
 
 
@@ -2843,6 +2861,7 @@ then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND st
 This can be used for http authentication with no session tracking. )
 (Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
 ]]></description>
+    <see>login, attribute</see>
     
     <attribute>
       <name>actor</name>
@@ -2857,16 +2876,18 @@ This can be used for http authentication with no session tracking. )
     <name>version</name>
     <tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
     <body-content>empty</body-content>
-    <display-name>prints Makumba version (a SVN tag)</display-name>
-    <description>Document me please</description>
+    <display-name>Prints Makumba version (a SVN tag)</display-name>
+    <description>Prints the Makumba version</description>
+    <see>info</see>
   </tag>
 
   <tag>
     <name>info</name>
     <tag-class>org.makumba.commons.tags.MakumbaInfoTag</tag-class>
     <body-content>empty</body-content>
-    <display-name>prints Makumba and environment information</display-name>
+    <display-name>Prints Makumba and environment information</display-name>
     <description>Document me please</description>
+    <see>version</see>
     
     <attribute>
       <name>applicationProperties</name>
@@ -2914,6 +2935,7 @@ This can be used for http authentication with no session tracking. )
     <display-name>Prints links for pagination navigation</display-name>
     <description><![CDATA[Provides pagination of the results in an enclosing <mak:list>. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the information provided by the enclosing <mak:list>, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
     ]]></description>
+    <see>list</see>
     
     <attribute>
       <name>styleClass</name>

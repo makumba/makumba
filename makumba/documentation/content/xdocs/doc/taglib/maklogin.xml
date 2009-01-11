@@ -36,6 +36,17 @@ This can be used for http authentication with no session tracking. )
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="maklogout.html">mak:logout</a>
+                </li>
+                <li>
+                    <a href="mak attribute.html">mak: attribute</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>

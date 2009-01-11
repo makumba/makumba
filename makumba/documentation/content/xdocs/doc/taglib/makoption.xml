@@ -12,7 +12,10 @@ Text inside mak:option will become an option title. The value attribute will bec
 If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
 
 If an option value appears many times it will only be shown the first time it occurs.
-</p>        </section>        <section id="attributes">            <title>Attributes</title>
+    </p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
             <table>
                 <tr>
                     <th>Name</th>
@@ -35,6 +38,17 @@ If an option value appears many times it will only be shown the first time it oc
             </table>
         </section>
     
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="makinput.html">mak:input</a>
+                </li>
+                <li>
+                    <a href="mak list.html">mak: list</a>
+                </li>
+            </ul>
+        </section>
       <section id="example">
         <title>Example</title>
         <p/>

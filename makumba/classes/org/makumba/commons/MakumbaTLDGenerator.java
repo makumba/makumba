@@ -70,7 +70,7 @@ public class MakumbaTLDGenerator {
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
                                 // remove all the <comments> tags inside <attribute> elements
-                                if (attributeContent.getName().equals("comments")) {
+                                if (attributeContent.getName().equals("comments") || attributeContent.getName().equals("see")) {
                                     attributeContent.getParent().remove(attributeContent);
                                 }
                             }

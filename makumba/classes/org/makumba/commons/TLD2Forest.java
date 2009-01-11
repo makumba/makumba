@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -24,8 +25,7 @@ import org.dom4j.tree.DefaultElement;
  * be provided</li>
  * <li>Step 2 merges the generated tag files and the corresponding example files</li>
  * </ul>
- * This mechanism allows for continuous documentation based on the TLD file TODO finish the XML generation according to
- * the template file<br>
+ * This mechanism allows for continuous documentation based on the TLD file.<br>
  * tag.XML - [path to the output directory of XMLs]\<b>tags</b>\tag.xml <br>
  * tagExample.XML - [path to the output directory of XMLs]\<b>examples</b>\tagExample.xml <br>
  * 
@@ -168,12 +168,17 @@ public class TLD2Forest {
         Element infoSectionTitle = infoSection.addElement("title");
         infoSectionTitle.setText("Description");
         Element description = infoSection.addElement("p");
+        
         String desc = new String();
+        String see = new String();
+        
         for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
             if (tagElement.getName().equals("description")) {
                 desc = tagElement.getText();
-                break;
+            }
+            if(tagElement.getName().equals("see")) {
+                see = tagElement.getText();
             }
         }
         if (desc.trim().length() != 0) {
@@ -218,9 +223,35 @@ public class TLD2Forest {
         Element exampleSection = bodyElement.addElement("section");
         exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
         exampleSection.addElement("title");
+        
+        // see also
+        if(see.length() != 0) {
+            see = see.trim();
+            Element seeAlsoSection = bodyElement.addElement("section");
+            seeAlsoSection.addAttribute("id", "seeAlso");
+            Element seeAlsoSectionTitle = seeAlsoSection.addElement("title");
+            seeAlsoSectionTitle.setText("See also");
+            Element seeAlso = seeAlsoSection.addElement("ul");
+            
+            String links = new String();
+            
+            StringTokenizer st = new StringTokenizer(see, ",");
+            while(st.hasMoreTokens()) {
+                String reference = st.nextToken();
+                // check if referred tag exists
+                List referredElement = (List) tag.getDocument().getRootElement().selectObject("//taglib//tag['@name="+reference+"']");
+                if(referredElement == null) {
+                    throw new RuntimeException("Error: see also reference "+reference+" in tag definition "+tagName+" does not exist.");
+                }
+                
+                Element refElement = seeAlso.addElement("li");
+                Element link = refElement.addElement("a");
+                link.addAttribute("href", "mak"+reference+".html");
+                link.setText("mak:"+reference);
+            }
+            seeAlso.setText(links);
+        }
 
-        // tagXML.addDocType("document", "-//APACHE//DTD Documentation V2.0//EN",
-        // "document-v20-mak.dtd");
 
         // now we write our new guy to the disk
         System.out.println("Writing XML for tag " + tagName + " at path " + tagFilePath);
