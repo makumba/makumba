@@ -474,10 +474,22 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
     </attribute>
 
     <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</description>
+      <comments><![CDATA[Fixed, cannot contain attributes, for now. 
+The default database is chosen if this argument is not set. 
+Can only be set for top-level (root) query tags
+Can be a Rtexpr <%= ...%>]]></comments>
+    </attribute>
+
+    <attribute>
       <name>styleId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -485,7 +497,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>styleClass</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -493,7 +505,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>style</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -559,7 +571,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>title</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -567,7 +579,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -575,7 +587,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onDblClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -583,7 +595,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onKeyDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -591,7 +603,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onKeyUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -599,7 +611,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onKeyPress</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -607,7 +619,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onMouseDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -615,7 +627,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onMouseUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -623,7 +635,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onMouseMove</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -631,7 +643,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onMouseOut</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
 
@@ -639,7 +651,7 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>onMouseOver</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic html tag attributes, see newForm</description>
+      <description>Generic HTML tag attributes.</description>
       <comments>Generic html tag attributes, see newForm</comments>
     </attribute>
   </tag>
