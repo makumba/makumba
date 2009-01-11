@@ -33,6 +33,12 @@
                 <url-pattern>/mak-tools/*</url-pattern>
             </filter-mapping> ]]>
                 </source>
+            <p>The mappings are needed for the following reasons:</p>
+            <ul>
+                <li>*.jsp: to enable authentication/authorisation on JSP page access, and to enable form processing</li>
+                <li>*.jspx: to enable the source-code viewer for JSP files</li>
+                <li>/mak-tools/ and /mak-tools/*: to enable the various makumba tools, such as the MDD viewer.</li>
+            </ul>
         </section>
     </body>
 </document>
