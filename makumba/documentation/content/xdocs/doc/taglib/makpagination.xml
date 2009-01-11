@@ -19,12 +19,6 @@
                     <th>Description</th>
                 </tr>
                 <tr>
-                    <td>styleClass</td>
-                    <td>false</td>
-                    <td>yes</td>
-                    <td>Generic html tag attribute, see newForm</td>
-                </tr>
-                <tr>
                     <td>action</td>
                     <td>false</td>
                     <td>yes</td>
@@ -41,6 +35,12 @@
                     <td>false</td>
                     <td>yes</td>
                     <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>Generic HTML tag attributes.</td>
                 </tr>
             </table>
         </section>
