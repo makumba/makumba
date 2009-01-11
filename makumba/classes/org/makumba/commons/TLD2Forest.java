@@ -372,7 +372,7 @@ public class TLD2Forest {
                             // adding the needed part from the exampleXML
                             parent.add(exampleSection);
                             XMLWriter writer = new XMLWriter(new FileWriter(new File(tagFilePath)), new OutputFormat(
-                                    "  ", true));
+                                    "  ", false));
                             writer.write(tagXML);
                             writer.close();
                         }
