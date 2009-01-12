@@ -173,3 +173,9 @@ pre.example {
 	/* margin-top: 0.5em; */
 }
 
+/** Custom styles - manu **/
+
+em.highlighted {
+    font-style:normal;
+    background-color: #cfdced;
+}
