@@ -746,7 +746,7 @@ package org.makumba]]>
 
     </target>
 
-    <target name="generateTagDoc" depends="generateTLDs">
+    <target name="generateTagDoc" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
             <classpath>
                 <pathelement path="${java.class.path}" />
@@ -764,7 +764,7 @@ package org.makumba]]>
 
     </target>
 
-    <target name="generateTagDocAndExamples">
+    <target name="generateTagDocAndExamples" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
             <classpath>
                 <pathelement path="${java.class.path}" />
@@ -782,7 +782,7 @@ package org.makumba]]>
     </target>
 
 	
-    <target name="mergeTagDocAndExamples">
+    <target name="mergeTagDocAndExamples" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
             <classpath>
                 <pathelement path="${java.class.path}" />
