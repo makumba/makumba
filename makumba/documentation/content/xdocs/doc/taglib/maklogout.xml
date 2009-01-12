@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>To cancel out a certain attribute, in order to produce a new login, the logout tag is available
+            <pre style="font-family: serif">To cancel out a certain attribute, in order to produce a new login, the logout tag is available
 You can remove (cancel-out, logout) multiple attributes from the session by using &lt;mak:logout actor="attribute name"&gt; several times and/or by using the star (*) wildcard, e.g.:
 (Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
 (Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
@@ -15,7 +15,7 @@ You can remove (cancel-out, logout) multiple attributes from the session by usin
 then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
 This can be used for http authentication with no session tracking. )
 (Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
-</p>        </section>        <section id="attributes">            <title>Attributes</title>
+</pre>        </section>        <section id="attributes">            <title>Attributes</title>
             <table>
                 <tr>
                     <th>Name</th>
@@ -39,7 +39,7 @@ This can be used for http authentication with no session tracking. )
                     <a href="maklogin.html">mak:login</a>
                 </li>
                 <li>
-                    <a href="mak attribute.html">mak: attribute</a>
+                    <a href="makattribute.html">mak:attribute</a>
                 </li>
             </ul>
         </section>

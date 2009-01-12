@@ -99,6 +99,10 @@ See http://forrest.apache.org/docs/linking.html for more info
       <maksearchForm label="mak:searchForm" href="/doc/taglib/maksearchForm.html"/>
       <makvalue label="mak:value" href="/doc/taglib/makvalue.html"/>
       <makversion label="mak:version" href="/doc/taglib/makversion.html"/>
+      <makversion label="mak:count()" href="/doc/taglib/makcount.html"/>
+      <makversion label="mak:maxCount()" href="/doc/taglib/makmaxCount.html"/>
+      <makversion label="mak:lastCount()" href="/doc/taglib/maklastCount.html"/>
+      <makversion label="mak:maxResults()" href="/doc/taglib/makmaxResults.html"/>
     </taglib>
     <controller label="Makumba Controller" href="/doc/controller.html" />
     <bl label="Business Logics" dir="/doc/BL" description="Makumba Business Logics" tab="documentation">

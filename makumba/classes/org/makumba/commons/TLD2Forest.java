@@ -31,6 +31,7 @@ import org.dom4j.tree.DefaultElement;
  * 
  * @author Manuel Gay
  * @author Anet Aselmaa (12 Oct 2008)
+ * @author Rudolf Mayer
  * @version $Id: TLD2Forest.java,v 1.1 Oct 3, 2008 11:11:51 PM manu Exp $
  */
 public class TLD2Forest {
@@ -41,6 +42,8 @@ public class TLD2Forest {
     final static int CREATE = 1;// action is step 1-creating all the needed files (separate tag.xml & tagExample.xml)
 
     final static int UPDATE = 2;// action is step 2 - merging all tag.xml and tagExample.xml files
+
+    final static int BOTH = 3;// both actions
 
     final static String EXAMPLE_SECTION_ID = "example";
 
@@ -64,13 +67,16 @@ public class TLD2Forest {
             String s = args[3];
             try {
                 int parsedAction = Integer.parseInt(s);
-                if (!s.equals("create") && !s.equals("update") && parsedAction != CREATE && parsedAction != UPDATE) {
-                    System.err.println("args[2] must be 'create', 'update', '1' or '2'");
+                if (!s.equals("create") && !s.equals("update") && parsedAction != CREATE && parsedAction != UPDATE
+                        && parsedAction != BOTH) {
+                    System.err.println("args[2] must be 'create', 'update', 'both', '1', '2' or '3' ");
                     return;
-                } else if (s.equals("create"))
+                } else if (s.equals("create")) {
                     action = CREATE;
-                else if (s.equals("update")) {
+                } else if (s.equals("update")) {
                     action = UPDATE;
+                } else if (s.equals("both")) {
+                    action = BOTH;
                 } else {
                     action = parsedAction;
                 }
@@ -80,19 +86,14 @@ public class TLD2Forest {
             }
         }
 
-        switch (action) {
-            case CREATE:// it is step 1, creating separate 2 files
-                System.out.println("doing STEP 1");
-                generateAllTagFiles(tldFilePath, taglibDirectory);
-                generateAllTagExampleFiles(tldFilePath, exampleDirectory);
-                break;
-            case UPDATE:
-                System.out.println("doing STEP 2");
-                // generateAllTagWithExampleFiles(tldFilePath, outputDirectory);
-                generateAllTagsWithExampleFile2(tldFilePath, taglibDirectory, exampleDirectory);
-                break;
-            default:
-                break;
+        if (action == CREATE || action == BOTH) { // it is step 1, creating separate 2 files
+            System.out.println("doing STEP 1");
+            generateAllTagFiles(tldFilePath, taglibDirectory);
+            generateAllTagExampleFiles(tldFilePath, exampleDirectory);
+        }
+        if (action == UPDATE || action == BOTH) {
+            System.out.println("doing STEP 2");
+            generateAllTagsWithExampleFile2(tldFilePath, taglibDirectory, exampleDirectory);
         }
 
     }
@@ -114,7 +115,7 @@ public class TLD2Forest {
         Element root = document.getRootElement();
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
-            if (e.getName().equals("tag")) {
+            if (e.getName().equals("tag") || e.getName().equals("function")) {
                 generateTagFile(taglibDirectory, e);
             }
         }
@@ -159,7 +160,11 @@ public class TLD2Forest {
         Element docElement = tagXML.addElement("document");
         Element headerElement = docElement.addElement("header");
         Element titleElement = headerElement.addElement("title");
-        titleElement.setText("mak:" + tagName + " tag documentation");
+        if (tag.getName().equals("tag")) {
+            titleElement.setText("mak:" + tagName + " tag documentation");
+        } else {
+            titleElement.setText("mak:" + tagName + "() function documentation");
+        }
         Element bodyElement = docElement.addElement("body");
 
         // tag description
@@ -167,17 +172,18 @@ public class TLD2Forest {
         infoSection.addAttribute("id", "description");
         Element infoSectionTitle = infoSection.addElement("title");
         infoSectionTitle.setText("Description");
-        Element description = infoSection.addElement("p");
-        
+        Element description = infoSection.addElement("pre");
+        description.addAttribute("style", "font-family: serif");
+
         String desc = new String();
         String see = new String();
-        
+
         for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
             if (tagElement.getName().equals("description")) {
                 desc = tagElement.getText();
             }
-            if(tagElement.getName().equals("see")) {
+            if (tagElement.getName().equals("see")) {
                 see = tagElement.getText();
             }
         }
@@ -191,67 +197,75 @@ public class TLD2Forest {
         Element sectionElement = bodyElement.addElement("section");
         sectionElement.addAttribute("id", "attributes");
         Element titleElement2 = sectionElement.addElement("title");
-        titleElement2.setText("Attributes");
-        /* creating the table */
-        Element table = sectionElement.addElement("table");
-        Element headerRow = table.addElement("tr");
-        /* the header row */
-        Element nameTh = headerRow.addElement("th");
-        nameTh.setText("Name");
-        Element requiredTh = headerRow.addElement("th");
-        requiredTh.setText("Required");
-        Element rtexprvalueTh = headerRow.addElement("th");
-        rtexprvalueTh.setText("rt expression value");
-        Element descriptionTh = headerRow.addElement("th");
-        descriptionTh.setText("Description");
-        /* the content */
-        /* the iterator of elements of a tag */
-        for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
-            Element tagElement = tagElementIter.next();
-            /* looking for attributes */
-            if (tagElement.getName().equals("attribute")) {
-                if (tagElement.attributeValue("name") != null || tagElement.attributeValue("specifiedIn") != null) {
-                    // have a referring attribute
-                    Element attribute = MakumbaTLDGenerator.getReferencedAttributes(processedTags, errorMsg, tag,
-                        tagName, tagElement);
-                    processAttribute(table, attributeTags, attribute);
-                } else { // normal attribute
-                    processAttribute(table, attributeTags, tagElement);
+        if (tag.getName().equals("tag")) { // create attribute section only for tags, not for functions
+            titleElement2.setText("Attributes");
+            /* creating the table */
+            if (hasAttributes(tag, "attribute")) { // create table only if this tag has attributes
+                Element table = sectionElement.addElement("table");
+                Element headerRow = table.addElement("tr");
+                /* the header row */
+                Element nameTh = headerRow.addElement("th");
+                nameTh.setText("Name");
+                Element requiredTh = headerRow.addElement("th");
+                requiredTh.setText("Required");
+                Element rtexprvalueTh = headerRow.addElement("th");
+                rtexprvalueTh.setText("rt expression value");
+                Element descriptionTh = headerRow.addElement("th");
+                descriptionTh.setText("Description");
+                /* the content */
+                /* the iterator of elements of a tag */
+                for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
+                    Element tagElement = tagElementIter.next();
+                    /* looking for attributes */
+                    if (tagElement.getName().equals("attribute")) {
+                        if (tagElement.attributeValue("name") != null
+                                || tagElement.attributeValue("specifiedIn") != null) {
+                            // have a referring attribute
+                            Element attribute = MakumbaTLDGenerator.getReferencedAttributes(processedTags, errorMsg,
+                                tag, tagName, tagElement);
+                            processAttribute(table, attributeTags, attribute);
+                        } else { // normal attribute
+                            processAttribute(table, attributeTags, tagElement);
+                        }
+                    }
                 }
+            } else { // default mesage if the tag has no attributes
+                sectionElement.addElement("p").setText("This tag has no attributes");
             }
         }
         Element exampleSection = bodyElement.addElement("section");
         exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
         exampleSection.addElement("title");
-        
+
         // see also
-        if(see.length() != 0) {
+        if (see.length() != 0) {
             see = see.trim();
             Element seeAlsoSection = bodyElement.addElement("section");
             seeAlsoSection.addAttribute("id", "seeAlso");
             Element seeAlsoSectionTitle = seeAlsoSection.addElement("title");
             seeAlsoSectionTitle.setText("See also");
             Element seeAlso = seeAlsoSection.addElement("ul");
-            
+
             String links = new String();
-            
+
             StringTokenizer st = new StringTokenizer(see, ",");
-            while(st.hasMoreTokens()) {
-                String reference = st.nextToken();
+            while (st.hasMoreTokens()) {
+                String reference = st.nextToken().trim();
                 // check if referred tag exists
-                List referredElement = (List) tag.getDocument().getRootElement().selectObject("//taglib//tag['@name="+reference+"']");
-                if(referredElement == null) {
-                    throw new RuntimeException("Error: see also reference "+reference+" in tag definition "+tagName+" does not exist.");
+                List referredElement = (List) tag.getDocument().getRootElement().selectObject(
+                    "//taglib//tag['@name=" + reference + "']");
+                if (referredElement == null) {
+                    throw new RuntimeException("Error: see also reference " + reference + " in tag definition "
+                            + tagName + " does not exist.");
                 }
-                
+
                 Element refElement = seeAlso.addElement("li");
                 Element link = refElement.addElement("a");
-                link.addAttribute("href", "mak"+reference+".html");
-                link.setText("mak:"+reference);
+                link.addAttribute("href", "mak" + reference + ".html");
+                link.setText("mak:" + reference);
             }
             seeAlso.setText(links);
         }
-
 
         // now we write our new guy to the disk
         System.out.println("Writing XML for tag " + tagName + " at path " + tagFilePath);
@@ -264,6 +278,15 @@ public class TLD2Forest {
         }
         processedTags.put(tagName, tag);
         return tagFilePath;
+    }
+
+    private static boolean hasAttributes(Element tag, String attributeName) {
+        for (Element e : (List<Element>) tag.elements()) {
+            if (e.getName().equals(attributeName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void processAttribute(Element table, String[] attributeTags, Element tagElement) {
@@ -366,7 +389,7 @@ public class TLD2Forest {
         Element root = document.getRootElement();
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
-            if (e.getName().equals("tag")) {
+            if (e.getName().equals("tag") || e.getName().equals("function")) {
                 generateTagWithExampleFile(taglibDirectory, exampleDirectory, e);
             }
         }

@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>create a match-mode input</p>
+            <pre style="font-family: serif">create a match-mode input</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -65,13 +65,13 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                     <a href="maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="mak resultList.html">mak: resultList</a>
+                    <a href="makresultList.html">mak:resultList</a>
                 </li>
                 <li>
-                    <a href="mak criterion.html">mak: criterion</a>
+                    <a href="makcriterion.html">mak:criterion</a>
                 </li>
                 <li>
-                    <a href="mak searchField.html">mak: searchField</a>
+                    <a href="maksearchField.html">mak:searchField</a>
                 </li>
             </ul>
         </section>

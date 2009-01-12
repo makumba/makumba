@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the &lt;mak:input/&gt; tag, and provides additionally the following attributes:</p>
+            <pre style="font-family: serif">Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the &lt;mak:input/&gt; tag, and provides additionally the following attributes:</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -267,13 +267,13 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                     <a href="maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="mak resultList.html">mak: resultList</a>
+                    <a href="makresultList.html">mak:resultList</a>
                 </li>
                 <li>
-                    <a href="mak criterion.html">mak: criterion</a>
+                    <a href="makcriterion.html">mak:criterion</a>
                 </li>
                 <li>
-                    <a href="mak matchMode.html">mak: matchMode</a>
+                    <a href="makmatchMode.html">mak:matchMode</a>
                 </li>
             </ul>
         </section>

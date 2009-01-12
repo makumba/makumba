@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Displays the value of an expression from within the query.</p>
+            <pre style="font-family: serif">Displays the value of an expression from within the query.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -130,10 +130,10 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</td>
                     <a href="maklist.html">mak:list</a>
                 </li>
                 <li>
-                    <a href="mak object.html">mak: object</a>
+                    <a href="makobject.html">mak:object</a>
                 </li>
                 <li>
-                    <a href="mak option.html">mak: option</a>
+                    <a href="makoption.html">mak:option</a>
                 </li>
             </ul>
         </section>

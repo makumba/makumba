@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</p>
+            <pre style="font-family: serif">Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -82,13 +82,13 @@ If not present, the default database is used. See database configuration and loo
                     <a href="maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="mak criterion.html">mak: criterion</a>
+                    <a href="makcriterion.html">mak:criterion</a>
                 </li>
                 <li>
-                    <a href="mak matchMode.html">mak: matchMode</a>
+                    <a href="makmatchMode.html">mak:matchMode</a>
                 </li>
                 <li>
-                    <a href="mak searchField.html">mak: searchField</a>
+                    <a href="maksearchField.html">mak:searchField</a>
                 </li>
             </ul>
         </section>

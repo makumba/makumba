@@ -6,18 +6,11 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>FIXME: no description for this tag in taglib-documented.xml!</p>
+            <pre style="font-family: serif">FIXME: no description for this tag in taglib-documented.xml!</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>rt expression value</th>
-                    <th>Description</th>
-                </tr>
-            </table>
+            <p>This tag has no attributes</p>
         </section>
     
       <section id="example">

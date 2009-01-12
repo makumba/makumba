@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Displays the body of the tag only if the OQL expression evaluates to true.</p>
+            <pre style="font-family: serif">Displays the body of the tag only if the OQL expression evaluates to true.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
