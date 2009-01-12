@@ -7,9 +7,77 @@
   </header>
   <body>
 
-<section>
-  <title></title>
-</section>
-    
+    <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. This
+      section provides examples and guidelines on how to design MDDs, check the <a
+        href="../doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
+
+    <section>
+      <title>General principles</title>
+
+      <p>MDDs are stored as files that are located in the
+          <code>WEB-INF/classes/dataDefinitions</code> folder of your webapp. Their file extensions
+        are <code>.mdd</code> and the resulting Makumba type name is using the same naming principle
+        of Java packages, i.e. the MDD stored in
+          <code>WEB-INF/classes/dataDefinitions/general/Person.mdd</code> will have as type name
+          <code>general.Person</code>. </p>
+      <p>MDDs contain following elements: </p>
+      <ul>
+        <li>the data definitions, i.e. <a href="../doc/datadef.html#Fields">field
+          definitions</a></li>
+        <li><a href="../doc/valrules.html">validation rules</a> referring to one or more fields</li>
+        <li>
+          <a href="../doc/queryfunct.html">query functions</a>
+        </li>
+      </ul>
+      <p>We will further explain those type of fields by using the example of a Person having a
+        number of Cars:</p>
+
+      <source><strong>general.Person (general/Person.mdd)</strong>
+        <![CDATA[
+# field definitions
+name = char[50]                           ;Name
+surname = char[50]                        ;Surname or last name
+birthdate = date                          ;Birthdate
+gender = int{"Male" = 10, "Female" = 20}  ;Gender
+brother = ptr general.Person              ;The brother
+cars = set general.Car                    ;Cars of this person
+
+# validation rules
+minimumAge%compare = birthdate >= date($now,$now,$now - 13) : You have to be at least 13 years old to use this website
+
+# query functions
+numberOfRedCars() {count(cars) FROM this.cars c WHERE c.colour = 'Red'}  # FIXME does this work?
+]]></source>
+
+      <source><strong>general.Car (general/Car.mdd)</strong>
+        <![CDATA[
+name = char[50]                                      ;Name of the car
+colour = int{"Green" = 10, "Blue" = 20, "Red" = 30}  ;Colour of this car]]>
+      </source>
+    </section>
+
+    <section>
+      <title>Field definitions</title>
+      <p>short explanation of what they are, and table of field types and short desc (with link to
+        datadef subsections)</p>
+
+    </section>
+    <section>
+      <title>Validation rules</title>
+      <p>Explanation of validation rules, of where they do take places, link to validation rule page
+        and to validation usage page</p>
+    </section>
+    <section>
+      <title>Query functions</title>
+      <p>Explanation of what they are, how they can be used (in queries, in other functions, at the
+        presentation level...), link to technical reference</p>
+    </section>
+
+    <section>
+      <title>Interaction with the database schema</title>
+    </section>
+    <p>how makumba generates tables based on the schema, alter#, makumba table names, link to db
+      config options related to schema, what happens when a field name is changed in MDD / type is
+      changed in MDD (warnings etc.) </p>
   </body>
 </document>
