@@ -4,6 +4,14 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:login>
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <input type="submit">
+</mak:login>
+      ]]>
+    </pre>
   </p>
 </section>

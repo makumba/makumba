@@ -32,7 +32,11 @@
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:version />
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

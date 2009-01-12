@@ -4,6 +4,19 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
+
+<% if (exception!=null) {
+     pageContext.setAttribute("pattern", (String)pattern+"%");
+%>
+   <mak:list from="type t" where="t.field like $pattern" >...</mak:list>
+
+<% } else { %>
+   No pattern argument. Please indicate one.
+<% } %>
+      ]]>
+    </pre>
   </p>
 </section>

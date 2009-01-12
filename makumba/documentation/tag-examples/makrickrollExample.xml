@@ -4,6 +4,9 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+      ]]>
+    </pre>
   </p>
 </section>

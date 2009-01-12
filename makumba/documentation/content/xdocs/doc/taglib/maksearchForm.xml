@@ -160,7 +160,13 @@ If not present, the default database is used. See database configuration and loo
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:searchForm in="general.Person" name="searchPerson">
+    ....
+</mak:searchForm>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

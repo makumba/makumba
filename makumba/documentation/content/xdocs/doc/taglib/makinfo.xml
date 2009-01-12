@@ -38,7 +38,11 @@
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:info applicationProperties="parade.properties" />
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

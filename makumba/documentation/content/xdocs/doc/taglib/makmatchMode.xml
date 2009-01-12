@@ -79,7 +79,16 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:searchForm in="best.Student" name="searchPerson">
+    <mak:criterion fields="name">
+        <mak:matchMode matchModes="contains, equals, begins, ends">
+        <mak:searchField />
+    </mak:criterion>
+</mak:searchForm>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

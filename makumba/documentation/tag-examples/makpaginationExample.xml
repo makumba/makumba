@@ -4,6 +4,14 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+  <mak:list from="best.Student s" offset="$offset" limit="$limit" defaultLimit="25" orderBy="s.name">
+      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
+      <mak:value expr="s.person.name"/>, born on <mak:value expr="s.person.birthdate" />
+      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
+  </mak:list>
+      ]]>
+    </pre>
   </p>
 </section>

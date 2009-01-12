@@ -210,7 +210,16 @@ If not present, the default database is used. See database configuration and loo
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:object from="best.Student s" where="s=$student">
+    <mak:form handler="doSomething" action="studentView.jsp" method="post">
+        <mak:input name="xxx" value="s.person.name"/>
+        <input type=submit>
+    </mak:form>
+</mak:object>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

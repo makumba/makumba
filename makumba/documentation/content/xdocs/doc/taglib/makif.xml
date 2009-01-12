@@ -28,6 +28,15 @@ for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
+    <mak:value expr="s.person.name"/>
+    <mak:if test="s.person.hideAge = 0">
+        was born on <mak:value expr="s.person.birthdate" />
+    </mak:if>
+</mak:list>
+      ]]>
+    </pre>
         </p>
     </section>  </body></document>

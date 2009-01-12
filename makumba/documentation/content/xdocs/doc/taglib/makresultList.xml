@@ -96,7 +96,13 @@ If not present, the default database is used. See database configuration and loo
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:resultList resultsFrom="searchPerson">
+    Name: <mak:value expr="o.name"/> <br/>
+</mak:resultList>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

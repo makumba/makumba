@@ -4,6 +4,12 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:searchForm in="best.Student" name="searchPerson">
+    <mak:criterion fields="name"> ... </mak:criterion>
+</mak:searchForm>
+      ]]>
+    </pre>
   </p>
 </section>

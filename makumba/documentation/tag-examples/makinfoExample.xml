@@ -4,6 +4,10 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:info applicationProperties="parade.properties" />
+      ]]>
+    </pre>
   </p>
 </section>
