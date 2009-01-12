@@ -21,16 +21,40 @@
     <title>Makumba Quick start</title>
   </header>
   <body>
-    <section id="status">
-      <title>Congratulations</title>
-      <p>
-        You have successfully generated and rendered an
-        <a
-          href="ext:forrest">Apache Forrest</a> site. This page is
-        from the site template. It is found in
-        <code>src/documentation/content/xdocs/index.xml</code> Please edit it
-        and replace this text with content of your own.
-      </p>
+    
+    <section>
+      <title>Introduction</title>
+        <p>Something along the lines of the following sections (taken from "basics") --manu
+        </p>
     </section>
+    
+    <section id="MDD">
+      <title>Describing the data</title>
+      <fixme author="manu">short intro to MDD (data only) with a few examples</fixme>
+    </section>
+    
+    <section id="viewing">
+      <title>Displaying data</title>
+      <fixme author="manu">mak:list, mak:value</fixme>
+    </section>
+    
+    
+    <section id="create">
+      <title>Entering new data</title>
+      <fixme author="manu">newForm, addForm</fixme>
+    </section>
+    
+    <section id="edit">
+      <title>Modifying existing data</title>
+      <fixme author="manu">editForm</fixme>
+    </section>
+    
+    <section id="delete">
+      <title>Deleting data</title>
+      <fixme author="manu">deleteForm</fixme>
+    </section>
+    
+    
+    
   </body>
 </document>

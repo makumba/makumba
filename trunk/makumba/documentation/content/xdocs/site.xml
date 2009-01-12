@@ -57,7 +57,9 @@ See http://forrest.apache.org/docs/linking.html for more info
   <usage label="Using Makumba" dir="/usage" description="How to use Makumba" tab="usage">
     <index label="Overview" href="/usage/index.html" description="Reference documentation overview" />
     <philosophy label="Makumba philosophy" href="/philosophy.html" />
-    <basics label="Makumba basics" href="/usage/basics.html" description="What you should know to get started" />
+    <model label="Designing the data model" href="/usage/model.html" description="Designing the data model with Makumba Data Definitions" />
+    <list label="Displaying data" href="/usage/list.html" description="Displaying data using the Makumba list" />
+    <forms label="Creating and editing data" href="/usage/forms.html" description="Creating and editing data using Makumba forms" />
     <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
     <advanced label="Advanced features" href="/usage/advanced.html" />
     <search label="Search forms" href="/usage/search.html" />
