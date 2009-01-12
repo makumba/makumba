@@ -4,6 +4,12 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:searchForm in="general.Person" name="searchPerson">
+    ....
+</mak:searchForm>
+      ]]>
+    </pre>
   </p>
 </section>

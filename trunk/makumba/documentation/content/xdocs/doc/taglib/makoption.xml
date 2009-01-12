@@ -53,7 +53,20 @@ If an option value appears many times it will only be shown the first time it oc
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:input name="some" dataType="ptr T">
+    <mak:option>Please choose:</mak:option>
+    <mak:list from="T choice" where="someCondition" >
+        <mak:option value="choice"><mak:value expr="choice.someField" /></mak:option>
+    </mak:list>
+    <mak:option> -------- separator----------</mak:option>
+    <mak:list from="T choice" where="someOtherCondition" >
+       <mak:option value="choice"> <mak:value expr="choice.someField /></mak:option>
+    </mak:list>
+</mak:input>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

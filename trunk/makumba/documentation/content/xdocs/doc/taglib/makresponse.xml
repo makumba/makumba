@@ -54,7 +54,11 @@ The unformatted message is available as request-scope attribute makumba.response
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:response />
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

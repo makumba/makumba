@@ -4,6 +4,17 @@
   <title>Example</title>
   <p></p>
   <p>
-    <code></code>
+    <pre class="example">
+      <![CDATA[
+<mak:object from="best.Student s, s.person p" where="s=$student">
+    <mak:editForm object="p" action="studentView.jsp" method="post">
+        name      <mak:input name="name"/>
+        surname   <mak:input name="surname"/>
+        gender    <mak:input name="gender" type="tickbox" />
+        dob       <mak:input name="birthdate" format="yyyy-MM-dd" />
+    </mak:editForm>
+</mak:object>
+      ]]>
+    </pre>
   </p>
 </section>

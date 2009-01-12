@@ -51,7 +51,15 @@ This can be used for http authentication with no session tracking. )
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:login>
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <input type="submit">
+</mak:login>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

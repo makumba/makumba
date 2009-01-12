@@ -216,7 +216,15 @@ If not present, the default database is used. See database configuration and loo
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+<mak:newForm type="general.Person" action="personList.jsp" method="post">
+    <mak:input name="name"/>
+    <mak:input name="surname"/>
+    <input type="submit">
+</mak:newForm>
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>

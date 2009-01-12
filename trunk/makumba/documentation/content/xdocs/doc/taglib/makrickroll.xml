@@ -24,7 +24,10 @@
         <title>Example</title>
         <p/>
         <p>
-            <code/>
+            <pre class="example">
+      <![CDATA[
+      ]]>
+    </pre>
         </p>
     </section>  </body>
 </document>
