@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</p>
+            <pre style="font-family: serif">Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -130,7 +130,7 @@ If not present, the default database is used. See database configuration and loo
                     <a href="makvalue.html">mak:value</a>
                 </li>
                 <li>
-                    <a href="mak object.html">mak: object</a>
+                    <a href="makobject.html">mak:object</a>
                 </li>
             </ul>
         </section>

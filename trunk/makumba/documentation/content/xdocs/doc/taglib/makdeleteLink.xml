@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>The usage of &lt;mak:deleteLink&gt; is deprecated, and should be replaced by the equivalent:&lt;mak:delete widget="link"&gt;</p>
+            <pre style="font-family: serif">The usage of &lt;mak:deleteLink&gt; is deprecated, and should be replaced by the equivalent:&lt;mak:delete widget="link"&gt;</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -159,16 +159,16 @@
                     <a href="makform.html">mak:form</a>
                 </li>
                 <li>
-                    <a href="mak newForm.html">mak: newForm</a>
+                    <a href="maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="mak addForm.html">mak: addForm</a>
+                    <a href="makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="mak editForm.html">mak: editForm</a>
+                    <a href="makeditForm.html">mak:editForm</a>
                 </li>
                 <li>
-                    <a href="mak delete.html">mak: delete</a>
+                    <a href="makdelete.html">mak:delete</a>
                 </li>
             </ul>
         </section>

@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</p>
+            <pre style="font-family: serif">Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -100,7 +100,7 @@ If not present, the default database is used. See database configuration and loo
                     <a href="maklist.html">mak:list</a>
                 </li>
                 <li>
-                    <a href="mak value.html">mak: value</a>
+                    <a href="makvalue.html">mak:value</a>
                 </li>
             </ul>
         </section>

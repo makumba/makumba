@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
     <header>
-        <title>mak:version tag documentation</title>
+        <title>mak:maxResults() function documentation</title>
     </header>
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Prints the Makumba version</pre>
+            <pre style="font-family: serif">the maximum count of the enclosing mak:list, disregarding potential limit and offset values</pre>
         </section>
         <section id="attributes">
-            <title>Attributes</title>
-            <p>This tag has no attributes</p>
+            <title/>
         </section>
     
         <section id="seeAlso">
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="makinfo.html">mak:info</a>
+                    <a href="makcount.html">mak:count</a>
+                </li>
+                <li>
+                    <a href="makmaxCount.html">mak:maxCount</a>
+                </li>
+                <li>
+                    <a href="maklastCount.html">mak:lastCount</a>
                 </li>
             </ul>
         </section>
@@ -27,7 +32,6 @@
         <p>
             <pre class="example">
       <![CDATA[
-<mak:version />
       ]]>
     </pre>
         </p>

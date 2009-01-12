@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Displays the value of an attribute, or sets it to a Java variable.</p>
+            <pre style="font-family: serif">Displays the value of an attribute, or sets it to a Java variable.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>

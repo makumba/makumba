@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
+            <pre style="font-family: serif">Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -45,13 +45,13 @@
                     <a href="maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="mak resultList.html">mak: resultList</a>
+                    <a href="makresultList.html">mak:resultList</a>
                 </li>
                 <li>
-                    <a href="mak matchMode.html">mak: matchMode</a>
+                    <a href="makmatchMode.html">mak:matchMode</a>
                 </li>
                 <li>
-                    <a href="mak searchField.html">mak: searchField</a>
+                    <a href="maksearchField.html">mak:searchField</a>
                 </li>
             </ul>
         </section>

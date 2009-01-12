@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Makes a form for creating a new object of the indicated type.</p>
+            <pre style="font-family: serif">Makes a form for creating a new object of the indicated type.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -196,19 +196,19 @@ If not present, the default database is used. See database configuration and loo
                     <a href="makinput.html">mak:input</a>
                 </li>
                 <li>
-                    <a href="mak form.html">mak: form</a>
+                    <a href="makform.html">mak:form</a>
                 </li>
                 <li>
-                    <a href="mak addForm.html">mak: addForm</a>
+                    <a href="makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="mak editForm.html">mak: editForm</a>
+                    <a href="makeditForm.html">mak:editForm</a>
                 </li>
                 <li>
-                    <a href="mak deleteLink.html">mak: deleteLink</a>
+                    <a href="makdeleteLink.html">mak:deleteLink</a>
                 </li>
                 <li>
-                    <a href="mak delete.html">mak: delete</a>
+                    <a href="makdelete.html">mak:delete</a>
                 </li>
             </ul>
         </section>

@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.</p>
+            <pre style="font-family: serif">Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -195,19 +195,19 @@
                     <a href="makinput.html">mak:input</a>
                 </li>
                 <li>
-                    <a href="mak newForm.html">mak: newForm</a>
+                    <a href="maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="mak addForm.html">mak: addForm</a>
+                    <a href="makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="mak editForm.html">mak: editForm</a>
+                    <a href="makeditForm.html">mak:editForm</a>
                 </li>
                 <li>
-                    <a href="mak deleteLink.html">mak: deleteLink</a>
+                    <a href="makdeleteLink.html">mak:deleteLink</a>
                 </li>
                 <li>
-                    <a href="mak delete.html">mak: delete</a>
+                    <a href="makdelete.html">mak:delete</a>
                 </li>
             </ul>
         </section>

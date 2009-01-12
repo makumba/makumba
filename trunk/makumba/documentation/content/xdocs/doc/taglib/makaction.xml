@@ -6,18 +6,11 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</p>
+            <pre style="font-family: serif">If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>rt expression value</th>
-                    <th>Description</th>
-                </tr>
-            </table>
+            <p>This tag has no attributes</p>
         </section>
     
         <section id="seeAlso">
@@ -27,13 +20,13 @@
                     <a href="makform.html">mak:form</a>
                 </li>
                 <li>
-                    <a href="mak newForm.html">mak: newForm</a>
+                    <a href="maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="mak addForm.html">mak: addForm</a>
+                    <a href="makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="mak editForm.html">mak: editForm</a>
+                    <a href="makeditForm.html">mak:editForm</a>
                 </li>
             </ul>
         </section>

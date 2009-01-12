@@ -764,6 +764,24 @@ package org.makumba]]>
 
     </target>
 
+    <target name="generateTagDocAndExamples">
+        <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
+            <classpath>
+                <pathelement path="${java.class.path}" />
+                <pathelement location="classes" />
+                <fileset dir="${basedir}/lib/">
+                    <include name="dom4j-1.6.1.jar" />
+                    <include name="jaxen-1.1-beta-7.jar" />
+                </fileset>
+            </classpath>
+            <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
+            <arg value="${basedir}/documentation/tag-examples" />
+            <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
+            <arg value="3" />
+        </java>
+    </target>
+
+	
     <target name="mergeTagDocAndExamples">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
             <classpath>
@@ -779,7 +797,6 @@ package org.makumba]]>
             <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
             <arg value="2" />
         </java>
-
     </target>
 
     <target name="forrest-build-webapp" description="Generates webapp">

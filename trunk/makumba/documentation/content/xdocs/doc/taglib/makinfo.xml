@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>Document me please</p>
+            <pre style="font-family: serif">Document me please</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>

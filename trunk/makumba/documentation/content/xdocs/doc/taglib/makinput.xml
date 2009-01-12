@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p>An input field to be created, depending on the makumba type of the field.
+            <pre style="font-family: serif">An input field to be created, depending on the makumba type of the field.
 
 Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
 
@@ -16,7 +16,7 @@ The difference between &lt;mak:input &gt; and normal HTML &lt;input&gt; in a mak
 
 &lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text). 
 the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String 
-the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</p>
+the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</pre>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -309,19 +309,19 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                     <a href="makform.html">mak:form</a>
                 </li>
                 <li>
-                    <a href="mak newForm.html">mak: newForm</a>
+                    <a href="maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="mak addForm.html">mak: addForm</a>
+                    <a href="makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="mak editForm.html">mak: editForm</a>
+                    <a href="makeditForm.html">mak:editForm</a>
                 </li>
                 <li>
-                    <a href="mak deleteLink.html">mak: deleteLink</a>
+                    <a href="makdeleteLink.html">mak:deleteLink</a>
                 </li>
                 <li>
-                    <a href="mak delete.html">mak: delete</a>
+                    <a href="makdelete.html">mak:delete</a>
                 </li>
             </ul>
         </section>
