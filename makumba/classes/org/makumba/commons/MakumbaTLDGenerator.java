@@ -3,11 +3,9 @@ package org.makumba.commons;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -52,7 +50,7 @@ public class MakumbaTLDGenerator {
                 // update makumba version place-holder
                 tag.setText(tag.getText().replace("@version@", MakumbaSystem.getVersion()));
             }
-            if (tag.getName().equals("tag")) {
+            if (tag.getName().equals("tag") || tag.getName().equals("function")) {
 
                 Element name = tag.element("name");
                 String tagName = name.getText();
@@ -70,11 +68,14 @@ public class MakumbaTLDGenerator {
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
                                 // remove all the <comments> tags inside <attribute> elements
-                                if (attributeContent.getName().equals("comments") || attributeContent.getName().equals("see")) {
+                                if (attributeContent.getName().equals("comments")) {
                                     attributeContent.getParent().remove(attributeContent);
                                 }
                             }
                         }
+                    } if (tagContent.getName().equals("see")) {
+                        // remove all the <comments> tags inside <attribute> elements
+                        tagContent.getParent().remove(tagContent);
                     }
                 }
                 processedTags.put(tagName, tag);
