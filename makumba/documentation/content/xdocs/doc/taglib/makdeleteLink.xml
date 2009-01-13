@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">The usage of &lt;mak:deleteLink&gt; is deprecated, and should be replaced by the equivalent:&lt;mak:delete widget="link"&gt;</pre>
+            <p class="tagDescription">The usage of &lt;mak:deleteLink&gt; is deprecated, and should be replaced by the equivalent:&lt;mak:delete widget="link"&gt;</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -174,9 +174,7 @@
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:object from="best.Student s, s.languages l" where="s=$student AND l.lang.name=$langname">
     <mak:deleteLink object="l" action="studentView.jsp">
@@ -184,7 +182,6 @@
     </mak:deleteLink>
 </mak:object>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

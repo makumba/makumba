@@ -6,13 +6,13 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag. 
+            <p class="tagDescription">By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag. 
 Text inside mak:option will become an option title. The value attribute will become the option. Text inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.
 
 If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
 
 If an option value appears many times it will only be shown the first time it occurs.
-    </pre>
+    </p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -51,9 +51,7 @@ If an option value appears many times it will only be shown the first time it oc
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:input name="some" dataType="ptr T">
     <mak:option>Please choose:</mak:option>
@@ -66,7 +64,6 @@ If an option value appears many times it will only be shown the first time it oc
     </mak:list>
 </mak:input>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

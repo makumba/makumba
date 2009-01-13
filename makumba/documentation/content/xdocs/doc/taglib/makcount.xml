@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">the count of the enclosing mak:list</pre>
+            <p class="tagDescription">the count of the enclosing mak:list</p>
         </section>
         <section id="attributes">
             <title/>
@@ -28,9 +28,7 @@
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:list ...>
    <c:if test="${mak:count()==1}">These are the list elements: </c:if>
@@ -45,7 +43,6 @@
 </mak:list>
 <c:if test="${mak:lastCount()==0}">These are no elements </c:if>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

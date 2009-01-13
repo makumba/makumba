@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</pre>
+            <p class="tagDescription">Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -208,9 +208,7 @@ If not present, the default database is used. See database configuration and loo
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:object from="best.Student s" where="s=$student">
     <mak:form handler="doSomething" action="studentView.jsp" method="post">
@@ -219,7 +217,6 @@ If not present, the default database is used. See database configuration and loo
     </mak:form>
 </mak:object>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

@@ -2,14 +2,11 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:searchForm in="general.Person" name="searchPerson">
     ....
 </mak:searchForm>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

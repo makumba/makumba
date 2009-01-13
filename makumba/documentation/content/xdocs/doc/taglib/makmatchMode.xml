@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">create a match-mode input</pre>
+            <p class="tagDescription">create a match-mode input</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -77,9 +77,7 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:searchForm in="best.Student" name="searchPerson">
     <mak:criterion fields="name">
@@ -88,7 +86,6 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
     </mak:criterion>
 </mak:searchForm>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

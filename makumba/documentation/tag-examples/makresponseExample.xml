@@ -2,12 +2,9 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:response />
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

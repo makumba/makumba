@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</pre>
+            <p class="tagDescription">Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -106,12 +106,9 @@ If not present, the default database is used. See database configuration and loo
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

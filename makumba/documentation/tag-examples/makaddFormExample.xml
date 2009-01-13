@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:object from="best.Student s" where="s=$student">
     <mak:addForm object="s" field="languages" action="studentView.jsp" method="post">
@@ -14,6 +12,5 @@
     </mak:addForm>
 </mak:object>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

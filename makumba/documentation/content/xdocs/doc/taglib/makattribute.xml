@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Displays the value of an attribute, or sets it to a Java variable.</pre>
+            <p class="tagDescription">Displays the value of an attribute, or sets it to a Java variable.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -46,9 +46,7 @@
     
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
 
@@ -61,7 +59,6 @@
    No pattern argument. Please indicate one.
 <% } %>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

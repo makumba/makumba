@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
 
@@ -17,6 +15,5 @@
    No pattern argument. Please indicate one.
 <% } %>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

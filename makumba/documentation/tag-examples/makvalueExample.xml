@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
   <mak:list from="best.Student s, s.person p" where="p.gender=\"male\"" orderBy="p.name">
       <mak:value expr="p.name"/>
@@ -18,6 +16,5 @@
       <mak:value expr="s.person.favoriteQuote" maxLength="60" addTitle="auto" />
   </mak:list>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>
