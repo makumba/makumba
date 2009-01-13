@@ -131,7 +131,7 @@
       <section>
         <title><code>&lt;code&gt;</code> tag</title>
         <source>
-          <![CDATA[<code>small code snippet, in the text</code]]>
+          <![CDATA[<code>small code snippet, in the paragraph text</code]]>
         </source>
         <p><code>small code snippet, in the paragraph text</code></p>
         <p>The <code>&lt;code&gt;</code> tag is part of a paragraph and should be used for small code snippets.</p>
