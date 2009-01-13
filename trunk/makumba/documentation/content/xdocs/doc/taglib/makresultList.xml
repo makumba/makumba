@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</pre>
+            <p class="tagDescription">Similar to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search form. On top of &lt;mak:list&gt;, the following attributes are available:</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -94,15 +94,12 @@ If not present, the default database is used. See database configuration and loo
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:resultList resultsFrom="searchPerson">
     Name: <mak:value expr="o.name"/> <br/>
 </mak:resultList>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

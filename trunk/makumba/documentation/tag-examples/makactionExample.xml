@@ -2,15 +2,12 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:editForm object="ins" method="post">
     <mak:action>memberView.jsp?person=<mak:value expr="p"/></mak:action>
     ...
 </mak:editForm>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

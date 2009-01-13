@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:object from="best.Student s, s.languages l" where="s=$student AND l.lang.name=$langname">
     <mak:deleteLink object="l" action="studentView.jsp">
@@ -12,6 +10,5 @@
     </mak:deleteLink>
 </mak:object>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

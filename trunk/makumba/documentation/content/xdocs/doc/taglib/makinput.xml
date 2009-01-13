@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">An input field to be created, depending on the makumba type of the field.
+            <p class="tagDescription">An input field to be created, depending on the makumba type of the field.
 
 Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
 
@@ -16,7 +16,7 @@ The difference between &lt;mak:input &gt; and normal HTML &lt;input&gt; in a mak
 
 &lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text). 
 the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String 
-the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</pre>
+the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -327,9 +327,7 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:object from="best.Student s, s.person p" where="s=$student">
     <mak:editForm object="p" action="studentView.jsp" method="post">
@@ -340,7 +338,6 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
     </mak:editForm>
 </mak:object>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

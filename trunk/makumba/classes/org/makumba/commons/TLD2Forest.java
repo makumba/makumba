@@ -172,8 +172,8 @@ public class TLD2Forest {
         infoSection.addAttribute("id", "description");
         Element infoSectionTitle = infoSection.addElement("title");
         infoSectionTitle.setText("Description");
-        Element description = infoSection.addElement("pre");
-        description.addAttribute("style", "font-family: serif");
+        Element description = infoSection.addElement("p");
+        description.addAttribute("class", "tagDescription");
 
         String desc = new String();
         String see = new String();

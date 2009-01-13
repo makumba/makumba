@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</pre>
+            <p class="tagDescription">Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -136,9 +136,7 @@ If not present, the default database is used. See database configuration and loo
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:list from="best.Student s, s.person p" where="p.gender=\"male\"" orderBy="p.name">
 
@@ -156,7 +154,6 @@ If not present, the default database is used. See database configuration and loo
 
 <c:if test="${mak:lastCount()==0}"> There are no male students. </c:if>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

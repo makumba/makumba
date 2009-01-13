@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</pre>
+            <p class="tagDescription">If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -32,16 +32,13 @@
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:editForm object="ins" method="post">
     <mak:action>memberView.jsp?person=<mak:value expr="p"/></mak:action>
     ...
 </mak:editForm>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

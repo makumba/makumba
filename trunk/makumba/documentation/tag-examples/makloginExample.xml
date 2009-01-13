@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:login>
     <input type="text" name="username">
@@ -12,6 +10,5 @@
     <input type="submit">
 </mak:login>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

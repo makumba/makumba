@@ -6,10 +6,10 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Produces a form to search for records in the database.
+            <p class="tagDescription">Produces a form to search for records in the database.
     
       
-Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</pre>
+Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -158,15 +158,12 @@ If not present, the default database is used. See database configuration and loo
     
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:searchForm in="general.Person" name="searchPerson">
     ....
 </mak:searchForm>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

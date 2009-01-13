@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </pre>
+            <p class="tagDescription">Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -57,15 +57,12 @@
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:searchForm in="best.Student" name="searchPerson">
     <mak:criterion fields="name"> ... </mak:criterion>
 </mak:searchForm>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

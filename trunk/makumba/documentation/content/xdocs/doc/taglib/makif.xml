@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Displays the body of the tag only if the OQL expression evaluates to true.</pre>
+            <p class="tagDescription">Displays the body of the tag only if the OQL expression evaluates to true.</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -26,9 +26,7 @@
 for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
 </td>                </tr>            </table>        </section>          <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
     <mak:value expr="s.person.name"/>
@@ -37,6 +35,5 @@ for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
     </mak:if>
 </mak:list>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body></document>

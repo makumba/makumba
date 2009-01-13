@@ -165,17 +165,21 @@ p {
   font-size: 110%;
 }
 
-pre.example {
-	border-left: solid green 1px;
-	margin-left: 20px;
-	padding-left: 5px;
-	background: #f5f5ff;
-	/* margin-top: 0.5em; */
-}
-
 /** Custom styles - manu **/
 
 em.highlighted {
     font-style:normal;
     background-color: #cfdced;
+}
+
+/** Custom styles - rudi **/
+pre.code {
+	border-left: solid green 1px;
+	margin-left: 20px;
+	padding-left: 5px;
+	background: #f5f5ff;
+}
+
+p.tagDescription {
+	white-space: pre;
 }

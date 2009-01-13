@@ -2,11 +2,8 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

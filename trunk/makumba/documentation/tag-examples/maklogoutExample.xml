@@ -2,23 +2,18 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    To cancel out a certain attribute, specify the exact name:
-    <pre class="example">
+  <p>To cancel out a certain attribute, specify the exact name:</p>
+  <source>
       <![CDATA[
 <mak:logout actor="student"/>
       ]]>
-    </pre>
-  </p>
-  <p>
-    You can remove (cancel-out, logout) multiple attributes from the session by using <![CDATA[<mak:logout actor="attribute name">]]> several times and/or by using the star (*) wildcard, e.g.:
-    <pre class="example">
+  </source>
+  <p>You can remove (cancel-out, logout) multiple attributes from the session by using <![CDATA[<mak:logout actor="attribute name">]]> several times and/or by using the star (*) wildcard, e.g.:</p>
+  <source>
       <![CDATA[
 <mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
 <mak:logout actor="*app"/> (attributes whose names end with "app")
 <mak:logout actor="*"/> (all attributes; this "invalidates" the session)
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

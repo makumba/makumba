@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Login is done as a result of a missing attribute (possibly invoked in checkAttributes), when a find{AttributeName} method is called. The missing attribute is the principal that needs to log in. 
+            <p class="tagDescription">Login is done as a result of a missing attribute (possibly invoked in checkAttributes), when a find{AttributeName} method is called. The missing attribute is the principal that needs to log in. 
 If the attribute cannot be found due to wrong login information, org.makumba.UnauthenticatedException is usually thrown.
 
 The principal (the person who logs in) can have more members (e.g. group, Lbg, Company representatives). E.g. the findCompany() method will check to see if the authentication (email_address and password) corresponds to any company representative of that company. If yes, it will return that company.
@@ -25,7 +25,7 @@ You can remove (cancel-out, logout) multiple attributes from the session by usin
 then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
 This can be used for http authentication with no session tracking. )
 (Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
-</pre>        </section>        <section id="attributes">            <title>Attributes</title>
+</p>        </section>        <section id="attributes">            <title>Attributes</title>
             <p>This tag has no attributes</p>
         </section>
     
@@ -42,9 +42,7 @@ This can be used for http authentication with no session tracking. )
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:login>
     <input type="text" name="username">
@@ -52,7 +50,6 @@ This can be used for http authentication with no session tracking. )
     <input type="submit">
 </mak:login>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

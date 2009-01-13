@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object$rt; (e.g. a language of a student, an address for a person).</pre>
+            <p class="tagDescription">Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object$rt; (e.g. a language of a student, an address for a person).</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -213,9 +213,7 @@
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:object from="best.Student s" where="s=$student">
     <mak:addForm object="s" field="languages" action="studentView.jsp" method="post">
@@ -225,7 +223,6 @@
     </mak:addForm>
 </mak:object>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>

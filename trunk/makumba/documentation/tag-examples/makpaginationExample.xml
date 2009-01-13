@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
   <mak:list from="best.Student s" offset="$offset" limit="$limit" defaultLimit="25" orderBy="s.name">
       <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
@@ -12,6 +10,5 @@
       <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
   </mak:list>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

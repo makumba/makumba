@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:list from="best.Student s, s.person p" where="p.gender=\"male\"" orderBy="p.name">
 
@@ -22,6 +20,5 @@
 
 <c:if test="${mak:lastCount()==0}"> There are no male students. </c:if>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

@@ -2,9 +2,7 @@
 
 <section id="example">
   <title>Example</title>
-  <p></p>
-  <p>
-    <pre class="example">
+  <source>
       <![CDATA[
 <mak:newForm type="general.Person" action="personList.jsp" method="post">
     <mak:input name="name"/>
@@ -12,6 +10,5 @@
     <input type="submit">
 </mak:newForm>
       ]]>
-    </pre>
-  </p>
+  </source>
 </section>

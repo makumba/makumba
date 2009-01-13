@@ -6,7 +6,7 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <pre style="font-family: serif">Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the &lt;mak:input/&gt; tag, and provides additionally the following attributes:</pre>
+            <p class="tagDescription">Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the &lt;mak:input/&gt; tag, and provides additionally the following attributes:</p>
         </section>
         <section id="attributes">
             <title>Attributes</title>
@@ -279,9 +279,7 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
         </section>
       <section id="example">
         <title>Example</title>
-        <p/>
-        <p>
-            <pre class="example">
+        <source>
       <![CDATA[
 <mak:searchForm in="best.Student" name="searchPerson">
     <mak:criterion fields="name"> 
@@ -292,7 +290,6 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
     </mak:criterion>  
 </mak:searchForm>
       ]]>
-    </pre>
-        </p>
+  </source>
     </section>  </body>
 </document>
