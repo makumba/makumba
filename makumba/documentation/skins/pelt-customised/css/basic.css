@@ -184,13 +184,18 @@ p.tagDescription {
 	white-space: pre;
 }
 
+td.center {
+	text-align: center;
+}
+
+td.missingDoc {
+	font-weight: bold;
+	color: red;
+	text-decoration: blink; /* just to annoy while the colours don't work.. a*/
+}
+
 tr.deprecated {
 	background-color: yellow;
-	color: gray;
-	font-style: italic;
-}
-td.deprecated {
-	background-color: yellow;
-	color: gray;
+	color: blue;
 	font-style: italic;
 }
