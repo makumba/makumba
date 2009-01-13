@@ -2,7 +2,20 @@
     <path id="project.class.path">
         <fileset dir="${basedir}/lib">
             <include name="**/*.jar" />
-            <exclude name="**/makumba.jar" />
+            <exclude name="**/makumba*.jar" />
+        </fileset>
+    </path>
+	
+    <path id="project.class.path.complete">
+        <pathelement path="${java.class.path}" />
+        <pathelement location="classes" />
+        <pathelement location="webapps/tests/WEB-INF/classes/" />
+        <fileset dir="${basedir}/lib">
+            <include name="**/*.jar" />
+            <exclude name="**/makumba*.jar" />
+        </fileset>
+        <fileset dir="${basedir}">
+            <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
         </fileset>
     </path>
 
@@ -728,19 +741,7 @@ package org.makumba]]>
 
     <target name="generateTLDs" depends="compile">
         <java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
-            <classpath>
-                <pathelement path="${java.class.path}" />
-                <pathelement location="classes" />
-                <pathelement location="webapps/tests/WEB-INF/classes/" />
-                <fileset dir="${basedir}/lib/">
-                    <include name="dom4j-1.6.1.jar" />
-                    <include name="inieditor.jar" />
-                    <include name="commons-lang-2.3.jar" />
-                </fileset>
-                <fileset dir="${basedir}">
-                    <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
-                </fileset>
-            </classpath>
+            <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF" />
         </java>
 
@@ -748,14 +749,7 @@ package org.makumba]]>
 
     <target name="generateTagDoc" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath>
-                <pathelement path="${java.class.path}" />
-                <pathelement location="classes" />
-                <fileset dir="${basedir}/lib/">
-                    <include name="dom4j-1.6.1.jar" />
-                    <include name="jaxen-1.1-beta-7.jar" />                    
-                </fileset>
-            </classpath>
+            <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
             <arg value="${basedir}/documentation/tag-examples" />
             <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
@@ -766,14 +760,7 @@ package org.makumba]]>
 
     <target name="generateTagDocAndExamples" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath>
-                <pathelement path="${java.class.path}" />
-                <pathelement location="classes" />
-                <fileset dir="${basedir}/lib/">
-                    <include name="dom4j-1.6.1.jar" />
-                    <include name="jaxen-1.1-beta-7.jar" />
-                </fileset>
-            </classpath>
+            <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
             <arg value="${basedir}/documentation/tag-examples" />
             <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
@@ -784,14 +771,7 @@ package org.makumba]]>
 	
     <target name="mergeTagDocAndExamples" depends="compile">
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath>
-                <pathelement path="${java.class.path}" />
-                <pathelement location="classes" />
-                <fileset dir="${basedir}/lib/">
-                    <include name="dom4j-1.6.1.jar" />
-                    <include name="jaxen-1.1-beta-7.jar" />
-                </fileset>
-            </classpath>
+            <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
             <arg value="${basedir}/documentation/tag-examples" />
             <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
