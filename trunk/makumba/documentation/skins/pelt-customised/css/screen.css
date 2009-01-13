@@ -585,3 +585,15 @@ p.instruction {
   list-style-position: outside;
   margin-left: 2em;
 } 
+
+/** Custom styles - rudi **/
+/** redefine td styles here, cause screen.css seems to be loaded after basic.css, and the here defined '.ForrestTable td' style seems to override our color settings */
+td.missingDoc {
+	font-weight: bold;
+	color: red;
+}
+
+td.deprecated {
+	color: blue;
+	font-style: italic;
+}
