@@ -131,7 +131,7 @@ public class SearchFieldTag extends InputTag {
         checkValidAttributeValues("role", role, allowedRoles);
         // role can be used only within a range type criterion tag
         if (!getCriterionTag().isRange()) {
-            throw new ProgrammerError("'role' can only be specified if the criterion specific range='true'! ");
+            throw new ProgrammerError("'role' can only be specified if the criterion specified range='true'! ");
         }
         this.role = role;
     }
