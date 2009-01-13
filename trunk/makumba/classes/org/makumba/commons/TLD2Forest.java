@@ -36,31 +36,28 @@ import org.dom4j.tree.DefaultElement;
  * @version $Id: TLD2Forest.java,v 1.1 Oct 3, 2008 11:11:51 PM manu Exp $
  */
 public class TLD2Forest {
-    final static String EXAMPLES_FOLDER = "examples";
+    private final static int CREATE = 1;// action is step 1-creating all the needed files (separate tag.xml &
 
-    final static String TAGS_FOLDER = "taglib";
+    // tagExample.xml)
 
-    final static int CREATE = 1;// action is step 1-creating all the needed files (separate tag.xml & tagExample.xml)
+    private final static int UPDATE = 2;// action is step 2 - merging all tag.xml and tagExample.xml files
 
-    final static int UPDATE = 2;// action is step 2 - merging all tag.xml and tagExample.xml files
+    private final static int BOTH = 3;// both actions
 
-    final static int BOTH = 3;// both actions
+    private final static String EXAMPLE_SECTION_ID = "example";
 
-    final static String EXAMPLE_SECTION_ID = "example";
+    private static String errorMsg;
 
-    public static String errorMsg;
+    private static HashMap<String, Element> processedTags = new HashMap<String, Element>();
 
-    public static HashMap<String, Element> processedTags = new HashMap<String, Element>();
+    private static final String[] attributeTags = { "name", "required", "rtexprvalue", "description", "comments" };
 
-    public static final String[] attributeTags = { "name", "required", "rtexprvalue", "description", "comments" };
+    private static final String[] attributeClassesAlignment = { null, "center", "center", null, null };
 
-    public static final String[] attributeTagsAlignment = { null, "center", "center", null, null };
-
-    public static final String[][] attributeTagHighlightValues = { null, { "true" }, null,
+    private static final String[][] attributeHighlightValues = { null, { "true" }, null,
             { "Document me please", "FIXME" }, { "Document me please" } };
 
-    public static final String[] attributeTagHighlightStyles = { null, "font-weight: bold;", null,
-            "color: red; font-weight: bold;", "color: red; font-weight: bold;" };
+    private static final String[] attributeHighlightClasses = { null, "required", null, "missingDoc", "missingDoc" };
 
     public static void main(String[] args) {
 
@@ -314,9 +311,11 @@ public class TLD2Forest {
                 String attributeName = attributeTags[i];
                 // if specified attribute is found then write the corresponding data to a table cell
                 if (tagElementAttributeName.equals(attributeName)) {
+                    StringBuffer cssClasses = new StringBuffer();
                     Element td = tr.addElement("td");
+
                     if (isDeprecated) {
-                        td.addAttribute("class", "deprecated");
+                        appendClass(cssClasses, "deprecated");
                     }
                     // content of a current data tag
                     String elementText = dataElement.getText();
@@ -324,21 +323,24 @@ public class TLD2Forest {
                     elementText = (elementText != null ? elementText : "");
 
                     // apply special formatting
-                    if (StringUtils.isNotBlank(attributeTagsAlignment[i])) {
-                        td.addAttribute("align", attributeTagsAlignment[i]);
+                    if (StringUtils.isNotBlank(attributeClassesAlignment[i])) {
+                        appendClass(cssClasses, attributeClassesAlignment[i]);
                     }
-                    if (org.makumba.commons.StringUtils.equalsAny(elementText, attributeTagHighlightValues[i])) {
-                        td.addAttribute("style", attributeTagHighlightStyles[i]);
+                    if (org.makumba.commons.StringUtils.equalsAny(elementText, attributeHighlightValues[i])) {
+                        appendClass(cssClasses, attributeHighlightClasses[i]);
                     }
 
                     // special treatment for deprecated attributes
-                    if (isDeprecated) {
+                    if (isDeprecated ) {
                         if (attributeName.equals("name")) {
                             elementText += " (deprecated)";
                         }
-                        td.addAttribute("style", "color: blue;");
+//                        appendClass(cssClasses, "deprecated");
                     }
                     td.setText(elementText);
+                    if (StringUtils.isNotBlank(cssClasses.toString())) {
+                        td.addAttribute("class", cssClasses.toString());
+                    }
                     cellAddedCount++;
                 }
             }
@@ -347,6 +349,13 @@ public class TLD2Forest {
             Element td = tr.addElement("td");
             td.setText("");
         }
+    }
+
+    private static void appendClass(StringBuffer cssClasses, String cssClass) {
+        if (cssClasses.length() > 0) {
+            cssClasses.append(" ");
+        }
+        cssClasses.append(cssClass);
     }
 
     private static boolean isDeprecated(Element e) {
