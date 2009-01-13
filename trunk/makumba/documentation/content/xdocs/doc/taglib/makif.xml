@@ -14,17 +14,23 @@
                 <tr>
                     <th>Name</th>
                     <th>Required</th>
-                    <th>rt expression value</th>
+                    <th>Request-time</th>
                     <th>Description</th>
+                    <th>Comments</th>
                 </tr>
                 <tr>
                     <td>test</td>
-                    <td>true</td>
-                    <td>false</td>
+                    <td align="center" style="font-weight: bold;">true</td>
+                    <td align="center">false</td>
                     <td>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
-</td>                </tr>            </table>        </section>          <section id="example">
+</td>                    <td style="color: red; font-weight: bold;">Document me please</td>
+                </tr>
+            </table>
+        </section>
+    
+      <section id="example">
         <title>Example</title>
         <source>
       <![CDATA[
@@ -36,4 +42,5 @@ for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
 </mak:list>
       ]]>
   </source>
-    </section>  </body></document>
+    </section>  </body>
+</document>

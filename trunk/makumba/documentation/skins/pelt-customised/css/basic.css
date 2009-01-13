@@ -183,3 +183,14 @@ pre.code {
 p.tagDescription {
 	white-space: pre;
 }
+
+tr.deprecated {
+	background-color: yellow;
+	color: gray;
+	font-style: italic;
+}
+td.deprecated {
+	background-color: yellow;
+	color: gray;
+	font-style: italic;
+}
