@@ -34,22 +34,22 @@ public class StringUtils {
 
     public static boolean anyNotEmpty(String[] o) {
         for (String element : o) {
-            if(org.apache.commons.lang.StringUtils.isNotEmpty(element)) {
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(element)) {
                 return true;
             }
-        } 
+        }
         return false;
     }
-    
+
     public static boolean allNotEmpty(String[] o) {
         for (String element : o) {
-            if(org.apache.commons.lang.StringUtils.isBlank(element)) {
+            if (org.apache.commons.lang.StringUtils.isBlank(element)) {
                 return false;
             }
-        } 
+        }
         return true;
     }
-    
+
     /** Checks whether an Object is null or has, after trimming, a length == 0. */
     public static boolean isEmpty(Object o) {
         return o == null || (o instanceof String && org.apache.commons.lang.StringUtils.isEmpty((String) o));
@@ -167,7 +167,7 @@ public class StringUtils {
         }
         return null;
     }
-    
+
     /** Checks whether the given String ends with any of the given options. */
     public static boolean endsWith(String s, String[] options) {
         if (s == null) {
@@ -182,8 +182,8 @@ public class StringUtils {
     }
 
     /**
-     * Convert a <code>String</code> to an <code>int</code>, returning a default value if the conversion fails or
-     * if the string is <code>null</code>.
+     * Convert a <code>String</code> to an <code>int</code>, returning a default value if the conversion fails or if the
+     * string is <code>null</code>.
      */
     public static int toInt(String str, int defaultValue) {
         if (str == null) {
@@ -199,7 +199,7 @@ public class StringUtils {
     public static String toString(Enumeration<?> enumeration) {
         return toString(EnumerationUtils.toList(enumeration));
     }
-    
+
     public static String[] append(String[] functionNames, String toAppend) {
         String[] s = new String[functionNames.length];
         for (int i = 0; i < s.length; i++) {
@@ -207,11 +207,14 @@ public class StringUtils {
         }
         return s;
     }
-    
+
     /**
      * Fetches a param out of a typical param string found in HTML tags
-     * @param paramName the name of the param
-     * @param queryString the string to search within
+     * 
+     * @param paramName
+     *            the name of the param
+     * @param queryString
+     *            the string to search within
      * @return the value of the param if found, null otherwise
      */
     public static String getParam(String paramName, String queryString) {
@@ -222,7 +225,7 @@ public class StringUtils {
             if (param.indexOf("&") > -1) {
                 param = param.substring(0, param.indexOf("&"));
             }
-            param=param.substring(0, param.length()-2);
+            param = param.substring(0, param.length() - 2);
         }
         return param;
     }
@@ -230,7 +233,8 @@ public class StringUtils {
     public static String getAbsolutePath(String requestURI, String page) {
         try {
             if (!page.startsWith("/")) {
-                // if we have a relative URL, compute the absolute URL of the action page, as we'll get that in ResponseTag
+                // if we have a relative URL, compute the absolute URL of the action page, as we'll get that in
+                // ResponseTag
                 if (requestURI.lastIndexOf("/") != -1) {
                     requestURI = requestURI.substring(0, requestURI.lastIndexOf("/") + 1);
                 }
@@ -245,6 +249,5 @@ public class StringUtils {
     public static String reverseString(String s) {
         return new StringBuilder(s).reverse().toString();
     }
-
 
 }
