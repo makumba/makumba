@@ -15,6 +15,15 @@
                     <th>Status</th>
                     <th>Comments</th>
                 </tr>
+                
+                <tr>
+                    <td>Example</td>
+                    <td>The Makumba example (demo app, quickstart, usage, tags)</td>
+                    <td>Not started</td>
+                    <td>We need a viable example that can start small and be extended, so as to illustrate all the nice mak concepts. Until this does not exist we can't have the usage section.</td>
+                </tr>
+                
+                
                 <tr>
                     <td>Welcome page (index.html)</td>
                     <td>Welcome page (index.html)</td>
