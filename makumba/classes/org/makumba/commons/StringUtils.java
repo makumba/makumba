@@ -132,7 +132,7 @@ public class StringUtils {
 
     /** Checks whether the given String equals any of the given options. */
     public static boolean equalsAny(String s, String... options) {
-        if (s == null) {
+        if (s == null || options == null) {
             return false;
         }
         for (String element : options) {
