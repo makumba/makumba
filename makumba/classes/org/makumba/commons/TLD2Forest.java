@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -51,7 +52,15 @@ public class TLD2Forest {
 
     public static HashMap<String, Element> processedTags = new HashMap<String, Element>();
 
-    public static final String[] attributeTags = { "name", "required", "rtexprvalue", "description" };
+    public static final String[] attributeTags = { "name", "required", "rtexprvalue", "description", "comments" };
+
+    public static final String[] attributeTagsAlignment = { null, "center", "center", null, null };
+
+    public static final String[][] attributeTagHighlightValues = { null, { "true" }, null,
+            { "Document me please", "FIXME" }, { "Document me please" } };
+
+    public static final String[] attributeTagHighlightStyles = { null, "font-weight: bold;", null,
+            "color: red; font-weight: bold;", "color: red; font-weight: bold;" };
 
     public static void main(String[] args) {
 
@@ -203,15 +212,11 @@ public class TLD2Forest {
             if (hasAttributes(tag, "attribute")) { // create table only if this tag has attributes
                 Element table = sectionElement.addElement("table");
                 Element headerRow = table.addElement("tr");
-                /* the header row */
-                Element nameTh = headerRow.addElement("th");
-                nameTh.setText("Name");
-                Element requiredTh = headerRow.addElement("th");
-                requiredTh.setText("Required");
-                Element rtexprvalueTh = headerRow.addElement("th");
-                rtexprvalueTh.setText("rt expression value");
-                Element descriptionTh = headerRow.addElement("th");
-                descriptionTh.setText("Description");
+                headerRow.addElement("th").setText("Name");
+                headerRow.addElement("th").setText("Required");
+                headerRow.addElement("th").setText("Request-time");
+                headerRow.addElement("th").setText("Description");
+                headerRow.addElement("th").setText("Comments");
                 /* the content */
                 /* the iterator of elements of a tag */
                 for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
@@ -223,9 +228,9 @@ public class TLD2Forest {
                             // have a referring attribute
                             Element attribute = MakumbaTLDGenerator.getReferencedAttributes(processedTags, errorMsg,
                                 tag, tagName, tagElement);
-                            processAttribute(table, attributeTags, attribute);
+                            processAttribute(table, attribute);
                         } else { // normal attribute
-                            processAttribute(table, attributeTags, tagElement);
+                            processAttribute(table, tagElement);
                         }
                     }
                 }
@@ -289,32 +294,50 @@ public class TLD2Forest {
         return false;
     }
 
-    private static void processAttribute(Element table, String[] attributeTags, Element tagElement) {
+    private static void processAttribute(Element table, Element tagElement) {
         int cellAddedCount = 0;
         /* if attribute is found then start writing new row for a table */
         Element tr = table.addElement("tr");
+
+        boolean isDeprecated = isDeprecated(tagElement);
+        if (isDeprecated) {
+            tr.addAttribute("class", "deprecated");
+        }
         /* going thru all the different data of attributes */
         for (Iterator<Element> tagElementAttributeIter = tagElement.elementIterator(); tagElementAttributeIter.hasNext();) {
             Element dataElement = tagElementAttributeIter.next();
             // System.out.println("tagelement attribute: "+dataElement.getText());
             String tagElementAttributeName = dataElement.getName();
+
             /* looking only specified data of an attribute, currently there are 4 tags to look for */
-            for (String attributeName : attributeTags) {
-                /*
-                 * if specified attribute is found then write the corresponding data to a table cell
-                 */
+            for (int i = 0; i < attributeTags.length; i++) {
+                String attributeName = attributeTags[i];
+                // if specified attribute is found then write the corresponding data to a table cell
                 if (tagElementAttributeName.equals(attributeName)) {
-                    // Element dataElement = tagElementAttribute.element(attributeName);
-                    /*
-                     * content of a current data tag
-                     */
-                    String elementText = dataElement.getText();
-                    /*
-                     * if a text of the tag is empty a check to avoid nullpointer Exception. Is it possible to have
-                     * null????
-                     */
-                    elementText = (elementText != null ? elementText : "");
                     Element td = tr.addElement("td");
+                    if (isDeprecated) {
+                        td.addAttribute("class", "deprecated");
+                    }
+                    // content of a current data tag
+                    String elementText = dataElement.getText();
+                    // if a text of the tag is empty a check to avoid nullpointer. Is it possible to have null????
+                    elementText = (elementText != null ? elementText : "");
+
+                    // apply special formatting
+                    if (StringUtils.isNotBlank(attributeTagsAlignment[i])) {
+                        td.addAttribute("align", attributeTagsAlignment[i]);
+                    }
+                    if (org.makumba.commons.StringUtils.equalsAny(elementText, attributeTagHighlightValues[i])) {
+                        td.addAttribute("style", attributeTagHighlightStyles[i]);
+                    }
+
+                    // special treatment for deprecated attributes
+                    if (isDeprecated) {
+                        if (attributeName.equals("name")) {
+                            elementText += " (deprecated)";
+                        }
+                        td.addAttribute("style", "color: blue;");
+                    }
                     td.setText(elementText);
                     cellAddedCount++;
                 }
@@ -324,6 +347,16 @@ public class TLD2Forest {
             Element td = tr.addElement("td");
             td.setText("");
         }
+    }
+
+    private static boolean isDeprecated(Element e) {
+        for (Iterator<Element> tagElementAttributeIter = e.elementIterator(); tagElementAttributeIter.hasNext();) {
+            Element dataElement = tagElementAttributeIter.next();
+            if (dataElement.getName().equals("deprecated")) {
+                return StringUtils.equals(dataElement.getText(), "true");
+            }
+        }
+        return false;
     }
 
     /**

@@ -68,7 +68,7 @@ public class MakumbaTLDGenerator {
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
                                 // remove all the <comments> tags inside <attribute> elements
-                                if (attributeContent.getName().equals("comments")) {
+                                if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated")) {
                                     attributeContent.getParent().remove(attributeContent);
                                 }
                             }
